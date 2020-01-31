@@ -17,8 +17,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public class ServicoEOL : IServicoEOL
     {
-        private readonly HttpClient httpClient;
         private readonly IRepositorioCache cache;
+        private readonly HttpClient httpClient;
 
         public ServicoEOL(HttpClient httpClient, IRepositorioCache cache)
         {
@@ -158,6 +158,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             else throw new NegocioException("Houve erro ao tentar obter a abrangência do Eol");
         }
 
+        public async Task<string[]> ObterAdministradoresSGPParaNotificar(string codigoDreOuUe)
+        {
+            var resposta = await httpClient.GetAsync($"escolas/{codigoDreOuUe}/administrador-sgp");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<string[]>(json);
+            }
+            return null;
+        }
+
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(long turmaId)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
@@ -197,9 +209,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
-        private string ObterChaveCacheAlunosTurma(string turmaId)
-            => $"alunos-turma:{turmaId}";
-
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
@@ -216,6 +225,12 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas/planejamento";
+            return await ObterDisciplinas(url);
+        }
+
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurma(string codigoTurma)
+        {
+            var url = $"funcionarios/turmas/{codigoTurma}/disciplinas";
             return await ObterDisciplinas(url);
         }
 
@@ -665,9 +680,12 @@ namespace SME.SGP.Aplicacao.Integracoes
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
-                RegistroFrequencia = x.PermiteRegistroFrequencia
+                RegistraFrequencia = x.RegistraFrequencia
             });
         }
+
+        private string ObterChaveCacheAlunosTurma(string turmaId)
+                                                                                                                                                                                                                                                                                            => $"alunos-turma:{turmaId}";
 
         private string[] ObterCodigosDres()
         {

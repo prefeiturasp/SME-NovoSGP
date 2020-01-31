@@ -35,6 +35,16 @@ class ServicoCompensacaoAusencia {
     const url = `/v1/processos/executando/frequencias/turma/${turmaId}/disciplina/${disciplinaId}/bimestres/${bimestre}`;
     return api.get(url);
   };
+
+  obterTurmasCopia = async turmaOrigemCodigo => {
+    const url = `v1/compensacoes/ausencia/copiar/turmas/${turmaOrigemCodigo}`;
+    return api.get(url);
+  };
+
+  copiarCompensacao = async parametros => {
+    const url = `v1/compensacoes/ausencia/copiar`;
+    return api.post(url, parametros);
+  };
 }
 
 export default new ServicoCompensacaoAusencia();

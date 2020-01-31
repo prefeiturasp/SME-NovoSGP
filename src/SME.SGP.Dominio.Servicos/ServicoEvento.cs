@@ -440,6 +440,10 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
             {
+                if (evento.EhTipoEventoFechamento())
+                {
+                    throw new NegocioException("Não é possível criar eventos do tipo selecionado.");
+                }
                 var temEventoLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, evento.DreId);
 
                 if (evento.TipoEvento.Codigo == (long)TipoEvento.Recesso || evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoNoRecesso)
@@ -489,6 +493,8 @@ namespace SME.SGP.Dominio.Servicos
                             {
                                 if (temEventoLiberacaoExcepcional)
                                     return true;
+                                else if (evento.TipoEvento.Codigo == (long)TipoEvento.Outros)
+                                    return devePassarPorWorkflow;
                                 else throw new NegocioException("Não é possível cadastrar o evento.");
                             }
                         }

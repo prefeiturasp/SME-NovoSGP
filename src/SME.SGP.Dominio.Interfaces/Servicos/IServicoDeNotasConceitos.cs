@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId);
 
-        NotaTipoValor TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa);
+        Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, bool consideraHistorico = false);
     }
 }
