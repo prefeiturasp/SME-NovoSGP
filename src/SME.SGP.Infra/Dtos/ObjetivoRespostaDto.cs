@@ -1,11 +1,10 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class RespostaDto
+    public class ObjetivoRespostaDto
     {
         public string Nome { get; set; }
         public long ObjetivoId { get; set; }
-        public long Id { get; set; }
+        public long RespostaId { get; set; }
         public bool Sim { get; set; }
-        public string Descricao { get; set; }
     }
 }
