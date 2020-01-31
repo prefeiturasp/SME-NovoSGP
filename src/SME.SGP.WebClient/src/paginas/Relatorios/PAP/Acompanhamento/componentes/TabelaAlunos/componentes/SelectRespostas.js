@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import t from 'prop-types';
 
 // Componentes
 import { SelectComponent } from '~/componentes';
@@ -28,14 +29,7 @@ function SelectRespostas({
 
       return String(respostasDisponiveisFiltradaPorSelecionada.id);
     });
-  }, [
-    aluno.Respostas,
-    aluno.respostas,
-    objetivoAtivo.Id,
-    objetivoAtivo.id,
-    respostas,
-    respostas.Opcoes,
-  ]);
+  }, [aluno.respostas, objetivoAtivo.id, respostas]);
 
   return (
     <SelectComponent
@@ -44,10 +38,24 @@ function SelectRespostas({
       lista={respostas}
       valueSelect={valorPadrao || undefined}
       valueOption="id"
-      valueText="descricao"
+      valueText="nome"
       placeholder="Selecione a opção"
     />
   );
 }
+
+SelectRespostas.propTypes = {
+  respostas: t.oneOfType([t.array]),
+  objetivoAtivo: t.oneOfType([t.object]),
+  aluno: t.oneOfType([t.object]),
+  onChangeResposta: t.func,
+};
+
+SelectRespostas.defaultProps = {
+  respostas: [],
+  objetivoAtivo: {},
+  aluno: {},
+  onChangeResposta: () => null,
+};
 
 export default SelectRespostas;
