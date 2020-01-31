@@ -14,6 +14,9 @@ namespace SME.SGP.Infra
         public int Bimestre { get; set; }
 
         [Required(ErrorMessage = "A disciplina é obrigatória!")]
-        public string DisciplinaId { get; set; }
+        public long DisciplinaId { get; set; }
+
+        [ListaTemElementos(ErrorMessage = "Necessário informar a lista de alunos e notas/conceitos para o fechamento")]
+        public IEnumerable<NotaConceitoBimestreDto> NotaConceitoAlunos { get; set; }
     }
 }
