@@ -72,6 +72,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new FechamentoMap());
                config.AddMap(new FechamentoBimestreMap());
                config.AddMap(new EventoFechamentoMap());
+               config.AddMap(new FechamentoTurmaDisciplinaMap());
+               config.AddMap(new NotaConceitoBimestreMap());
                config.ForDommel();
            });
         }
