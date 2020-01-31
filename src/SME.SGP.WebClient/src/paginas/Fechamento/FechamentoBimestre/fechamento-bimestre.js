@@ -24,15 +24,17 @@ const FechamentoBismestre = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [bimestreCorrente, setBimestreCorrente] = useState(0);
 
-  const onChangeDisciplinas = () => {};
+  const onChangeDisciplinas = () => { };
 
-  const onClickVoltar = () => {};
+  const onClickVoltar = () => { };
 
-  const onClickCancelar = () => {};
+  const onClickCancelar = () => { };
 
-  const onClickSalvar = () => {};
+  const onClickSalvar = () => { };
 
-  const onChangeTab = () => {};
+  const onChangeTab = async numeroBimestre => {
+    setBimestreCorrente(numeroBimestre);
+  }
 
   return (
     <>
@@ -83,37 +85,24 @@ const FechamentoBismestre = () => {
               </div>
             </div>
           </div>
-          <div className="row">
-            <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
-              <SelectComponent
-                id="disciplina"
-                name="disciplinaId"
-                lista={listaDisciplinas}
-                valueOption="codigoComponenteCurricular"
-                valueText="nome"
-                valueSelect={disciplinaIdSelecionada}
-                onChange={onChangeDisciplinas}
-                placeholder="Selecione um componente curricular"
-                disabled={desabilitarDisciplina || !turmaSelecionada.turma}
-              />
+          <div className="col-md-12">
+            <div className="row">
+              <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-4">
+                <SelectComponent
+                  id="disciplina"
+                  name="disciplinaId"
+                  lista={listaDisciplinas}
+                  valueOption="codigoComponenteCurricular"
+                  valueText="nome"
+                  valueSelect={disciplinaIdSelecionada}
+                  onChange={onChangeDisciplinas}
+                  placeholder="Selecione um componente curricular"
+                  disabled={desabilitarDisciplina || !turmaSelecionada.turma}
+                />
+              </div>
             </div>
           </div>
-          {/* <div className="row">
-            <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
-              <SelectComponent
-                id="disciplina"
-                name="disciplinaId"
-                lista={listaDisciplinas}
-                valueOption="codigoComponenteCurricular"
-                valueText="nome"
-                valueSelect={disciplinaIdSelecionada}
-                onChange={onChangeDisciplinas}
-                placeholder="Selecione um componente curricular"
-                disabled={desabilitarDisciplina || !turmaSelecionada.turma}
-              />
-            </div>
-          </div> */}
-          <>
+          <div className="col-md-12">
             <div className="row">
               <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                 <ContainerTabsCard
@@ -136,10 +125,14 @@ const FechamentoBismestre = () => {
                   <TabPane tab="4º Bimestre" key="4Bimestre">
                     teste
                   </TabPane>
+
+                  <TabPane tab="Final" key="final">
+                    teste
+                  </TabPane>
                 </ContainerTabsCard>
               </div>
             </div>
-          </>
+          </div>
         </Card>
       </Loader>
     </>
