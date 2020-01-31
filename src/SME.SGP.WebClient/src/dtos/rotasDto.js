@@ -27,6 +27,7 @@ const RotasDto = {
   COMPENSACAO_AUSENCIA: '/diario-classe/compensacao-ausencia',
   PERIODO_FECHAMENTO_ABERTURA:
     '/calendario-escolar/periodo-fechamento-abertura',
+  PAP: '/recuperacao-paralela',
 };
 
 export default RotasDto;
