@@ -14,6 +14,11 @@ namespace SME.SGP.Dominio
         Diretor = 3360,
 
         [Display(Name = "Supervisor Escolar")]
-        Supervisor = 3352
+        Supervisor = 3352,
+
+        [Display(Name = "Supervisor Técnico")]
+        SupervisorTecnico = 434
+
+
     }
 }

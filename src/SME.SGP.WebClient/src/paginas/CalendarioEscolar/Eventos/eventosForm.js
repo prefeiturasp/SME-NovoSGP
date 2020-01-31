@@ -108,6 +108,7 @@ const EventosForm = ({ match }) => {
     tipoEventoId: '',
     ueId: '',
     recorrenciaEventos: null,
+    podeAlterar: true,
   };
   const [valoresIniciais, setValoresIniciais] = useState(inicial);
 
@@ -336,6 +337,7 @@ const EventosForm = ({ match }) => {
           : undefined,
         id: evento.data.id,
         recorrenciaEventos: evento.data.recorrenciaEventos,
+        podeAlterar: evento.data.podeAlterar,
       });
       setAuditoria({
         criadoPor: evento.data.criadoPor,
@@ -395,7 +397,7 @@ const EventosForm = ({ match }) => {
   };
 
   const onClickVoltar = async () => {
-    if (modoEdicao) {
+    if (modoEdicao && valoresIniciais.podeAlterar) {
       const confirmado = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -775,13 +777,12 @@ const EventosForm = ({ match }) => {
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 pb-2">
-                  <div className="row">
-                    {/* TODO - Mock */}
+                  {/* <div className="row">
                     <CaixaDiasLetivos>2016</CaixaDiasLetivos>
                     <TextoDiasLetivos>
                       Nº de Dias Letivos no Calendário
                     </TextoDiasLetivos>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-4 pb-2 d-flex justify-content-end">
                   <Button
@@ -798,7 +799,7 @@ const EventosForm = ({ match }) => {
                     border
                     className="mr-2"
                     onClick={() => onClickCancelar(form)}
-                    disabled={!modoEdicao}
+                    disabled={!modoEdicao || !valoresIniciais.podeAlterar}
                   />
                   <Button
                     label="Excluir"
@@ -810,7 +811,8 @@ const EventosForm = ({ match }) => {
                     disabled={
                       somenteConsulta ||
                       !permissoesTela.podeExcluir ||
-                      novoRegistro
+                      novoRegistro ||
+                      !valoresIniciais.podeAlterar
                     }
                   />
                   <Button
@@ -820,7 +822,7 @@ const EventosForm = ({ match }) => {
                     bold
                     className="mr-2"
                     onClick={() => validaAntesDoSubmit(form)}
-                    disabled={desabilitarCampos}
+                    disabled={desabilitarCampos || !valoresIniciais.podeAlterar}
                   />
                 </div>
               </div>

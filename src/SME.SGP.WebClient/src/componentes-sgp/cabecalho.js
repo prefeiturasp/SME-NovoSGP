@@ -16,7 +16,7 @@ const Container = styled.div`
     color: #a4a4a4;
   }
 
-  h3 {
+  .titulo {
     height: 29px;
     object-fit: contain;
     font-family: Roboto;
@@ -31,12 +31,13 @@ const Container = styled.div`
   }
 `;
 
-const Cabecalho = ({ titulo, pagina }) => {
+const Cabecalho = ({ titulo, pagina, children }) => {
   return (
     <Container>
       <div className="col-xs-12 col-md-12 col-lg-12 p-l-10">
         <span>{titulo}</span>
-        <h3>{pagina}</h3>
+        <span className="titulo">{pagina}</span>
+        {children}
       </div>
     </Container>
   );

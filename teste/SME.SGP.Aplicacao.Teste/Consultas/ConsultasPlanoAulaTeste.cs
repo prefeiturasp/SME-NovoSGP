@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 TurmaId = "1"
             };
 
-            consultasAula.Setup(a => a.BuscarPorId(It.IsAny<long>()))
+            consultasAula.Setup(a => a.BuscarPorId(It.IsAny<long>()).Result)
                 .Returns(aula);
 
             // Plano anual

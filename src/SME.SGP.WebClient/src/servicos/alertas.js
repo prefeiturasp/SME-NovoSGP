@@ -25,6 +25,8 @@ const exibirAlerta = (tipo, mensagem, fixo = false) => {
     }, 5000);
   }
   window.scroll(0, 0);
+
+  return id;
 };
 
 const sucesso = mensagem => {

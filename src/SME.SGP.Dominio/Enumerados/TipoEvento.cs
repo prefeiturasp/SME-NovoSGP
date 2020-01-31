@@ -4,6 +4,9 @@ namespace SME.SGP.Dominio
 {
     public enum TipoEvento
     {
+        [Display(Name = "Fechamento de Bimestre")]
+        FechamentoBimestre = 3,
+
         [Display(Name = "Feriado")]
         Feriado = 4,
 
@@ -12,6 +15,9 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Organização Escolar")]
         OrganizacaoEscolar = 8,
+
+        [Display(Name = "Outros")]
+        Outros = 9,
 
         [Display(Name = "Recesso")]
         Recesso = 11,

@@ -91,9 +91,9 @@ namespace SME.SGP.Dominio
             await validarMediaAlunos(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId);
         }
 
-        public NotaTipoValor TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa)
+        public async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, bool consideraHistorico = false)
         {
-            var notaTipo = ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao).Result;
+            var notaTipo = await ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, consideraHistorico);
 
             if (notaTipo == null)
                 throw new NegocioException("Não foi encontrado tipo de nota para a avaliação informada");
@@ -116,7 +116,7 @@ namespace SME.SGP.Dominio
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
                 var valoresConceito = repositorioConceito.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
-                var tipoNota = TipoNotaPorAvaliacao(atividadeAvaliativa);
+                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
                 var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
@@ -202,9 +202,9 @@ namespace SME.SGP.Dominio
             return periodosEscolares;
         }
 
-        private async Task<NotaTipoValor> ObterNotaTipo(string turmaId, DateTime dataAvaliacao)
+        private async Task<NotaTipoValor> ObterNotaTipo(string turmaId, DateTime dataAvaliacao, bool consideraHistorico)
         {
-            var turma = await consultasAbrangencia.ObterAbrangenciaTurma(turmaId);
+            var turma = await consultasAbrangencia.ObterAbrangenciaTurma(turmaId, consideraHistorico);
 
             if (turma == null)
                 throw new NegocioException("Não foi encontrada a turma informada");
@@ -254,7 +254,7 @@ namespace SME.SGP.Dominio
             var alunosNotasExtemporaneas = new StringBuilder();
             var bimestreInformado = 0;
             var nota = notasConceitos.FirstOrDefault();
-            var tipoNota = TipoNotaPorAvaliacao(atividadeAvaliativa);
+            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
             var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
             var dataAtual = DateTime.Now;
             var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);

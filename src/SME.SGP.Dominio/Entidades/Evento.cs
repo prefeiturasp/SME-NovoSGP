@@ -100,6 +100,11 @@ namespace SME.SGP.Dominio
             return TipoEvento.Letivo == EventoLetivo.Sim;
         }
 
+        public bool EhTipoEventoFechamento()
+        {
+            return TipoEvento.Codigo == (long)Dominio.TipoEvento.FechamentoBimestre;
+        }
+
         public void EnviarParaWorkflowDeAprovacao(long idWorkflow)
         {
             WorkflowAprovacaoId = idWorkflow;

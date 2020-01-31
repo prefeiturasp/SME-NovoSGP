@@ -90,6 +90,7 @@ const inicial = {
   },
   diaSelecionado: undefined,
   eventoAulaCalendarioEdicao: {},
+  dadosAulaFrequencia: {},
 };
 
 export default function calendarioProfessor(state = inicial, action) {
@@ -132,6 +133,10 @@ export default function calendarioProfessor(state = inicial, action) {
       }
       case '@calendarioProfessor/salvarEventoAulaCalendarioEdicao': {
         draft.eventoAulaCalendarioEdicao = action.payload;
+        break;
+      }
+      case '@calendarioProfessor/salvarDadosAulaFrequencia': {
+        draft.dadosAulaFrequencia = action.payload;
         break;
       }
       default:
