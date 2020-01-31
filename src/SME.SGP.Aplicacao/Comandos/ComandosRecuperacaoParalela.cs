@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                     CriadoPor = recuperacaoParalelaDto.Periodo.CriadoPor ?? null
                 };
                 await repositorioRecuperacaoParalela.SalvarAsync(recuperacaoParalela);
-                await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.Excluir(item.Id);
+                await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.Excluir(item.Id, recuperacaoParalelaDto.Periodo.Id);
                 foreach (var resposta in recuperacaoParalelaDto.Periodo.Alunos.Where(w => w.Id == item.Id).FirstOrDefault().Respostas)
                 {
                     await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.SalvarAsync(new RecuperacaoParalelaPeriodoObjetivoResposta

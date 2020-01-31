@@ -171,9 +171,9 @@ where
 		where
 			descricao = 'Informações escolares' );
 
-insert into public.eixo (id,descricao,dt_inicio,criado_em,criado_por, criado_rf,excluido,recuperacao_paralela_periodo_id)
+insert into public.eixo (id,descricao,dt_inicio,criado_em,criado_por, criado_rf,excluido)
 select
-	2,'Frequência',now(),now(),'Carga Inicial','Carga Inicial',false,1
+	2,'Frequência',now(),now(),'Carga Inicial','Carga Inicial',false
 where
 	not exists(
 		select
@@ -182,9 +182,9 @@ where
 			public.eixo
 		where
 			descricao = 'Frequência' );
-insert into public.eixo (id,descricao,dt_inicio,criado_em,criado_por, criado_rf,excluido,recuperacao_paralela_periodo_id)
+insert into public.eixo (id,descricao,dt_inicio,criado_em,criado_por, criado_rf,excluido)
 select
-	3,'Sondagem',now(),now(),'Carga Inicial','Carga Inicial',false,1
+	3,'Sondagem',now(),now(),'Carga Inicial','Carga Inicial',false
 where
 	not exists(
 		select
@@ -266,7 +266,7 @@ where
 			
 insert into public.objetivo (id,eixo_id,nome,descricao,dt_inicio,criado_em,criado_por, criado_rf,excluido,ehEspecifico,ordem)
 select
-	1,1,'É atendido pelo AEE?','É atendido pelo AEE?',now(),now(),'Carga Inicial','Carga Inicial',false,true,10
+	1,1,'É atendido pelo AEE?','É atendido pelo AEE?',now(),now(),'Carga Inicial','Carga Inicial',false,false,10
 where
 	not exists(
 		select
@@ -277,7 +277,7 @@ where
 			id=1 );						
 insert into public.objetivo (id,eixo_id,nome,descricao,dt_inicio,criado_em,criado_por, criado_rf,excluido,ehEspecifico,ordem)
 select
-	2,1,'É atendido pelo NAAPA?','É atendido pelo NAAPA?',now(),now(),'Carga Inicial','Carga Inicial',false,true,20
+	2,1,'É atendido pelo NAAPA?','É atendido pelo NAAPA?',now(),now(),'Carga Inicial','Carga Inicial',false,false,20
 where
 	not exists(
 		select
@@ -288,7 +288,7 @@ where
 			id=2 );		
 insert into public.objetivo (id,eixo_id,nome,descricao,dt_inicio,criado_em,criado_por, criado_rf,excluido,ehEspecifico,ordem)
 select
-	3,1,'Parecer conclusivo do ano anterior','Parecer conclusivo do ano anterior',now(),now(),'Carga Inicial','Carga Inicial',false,true,30
+	3,1,'Parecer conclusivo do ano anterior','Parecer conclusivo do ano anterior',now(),now(),'Carga Inicial','Carga Inicial',false,false,30
 where
 	not exists(
 		select
@@ -310,7 +310,7 @@ where
 			id=4 );
 insert into public.objetivo (id,eixo_id,nome,descricao,dt_inicio,criado_em,criado_por, criado_rf,excluido,ehEspecifico,ordem)
 select
-	5,3,'Hipótese de escrita','Hipótese de escrita',now(),now(),'Carga Inicial','Carga Inicial',false,true,50
+	5,3,'Hipótese de escrita','Hipótese de escrita',now(),now(),'Carga Inicial','Carga Inicial',false,false,50
 where
 	not exists(
 		select

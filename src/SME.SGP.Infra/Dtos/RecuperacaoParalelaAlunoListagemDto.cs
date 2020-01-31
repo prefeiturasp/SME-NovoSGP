@@ -10,12 +10,13 @@ namespace SME.SGP.Dto
         private readonly Random rdm = new Random();
 
         public long CodAluno { get; set; }
-        public RecuperacaoParalelaStatus Concluido { get { return (RecuperacaoParalelaStatus)rdm.Next(1, 3); } }
+        public RecuperacaoParalelaStatus Concluido { get; set; }
         public long Id { get; set; }
         public string Nome { get; set; }
         public int NumeroChamada { get; set; }
-        public List<RespostaDto> Respostas { get; set; }
+        public List<ObjetivoRespostaDto> Respostas { get; set; }
         public string Turma { get; set; }
         public long TurmaId { get; set; }
+        public char? ParecerConclusivo { get; set; }
     }
 }
