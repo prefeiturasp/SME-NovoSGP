@@ -50,6 +50,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
   const [listaDisciplinasRegencia, setListaDisciplinasRegencia] = useState([]);
   const [temRegencia, setTemRegencia] = useState(false);
   const [refForm, setRefForm] = useState({});
+  const [bimestreSugeridoCopia, setBimestreSugeridoCopia] = useState(null);
 
   const [
     alunosAusenciaTurmaOriginal,
@@ -337,6 +338,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
           atividade: dadosEdicao.data.atividade,
           descricao: dadosEdicao.data.descricao,
         });
+        setBimestreSugeridoCopia(String(dadosEdicao.data.bimestre));
         if (dadosEdicao.data.alunos && dadosEdicao.data.alunos.length) {
           setAlunosAusenciaCompensada(dadosEdicao.data.alunos);
         }
@@ -556,7 +558,9 @@ const CompensacaoAusenciaForm = ({ match }) => {
     if (cadastrado && cadastrado.status == 200) {
       if (
         compensacoesParaCopiar &&
-        compensacoesParaCopiar.compensacaoOrigemId
+        compensacoesParaCopiar.compensacaoOrigemId &&
+        compensacoesParaCopiar.dadosTurmas &&
+        compensacoesParaCopiar.dadosTurmas.length
       ) {
         await ServicoCompensacaoAusencia.copiarCompensacao(
           compensacoesParaCopiar
@@ -739,6 +743,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
           onCloseCopiarCompensacao={fecharCopiarCompensacao}
           onCopiarCompensacoes={onCopiarCompensacoes}
           compensacoesParaCopiar={compensacoesParaCopiar}
+          bimestreSugerido={bimestreSugeridoCopia}
         />
       ) : (
           ''
@@ -953,11 +958,11 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       disabled={novoRegistro || desabilitarCampos}
                     />
                     {compensacoesParaCopiar &&
-                      compensacoesParaCopiar.compensacaoOrigemId ? (
+                      compensacoesParaCopiar.compensacaoOrigemId && compensacoesParaCopiar.dadosTurmas.length ? (
                         <ListaCopiarCompensacoes>
                           <div className="mb-1">
                             Compensação será copiada para:
-                        </div>
+                          </div>
                           <div
                             className="font-weight-bold"
                             key={`bimestre-${shortid.generate()}`}
