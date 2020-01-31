@@ -17,5 +17,6 @@ namespace SME.SGP.Dto
         public List<ObjetivoRespostaDto> Respostas { get; set; }
         public string Turma { get; set; }
         public long TurmaId { get; set; }
+        public char? ParecerConclusivo { get; set; }
     }
 }
