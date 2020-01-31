@@ -25,5 +25,10 @@ namespace SME.SGP.Dominio
         public SituacaoFechamento Situacao { get; set; }
         public Turma Turma { get; set; }
         public long TurmaId { get; set; }
+
+        public void AtualizarSituacao(SituacaoFechamento processadoComPendencias)
+        {
+            Situacao = processadoComPendencias;
+        }
     }
 }
