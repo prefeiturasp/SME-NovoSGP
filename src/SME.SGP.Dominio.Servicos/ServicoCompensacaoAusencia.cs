@@ -131,7 +131,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // TODO alterar verificação para checagem de periodo de fechamento e reabertura do fechamento depois de implementado
             if (DateTime.Now < periodo.PeriodoInicio || DateTime.Now > periodo.PeriodoFim)
-                throw new NegocioException($"Período do {bimestre}º Bimestre não esta aberto");
+                throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto");
 
             return periodo;
         }
