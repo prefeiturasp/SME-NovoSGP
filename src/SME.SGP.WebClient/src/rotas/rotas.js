@@ -39,8 +39,17 @@ import RegistroPOAForm from '~/paginas/DiarioClasse/RegistroPOA/Form';
 import CompensacaoAusenciaLista from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaLista';
 import CompensacaoAusenciaForm from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaForm';
 import PeriodoFechamentoAbertura from '~/paginas/CalendarioEscolar/PeriodoFechamentoAbertura/periodo-fechamento-abertura';
+import ResumosGraficosPAP from '~/paginas/Relatorios/PAP/ResumosGraficos';
 
 const rotas = new Map();
+
+rotas.set(`${RotasDto.PAP}/resumos`, {
+  breadcrumbName: 'ResumosGraficosPAP',
+  parent: RotasDto.PAP,
+  component: ResumosGraficosPAP,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+});
 
 rotas.set(RotasDto.CALENDARIO_ESCOLAR, {
   breadcrumbName: 'Calendário Escolar',
