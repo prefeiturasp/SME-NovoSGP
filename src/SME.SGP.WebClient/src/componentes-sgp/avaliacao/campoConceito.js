@@ -43,9 +43,7 @@ const CampoConceito = props => {
       className={`select-conceitos ${
         conceitoAlterado ? 'border-registro-alterado' : ''
       }`}
-      classNameContainer={
-        nota.ausente ? 'aluno-ausente-conceitos' : 'aluno-conceitos'
-      }
+      classNameContainer={nota.ausente ? 'aluno-ausente-conceitos' : ''}
       disabled={desabilitarCampo || !nota.podeEditar}
     />
   );
