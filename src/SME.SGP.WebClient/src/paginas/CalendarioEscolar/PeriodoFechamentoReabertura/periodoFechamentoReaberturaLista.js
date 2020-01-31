@@ -160,8 +160,9 @@ const PeriodoFechamentoReaberturaLista = () => {
       'Cancelar'
     );
     if (confirmado) {
+      const idsDeletar = idsReaberturasSelecionadas.map(tipo => tipo.id);
       const excluir = await ServicoFechamentoReabertura.deletar(
-        idsReaberturasSelecionadas
+        idsDeletar
       ).catch(e => erros(e));
 
       if (excluir && excluir.status == 200) {

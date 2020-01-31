@@ -245,9 +245,9 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
         'Cancelar'
       );
       if (confirmado) {
-        const excluir = await ServicoFechamentoReabertura.deletar(
-          idFechamentoReabertura
-        ).catch(e => erros(e));
+        const excluir = await ServicoFechamentoReabertura.deletar([
+          idFechamentoReabertura,
+        ]).catch(e => erros(e));
 
         if (excluir && excluir.status == 200) {
           sucesso(excluir.data);
@@ -317,8 +317,32 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     const cadastrado = await ServicoFechamentoReabertura.salvar(
       idFechamentoReabertura,
       prametrosParaSalvar
-    ).catch(e => erros(e));
-
+    ).catch(async e => {
+      if (e && e.response && e.response.status == 602) {
+        const mensagens =
+          e && e.response && e.response.data && e.response.data.mensagens;
+        if (mensagens) {
+          const alteracaoConfirmacao = await confirmar(
+            'Atenção',
+            '',
+            mensagens[0]
+          );
+          if (alteracaoConfirmacao) {
+            const cadastradoAlteracao = await ServicoFechamentoReabertura.salvar(
+              idFechamentoReabertura,
+              prametrosParaSalvar,
+              true
+            );
+            if (cadastradoAlteracao && cadastradoAlteracao.status == 200) {
+              sucesso(cadastradoAlteracao.data);
+              history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
+            }
+          }
+        }
+      } else {
+        erros(e);
+      }
+    });
     if (cadastrado && cadastrado.status == 200) {
       sucesso(cadastrado.data);
       history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
@@ -500,17 +524,6 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
             </Form>
           )}
         </Formik>
-
-        {exibirAuditoria ? (
-          <Auditoria
-            criadoEm={auditoria.criadoEm}
-            criadoPor={auditoria.criadoPor}
-            alteradoPor={auditoria.alteradoPor}
-            alteradoEm={auditoria.alteradoEm}
-          />
-        ) : (
-          ''
-        )}
       </Card>
     </>
   );
