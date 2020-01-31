@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -42,6 +43,8 @@ namespace SME.SGP.Aplicacao
         public async Task<RecuperacaoParalelaListagemDto> Listar(FiltroRecuperacaoParalelaDto filtro)
         {
             var alunosEol = await servicoEOL.ObterAlunosAtivosPorTurma(filtro.TurmaId);
+            if (!alunosEol.Any())
+                return null;
             var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
         }
@@ -53,10 +56,10 @@ namespace SME.SGP.Aplicacao
             var objetivos = await repositorioObjetivo.Listar(periodoId);
             var eixos = await repositorioEixo.Listar(periodoId);
 
-            var alunosRecParalela = alunosRecuperacaoParalela.Where(w => w.PeriodoRecuperacaoParalelaId == periodoId).ToList();
+            var alunosRecParalela = alunosRecuperacaoParalela.ToList();
             alunos.ForEach(x => alunosRecParalela.Add(new RetornoRecuperacaoParalela { AlunoId = Convert.ToInt64(x.CodigoAluno) }));
             var retorno = alunosRecParalela.Select(s => new { s.AlunoId, s.Id }).Distinct();
-            return new RecuperacaoParalelaListagemDto
+            var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {
                 Eixos = eixos,
                 Objetivos = objetivos,
@@ -78,6 +81,7 @@ namespace SME.SGP.Aplicacao
                             .Where(w => w.Id == a.Id)
                             .Count(),
                             objetivos.Count()),
+                        ParecerConclusivo = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.ParecerConclusivo).FirstOrDefault(),
                         Nome = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NomeAluno).FirstOrDefault(),
                         NumeroChamada = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NumeroAlunoChamada).FirstOrDefault(),
                         CodAluno = a.AlunoId,
@@ -93,6 +97,22 @@ namespace SME.SGP.Aplicacao
                     }).ToList()
                 }
             };
+
+            recuperacaoRetorno.Periodo.Alunos.Where(w => w.Id == 0 && w.ParecerConclusivo.HasValue && char.GetNumericValue(w.ParecerConclusivo.Value) <= 3).ToList().ForEach(x => x.Respostas.Add(new ObjetivoRespostaDto
+            {
+                ObjetivoId = 3,
+                RespostaId = ValidarParecerConclusivo(x.ParecerConclusivo.Value)
+            }));
+            return recuperacaoRetorno;
+        }
+
+        private long ValidarParecerConclusivo(char Parecer)
+        {
+            if (Parecer == (char)ParecerConclusivo.Aprovado)
+                return 3;
+            if (Parecer == (char)ParecerConclusivo.Reprovado)
+                return 6;
+            else return 7;
         }
     }
 }
