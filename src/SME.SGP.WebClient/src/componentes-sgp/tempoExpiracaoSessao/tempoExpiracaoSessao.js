@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import shortid from 'shortid';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import {
@@ -156,6 +157,7 @@ const TempoExpiracaoSessao = () => {
               />
             </span>
             <Button
+              id={shortid.generate()}
               icon="sync-alt"
               color={Colors.Azul}
               border

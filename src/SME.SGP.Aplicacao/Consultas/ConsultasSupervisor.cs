@@ -114,7 +114,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaEscolas = servicoEOL.ObterEscolasPorCodigo(supervisoresEscolasDres.Select(a => a.EscolaId.ToString()).ToArray());
 
-            List<SupervisoresRetornoDto> listaSupervisores;
+            IEnumerable<SupervisoresRetornoDto> listaSupervisores;
 
             if (supervisoresEscolasDres.Count() == 1 && string.IsNullOrEmpty(supervisoresEscolasDres.FirstOrDefault().SupervisorId))
             {
@@ -122,8 +122,19 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                listaSupervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.SupervisorId.ToString()).ToArray())
-                .ToList();
+                var supervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.SupervisorId.ToString()).ToArray());
+
+                if (supervisores == null || (supervisores.Count() != supervisoresEscolasDres.Count()))
+                {
+                    RemoverSupervisorSemAtribuicao(supervisoresEscolasDres, supervisores);
+
+                    if (supervisores != null)
+                        supervisoresEscolasDres = supervisoresEscolasDres.ToList().Where(s => supervisores.Select(e => e.CodigoRF).Contains(s.SupervisorId));
+                    else
+                        supervisoresEscolasDres = Enumerable.Empty<SupervisorEscolasDreDto>();
+                }
+
+                listaSupervisores = supervisores;
             }
 
             var supervisoresIds = supervisoresEscolasDres
@@ -189,20 +200,7 @@ namespace SME.SGP.Aplicacao
                 if (supervisores != null && supervisores.Any())
                 {
                     if (supervisores.Count() != supervisoresIds.Count())
-                    {
-                        var supervisoresSemAtribuicao = supervisoresEscolasDres.Where(s => !supervisores.Select(e => e.CodigoRF).Contains(s.SupervisorId));
-
-                        if (supervisoresSemAtribuicao != null && supervisoresSemAtribuicao.Any())
-                        {
-                            foreach (var supervisor in supervisoresSemAtribuicao)
-                            {
-                                var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
-                                supervisorEntidadeExclusao.Excluir();
-
-                                repositorioSupervisorEscolaDre.Salvar(supervisorEntidadeExclusao);
-                            }
-                        }
-                    }
+                        RemoverSupervisorSemAtribuicao(supervisoresEscolasDres, supervisores);
 
                     foreach (var supervisorEscolaDre in supervisoresIds)
                     {
@@ -225,5 +223,25 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
+
+        private void RemoverSupervisorSemAtribuicao(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, IEnumerable<SupervisoresRetornoDto> supervisoresEol)
+        {
+            var supervisoresSemAtribuicao = supervisoresEscolasDres;
+
+            if (supervisoresEol != null)
+                supervisoresSemAtribuicao = supervisoresEscolasDres.Where(s => !supervisoresEol.Select(e => e.CodigoRF).Contains(s.SupervisorId));
+
+            if (supervisoresSemAtribuicao != null && supervisoresSemAtribuicao.Any())
+            {
+                foreach (var supervisor in supervisoresSemAtribuicao)
+                {
+                    var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
+                    supervisorEntidadeExclusao.Excluir();
+
+                    repositorioSupervisorEscolaDre.Salvar(supervisorEntidadeExclusao);
+                }
+            }
+        }
+
     }
 }
