@@ -36,6 +36,7 @@ import TipoAvaliacaoForm from '~paginas/Configuracoes/TipoAvaliacao/tipoAvaliaca
 import AulaDadaAulaPrevista from '~/paginas/DiarioClasse/AulaDadaAulaPrevista/aulaDadaAulaPrevista';
 import RegistroPOALista from '~/paginas/DiarioClasse/RegistroPOA/Lista';
 import RegistroPOAForm from '~/paginas/DiarioClasse/RegistroPOA/Form';
+import PaginaComErro from '~/paginas/Erro/pagina-com-erro';
 
 const rotas = new Map();
 
@@ -503,7 +504,7 @@ rotas.set(`${RotasDto.AULA_DADA_AULA_PREVISTA}`, {
 
 rotas.set(`${RotasDto.REGISTRO_POA}`, {
   breadcrumbName: 'Registro POA',
-  menu: ['Diário de Classe'],
+  menu: ['Planejamento'],
   parent: '/',
   component: RegistroPOALista,
   exact: true,
@@ -529,6 +530,24 @@ rotas.set(`${RotasDto.REGISTRO_POA}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.REGISTRO_POA,
+});
+
+rotas.set('*', {
+  breadcrumbName: 'Erro',
+  parent: '/',
+  component: PaginaComErro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+
+rotas.set('/erro', {
+  breadcrumbName: 'Erro',
+  parent: '/',
+  component: PaginaComErro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
 });
 
 const rotasArray = [];
