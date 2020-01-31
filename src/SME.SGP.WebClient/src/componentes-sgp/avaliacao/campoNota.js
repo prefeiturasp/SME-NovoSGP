@@ -49,7 +49,7 @@ const CampoNota = props => {
       max={10}
       step={0.5}
       placeholder="Nota"
-      classNameCampo={`${nota.ausente ? 'aluno-ausente-notas' : 'aluno-notas'}`}
+      classNameCampo={`${nota.ausente ? 'aluno-ausente-notas' : ''}`}
       desabilitado={desabilitarCampo || !nota.podeEditar}
       className={`${notaAlterada ? 'border-registro-alterado' : ''}`}
     />
