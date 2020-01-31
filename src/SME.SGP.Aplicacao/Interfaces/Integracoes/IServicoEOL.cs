@@ -29,6 +29,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<string[]> ObterAdministradoresSGPParaNotificar(string codigoDreOuUe);
 
+        Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(long turmaId);
+
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo);
