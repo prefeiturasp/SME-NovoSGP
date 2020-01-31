@@ -540,7 +540,8 @@ rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}`, {
   component: PeriodoFechamentoReaberturaLista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
 });
 
 rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/novo`, {

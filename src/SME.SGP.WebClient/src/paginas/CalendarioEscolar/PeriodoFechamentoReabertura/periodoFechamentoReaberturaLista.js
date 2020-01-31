@@ -1,6 +1,7 @@
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ListaPaginada, Loader } from '~/componentes';
 import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
 import Button from '~/componentes/button';
@@ -9,14 +10,22 @@ import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
 import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
+import RotasDto from '~/dtos/rotasDto';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 import ServicoFechamentoReabertura from '~/servicos/Paginas/Calendario/ServicoFechamentoReabertura';
 
 import { CampoBimestre } from './periodoFechamentoReaberuraLista.css';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const PeriodoFechamentoReaberturaLista = () => {
+  const usuario = useSelector(store => store.usuario);
+
+  const permissoesTela =
+    usuario.permissoes[RotasDto.PERIODO_FECHAMENTO_REABERTURA];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
   const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
     []
   );
@@ -96,6 +105,10 @@ const PeriodoFechamentoReaberturaLista = () => {
   const [colunasBimestre, setColunasBimestre] = useState(
     getColunasBimestreAnual()
   );
+
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
 
   const onFiltrar = useCallback(() => {
     if (tipoCalendarioSelecionado) {
@@ -261,8 +274,9 @@ const PeriodoFechamentoReaberturaLista = () => {
                     className="mr-2"
                     onClick={onClickExcluir}
                     disabled={
-                      idsReaberturasSelecionadas &&
-                      idsReaberturasSelecionadas.length < 1
+                      !permissoesTela.podeExcluir ||
+                      (idsReaberturasSelecionadas &&
+                        idsReaberturasSelecionadas.length < 1)
                     }
                   />
                   <Button
@@ -272,6 +286,7 @@ const PeriodoFechamentoReaberturaLista = () => {
                     bold
                     className="mr-2"
                     onClick={onClickNovo}
+                    disabled={somenteConsulta || !permissoesTela.podeIncluir}
                   />
                 </div>
                 <div className="col-md-12 mb-2">
