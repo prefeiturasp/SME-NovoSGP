@@ -37,7 +37,7 @@ namespace SME.SGP.Dominio.Servicos
             }
             var fechamento = new Fechamento(turma.Id, disciplinaId, periodoEscolar.Id);
             fechamento.Id = repositorioFechamento.Salvar(fechamento);
-            servicoPendenciaFechamento.ValidarAvaliacoesSemNotas(fechamento.Id, codigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, codigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
         }
     }
 }
