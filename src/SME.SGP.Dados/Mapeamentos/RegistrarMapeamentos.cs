@@ -72,6 +72,9 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PeriodoFechamentoBimestreMap());
                config.AddMap(new NotificacaoCompensacaoAusenciaMap());
                config.AddMap(new EventoFechamentoMap());
+               config.AddMap(new RecuperacaoParalelaMap());
+               config.AddMap(new RecuperacaoParalelaPeriodoMap());
+               config.AddMap(new RecuperacaoParalelaPeriodoObjetivoRespostaMap());
                config.ForDommel();
            });
         }

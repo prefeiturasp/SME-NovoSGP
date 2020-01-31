@@ -106,6 +106,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasProcessoExecutando, ConsultasProcessoExecutando>();
             services.TryAddScoped<IConsultasFechamento, ConsultasFechamento>();
             services.TryAddScoped<IConsultasEventoFechamento, ConsultasEventoFechamento>();
+            services.TryAddScoped<IConsultaRecuperacaoParalela, ConsultasRecuperacaoParalela>();
+            services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -179,6 +181,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPeriodoFechamento, RepositorioPeriodoFechamento>();
             services.TryAddScoped<IRepositorioNotificacaoCompensacaoAusencia, RepositorioNotificacaoCompensacaoAusencia>();
             services.TryAddScoped<IRepositorioEventoFechamento, RepositorioEventoFechamento>();
+            services.TryAddScoped<IRepositorioRecuperacaoParalela, RepositorioRecuperacaoParalela>();
+            services.TryAddScoped<IRepositorioRecuperacaoParalelaPeriodo, RepositorioRecuperacaoParalelaPeriodo>();
+            services.TryAddScoped<IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta, RepositorioRecuperacaoParalelaPeriodoObjetivoResposta>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
