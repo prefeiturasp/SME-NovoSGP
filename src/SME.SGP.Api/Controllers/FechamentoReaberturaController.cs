@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(string), 200)]
         [Permissao(Permissao.PFR_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir([FromServices] IComandosFechamentoReabertura comandosFechamentoReabertura, [FromQuery]long[] ids)
+        public async Task<IActionResult> Excluir([FromServices] IComandosFechamentoReabertura comandosFechamentoReabertura, [FromBody]long[] ids)
         {
             return Ok(await comandosFechamentoReabertura.Excluir(ids));
         }
