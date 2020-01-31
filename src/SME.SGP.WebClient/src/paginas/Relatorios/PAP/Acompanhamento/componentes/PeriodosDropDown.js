@@ -41,7 +41,7 @@ PeriodosDropDown.propTypes = {
 
 PeriodosDropDown.defaultProps = {
   onChangePeriodo: () => {},
-  valor: null,
+  valor: undefined,
   desabilitado: false,
 };
 

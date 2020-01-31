@@ -23,9 +23,13 @@ function BarraNavegacao({ objetivos, objetivoAtivo, onChangeObjetivo }) {
           color={Colors.Roxo}
           className="ml-auto attached left"
           bold
-          onClick={() => null}
+          onClick={() =>
+            onChangeObjetivo(objetivos[objetivos.indexOf(objetivoAtivo) - 1])
+          }
           border
-          disabled={objetivos.length < 1}
+          disabled={
+            objetivos.length < 1 || objetivos.indexOf(objetivoAtivo) === 0
+          }
         />
       </div>
       <div className="conteudo">
@@ -57,9 +61,14 @@ function BarraNavegacao({ objetivos, objetivoAtivo, onChangeObjetivo }) {
           color={Colors.Roxo}
           className="ml-auto attached right"
           bold
-          onClick={() => null}
+          onClick={() =>
+            onChangeObjetivo(objetivos[objetivos.indexOf(objetivoAtivo) + 1])
+          }
           border
-          disabled={objetivos.length < 1}
+          disabled={
+            objetivos.length < 1 ||
+            objetivos.indexOf(objetivoAtivo) === objetivos.length - 1
+          }
         />
       </div>
     </Container>
@@ -74,7 +83,7 @@ BarraNavegacao.propTypes = {
 
 BarraNavegacao.defaultProps = {
   objetivos: [],
-  objetivoAtivo: null,
+  objetivoAtivo: {},
   onChangeObjetivo: () => {},
 };
 

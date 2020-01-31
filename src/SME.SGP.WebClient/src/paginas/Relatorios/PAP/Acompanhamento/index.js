@@ -33,6 +33,9 @@ import Reducer, {
   setarObjetivoAtivo,
 } from './reducer';
 
+// Utils
+import { stringNulaOuEmBranco, valorNuloOuVazio } from '~/utils/funcoes/gerais';
+
 function RelatorioPAPAcompanhamento() {
   const [periodo, setPeriodo] = useState(undefined);
   const [modoEdicao, setModoEdicao] = useState(false);
@@ -40,6 +43,15 @@ function RelatorioPAPAcompanhamento() {
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
   const [carregando, setCarregando] = useState(false);
   const { turma } = useSelector(store => store.usuario.turmaSelecionada);
+
+  const dispararAlteracoes = dados => {
+    setEstadoOriginalAlunos(dados.periodo.alunos);
+    disparar(carregarAlunos(dados.periodo.alunos));
+    disparar(carregarPeriodo(dados.periodo));
+    disparar(carregarEixos(dados.eixos));
+    disparar(carregarObjetivos(dados.objetivos));
+    disparar(carregarRespostas(dados.respostas));
+  };
 
   const salvarAlteracoes = useCallback(
     async objetivo => {
@@ -53,6 +65,7 @@ function RelatorioPAPAcompanhamento() {
         });
 
         if (req.status === 200) {
+          dispararAlteracoes(req.data);
           if (objetivo) {
             disparar(setarObjetivoAtivo(objetivo.id));
           }
@@ -76,18 +89,26 @@ function RelatorioPAPAcompanhamento() {
   const onChangePeriodoHandler = async valor => {
     try {
       setCarregando(true);
+
+      if (valorNuloOuVazio(valor)) {
+        dispararAlteracoes({
+          periodo: { alunos: [] },
+          eixos: [],
+          respostas: [],
+          objetivos: [],
+        });
+        disparar(setarObjetivoAtivo({}));
+        setPeriodo(undefined);
+        setCarregando(false);
+        return false;
+      }
+
       setPeriodo(valor);
       const { data } = await AcompanhamentoPAPServico.ListarAlunos({
         TurmaId: turma,
         PeriodoId: valor,
       });
-
-      setEstadoOriginalAlunos(data.periodo.alunos);
-      disparar(carregarAlunos(data.periodo.alunos));
-      disparar(carregarPeriodo(data.periodo));
-      disparar(carregarEixos(data.eixos));
-      disparar(carregarObjetivos(data.objetivos));
-      disparar(carregarRespostas(data.respostas));
+      dispararAlteracoes(data);
       disparar(setarObjetivoAtivo(estado.Objetivos[0]));
       setCarregando(false);
     } catch (err) {
@@ -107,15 +128,27 @@ function RelatorioPAPAcompanhamento() {
       objetivoId: estado.ObjetivoAtivo.id,
     };
 
-    const respostasAluno =
-      alunoCorrente.respostas && alunoCorrente.respostas.length > 0
-        ? [
-            ...alunoCorrente.respostas.filter(
-              y => y.objetivoId !== estado.ObjetivoAtivo.id
-            ),
-            novaResposta,
-          ]
-        : [novaResposta];
+    let respostasAluno = [];
+    if (!valorNuloOuVazio(valor)) {
+      respostasAluno =
+        alunoCorrente.respostas && alunoCorrente.respostas.length > 0
+          ? [
+              ...alunoCorrente.respostas.filter(
+                y => y.objetivoId !== estado.ObjetivoAtivo.id
+              ),
+              novaResposta,
+            ]
+          : [novaResposta];
+    } else {
+      respostasAluno =
+        alunoCorrente.respostas && alunoCorrente.respostas.length > 0
+          ? [
+              ...alunoCorrente.respostas.filter(
+                y => y.objetivoId !== estado.ObjetivoAtivo.id
+              ),
+            ]
+          : [];
+    }
 
     disparar(
       carregarAlunos(
@@ -152,7 +185,7 @@ function RelatorioPAPAcompanhamento() {
     return estado.Respostas.filter(
       x => x.objetivoId === estado.ObjetivoAtivo.id
     );
-  }, [estado.ObjetivoAtivo.id, estado.Respostas]);
+  }, [estado.ObjetivoAtivo, estado.Respostas]);
 
   const onClickCancelarHandler = useCallback(async () => {
     if (!modoEdicao) return;
@@ -187,7 +220,7 @@ function RelatorioPAPAcompanhamento() {
   return (
     <>
       <AlertaSelecionarTurma />
-      <Cabecalho pagina="Registro do Projeto de Apoio Pedagógico" />
+      <Cabecalho pagina="Relatório de acompanhamento PAP" />
       <Loader loading={carregando}>
         <Card mx="mx-0">
           <ButtonGroup
@@ -226,6 +259,7 @@ function RelatorioPAPAcompanhamento() {
           <Grid className="p-0 mt-2" cols={12}>
             <EixoObjetivo
               eixo={
+                estado.ObjetivoAtivo &&
                 estado.Eixos.filter(
                   x => x.id === estado.ObjetivoAtivo.eixoId
                 )[0]
