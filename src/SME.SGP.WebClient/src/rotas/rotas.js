@@ -38,6 +38,7 @@ import RegistroPOALista from '~/paginas/DiarioClasse/RegistroPOA/Lista';
 import RegistroPOAForm from '~/paginas/DiarioClasse/RegistroPOA/Form';
 import CompensacaoAusenciaLista from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaLista';
 import CompensacaoAusenciaForm from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaForm';
+import FechamentoBismestre from '~/paginas/Fechamento/FechamentoBimestre/fechamento-bimestre';
 
 const rotas = new Map();
 
@@ -564,15 +565,15 @@ rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/editar/:id`, {
   chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
 });
 
-// rotas.set(`${RotasDto.FECHAMENTO_BIMESTRE}`, {
-//   breadcrumbName: 'Fechamento',
-//   parent: RotasDto.COMPENSACAO_AUSENCIA,
-//   component: CompensacaoAusenciaForm,
-//   exact: true,
-//   tipo: RotasTipo.EstruturadaAutenticada,
-//   temPermissionamento: true,
-//   chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
-// });
+rotas.set(`${RotasDto.FECHAMENTO_BIMESTRE}`, {
+  breadcrumbName: 'Fechamento',
+  parent: '/',
+  component: FechamentoBismestre,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.FECHAMENTO_BIMESTRE,
+});
 
 const rotasArray = [];
 for (var [key, value] of rotas) {
