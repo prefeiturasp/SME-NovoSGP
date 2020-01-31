@@ -1,7 +1,7 @@
 import { Tabs } from 'antd';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Colors, Loader } from '~/componentes';
+import { Colors, Loader, DataTable } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Button from '~/componentes/button';
@@ -9,6 +9,7 @@ import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
+import { Table } from 'antd';
 
 const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
@@ -23,6 +24,34 @@ const FechamentoBismestre = () => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [bimestreCorrente, setBimestreCorrente] = useState(0);
+
+  const columns = [
+    { title: '', dataIndex: 'contador', key: 'contador', colSpan: 0, width: '10%' },
+    { title: 'Nome', dataIndex: 'nome', key: 'nome', colSpan: 2 },
+    { title: 'Nota/Conceito', dataIndex: 'nota_conceito', key: 'age' },
+    { title: 'Faltas no Bimestre', dataIndex: 'faltas_bimestre', key: 'faltas_bimestre' },
+    { title: 'Ausências Compensadas', dataIndex: 'ausencias_compensadas', key: 'ausencias_compensadas' },
+    { title: 'Frequência (%)', dataIndex: 'frequencia', key: 'frequencia', render: frequencia => { return `${frequencia}%` } },
+  ];
+
+  const data = [
+    {
+      contador: 1,
+      nome: 'Alvaro Ramos Grassi',
+      nota_conceito: 8.5,
+      faltas_bimestre: 12,
+      ausencias_compensadas: 12,
+      frequencia: 70
+    },
+    {
+      contador: 1,
+      nome: 'Alvaro Ramos Grassi',
+      nota_conceito: 8.5,
+      faltas_bimestre: 12,
+      ausencias_compensadas: 12,
+      frequencia: 70
+    },
+  ];
 
   const onChangeDisciplinas = () => { };
 
@@ -111,7 +140,14 @@ const FechamentoBismestre = () => {
                   activeKey={String(bimestreCorrente)}
                 >
                   <TabPane tab="1º Bimestre" key="1Bimestre">
-                    teste
+                    <DataTable
+                      scroll={{ y: 420 }}
+                      id="lista-fechamento-bimestre"
+                      columns={columns}
+                      dataSource={data}
+                      pagination={false}
+                      pageSize={9999}
+                    />
                   </TabPane>
 
                   <TabPane tab="2º Bimestre" key="2Bimestre">
