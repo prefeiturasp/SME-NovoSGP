@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
-    public class ServicoCompensacaoAusencia: IServicoCompensacaoAusencia
+    public class ServicoCompensacaoAusencia : IServicoCompensacaoAusencia
     {
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
@@ -50,7 +50,7 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task Salvar(long id, CompensacaoAusenciaDto compensacaoDto)
+        public async Task Salvar(long id, CompensacaoAusenciaDto compensacaoDto, bool ehCopia = false)
         {
             // Busca dados da turma
             var turma = BuscaTurma(compensacaoDto.TurmaId);
@@ -65,10 +65,12 @@ namespace SME.SGP.Dominio.Servicos
             // Valida mesma compensação no ano
             var compensacaoExistente = await repositorioCompensacaoAusencia.ObterPorAnoTurmaENome(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id);
             if (compensacaoExistente != null)
-                throw new NegocioException("Já existe essa compensação cadastrada para turma no ano letivo.");
+            {
+                throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.{adicionarMensagemTurma(ehCopia, turma.Nome)}");
+            }
 
             // Carrega dasdos da disciplina no EOL
-            ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds);
+            ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds, ehCopia, turma.Nome);
 
             // Persiste os dados
             var compensacao = MapearEntidade(id, compensacaoDto);
@@ -96,17 +98,17 @@ namespace SME.SGP.Dominio.Servicos
             Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
         }
 
-        private void ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds)
+        private void ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool ehCopia = false, string nomeTurma = null)
         {
             var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId });
 
             if (!disciplinasEOL.Any())
-                throw new NegocioException("Disciplina não encontrada no EOL.");
+                throw new NegocioException($"Disciplina não encontrada no EOL.{adicionarMensagemTurma(ehCopia, nomeTurma)}");
 
             var disciplina = disciplinasEOL.FirstOrDefault();
 
             if (disciplina.Regencia && ((disciplinasRegenciaIds == null) || !disciplinasRegenciaIds.Any()))
-                throw new NegocioException("Regência de classe deve informar a(s) disciplina(s) relacionadas a esta atividade.");
+                throw new NegocioException($"Regência de classe deve informar a(s) disciplina(s) relacionadas a esta atividade.{adicionarMensagemTurma(ehCopia, nomeTurma)}");
 
         }
 
@@ -156,7 +158,7 @@ namespace SME.SGP.Dominio.Servicos
                 disciplinas = await repositorioCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoId);
 
             // Remove as disciplinas não existentes mais
-            foreach(var disciplinaExcluida in disciplinas.Where(x => !disciplinasRegenciaIds.Any(d => d == x.DisciplinaId)))
+            foreach (var disciplinaExcluida in disciplinas.Where(x => !disciplinasRegenciaIds.Any(d => d == x.DisciplinaId)))
             {
                 disciplinaExcluida.Excluir();
                 listaPersistencia.Add(disciplinaExcluida);
@@ -187,7 +189,7 @@ namespace SME.SGP.Dominio.Servicos
                 alunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
 
             // excluir os removidos da lista
-            foreach(var alunoRemovido in alunos.Where(a => !alunosDto.Any(d => d.Id == a.CodigoAluno)))
+            foreach (var alunoRemovido in alunos.Where(a => !alunosDto.Any(d => d.Id == a.CodigoAluno)))
             {
                 alunoRemovido.Excluir();
                 listaPersistencia.Add(alunoRemovido);
@@ -246,7 +248,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private CompensacaoAusenciaAluno MapearCompensacaoAlunoEntidade(long compensacaoId, CompensacaoAusenciaAlunoDto alunoDto)
             => new CompensacaoAusenciaAluno()
-            { 
+            {
                 CompensacaoAusenciaId = compensacaoId,
                 CodigoAluno = alunoDto.Id,
                 QuantidadeFaltasCompensadas = alunoDto.QtdFaltasCompensadas,
@@ -285,7 +287,7 @@ namespace SME.SGP.Dominio.Servicos
                 compensacoesExcluir.Add(compensacao);
 
                 var compensacoesAlunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
-                foreach(var compensacaoAluno in compensacoesAlunos)
+                foreach (var compensacaoAluno in compensacoesAlunos)
                 {
                     compensacaoAluno.Excluir();
                     compensacoesAlunosExcluir.Add(compensacaoAluno);
@@ -300,7 +302,7 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             // Excluir lista carregada
-            foreach(var compensacaoExcluir in compensacoesExcluir)
+            foreach (var compensacaoExcluir in compensacoesExcluir)
             {
                 var turma = repositorioTurma.ObterPorId(compensacaoExcluir.TurmaId);
                 var periodo = BuscaPeriodo(turma.AnoLetivo, turma.ModalidadeCodigo, compensacaoExcluir.Bimestre, turma.Semestre);
@@ -311,7 +313,7 @@ namespace SME.SGP.Dominio.Servicos
                     // Exclui dependencias
                     var alunosDaCompensacao = compensacoesAlunosExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList();
                     alunosDaCompensacao.ForEach(c => repositorioCompensacaoAusenciaAluno.Salvar(c));
-                    
+
                     compensacoesDisciplinasExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
                         .ForEach(c => repositorioCompensacaoAusenciaDisciplinaRegencia.Salvar(c));
 
@@ -342,14 +344,16 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
 
-        public async Task Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia)
+        public async Task<string> Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia)
         {
             var compensacaoOrigem = repositorioCompensacaoAusencia.ObterPorId(compensacaoCopia.CompensacaoOrigemId);
             if (compensacaoOrigem == null)
                 throw new NegocioException("Compensação de origem não localizada com o identificador informado.");
 
-            foreach(var turmaId in compensacaoCopia.TurmasIds)
+            var turmasCopiadas = new StringBuilder("");
+            foreach (var turmaId in compensacaoCopia.TurmasIds)
             {
+                var turma = repositorioTurma.ObterPorId(turmaId);
                 CompensacaoAusenciaDto compensacaoDto = new CompensacaoAusenciaDto()
                 {
                     TurmaId = turmaId,
@@ -360,13 +364,21 @@ namespace SME.SGP.Dominio.Servicos
                     DisciplinasRegenciaIds = new List<string>(),
                     Alunos = new List<CompensacaoAusenciaAlunoDto>()
                 };
-                
+
                 var disciplinasRegencia = await repositorioCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoOrigem.Id);
                 if (disciplinasRegencia != null && disciplinasRegencia.Any())
                     compensacaoDto.DisciplinasRegenciaIds = disciplinasRegencia.Select(s => s.DisciplinaId);
 
-                await Salvar(0, compensacaoDto);
+                await Salvar(0, compensacaoDto, true);
+                turmasCopiadas.AppendLine(turmasCopiadas.ToString().Length > 0 ? ", " + turma.Nome : turma.Nome);
             }
+            var respTurmas = turmasCopiadas.ToString();
+            return respTurmas.Length > 0 ? $"A cópia para as turmas {respTurmas} foram realizdas com sucesso" : "";
+        }
+
+        private string adicionarMensagemTurma(bool ehCopia, string turma)
+        {
+            return ehCopia ? $"Turma: {turma}" : "";
         }
     }
 }
