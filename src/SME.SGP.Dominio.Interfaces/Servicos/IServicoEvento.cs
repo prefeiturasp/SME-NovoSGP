@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         void AlterarRecorrenciaEventos(Evento evento, bool alterarRecorrenciaCompleta);
 
-        Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false);
+        Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false);
 
         void SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario);
 

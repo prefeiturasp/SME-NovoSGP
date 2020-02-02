@@ -6,7 +6,6 @@ import shortid from 'shortid';
 import { Base, Colors } from '~/componentes/colors';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
-import Grid from '~/componentes/grid';
 import Button from '~/componentes/button';
 import { store } from '~/redux';
 import {
