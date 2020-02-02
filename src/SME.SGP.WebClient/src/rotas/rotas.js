@@ -39,6 +39,7 @@ import RegistroPOAForm from '~/paginas/DiarioClasse/RegistroPOA/Form';
 import CompensacaoAusenciaLista from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaLista';
 import CompensacaoAusenciaForm from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaForm';
 import PeriodoFechamentoAbertura from '~/paginas/CalendarioEscolar/PeriodoFechamentoAbertura/periodo-fechamento-abertura';
+import PaginaComErro from '~/paginas/Erro/pagina-com-erro';
 
 const rotas = new Map();
 
@@ -506,7 +507,7 @@ rotas.set(`${RotasDto.AULA_DADA_AULA_PREVISTA}`, {
 
 rotas.set(`${RotasDto.REGISTRO_POA}`, {
   breadcrumbName: 'Registro POA',
-  menu: ['Diário de Classe'],
+  menu: ['Planejamento'],
   parent: '/',
   component: RegistroPOALista,
   exact: true,
@@ -574,6 +575,24 @@ rotas.set(`${RotasDto.PERIODO_FECHAMENTO_ABERTURA}`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.PERIODO_FECHAMENTO_ABERTURA,
+});
+
+rotas.set('*', {
+  breadcrumbName: 'Erro',
+  parent: '/',
+  component: PaginaComErro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+
+rotas.set('/erro', {
+  breadcrumbName: 'Erro',
+  parent: '/',
+  component: PaginaComErro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
 });
 
 const rotasArray = [];
