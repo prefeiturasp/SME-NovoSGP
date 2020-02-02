@@ -415,7 +415,6 @@ const CadastroAula = ({ match }) => {
     const val = {
       tipoAula: Yup.string().required('Tipo obrigatório'),
       disciplinaId: Yup.string().required('Componente curricular obrigatório'),
-      dataAula: momentSchema.required('Hora obrigatória'),
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
       quantidadeTexto: controlaQuantidadeAula
@@ -490,11 +489,13 @@ const CadastroAula = ({ match }) => {
 
   const salvar = async valoresForm => {
     const dados = { ...valoresForm };
+
     const data =
       dados.dataAulaCompleta && dados.dataAulaCompleta.format('YYYY-MM-DD');
-    const hora = dados.dataAula && dados.dataAula.format('HH:mm');
+    dados.dataAula = moment(`${data}T00:00:00-03:00`);
 
-    dados.dataAula = moment(`${data}T${hora}`);
+    console.log(dados.dataAula);
+
     if (dados.quantidadeRadio && dados.quantidadeRadio > 0) {
       dados.quantidade = dados.quantidadeRadio;
     } else if (dados.quantidadeTexto && dados.quantidadeTexto > 0) {
@@ -506,6 +507,8 @@ const CadastroAula = ({ match }) => {
       dados.ueId = ueId;
       dados.turmaId = turmaId;
     }
+
+    dados.dataAula = dados.dataAula.format();
 
     const cadastrado = await ServicoAula.salvar(idAula, dados).catch(e =>
       erros(e)
@@ -815,18 +818,6 @@ const CadastroAula = ({ match }) => {
                       ) ||
                       !novoRegistro
                     }
-                  />
-                </div>
-                <div className="col-sm-12 col-md-4 col-lg-4 col-xl-3 pb-2">
-                  <CampoData
-                    form={form}
-                    label="Horário do início da aula"
-                    placeholder="Formato 24 horas"
-                    formatoData="HH:mm"
-                    desabilitado={somenteLeitura}
-                    name="dataAula"
-                    onChange={onChangeCampos}
-                    somenteHora
                   />
                 </div>
                 {disciplinaCompartilhada && (
