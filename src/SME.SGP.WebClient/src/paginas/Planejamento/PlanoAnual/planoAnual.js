@@ -372,7 +372,7 @@ const PlanoAnual = () => {
                   alerta={{
                     tipo: 'warning',
                     id: 'plano-anual-selecione-turma',
-                    mensagem: 'Você precisa escolher uma turma.1',
+                    mensagem: 'Você precisa escolher uma turma.',
                     estiloTitulo: { fontSize: '18px' },
                   }}
                   className="mb-0"
@@ -405,18 +405,6 @@ const PlanoAnual = () => {
               valueSelect={codigoDisciplinaSelecionada}
               placeholder="Selecione um componente curricular"
               disabled={listaDisciplinas && listaDisciplinas.length === 1}
-            />
-          </div>
-
-          <div className="col-md-4 col-xs-12">
-            <SelectComponent
-              name="teste"
-              id="teste"
-              lista={[{ cd: 1, nome: 'teste' }]}
-              valueOption="cd"
-              valueText="nome"
-              onChange={() => {}}
-              placeholder="Selecione um teste"
             />
           </div>
           <div className="col-md-8 col-sm-2 d-flex justify-content-end">
