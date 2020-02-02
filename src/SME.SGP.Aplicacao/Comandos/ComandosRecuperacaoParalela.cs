@@ -36,6 +36,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = item.Id,
                     TurmaId = item.TurmaId,
+                    TurmaRecuperacaoParalelaId = item.TurmaRecuperacaoParalelaId,
                     Aluno_id = item.CodAluno,
                     CriadoEm = recuperacaoParalelaDto.Periodo.CriadoEm ?? default,
                     CriadoRF = recuperacaoParalelaDto.Periodo.CriadoRF ?? null,
@@ -58,7 +59,7 @@ namespace SME.SGP.Aplicacao
             return await consultaRecuperacaoParalela.Listar(new Infra.FiltroRecuperacaoParalelaDto
             {
                 PeriodoId = recuperacaoParalelaDto.Periodo.Id,
-                TurmaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaId
+                TurmaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId
             });
         }
     }
