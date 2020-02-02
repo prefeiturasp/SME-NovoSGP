@@ -158,6 +158,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             else throw new NegocioException("Houve erro ao tentar obter a abrangência do Eol");
         }
 
+        public async Task<string[]> ObterAdministradoresSGP(string codigoDreOuUe)
+        {
+            var resposta = await httpClient.GetAsync($"escolas/{codigoDreOuUe}/administrador-sgp");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<string[]>(json);
+            }
+            return null;
+        }
+
         public async Task<string[]> ObterAdministradoresSGPParaNotificar(string codigoDreOuUe)
         {
             var resposta = await httpClient.GetAsync($"escolas/{codigoDreOuUe}/administrador-sgp");
@@ -616,6 +628,21 @@ namespace SME.SGP.Aplicacao.Integracoes
                 turmas = JsonConvert.DeserializeObject<List<TurmaPorUEResposta>>(json);
             }
             return turmas;
+        }
+
+        public async Task<bool> PodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var dataString = data.ToString("s");
+
+            var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}");
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+            return JsonConvert.DeserializeObject<bool>(json);
         }
 
         public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)

@@ -280,7 +280,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
         {
-            if (!await servicoEol.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
+            if (!await servicoUsuario.PodePersistirTurma(codigoRf, turmaId, dataAula))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
