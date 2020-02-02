@@ -5,5 +5,6 @@
         public long Aluno_id { get; set; }
         public bool Excluido { get; set; }
         public long TurmaId { get; set; }
+        public long TurmaRecuperacaoParalelaId { get; set; }
     }
 }
