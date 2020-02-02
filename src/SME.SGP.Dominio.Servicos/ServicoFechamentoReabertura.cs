@@ -160,7 +160,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task AtualizoEvento(FechamentoReabertura fechamentoReaberturasParaAtualizar, DateTime inicio, DateTime fim)
         {
-            var eventosParaAtualizar = await repositorioEvento.EventosNosDiasETipo(fechamentoReaberturasParaAtualizar.Inicio, fechamentoReaberturasParaAtualizar.Fim, TipoEvento.FechamentoDoBimestre, fechamentoReaberturasParaAtualizar.TipoCalendarioId, fechamentoReaberturasParaAtualizar.Ue.CodigoUe, fechamentoReaberturasParaAtualizar.Dre.CodigoDre);
+            var eventosParaAtualizar = await repositorioEvento.EventosNosDiasETipo(fechamentoReaberturasParaAtualizar.Inicio, fechamentoReaberturasParaAtualizar.Fim, TipoEvento.FechamentoBimestre, fechamentoReaberturasParaAtualizar.TipoCalendarioId, fechamentoReaberturasParaAtualizar.Ue.CodigoUe, fechamentoReaberturasParaAtualizar.Dre.CodigoDre);
             if (eventosParaAtualizar != null && eventosParaAtualizar.Any())
             {
                 var eventoParaAtualizar = eventosParaAtualizar.FirstOrDefault();
@@ -185,7 +185,7 @@ namespace SME.SGP.Dominio.Servicos
             }
             if (fechamentoReaberturaParaExcluir.EhParaUe())
             {
-                var eventosParaExcluir = await repositorioEvento.EventosNosDiasETipo(fechamentoReaberturaParaExcluir.Inicio, fechamentoReaberturaParaExcluir.Fim, TipoEvento.FechamentoDoBimestre, fechamentoReaberturaParaExcluir.TipoCalendarioId, fechamentoReaberturaParaExcluir.Ue.CodigoUe, fechamentoReaberturaParaExcluir.Dre.CodigoDre);
+                var eventosParaExcluir = await repositorioEvento.EventosNosDiasETipo(fechamentoReaberturaParaExcluir.Inicio, fechamentoReaberturaParaExcluir.Fim, TipoEvento.FechamentoBimestre, fechamentoReaberturaParaExcluir.TipoCalendarioId, fechamentoReaberturaParaExcluir.Ue.CodigoUe, fechamentoReaberturaParaExcluir.Dre.CodigoDre);
                 if (eventosParaExcluir != null && eventosParaExcluir.Any())
                 {
                     var eventoParaExcluir = eventosParaExcluir.FirstOrDefault();
@@ -283,9 +283,9 @@ namespace SME.SGP.Dominio.Servicos
 
         private EventoTipo ObterTipoEvento()
         {
-            EventoTipo tipoEvento = repositorioEventoTipo.ObterPorCodigo((int)TipoEvento.FechamentoDoBimestre);
+            EventoTipo tipoEvento = repositorioEventoTipo.ObterPorCodigo((int)TipoEvento.FechamentoBimestre);
             if (tipoEvento == null)
-                throw new NegocioException($"Não foi possível localizar o tipo de evento {TipoEvento.FechamentoDoBimestre.GetAttribute<DisplayAttribute>().Name}.");
+                throw new NegocioException($"Não foi possível localizar o tipo de evento {TipoEvento.FechamentoBimestre.GetAttribute<DisplayAttribute>().Name}.");
             return tipoEvento;
         }
 

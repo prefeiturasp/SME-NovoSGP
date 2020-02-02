@@ -437,7 +437,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var devePassarPorWorkflow = false;
 
-            if (evento.TipoEvento.Codigo == (int)TipoEvento.FechamentoDoBimestre)
+            if (evento.TipoEvento.Codigo == (int)TipoEvento.FechamentoBimestre)
                 return false;
             if (evento.TipoEvento.Codigo == (int)TipoEvento.LiberacaoExcepcional)
             {
@@ -491,9 +491,8 @@ namespace SME.SGP.Dominio.Servicos
                                         throw new NegocioException("Não é possível cadastrar o evento pois há feriado na data selecionada.");
                                     else if (temEventoSuspensaoAtividades)
                                         throw new NegocioException("Não é possível cadastrar o evento pois há evento de suspensão de atividades na data informada.");
-                                    else if(evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday)
+                                    else if (evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday)
                                         throw new NegocioException("Não é possível cadastrar o evento letivo no final de semana.");
-
                                 }
                             }
                         }
