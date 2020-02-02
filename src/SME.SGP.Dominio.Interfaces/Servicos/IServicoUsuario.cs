@@ -31,6 +31,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task PodeModificarPerfil(Guid perfilParaModificar, string login);
 
+        Task<bool> PodePersistirTurma(string codigoRf, string turmaId, DateTime data);
+
         void RemoverPerfisUsuarioAtual();
 
         void RemoverPerfisUsuarioCache(string login);
