@@ -20,7 +20,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("o.id,");
             query.AppendLine("o.eixo_id,");
             query.AppendLine("o.nome,");
-            query.AppendLine("o.descricao");
+            query.AppendLine("o.descricao,");
+            query.AppendLine("o.ordem");
             query.AppendLine("from objetivo o ");
             query.AppendLine("inner join eixo e on o.eixo_id = e.id ");
             query.AppendLine("where (o.dt_fim is null or o.dt_fim <= now())");
