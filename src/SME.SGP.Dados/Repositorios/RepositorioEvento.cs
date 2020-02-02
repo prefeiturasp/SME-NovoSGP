@@ -174,7 +174,20 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(")");
             query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
 
-            return (await database.Conexao.QueryAsync<Evento>(query.ToString(), new
+            var lookup = new Dictionary<long, Evento>();
+
+            await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(query.ToString(), (evento, eventoTipo) =>
+            {
+                var eventoRetorno = new Evento();
+                if (!lookup.TryGetValue(evento.Id, out eventoRetorno))
+                {
+                    eventoRetorno = evento;
+                    lookup.Add(evento.Id, eventoRetorno);
+                }
+
+                eventoRetorno.AdicionarTipoEvento(eventoTipo);
+                return eventoRetorno;
+            }, new
             {
                 dataInicio = dataInicio.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
                 dataFim = dataFim.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
@@ -182,7 +195,9 @@ namespace SME.SGP.Dados.Repositorios
                 tipoCalendarioId,
                 UeId,
                 DreId
-            }));
+            });
+
+            return lookup.Values;
         }
 
         public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId, long eventoId)
@@ -327,10 +342,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("  or(e.dre_id is null ");
             query.AppendLine("    and e.ue_id is null)) ");
 
-            if (dreId != "0")
+            if (!string.IsNullOrEmpty(dreId) && dreId != "0")
                 query.AppendLine($"and e.dre_id = @dreId");
 
-            if (ueId != "0")
+            if (!string.IsNullOrEmpty(ueId) && ueId != "0")
                 query.AppendLine($"and e.ue_id  = @ueId");
 
             if (tipoCalendarioId.HasValue)
@@ -414,10 +429,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and not et.excluido");
             query.AppendLine("and e.status = 1");
             query.AppendLine("and not e.excluido");
-
             query.AppendLine("and ( a.usuario_id is not null");
             query.AppendLine("  or (e.dre_id is null");
             query.AppendLine("  and e.ue_id is null) )");
+            query.AppendFormat(" and et.codigo not in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
 
             if (!string.IsNullOrEmpty(dreId) && dreId != "0")
                 query.AppendLine("  and e.dre_id = @dreId");
@@ -462,8 +477,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo = true");
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
-            query.AppendLine("and e.status = 2");
-            query.AppendFormat(" and et.codigo = ANY('{{0}}') ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
+            query.AppendLine("and e.status in (1, 2)");
+            query.AppendFormat(" and et.codigo in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
 
             //if (string.IsNullOrEmpty(dreId))
             //    query.AppendLine($"and e.dre_id is {(ehTodasDres ? "not" : "")} null");
