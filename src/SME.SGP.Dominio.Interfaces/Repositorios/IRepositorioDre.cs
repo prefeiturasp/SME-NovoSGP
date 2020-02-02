@@ -8,12 +8,12 @@ namespace SME.SGP.Dominio.Interfaces
 
         IEnumerable<Dre> MaterializarCodigosDre(string[] idDres, out string[] naoEncontradas);
 
-        Dre ObterPorCodigo(string dreId);
+        Dre ObterPorCodigo(string codigo);
+
+        Dre ObterPorId(long id);
 
         IEnumerable<Dre> ObterTodas();
 
         IEnumerable<Dre> Sincronizar(IEnumerable<Dre> entidades);
-
-        Dre ObterPorId(long id);
     }
 }
