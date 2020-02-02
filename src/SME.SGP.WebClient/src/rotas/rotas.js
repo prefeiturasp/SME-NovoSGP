@@ -42,6 +42,7 @@ import PeriodoFechamentoAbertura from '~/paginas/CalendarioEscolar/PeriodoFecham
 import PaginaComErro from '~/paginas/Erro/pagina-com-erro';
 import PeriodoFechamentoReaberturaLista from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaLista';
 import PeriodoFechamentoReaberturaForm from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaForm';
+import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento';
 
 const rotas = new Map();
 
@@ -626,6 +627,15 @@ rotas.set('/erro', {
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
+});
+
+rotas.set(RotasDto.RELATORIO_PAP_ACOMPANHAMENTO, {
+  breadcrumbName: 'Acompanhamento',
+  menu: ['Relatórios', 'PAP'],
+  parent: '/',
+  component: RelatorioPAPAcompanhamento,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada, // temPermissionamento: true, // chavePermissao: RotasDto.REINICIAR_SENHA,
 });
 
 const rotasArray = [];
