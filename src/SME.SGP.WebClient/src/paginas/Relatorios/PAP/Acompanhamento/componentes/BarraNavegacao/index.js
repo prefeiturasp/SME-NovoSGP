@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import t from 'prop-types';
 import shortid from 'shortid';
 
@@ -15,6 +15,7 @@ function BarraNavegacao({ objetivos, objetivoAtivo, onChangeObjetivo }) {
   useEffect(() => {
     console.log('Objetivos BarraNavegação: ', objetivos);
   }, [objetivos]);
+
   return (
     <Container>
       <div>
