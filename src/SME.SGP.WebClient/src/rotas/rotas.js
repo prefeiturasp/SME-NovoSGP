@@ -611,15 +611,6 @@ rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/editar/:id`, {
   chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
 });
 
-rotas.set('*', {
-  breadcrumbName: 'Erro',
-  parent: '/',
-  component: PaginaComErro,
-  exact: true,
-  tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
-});
-
 rotas.set('/erro', {
   breadcrumbName: 'Erro',
   parent: '/',
@@ -635,7 +626,8 @@ rotas.set(RotasDto.RELATORIO_PAP_ACOMPANHAMENTO, {
   parent: '/',
   component: RelatorioPAPAcompanhamento,
   exact: true,
-  tipo: RotasTipo.EstruturadaAutenticada, // temPermissionamento: true, // chavePermissao: RotasDto.REINICIAR_SENHA,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false, // chavePermissao: RotasDto.REINICIAR_SENHA,
 });
 
 const rotasArray = [];
