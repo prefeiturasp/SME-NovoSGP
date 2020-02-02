@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
                                                         ObjetivoId = s.ObjetivoId,
                                                         RespostaId = s.RespostaId
                                                     }).ToList()
-                    }).ToList()
+                    }).OrderBy(o => o.Nome).ToList()
                 }
             };
 
