@@ -579,24 +579,6 @@ rotas.set(`${RotasDto.PERIODO_FECHAMENTO_ABERTURA}`, {
   chavePermissao: RotasDto.PERIODO_FECHAMENTO_ABERTURA,
 });
 
-rotas.set('*', {
-  breadcrumbName: 'Erro',
-  parent: '/',
-  component: PaginaComErro,
-  exact: true,
-  tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
-});
-
-rotas.set('/erro', {
-  breadcrumbName: 'Erro',
-  parent: '/',
-  component: PaginaComErro,
-  exact: true,
-  tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
-});
-
 rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}`, {
   breadcrumbName: 'Reabertura',
   menu: ['Calendário Escolar', 'Período de Fechamento'],
@@ -626,6 +608,24 @@ rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+});
+
+rotas.set('*', {
+  breadcrumbName: 'Erro',
+  parent: '/',
+  component: PaginaComErro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+
+rotas.set('/erro', {
+  breadcrumbName: 'Erro',
+  parent: '/',
+  component: PaginaComErro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
 });
 
 const rotasArray = [];
