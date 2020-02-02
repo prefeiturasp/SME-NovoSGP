@@ -49,7 +49,9 @@ function RelatorioPAPAcompanhamento() {
     disparar(carregarAlunos(dados.periodo.alunos));
     disparar(carregarPeriodo(dados.periodo));
     disparar(carregarEixos(dados.eixos));
-    disparar(carregarObjetivos(dados.objetivos));
+    disparar(
+      carregarObjetivos(dados.objetivos.sort((a, b) => a.ordem - b.ordem))
+    );
     disparar(carregarRespostas(dados.respostas));
   };
 
