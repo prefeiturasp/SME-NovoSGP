@@ -63,16 +63,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultas.BuscarPorId(id));
         }
 
-        [HttpGet]
-        [ProducesResponseType(typeof(TipoCalendarioCompletoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Route("anos-letivos/{anoLetivo}")]
-        [Permissao(Permissao.TCE_C, Permissao.E_C, Policy = "Bearer")]
-        public IActionResult BuscarPorAnoLetivo(int anoLetivo)
-        {
-            return Ok(consultas.BuscarPorAnoLetivo(anoLetivo));
-        }
-
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
