@@ -6,9 +6,9 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasNotasConceitos
     {
-        Task<NotasConceitosRetornoDto> ListarNotasConceitos(string turmaId, int? bimestre, int anoLetivo, string disciplinaCodigo, Modalidade modalidade);
+        Task<NotasConceitosRetornoDto> ListarNotasConceitos(ListaNotasConceitosConsultaDto filtro);
 
-        TipoNota ObterNotaTipo(long turmaId, int anoLetivo);
+        Task<TipoNota> ObterNotaTipo(long turmaId, int anoLetivo, bool consideraHistorico);
 
         double ObterValorArredondado(long atividadeAvaliativaId, double nota);
     }

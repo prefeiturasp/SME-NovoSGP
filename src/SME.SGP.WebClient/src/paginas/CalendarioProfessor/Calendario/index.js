@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Tooltip, Switch } from 'antd';
+import shortid from 'shortid';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import Calendario from '~/componentes-sgp/calendarioProfessor/Calendario';
@@ -13,7 +14,6 @@ import history from '~/servicos/history';
 import { store } from '~/redux';
 import { zeraCalendario } from '~/redux/modulos/calendarioProfessor/actions';
 import ModalidadeDTO from '~/dtos/modalidade';
-import { erro } from '~/servicos/alertas';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
@@ -215,7 +215,7 @@ const CalendarioProfessor = () => {
   const obterDres = () => {
     setCarregandoDres(true);
     api
-      .get('v1/abrangencias/false/dres')
+      .get(`v1/abrangencias/${turmaSelecionadaStore.consideraHistorico}/dres`)
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -248,14 +248,6 @@ const CalendarioProfessor = () => {
       setUnidadeEscolarSelecionada();
       setOpcaoTurma();
     }
-    setFiltros({
-      tipoCalendarioSelecionado,
-      eventoSme,
-      dreSelecionada,
-      unidadeEscolarSelecionada,
-      turmaSelecionada,
-      todasTurmas,
-    });
   }, [tipoCalendarioSelecionado]);
 
   const aoClicarBotaoVoltar = () => {
@@ -265,17 +257,6 @@ const CalendarioProfessor = () => {
   const aoTrocarEventoSme = () => {
     setEventoSme(!eventoSme);
   };
-
-  useEffect(() => {
-    setFiltros({
-      tipoCalendarioSelecionado,
-      eventoSme,
-      dreSelecionada,
-      unidadeEscolarSelecionada,
-      turmaSelecionada,
-      todasTurmas,
-    });
-  }, [eventoSme]);
 
   const [dreDesabilitada, setDreDesabilitada] = useState(false);
 
@@ -290,7 +271,7 @@ const CalendarioProfessor = () => {
     ) {
       setDreSelecionada(eventoAulaCalendarioEdicao.dre);
     }
-  }, [dres]);
+  }, [dres, eventoAulaCalendarioEdicao]);
 
   const unidadesEscolaresStore = useSelector(
     state => state.filtro.unidadesEscolares
@@ -303,7 +284,9 @@ const CalendarioProfessor = () => {
   const obterUnidadesEscolares = () => {
     setCarregandoUes(true);
     api
-      .get(`v1/abrangencias/false/dres/${dreSelecionada}/ues`)
+      .get(
+        `v1/abrangencias/${turmaSelecionadaStore.consideraHistorico}/dres/${dreSelecionada}/ues`
+      )
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -336,7 +319,7 @@ const CalendarioProfessor = () => {
     ) {
       setUnidadeEscolarSelecionada(eventoAulaCalendarioEdicao.unidadeEscolar);
     }
-  }, [unidadesEscolares]);
+  }, [eventoAulaCalendarioEdicao, unidadesEscolares]);
 
   const aoSelecionarDre = dre => {
     setDreSelecionada(dre);
@@ -350,14 +333,6 @@ const CalendarioProfessor = () => {
       setUnidadeEscolarSelecionada();
       setOpcaoTurma();
     }
-    setFiltros({
-      tipoCalendarioSelecionado,
-      eventoSme,
-      dreSelecionada,
-      unidadeEscolarSelecionada,
-      turmaSelecionada,
-      todasTurmas,
-    });
   }, [dreSelecionada]);
 
   const listaTurmas = [
@@ -369,28 +344,19 @@ const CalendarioProfessor = () => {
     setUnidadeEscolarSelecionada(unidade);
   };
 
-  const [turmas, setTurmas] = useState([]);
+  const [turmas] = useState(listaTurmas);
   const [turmaDesabilitada, setTurmaDesabilitada] = useState(false);
 
   useEffect(() => {
     if (unidadeEscolarSelecionada) {
       consultarDiasLetivos();
-      setTurmas(listaTurmas);
     } else {
       setOpcaoTurma();
     }
-    setFiltros({
-      tipoCalendarioSelecionado,
-      eventoSme,
-      dreSelecionada,
-      unidadeEscolarSelecionada,
-      turmaSelecionada,
-      todasTurmas,
-    });
   }, [unidadeEscolarSelecionada]);
 
   useEffect(() => {
-    if (turmas.length) {
+    if (turmas.length && !opcaoTurma) {
       if (usuario.ehProfessor || usuario.ehProfessorCj) {
         if (Object.entries(turmaSelecionadaStore).length) {
           setOpcaoTurma(listaTurmas[1].valor.toString());
@@ -424,6 +390,8 @@ const CalendarioProfessor = () => {
     usuario.ehProfessorCj,
     listaTurmas,
     unidadeEscolarSelecionada,
+    eventoAulaCalendarioEdicao,
+    opcaoTurma,
   ]);
 
   const aoSelecionarTurma = turma => {
@@ -432,19 +400,17 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     if (opcaoTurma === '1') {
+      // Todas as turmas
       setTurmaSelecionada();
       setTodasTurmas(true);
     } else if (opcaoTurma === '2') {
+      // Turma selecionada
       if (Object.entries(turmaSelecionadaStore).length) {
         setTurmaSelecionada(turmaSelecionadaStore.turma);
-      } else {
-        setOpcaoTurma();
-        setTurmaSelecionada();
-        erro('Você precisa escolher uma turma!');
       }
       setTodasTurmas(false);
     } else store.dispatch(zeraCalendario());
-  }, [opcaoTurma]);
+  }, [opcaoTurma, turmaSelecionadaStore]);
 
   useEffect(() => {
     setFiltros({
@@ -455,18 +421,14 @@ const CalendarioProfessor = () => {
       turmaSelecionada,
       todasTurmas,
     });
-  }, [todasTurmas]);
-
-  useEffect(() => {
-    setFiltros({
-      tipoCalendarioSelecionado,
-      eventoSme,
-      dreSelecionada,
-      unidadeEscolarSelecionada,
-      turmaSelecionada,
-      todasTurmas,
-    });
-  }, [turmaSelecionada]);
+  }, [
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+    turmaSelecionada,
+    todasTurmas,
+  ]);
 
   return (
     <Div className="col-12">
@@ -506,6 +468,7 @@ const CalendarioProfessor = () => {
               {diasLetivos && diasLetivos.dias ? (
                 <Div>
                   <Button
+                    id={shortid.generate()}
                     label={diasLetivos.dias.toString()}
                     color={
                       diasLetivos.estaAbaixoPermitido
@@ -533,6 +496,7 @@ const CalendarioProfessor = () => {
             </Grid>
             <Grid cols={4}>
               <Button
+                id={shortid.generate()}
                 label="Voltar"
                 icon="arrow-left"
                 color={Colors.Azul}

@@ -42,6 +42,14 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QuerySingleOrDefault<EventoTipo>(sql, new { descricao = "Feriado" });
         }
 
+        public EventoTipo ObterTipoEventoPorTipo(TipoEvento tipoEvento)
+        {
+            var sql = "select * from evento_tipo where codigo = @tipoEvento";
+
+            return database.Conexao.QuerySingleOrDefault<EventoTipo>(sql, new { tipoEvento });
+            
+        }
+
         public EventoTipo ObterPorCodigo(long id)
         {
             var sql = "select * from evento_tipo where codigo = @id";

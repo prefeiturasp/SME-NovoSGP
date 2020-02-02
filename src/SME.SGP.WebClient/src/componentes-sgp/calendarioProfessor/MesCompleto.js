@@ -53,6 +53,9 @@ const MesCompleto = props => {
     state => state.calendarioProfessor.eventoAulaCalendarioEdicao
   );
 
+  const usuario = useSelector(state => state.usuario);
+  const { turmaSelecionada: turmaSelecionadaStore } = usuario;
+
   useEffect(() => {
     const abrirMesEventoCalendarioEdicao = setTimeout(() => {
       if (eventoAulaCalendarioEdicao && eventoAulaCalendarioEdicao.mes)
@@ -114,8 +117,11 @@ const MesCompleto = props => {
 
   useEffect(() => {
     if (mesSelecionado > 0) {
-      const dataAtual = new Date();
-      const data = new Date(dataAtual.getFullYear(), mesSelecionado - 1, 1);
+      const data = new Date(
+        turmaSelecionadaStore.anoLetivo,
+        mesSelecionado - 1,
+        1
+      );
       data.setDate(data.getDate() - data.getDay() - 1);
 
       const diasDaSemanaLista = [];

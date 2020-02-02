@@ -119,7 +119,6 @@ const MeusDados = () => {
           visivel={alterarFoto}
           onConfirmacaoPrincipal={salvarFoto}
           onConfirmacaoSecundaria={cancelarTrocaFoto}
-          onClose={() => {}}
           labelBotaoPrincipal="Confirmar"
           labelBotaoSecundario="Cancelar"
           desabilitarBotaoPrincipal={desabilitaConfirmar}

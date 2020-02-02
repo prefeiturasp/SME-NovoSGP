@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Dre ObterPorCodigo(string codigo);
 
-        Dre ObterPorId(long value);
+        Dre ObterPorId(long id);
 
         IEnumerable<Dre> ObterTodas();
 

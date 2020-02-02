@@ -15,13 +15,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<RegistroPoa>> ListarPaginado(string codigoRf, string dreId, int mes, string ueId, string titulo, int anoLetivo, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<RegistroPoa>> ListarPaginado(string codigoRf, string dreId, int bimestre, string ueId, string titulo, int anoLetivo, Paginacao paginacao)
         {
             var retorno = new PaginacaoResultadoDto<RegistroPoa>();
 
-            var sql = MontaQueryCompleta(paginacao, titulo, mes);
+            var sql = MontaQueryCompleta(paginacao, titulo, bimestre);
 
-            var parametros = new { codigoRf, mes, ueId, dreId, titulo = $"%{titulo?.ToLower()}%", anoLetivo };
+            var parametros = new { codigoRf, bimestre, ueId, dreId, titulo = $"%{titulo?.ToLower()}%", anoLetivo };
 
             using (var multi = await database.Conexao.QueryMultipleAsync(sql, parametros))
             {
@@ -34,24 +34,24 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private string MontaQueryCompleta(Paginacao paginacao, string titulo, int mes)
+        private string MontaQueryCompleta(Paginacao paginacao, string titulo, int bimestre)
         {
             var sql = new StringBuilder();
 
-            MontaQueryConsulta(sql, paginacao, titulo, mes, contador: false);
+            MontaQueryConsulta(sql, paginacao, titulo, bimestre, contador: false);
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(sql, paginacao, titulo, mes, contador: true);
+            MontaQueryConsulta(sql, paginacao, titulo, bimestre, contador: true);
 
             return sql.ToString();
         }
 
-        private void MontaQueryConsulta(StringBuilder sql, Paginacao paginacao, string titulo, int mes, bool contador)
+        private void MontaQueryConsulta(StringBuilder sql, Paginacao paginacao, string titulo, int bimestre, bool contador)
         {
             ObtenhaCabecalho(sql, contador);
 
-            ObtenhaFiltros(sql, titulo, mes);
+            ObtenhaFiltros(sql, titulo, bimestre);
 
             if (!contador)
                 sql.AppendLine("order by id desc");
@@ -67,10 +67,10 @@ namespace SME.SGP.Dados.Repositorios
 
         private string ObtenhaCampos(bool contador)
         {
-            return contador ? "count(*)" : "id, codigo_rf, mes, titulo, ano_letivo, descricao, dre_id, ue_id ";
+            return contador ? "count(*)" : "id, codigo_rf, bimestre, titulo, ano_letivo, descricao, dre_id, ue_id ";
         }
 
-        private void ObtenhaFiltros(StringBuilder sql, string titulo, int mes)
+        private void ObtenhaFiltros(StringBuilder sql, string titulo, int bimestre)
         {
             sql.AppendLine("where excluido = false");
             sql.AppendLine("and ano_letivo = @anoLetivo");
@@ -78,8 +78,8 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("and ue_id = @ueId");
             sql.AppendLine("and dre_id = @dreId");
 
-            if (mes > 0)
-                sql.AppendLine("and mes = @mes");
+            if (bimestre > 0)
+                sql.AppendLine("and bimestre = @bimestre");
 
             if (!string.IsNullOrWhiteSpace(titulo))
                 sql.AppendLine("and lower(titulo) like @titulo");

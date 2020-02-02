@@ -101,7 +101,7 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             ValidaSeUsuarioPodeCriarAula(aula, usuario);
-            ValidaProfessorPodePersistirTurma(aula.TurmaId, usuario.CodigoRf, aula.DataAula);
+            await ValidaProfessorPodePersistirTurma(aula.TurmaId, usuario.CodigoRf, aula.DataAula);
 
             var alunos = await ObterAlunos(aula);
 
@@ -123,7 +123,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunos(Aula aula)
         {
-            var alunos = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
+            var alunos = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId, aula.DataAula.Year);
             if (alunos == null || !alunos.Any())
             {
                 throw new NegocioException("Não foram encontrados alunos para a turma informada.");
@@ -183,9 +183,9 @@ namespace SME.SGP.Dominio.Servicos
             return registroFrequencia;
         }
 
-        private async void ValidaProfessorPodePersistirTurma(string turmaId, string codigoRf, DateTime dataAula)
+        private async Task ValidaProfessorPodePersistirTurma(string turmaId, string codigoRf, DateTime dataAula)
         {
-            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula.Local()))
+            if (!servicoUsuario.PodePersistirTurma(codigoRf, turmaId, dataAula.Local()).Result)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
 

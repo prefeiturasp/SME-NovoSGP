@@ -113,7 +113,7 @@ Button.propTypes = {
   indice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   label: PropTypes.string,
   hidden: PropTypes.bool,
-  id: PropTypes.string,
+  id: PropTypes.string.isRequired,
   customRadius: PropTypes.string,
 };
 
@@ -136,7 +136,6 @@ Button.defaultProps = {
   indice: '',
   label: '',
   hidden: false,
-  id: '',
   customRadius: '',
 };
 
