@@ -692,9 +692,9 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<Evento>(query, new { eventoId, eventoPaiId, dataEvento });
         }
 
-        public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId, bool EhEventoSme = false)
+        public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId, bool EhEventoSme = false, bool filtroDreUe = true)
         {
-            var query = ObterEventos(dreId, ueId, null, null, EhEventoSme, !EhEventoSme);
+            var query = ObterEventos(dreId, ueId, null, null, EhEventoSme, !EhEventoSme, filtroDreUe);
             return database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId });
         }
 
@@ -1239,7 +1239,7 @@ namespace SME.SGP.Dados.Repositorios
 
         #endregion Quantidade De Eventos Por Dia filtrado por mes
 
-        private string ObterEventos(string dreId, string ueId, int? mes = null, DateTime? data = null, bool EhEventoSme = false, bool naoTrazerSme = false)
+        private string ObterEventos(string dreId, string ueId, int? mes = null, DateTime? data = null, bool EhEventoSme = false, bool naoTrazerSme = false, bool filtroDreUe = true)
         {
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
@@ -1252,7 +1252,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and e.dre_id = @dreId and e.ue_id is null");
             else if (EhEventoSme)
                 query.AppendLine("and e.dre_id is null or e.ue_id is null");
-            else
+            else if (filtroDreUe)
                 query.AppendLine("and e.dre_id is not null or e.ue_id is not null");
 
             if (mes.HasValue)
