@@ -1271,6 +1271,9 @@ namespace SME.SGP.Dados.Repositorios
             else if (filtroDreUe)
                 query.AppendLine("and e.dre_id is not null or e.ue_id is not null");
 
+            if (!filtroDreUe)
+                query.AppendLine("or e.dre_id is null and e.ue_id is null");
+
             if (mes.HasValue)
             {
                 query.AppendLine("and (extract(month from e.data_inicio) = @mes");
