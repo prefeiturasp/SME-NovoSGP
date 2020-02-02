@@ -16,7 +16,19 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
+        public IEnumerable<TipoCalendario> BuscarPorAnoLetivo(int anoLetivo)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select *");
+            query.AppendLine("from tipo_calendario");
+            query.AppendLine("where excluido = false");
+            query.AppendLine("and ano_letivo = @anoLetivo");
+
+            return database.Conexao.Query<TipoCalendario>(query.ToString(), new { anoLetivo });
+        }
+
+        public TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade)
         {
             StringBuilder query = new StringBuilder();
 
