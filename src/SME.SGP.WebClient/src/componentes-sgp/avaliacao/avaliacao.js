@@ -39,9 +39,8 @@ const Avaliacao = props => {
           );
           return (
             <th key={shortid.generate()} className="width-150">
-              <div className="texto-header-avaliacao">{avaliacao.nome}</div>
               <div className="texto-header-avaliacao">
-                <Tooltip title={descricaoSemHtml}>{descricaoSemHtml}</Tooltip>
+                <Tooltip title={avaliacao.nome}>{avaliacao.nome}</Tooltip>
               </div>
               <div className="texto-header-avaliacao">
                 {window.moment(avaliacao.data).format('DD/MM/YYYY')}

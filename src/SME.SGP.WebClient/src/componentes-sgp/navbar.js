@@ -27,6 +27,9 @@ const Nav = styled.nav`
 const Logo = styled.img`
   height: 65px !important;
   width: 75px !important;
+  @media screen and (max-width: 993px) {
+    width: 4rem !important;
+  }
 `;
 
 const Botoes = styled.div`
@@ -87,11 +90,18 @@ const Navbar = () => {
                 : 'col-xl-2 col-lg-2 col-md-2 col-sm-4'
             }`}
           >
-            <Link to={URL_HOME}>
+            <Link
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              to={URL_HOME}
+            >
               <Logo
                 src={LogoDoSgp}
                 alt="SGP"
-                className="mx-xl-auto mx-lg-auto mt-xl-0 mt-lg-0 mt-md-2 mt-sm-2 d-block"
+                className="mx-xl-auto mx-lg-auto mt-xl-0 mt-lg-0 mt-md-0 mt-sm-0 d-block"
               />
             </Link>
           </div>
@@ -102,7 +112,7 @@ const Navbar = () => {
                 : 'col-xl-10 col-lg-10 col-md-10'
             } col-sm-8`}
           >
-            <Botoes className="align-self-xl-center align-self-lg-center align-self-md-start align-self-sm-start mt-xl-0 mt-lg-0 mt-md-4 mt-sm-4">
+            <Botoes className="align-self-xl-center align-self-lg-center align-self-md-center align-self-sm-center mt-xl-0 mt-lg-0 mt-md-0 mt-sm-0">
               <ul className="list-inline p-0 m-0">
                 <li className="list-inline-item mr-4">
                   <NavbarNotificacoes
@@ -125,7 +135,7 @@ const Navbar = () => {
           </div>
           <Div
             retraido={retraido}
-            className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2"
+            className="d-flex align-self-xl-center align-self-lg-center align-self-md-center align-self-sm-center w-100 position-absolute mb-sm-2 mb-md-2"
           >
             <Filtro />
           </Div>

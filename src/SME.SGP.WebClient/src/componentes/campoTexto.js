@@ -88,7 +88,6 @@ const CampoTexto = React.forwardRef((props, ref) => {
             style={style}
             prefix={iconeBusca && <i className="fa fa-search fa-lg" />}
             value={value || form.values[name]}
-            allowClear={allowClear}
           />
           {!semMensagem && form && form.touched[name] ? (
             <span>{form.errors[name]}</span>
@@ -113,18 +112,31 @@ const CampoTexto = React.forwardRef((props, ref) => {
 });
 
 CampoTexto.propTypes = {
-  onChange: PropTypes.func,
-  semMensagem: PropTypes.bool,
+  name: PropTypes.string,
+  id: PropTypes.string,
   form: PropTypes.oneOfType([PropTypes.any]),
+  className: PropTypes.string,
+  classNameCampo: PropTypes.string,
+  type: PropTypes.string,
+  maskType: PropTypes.string,
+  placeholder: PropTypes.string,
+  onChange: PropTypes.oneOfType([PropTypes.func]),
+  onKeyDown: PropTypes.oneOfType([PropTypes.func]),
+  value: PropTypes.oneOfType([PropTypes.any]),
+  desabilitado: PropTypes.bool,
   maxLength: PropTypes.oneOfType([PropTypes.number]),
+  label: PropTypes.string,
+  semMensagem: PropTypes.bool,
+  style: PropTypes.oneOfType([PropTypes.any]),
+  iconeBusca: PropTypes.bool,
   allowClear: PropTypes.bool,
 };
 
 CampoTexto.defaultProps = {
-  onChange: () => {},
-  semMensagem: false,
   form: null,
+  onChange: () => {},
   maxLength: 100,
+  semMensagem: false,
   allowClear: true,
 };
 

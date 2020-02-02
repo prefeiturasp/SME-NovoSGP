@@ -18,9 +18,6 @@ import { Cabecalho } from '~/componentes-sgp';
 import { Loader, Card, ButtonGroup, ListaPaginada } from '~/componentes';
 import Filtro from './componentes/Filtro';
 
-// Funções
-import { renderizarMes } from '~/utils/funcoes/dataMes';
-
 function RegistroPOALista() {
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
@@ -33,13 +30,35 @@ function RegistroPOALista() {
   const anoLetivo =
     usuarioLogado.turmaSelecionada.anoLetivo || window.moment().format('YYYY');
 
+  const renderizarBimestres = valor => {
+    const bimestres = [
+      {
+        valor: '1',
+        desc: '1º Bimestre',
+      },
+      {
+        valor: '2',
+        desc: '2º Bimestre',
+      },
+      {
+        valor: '3',
+        desc: '3º Bimestre',
+      },
+      {
+        valor: '4',
+        desc: '4º Bimestre',
+      },
+    ];
+    return bimestres.find(bimestre => bimestre.valor === valor.toString()).desc;
+  };
+
   const colunas = [
     {
-      title: 'Mês',
-      dataIndex: 'mes',
+      title: 'Bimestre',
+      dataIndex: 'bimestre',
       width: '20%',
       render: valor => {
-        return renderizarMes(valor);
+        return renderizarBimestres(valor);
       },
     },
     {
@@ -95,9 +114,18 @@ function RegistroPOALista() {
     }
   };
 
+  const ehFiltroValido = useCallback(
+    () => !!filtro.dreId && !!filtro.ueId && !!filtro.professorRf,
+    [filtro.dreId, filtro.professorRf, filtro.ueId]
+  );
+
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
+
   useEffect(() => {
     setFiltroValido(ehFiltroValido());
-  }, [filtro]);
+  }, [ehFiltroValido, filtro]);
 
   const onChangeFiltro = useCallback(
     valoresFiltro => {
@@ -105,22 +133,15 @@ function RegistroPOALista() {
         ...valoresFiltro,
         CodigoRf: valoresFiltro.professorRf,
         anoLetivo,
-        mes: valoresFiltro.mes || 0,
+        bimestre: valoresFiltro.bimestre || 0,
       });
     },
     [anoLetivo]
   );
 
-  const ehFiltroValido = () =>
-    !!filtro.dreId && !!filtro.ueId && !!filtro.professorRf;
-
-  useEffect(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, [permissoesTela]);
-
   return (
     <>
-      <Cabecalho pagina="Registro do Professor Orientador de Área" />
+      <Cabecalho pagina="Registro do professor orientador de área" />
       <Loader loading={loaderSecao}>
         <Card mx="mx-0">
           <ButtonGroup

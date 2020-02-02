@@ -61,7 +61,7 @@ function RegistroPOAForm({ match }) {
   const [descricao, setDescricao] = useState('');
   const ehEdicaoRegistro = match && match.params && match.params.id > 0;
   const [valoresIniciais, setValoresIniciais] = useState({
-    mes: '',
+    bimestre: '',
     titulo: '',
     descricao: '',
     professorRf: '',
@@ -72,11 +72,11 @@ function RegistroPOAForm({ match }) {
 
   const validacoes = () => {
     return Yup.object({
-      mes: Yup.number().required('Campo obrigatório!'),
+      bimestre: Yup.number().required('Campo obrigatório!'),
       titulo: Yup.string().required('O campo "Título" é obrigatório!'),
       professorRf: Yup.number()
-        .typeError('Informar um número inteiro')
-        .required('Campo obrigatório'),
+        .typeError('Informar um número inteiro!')
+        .required('Campo obrigatório!'),
     });
   };
 
@@ -86,8 +86,8 @@ function RegistroPOAForm({ match }) {
       form.setFieldTouched(campo, true, true);
     });
 
-    if (form.values.descricao === '<p><br></p>') {
-      erro('É necessário informar a descrição');
+    if (!form.values.descricao.length) {
+      erro('O campo "Descrição" é obrigatório!');
       return;
     }
 
@@ -160,6 +160,7 @@ function RegistroPOAForm({ match }) {
     );
     if (confirmou) {
       form.resetForm();
+      setDescricao('');
       setModoEdicao(false);
     }
   };
@@ -185,39 +186,33 @@ function RegistroPOAForm({ match }) {
     }
   };
 
-  const buscarPorId = useCallback(
-    async id => {
-      try {
-        dispatch(setLoaderSecao(true));
-        const registro = await RegistroPOAServico.buscarRegistroPOA(id);
-        if (registro && registro.data) {
-          setValoresIniciais({
-            ...registro.data,
-            mes: String(registro.data.mes),
-            professorRf: registro.data.codigoRf,
-            professorNome: registro.data.nome,
-            titulo: registro.data.titulo,
-          });
-          setDescricao(registro.data.descricao);
-          setAuditoria({
-            criadoPor: registro.data.criadoPor,
-            criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
-            criadoEm: registro.data.criadoEm,
-            alteradoPor: registro.data.alteradoPor,
-            alteradoRf:
-              registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
-            alteradoEm: registro.data.alteradoEm,
-          });
-          setValoresCarregados(true);
-          dispatch(setLoaderSecao(false));
-        }
-      } catch (err) {
-        dispatch(setLoaderSecao(false));
-        erros(err);
+  const buscarPorId = useCallback(async id => {
+    try {
+      const registro = await RegistroPOAServico.buscarRegistroPOA(id);
+      if (registro && registro.data) {
+        setValoresIniciais({
+          ...registro.data,
+          bimestre: String(registro.data.bimestre),
+          professorRf: registro.data.codigoRf,
+          professorNome: registro.data.nome,
+          titulo: registro.data.titulo,
+        });
+        setDescricao(registro.data.descricao);
+        setAuditoria({
+          criadoPor: registro.data.criadoPor,
+          criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
+          criadoEm: registro.data.criadoEm,
+          alteradoPor: registro.data.alteradoPor,
+          alteradoRf:
+            registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
+          alteradoEm: registro.data.alteradoEm,
+        });
+        setValoresCarregados(true);
       }
-    },
-    [dispatch]
-  );
+    } catch (err) {
+      erros(err);
+    }
+  }, []);
 
   const validaFormulario = valores => {
     if (validaSeObjetoEhNuloOuVazio(valores)) return;
@@ -311,7 +306,8 @@ function RegistroPOAForm({ match }) {
                 <Row className="row">
                   <Grid cols={2}>
                     <MesesDropDown
-                      label="Mês"
+                      label="Bimestre"
+                      name="bimestre"
                       form={form}
                       desabilitado={somenteConsulta}
                     />
@@ -329,12 +325,12 @@ function RegistroPOAForm({ match }) {
                 </Row>
                 <Row className="row">
                   <Grid cols={12}>
-                    <Label text="Descrição" />
+                    <Label text="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente" />
                     <TextEditor
                       className="form-control w-100"
                       ref={textEditorRef}
                       id="descricao"
-                      alt="Descrição"
+                      alt="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente"
                       name="descricao"
                       onBlur={valor => setDescricao(valor)}
                       value={descricao}

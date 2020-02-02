@@ -65,6 +65,9 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
         }
 
+        public Ue ObterPorId(long id)
+            => contexto.Conexao.QueryFirst<Ue>("select * from ue where id = @id", new { id });
+
         public IEnumerable<Ue> ObterPorDre(long dreId)
         {
             var query = @"select

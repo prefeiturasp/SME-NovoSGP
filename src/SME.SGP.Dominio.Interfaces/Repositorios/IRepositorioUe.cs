@@ -13,9 +13,10 @@ namespace SME.SGP.Dominio.Interfaces
 
         Ue ObterPorCodigo(string ueId);
 
+        Ue ObterPorId(long id);
+
         IEnumerable<Ue> ObterPorDre(long dreId);
 
-        Ue ObterPorId(long ueId);
 
         Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano);
 

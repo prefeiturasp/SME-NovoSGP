@@ -213,41 +213,26 @@ namespace SME.SGP.Dominio.Servicos
             if (codigoNotificacao == 0)
                 codigoNotificacao = servicoNotificacao.ObtemNovoCodigo();
 
+            List<Cargo?> cargosNotificados = new List<Cargo?>();
+
             foreach (var aprovaNivel in niveis)
             {
-                EnviaNotificacaoParaNivel(aprovaNivel, codigoNotificacao);
+                if (!cargosNotificados.Contains(aprovaNivel.Cargo))
+                    cargosNotificados.Add(EnviaNotificacaoParaNivel(aprovaNivel, codigoNotificacao));
             }
         }
 
-        private void EnviaNotificacaoParaNivel(WorkflowAprovacaoNivel nivel, long codigoNotificacao)
+        private Cargo? EnviaNotificacaoParaNivel(WorkflowAprovacaoNivel nivel, long codigoNotificacao)
         {
             Notificacao notificacao;
             List<Usuario> usuarios = nivel.Usuarios.ToList();
 
             if (nivel.Cargo.HasValue)
             {
-                if (nivel.Cargo == Cargo.Supervisor)
-                {
-                    var supervisoresEscola = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(nivel.Workflow.UeId);
-                    if (supervisoresEscola == null || supervisoresEscola.Count() == 0)
-                        throw new NegocioException($"Não foram encontrados supervisores atribuídos para a escola de código {nivel.Workflow.UeId} para enviar para o nível {nivel.Nivel}.");
+                var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(nivel.Workflow.UeId, nivel.Cargo);
 
-                    foreach (var supervisorEscola in supervisoresEscola)
-                    {
-                        usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(supervisorEscola.SupervisorId));
-                    }
-                }
-                else
-                {
-                    var funcionariosRetornoEol = servicoEOL.ObterFuncionariosPorCargoUe(nivel.Workflow.UeId, (int)nivel.Cargo.Value);
-                    if (funcionariosRetornoEol == null || funcionariosRetornoEol.Count() == 0)
-                        throw new NegocioException($"Não foram encontrados funcionários de cargo {nivel.Cargo.GetAttribute<DisplayAttribute>().Name} para a escola de código {nivel.Workflow.UeId} para enviar para o nível {nivel.Nivel}.");
-
-                    foreach (var usuario in funcionariosRetornoEol)
-                    {
-                        usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuario.CodigoRf));
-                    }
-                }
+                foreach (var funcionario in funcionariosRetorno)
+                    usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id));
             }
 
             foreach (var usuario in usuarios)
@@ -282,6 +267,8 @@ namespace SME.SGP.Dominio.Servicos
                     workflowAprovacaoNivel.Salvar(nivel);
                 }
             }
+
+            return nivel.Cargo;
         }
 
         private void NotificarAdminSgpUeFechamentoReaberturaAprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, long nivelId)
@@ -469,16 +456,13 @@ namespace SME.SGP.Dominio.Servicos
             if (escola == null)
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
 
-            var diretoresDaEscola = servicoEOL.ObterFuncionariosPorCargoUe(escola.CodigoUe, (long)Cargo.Diretor);
-
-            if (diretoresDaEscola == null && !diretoresDaEscola.Any())
-                throw new NegocioException("Não foi possível localizar o diretor da Ue deste evento.");
+            var funcionariosEscola = servicoNotificacao.ObterFuncionariosPorNivel(escola.CodigoUe, Cargo.Diretor);
 
             var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/{evento.Id}/";
 
-            foreach (var diretor in diretoresDaEscola)
+            foreach (var funcionario in funcionariosEscola)
             {
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id);
 
                 repositorioNotificacao.Salvar(new Notificacao()
                 {
@@ -622,14 +606,11 @@ namespace SME.SGP.Dominio.Servicos
 
             if (cargoDoNivelQueRecusou == Cargo.Supervisor)
             {
-                var funcionariosRetornoEol = servicoEOL.ObterFuncionariosPorCargoUe(evento.UeId, (int)Cargo.Diretor);
-                if (funcionariosRetornoEol == null || !funcionariosRetornoEol.Any())
+                var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(evento.UeId, Cargo.Diretor);
+             
+                foreach (var funcionario in funcionariosRetorno)
                 {
-                    throw new NegocioException($"Não foram encontrados funcionários de cargo {Cargo.Diretor.GetAttribute<DisplayAttribute>().Name} para a escola de código {evento.UeId} para enviar a reprovação do evento.");
-                }
-                foreach (var usuarioEol in funcionariosRetornoEol)
-                {
-                    var usuarioDiretor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.CodigoRf);
+                    var usuarioDiretor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id);
 
                     NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuarioDiretor, motivo, escola.Nome);
                 }

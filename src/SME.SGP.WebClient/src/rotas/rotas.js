@@ -36,6 +36,10 @@ import TipoAvaliacaoForm from '~paginas/Configuracoes/TipoAvaliacao/tipoAvaliaca
 import AulaDadaAulaPrevista from '~/paginas/DiarioClasse/AulaDadaAulaPrevista/aulaDadaAulaPrevista';
 import RegistroPOALista from '~/paginas/DiarioClasse/RegistroPOA/Lista';
 import RegistroPOAForm from '~/paginas/DiarioClasse/RegistroPOA/Form';
+import CompensacaoAusenciaLista from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaLista';
+import CompensacaoAusenciaForm from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaForm';
+import PeriodoFechamentoAbertura from '~/paginas/CalendarioEscolar/PeriodoFechamentoAbertura/periodo-fechamento-abertura';
+import PaginaComErro from '~/paginas/Erro/pagina-com-erro';
 import PeriodoFechamentoReaberturaLista from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaLista';
 import PeriodoFechamentoReaberturaForm from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaForm';
 
@@ -505,7 +509,7 @@ rotas.set(`${RotasDto.AULA_DADA_AULA_PREVISTA}`, {
 
 rotas.set(`${RotasDto.REGISTRO_POA}`, {
   breadcrumbName: 'Registro POA',
-  menu: ['Diário de Classe'],
+  menu: ['Planejamento'],
   parent: '/',
   component: RegistroPOALista,
   exact: true,
@@ -531,6 +535,66 @@ rotas.set(`${RotasDto.REGISTRO_POA}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.REGISTRO_POA,
+});
+
+rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}`, {
+  breadcrumbName: 'Compensação de Ausência',
+  menu: ['Diário de Classe'],
+  parent: '/',
+  component: CompensacaoAusenciaLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
+});
+
+rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/novo`, {
+  breadcrumbName: 'Cadastrar Compensação de Ausência',
+  parent: RotasDto.COMPENSACAO_AUSENCIA,
+  component: CompensacaoAusenciaForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
+});
+
+rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/editar/:id`, {
+  breadcrumbName: 'Editar Compensação de Ausência',
+  parent: RotasDto.COMPENSACAO_AUSENCIA,
+  component: CompensacaoAusenciaForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
+});
+
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_ABERTURA}`, {
+  breadcrumbName: 'Abertura',
+  menu: ['Calendário Escolar', 'Período de Fechamento'],
+  parent: '/',
+  component: PeriodoFechamentoAbertura,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_ABERTURA,
+});
+
+rotas.set('*', {
+  breadcrumbName: 'Erro',
+  parent: '/',
+  component: PaginaComErro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+
+rotas.set('/erro', {
+  breadcrumbName: 'Erro',
+  parent: '/',
+  component: PaginaComErro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
 });
 
 rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}`, {

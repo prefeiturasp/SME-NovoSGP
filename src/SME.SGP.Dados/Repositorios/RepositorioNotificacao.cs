@@ -18,6 +18,15 @@ namespace SME.SGP.Dados.Repositorios
 
         #region Obter paginado
 
+        public override void Remover(long id)
+            => Remover(ObterPorId(id));
+
+        public override void Remover(Notificacao entidade)
+        {
+            entidade.Excluida = true;
+            Salvar(entidade);
+        }
+
         public async Task<PaginacaoResultadoDto<Notificacao>> Obter(string dreId, string ueId, int statusId,
             string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, Paginacao paginacao)
         {
