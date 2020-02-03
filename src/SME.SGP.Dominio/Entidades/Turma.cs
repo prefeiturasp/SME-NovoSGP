@@ -22,5 +22,13 @@ namespace SME.SGP.Dominio
         {
             Ue = ue;
         }
+
+        public bool MesmaModalidadePeriodoEscolar(ModalidadeTipoCalendario modalidade)
+        {
+            if (modalidade == ModalidadeTipoCalendario.EJA)
+                return ModalidadeCodigo == Modalidade.EJA;
+            else
+                return ModalidadeCodigo != Modalidade.EJA
+        }
     }
 }

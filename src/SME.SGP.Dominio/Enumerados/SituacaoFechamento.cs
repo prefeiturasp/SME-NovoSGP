@@ -2,8 +2,8 @@
 {
     public enum SituacaoFechamento
     {
-        ProcessadoComPendencias = 1,
-        Reprocessando = 2,
+        EmProcessamento = 1,
+        ProcessadoComPendencias = 2,
         ProcessadoComSucesso = 3
     }
 }
