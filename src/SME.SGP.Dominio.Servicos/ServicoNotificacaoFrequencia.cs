@@ -571,19 +571,22 @@ namespace SME.SGP.Dominio.Servicos
                                         }
                                     };
 
-                                    var disciplinaEOL = disciplinasEol.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString() == disciplinaId);
-                                    foreach (var gestor in gestores)
+                                    if (alunosDto.Any())
                                     {
-                                        NotificarFrequenciaBimestre(turma.CodigoTurma,
-                                                            turma.Nome,
-                                                            periodoAtual.Bimestre,
-                                                            turmasUE.Key.CodigoUe,
-                                                            turmasUE.Key.Nome,
-                                                            turmasDRE.Key.CodigoDre,
-                                                            turmasDRE.Key.Nome,
-                                                            disciplinaEOL.Nome,
-                                                            gestor.Usuario.Id,
-                                                            alunosDto);
+                                        var disciplinaEOL = disciplinasEol.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString() == disciplinaId);
+                                        foreach (var gestor in gestores)
+                                        {
+                                            NotificarFrequenciaBimestre(turma.CodigoTurma,
+                                                                turma.Nome,
+                                                                periodoAtual.Bimestre,
+                                                                turmasUE.Key.CodigoUe,
+                                                                turmasUE.Key.Nome,
+                                                                turmasDRE.Key.CodigoDre,
+                                                                turmasDRE.Key.Nome,
+                                                                disciplinaEOL.Nome,
+                                                                gestor.Usuario.Id,
+                                                                alunosDto);
+                                        }
                                     }
                                 });
                         }
