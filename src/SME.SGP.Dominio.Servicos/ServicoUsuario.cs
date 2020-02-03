@@ -197,6 +197,18 @@ namespace SME.SGP.Dominio
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
 
+        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data)
+        {
+            var usuarioLogado = await ObterUsuarioLogado();
+
+            if (!usuarioLogado.EhProfessorCj())
+                return await servicoEOL.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, data);
+
+            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRf);
+
+            return atribuicaoCj != null && atribuicaoCj.Any();
+        }
+
         public void RemoverPerfisUsuarioAtual()
         {
             var login = ObterLoginAtual();
