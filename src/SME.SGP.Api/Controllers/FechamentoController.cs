@@ -12,6 +12,15 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class FechamentoController : ControllerBase
     {
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult RealizarFechamento([FromQuery]string codigoTurma, [FromQuery]string disciplinaId, [FromQuery] long periodoEscolarId, [FromServices]IServicoFechamento servicoFechamento)
+        {
+            servicoFechamento.RealizarFechamento(codigoTurma, disciplinaId, periodoEscolarId);
+            return Ok();
+        }
+
         [HttpPost("reprocessar/{fechamentoId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
