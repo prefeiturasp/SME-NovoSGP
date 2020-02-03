@@ -180,7 +180,7 @@ namespace SME.SGP.Dados.Repositorios
                             from
 	                            aula a
                             where
-	                            and turma_id = @codigoTurma
+	                            turma_id = @codigoTurma
 	                            and disciplina_id = @disciplinaId
 	                            and data_aula >= @inicioPeriodo
 	                            and data_aula <= @fimPeriodo

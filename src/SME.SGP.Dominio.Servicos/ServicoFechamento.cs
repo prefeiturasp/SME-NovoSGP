@@ -8,18 +8,21 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IRepositorioFechamento repositorioFechamento;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
 
         public ServicoFechamento(IRepositorioFechamento repositorioFechamento,
                                  IRepositorioTurma repositorioTurma,
                                  IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                 IServicoPendenciaFechamento servicoPendenciaFechamento)
+                                 IServicoPendenciaFechamento servicoPendenciaFechamento,
+                                 IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.repositorioFechamento = repositorioFechamento ?? throw new ArgumentNullException(nameof(repositorioFechamento));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
         public void GerarPendenciasFechamento(string disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, Fechamento fechamento)
@@ -45,30 +48,26 @@ namespace SME.SGP.Dominio.Servicos
 
         public void RealizarFechamento(string codigoTurma, string disciplinaId, long periodoEscolarId)
         {
-            var turma = repositorioTurma.ObterPorId(codigoTurma);
-            if (turma == null)
+            var (turma, periodoEscolar) = ValidarTurmaEPeriodoEscolar(codigoTurma, periodoEscolarId);
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(periodoEscolar.TipoCalendarioId);
+            if (tipoCalendario == null)
             {
-                throw new NegocioException("Turma não encontrada.");
+                throw new NegocioException("Tipo de calendário não encontrado.");
             }
 
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(periodoEscolarId);
-            if (periodoEscolar == null)
-            {
-                throw new NegocioException("Período escolar não encontrado.");
-            }
-
-            if (!turma.MesmaModalidadePeriodoEscolar(periodoEscolar.TipoCalendario.Modalidade))
+            if (!turma.MesmaModalidadePeriodoEscolar(tipoCalendario.Modalidade))
             {
                 throw new NegocioException("Essa turma não pertence ao tipo de calendário informado.");
             }
-
-            var fechamento = new Fechamento(turma.Id, disciplinaId, periodoEscolar.Id);
+            Fechamento fechamento = repositorioFechamento.ObterPorTurmaDisciplinaPeriodo(turma.Id, disciplinaId, periodoEscolar.Id);
+            if (fechamento == null)
+            {
+                fechamento = new Fechamento(turma.Id, disciplinaId, periodoEscolar.Id);
+            }
+            fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
             fechamento.Id = repositorioFechamento.Salvar(fechamento);
 
-            GerarPendenciasFechamento(disciplinaId, turma, periodoEscolar, fechamento);
-
-            if (fechamento.Situacao != SituacaoFechamento.EmProcessamento)
-                repositorioFechamento.Salvar(fechamento);
+            Cliente.Executar<IServicoFechamento>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento));
         }
 
         public void Reprocessar(long fechamentoId)
@@ -89,7 +88,25 @@ namespace SME.SGP.Dominio.Servicos
             {
                 throw new NegocioException("Período escolar não encontrado.");
             }
+            fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
+            repositorioFechamento.Salvar(fechamento);
             Cliente.Executar<IServicoFechamento>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento));
+        }
+
+        private (Turma, PeriodoEscolar) ValidarTurmaEPeriodoEscolar(string codigoTurma, long periodoEscolarId)
+        {
+            var turma = repositorioTurma.ObterPorId(codigoTurma);
+            if (turma == null)
+            {
+                throw new NegocioException("Turma não encontrada.");
+            }
+
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(periodoEscolarId);
+            if (periodoEscolar == null)
+            {
+                throw new NegocioException("Período escolar não encontrado.");
+            }
+            return (turma, periodoEscolar);
         }
     }
 }
