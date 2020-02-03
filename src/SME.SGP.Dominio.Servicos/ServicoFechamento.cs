@@ -323,7 +323,7 @@ namespace SME.SGP.Dominio.Servicos
             var (dre, ue) = ObterDreEUe(fechamentoDto.DreId, fechamentoDto.UeId);
             var fechamento = repositorioFechamento.ObterPorTipoCalendarioDreEUE(fechamentoDto.TipoCalendarioId, dre?.Id, ue?.Id);
             if (fechamento == null)
-                fechamento = new PeriodoFechamento(dre?.Id, ue?.Id);
+                fechamento = new PeriodoFechamento(dre, ue);
 
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(fechamentoDto.TipoCalendarioId);
             if (tipoCalendario == null)

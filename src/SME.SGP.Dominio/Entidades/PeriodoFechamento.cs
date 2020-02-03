@@ -5,10 +5,11 @@ namespace SME.SGP.Dominio
 {
     public class PeriodoFechamento : EntidadeBase
     {
-        public PeriodoFechamento(long? dreId, long? ueId)
+        public PeriodoFechamento(Dre dre, Ue ue)
         {
-            DreId = dreId;
-            UeId = ueId;
+            AdicionarDre(dre);
+            AdicionarUe(ue);
+
             fechamentosBimestre = new List<PeriodoFechamentoBimestre>();
         }
 
@@ -27,7 +28,11 @@ namespace SME.SGP.Dominio
 
         public void AdicionarDre(Dre dre)
         {
-            Dre = dre;
+            if (dre != null)
+            {
+                DreId = dre.Id;
+                Dre = dre;
+            }
         }
 
         public void AdicionarFechamentoBimestre(PeriodoFechamentoBimestre fechamentoBimestre)
@@ -68,7 +73,11 @@ namespace SME.SGP.Dominio
 
         public void AdicionarUe(Ue ue)
         {
-            Ue = ue;
+            if (ue != null)
+            {
+                UeId = ue.Id;
+                Ue = ue;
+            }
         }
 
         public PeriodoFechamentoBimestre ObterFechamentoBimestre(long periodoEscolarId)
