@@ -23,7 +23,7 @@ function TabelaAlunos({ alunos, respostas, objetivoAtivo, onChangeResposta }) {
         </thead>
         <tbody>
           {alunos.length > 1 ? (
-            alunos.map(aluno => (
+            alunos.map((aluno, key) => (
               <tr key={shortid.generate()}>
                 <td>{aluno.numeroChamada}</td>
                 <td>{aluno.nome}</td>
@@ -31,13 +31,14 @@ function TabelaAlunos({ alunos, respostas, objetivoAtivo, onChangeResposta }) {
                   <IconeStatus status={aluno.concluido} />
                 </td>
                 <td>{aluno.turma}</td>
-                <td>
+                <td id={`resposta-${key}`}>
                   <div className="opcaoSelect">
                     <SelectRespostas
                       aluno={aluno}
                       objetivoAtivo={objetivoAtivo}
                       respostas={respostas}
                       onChangeResposta={onChangeResposta}
+                      containerVinculoId={`resposta-${key}`}
                     />
                   </div>
                 </td>
