@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
-    public class ServicoCompensacaoAusencia: IServicoCompensacaoAusencia
+    public class ServicoCompensacaoAusencia : IServicoCompensacaoAusencia
     {
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
@@ -65,7 +65,9 @@ namespace SME.SGP.Dominio.Servicos
             // Valida mesma compensação no ano
             var compensacaoExistente = await repositorioCompensacaoAusencia.ObterPorAnoTurmaENome(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id);
             if (compensacaoExistente != null)
-                throw new NegocioException("Já existe essa compensação cadastrada para turma no ano letivo.");
+            {
+                throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
+            }
 
             // Carrega dasdos da disciplina no EOL
             ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds);
@@ -131,7 +133,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // TODO alterar verificação para checagem de periodo de fechamento e reabertura do fechamento depois de implementado
             if (DateTime.Now < periodo.PeriodoInicio || DateTime.Now > periodo.PeriodoFim)
-                throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto");
+                throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto.");
 
             return periodo;
         }
@@ -156,7 +158,7 @@ namespace SME.SGP.Dominio.Servicos
                 disciplinas = await repositorioCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoId);
 
             // Remove as disciplinas não existentes mais
-            foreach(var disciplinaExcluida in disciplinas.Where(x => !disciplinasRegenciaIds.Any(d => d == x.DisciplinaId)))
+            foreach (var disciplinaExcluida in disciplinas.Where(x => !disciplinasRegenciaIds.Any(d => d == x.DisciplinaId)))
             {
                 disciplinaExcluida.Excluir();
                 listaPersistencia.Add(disciplinaExcluida);
@@ -187,7 +189,7 @@ namespace SME.SGP.Dominio.Servicos
                 alunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
 
             // excluir os removidos da lista
-            foreach(var alunoRemovido in alunos.Where(a => !alunosDto.Any(d => d.Id == a.CodigoAluno)))
+            foreach (var alunoRemovido in alunos.Where(a => !alunosDto.Any(d => d.Id == a.CodigoAluno)))
             {
                 alunoRemovido.Excluir();
                 listaPersistencia.Add(alunoRemovido);
@@ -246,7 +248,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private CompensacaoAusenciaAluno MapearCompensacaoAlunoEntidade(long compensacaoId, CompensacaoAusenciaAlunoDto alunoDto)
             => new CompensacaoAusenciaAluno()
-            { 
+            {
                 CompensacaoAusenciaId = compensacaoId,
                 CodigoAluno = alunoDto.Id,
                 QuantidadeFaltasCompensadas = alunoDto.QtdFaltasCompensadas,
@@ -285,7 +287,7 @@ namespace SME.SGP.Dominio.Servicos
                 compensacoesExcluir.Add(compensacao);
 
                 var compensacoesAlunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
-                foreach(var compensacaoAluno in compensacoesAlunos)
+                foreach (var compensacaoAluno in compensacoesAlunos)
                 {
                     compensacaoAluno.Excluir();
                     compensacoesAlunosExcluir.Add(compensacaoAluno);
@@ -300,7 +302,7 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             // Excluir lista carregada
-            foreach(var compensacaoExcluir in compensacoesExcluir)
+            foreach (var compensacaoExcluir in compensacoesExcluir)
             {
                 var turma = repositorioTurma.ObterPorId(compensacaoExcluir.TurmaId);
                 var periodo = BuscaPeriodo(turma.AnoLetivo, turma.ModalidadeCodigo, compensacaoExcluir.Bimestre, turma.Semestre);
@@ -311,7 +313,7 @@ namespace SME.SGP.Dominio.Servicos
                     // Exclui dependencias
                     var alunosDaCompensacao = compensacoesAlunosExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList();
                     alunosDaCompensacao.ForEach(c => repositorioCompensacaoAusenciaAluno.Salvar(c));
-                    
+
                     compensacoesDisciplinasExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
                         .ForEach(c => repositorioCompensacaoAusenciaDisciplinaRegencia.Salvar(c));
 
@@ -342,14 +344,17 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
 
-        public async Task Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia)
+        public async Task<string> Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia)
         {
             var compensacaoOrigem = repositorioCompensacaoAusencia.ObterPorId(compensacaoCopia.CompensacaoOrigemId);
             if (compensacaoOrigem == null)
                 throw new NegocioException("Compensação de origem não localizada com o identificador informado.");
 
-            foreach(var turmaId in compensacaoCopia.TurmasIds)
+            var turmasCopiadas = new StringBuilder("");
+            var turmasComErro = new StringBuilder("");
+            foreach (var turmaId in compensacaoCopia.TurmasIds)
             {
+                var turma = repositorioTurma.ObterPorId(turmaId);
                 CompensacaoAusenciaDto compensacaoDto = new CompensacaoAusenciaDto()
                 {
                     TurmaId = turmaId,
@@ -360,13 +365,29 @@ namespace SME.SGP.Dominio.Servicos
                     DisciplinasRegenciaIds = new List<string>(),
                     Alunos = new List<CompensacaoAusenciaAlunoDto>()
                 };
-                
+
                 var disciplinasRegencia = await repositorioCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoOrigem.Id);
                 if (disciplinasRegencia != null && disciplinasRegencia.Any())
                     compensacaoDto.DisciplinasRegenciaIds = disciplinasRegencia.Select(s => s.DisciplinaId);
 
-                await Salvar(0, compensacaoDto);
+                try
+                {
+                    await Salvar(0, compensacaoDto);
+                    turmasCopiadas.Append(turmasCopiadas.ToString().Length > 0 ? ", " + turma.Nome : turma.Nome);
+                }catch(Exception e)
+                {
+                    turmasComErro.AppendLine($"A cópia para a turma {turma.Nome} não foi realizada: {e.Message}\n");
+                }
             }
+            var respTurmasCopiadas = turmasCopiadas.ToString();
+            var textoTurmas = respTurmasCopiadas.Contains(",") ? "as turmas" : "a turma";
+            var respostaSucesso = respTurmasCopiadas.Length > 0 ? $"A cópia para {textoTurmas} {respTurmasCopiadas} foi realizada com sucesso" : "";
+            var respTurmasComErro = turmasComErro.ToString();
+            if (respTurmasComErro.Length > 0)
+            {
+                throw new NegocioException($"{respTurmasComErro} {respostaSucesso}");
+            }
+            return respostaSucesso;
         }
     }
 }

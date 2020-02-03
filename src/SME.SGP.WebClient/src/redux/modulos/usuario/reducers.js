@@ -55,9 +55,13 @@ export default function usuario(state = inicial, action) {
         draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
         break;
       case '@usuario/deslogar':
+        const valoresAtuais = {...draft};
         draft = inicial;
+        draft.exibirMensagemSessaoExpirou = valoresAtuais.exibirMensagemSessaoExpirou;
         localStorage.clear();
-        window.location.reload(true);
+        if (!valoresAtuais.exibirMensagemSessaoExpirou) {
+          window.location.reload(true);
+        }
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
