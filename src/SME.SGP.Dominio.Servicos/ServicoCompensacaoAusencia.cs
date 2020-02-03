@@ -50,7 +50,7 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task Salvar(long id, CompensacaoAusenciaDto compensacaoDto, bool ehCopia = false)
+        public async Task Salvar(long id, CompensacaoAusenciaDto compensacaoDto)
         {
             // Busca dados da turma
             var turma = BuscaTurma(compensacaoDto.TurmaId);
@@ -66,11 +66,11 @@ namespace SME.SGP.Dominio.Servicos
             var compensacaoExistente = await repositorioCompensacaoAusencia.ObterPorAnoTurmaENome(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id);
             if (compensacaoExistente != null)
             {
-                throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.{adicionarMensagemTurma(ehCopia, turma.Nome)}");
+                throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
             }
 
             // Carrega dasdos da disciplina no EOL
-            ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds, ehCopia, turma.Nome);
+            ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds);
 
             // Persiste os dados
             var compensacao = MapearEntidade(id, compensacaoDto);
@@ -98,17 +98,17 @@ namespace SME.SGP.Dominio.Servicos
             Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
         }
 
-        private void ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool ehCopia = false, string nomeTurma = null)
+        private void ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds)
         {
             var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId });
 
             if (!disciplinasEOL.Any())
-                throw new NegocioException($"Disciplina não encontrada no EOL.{adicionarMensagemTurma(ehCopia, nomeTurma)}");
+                throw new NegocioException("Disciplina não encontrada no EOL.");
 
             var disciplina = disciplinasEOL.FirstOrDefault();
 
             if (disciplina.Regencia && ((disciplinasRegenciaIds == null) || !disciplinasRegenciaIds.Any()))
-                throw new NegocioException($"Regência de classe deve informar a(s) disciplina(s) relacionadas a esta atividade.{adicionarMensagemTurma(ehCopia, nomeTurma)}");
+                throw new NegocioException("Regência de classe deve informar a(s) disciplina(s) relacionadas a esta atividade.");
 
         }
 
@@ -133,7 +133,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // TODO alterar verificação para checagem de periodo de fechamento e reabertura do fechamento depois de implementado
             if (DateTime.Now < periodo.PeriodoInicio || DateTime.Now > periodo.PeriodoFim)
-                throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto");
+                throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto.");
 
             return periodo;
         }
@@ -351,6 +351,7 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Compensação de origem não localizada com o identificador informado.");
 
             var turmasCopiadas = new StringBuilder("");
+            var turmasComErro = new StringBuilder("");
             foreach (var turmaId in compensacaoCopia.TurmasIds)
             {
                 var turma = repositorioTurma.ObterPorId(turmaId);
@@ -369,16 +370,23 @@ namespace SME.SGP.Dominio.Servicos
                 if (disciplinasRegencia != null && disciplinasRegencia.Any())
                     compensacaoDto.DisciplinasRegenciaIds = disciplinasRegencia.Select(s => s.DisciplinaId);
 
-                await Salvar(0, compensacaoDto, true);
-                turmasCopiadas.AppendLine(turmasCopiadas.ToString().Length > 0 ? ", " + turma.Nome : turma.Nome);
+                try
+                {
+                    await Salvar(0, compensacaoDto);
+                    turmasCopiadas.AppendLine(turmasCopiadas.ToString().Length > 0 ? ", " + turma.Nome : turma.Nome);
+                }catch(Exception e)
+                {
+                    turmasComErro.AppendLine($"A cópia para a {turma.Nome} não foi realizada: {e.Message}");
+                }
             }
-            var respTurmas = turmasCopiadas.ToString();
-            return respTurmas.Length > 0 ? $"A cópia para as turmas {respTurmas} foram realizdas com sucesso" : "";
-        }
-
-        private string adicionarMensagemTurma(bool ehCopia, string turma)
-        {
-            return ehCopia ? $"Turma: {turma}" : "";
+            var respTurmasCopiadas = turmasCopiadas.ToString();
+            var respostaSucesso = respTurmasCopiadas.Length > 0 ? $"A cópia para as turmas {respTurmasCopiadas} foi realizada com sucesso" : "";
+            var respTurmasComErro = turmasComErro.ToString();
+            if (respTurmasComErro.Length > 0)
+            {
+                throw new NegocioException($"{respTurmasComErro} {respostaSucesso}");
+            }
+            return respostaSucesso;
         }
     }
 }
