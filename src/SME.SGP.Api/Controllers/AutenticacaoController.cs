@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -164,15 +163,6 @@ namespace SME.SGP.Api.Controllers
         public IActionResult TokenRecuperacaoSenhaEstaValido(Guid token)
         {
             return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
-        }
-
-        [HttpGet("variavelambiente/{nome}")]
-        [ProducesResponseType(typeof(bool), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
-        public IActionResult TokenRecuperacaoSenhaEstaValido(string nome, [FromServices]IConfiguration configuration)
-        {
-            return Ok(configuration.GetValue<string>(nome));
         }
     }
 }
