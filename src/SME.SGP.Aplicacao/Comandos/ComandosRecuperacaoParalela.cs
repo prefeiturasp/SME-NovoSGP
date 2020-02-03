@@ -36,6 +36,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = item.Id,
                     TurmaId = item.TurmaId,
+                    TurmaRecuperacaoParalelaId = item.TurmaRecuperacaoParalelaId,
                     Aluno_id = item.CodAluno,
                     CriadoEm = recuperacaoParalelaDto.Periodo.CriadoEm ?? default,
                     CriadoRF = recuperacaoParalelaDto.Periodo.CriadoRF ?? null,
@@ -43,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 };
                 await repositorioRecuperacaoParalela.SalvarAsync(recuperacaoParalela);
                 await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.Excluir(item.Id, recuperacaoParalelaDto.Periodo.Id);
-                foreach (var resposta in recuperacaoParalelaDto.Periodo.Alunos.Where(w => w.Id == item.Id).FirstOrDefault().Respostas)
+                foreach (var resposta in recuperacaoParalelaDto.Periodo.Alunos.Where(w => w.CodAluno == item.CodAluno).FirstOrDefault().Respostas)
                 {
                     await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.SalvarAsync(new RecuperacaoParalelaPeriodoObjetivoResposta
                     {
@@ -58,7 +59,7 @@ namespace SME.SGP.Aplicacao
             return await consultaRecuperacaoParalela.Listar(new Infra.FiltroRecuperacaoParalelaDto
             {
                 PeriodoId = recuperacaoParalelaDto.Periodo.Id,
-                TurmaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaId
+                TurmaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId
             });
         }
     }

@@ -16,14 +16,12 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEixo repositorioEixo;
         private readonly IRepositorioObjetivo repositorioObjetivo;
         private readonly IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela;
-        private readonly IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo;
         private readonly IRepositorioResposta repositorioResposta;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoRecuperacaoParalela servicoRecuperacaoParalela;
 
         public ConsultasRecuperacaoParalela(
             IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
-            IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo,
             IRepositorioEixo repositorioEixo,
             IRepositorioObjetivo repositorioObjetivo,
             IRepositorioResposta repositorioResposta,
@@ -32,7 +30,6 @@ namespace SME.SGP.Aplicacao
             IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
-            this.repositorioRecuperacaoParalelaPeriodo = repositorioRecuperacaoParalelaPeriodo ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalelaPeriodo));
             this.repositorioEixo = repositorioEixo ?? throw new ArgumentNullException(nameof(repositorioEixo));
             this.repositorioObjetivo = repositorioObjetivo ?? throw new ArgumentNullException(nameof(repositorioObjetivo));
             this.repositorioResposta = repositorioResposta ?? throw new ArgumentNullException(nameof(repositorioResposta));
@@ -86,7 +83,8 @@ namespace SME.SGP.Aplicacao
                         NumeroChamada = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NumeroAlunoChamada).FirstOrDefault(),
                         CodAluno = a.AlunoId,
                         Turma = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.TurmaEscola).FirstOrDefault(),
-                        TurmaId = turmaId,
+                        TurmaId = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.CodigoTurma).FirstOrDefault(),
+                        TurmaRecuperacaoParalelaId = turmaId,
                         Respostas = alunosRecuperacaoParalela
                                                     .Where(w => w.Id == a.Id)
                                                     .Select(s => new ObjetivoRespostaDto
@@ -94,7 +92,7 @@ namespace SME.SGP.Aplicacao
                                                         ObjetivoId = s.ObjetivoId,
                                                         RespostaId = s.RespostaId
                                                     }).ToList()
-                    }).ToList()
+                    }).OrderBy(o => o.Nome).ToList()
                 }
             };
 

@@ -16,7 +16,6 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 const TipoEventosLista = () => {
   const Div = styled.div`
     .select-local {
-      
     }
   `;
 
@@ -190,7 +189,7 @@ const TipoEventosLista = () => {
   return (
     <Div className="col-12">
       <Grid cols={12} className="mb-1 p-0">
-        <Titulo className="font-weight-bold">Tipo de Eventos</Titulo>
+        <Titulo className="font-weight-bold">Tipo de eventos</Titulo>
       </Grid>
       <Card className="rounded" mx="mx-auto">
         <Div className="row w-100 mx-auto mb-5">

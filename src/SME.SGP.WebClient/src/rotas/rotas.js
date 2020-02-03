@@ -40,6 +40,10 @@ import CompensacaoAusenciaLista from '~/paginas/DiarioClasse/CompensacaoAusencia
 import CompensacaoAusenciaForm from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaForm';
 import PeriodoFechamentoAbertura from '~/paginas/CalendarioEscolar/PeriodoFechamentoAbertura/periodo-fechamento-abertura';
 import ResumosGraficosPAP from '~/paginas/Relatorios/PAP/ResumosGraficos';
+import PaginaComErro from '~/paginas/Erro/pagina-com-erro';
+import PeriodoFechamentoReaberturaLista from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaLista';
+import PeriodoFechamentoReaberturaForm from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaForm';
+import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento';
 
 const rotas = new Map();
 
@@ -515,7 +519,7 @@ rotas.set(`${RotasDto.AULA_DADA_AULA_PREVISTA}`, {
 
 rotas.set(`${RotasDto.REGISTRO_POA}`, {
   breadcrumbName: 'Registro POA',
-  menu: ['Diário de Classe'],
+  menu: ['Planejamento'],
   parent: '/',
   component: RegistroPOALista,
   exact: true,
@@ -583,6 +587,56 @@ rotas.set(`${RotasDto.PERIODO_FECHAMENTO_ABERTURA}`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.PERIODO_FECHAMENTO_ABERTURA,
+});
+
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}`, {
+  breadcrumbName: 'Reabertura',
+  menu: ['Calendário Escolar', 'Período de Fechamento'],
+  parent: '/',
+  component: PeriodoFechamentoReaberturaLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+});
+
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/novo`, {
+  breadcrumbName: 'Períodos',
+  parent: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+  component: PeriodoFechamentoReaberturaForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+});
+
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/editar/:id`, {
+  breadcrumbName: 'Períodos',
+  parent: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+  component: PeriodoFechamentoReaberturaForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+});
+
+rotas.set('/erro', {
+  breadcrumbName: 'Erro',
+  parent: '/',
+  component: PaginaComErro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+
+rotas.set(RotasDto.RELATORIO_PAP_ACOMPANHAMENTO, {
+  breadcrumbName: 'Acompanhamento',
+  menu: ['Relatórios', 'PAP'],
+  parent: '/',
+  component: RelatorioPAPAcompanhamento,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false, // chavePermissao: RotasDto.REINICIAR_SENHA,
 });
 
 const rotasArray = [];
