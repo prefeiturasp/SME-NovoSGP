@@ -67,6 +67,17 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, string dreId, string ueId)
         {
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(tipoCalendarioId);
+            if (tipoCalendario == null)
+            {
+                throw new NegocioException("Tipo de calendário não encontrado.");
+            }
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
+            if (periodoEscolar == null || !periodoEscolar.Any())
+            {
+                throw new NegocioException("Período escolar não encontrado para o tipo de calendário informado.");
+            }
+
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
             var (dre, ue) = ObterDreEUe(dreId, ueId);
@@ -85,18 +96,10 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         fechamentoSMEDre = new PeriodoFechamento(null, null);
 
-                        var tipoCalendario = repositorioTipoCalendario.ObterPorId(tipoCalendarioId);
-                        if (tipoCalendario == null)
-                            throw new NegocioException("Tipo de calendário não encontrado.");
-
-                        var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
-                        if (periodoEscolar == null)
-                            throw new NegocioException("Período escolar não encontrado.");
-
                         foreach (var periodo in periodoEscolar)
                         {
                             periodo.AdicionarTipoCalendario(tipoCalendario);
-                            fechamentoSMEDre.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSMEDre.Id, periodo, periodo.PeriodoInicio, periodo.PeriodoFim));
+                            fechamentoSMEDre.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSMEDre.Id, periodo, null, null));
                         }
                     }
                 }
@@ -124,8 +127,8 @@ namespace SME.SGP.Dominio.Servicos
                     }
                     else
                     {
-                        bimestreDreUe.InicioMinimo = new DateTime(bimestreSME.InicioDoFechamento.Year, 01, 01);
-                        bimestreDreUe.FinalMaximo = new DateTime(bimestreSME.InicioDoFechamento.Year, 12, 31);
+                        bimestreDreUe.InicioMinimo = new DateTime(DateTime.Now.Year, 01, 01);
+                        bimestreDreUe.FinalMaximo = new DateTime(DateTime.Now.Year, 12, 31);
                     }
                 }
             }
@@ -308,8 +311,8 @@ namespace SME.SGP.Dominio.Servicos
             {
                 listaFechamentoBimestre.Add(new FechamentoBimestreDto
                 {
-                    FinalDoFechamento = fechamentoBimestre.FinalDoFechamento,
-                    InicioDoFechamento = fechamentoBimestre.InicioDoFechamento,
+                    InicioDoFechamento = fechamentoBimestre.InicioDoFechamento > DateTime.MinValue ? fechamentoBimestre.InicioDoFechamento : (DateTime?)null,
+                    FinalDoFechamento = fechamentoBimestre.FinalDoFechamento > DateTime.MinValue ? fechamentoBimestre.FinalDoFechamento : (DateTime?)null,
                     Bimestre = fechamentoBimestre.PeriodoEscolar.Bimestre,
                     Id = fechamentoBimestre.Id,
                     PeriodoEscolarId = fechamentoBimestre.PeriodoEscolarId
@@ -321,11 +324,11 @@ namespace SME.SGP.Dominio.Servicos
         private PeriodoFechamento MapearParaDominio(FechamentoDto fechamentoDto)
         {
             var (dre, ue) = ObterDreEUe(fechamentoDto.DreId, fechamentoDto.UeId);
-            var fechamento = repositorioFechamento.ObterPorTipoCalendarioDreEUE(fechamentoDto.TipoCalendarioId, dre?.Id, ue?.Id);
+            var fechamento = repositorioFechamento.ObterPorTipoCalendarioDreEUE(fechamentoDto.TipoCalendarioId.Value, dre?.Id, ue?.Id);
             if (fechamento == null)
-                fechamento = new PeriodoFechamento(dre?.Id, ue?.Id);
+                fechamento = new PeriodoFechamento(dre, ue);
 
-            var tipoCalendario = repositorioTipoCalendario.ObterPorId(fechamentoDto.TipoCalendarioId);
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(fechamentoDto.TipoCalendarioId.Value);
             if (tipoCalendario == null)
             {
                 throw new NegocioException("Tipo calendário não encontrado.");
@@ -354,7 +357,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 Id = fechamento.Id,
                 DreId = fechamento.Dre?.CodigoDre,
-                TipoCalendarioId = fechamento.FechamentosBimestre.FirstOrDefault().PeriodoEscolar.TipoCalendarioId,
+                TipoCalendarioId = fechamento.FechamentosBimestre.FirstOrDefault()?.PeriodoEscolar?.TipoCalendarioId,
                 UeId = fechamento.Ue?.CodigoUe,
                 FechamentosBimestres = MapearFechamentoBimestreParaDto(fechamento).OrderBy(c => c.Bimestre),
                 AlteradoEm = fechamento.AlteradoEm,

@@ -14,7 +14,7 @@ import {
   CaixaBimestre,
 } from './periodo-fechamento-abertura.css';
 import api from '~/servicos/api';
-import { CampoData, Loader, Auditoria } from '~/componentes';
+import { CampoData, Loader, Auditoria, momentSchema } from '~/componentes';
 import history from '~/servicos/history';
 import { URL_HOME } from '~/constantes/url';
 import { erros, sucesso, confirmar } from '~/servicos/alertas';
@@ -66,10 +66,12 @@ const PeriodoFechamentoAbertura = () => {
     Yup.object().shape({
       fechamentosBimestres: Yup.array().of(
         Yup.object().shape({
-          inicioDoFechamento: Yup.string().required(
-            'Data de início obrigatória.'
-          ),
-          finalDoFechamento: Yup.string().required('Data final obrigatória.'),
+          inicioDoFechamento: Yup.string()
+            .nullable()
+            .required('Data de início obrigatória.'),
+          finalDoFechamento: Yup.string()
+            .nullable()
+            .required('Data final obrigatória.'),
         })
       ),
     })
@@ -123,6 +125,10 @@ const PeriodoFechamentoAbertura = () => {
     consultaTipos();
   }, [usuarioLogado.turmaSelecionada]);
 
+  const obterDataMoment = data => {
+    return data ? moment(data) : null;
+  };
+
   useEffect(() => {
     buscarDados();
   }, [dreSelecionada, tipoCalendarioSelecionado, ueSelecionada]);
@@ -154,10 +160,14 @@ const PeriodoFechamentoAbertura = () => {
         .then(resposta => {
           if (resposta.data && resposta.data.fechamentosBimestres) {
             resposta.data.fechamentosBimestres.forEach(bimestre => {
-              bimestre.inicioDoFechamento = moment(bimestre.inicioDoFechamento);
-              bimestre.finalDoFechamento = moment(bimestre.finalDoFechamento);
-              bimestre.inicioMinimo = moment(bimestre.inicioMinimo);
-              bimestre.finalMaximo = moment(bimestre.finalMaximo);
+              bimestre.inicioDoFechamento = obterDataMoment(
+                bimestre.inicioDoFechamento
+              );
+              bimestre.finalDoFechamento = obterDataMoment(
+                bimestre.finalDoFechamento
+              );
+              bimestre.inicioMinimo = obterDataMoment(bimestre.inicioMinimo);
+              bimestre.finalMaximo = obterDataMoment(bimestre.finalMaximo);
             });
           }
           setFechamento(resposta.data);
@@ -384,26 +394,32 @@ const PeriodoFechamentoAbertura = () => {
                   </div>
                   <br />
                   <div className="col-md-6 pb-2">
-                    {tipoCalendarioSelecionado && (
-                      <DreDropDown
-                        label="Diretoria Regional de Educação (DRE)"
-                        form={form}
-                        onChange={dreId => onChangeDre(dreId)}
-                        desabilitado={desabilitarCampos}
-                      />
-                    )}
+                    {tipoCalendarioSelecionado &&
+                      fechamento &&
+                      fechamento.fechamentosBimestres &&
+                      fechamento.fechamentosBimestres.length > 0 && (
+                        <DreDropDown
+                          label="Diretoria Regional de Educação (DRE)"
+                          form={form}
+                          onChange={dreId => onChangeDre(dreId)}
+                          desabilitado={desabilitarCampos}
+                        />
+                      )}
                   </div>
                   <div className="col-md-6 pb-2">
-                    {tipoCalendarioSelecionado && (
-                      <UeDropDown
-                        dreId={form.values.dreId}
-                        label="Unidade Escolar (UE)"
-                        form={form}
-                        url="v1/dres"
-                        onChange={ueId => setUeSelecionada(ueId)}
-                        desabilitado={desabilitarCampos}
-                      />
-                    )}
+                    {tipoCalendarioSelecionado &&
+                      fechamento &&
+                      fechamento.fechamentosBimestres &&
+                      fechamento.fechamentosBimestres.length > 0 && (
+                        <UeDropDown
+                          dreId={form.values.dreId}
+                          label="Unidade Escolar (UE)"
+                          form={form}
+                          url="v1/dres"
+                          onChange={ueId => setUeSelecionada(ueId)}
+                          desabilitado={desabilitarCampos}
+                        />
+                      )}
                   </div>
                 </div>
                 <FieldArray

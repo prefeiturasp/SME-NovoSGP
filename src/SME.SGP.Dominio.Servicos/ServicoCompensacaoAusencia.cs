@@ -373,14 +373,15 @@ namespace SME.SGP.Dominio.Servicos
                 try
                 {
                     await Salvar(0, compensacaoDto);
-                    turmasCopiadas.AppendLine(turmasCopiadas.ToString().Length > 0 ? ", " + turma.Nome : turma.Nome);
+                    turmasCopiadas.Append(turmasCopiadas.ToString().Length > 0 ? ", " + turma.Nome : turma.Nome);
                 }catch(Exception e)
                 {
-                    turmasComErro.AppendLine($"A cópia para a {turma.Nome} não foi realizada: {e.Message}");
+                    turmasComErro.AppendLine($"A cópia para a turma {turma.Nome} não foi realizada: {e.Message}\n");
                 }
             }
             var respTurmasCopiadas = turmasCopiadas.ToString();
-            var respostaSucesso = respTurmasCopiadas.Length > 0 ? $"A cópia para as turmas {respTurmasCopiadas} foi realizada com sucesso" : "";
+            var textoTurmas = respTurmasCopiadas.Contains(",") ? "as turmas" : "a turma";
+            var respostaSucesso = respTurmasCopiadas.Length > 0 ? $"A cópia para {textoTurmas} {respTurmasCopiadas} foi realizada com sucesso" : "";
             var respTurmasComErro = turmasComErro.ToString();
             if (respTurmasComErro.Length > 0)
             {
