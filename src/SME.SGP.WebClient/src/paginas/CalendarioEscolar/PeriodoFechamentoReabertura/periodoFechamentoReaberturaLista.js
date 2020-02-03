@@ -15,9 +15,10 @@ import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 import ServicoFechamentoReabertura from '~/servicos/Paginas/Calendario/ServicoFechamentoReabertura';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import { CampoBimestre } from './periodoFechamentoReaberuraLista.css';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import modalidade from '~/dtos/modalidade';
 
 const PeriodoFechamentoReaberturaLista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -136,21 +137,49 @@ const PeriodoFechamentoReaberturaLista = () => {
     onFiltrar();
   }, [tipoCalendarioSelecionado, ueSelecionada, dreSelecionada, onFiltrar]);
 
+  const obterListaTiposCalAnoLetivo = useCallback(
+    lista => {
+      let { anoLetivo } = usuario.turmaSelecionada;
+
+      if (!anoLetivo) {
+        anoLetivo = new Date().getFullYear();
+      }
+
+      if (usuario.turmaSelecionada && usuario.turmaSelecionada.modalidade) {
+        const ehEja = usuario.turmaSelecionada.modalidade == modalidade.EJA;
+        const listaPorAnoLetivoModalidade = lista.filter(item => {
+          if (ehEja) {
+            return item.modalidade == modalidadeTipoCalendario.EJA;
+          }
+          return item.modalidade == modalidadeTipoCalendario.FUNDAMENTAL_MEDIO;
+        });
+        return listaPorAnoLetivoModalidade;
+      }
+
+      return lista.filter(item => item.anoLetivo == anoLetivo);
+    },
+    [usuario.turmaSelecionada]
+  );
+
   useEffect(() => {
     async function consultaTipos() {
       setCarregandoTipos(true);
       const listaTipo = await ServicoCalendarios.obterTiposCalendario();
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
-        listaTipo.data.map(item => {
+        const listaTipoPorAnoLetivo = obterListaTiposCalAnoLetivo(
+          listaTipo.data
+        );
+        listaTipoPorAnoLetivo.map(item => {
           item.id = String(item.id);
           item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
         });
-        setListaTipoCalendarioEscolar(listaTipo.data);
-        if (listaTipo.data.length === 1) {
-          setTipoCalendarioSelecionado(listaTipo.data[0].id);
+        setListaTipoCalendarioEscolar(listaTipoPorAnoLetivo);
+        if (listaTipoPorAnoLetivo.length === 1) {
+          setTipoCalendarioSelecionado(String(listaTipoPorAnoLetivo[0].id));
           setDesabilitarTipoCalendario(true);
         } else {
           setDesabilitarTipoCalendario(false);
+          setTipoCalendarioSelecionado(undefined);
         }
       } else {
         setListaTipoCalendarioEscolar([]);
@@ -158,7 +187,7 @@ const PeriodoFechamentoReaberturaLista = () => {
       setCarregandoTipos(false);
     }
     consultaTipos();
-  }, []);
+  }, [usuario.turmaSelecionada.anoLetivo, obterListaTiposCalAnoLetivo]);
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
@@ -232,13 +261,17 @@ const PeriodoFechamentoReaberturaLista = () => {
   ];
 
   const onChangeTipoCalendario = id => {
-    const tipo = listaTipoCalendarioEscolar.find(t => t.id === id);
-    if (tipo.modalidade === modalidadeTipoCalendario.FUNDAMENTAL_MEDIO) {
-      setColunasBimestre(getColunasBimestreAnual);
+    if (id) {
+      const tipo = listaTipoCalendarioEscolar.find(t => t.id === id);
+      if (tipo.modalidade === modalidadeTipoCalendario.FUNDAMENTAL_MEDIO) {
+        setColunasBimestre(getColunasBimestreAnual);
+      } else {
+        setColunasBimestre(getColunasBimestreSemestral);
+      }
+      setTipoCalendarioSelecionado(id);
     } else {
-      setColunasBimestre(getColunasBimestreSemestral);
+      setTipoCalendarioSelecionado(undefined);
     }
-    setTipoCalendarioSelecionado(id);
   };
 
   return (
