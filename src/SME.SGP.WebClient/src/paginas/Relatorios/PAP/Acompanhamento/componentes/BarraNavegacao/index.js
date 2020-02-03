@@ -20,6 +20,7 @@ function BarraNavegacao({ objetivos, objetivoAtivo, onChangeObjetivo }) {
     <Container>
       <div>
         <Button
+          id="anteriorBtn"
           label="Anterior"
           color={Colors.Roxo}
           className="ml-auto attached left"
@@ -58,6 +59,7 @@ function BarraNavegacao({ objetivos, objetivoAtivo, onChangeObjetivo }) {
       </div>
       <div>
         <Button
+          id="proximoBtn"
           label="Próximo"
           color={Colors.Roxo}
           className="ml-auto attached right"
@@ -80,12 +82,14 @@ BarraNavegacao.propTypes = {
   objetivos: t.oneOfType([t.any]),
   objetivoAtivo: t.oneOfType([t.any]),
   onChangeObjetivo: t.func,
+  id: t.number,
 };
 
 BarraNavegacao.defaultProps = {
   objetivos: [],
   objetivoAtivo: {},
   onChangeObjetivo: () => {},
+  id: 0,
 };
 
 export default BarraNavegacao;

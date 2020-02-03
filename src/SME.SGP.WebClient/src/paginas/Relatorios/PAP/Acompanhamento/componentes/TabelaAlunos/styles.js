@@ -66,6 +66,7 @@ export const Tabela = styled.table`
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
+    position: relative;
 
     tr.semConteudo {
       td {
