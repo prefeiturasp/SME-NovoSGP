@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task Alterar(long id, CompensacaoAusenciaDto compensacao)
             => await servicoCompensacaoAusencia.Salvar(id, compensacao);
 
-        public async Task Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia)
+        public async Task<string> Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia)
             => await servicoCompensacaoAusencia.Copiar(compensacaoCopia);
 
         public async Task Excluir(long[] compensacoesIds)

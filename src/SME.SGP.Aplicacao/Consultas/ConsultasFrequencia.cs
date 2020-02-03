@@ -200,7 +200,7 @@ namespace SME.SGP.Aplicacao
             if (frequenciaAluno == null)
                 return null;
 
-            int percentualFrequencia = (int)frequenciaAluno.PercentualFrequencia;
+            int percentualFrequencia = (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0);
             // Critico
             if (percentualFrequencia <= percentualCritico)
                 return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequencia};
