@@ -81,7 +81,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             disabled={desabilitado}
             onBlur={executaOnBlur}
             maxLength={maxLength || ''}
-            innerRef={ref}
+            ref={ref}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
             onChange={onChangeCampo}
