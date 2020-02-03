@@ -28,6 +28,9 @@ const RotasDto = {
   PERIODO_FECHAMENTO_ABERTURA:
     '/calendario-escolar/periodo-fechamento-abertura',
   PAP: '/recuperacao-paralela',
+  PERIODO_FECHAMENTO_REABERTURA:
+    '/calendario-escolar/periodo-fechamento-reabertura',
+  RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/acompanhamento',
 };
 
 export default RotasDto;
