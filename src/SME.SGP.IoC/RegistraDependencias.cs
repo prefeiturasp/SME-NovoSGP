@@ -212,6 +212,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
             services.TryAddScoped<IServicoPeriodoFechamento, ServicoPeriodoFechamento>();
             services.TryAddScoped<IServicoFechamento, ServicoFechamento>();
+            services.TryAddScoped<IServicoPendenciaFechamento, ServicoPendenciaFechamento>();
         }
     }
 }
