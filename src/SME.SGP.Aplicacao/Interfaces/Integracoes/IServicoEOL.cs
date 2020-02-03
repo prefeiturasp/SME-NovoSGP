@@ -89,6 +89,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<bool> PodePersistirTurma(string professorRf, string codigoTurma, DateTime data);
 
+        Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data);
+
         Task ReiniciarSenha(string login);
 
         Task RemoverCJSeNecessario(Guid usuarioId);
