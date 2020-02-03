@@ -564,7 +564,11 @@ const CompensacaoAusenciaForm = ({ match }) => {
       ) {
         await ServicoCompensacaoAusencia.copiarCompensacao(
           compensacoesParaCopiar
-        ).catch(e => erros(e));
+        ).then(resposta => {
+          if (resposta.status === 200) {
+            sucesso(resposta.data);
+          }
+        }).catch(e => erros(e));
       }
       if (idCompensacaoAusencia) {
         sucesso('Compensação alterada com sucesso.');
