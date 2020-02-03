@@ -215,6 +215,7 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, onSalvarCopias }) {
             </Grid>
             <Grid cols={2}>
               <Button
+                id={shortid.generate()}
                 label="Excluir"
                 color={Colors.Roxo}
                 border
@@ -226,6 +227,7 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, onSalvarCopias }) {
         ))}
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
+            id={shortid.generate()}
             label="Adicionar turma"
             color={Colors.Azul}
             border
