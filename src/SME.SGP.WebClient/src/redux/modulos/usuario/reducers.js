@@ -55,13 +55,9 @@ export default function usuario(state = inicial, action) {
         draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
         break;
       case '@usuario/deslogar':
-        const valoresAtuais = {...draft};
         draft = inicial;
-        draft.exibirMensagemSessaoExpirou = valoresAtuais.exibirMensagemSessaoExpirou;
         localStorage.clear();
-        if (!valoresAtuais.exibirMensagemSessaoExpirou) {
-          window.location.reload(true);
-        }
+        window.location.reload(true);
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
@@ -92,9 +88,6 @@ export default function usuario(state = inicial, action) {
         break;
       case '@usuario/setPermissoes':
         draft.permissoes = action.payload;
-        break;
-      case '@usuario/setExibirMensagemSessaoExpirou':
-        draft.exibirMensagemSessaoExpirou = action.payload;
         break;
       default:
         break;
