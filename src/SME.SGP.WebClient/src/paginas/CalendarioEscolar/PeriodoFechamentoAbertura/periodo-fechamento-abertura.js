@@ -124,6 +124,18 @@ const PeriodoFechamentoAbertura = () => {
   }, [usuarioLogado.turmaSelecionada]);
 
   useEffect(() => {
+    buscarDados();
+  }, [dreSelecionada, tipoCalendarioSelecionado, ueSelecionada]);
+
+  const onChangeCamposData = valor => {
+    setModoEdicao(true);
+  };
+
+  const onClickVoltar = () => {
+    history.push(URL_HOME);
+  };
+
+  const buscarDados = () => {
     if (tipoCalendarioSelecionado) {
       if (
         !usuarioLogado.possuiPerfilSmeOuDre &&
@@ -159,7 +171,6 @@ const PeriodoFechamentoAbertura = () => {
             alteradoRf: resposta.data.alteradoRf,
           });
           setIdFechamentoAbertura(resposta.data.id);
-          setModoEdicao(true);
         })
         .catch(e => {
           setFechamento(obtemPeriodosIniciais());
@@ -169,16 +180,7 @@ const PeriodoFechamentoAbertura = () => {
     } else {
       setFechamento(obtemPeriodosIniciais());
     }
-  }, [dreSelecionada, tipoCalendarioSelecionado, ueSelecionada]);
-
-  const onChangeCamposData = valor => {
-    setModoEdicao(true);
-  };
-
-  const onClickVoltar = () => {
-    history.push(URL_HOME);
-  };
-
+  }
   const validaAntesDoSubmit = form => {
     form.validateForm().then(() => {
       if (
@@ -192,12 +194,15 @@ const PeriodoFechamentoAbertura = () => {
   };
 
   const onClickCancelar = form => {
-    form.resetForm();
-    setModoEdicao(false);
-    setDreSelecionada('');
-    setUeSelecionada('');
-    setTipoCalendarioSelecionado('');
-    setFechamento(obtemPeriodosIniciais());
+    if (modoEdicao) {
+      form.resetForm();
+      setModoEdicao(false);
+      setDreSelecionada('');
+      setUeSelecionada('');
+      setTipoCalendarioSelecionado('');
+      setFechamento(obtemPeriodosIniciais());
+      buscarDados();
+    }
   };
 
   const onSubmit = async (form, confirmou = false) => {
