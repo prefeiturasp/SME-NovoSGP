@@ -77,6 +77,7 @@ function RelatorioPAPAcompanhamento() {
           if (objetivo) {
             disparar(setarObjetivoAtivo(objetivo.id));
           }
+          setModoEdicao(false);
           setCarregando(false);
         }
       } catch (err) {
@@ -89,13 +90,9 @@ function RelatorioPAPAcompanhamento() {
 
   const onChangeObjetivoHandler = useCallback(
     async objetivo => {
-      if (!modoEdicao) {
-        disparar(setarObjetivoAtivo(objetivo.id));
-      } else {
-        salvarAlteracoes(objetivo);
-      }
+      salvarAlteracoes(objetivo);
     },
-    [salvarAlteracoes, modoEdicao]
+    [salvarAlteracoes]
   );
 
   const limparTela = useCallback(() => {
@@ -211,8 +208,9 @@ function RelatorioPAPAcompanhamento() {
   }, [estado.Eixos, estado.Objetivos, periodo]);
 
   const respostasCorrentes = useMemo(() => {
-    return estado.Respostas.filter(
-      x => x.objetivoId === estado.ObjetivoAtivo.id
+    return (
+      estado.ObjetivoAtivo &&
+      estado.Respostas.filter(x => x.objetivoId === estado.ObjetivoAtivo.id)
     );
   }, [estado.ObjetivoAtivo, estado.Respostas]);
 
@@ -246,6 +244,10 @@ function RelatorioPAPAcompanhamento() {
     }
   }, [modoEdicao]);
 
+  useEffect(() => {
+    limparTela();
+  }, [limparTela, turmaSelecionada]);
+
   return (
     <>
       <AlertaSelecionarTurma />
@@ -263,7 +265,7 @@ function RelatorioPAPAcompanhamento() {
             modoEdicao={modoEdicao}
             temItemSelecionado
             onClickVoltar={() => onClickVoltarHandler()}
-            onClickBotaoPrincipal={() => salvarAlteracoes()}
+            onClickBotaoPrincipal={() => salvarAlteracoes(estado.ObjetivoAtivo)}
             onClickCancelar={() => onClickCancelarHandler()}
             labelBotaoPrincipal="Salvar"
             desabilitarBotaoPrincipal={!modoEdicao || !periodo}

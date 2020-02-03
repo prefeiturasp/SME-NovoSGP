@@ -12,10 +12,6 @@ import { Button, Colors, Base } from '~/componentes';
 import { Container } from './styles';
 
 function BarraNavegacao({ objetivos, objetivoAtivo, onChangeObjetivo }) {
-  useEffect(() => {
-    console.log('Objetivos BarraNavegação: ', objetivos);
-  }, [objetivos]);
-
   return (
     <Container>
       <div>
