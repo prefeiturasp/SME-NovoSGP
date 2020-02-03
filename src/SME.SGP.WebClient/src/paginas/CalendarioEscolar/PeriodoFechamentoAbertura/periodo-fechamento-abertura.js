@@ -47,6 +47,7 @@ const PeriodoFechamentoAbertura = () => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [idFechamentoAbertura, setIdFechamentoAbertura] = useState(0);
+  const [ehRegistroExistente, setEhRegistroExistente] = useState(false);
 
   const obtemPeriodosIniciais = () => {
     return {
@@ -130,18 +131,10 @@ const PeriodoFechamentoAbertura = () => {
   };
 
   useEffect(() => {
-    buscarDados();
+    carregaDados();
   }, [dreSelecionada, tipoCalendarioSelecionado, ueSelecionada]);
 
-  const onChangeCamposData = valor => {
-    setModoEdicao(true);
-  };
-
-  const onClickVoltar = () => {
-    history.push(URL_HOME);
-  };
-
-  const buscarDados = () => {
+  const carregaDados = () => {
     if (tipoCalendarioSelecionado) {
       if (
         !usuarioLogado.possuiPerfilSmeOuDre &&
@@ -170,6 +163,7 @@ const PeriodoFechamentoAbertura = () => {
               bimestre.finalMaximo = obterDataMoment(bimestre.finalMaximo);
             });
           }
+          setEhRegistroExistente(resposta.data.ehRegistroExistente);
           setFechamento(resposta.data);
           setRegistroMigrado(resposta.data.migrado);
           setAuditoria({
@@ -191,6 +185,32 @@ const PeriodoFechamentoAbertura = () => {
       setFechamento(obtemPeriodosIniciais());
     }
   }
+
+  const onChangeCamposData = valor => {
+    setModoEdicao(true);
+  };
+
+  const onClickVoltar = async form => {
+    if (modoEdicao) {
+      const confirmado = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?',
+        'Sim',
+        'Não'
+      );
+
+      if (confirmado) {
+        validaAntesDoSubmit(form);
+        history.push(URL_HOME);
+      } else {
+        history.push(URL_HOME);
+      }
+    } else {
+      history.push(URL_HOME);
+    }
+  };
+
   const validaAntesDoSubmit = form => {
     form.validateForm().then(() => {
       if (
@@ -203,17 +223,26 @@ const PeriodoFechamentoAbertura = () => {
     });
   };
 
-  const onClickCancelar = form => {
+  const onClickCancelar = async form => {
     if (modoEdicao) {
-      form.resetForm();
-      setModoEdicao(false);
-      setDreSelecionada('');
-      setUeSelecionada('');
-      setTipoCalendarioSelecionado('');
-      setFechamento(obtemPeriodosIniciais());
-      buscarDados();
+      const confirmado = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmado) {
+        resetarTela(form);
+      }
     }
+
   };
+
+  const resetarTela = form => {
+    form.resetForm();
+    setModoEdicao(false);
+    setFechamento(obtemPeriodosIniciais());
+    carregaDados();
+  }
 
   const onSubmit = async (form, confirmou = false) => {
     setEmprocessamento(true);
@@ -223,6 +252,7 @@ const PeriodoFechamentoAbertura = () => {
     })
       .then(() => {
         sucesso('Períodos salvos com sucesso.');
+        carregaDados();
         setModoEdicao(false);
       })
       .catch(async e => {
@@ -355,7 +385,7 @@ const PeriodoFechamentoAbertura = () => {
                       color={Colors.Azul}
                       border
                       className="mr-3"
-                      onClick={onClickVoltar}
+                      onClick={() => onClickVoltar(form)}
                     />
                     <Button
                       label="Cancelar"
@@ -367,7 +397,7 @@ const PeriodoFechamentoAbertura = () => {
                       onClick={() => onClickCancelar(form)}
                     />
                     <Button
-                      label="Cadastrar"
+                      label={ehRegistroExistente ? "Alterar" : "Cadastrar"}
                       color={Colors.Roxo}
                       border
                       bold
@@ -445,7 +475,7 @@ const PeriodoFechamentoAbertura = () => {
               </Form>
             )}
           </Formik>
-          {tipoCalendarioSelecionado && (
+          {tipoCalendarioSelecionado && ehRegistroExistente && (
             <Auditoria
               criadoEm={auditoria.criadoEm}
               criadoPor={auditoria.criadoPor}
