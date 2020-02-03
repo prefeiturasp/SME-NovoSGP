@@ -464,8 +464,10 @@ namespace SME.SGP.Dominio.Servicos
             mensagemUsuario.AppendLine("</tr>");
             foreach (var aluno in alunos)
             {
+                int percentualFrequencia = (int)Math.Round(aluno.PercentualFrequencia, 0);
+
                 mensagemUsuario.AppendLine("<tr>");
-                mensagemUsuario.Append($"<td>{aluno.CodigoAluno} </td><td> {aluno.NomeAluno} </td><td style='text-align: center;'> {aluno.PercentualFrequencia}</td>");
+                mensagemUsuario.Append($"<td>{aluno.CodigoAluno} </td><td> {aluno.NomeAluno} </td><td style='text-align: center;'> {percentualFrequencia}</td>");
                 mensagemUsuario.AppendLine("</tr>");
             }
             mensagemUsuario.AppendLine("</table>");
@@ -519,7 +521,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (dataAtual == dataReferencia)
             {
-                var alunosAusentes = repositorioFrequenciaAluno.ObterAlunosComAusenciaNoBimestre(periodoAtual.Bimestre);
+                var alunosAusentes = repositorioFrequenciaAluno.ObterAlunosComAusenciaPorDisciplinaNoPeriodo(periodoAtual.Id);
 
                 // Carrega dados das disciplinas do EOL
                 var disciplinasIds = alunosAusentes.Select(a => long.Parse(a.DisciplinaId)).ToArray();
