@@ -40,7 +40,9 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const [validacoes, setValidacoes] = useState({});
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [auditoria, setAuditoria] = useState([]);
-  const [novoRegistro, setNovoRegistro] = useState(false);
+  const [novoRegistro, setNovoRegistro] = useState(
+    !(match && match.params && match.params.id)
+  );
   const [modoEdicao, setModoEdicao] = useState(false);
 
   const [valoresIniciais, setValoresIniciais] = useState({
