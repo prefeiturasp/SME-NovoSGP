@@ -384,7 +384,7 @@ const PlanoAnual = () => {
         <Grid cols={12} className="p-0">
           <Planejamento> PLANEJAMENTO </Planejamento>
           <Titulo>
-            {ehEja ? 'Plano Semestral' : 'Plano Anualaaa'}
+            {ehEja ? 'Plano Semestral' : 'Plano Anual2'}
             <TituloAno>{` / ${turmaSelecionada.anoLetivo}`}</TituloAno>
             {registroMigrado && (
               <RegistroMigrado className="float-right">
