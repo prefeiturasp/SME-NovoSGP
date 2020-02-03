@@ -6,12 +6,14 @@ namespace SME.SGP.Dominio
     {
         public PeriodoFechamentoBimestre(long fechamentoId,
                                   PeriodoEscolar periodoEscolar,
-                                  DateTime inicioDoFechamento,
-                                  DateTime finalDoFechamento)
+                                  DateTime? inicioDoFechamento,
+                                  DateTime? finalDoFechamento)
         {
             FechamentoId = fechamentoId;
-            FinalDoFechamento = finalDoFechamento;
-            InicioDoFechamento = inicioDoFechamento;
+            if (inicioDoFechamento.HasValue)
+                InicioDoFechamento = inicioDoFechamento.Value;
+            if (finalDoFechamento.HasValue)
+                FinalDoFechamento = finalDoFechamento.Value;
             PeriodoEscolar = periodoEscolar;
             PeriodoEscolarId = periodoEscolar.Id;
         }
@@ -33,14 +35,17 @@ namespace SME.SGP.Dominio
             PeriodoEscolar = periodoEscolar;
         }
 
-        public void AtualizarDatas(DateTime inicioDoFechamento, DateTime finalDoFechamento)
+        public void AtualizarDatas(DateTime? inicioDoFechamento, DateTime? finalDoFechamento)
         {
             if (inicioDoFechamento > finalDoFechamento)
             {
                 throw new NegocioException("A data de início deve ser menor que a data final.");
             }
-            InicioDoFechamento = inicioDoFechamento;
-            FinalDoFechamento = finalDoFechamento;
+            if (inicioDoFechamento.HasValue)
+                InicioDoFechamento = inicioDoFechamento.Value;
+
+            if (finalDoFechamento.HasValue)
+                FinalDoFechamento = finalDoFechamento.Value;
         }
     }
 }

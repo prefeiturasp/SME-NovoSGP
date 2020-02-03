@@ -83,8 +83,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CA_I, Policy = "Bearer")]
         public async Task<IActionResult> Copiar([FromBody] CompensacaoAusenciaCopiaDto compensacaoCopia, [FromServices] IComandosCompensacaoAusencia comandos)
         {
-            await comandos.Copiar(compensacaoCopia);
-            return Ok();
+            return Ok(await comandos.Copiar(compensacaoCopia));
         }
 
         [HttpPost("notificar")]
