@@ -85,9 +85,11 @@ namespace SME.SGP.Dominio.Servicos
             var dreIdFiltro = !string.IsNullOrWhiteSpace(ueId) || usuarioLogado.EhPerfilUE() ? dre?.Id : null;
 
             var fechamentoSMEDre = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, dreIdFiltro, null);
+            var ehRegistroExistente = (dreId == null && fechamentoSMEDre != null);
             if (fechamentoSMEDre == null)
             {
                 fechamentoSMEDre = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, null, null);
+                ehRegistroExistente = fechamentoSMEDre != null;
                 if (fechamentoSMEDre == null)
                 {
                     if (!usuarioLogado.EhPerfilSME())
@@ -108,12 +110,18 @@ namespace SME.SGP.Dominio.Servicos
             var fechamentoDreUe = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, dre?.Id, ue?.Id);
             if (fechamentoDreUe == null)
             {
+                ehRegistroExistente = false;
                 fechamentoDreUe = fechamentoSMEDre;
                 fechamentoDreUe.Dre = dre;
                 fechamentoDreUe.Ue = ue;
             }
+            else
+            {
+                ehRegistroExistente = true;
+            }
 
             var fechamentoDto = MapearParaDto(fechamentoDreUe);
+            fechamentoDto.EhRegistroExistente = ehRegistroExistente;
 
             foreach (var bimestreSME in fechamentoSMEDre.FechamentosBimestre)
             {
