@@ -13,12 +13,13 @@ const CopiarCompensacao = ({
   onCloseCopiarCompensacao,
   onCopiarCompensacoes,
   compensacoesParaCopiar,
+  bimestreSugerido
 }) => {
   const [listaTurmas, setListaTurmas] = useState([]);
   const [loader, setLoader] = useState(false);
   const [valoresIniciais, setValoresIniciais] = useState({
     turmas: [],
-    bimestre: '',
+    bimestre: bimestreSugerido,
   });
   const refForm = useRef();
 
@@ -61,7 +62,6 @@ const CopiarCompensacao = ({
   };
 
   const validacoes = Yup.object({
-    turmas: Yup.string().required('Selecione ao menos uma turma.'),
     bimestre: Yup.string().required('Selecione um bimestre.'),
   });
 
@@ -87,10 +87,10 @@ const CopiarCompensacao = ({
             }}
             onConfirmacaoSecundaria={fecharCopiarCompensacao}
             onClose={fecharCopiarCompensacao}
-            labelBotaoPrincipal="Copiar"
+            labelBotaoPrincipal="Selecionar"
             labelBotaoSecundario="Cancelar"
             titulo="Copiar Compensação"
-            closable={false}
+            closable={true}
             loader={loader}
             desabilitarBotaoPrincipal={false}
           >
@@ -140,8 +140,8 @@ CopiarCompensacao.defaultProps = {
   visivel: false,
   turmaId: '',
   listaBimestres: [],
-  onCloseCopiarCompensacao: () => {},
-  onCopiarCompensacoes: () => {},
+  onCloseCopiarCompensacao: () => { },
+  onCopiarCompensacoes: () => { },
   compensacoesParaCopiar: [],
 };
 
