@@ -20,6 +20,9 @@ function SelectRespostas({
       );
 
       if (!respostasAlunoFiltradaPorObjetivo) {
+        if (objetivoAtivo.id === 1 || objetivoAtivo.id === 2) {
+          return '2';
+        }
         return null;
       }
 
