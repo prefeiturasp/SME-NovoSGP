@@ -9,6 +9,7 @@ function SelectRespostas({
   objetivoAtivo,
   aluno,
   onChangeResposta,
+  containerVinculoId,
 }) {
   const [valorPadrao, setValorPadrao] = useState(null);
 
@@ -40,6 +41,7 @@ function SelectRespostas({
       valueOption="id"
       valueText="nome"
       placeholder="Selecione a opção"
+      containerVinculoId={containerVinculoId}
     />
   );
 }
@@ -49,6 +51,7 @@ SelectRespostas.propTypes = {
   objetivoAtivo: t.oneOfType([t.object]),
   aluno: t.oneOfType([t.object]),
   onChangeResposta: t.func,
+  containerVinculoId: t.string,
 };
 
 SelectRespostas.defaultProps = {
@@ -56,6 +59,7 @@ SelectRespostas.defaultProps = {
   objetivoAtivo: {},
   aluno: {},
   onChangeResposta: () => null,
+  containerVinculoId: '',
 };
 
 export default SelectRespostas;

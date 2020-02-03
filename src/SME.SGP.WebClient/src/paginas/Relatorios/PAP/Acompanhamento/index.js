@@ -1,4 +1,10 @@
-import React, { useState, useReducer, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useReducer,
+  useMemo,
+  useCallback,
+  useEffect,
+} from 'react';
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -34,15 +40,15 @@ import Reducer, {
 } from './reducer';
 
 // Utils
-import { stringNulaOuEmBranco, valorNuloOuVazio } from '~/utils/funcoes/gerais';
+import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 
 function RelatorioPAPAcompanhamento() {
+  const [estado, disparar] = useReducer(Reducer, estadoInicial);
   const [periodo, setPeriodo] = useState(undefined);
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [estadoOriginalAlunos, setEstadoOriginalAlunos] = useState(null);
-  const [estado, disparar] = useReducer(Reducer, estadoInicial);
   const [carregando, setCarregando] = useState(false);
-  const { turma } = useSelector(store => store.usuario.turmaSelecionada);
+  const [estadoOriginalAlunos, setEstadoOriginalAlunos] = useState(null);
+  const { turmaSelecionada } = useSelector(store => store.usuario);
 
   const dispararAlteracoes = dados => {
     setEstadoOriginalAlunos(dados.periodo.alunos);
@@ -83,36 +89,57 @@ function RelatorioPAPAcompanhamento() {
 
   const onChangeObjetivoHandler = useCallback(
     async objetivo => {
-      salvarAlteracoes(objetivo);
+      if (!modoEdicao) {
+        disparar(setarObjetivoAtivo(objetivo.id));
+      } else {
+        salvarAlteracoes(objetivo);
+      }
     },
-    [salvarAlteracoes]
+    [salvarAlteracoes, modoEdicao]
   );
+
+  const limparTela = useCallback(() => {
+    dispararAlteracoes({
+      periodo: { alunos: [] },
+      eixos: [],
+      respostas: [],
+      objetivos: [],
+    });
+    disparar(setarObjetivoAtivo({ id: 0 }));
+    setPeriodo(undefined);
+    setCarregando(false);
+    return false;
+  }, []);
 
   const onChangePeriodoHandler = async valor => {
     try {
       setCarregando(true);
 
-      if (valorNuloOuVazio(valor)) {
-        dispararAlteracoes({
-          periodo: { alunos: [] },
-          eixos: [],
-          respostas: [],
-          objetivos: [],
-        });
-        disparar(setarObjetivoAtivo({}));
-        setPeriodo(undefined);
-        setCarregando(false);
-        return false;
+      if (modoEdicao) {
+        const confirmou = await confirmar(
+          'Atenção',
+          'Você não salvou as informações preenchidas.',
+          'Deseja realmente cancelar as alterações?'
+        );
+        if (!confirmou) {
+          setCarregando(false);
+          return false;
+        }
       }
 
-      setPeriodo(valor);
-      const { data } = await AcompanhamentoPAPServico.ListarAlunos({
-        TurmaId: turma,
-        PeriodoId: valor,
-      });
-      dispararAlteracoes(data);
-      disparar(setarObjetivoAtivo(estado.Objetivos[0]));
-      setCarregando(false);
+      setModoEdicao(false);
+      if (valorNuloOuVazio(valor)) {
+        limparTela();
+      } else {
+        setPeriodo(valor);
+        const { data } = await AcompanhamentoPAPServico.ListarAlunos({
+          TurmaId: turmaSelecionada.turma,
+          PeriodoId: valor,
+        });
+        dispararAlteracoes(data);
+        disparar(setarObjetivoAtivo(estado.Objetivos[0]));
+        setCarregando(false);
+      }
     } catch (err) {
       setCarregando(false);
       erro(`Não foi possível completar a requisição: ${JSON.stringify(err)}`);
@@ -239,6 +266,7 @@ function RelatorioPAPAcompanhamento() {
             onClickBotaoPrincipal={() => salvarAlteracoes()}
             onClickCancelar={() => onClickCancelarHandler()}
             labelBotaoPrincipal="Salvar"
+            desabilitarBotaoPrincipal={!modoEdicao || !periodo}
           />
           <Grid className="p-0" cols={12}>
             <Linha className="row m-0">
@@ -246,7 +274,10 @@ function RelatorioPAPAcompanhamento() {
                 <PeriodosDropDown
                   onChangePeriodo={onChangePeriodoHandler}
                   valor={periodo}
-                  desabilitado={turma === null || turma === undefined}
+                  desabilitado={
+                    turmaSelecionada.turma === null ||
+                    turmaSelecionada.turma === undefined
+                  }
                 />
               </Grid>
             </Linha>
