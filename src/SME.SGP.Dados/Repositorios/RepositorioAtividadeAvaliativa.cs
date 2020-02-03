@@ -126,7 +126,7 @@ namespace SME.SGP.Dados.Repositorios
                         from
 	                        atividade_avaliativa av
                         where
-	                        turma_id = @turmaId
+	                        turma_id = @turmaCodigo
 	                        and not exists (
 	                        select
 		                        1

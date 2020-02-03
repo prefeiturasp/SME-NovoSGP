@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -9,7 +8,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/fechamentos")]
     [ValidaDto]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class FechamentoController : ControllerBase
     {
         [HttpPost]
