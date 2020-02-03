@@ -372,7 +372,7 @@ const PlanoAnual = () => {
                   alerta={{
                     tipo: 'warning',
                     id: 'plano-anual-selecione-turma',
-                    mensagem: 'Você precisa escolher uma turma.2',
+                    mensagem: 'Você precisa escolher uma turma.',
                     estiloTitulo: { fontSize: '18px' },
                   }}
                   className="mb-0"
