@@ -1,6 +1,6 @@
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { CampoData, Loader, momentSchema } from '~/componentes';
@@ -19,6 +19,7 @@ import history from '~/servicos/history';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 import ServicoFechamentoReabertura from '~/servicos/Paginas/Calendario/ServicoFechamentoReabertura';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import modalidade from '~/dtos/modalidade';
 
 const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -44,7 +45,6 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     !(match && match.params && match.params.id)
   );
   const [modoEdicao, setModoEdicao] = useState(false);
-
   const [valoresIniciais, setValoresIniciais] = useState({
     tipoCalendarioId: undefined,
     dreId: undefined,
@@ -98,27 +98,65 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   }, [permissoesTela]);
 
   useEffect(() => {
+    // Quando alterar a turma caso seja edição vai retotnar para a lista!
+    if (idFechamentoReabertura) {
+      history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
+    }
+  }, [usuarioStore.turmaSelecionada.turma]);
+
+  useEffect(() => {
     const desabilitar = novoRegistro
       ? somenteConsulta || !permissoesTela.podeIncluir
       : somenteConsulta || !permissoesTela.podeAlterar;
     setDesabilitarCampos(desabilitar);
   }, [somenteConsulta, novoRegistro, permissoesTela]);
 
+  const obterListaTiposCalAnoLetivo = useCallback(
+    lista => {
+      let { anoLetivo } = usuarioStore.turmaSelecionada;
+
+      if (!anoLetivo) {
+        anoLetivo = new Date().getFullYear();
+      }
+
+      if (
+        usuarioStore.turmaSelecionada &&
+        usuarioStore.turmaSelecionada.modalidade
+      ) {
+        const ehEja =
+          usuarioStore.turmaSelecionada.modalidade == modalidade.EJA;
+        const listaPorAnoLetivoModalidade = lista.filter(item => {
+          if (ehEja) {
+            return item.modalidade == modalidadeTipoCalendario.EJA;
+          }
+          return item.modalidade == modalidadeTipoCalendario.FUNDAMENTAL_MEDIO;
+        });
+        return listaPorAnoLetivoModalidade;
+      }
+
+      return lista.filter(item => item.anoLetivo == anoLetivo);
+    },
+    [usuarioStore.turmaSelecionada]
+  );
+
   useEffect(() => {
     async function consultaTipos() {
       setCarregandoTipos(true);
       const listaTipo = await ServicoCalendarios.obterTiposCalendario();
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
-        listaTipo.data.map(item => {
+        const listaTipoPorAnoLetivo = obterListaTiposCalAnoLetivo(
+          listaTipo.data
+        );
+        listaTipoPorAnoLetivo.map(item => {
           item.id = String(item.id);
           item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
         });
-        setListaTipoCalendarioEscolar(listaTipo.data);
-        if (listaTipo.data.length === 1) {
+        setListaTipoCalendarioEscolar(listaTipoPorAnoLetivo);
+        if (listaTipoPorAnoLetivo.length === 1) {
           setDesabilitarTipoCalendario(true);
           if (!(match && match.params && match.params.id)) {
             const valores = {
-              tipoCalendarioId: listaTipo.data[0].id,
+              tipoCalendarioId: String(listaTipoPorAnoLetivo[0].id),
               dreId: undefined,
               ueId: undefined,
               dataInicio: '',
@@ -129,8 +167,18 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
             setValoresIniciais(valores);
             setNovoRegistro(true);
           }
-          montarListaBimestres(listaTipo.data[0].modalidade);
+          montarListaBimestres(listaTipoPorAnoLetivo[0].modalidade);
         } else {
+          const valores = {
+            tipoCalendarioId: undefined,
+            dreId: undefined,
+            ueId: undefined,
+            dataInicio: '',
+            dataFim: '',
+            descricao: '',
+            bimestres: [],
+          };
+          setValoresIniciais(valores);
           setDesabilitarTipoCalendario(false);
         }
       } else {
@@ -139,7 +187,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       setCarregandoTipos(false);
     }
     consultaTipos();
-  }, []);
+  }, [match, obterListaTiposCalAnoLetivo]);
 
   useEffect(() => {
     const consultaPorId = async () => {
@@ -154,10 +202,10 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
           'Períodos',
           RotasDto.PERIODO_FECHAMENTO_REABERTURA
         );
-        setIdFechamentoReabertura(match.params.id);
         const cadastrado = await ServicoFechamentoReabertura.obterPorId(
           match.params.id
         ).catch(e => erros(e));
+        setIdFechamentoReabertura(match.params.id);
 
         if (cadastrado && cadastrado.data) {
           const bimestres = [];
