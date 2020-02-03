@@ -269,6 +269,7 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Usuário não encontrado.");
             }
+            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));
             var usuarioCore = await servicoEOL.ObterMeusDados(login);
             usuario.DefinirEmail(usuarioCore.Email);
             usuario.IniciarRecuperacaoDeSenha();

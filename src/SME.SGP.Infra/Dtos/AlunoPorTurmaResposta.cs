@@ -8,6 +8,7 @@ namespace SME.SGP.Infra
     {
         public string CodigoAluno { get; set; }
         public SituacaoMatriculaAluno CodigoSituacaoMatricula { get; set; }
+        public long CodigoTurma { get; set; }
         public DateTime DataNascimento { get; set; }
         public DateTime DataSituacao { get; set; }
         public string EscolaTransferencia { get; set; }
