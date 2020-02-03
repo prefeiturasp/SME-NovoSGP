@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // Formulario
@@ -6,13 +6,41 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
 // Componentes
+import { useSelector } from 'react-redux';
 import { Grid, SelectComponent } from '~/componentes';
 
 // Styles
 import { Linha } from '~/componentes/EstilosGlobais';
 
+// Services
+import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
+
 function Filtro({ onFiltrar }) {
   const [refForm, setRefForm] = useState({});
+
+  const usuario = useSelector(state => state.usuario);
+  const filtro = useSelector(state => state.filtro);
+
+  const [listaDres, setListaDres] = useState([]);
+
+  // const buscarListaDres = async () => {
+  //   setListaDres(
+  //     await ServicoFiltro.listarDres(
+  //       consideraHistorico,
+  //       modalidadeSelecionada,
+  //       periodoSelecionado,
+  //       anoLetivoSelecionado
+  //     )
+  //   );
+  // };
+
+  // const []
+
+  useEffect(() => {
+    console.log(usuario);
+    console.log(filtro);
+    // buscarListaDres();
+  }, []);
 
   const [dreId, setDreId] = useState(undefined);
   const [ueId, setUeId] = useState(undefined);
@@ -60,7 +88,7 @@ function Filtro({ onFiltrar }) {
                 className="fonte-14"
                 form={form}
                 name="dreId"
-                lista={[]}
+                lista={listaDres}
                 containerVinculoId="containerFiltro"
                 valueOption="valor"
                 valueText="desc"
