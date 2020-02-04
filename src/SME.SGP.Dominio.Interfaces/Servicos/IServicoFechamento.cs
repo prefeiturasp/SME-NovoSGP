@@ -1,11 +1,13 @@
-﻿namespace SME.SGP.Dominio.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoFechamento
     {
-        void GerarPendenciasFechamento(string disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, Fechamento fechamento);
+        void GerarPendenciasFechamento(string disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, Fechamento fechamento, Usuario usuarioLogado);
 
-        void RealizarFechamento(string codigoTurma, string disciplinaId, long periodoEscolarId);
+        void RealizarFechamento(string codigoTurma, string disciplinaId, long periodoEscolarId, Usuario usuarioLogado);
 
-        void Reprocessar(long fechamentoId);
+        Task Reprocessar(long fechamentoId);
     }
 }
