@@ -2,7 +2,7 @@
 {
     public class RetornoDisciplinaDto
     {
-        public int CdComponenteCurricular { get; set; }
+        public long CdComponenteCurricular { get; set; }
         public string Descricao { get; set; }
         public bool EhCompartilhada { get; set; }
         public bool EhRegencia { get; set; }
