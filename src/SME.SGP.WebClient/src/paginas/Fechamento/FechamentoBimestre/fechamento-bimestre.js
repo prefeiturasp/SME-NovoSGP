@@ -1,4 +1,4 @@
-import { Tabs } from 'antd';
+import { Tabs, Tooltip } from 'antd';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Colors, Loader, DataTable } from '~/componentes';
@@ -10,6 +10,8 @@ import Grid from '~/componentes/grid';
 import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { Table } from 'antd';
+import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
+import { Marcadores, MarcadorAulas } from './fechamento-bimestre.css';
 
 const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
@@ -23,10 +25,13 @@ const FechamentoBismestre = () => {
   );
   const [modoEdicao, setModoEdicao] = useState(false);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
-  const [bimestreCorrente, setBimestreCorrente] = useState(0);
+  const [bimestreCorrente, setBimestreCorrente] = useState('1Bimestre');
 
   const columns = [
-    { title: '', dataIndex: 'contador', key: 'contador', colSpan: 0, width: '10%' },
+    {
+      title: '', dataIndex: 'contador', key: 'contador', colSpan: 0, width: '10%',
+      render: (contador, dados) => { return constroiTooltip(contador, dados) },
+    },
     { title: 'Nome', dataIndex: 'nome', key: 'nome', colSpan: 2 },
     { title: 'Nota/Conceito', dataIndex: 'nota_conceito', key: 'age' },
     { title: 'Faltas no Bimestre', dataIndex: 'faltas_bimestre', key: 'faltas_bimestre' },
@@ -34,24 +39,51 @@ const FechamentoBismestre = () => {
     { title: 'Frequência (%)', dataIndex: 'frequencia', key: 'frequencia', render: frequencia => { return `${frequencia}%` } },
   ];
 
-  const data = [
+  const constroiTooltip = (contador, dados) => {
+    return (
+      <>
+        <Tooltip
+          title={dados.detalhe}
+          placement="top"
+        >
+          <span id="contador"> {contador} </span>
+        </Tooltip>
+      </>);
+  }
+
+  const [data, setData] = useState([
     {
       contador: 1,
+      detalhe: "Estudante transferido em 01/02/2020",
       nome: 'Alvaro Ramos Grassi',
       nota_conceito: 8.5,
       faltas_bimestre: 12,
       ausencias_compensadas: 12,
-      frequencia: 70
+      frequencia: 70,
+      children: [
+        {
+          disciplina: 'Português',
+          nota: 2
+        },
+        {
+          disciplina: 'Matemática',
+          nota: 3
+        },
+        {
+          disciplina: 'História',
+          nota: 4
+        }
+      ],
     },
     {
-      contador: 1,
-      nome: 'Alvaro Ramos Grassi',
-      nota_conceito: 8.5,
-      faltas_bimestre: 12,
-      ausencias_compensadas: 12,
-      frequencia: 70
+      contador: 2,
+      nome: 'Aline  Grassi',
+      nota_conceito: 9,
+      faltas_bimestre: 3,
+      ausencias_compensadas: 3,
+      frequencia: 89
     },
-  ];
+  ]);
 
   const onChangeDisciplinas = () => { };
 
@@ -137,16 +169,36 @@ const FechamentoBismestre = () => {
                 <ContainerTabsCard
                   type="card"
                   onChange={onChangeTab}
-                  activeKey={String(bimestreCorrente)}
+                  activeKey={bimestreCorrente}
                 >
                   <TabPane tab="1º Bimestre" key="1Bimestre">
-                    <DataTable
-                      scroll={{ y: 420 }}
-                      id="lista-fechamento-bimestre"
+                    <div className="row pb-4">
+                      <div className="col-md-6 d-flex justify-content-start">
+                        <Ordenacao
+                          className="botao-ordenacao-avaliacao"
+                          conteudoParaOrdenar={data}
+                          ordenarColunaNumero="contador"
+                          ordenarColunaTexto="nome"
+                          retornoOrdenado={retorno => {
+                            setData(retorno);
+                          }}
+                        />
+                      </div>
+                      <Marcadores className="col-md-6 d-flex justify-content-end">
+                        <MarcadorAulas>
+                          <span>Aulas previstas </span>
+                          <span className="numero">343</span>
+                        </MarcadorAulas>
+                        <MarcadorAulas className="ml-2">
+                          <span>Aulas dadas </span>
+                          <span className="numero">300</span>
+                        </MarcadorAulas>
+                      </Marcadores>
+                    </div>
+                    <Table
                       columns={columns}
                       dataSource={data}
-                      pagination={false}
-                      pageSize={9999}
+                      expandIconColumnIndex={3}
                     />
                   </TabPane>
 
