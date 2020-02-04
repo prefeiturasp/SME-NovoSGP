@@ -557,10 +557,12 @@ namespace SME.SGP.Dominio.Servicos
                                     var alunosDisciplina = alunosTurma.Where(c => c.DisciplinaId == disciplinaId);
 
                                     var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
+                                    var disciplinaEOL = disciplinasEol.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString() == disciplinaId);
 
                                     foreach (var alunoDisciplina in alunosDisciplina)
                                     {
-                                        if (alunoDisciplina.PercentualFrequencia < (modalidade == ModalidadeTipoCalendario.FundamentalMedio ? percentualFrequenciaFund : percentualFrequenciaRegencia))
+                                        if (alunoDisciplina.PercentualFrequencia < 
+                                                (disciplinaEOL.Regencia ? percentualFrequenciaRegencia : percentualFrequenciaFund))
                                         {
                                             alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
                                             {
@@ -571,19 +573,21 @@ namespace SME.SGP.Dominio.Servicos
                                         }
                                     };
 
-                                    var disciplinaEOL = disciplinasEol.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString() == disciplinaId);
-                                    foreach (var gestor in gestores)
+                                    if (alunosDto.Any())
                                     {
-                                        NotificarFrequenciaBimestre(turma.CodigoTurma,
-                                                            turma.Nome,
-                                                            periodoAtual.Bimestre,
-                                                            turmasUE.Key.CodigoUe,
-                                                            turmasUE.Key.Nome,
-                                                            turmasDRE.Key.CodigoDre,
-                                                            turmasDRE.Key.Nome,
-                                                            disciplinaEOL.Nome,
-                                                            gestor.Usuario.Id,
-                                                            alunosDto);
+                                        foreach (var gestor in gestores)
+                                        {
+                                            NotificarFrequenciaBimestre(turma.CodigoTurma,
+                                                                turma.Nome,
+                                                                periodoAtual.Bimestre,
+                                                                turmasUE.Key.CodigoUe,
+                                                                turmasUE.Key.Nome,
+                                                                turmasDRE.Key.CodigoDre,
+                                                                turmasDRE.Key.Nome,
+                                                                disciplinaEOL.Nome,
+                                                                gestor.Usuario.Id,
+                                                                alunosDto);
+                                        }
                                     }
                                 });
                         }
