@@ -6,100 +6,38 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
 // Componentes
-// import { useSelector } from 'react-redux';
 import { Grid, SelectComponent, Loader } from '~/componentes';
+import PeriodosDropDown from '../../../Acompanhamento/componentes/PeriodosDropDown';
+import { DreDropDown, UeDropDown } from '~/componentes-sgp';
 
 // Styles
 import { Linha } from '~/componentes/EstilosGlobais';
 
 // Services
-import AbrangenciaServico from '~/servicos/Abrangencia';
-// import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
+import api from '~/servicos/api';
+import AtribuicaoCJServico from '~/servicos/Paginas/AtribuicaoCJ';
+
+// Funções
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
 function Filtro({ onFiltrar }) {
   const [refForm, setRefForm] = useState({});
 
-  // const usuario = useSelector(state => state.usuario);
-  // const { turmaSelecionada } = usuario;
-  // const filtro = useSelector(state => state.filtro);
-
   const [dreId, setDreId] = useState(undefined);
   const [ueId, setUeId] = useState(undefined);
-  const [ciclo, setCiclo] = useState(undefined);
+  const [cicloId, setCicloId] = useState(undefined);
   const [ano, setAno] = useState(undefined);
   const [turmaId, setTurmaId] = useState(undefined);
   const [periodo, setPeriodo] = useState(undefined);
 
-  const [valoresIniciais, setValoresIniciais] = useState({
+  const [valoresIniciais] = useState({
     dreId,
     ueId,
-    ciclo,
+    cicloId,
     ano,
     turmaId,
     periodo,
   });
-
-  const [carregandoDres, setCarregandoDres] = useState(false);
-  const [listaDres, setListaDres] = useState([]);
-
-  const buscarListaDres = async () => {
-    const dres = [];
-    setCarregandoDres(true);
-
-    AbrangenciaServico.buscarDres()
-      .then(resposta => {
-        if (resposta.data) {
-          resposta.data.forEach(dre => {
-            dres.push({
-              desc: dre.nome,
-              valor: dre.codigo,
-            });
-          });
-        }
-      })
-      .finally(() => {
-        setCarregandoDres(false);
-      });
-
-    dres.sort(FiltroHelper.ordenarLista('desc'));
-    dres.unshift({ valor: 0, desc: 'Todas' });
-    setListaDres(dres);
-  };
-
-  useEffect(() => {
-    buscarListaDres();
-  }, []);
-
-  const [carregandoUes, setCarregandoUes] = useState(false);
-  const [listaUes, setListaUes] = useState([]);
-
-  const buscarListaUes = useCallback(async () => {
-    const ues = [];
-    setCarregandoUes(true);
-
-    AbrangenciaServico.buscarUes(dreId)
-      .then(resposta => {
-        if (resposta.data) {
-          resposta.data.forEach(ue => {
-            ues.push({
-              desc: ue.nome,
-              valor: ue.codigo,
-            });
-          });
-        }
-      })
-      .finally(() => {
-        setCarregandoUes(false);
-      });
-
-    setListaUes(ues.sort(FiltroHelper.ordenarLista('desc')));
-  }, [dreId]);
-
-  useEffect(() => {
-    buscarListaUes();
-    setValoresIniciais({ dreId });
-  }, [buscarListaUes, dreId]);
 
   const validacoes = () => {
     return Yup.object({});
@@ -111,6 +49,122 @@ function Filtro({ onFiltrar }) {
       onFiltrar(valores);
     }
   };
+
+  const aoTrocarDreId = id => {
+    if (!id) refForm.setFieldValue('ueId', undefined);
+    setDreId(id);
+  };
+
+  const [listaCiclos, setListaCiclos] = useState([]);
+  const [carregandoCiclos, setCarregandoCiclos] = useState(false);
+
+  const buscarListaCiclos = async () => {
+    setCarregandoCiclos(true);
+
+    const params = {
+      anoSelecionado: window.moment().format('YYYY'),
+      modalidade: 5,
+      anos: ['3', '4', '5', '6', '7', '8', '9'],
+    };
+
+    const ciclos = await api.post('v1/ciclos/filtro', params).finally(() => {
+      setCarregandoCiclos(false);
+    });
+
+    const { data } = ciclos;
+
+    if (data) {
+      data.sort(FiltroHelper.ordenarLista('descricao'));
+      data.unshift({ descricao: 'Todos', id: '0' });
+      setListaCiclos(data);
+    }
+  };
+
+  useEffect(() => {
+    buscarListaCiclos();
+  }, []);
+
+  const [listaAnos, setListaAnos] = useState([]);
+  const [carregandoAnos, setCarregandoAnos] = useState(false);
+
+  const aoTrocarCiclo = id => {
+    setCarregandoAnos(true);
+
+    if (id) {
+      switch (id) {
+        case '1':
+          // Alfabetização
+          setListaAnos([{ desc: '3', valor: '3' }]);
+          break;
+        case '2':
+          // Interdisciplinar
+          setListaAnos([
+            { desc: '4', valor: '4' },
+            { desc: '5', valor: '5' },
+            { desc: '6', valor: '6' },
+          ]);
+          break;
+        case '3':
+          // Autoral
+          setListaAnos([
+            { desc: '7', valor: '7' },
+            { desc: '8', valor: '8' },
+            { desc: '9', valor: '9' },
+          ]);
+          break;
+        case '0':
+          setListaAnos([{ desc: 'Todos', valor: '0' }]);
+          break;
+        default:
+          setListaAnos([]);
+      }
+    } else {
+      setListaAnos([]);
+    }
+
+    setCicloId(id);
+    setCarregandoAnos(false);
+  };
+
+  const [listaTodasTurmas, setListaTodasTurmas] = useState([]);
+
+  const buscarTurmas = useCallback(async () => {
+    const turmas = await AtribuicaoCJServico.buscarTurmas(ueId, 5);
+    const { data } = turmas;
+
+    if (data) setListaTodasTurmas(data);
+  }, [ueId]);
+
+  const [listaTurmas, setListaTurmas] = useState([]);
+
+  useEffect(() => {
+    if (ueId) {
+      if (ueId === '0') {
+        setListaTurmas([{ codigo: '0', nome: 'Todas' }]);
+      } else {
+        buscarTurmas();
+      }
+    }
+  }, [buscarTurmas, ueId]);
+
+  useEffect(() => {
+    if (ano) {
+      const turmas = [];
+      listaTodasTurmas.forEach(turma => {
+        const valor = turma.nome.split('');
+        if (
+          typeof parseInt(valor[0], 10) === 'number' &&
+          valor[0] === ano &&
+          turmas.indexOf(turma) === -1
+        ) {
+          turmas.push(turma);
+        }
+      });
+      setListaTurmas(turmas.sort(FiltroHelper.ordenarLista('nome')));
+    } else {
+      setListaTurmas([]);
+    }
+  }, [ano, listaTodasTurmas]);
 
   return (
     <Formik
@@ -127,84 +181,70 @@ function Filtro({ onFiltrar }) {
         <Form className="col-md-12 mb-4">
           <Linha className="row mb-2">
             <Grid cols={6}>
-              <Loader loading={carregandoDres} tip="">
-                <SelectComponent
-                  className="fonte-14"
-                  form={form}
-                  name="dreId"
-                  lista={listaDres}
-                  onChange={dre => setDreId(dre)}
-                  containerVinculoId="containerFiltro"
-                  valueOption="valor"
-                  valueText="desc"
-                  placeholder="Selecione a DRE"
-                />
-              </Loader>
+              <DreDropDown
+                form={form}
+                onChange={dre => aoTrocarDreId(dre)}
+                opcaoTodas
+              />
             </Grid>
             <Grid cols={6}>
-              <Loader loading={carregandoUes} tip="">
-                <SelectComponent
-                  className="fonte-14"
-                  form={form}
-                  name="ueId"
-                  lista={listaUes}
-                  onChange={ue => setUeId(ue)}
-                  containerVinculoId="containerFiltro"
-                  valueOption="valor"
-                  valueText="desc"
-                  placeholder="Selecione a UE"
-                />
-              </Loader>
+              <UeDropDown
+                form={form}
+                dreId={form.values.dreId}
+                onChange={ue => setUeId(ue)}
+                opcaoTodas
+              />
             </Grid>
           </Linha>
           <Linha className="row mb-2">
             <Grid cols={3}>
-              <SelectComponent
-                className="fonte-14"
-                form={form}
-                name="ciclo"
-                lista={[]}
-                containerVinculoId="containerFiltro"
-                valueOption="valor"
-                valueText="desc"
-                placeholder="Selec. o Ciclo"
-              />
+              <Loader loading={carregandoCiclos} tip="">
+                <SelectComponent
+                  className="fonte-14"
+                  form={form}
+                  name="cicloId"
+                  lista={listaCiclos}
+                  onChange={ciclo => aoTrocarCiclo(ciclo)}
+                  containerVinculoId="containerFiltro"
+                  valueOption="id"
+                  valueText="descricao"
+                  placeholder="Selec. o ciclo"
+                  disabled={!listaCiclos.length}
+                />
+              </Loader>
             </Grid>
             <Grid cols={2}>
-              <SelectComponent
-                className="fonte-14"
-                form={form}
-                name="ano"
-                lista={[]}
-                containerVinculoId="containerFiltro"
-                valueOption="valor"
-                valueText="desc"
-                placeholder="Selec. o ano"
-              />
+              <Loader loading={carregandoAnos} tip="">
+                <SelectComponent
+                  className="fonte-14"
+                  form={form}
+                  name="ano"
+                  lista={listaAnos}
+                  onChange={valor => setAno(valor)}
+                  containerVinculoId="containerFiltro"
+                  valueOption="valor"
+                  valueText="desc"
+                  placeholder="Selec. o ano"
+                  disabled={!listaAnos.length}
+                />
+              </Loader>
             </Grid>
             <Grid cols={2}>
               <SelectComponent
                 className="fonte-14"
                 form={form}
                 name="turmaId"
-                lista={[]}
+                lista={listaTurmas}
+                onChange={valor => setTurmaId(valor)}
                 containerVinculoId="containerFiltro"
-                valueOption="valor"
-                valueText="desc"
+                valueOption="codigo"
+                valueText="nome"
                 placeholder="Selec. a turma"
+                disabled={!listaTurmas.length}
               />
             </Grid>
             <Grid cols={5}>
-              <SelectComponent
-                className="fonte-14"
-                form={form}
-                name="periodo"
-                lista={[]}
-                containerVinculoId="containerFiltro"
-                valueOption="valor"
-                valueText="desc"
-                placeholder="Selecione o período"
-              />
+              <PeriodosDropDown onChangePeriodo={valor => setPeriodo(valor)} />
             </Grid>
           </Linha>
         </Form>
