@@ -205,13 +205,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             httpClient.DefaultRequestHeaders.Clear();
 
             var resposta = httpClient.PostAsync("disciplinas", new StringContent(JsonConvert.SerializeObject(ids), Encoding.UTF8, "application/json-patch+json")).Result;
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = resposta.Content.ReadAsStringAsync().Result;
-                var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
-                return MapearParaDtoDisciplinas(retorno);
-            }
-            return null;
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+            return MapearParaDtoDisciplinas(retorno);
         }
 
         public IEnumerable<DreRespostaEolDto> ObterDres()
@@ -542,7 +542,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanoAnual(string codigoRf, int componenteCurricularId, int codigoTurma)
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanoAnual(string codigoRf, long componenteCurricularId, int codigoTurma)
         {
             httpClient.DefaultRequestHeaders.Clear();
 

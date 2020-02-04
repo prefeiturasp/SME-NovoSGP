@@ -145,7 +145,7 @@ namespace SME.SGP.Aplicacao
                 // Caso a disciplina não possui vinculo com Jurema, os objetivos não devem ser exigidos
                 if (!permitePlanoSemObjetivos)
                 {
-                    permitePlanoSemObjetivos = !(await consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt32(aula.DisciplinaId)));
+                    permitePlanoSemObjetivos = !(await consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt64(aula.DisciplinaId)));
                 }
 
                 if (!permitePlanoSemObjetivos)

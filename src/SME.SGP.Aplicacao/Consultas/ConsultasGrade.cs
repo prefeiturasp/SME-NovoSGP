@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
-        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turmaCodigo, int disciplina, string semana, DateTime dataAula, string codigoRf = null)
+        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turmaCodigo, long disciplina, string semana, DateTime dataAula, string codigoRf = null)
         {
             var ue = repositorioUe.ObterUEPorTurma(turmaCodigo);
             if (ue == null)
@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(await repositorioGrade.ObterGradeTurma(tipoEscola, modalidade, duracao));
         }
 
-        public async Task<int> ObterHorasGradeComponente(long grade, int componenteCurricular, int ano)
+        public async Task<int> ObterHorasGradeComponente(long grade, long componenteCurricular, int ano)
         {
             return await repositorioGrade.ObterHorasComponente(grade, componenteCurricular, ano);
         }

@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<PlanoAnualCompletoDto>> ObterPorUETurmaAnoEComponenteCurricular(string ueId, string turmaId, int anoLetivo, long componenteCurricularEolId);
 
-        Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopia(int turmaId, int componenteCurricular);
+        Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopia(int turmaId, long componenteCurricular);
 
         bool ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto);
     }

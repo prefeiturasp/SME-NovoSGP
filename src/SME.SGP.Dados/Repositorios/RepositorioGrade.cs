@@ -1,10 +1,9 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -37,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             return filtro.FirstOrDefault();
         }
 
-        public async Task<int> ObterHorasComponente(long grade, int componenteCurricular, int ano)
+        public async Task<int> ObterHorasComponente(long grade, long componenteCurricular, int ano)
         {
             var query = @"select gd.quantidade_aulas
                       from grade_disciplina gd
