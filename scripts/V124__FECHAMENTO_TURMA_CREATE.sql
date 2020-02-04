@@ -3,7 +3,7 @@ DROP TABLE if exists public.fechamento_turma_disciplina;
 
 CREATE TABLE public.fechamento_turma_disciplina (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
-	fechamento_bimestre_id int8 not null,
+	periodo_fechamento_bimestre_id int8 not null,
 	turma_id int8 not null,
 	disciplina_id int8 not null,
 
@@ -21,7 +21,7 @@ CREATE INDEX fechamento_turma_disciplina_turma_idx ON public.fechamento_turma_di
 CREATE INDEX fechamento_turma_disciplina_disciplina_idx ON public.fechamento_turma_disciplina USING btree (disciplina_id);
 
 ALTER TABLE public.fechamento_turma_disciplina ADD CONSTRAINT fechamento_turma_disciplina_turma_fk FOREIGN KEY (turma_id) REFERENCES turma(id);
-ALTER TABLE public.fechamento_turma_disciplina ADD CONSTRAINT fechamento_turma_disciplina_bimestre_fk FOREIGN KEY (fechamento_bimestre_id) REFERENCES fechamento_bimestre(id);
+ALTER TABLE public.fechamento_turma_disciplina ADD CONSTRAINT fechamento_turma_disciplina_bimestre_fk FOREIGN KEY (periodo_fechamento_bimestre_id) REFERENCES periodo_fechamento_bimestre(id);
 
 
 CREATE TABLE public.nota_conceito_bimestre (
