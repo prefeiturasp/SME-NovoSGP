@@ -78,7 +78,7 @@ namespace SME.SGP.Dominio
 
         public string UeId { get; set; }
 
-        public long WorkflowAprovacaoId { get; set; }
+        public long? WorkflowAprovacaoId { get; set; }
 
         public void AdicionarAulaPai(Aula aula)
         {
