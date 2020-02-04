@@ -16,7 +16,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
-        private readonly IRepositorioFechamento repositorioFechamento;
+        private readonly IRepositorioPeriodoFechamento repositorioFechamento;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioEventoTipo repositorioTipoEvento;
@@ -26,7 +26,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
-        public ServicoFechamento(IRepositorioFechamento repositorioFechamento,
+        public ServicoFechamento(IRepositorioPeriodoFechamento repositorioFechamento,
                                  IServicoUsuario servicoUsuario,
                                  IRepositorioTipoCalendario repositorioTipoCalendario,
                                  IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
@@ -53,20 +53,31 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task AlterarPeriodosComHierarquiaInferior(Fechamento fechamento)
+        public async Task AlterarPeriodosComHierarquiaInferior(PeriodoFechamento fechamento)
         {
-            var ehParaDre = fechamento.DreId != null && fechamento.DreId > 0;
+            var ehParaUe = fechamento.DreId != null && fechamento.DreId > 0;
             unitOfWork.IniciarTransacao();
             foreach (var fechamentoBimestre in fechamento.FechamentosBimestre)
             {
                 repositorioFechamento.AlterarPeriodosComHierarquiaInferior(fechamentoBimestre.InicioDoFechamento, fechamentoBimestre.FinalDoFechamento, fechamentoBimestre.PeriodoEscolarId, fechamento.DreId);
             }
-            EnviarNotificacaoDeAlteracaoDePeriodo(fechamento, fechamento.FechamentosBimestre, ehParaDre);
+            EnviarNotificacaoDeAlteracaoDePeriodo(fechamento, fechamento.FechamentosBimestre, ehParaUe);
             unitOfWork.PersistirTransacao();
         }
 
         public async Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, string dreId, string ueId)
         {
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(tipoCalendarioId);
+            if (tipoCalendario == null)
+            {
+                throw new NegocioException("Tipo de calendário não encontrado.");
+            }
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
+            if (periodoEscolar == null || !periodoEscolar.Any())
+            {
+                throw new NegocioException("Período escolar não encontrado para o tipo de calendário informado.");
+            }
+
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
             var (dre, ue) = ObterDreEUe(dreId, ueId);
@@ -74,29 +85,23 @@ namespace SME.SGP.Dominio.Servicos
             var dreIdFiltro = !string.IsNullOrWhiteSpace(ueId) || usuarioLogado.EhPerfilUE() ? dre?.Id : null;
 
             var fechamentoSMEDre = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, dreIdFiltro, null);
+            var ehRegistroExistente = (dreId == null && fechamentoSMEDre != null);
             if (fechamentoSMEDre == null)
             {
                 fechamentoSMEDre = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, null, null);
+                ehRegistroExistente = fechamentoSMEDre != null;
                 if (fechamentoSMEDre == null)
                 {
                     if (!usuarioLogado.EhPerfilSME())
                         throw new NegocioException("Fechamento da SME/Dre não encontrado para este tipo de calendário.");
                     else
                     {
-                        fechamentoSMEDre = new Fechamento(null, null);
-
-                        var tipoCalendario = repositorioTipoCalendario.ObterPorId(tipoCalendarioId);
-                        if (tipoCalendario == null)
-                            throw new NegocioException("Tipo de calendário não encontrado.");
-
-                        var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
-                        if (periodoEscolar == null)
-                            throw new NegocioException("Período escolar não encontrado.");
+                        fechamentoSMEDre = new PeriodoFechamento(null, null);
 
                         foreach (var periodo in periodoEscolar)
                         {
                             periodo.AdicionarTipoCalendario(tipoCalendario);
-                            fechamentoSMEDre.AdicionarFechamentoBimestre(new FechamentoBimestre(fechamentoSMEDre.Id, periodo, periodo.PeriodoInicio, periodo.PeriodoFim));
+                            fechamentoSMEDre.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSMEDre.Id, periodo, null, null));
                         }
                     }
                 }
@@ -105,12 +110,18 @@ namespace SME.SGP.Dominio.Servicos
             var fechamentoDreUe = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, dre?.Id, ue?.Id);
             if (fechamentoDreUe == null)
             {
+                ehRegistroExistente = false;
                 fechamentoDreUe = fechamentoSMEDre;
                 fechamentoDreUe.Dre = dre;
                 fechamentoDreUe.Ue = ue;
             }
+            else
+            {
+                ehRegistroExistente = true;
+            }
 
             var fechamentoDto = MapearParaDto(fechamentoDreUe);
+            fechamentoDto.EhRegistroExistente = ehRegistroExistente;
 
             foreach (var bimestreSME in fechamentoSMEDre.FechamentosBimestre)
             {
@@ -124,8 +135,8 @@ namespace SME.SGP.Dominio.Servicos
                     }
                     else
                     {
-                        bimestreDreUe.InicioMinimo = new DateTime(bimestreSME.InicioDoFechamento.Year, 01, 01);
-                        bimestreDreUe.FinalMaximo = new DateTime(bimestreSME.InicioDoFechamento.Year, 12, 31);
+                        bimestreDreUe.InicioMinimo = new DateTime(DateTime.Now.Year, 01, 01);
+                        bimestreDreUe.FinalMaximo = new DateTime(DateTime.Now.Year, 12, 31);
                     }
                 }
             }
@@ -152,13 +163,13 @@ namespace SME.SGP.Dominio.Servicos
             CriarEventoFechamento(fechamento);
         }
 
-        private static void ExecutaAlterarPeriodosComHierarquiaInferior(FechamentoDto fechamentoDto, Fechamento fechamento, bool ehSme)
+        private static void ExecutaAlterarPeriodosComHierarquiaInferior(FechamentoDto fechamentoDto, PeriodoFechamento fechamento, bool ehSme)
         {
-            if ((ehSme && !fechamento.DreId.HasValue) || !fechamento.UeId.HasValue && fechamentoDto.ConfirmouAlteracaoHierarquica)
+            if ((ehSme && !fechamento.DreId.HasValue) || (fechamento.DreId.HasValue && !fechamento.UeId.HasValue) && fechamentoDto.ConfirmouAlteracaoHierarquica)
                 Cliente.Executar<IServicoFechamento>(c => c.AlterarPeriodosComHierarquiaInferior(fechamento));
         }
 
-        private static Notificacao MontaNotificacao(string nomeEntidade, string tipoEntidade, IEnumerable<FechamentoBimestre> fechamentosBimestre, string codigoUe, string codigoDre)
+        private static Notificacao MontaNotificacao(string nomeEntidade, string tipoEntidade, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, string codigoUe, string codigoDre)
         {
             var mensagem = new StringBuilder();
             mensagem.AppendLine($"A { tipoEntidade} realizou alterações em datas de abertura do período de fechamento de bimestre e as datas definidas pela ");
@@ -186,7 +197,7 @@ namespace SME.SGP.Dominio.Servicos
             return notificacao;
         }
 
-        private void AtualizaEventoDeFechamento(FechamentoBimestre bimestre, EventoFechamento fechamentoExistente)
+        private void AtualizaEventoDeFechamento(PeriodoFechamentoBimestre bimestre, EventoFechamento fechamentoExistente)
         {
             var eventoExistente = repositorioEvento.ObterPorId(fechamentoExistente.EventoId);
             if (eventoExistente != null)
@@ -197,7 +208,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void CriaEventoDeFechamento(Fechamento fechamento, EventoTipo tipoEvento, FechamentoBimestre bimestre)
+        private void CriaEventoDeFechamento(PeriodoFechamento fechamento, EventoTipo tipoEvento, PeriodoFechamentoBimestre bimestre)
         {
             var evento = new Evento()
             {
@@ -217,7 +228,7 @@ namespace SME.SGP.Dominio.Servicos
             });
         }
 
-        private void CriarEventoFechamento(Fechamento fechamento)
+        private void CriarEventoFechamento(PeriodoFechamento fechamento)
         {
             if (fechamento.UeId > 0)
             {
@@ -243,7 +254,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void EnviaNotificacaoParaDre(IEnumerable<FechamentoBimestre> fechamentosBimestre)
+        private void EnviaNotificacaoParaDre(IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre)
         {
             var dres = repositorioDre.ObterTodas();
             if (dres != null && dres.Any())
@@ -266,7 +277,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void EnviaNotificacaoParaUe(IEnumerable<FechamentoBimestre> fechamentosBimestre, long dreId)
+        private void EnviaNotificacaoParaUe(IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, long dreId)
         {
             var ues = repositorioUe.ObterPorDre(dreId);
             if (ues != null && ues.Any())
@@ -289,27 +300,27 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void EnviarNotificacaoDeAlteracaoDePeriodo(Fechamento fechamento, IEnumerable<FechamentoBimestre> fechamentosBimestre, bool paraDre)
+        private void EnviarNotificacaoDeAlteracaoDePeriodo(PeriodoFechamento fechamento, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, bool paraUe)
         {
-            if (paraDre)
-            {
-                EnviaNotificacaoParaDre(fechamentosBimestre);
-            }
-            else
+            if (paraUe)
             {
                 EnviaNotificacaoParaUe(fechamentosBimestre, fechamento.DreId.Value);
             }
+            else
+            {
+                EnviaNotificacaoParaDre(fechamentosBimestre);
+            }
         }
 
-        private IEnumerable<FechamentoBimestreDto> MapearFechamentoBimestreParaDto(Fechamento fechamento)
+        private IEnumerable<FechamentoBimestreDto> MapearFechamentoBimestreParaDto(PeriodoFechamento fechamento)
         {
             var listaFechamentoBimestre = new List<FechamentoBimestreDto>();
             foreach (var fechamentoBimestre in fechamento.FechamentosBimestre)
             {
                 listaFechamentoBimestre.Add(new FechamentoBimestreDto
                 {
-                    FinalDoFechamento = fechamentoBimestre.FinalDoFechamento,
-                    InicioDoFechamento = fechamentoBimestre.InicioDoFechamento,
+                    InicioDoFechamento = fechamentoBimestre.InicioDoFechamento > DateTime.MinValue ? fechamentoBimestre.InicioDoFechamento : (DateTime?)null,
+                    FinalDoFechamento = fechamentoBimestre.FinalDoFechamento > DateTime.MinValue ? fechamentoBimestre.FinalDoFechamento : (DateTime?)null,
                     Bimestre = fechamentoBimestre.PeriodoEscolar.Bimestre,
                     Id = fechamentoBimestre.Id,
                     PeriodoEscolarId = fechamentoBimestre.PeriodoEscolarId
@@ -318,14 +329,14 @@ namespace SME.SGP.Dominio.Servicos
             return listaFechamentoBimestre;
         }
 
-        private Fechamento MapearParaDominio(FechamentoDto fechamentoDto)
+        private PeriodoFechamento MapearParaDominio(FechamentoDto fechamentoDto)
         {
             var (dre, ue) = ObterDreEUe(fechamentoDto.DreId, fechamentoDto.UeId);
-            var fechamento = repositorioFechamento.ObterPorTipoCalendarioDreEUE(fechamentoDto.TipoCalendarioId, dre?.Id, ue?.Id);
+            var fechamento = repositorioFechamento.ObterPorTipoCalendarioDreEUE(fechamentoDto.TipoCalendarioId.Value, dre?.Id, ue?.Id);
             if (fechamento == null)
-                fechamento = new Fechamento(dre?.Id, ue?.Id);
+                fechamento = new PeriodoFechamento(dre, ue);
 
-            var tipoCalendario = repositorioTipoCalendario.ObterPorId(fechamentoDto.TipoCalendarioId);
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(fechamentoDto.TipoCalendarioId.Value);
             if (tipoCalendario == null)
             {
                 throw new NegocioException("Tipo calendário não encontrado.");
@@ -336,25 +347,25 @@ namespace SME.SGP.Dominio.Servicos
                 foreach (var bimestre in fechamentoDto.FechamentosBimestres)
                 {
                     var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(bimestre.PeriodoEscolarId);
-                    FechamentoBimestre fechamentoBimestreExistente = fechamento.ObterFechamentoBimestre(bimestre.PeriodoEscolarId);
+                    PeriodoFechamentoBimestre fechamentoBimestreExistente = fechamento.ObterFechamentoBimestre(bimestre.PeriodoEscolarId);
                     if (fechamentoBimestreExistente != null)
                     {
                         fechamentoBimestreExistente.AtualizarDatas(bimestre.InicioDoFechamento, bimestre.FinalDoFechamento);
                     }
                     else
-                        fechamento.AdicionarFechamentoBimestre(new FechamentoBimestre(fechamento.Id, periodoEscolar, bimestre.InicioDoFechamento, bimestre.FinalDoFechamento));
+                        fechamento.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamento.Id, periodoEscolar, bimestre.InicioDoFechamento, bimestre.FinalDoFechamento));
                 }
             }
             return fechamento;
         }
 
-        private FechamentoDto MapearParaDto(Fechamento fechamento)
+        private FechamentoDto MapearParaDto(PeriodoFechamento fechamento)
         {
             return fechamento == null ? null : new FechamentoDto
             {
                 Id = fechamento.Id,
                 DreId = fechamento.Dre?.CodigoDre,
-                TipoCalendarioId = fechamento.FechamentosBimestre.FirstOrDefault().PeriodoEscolar.TipoCalendarioId,
+                TipoCalendarioId = fechamento.FechamentosBimestre.FirstOrDefault()?.PeriodoEscolar?.TipoCalendarioId,
                 UeId = fechamento.Ue?.CodigoUe,
                 FechamentosBimestres = MapearFechamentoBimestreParaDto(fechamento).OrderBy(c => c.Bimestre),
                 AlteradoEm = fechamento.AlteradoEm,
@@ -382,7 +393,7 @@ namespace SME.SGP.Dominio.Servicos
             return (dre, ue);
         }
 
-        private void ValidarCamposObrigatorios(bool ehSme, bool ehDre, Fechamento fechamento)
+        private void ValidarCamposObrigatorios(bool ehSme, bool ehDre, PeriodoFechamento fechamento)
         {
             if (!fechamento.UeId.HasValue)
             {
@@ -395,9 +406,9 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void ValidarHierarquiaPeriodos(bool ehSme, bool ehDre, Fechamento fechamento)
+        private void ValidarHierarquiaPeriodos(bool ehSme, bool ehDre, PeriodoFechamento fechamento)
         {
-            Fechamento fechamentoParaValidacao = null;
+            PeriodoFechamento fechamentoParaValidacao = null;
             if (ehDre)
             {
                 fechamentoParaValidacao = repositorioFechamento.ObterPorTipoCalendarioDreEUE(fechamento.FechamentosBimestre.FirstOrDefault().PeriodoEscolar.TipoCalendarioId, null, null);
@@ -413,7 +424,7 @@ namespace SME.SGP.Dominio.Servicos
                 fechamento.ValidarIntervaloDatasDreEUe(fechamentoParaValidacao.FechamentosBimestre.ToList());
         }
 
-        private void ValidarRegistrosForaDoPeriodo(FechamentoDto fechamentoDto, Fechamento fechamento, bool ehSme, bool ehDre)
+        private void ValidarRegistrosForaDoPeriodo(FechamentoDto fechamentoDto, PeriodoFechamento fechamento, bool ehSme, bool ehDre)
         {
             if ((ehDre || ehSme) && string.IsNullOrWhiteSpace(fechamentoDto.UeId) && fechamento.Id > 0 && !fechamentoDto.ConfirmouAlteracaoHierarquica)
             {

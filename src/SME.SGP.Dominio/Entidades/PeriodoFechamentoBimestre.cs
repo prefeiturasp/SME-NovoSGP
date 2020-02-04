@@ -2,25 +2,27 @@
 
 namespace SME.SGP.Dominio
 {
-    public class FechamentoBimestre
+    public class PeriodoFechamentoBimestre
     {
-        public FechamentoBimestre(long fechamentoId,
+        public PeriodoFechamentoBimestre(long fechamentoId,
                                   PeriodoEscolar periodoEscolar,
-                                  DateTime inicioDoFechamento,
-                                  DateTime finalDoFechamento)
+                                  DateTime? inicioDoFechamento,
+                                  DateTime? finalDoFechamento)
         {
             FechamentoId = fechamentoId;
-            FinalDoFechamento = finalDoFechamento;
-            InicioDoFechamento = inicioDoFechamento;
+            if (inicioDoFechamento.HasValue)
+                InicioDoFechamento = inicioDoFechamento.Value;
+            if (finalDoFechamento.HasValue)
+                FinalDoFechamento = finalDoFechamento.Value;
             PeriodoEscolar = periodoEscolar;
             PeriodoEscolarId = periodoEscolar.Id;
         }
 
-        protected FechamentoBimestre()
+        protected PeriodoFechamentoBimestre()
         {
         }
 
-        public Fechamento Fechamento { get; set; }
+        public PeriodoFechamento Fechamento { get; set; }
         public long FechamentoId { get; set; }
         public DateTime FinalDoFechamento { get; set; }
         public long Id { get; set; }
@@ -33,14 +35,17 @@ namespace SME.SGP.Dominio
             PeriodoEscolar = periodoEscolar;
         }
 
-        public void AtualizarDatas(DateTime inicioDoFechamento, DateTime finalDoFechamento)
+        public void AtualizarDatas(DateTime? inicioDoFechamento, DateTime? finalDoFechamento)
         {
             if (inicioDoFechamento > finalDoFechamento)
             {
                 throw new NegocioException("A data de início deve ser menor que a data final.");
             }
-            InicioDoFechamento = inicioDoFechamento;
-            FinalDoFechamento = finalDoFechamento;
+            if (inicioDoFechamento.HasValue)
+                InicioDoFechamento = inicioDoFechamento.Value;
+
+            if (finalDoFechamento.HasValue)
+                FinalDoFechamento = finalDoFechamento.Value;
         }
     }
 }

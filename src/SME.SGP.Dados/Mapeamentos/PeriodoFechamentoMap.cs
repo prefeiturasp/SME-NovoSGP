@@ -2,11 +2,11 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FechamentoMap : BaseMap<Fechamento>
+    public class PeriodoFechamentoMap : BaseMap<PeriodoFechamento>
     {
-        public FechamentoMap()
+        public PeriodoFechamentoMap()
         {
-            ToTable("fechamento");
+            ToTable("periodo_fechamento");
             Map(c => c.DreId).ToColumn("dre_id");
             Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.FechamentosBimestre).Ignore();

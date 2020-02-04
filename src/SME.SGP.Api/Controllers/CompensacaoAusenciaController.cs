@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -82,7 +83,15 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CA_I, Policy = "Bearer")]
         public async Task<IActionResult> Copiar([FromBody] CompensacaoAusenciaCopiaDto compensacaoCopia, [FromServices] IComandosCompensacaoAusencia comandos)
         {
-            await comandos.Copiar(compensacaoCopia);
+            return Ok(await comandos.Copiar(compensacaoCopia));
+        }
+
+        [HttpPost("notificar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Notificar([FromServices] IServicoNotificacaoFrequencia servicoNotificacao)
+        {
+            servicoNotificacao.VerificaNotificacaoBimestral();
             return Ok();
         }
 
