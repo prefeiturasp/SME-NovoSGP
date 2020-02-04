@@ -26,6 +26,11 @@ namespace SME.SGP.Dominio
         public Turma Turma { get; set; }
         public long TurmaId { get; set; }
 
+        public void AdicionarPeriodoEscolar(PeriodoEscolar periodoEscolar)
+        {
+            PeriodoEscolar = periodoEscolar;
+        }
+
         public void AtualizarSituacao(SituacaoFechamento processadoComPendencias)
         {
             Situacao = processadoComPendencias;
