@@ -5,7 +5,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioSupervisorEscolaDre : IRepositorioBase<SupervisorEscolaDre>
     {
-        IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisor(string dreId, string supervisorId);
+        IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisor(string dreId, string supervisorId, bool excluidos = false);
 
         IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisores(string dreId, string[] supervisoresId);
 
