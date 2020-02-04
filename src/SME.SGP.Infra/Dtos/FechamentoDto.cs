@@ -20,5 +20,6 @@ namespace SME.SGP.Infra
         public long? TipoCalendarioId { get; set; }
 
         public string UeId { get; set; }
+        public bool EhRegistroExistente { get; set; }
     }
 }
