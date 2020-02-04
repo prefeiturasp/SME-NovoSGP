@@ -1,16 +1,24 @@
-﻿using SME.Background.Core;
+﻿using Microsoft.Extensions.Configuration;
+using SME.Background.Core;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoFechamento : IServicoFechamento
     {
+        private readonly IConfiguration configuration;
+        private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioFechamento repositorioFechamento;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioUe repositorioUe;
+        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
         private readonly IServicoUsuario servicoUsuario;
 
@@ -19,7 +27,12 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                  IServicoPendenciaFechamento servicoPendenciaFechamento,
                                  IRepositorioTipoCalendario repositorioTipoCalendario,
-                                 IServicoUsuario servicoUsuario)
+                                 IServicoUsuario servicoUsuario,
+                                 IServicoEOL servicoEOL,
+                                 IRepositorioUe repositorioUe,
+                                 IRepositorioDre repositorioDre,
+                                 IConfiguration configuration,
+                                 IServicoNotificacao servicoNotificacao)
         {
             this.repositorioFechamento = repositorioFechamento ?? throw new ArgumentNullException(nameof(repositorioFechamento));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -27,6 +40,11 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.repositorioUe = repositorioUe;
+            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
         }
 
         public void GerarPendenciasFechamento(string disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, Fechamento fechamento, Usuario usuarioLogado)
@@ -49,12 +67,15 @@ namespace SME.SGP.Dominio.Servicos
             if (aulasSemFrequencia > 0)
                 situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
 
+            //TODO VALIDAR PERCENTUAL DE ALUNOS ABAIXO DA MEDIA QUANDO HISTORIA 9269 ESTIVER CONCLUIDA
+
             fechamento.AtualizarSituacao(situacaoFechamento);
-            if (fechamento.Situacao != SituacaoFechamento.EmProcessamento)
+            var quantidadePendencias = avaliacoesSemnota + aulasReposicaoPendentes + aulasSemPlanoAula + aulasSemFrequencia;
+            if (situacaoFechamento != SituacaoFechamento.ProcessadoComSucesso && quantidadePendencias > 0)
             {
-                GerarNotificacaoFechamento(fechamento, avaliacoesSemnota + aulasReposicaoPendentes + aulasSemPlanoAula + aulasSemFrequencia, usuarioLogado);
-                repositorioFechamento.Salvar(fechamento);
+                GerarNotificacaoFechamento(fechamento, turma, quantidadePendencias, usuarioLogado);
             }
+            repositorioFechamento.Salvar(fechamento);
         }
 
         public void RealizarFechamento(string codigoTurma, string disciplinaId, long periodoEscolarId, Usuario usuarioLogado)
@@ -99,20 +120,42 @@ namespace SME.SGP.Dominio.Servicos
             {
                 throw new NegocioException("Período escolar não encontrado.");
             }
+            fechamento.AdicionarPeriodoEscolar(periodoEscolar);
             fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
             repositorioFechamento.Salvar(fechamento);
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             Cliente.Executar<IServicoFechamento>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuarioLogado));
         }
 
-        private void GerarNotificacaoFechamento(Fechamento fechamento, int quantidadePendencias, Usuario usuarioLogado)
+        private void GerarNotificacaoFechamento(Fechamento fechamento, Turma turma, int quantidadePendencias, Usuario usuarioLogado)
         {
-            if (fechamento.Situacao == SituacaoFechamento.ProcessadoComPendencias && quantidadePendencias > 0)
+            var componentes = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(fechamento.DisciplinaId) });
+            if (componentes == null || !componentes.Any())
             {
-                var notificacao = new Notificacao()
-                {
-                };
+                throw new NegocioException("Componente curricular não encontrado.");
             }
+            var ue = repositorioUe.ObterPorId(turma.UeId);
+            if (ue == null)
+                throw new NegocioException("UE não encontrada.");
+
+            var dre = repositorioDre.ObterPorId(ue.DreId);
+            if (dre == null)
+                throw new NegocioException("DRE não encontrada.");
+
+            var urlFrontEnd = configuration["UrlFrontEnd"];
+            if (string.IsNullOrWhiteSpace(urlFrontEnd))
+                throw new NegocioException("Url do frontend não encontrada.");
+
+            var notificacao = new Notificacao()
+            {
+                UsuarioId = usuarioLogado.Id,
+                Ano = DateTime.Now.Year,
+                Categoria = NotificacaoCategoria.Aviso,
+                Titulo = $"Pendência no fechamento da turma {turma.Nome}",
+                Tipo = NotificacaoTipo.Fechamento,
+                Mensagem = $"O fechamento do {fechamento.PeriodoEscolar.Bimestre}Nº bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {quantidadePendencias} pendência(s). Clique <a href='{urlFrontEnd}'>aqui</a> para mais detalhes."
+            };
+            servicoNotificacao.Salvar(notificacao);
         }
 
         private (Turma, PeriodoEscolar) ValidarTurmaEPeriodoEscolar(string codigoTurma, long periodoEscolarId)
