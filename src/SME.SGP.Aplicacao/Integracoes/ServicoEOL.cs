@@ -214,6 +214,22 @@ namespace SME.SGP.Aplicacao.Integracoes
             return MapearParaDtoDisciplinas(retorno);
         }
 
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = await httpClient.PostAsync("disciplinas/SemAgrupamento", new StringContent(JsonConvert.SerializeObject(ids), Encoding.UTF8, "application/json-patch+json"));
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+
+            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+
+            return MapearParaDtoDisciplinas(retorno);
+        }
+
         public IEnumerable<DreRespostaEolDto> ObterDres()
         {
             var resposta = httpClient.GetAsync("dres").Result;
@@ -639,7 +655,8 @@ namespace SME.SGP.Aplicacao.Integracoes
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
-                RegistraFrequencia = x.RegistraFrequencia
+                RegistraFrequencia = x.RegistraFrequencia,
+                TerritorioSaber = x.Territorio
             });
         }
 

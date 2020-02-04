@@ -7,5 +7,6 @@
         public bool EhCompartilhada { get; set; }
         public bool EhRegencia { get; set; }
         public bool RegistraFrequencia { get; set; }
+        public bool Territorio { get; set; }
     }
 }

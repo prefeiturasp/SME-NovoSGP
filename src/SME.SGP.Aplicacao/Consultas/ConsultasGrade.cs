@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -44,22 +45,16 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             // Busca disciplina no EOL para validar se é regente
-            var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina });
+            var disciplinaEOL = await servicoEOL.ObterDisciplinasPorIdsSemAgrupamento(new long[] { disciplina });
             if (disciplinaEOL == null)
                 throw new NegocioException("Disciplina não localizada.");
 
             bool ehRegencia = disciplinaEOL.FirstOrDefault().Regencia;
-
+            bool ehTerritorio = disciplinaEOL.Any(x => x.TerritorioSaber);
             int horasGrade;
 
             // verifica se é regencia de classe
-            if (ehRegencia)
-                horasGrade = turma.ModalidadeCodigo == Modalidade.EJA ? 5 : 1;
-            else if (disciplina == 1030)
-                horasGrade = 4;
-            else
-                // Busca carga horaria na grade da disciplina para o ano da turma
-                horasGrade = await ObterHorasGradeComponente(grade.Id, disciplina, int.Parse(turma.Ano));
+            horasGrade = await TratarHorasGrade(disciplina, turma, grade, ehRegencia, disciplinaEOL.Select(x => x.CodigoComponenteCurricular), ehTerritorio);
 
             if (horasGrade == 0)
                 return null;
@@ -96,6 +91,29 @@ namespace SME.SGP.Aplicacao
                 Id = grade.Id,
                 Nome = grade.Nome
             };
+        }
+
+        private async Task<int> TratarHorasGrade(long disciplina, Turma turma, GradeDto grade, bool ehRegencia,
+            IEnumerable<long> codigosDisciplinaEol, bool ehTerritorio)
+        {
+            int horasGrade = 0;
+
+            if (ehRegencia)
+                return turma.ModalidadeCodigo == Modalidade.EJA ? 5 : 1;
+
+            if (disciplina == 1030)
+                return 4;
+
+            // Busca carga horaria na grade da disciplina para o ano da turma
+            if (!ehTerritorio)
+                return await ObterHorasGradeComponente(grade.Id, disciplina, int.Parse(turma.Ano));
+
+            foreach (var codigoDisciplinaEol in codigosDisciplinaEol)
+            {
+                horasGrade += await ObterHorasGradeComponente(grade.Id, codigoDisciplinaEol, int.Parse(turma.Ano));
+            }
+
+            return horasGrade;
         }
     }
 }
