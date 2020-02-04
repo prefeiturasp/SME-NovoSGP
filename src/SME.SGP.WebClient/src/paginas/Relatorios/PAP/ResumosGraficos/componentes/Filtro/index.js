@@ -244,7 +244,10 @@ function Filtro({ onFiltrar }) {
               />
             </Grid>
             <Grid cols={5}>
-              <PeriodosDropDown onChangePeriodo={valor => setPeriodo(valor)} />
+              <PeriodosDropDown
+                valor={periodo}
+                onChangePeriodo={valor => setPeriodo(valor)}
+              />
             </Grid>
           </Linha>
         </Form>
