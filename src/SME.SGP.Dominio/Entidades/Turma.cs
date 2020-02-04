@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio
             if (modalidade == ModalidadeTipoCalendario.EJA)
                 return ModalidadeCodigo == Modalidade.EJA;
             else
-                return ModalidadeCodigo != Modalidade.EJA
+                return ModalidadeCodigo != Modalidade.EJA;
         }
     }
 }
