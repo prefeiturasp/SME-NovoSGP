@@ -1,6 +1,7 @@
 ﻿using SME.Background.Core;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -11,42 +12,52 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ServicoFechamento(IRepositorioFechamento repositorioFechamento,
                                  IRepositorioTurma repositorioTurma,
                                  IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                  IServicoPendenciaFechamento servicoPendenciaFechamento,
-                                 IRepositorioTipoCalendario repositorioTipoCalendario)
+                                 IRepositorioTipoCalendario repositorioTipoCalendario,
+                                 IServicoUsuario servicoUsuario)
         {
             this.repositorioFechamento = repositorioFechamento ?? throw new ArgumentNullException(nameof(repositorioFechamento));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public void GerarPendenciasFechamento(string disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, Fechamento fechamento)
+        public void GerarPendenciasFechamento(string disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, Fechamento fechamento, Usuario usuarioLogado)
         {
             var situacaoFechamento = SituacaoFechamento.ProcessadoComSucesso;
 
-            if (servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim))
+            var avaliacoesSemnota = servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            if (avaliacoesSemnota > 0)
                 situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
 
-            if (servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim))
+            var aulasReposicaoPendentes = servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            if (aulasReposicaoPendentes > 0)
                 situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
 
-            if (servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim))
+            var aulasSemPlanoAula = servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            if (aulasSemPlanoAula > 0)
                 situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
 
-            if (servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim))
+            var aulasSemFrequencia = servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            if (aulasSemFrequencia > 0)
                 situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
 
             fechamento.AtualizarSituacao(situacaoFechamento);
             if (fechamento.Situacao != SituacaoFechamento.EmProcessamento)
+            {
+                GerarNotificacaoFechamento(fechamento, avaliacoesSemnota + aulasReposicaoPendentes + aulasSemPlanoAula + aulasSemFrequencia, usuarioLogado);
                 repositorioFechamento.Salvar(fechamento);
+            }
         }
 
-        public void RealizarFechamento(string codigoTurma, string disciplinaId, long periodoEscolarId)
+        public void RealizarFechamento(string codigoTurma, string disciplinaId, long periodoEscolarId, Usuario usuarioLogado)
         {
             var (turma, periodoEscolar) = ValidarTurmaEPeriodoEscolar(codigoTurma, periodoEscolarId);
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(periodoEscolar.TipoCalendarioId);
@@ -67,10 +78,10 @@ namespace SME.SGP.Dominio.Servicos
             fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
             fechamento.Id = repositorioFechamento.Salvar(fechamento);
 
-            Cliente.Executar<IServicoFechamento>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento));
+            Cliente.Executar<IServicoFechamento>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuarioLogado));
         }
 
-        public void Reprocessar(long fechamentoId)
+        public async Task Reprocessar(long fechamentoId)
         {
             var fechamento = repositorioFechamento.ObterPorId(fechamentoId);
             if (fechamento == null)
@@ -90,7 +101,18 @@ namespace SME.SGP.Dominio.Servicos
             }
             fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
             repositorioFechamento.Salvar(fechamento);
-            Cliente.Executar<IServicoFechamento>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento));
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            Cliente.Executar<IServicoFechamento>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuarioLogado));
+        }
+
+        private void GerarNotificacaoFechamento(Fechamento fechamento, int quantidadePendencias, Usuario usuarioLogado)
+        {
+            if (fechamento.Situacao == SituacaoFechamento.ProcessadoComPendencias && quantidadePendencias > 0)
+            {
+                var notificacao = new Notificacao()
+                {
+                };
+            }
         }
 
         private (Turma, PeriodoEscolar) ValidarTurmaEPeriodoEscolar(string codigoTurma, long periodoEscolarId)

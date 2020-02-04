@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public bool ValidarAulasReposicaoPendente(long fechamentoId, Turma turma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public int ValidarAulasReposicaoPendente(long fechamentoId, Turma turma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
             var aulasPendentes = repositorioAula.ObterAulasReposicaoPendentes(turma.CodigoTurma, disciplinaId, inicioPeriodo, fimPeriodo);
             if (aulasPendentes != null && aulasPendentes.Any())
@@ -54,16 +54,13 @@ namespace SME.SGP.Dominio.Servicos
                                               TipoPendencia.AulasReposicaoPendenteAprovacao);
 
                 repositorioPendencia.Salvar(pendencia);
-                return true;
             }
             else
-            {
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasReposicaoPendenteAprovacao);
-                return false;
-            }
+            return aulasPendentes.Count();
         }
 
-        public bool ValidarAulasSemFrequenciaRegistrada(long fechamentoId, Turma turma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public int ValidarAulasSemFrequenciaRegistrada(long fechamentoId, Turma turma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
             var aulasSemFrequencia = repositorioAula.ObterAulasSemFrequenciaRegistrada(turma.CodigoTurma, disciplinaId, inicioPeriodo, fimPeriodo);
             if (aulasSemFrequencia != null && aulasSemFrequencia.Any())
@@ -90,16 +87,13 @@ namespace SME.SGP.Dominio.Servicos
                                               TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
 
                 repositorioPendencia.Salvar(pendencia);
-                return true;
             }
             else
-            {
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasReposicaoPendenteAprovacao);
-                return false;
-            }
+            return aulasSemFrequencia.Count();
         }
 
-        public bool ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public int ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
             var aulasSemPlanoAula = repositorioAula.ObterAulasSemPlanoAulaNaDataAtual(turma.CodigoTurma,
                                                                             disciplinaId,
@@ -130,16 +124,13 @@ namespace SME.SGP.Dominio.Servicos
                                               TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
 
                 repositorioPendencia.Salvar(pendencia);
-                return true;
             }
             else
-            {
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
-                return false;
-            }
+            return aulasSemPlanoAula.Count();
         }
 
-        public bool ValidarAvaliacoesSemNotasParaNenhumAluno(long fechamentoId, string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public int ValidarAvaliacoesSemNotasParaNenhumAluno(long fechamentoId, string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
             var avaliacoesSemNotaParaNenhumAluno = repositorioAtividadeAvaliativa.ObterAtividadesAvaliativasSemNotaParaNenhumAluno(codigoTurma,
                                                                             disciplinaId,
@@ -166,13 +157,10 @@ namespace SME.SGP.Dominio.Servicos
                                               TipoPendencia.AvaliacaoSemNotaParaNenhumAluno);
 
                 repositorioPendencia.Salvar(pendencia);
-                return true;
             }
             else
-            {
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno);
-                return false;
-            }
+            return avaliacoesSemNotaParaNenhumAluno.Count();
         }
     }
 }

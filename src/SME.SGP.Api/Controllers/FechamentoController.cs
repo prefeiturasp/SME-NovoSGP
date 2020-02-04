@@ -2,6 +2,7 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -16,16 +17,16 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult RealizarFechamento([FromQuery]string codigoTurma, [FromQuery]string disciplinaId, [FromQuery] long periodoEscolarId, [FromServices]IServicoFechamento servicoFechamento)
         {
-            servicoFechamento.RealizarFechamento(codigoTurma, disciplinaId, periodoEscolarId);
+            servicoFechamento.RealizarFechamento(codigoTurma, disciplinaId, periodoEscolarId, null);
             return Ok();
         }
 
         [HttpPost("reprocessar/{fechamentoId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Reprocessar(long fechamentoId, [FromServices]IServicoFechamento servicoFechamento)
+        public async Task<IActionResult> Reprocessar(long fechamentoId, [FromServices]IServicoFechamento servicoFechamento)
         {
-            servicoFechamento.Reprocessar(fechamentoId);
+            await servicoFechamento.Reprocessar(fechamentoId);
             return Ok();
         }
     }
