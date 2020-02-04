@@ -19,20 +19,22 @@ function Filtro({ onFiltrar }) {
   const [refForm, setRefForm] = useState({});
 
   const usuario = useSelector(state => state.usuario);
+  const { turmaSelecionada } = usuario;
   const filtro = useSelector(state => state.filtro);
 
   const [listaDres, setListaDres] = useState([]);
 
-  // const buscarListaDres = async () => {
-  //   setListaDres(
-  //     await ServicoFiltro.listarDres(
-  //       consideraHistorico,
-  //       modalidadeSelecionada,
-  //       periodoSelecionado,
-  //       anoLetivoSelecionado
-  //     )
-  //   );
-  // };
+  const buscarListaDres = async () => {
+    setListaDres(
+      await ServicoFiltro.listarDres({
+        consideraHistorico:
+          turmaSelecionada && turmaSelecionada.consideraHistorico,
+        modalidadeSelecionada,
+        periodoSelecionado,
+        anoLetivoSelecionado,
+      })
+    );
+  };
 
   // const []
 
