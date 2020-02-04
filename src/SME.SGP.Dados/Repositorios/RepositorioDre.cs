@@ -39,9 +39,14 @@ namespace SME.SGP.Dados.Repositorios
             return armazenados;
         }
 
-        public Dre ObterPorCodigo(string dreId)
+        public Dre ObterPorCodigo(string codigo)
         {
-            return contexto.QueryFirstOrDefault<Dre>("select * from dre where dre_id = @dreId", new { dreId });
+            return contexto.Conexao.QueryFirstOrDefault<Dre>("select * from dre where dre_id = @codigo", new { codigo });
+        }
+
+        public Dre ObterPorId(long dreId)
+        {
+            return contexto.Conexao.QueryFirstOrDefault<Dre>("select * from dre where id = @dreId", new { dreId });
         }
 
         public IEnumerable<Dre> ObterTodas()
@@ -90,8 +95,5 @@ namespace SME.SGP.Dados.Repositorios
 
             return resultado;
         }
-
-        public Dre ObterPorId(long id)
-            => contexto.Conexao.QueryFirst<Dre>("select * from public.dre where id = @id", new { id });
     }
 }

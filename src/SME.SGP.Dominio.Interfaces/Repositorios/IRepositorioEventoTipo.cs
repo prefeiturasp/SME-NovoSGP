@@ -11,5 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         EventoTipo ObtenhaTipoEventoFeriado();
 
         EventoTipo ObterTipoEventoPorTipo(TipoEvento tipoEvento);
+
+        EventoTipo ObterPorCodigo(long id);
     }
 }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -21,6 +22,11 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+        }
+
+        public async Task ExcluirFisicamenteAsync(long[] ids)
+        {
+            await repositorioNotificacao.ExcluirPorIdsAsync(ids);
         }
 
         public void GeraNovoCodigo(Notificacao notificacao)

@@ -14,7 +14,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioFechamento repositorioFechamento;
+        private readonly IRepositorioPeriodoFechamento repositorioFechamento;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IUnitOfWork unitOfWork;
 
@@ -22,7 +22,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre,
                                                 IRepositorioTurma repositorioTurma,
                                                 IRepositorioUe repositorioUe,
-                                                IRepositorioFechamento repositorioFechamento,
+                                                IRepositorioPeriodoFechamento repositorioFechamento,
                                                 IRepositorioTipoCalendario repositorioTipoCalendario,
                                                 IUnitOfWork unitOfWork)
         {
