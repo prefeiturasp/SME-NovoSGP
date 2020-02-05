@@ -16,24 +16,19 @@ const LinhaConceitoFinal = props => {
   return (
     <>
       {expandirLinha[indexLinha] ? (
-        // <div>
-        <tr>
-          {/* <td className="sticky-col col-numero-chamada" /> */}
-          {/* <td className="sticky-col desc-linha-conceito-final"> */}
-          Conceitos finais Regência de classe
-          {/* </td> */}
-          {/* <div> */}
-          {/* <td colSpan={6 + 2} align="left"> */}
-          <CampoConceitoFinal />
-          <CampoConceitoFinal />
-          <CampoConceitoFinal />
-          <CampoConceitoFinal />
-          <CampoConceitoFinal />
-          {/* </td> */}
-          {/* </div> */}
-        </tr>
+        <div style={{ height: '60px' }}>
+          <tr className="linha-conceito-final">
+            <div className="desc-conceito-final">
+              Conceitos finais Regência de classe
+            </div>
+            <CampoConceitoFinal />
+            <CampoConceitoFinal />
+            <CampoConceitoFinal />
+            <CampoConceitoFinal />
+            <CampoConceitoFinal />
+          </tr>
+        </div>
       ) : (
-        // </div>
         ''
       )}
     </>
