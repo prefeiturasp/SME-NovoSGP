@@ -10,24 +10,29 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 // Funções
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import Loader from '~/componentes/loader';
 
-function DreDropDown({ form, onChange, label, url, desabilitado }) {
+function DreDropDown({ form, onChange, label, url, desabilitado, opcaoTodas }) {
+  const [carregando, setCarregando] = useState(false);
   const [listaDres, setListaDres] = useState([]);
 
   useEffect(() => {
     async function buscarDres() {
+      setCarregando(true);
       const { data } = await AbrangenciaServico.buscarDres(url);
       if (data) {
-        setListaDres(
-          data
-            .map(item => ({
-              desc: item.nome,
-              valor: item.codigo,
-              abrev: item.abreviacao,
-            }))
-            .sort(FiltroHelper.ordenarLista('desc'))
-        );
+        const lista = data
+          .map(item => ({
+            desc: item.nome,
+            valor: item.codigo,
+            abrev: item.abreviacao,
+          }))
+          .sort(FiltroHelper.ordenarLista('desc'));
+        if (opcaoTodas && lista.length > 1)
+          lista.unshift({ desc: 'Todas', valor: '0' });
+        setListaDres(lista);
       }
+      setCarregando(false);
     }
     buscarDres();
   }, [url]);
@@ -46,18 +51,20 @@ function DreDropDown({ form, onChange, label, url, desabilitado }) {
   }, [form.values.dreId, onChange]);
 
   return (
-    <SelectComponent
-      label={!label ? null : label}
-      form={form}
-      name="dreId"
-      className="fonte-14"
-      onChange={onChange}
-      lista={listaDres}
-      valueOption="valor"
-      valueText="desc"
-      placeholder="Diretoria Regional De Educação (DRE)"
-      disabled={listaDres.length === 1 || desabilitado}
-    />
+    <Loader loading={carregando} tip="">
+      <SelectComponent
+        label={!label ? null : label}
+        form={form}
+        name="dreId"
+        className="fonte-14"
+        onChange={onChange}
+        lista={listaDres}
+        valueOption="valor"
+        valueText="desc"
+        placeholder="Diretoria Regional De Educação (DRE)"
+        disabled={listaDres.length === 1 || desabilitado}
+      />
+    </Loader>
   );
 }
 
@@ -70,6 +77,7 @@ DreDropDown.propTypes = {
   label: PropTypes.string,
   url: PropTypes.string,
   desabilitado: PropTypes.bool,
+  opcaoTodas: PropTypes.bool,
 };
 
 DreDropDown.defaultProps = {
@@ -78,6 +86,7 @@ DreDropDown.defaultProps = {
   label: null,
   url: null,
   desabilitado: false,
+  opcaoTodas: false,
 };
 
 export default DreDropDown;

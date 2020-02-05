@@ -11,13 +11,13 @@ import { LimparSessao } from '~/redux/modulos/sessao/actions';
 import {
   Deslogar,
   salvarLoginRevalidado,
-  setExibirMensagemSessaoExpirou,
 } from '~/redux/modulos/usuario/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 
 import ContadorExpiracao from './contadorExpiracao';
+import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/mensagens/actions';
 
 const Container = styled.div`
   margin-right: 10px;
@@ -95,11 +95,11 @@ const TempoExpiracaoSessao = () => {
   }, [dataHoraExpiracao]);
 
   const deslogarDoUsuario = () => {
-    store.dispatch(setExibirMensagemSessaoExpirou(true));
     store.dispatch(limparDadosFiltro());
     store.dispatch(Deslogar());
     store.dispatch(LimparSessao());
     history.push(URL_LOGIN);
+    store.dispatch(setExibirMensagemSessaoExpirou(true));
   };
 
   useEffect(() => {
