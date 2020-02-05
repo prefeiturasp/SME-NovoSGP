@@ -11,6 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(n => n.AlunoId).ToColumn("aluno_id");
             Map(n => n.TipoNota).ToColumn("tipo_nota");
             Map(n => n.DisciplinaId).ToColumn("disciplina_id");
+            Map(n => n.ConceitoId).ToColumn("conceito");
         }
     }
 }
