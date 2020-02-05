@@ -213,17 +213,19 @@ export const TabelaColunasFixas = styled.div`
     z-index: 2;
   }
 
-  .campos-conceito-final {
-    border-left: none !important;
-    border-right: none !important;
-  }
-
   .tamanho-conceito-final {
     width: 126px;
     max-width: 126px;
     min-width: 126px;
   }
 
+  .linha-conceito-final {
+    position: fixed;
+    display: flex;
+    padding: -1px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+  }
 `;
 export const CaixaMarcadores = styled.span`
   border: 1.6px solid ${Base.Roxo};
