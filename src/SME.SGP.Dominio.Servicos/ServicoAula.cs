@@ -157,7 +157,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 // Busca quantidade de aulas semanais da grade de aula
                 var semana = (aula.DataAula.DayOfYear / 7) + 1;
-                var gradeAulas = consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, int.Parse(aula.DisciplinaId), semana.ToString(), aula.DataAula, usuario.CodigoRf).Result;
+                var gradeAulas = consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, Convert.ToInt64(aula.DisciplinaId), semana.ToString(), aula.DataAula, usuario.CodigoRf).Result;
 
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
@@ -225,21 +225,6 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             return "Aula cadastrada com sucesso.";
-        }
-
-        private IEnumerable<long> ObterDisciplinasProfessor(Aula aula, Usuario usuario)
-        {
-
-            IEnumerable<DisciplinaResposta> lstDisciplinasProf = servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual).Result;
-
-            return lstDisciplinasProf != null && lstDisciplinasProf.Any() ? lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular)) : null;
-        }
-
-        private IEnumerable<long> ObterDisciplinasProfessorCJ(Aula aula, Usuario usuario)
-        {
-            IEnumerable<AtribuicaoCJ> lstDisciplinasProfCJ = repositorioAtribuicaoCJ.ObterPorFiltros(null, aula.TurmaId, aula.UeId, 0, usuario.CodigoRf, usuario.Nome, null).Result;
-
-            return lstDisciplinasProfCJ != null && lstDisciplinasProfCJ.Any() ? lstDisciplinasProfCJ.Select(d => d.DisciplinaId) : null;
         }
 
         private static bool ReposicaoDeAulaPrecisaDeAprovacao(int quantidadeAulasExistentesNoDia, Turma turma)
@@ -463,6 +448,20 @@ namespace SME.SGP.Dominio.Servicos
             diasParaIncluirRecorrencia.AddRange(ObterDiaEntreDatas(inicioRecorrencia, fimRecorrencia));
             if (inicioRecorrencia.Date == fimRecorrencia.Date)
                 diasParaIncluirRecorrencia.Add(inicioRecorrencia);
+        }
+
+        private IEnumerable<long> ObterDisciplinasProfessor(Aula aula, Usuario usuario)
+        {
+            IEnumerable<DisciplinaResposta> lstDisciplinasProf = servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual).Result;
+
+            return lstDisciplinasProf != null && lstDisciplinasProf.Any() ? lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular)) : null;
+        }
+
+        private IEnumerable<long> ObterDisciplinasProfessorCJ(Aula aula, Usuario usuario)
+        {
+            IEnumerable<AtribuicaoCJ> lstDisciplinasProfCJ = repositorioAtribuicaoCJ.ObterPorFiltros(null, aula.TurmaId, aula.UeId, 0, usuario.CodigoRf, usuario.Nome, null).Result;
+
+            return lstDisciplinasProfCJ != null && lstDisciplinasProfCJ.Any() ? lstDisciplinasProfCJ.Select(d => d.DisciplinaId) : null;
         }
 
         private void PersistirWorkflowReposicaoAula(Aula aula, string nomeDre, string nomeEscola, string nomeDisciplina,

@@ -171,7 +171,7 @@ namespace SME.SGP.Aplicacao
             return listaPlanoAnual.OrderBy(c => c.Bimestre);
         }
 
-        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopia(int turmaId, int componenteCurricular)
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopia(int turmaId, long componenteCurricular)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var turmasEOL = await servicoEOL.ObterTurmasParaCopiaPlanoAnual(usuarioLogado.CodigoRf, componenteCurricular, turmaId);
