@@ -50,7 +50,7 @@ namespace SME.SGP.Dominio.Servicos
             if (fechamento == null || fechamentoBimestre == null)
                 throw new NegocioException("Não localizado período de fechamento em aberto para turma informada");
 
-            fechamentoTurma.FechamentoBimestreId = fechamentoBimestre.Id;
+            fechamentoTurma.PeriodoFechamentoBimestreId = fechamentoBimestre.Id;
 
             // Carrega notas alunos
             var notasConceitosBimestre = await MapearParaEntidade(id, entidadeDto.NotaConceitoAlunos);
