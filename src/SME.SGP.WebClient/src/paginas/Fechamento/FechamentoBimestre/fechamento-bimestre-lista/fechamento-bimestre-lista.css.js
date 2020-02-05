@@ -54,3 +54,8 @@ export const Info = styled.i`
   padding-top: 5px;
 `;
 
+export const MaisMenos = styled.i`
+  color: ${Base.Roxo} !important;
+  font-size: 18px;
+`;
+

@@ -1,16 +1,20 @@
 import { Tooltip } from 'antd';
 import React, { useState } from 'react';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
-import { Info, MarcadorAulas, Marcadores, TabelaFechamento } from './fechamento-bimestre-lista.css';
+import { Info, MarcadorAulas, Marcadores, TabelaFechamento, MaisMenos } from './fechamento-bimestre-lista.css';
+import BotaoExpandir from './botao-expandir';
 
 const FechamentoBimestreLista = props => {
   const { dados } = props;
   const [dadosLista, setDadosLista] = useState(dados.lista);
 
+  const clickExpandirRegencia = (item, index) => {
+  }
+
   return (
     <TabelaFechamento>
       <div className="row pb-4">
-        <div className="col-md-6 d-flex justify-content-start">
+        <div className="col-md-6 col-sm-12 d-flex justify-content-start">
           <Ordenacao
             className="botao-ordenacao-avaliacao"
             conteudoParaOrdenar={dadosLista}
@@ -21,7 +25,7 @@ const FechamentoBimestreLista = props => {
             }}
           />
         </div>
-        <Marcadores className="col-md-6 d-flex justify-content-end">
+        <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
           <MarcadorAulas>
             <span>Aulas previstas </span>
             <span className="numero">{dados.totalAulasPrevistas}</span>
@@ -55,7 +59,7 @@ const FechamentoBimestreLista = props => {
           </tr>
         </thead>
         <tbody>
-          {dadosLista.map(item => {
+          {dadosLista.map((item, index) => {
             return (
               <tr>
                 <td className={`text-center ${!item.ativo ? 'fundo-cinza' : ''}`}>
@@ -67,7 +71,13 @@ const FechamentoBimestreLista = props => {
                     : ''}
                 </td>
                 <td className={`${!item.ativo ? 'fundo-cinza' : ''}`}>{item.nome}</td>
-                <td className={`text-center ${!item.ativo ? 'fundo-cinza' : ''}`}>{item.nota_conceito}</td>
+                <td className={`text-center ${!item.ativo ? 'fundo-cinza' : ''}`}>
+                  {item.regencia && item.regencia.length > 0 ?
+                    <BotaoExpandir />
+                    :
+                    item.nota_conceito
+                  }
+                </td>
                 <td className={`text-center ${!item.ativo ? 'fundo-cinza' : ''}`}>{item.faltas_bimestre}</td>
                 <td className={`text-center ${!item.ativo ? 'fundo-cinza' : ''}`}>{item.ausencias_compensadas}</td>
                 <td className={`text-center ${!item.ativo ? 'fundo-cinza' : ''}`}>{item.frequencia ? item.frequencia + '%' : ''}</td>
