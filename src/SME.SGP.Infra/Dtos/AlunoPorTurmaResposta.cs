@@ -6,7 +6,9 @@ namespace SME.SGP.Infra
 {
     public class AlunoPorTurmaResposta
     {
+        public int Ano { get; set; }
         public string CodigoAluno { get; set; }
+        public int? CodigoComponenteCurricular { get; set; }
         public SituacaoMatriculaAluno CodigoSituacaoMatricula { get; set; }
         public long CodigoTurma { get; set; }
         public DateTime DataNascimento { get; set; }
