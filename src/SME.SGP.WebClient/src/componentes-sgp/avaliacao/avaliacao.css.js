@@ -15,7 +15,7 @@ export const TabelaColunasFixas = styled.div`
     position: relative;
     overflow: auto;
     white-space: nowrap;
-    height: 300px;
+    height: 400px;
 
     ::-webkit-scrollbar-track {
       background-color: #f4f4f4 !important;
@@ -199,6 +199,31 @@ export const TabelaColunasFixas = styled.div`
     border-right: solid 22px #d06d12 !important;
     padding-left: 2px !important;
   }
+
+  .desc-linha-conceito-final {
+    border-left: solid 1px ${Base.CinzaDesabilitado};
+    width: 100%;
+    min-width: 250px;
+    max-width: 250px;
+    left: 55px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
+    z-index: 2;
+  }
+
+  .campos-conceito-final {
+    border-left: none !important;
+    border-right: none !important;
+  }
+
+  .tamanho-conceito-final {
+    width: 126px;
+    max-width: 126px;
+    min-width: 126px;
+  }
+
 `;
 export const CaixaMarcadores = styled.span`
   border: 1.6px solid ${Base.Roxo};

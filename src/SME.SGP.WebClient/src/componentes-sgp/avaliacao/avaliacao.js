@@ -15,6 +15,9 @@ import {
 import CampoConceito from './campoConceito';
 import CampoNota from './campoNota';
 import { LabelSemDados } from '~/componentes';
+import ColunaConceitoFinal from './colunaConceitoFinal';
+import LinhaConceitoFinal from './linhaConceitoFinal';
+import CampoNotaFinal from './campoNotaFinal';
 
 const Avaliacao = props => {
   const dispatch = useDispatch();
@@ -103,10 +106,10 @@ const Avaliacao = props => {
     );
   };
 
-  const onClickExpandir = index => {
-    expandirLinha[index] = !expandirLinha[index];
-    setExpandirLinha([...expandirLinha]);
-  };
+  // const onClickExpandir = index => {
+  //   expandirLinha[index] = !expandirLinha[index];
+  //   setExpandirLinha([...expandirLinha]);
+  // };
 
   return (
     <>
@@ -217,13 +220,17 @@ const Avaliacao = props => {
                               })
                             : ''}
                           <td className="sticky-col col-nota-final linha-nota-conceito-final">
-                            {/* TODO Montar campo! */}
-                            10,00
+                            <ColunaConceitoFinal indexLinha={i} />
                           </td>
+                          {/* <td className="sticky-col col-nota-final linha-nota-conceito-final">
+                            <CampoNotaFinal />
+                          </td> */}
                           <td className="sticky-col col-frequencia linha-frequencia ">
                             100%
                           </td>
                         </tr>
+                        <LinhaConceitoFinal indexLinha={i} dados={dados} />
+
                         {/* TODO Padrão de marcador vai ser alterado! */}
                         {/* {expandirLinha[i] ? (
                           <>
