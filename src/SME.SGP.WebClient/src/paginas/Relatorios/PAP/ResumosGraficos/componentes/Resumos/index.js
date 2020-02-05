@@ -1,4 +1,4 @@
-import React, { useEffect, lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 
 // Componentes
 import { PainelCollapse } from '~/componentes';
@@ -6,9 +6,6 @@ import { PainelCollapse } from '~/componentes';
 function Resumos() {
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
 
-  useEffect(() => {
-    console.log('Renderizou componente resumos');
-  }, []);
   return (
     <>
       <PainelCollapse>
