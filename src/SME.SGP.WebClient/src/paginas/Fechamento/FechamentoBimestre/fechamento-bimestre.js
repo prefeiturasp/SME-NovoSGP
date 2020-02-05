@@ -10,6 +10,7 @@ import Grid from '~/componentes/grid';
 import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import FechamentoBimestreLista from './fechamento-bimestre-lista/fechamento-bimestre-lista';
+import { FechamentoMock } from './fechamento.mock';
 
 const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
@@ -24,55 +25,7 @@ const FechamentoBismestre = () => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [bimestreCorrente, setBimestreCorrente] = useState('1Bimestre');
-  const [dados, setDados] = useState({
-    totalAulasPrevistas: 343,
-    totalAulasDadas: 300,
-    lista: [
-      {
-        contador: 1,
-        informacao: 'Estudante transferido em 01/02/2020',
-        nome: 'Alvaro Ramos Grassi',
-        nota_conceito: 8.5,
-        faltas_bimestre: 12,
-        ausencias_compensadas: 12,
-        frequencia: 70,
-        ativo: true,
-        regencia: [
-          {
-            disciplina: 'Português',
-            nota: 2,
-          },
-          {
-            disciplina: 'Matemática',
-            nota: 3,
-          },
-          {
-            disciplina: 'História',
-            nota: 4,
-          },
-        ],
-      },
-      {
-        contador: 2,
-        nome: 'Aline  Grassi',
-        nota_conceito: 9,
-        faltas_bimestre: 3,
-        ausencias_compensadas: 3,
-        frequencia: 89,
-        ativo: true,
-      },
-      {
-        contador: 3,
-        nome: 'Valentina  Grassi',
-        nota_conceito: undefined,
-        faltas_bimestre: undefined,
-        ausencias_compensadas: undefined,
-        frequencia: undefined,
-        ativo: false,
-        informacao: 'desabilitado',
-      },
-    ],
-  });
+  const [dados, setDados] = useState(FechamentoMock);
 
   const onChangeDisciplinas = () => { };
 
