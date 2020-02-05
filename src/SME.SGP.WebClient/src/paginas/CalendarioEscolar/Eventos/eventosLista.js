@@ -194,8 +194,8 @@ const EventosLista = () => {
       const anoAtual = window.moment().format('YYYY');
       const tiposCalendario = await api.get(
         usuario && turmaSelecionada && turmaSelecionada.anoLetivo
-          ? `v1/calendarios/tipos/anos-letivos/${turmaSelecionada.anoLetivo}`
-          : `v1/calendarios/tipos/anos-letivos/${anoAtual}`
+          ? `v1/calendarios/tipos/anos/letivos/${turmaSelecionada.anoLetivo}`
+          : `v1/calendarios/tipos/anos/letivos/${anoAtual}`
       );
 
       if (
@@ -315,7 +315,7 @@ const EventosLista = () => {
         'Excluir evento',
         listaNomeExcluir,
         `Deseja realmente excluir ${
-          eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
+        eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
         }?`,
         'Excluir',
         'Cancelar'
@@ -330,7 +330,7 @@ const EventosLista = () => {
             eventosSelecionados.length > 1
               ? 'Eventos excluídos'
               : 'Evento excluído'
-          } com sucesso.`;
+            } com sucesso.`;
           sucesso(mensagemSucesso);
           validarFiltrar();
         }
@@ -568,8 +568,8 @@ const EventosLista = () => {
               filtroEhValido={filtroValido.valido}
             />
           ) : (
-            ''
-          )}
+              ''
+            )}
         </div>
       </Card>
     </>
