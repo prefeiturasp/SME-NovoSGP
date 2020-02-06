@@ -91,7 +91,11 @@ namespace SME.SGP.Aplicacao
                     var notas = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativasdoBimestre.Select(a => a.Id).Distinct(), alunosIds, filtro.DisciplinaCodigo);
                     var ausenciasAtividadesAvaliativas = await repositorioFrequencia.ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
 
-                    var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) }).FirstOrDefault();
+                    var consultaEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) });
+                    if (consultaEOL == null || !consultaEOL.Any())
+                        throw new NegocioException("Disciplina informada não encontrada no EOL");
+                    var disciplinaEOL = consultaEOL.First();
+
                     IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
 
                     if (disciplinaEOL.Regencia)
