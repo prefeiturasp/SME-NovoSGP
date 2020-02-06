@@ -97,10 +97,10 @@ namespace SME.SGP.Aplicacao
                     if (disciplinaEOL.Regencia)
                         disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(filtro.TurmaCodigo), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
 
-
                     var professorRfTitularTurmaDisciplina = string.Empty;
 
                     professorRfTitularTurmaDisciplina = await ObterRfProfessorTitularDisciplina(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre);
+                    var fechamentoTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(filtro.TurmaCodigo, long.Parse(filtro.DisciplinaCodigo), valorBimestreAtual);
 
                     foreach (var aluno in alunos.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
                     {
@@ -151,17 +151,25 @@ namespace SME.SGP.Aplicacao
                         notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                         // Carrega Notas do Bimestre
-                        var notasConceitoBimestre = await consultasFechamentoTurmaDisciplina.ObterNotasBimestre(aluno.CodigoAluno, long.Parse(filtro.DisciplinaCodigo), valorBimestreAtual);
-                        foreach(var notaConceitoBimestre in notasConceitoBimestre)
+                        if (fechamentoTurma != null)
                         {
-                            notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
+
+                            retorno.AuditoriaBimestreInserido = $"Nota final do bimestre inserida por {fechamentoTurma.CriadoPor} em {fechamentoTurma.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurma.CriadoEm.ToString("hh:mm:ss")}.";
+                            if (fechamentoTurma.AlteradoEm.HasValue)
+                                retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {fechamentoTurma.AlteradoPor} em {fechamentoTurma.AlteradoEm.Value.ToString("dd/MM/yyyy")}, às {fechamentoTurma.AlteradoEm.ToString("hh:mm:ss")}.";
+                            
+                            var notasConceitoBimestre = await consultasFechamentoTurmaDisciplina.ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
+                            foreach(var notaConceitoBimestre in notasConceitoBimestre)
                             {
-                                DisciplinaId = notaConceitoBimestre.DisciplinaId,
-                                Disciplina = disciplinaEOL.Regencia ?
-                                    disciplinasRegencia.First(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
-                                    disciplinaEOL.Nome,
-                                NotaConceito = (notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota : notaConceitoBimestre.ConceitoId).ToString()
-                            });
+                                notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
+                                {
+                                    DisciplinaId = notaConceitoBimestre.DisciplinaId,
+                                    Disciplina = disciplinaEOL.Regencia ?
+                                        disciplinasRegencia.First(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
+                                        disciplinaEOL.Nome,
+                                    NotaConceito = (notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota : notaConceitoBimestre.ConceitoId).ToString()
+                                });
+                            }
                         }
 
                         // Carrega Frequencia Aluno
