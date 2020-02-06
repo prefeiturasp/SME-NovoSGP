@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -12,9 +13,11 @@ namespace SME.SGP.Aplicacao
     public class ConsultasNotasConceitos : IConsultasNotasConceitos
     {
         private readonly IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa;
+        private readonly IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
         private readonly IServicoAluno servicoAluno;
@@ -23,16 +26,20 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasNotasConceitos(IServicoEOL servicoEOL, IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa,
+            IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina,
             IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitos repositorioNotasConceitos,
-            IRepositorioFrequencia repositorioFrequencia, IServicoUsuario servicoUsuario, IServicoAluno servicoAluno,
+            IRepositorioFrequencia repositorioFrequencia, IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
+            IServicoUsuario servicoUsuario, IServicoAluno servicoAluno,
             IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAtividadeAvaliativa = consultasAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(consultasAtividadeAvaliativa));
+            this.consultasFechamentoTurmaDisciplina = consultasFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(consultasFechamentoTurmaDisciplina));
             this.servicoDeNotasConceitos = servicoDeNotasConceitos ?? throw new ArgumentNullException(nameof(servicoDeNotasConceitos));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
+            this.repositorioFrequenciaAluno = repositorioFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAluno));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
             this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
@@ -83,6 +90,17 @@ namespace SME.SGP.Aplicacao
                     var alunosIds = alunos.Select(a => a.CodigoAluno).Distinct();
                     var notas = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativasdoBimestre.Select(a => a.Id).Distinct(), alunosIds, filtro.DisciplinaCodigo);
                     var ausenciasAtividadesAvaliativas = await repositorioFrequencia.ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
+
+                    var consultaEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) });
+                    if (consultaEOL == null || !consultaEOL.Any())
+                        throw new NegocioException("Disciplina informada não encontrada no EOL");
+                    var disciplinaEOL = consultaEOL.First();
+
+                    IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
+
+                    if (disciplinaEOL.Regencia)
+                        disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(filtro.TurmaCodigo), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
+
 
                     var professorRfTitularTurmaDisciplina = string.Empty;
 
@@ -135,6 +153,27 @@ namespace SME.SGP.Aplicacao
                         });
 
                         notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
+
+                        // Carrega Notas do Bimestre
+                        var notasConceitoBimestre = await consultasFechamentoTurmaDisciplina.ObterNotasBimestre(aluno.CodigoAluno, long.Parse(filtro.DisciplinaCodigo), valorBimestreAtual);
+                        foreach(var notaConceitoBimestre in notasConceitoBimestre)
+                        {
+                            notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
+                            {
+                                DisciplinaId = notaConceitoBimestre.DisciplinaId,
+                                Disciplina = disciplinaEOL.Regencia ?
+                                    disciplinasRegencia.First(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
+                                    disciplinaEOL.Nome,
+                                NotaConceito = (notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota : notaConceitoBimestre.ConceitoId).ToString()
+                            });
+                        }
+
+                        // Carrega Frequencia Aluno
+                        var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, atividadesAvaliativaEBimestres.PeriodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
+                        notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ? 
+                                        (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0) :
+                                        100;
+
                         listaAlunosDoBimestre.Add(notaConceitoAluno);
                     }
 
