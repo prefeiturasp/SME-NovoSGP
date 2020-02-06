@@ -30,6 +30,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultaRecuperacaoParalela.Listar(filtro));
         }
 
+        //[HttpGet("total-estudantes")]
+        //[ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaListagemDto>), 200)]
+        //[ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //public async Task<IActionResult> Listar([FromQuery]FiltroRecuperacaoParalelaDto filtro)
+        //{
+        //    return Ok(await consultaRecuperacaoParalela.Listar(filtro));
+        //}
+
         //[HttpGet("listar-periodos")]
         //[ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaDto>), 200)]
         //[ProducesResponseType(typeof(RetornoBaseDto), 500)]
