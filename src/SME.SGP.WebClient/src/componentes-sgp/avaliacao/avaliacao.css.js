@@ -139,6 +139,12 @@ export const TabelaColunasFixas = styled.div`
     background: ${Base.CinzaFundo};
   }
 
+  .linha-nota-conceito-final-clicada {
+    box-shadow: -8px 0px 8px -4px #8080804d;
+    background: ${Base.Roxo};
+    color: white;
+  }
+
   .linha-frequencia {
     background: ${Base.CinzaFundo};
   }
@@ -220,11 +226,18 @@ export const TabelaColunasFixas = styled.div`
   }
 
   .linha-conceito-final {
-    position: fixed;
+    position: absolute;
     display: flex;
-    padding: -1px;
-    overflow-y: hidden;
-    overflow-x: scroll;
+    border-left: solid 1px ${Base.CinzaDesabilitado};
+    align-items: center;
+    width: 100% !important;
+    box-shadow: 0px 0px 7px 3px ${Base.CinzaDesabilitado};
+    z-index: 2;
+    border-radius: 3px;
+  }
+
+  .desc-conceito-final {
+    margin: 32px;
   }
 `;
 export const CaixaMarcadores = styled.span`
@@ -241,4 +254,6 @@ export const IconePlusMarcadores = styled.i`
   font-size: 16px;
   margin-left: 5px;
   cursor: pointer;
+  font-size: 18px;
+  margin-top: 10px;
 `;

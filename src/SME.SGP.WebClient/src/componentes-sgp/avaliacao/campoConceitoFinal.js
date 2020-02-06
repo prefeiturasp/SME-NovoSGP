@@ -17,16 +17,19 @@ const CampoConceitoFinal = props => {
   };
 
   return (
-    <SelectComponent
-      onChange={valorNovo => setarValorNovo(valorNovo)}
-      valueOption="valor"
-      valueText="descricao"
-      lista={listaConceitos}
-      valueSelect={conceitoValorAtual || undefined}
-      showSearch
-      placeholder="Conceito"
-      className="tamanho-conceito-final"
-    />
+    <div style={{ marginRight: '22px' }}>
+      <SelectComponent
+        label="Matemática"
+        onChange={valorNovo => setarValorNovo(valorNovo)}
+        valueOption="valor"
+        valueText="descricao"
+        lista={listaConceitos}
+        valueSelect={conceitoValorAtual || undefined}
+        showSearch
+        placeholder="Conceito"
+        className="tamanho-conceito-final"
+      />
+    </div>
   );
 };
 

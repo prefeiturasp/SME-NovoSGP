@@ -3,7 +3,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setExpandirLinha } from '~/redux/modulos/notasConceitos/actions';
 
-import { IconePlusMarcadores } from '../ListaFrequencia/listaFrequencia.css';
+import { IconePlusMarcadores } from './avaliacao.css';
 
 const ColunaConceitoFinal = props => {
   const dispatch = useDispatch();
