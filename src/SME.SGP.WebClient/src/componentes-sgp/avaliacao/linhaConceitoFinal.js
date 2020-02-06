@@ -16,7 +16,7 @@ const LinhaConceitoFinal = props => {
   return (
     <>
       {expandirLinha[indexLinha] ? (
-        <div style={{ height: '60px' }}>
+        <div style={{ height: '83px' }}>
           <tr className="linha-conceito-final">
             <div className="desc-conceito-final">
               Conceitos finais Regência de classe
