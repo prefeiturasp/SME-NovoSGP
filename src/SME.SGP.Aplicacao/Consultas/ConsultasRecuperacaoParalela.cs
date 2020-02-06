@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
                 RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
             }));
 
-            if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento)
+            if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento && alunos.Any())
             {
                 //pegar o dados daquela turma pap
                 var dadosTurma = alunos.FirstOrDefault(w => w.CodigoComponenteCurricular.HasValue);
