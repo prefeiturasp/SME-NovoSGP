@@ -102,7 +102,6 @@ const Mes = props => {
         >
           <Div className="w-100 pl-2 fonte-16">{mesSelecionado.nome}</Div>
           <Div className="flex-shrink-1 d-flex align-items-center pr-3">
-            <Div className="pr-2 fonte-14">{mesSelecionado.eventos}</Div>
             <Div className="fonte-14">
               <Icone className="far fa-calendar-alt" />
             </Div>
