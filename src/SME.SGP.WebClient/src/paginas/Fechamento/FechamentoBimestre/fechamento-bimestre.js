@@ -136,10 +136,6 @@ const FechamentoBismestre = () => {
                       dados={dados}
                     />
                   </TabPane>
-
-                  <TabPane tab="Final" key="final">
-                    teste
-                  </TabPane>
                 </ContainerTabsCard>
               </div>
             </div>
