@@ -5,12 +5,17 @@ import { PainelCollapse } from '~/componentes';
 
 function Resumos() {
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
+  const TabelaTotalEstudantes = lazy(() =>
+    import('./componentes/TabelaTotalEstudantes')
+  );
 
   return (
     <>
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Total de estudantes">
-          <div>Teste</div>
+          <Suspense fallback={<h1>Carregando...</h1>}>
+            <TabelaTotalEstudantes />
+          </Suspense>
         </PainelCollapse.Painel>
       </PainelCollapse>
       <PainelCollapse>
