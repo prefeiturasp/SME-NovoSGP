@@ -16,18 +16,47 @@ const LinhaConceitoFinal = props => {
   return (
     <>
       {expandirLinha[indexLinha] ? (
-        <div style={{ height: '83px' }}>
-          <tr className="linha-conceito-final">
-            <div className="desc-conceito-final">
-              Conceitos finais Regência de classe
-            </div>
-            <CampoConceitoFinal />
-            <CampoConceitoFinal />
-            <CampoConceitoFinal />
-            <CampoConceitoFinal />
-            <CampoConceitoFinal />
+        <>
+          <tr>
+            <td colSpan="5" style={{ overflow: 'scroll' }}>
+              <div style={{ width: '300px', display: 'flex' }}>
+                Conceitos finais Regência de classe
+                <CampoConceitoFinal />
+                <CampoConceitoFinal />
+                <CampoConceitoFinal />
+                <CampoConceitoFinal />
+                <CampoConceitoFinal />
+                <CampoConceitoFinal />
+              </div>
+            </td>
           </tr>
-        </div>
+
+          {/* <div style={{ height: '83px' }}>
+            <tr className="linha-conceito-final">
+              <div className="desc-conceito-final">
+                Conceitos finais Regência de classe
+              </div>
+              <CampoConceitoFinal />
+              <CampoConceitoFinal />
+              <CampoConceitoFinal />
+              <CampoConceitoFinal />
+              <CampoConceitoFinal />
+            </tr>
+          </div> */}
+
+          {/* <tr>
+            <td className="sticky-col col-numero-chamada" />
+            <td className="sticky-col col-nome-aluno">
+              Conceitos finais Regência de classe
+            </td>
+            <td className="sticky-col col-nome-aluno">
+              <CampoConceitoFinal />
+            </td>
+            <td className="sticky-col col-nota-final linha-nota-conceito-final"></td>
+
+            <td className="sticky-col col-frequencia linha-frequencia "></td>
+          </tr> */}
+        </>
       ) : (
         ''
       )}
