@@ -7,6 +7,11 @@ export const TabelaFechamento = styled.div`
     vertical-align: middle !important;
   }
 
+  .container-table {
+    width: 100%;
+    overflow: auto;
+  }
+
   th,
   td {
     border: solid 1px ${Base.CinzaDesabilitado};
@@ -30,21 +35,21 @@ export const Marcadores = styled.div`
 
 export const MarcadorAulas = styled.div`
   background-color: ${Base.Roxo};
-  color:${Base.Branco};
+  color: ${Base.Branco};
   height: 22px;
   min-width: 123px;
   display: 'flex';
   align-items: 'center';
   justify-content: 'center';
-  font-size:12px;
+  font-size: 12px;
   text-align: center;
   border-radius: 4px;
   margin-top: 15px;
 
-  .numero{
+  .numero {
     font-weight: bold;
   }
-  `;
+`;
 
 export const Info = styled.i`
   color: ${Base.Roxo} !important;
@@ -58,4 +63,3 @@ export const MaisMenos = styled.i`
   color: ${Base.Roxo} !important;
   font-size: 18px;
 `;
-

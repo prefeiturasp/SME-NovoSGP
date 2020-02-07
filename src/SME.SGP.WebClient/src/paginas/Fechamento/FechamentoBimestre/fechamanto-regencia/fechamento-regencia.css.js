@@ -6,6 +6,8 @@ export const TrRegencia = styled.tr`
 `;
 
 export const TdRegencia = styled.td`
+  max-width: 300px;
+  overflow-x: auto;
   padding-left: 0 !important;
   padding-right: 0 !important;
 `;
@@ -18,16 +20,16 @@ export const CampoNotaRegencia = styled.div`
   justify-content: center;
   align-items: center;
   margin-left: 30px;
-  .disciplina{
+  .disciplina {
     font-size: 11px;
     font-weight: bold;
   }
-  .centro{
+  .centro {
     justify-content: center;
     align-items: center;
     display: flex;
   }
-  .nota{
+  .nota {
     border: 1px solid ${Base.CinzaBarras};
     width: 100px;
     height: 30px;
