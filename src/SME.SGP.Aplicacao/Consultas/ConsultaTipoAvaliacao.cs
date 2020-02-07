@@ -33,6 +33,9 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(tipoAvaliacao, possuAvaliacaoVinculada);
         }
 
+        public async Task<TipoAvaliacaoCompletaDto> ObterTipoAvaliacaoBimestral()
+            => MapearParaDto(await repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral(), false);
+
         private TipoAvaliacaoCompletaDto MapearParaDto(TipoAvaliacao tipoAvaliacao, bool? possuiAvaliacaoVinculada)
         {
             return tipoAvaliacao == null ? null : new TipoAvaliacaoCompletaDto
