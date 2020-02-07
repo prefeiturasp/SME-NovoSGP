@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import shortid from 'shortid';
 import styled from 'styled-components';
 
@@ -8,6 +7,7 @@ import { Table } from 'antd';
 
 // Componentes
 import { Base, Loader } from '~/componentes';
+import ResumosGraficosPAPServico from '~/servicos/Paginas/Relatorios/PAP/ResumosGraficos';
 
 const Tabela = styled(Table)`
   th.headerTotal {
@@ -15,10 +15,6 @@ const Tabela = styled(Table)`
     color: ${Base.Branco};
   }
 `;
-
-const servico = axios.create({
-  baseURL: 'http://demo7314211.mockable.io/api',
-});
 
 const TabelaTotalEstudantes = () => {
   const [colunas, setColunas] = useState([
@@ -45,8 +41,7 @@ const TabelaTotalEstudantes = () => {
   const buscarDadosApi = () => {
     setCarregandoDados(true);
 
-    servico
-      .get('v1/recuperacao-paralela/resumos/total-estudantes', filtro)
+    ResumosGraficosPAPServico.ListarTotalEstudantes(filtro)
       .then(resposta => {
         if (resposta.data) {
           const montaColunas = [];
@@ -146,6 +141,8 @@ const TabelaTotalEstudantes = () => {
               };
             },
           });
+
+          console.log(montaColunas);
 
           setColunas([...colunas, ...montaColunas]);
         }

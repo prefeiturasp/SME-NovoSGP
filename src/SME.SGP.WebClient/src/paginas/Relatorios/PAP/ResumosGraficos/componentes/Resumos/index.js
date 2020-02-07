@@ -6,10 +6,12 @@ import { PainelCollapse, LazyLoad } from '~/componentes';
 
 function Resumos({ dados }) {
   const filtroFake = 'ciclos';
+
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
   const TabelaTotalEstudantes = lazy(() =>
     import('./componentes/TabelaTotalEstudantes')
   );
+  const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
 
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados.Frequencia;
@@ -66,6 +68,13 @@ function Resumos({ dados }) {
         <PainelCollapse.Painel temBorda header="Frequência">
           <LazyLoad>
             <TabelaFrequencia dados={dadosTabelaFrequencia} />
+          </LazyLoad>
+        </PainelCollapse.Painel>
+      </PainelCollapse>
+      <PainelCollapse>
+        <PainelCollapse.Painel temBorda header="Resultados">
+          <LazyLoad>
+            <TabelaResultados />
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
