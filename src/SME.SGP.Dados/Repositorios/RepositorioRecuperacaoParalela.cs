@@ -32,7 +32,6 @@ namespace SME.SGP.Dados.Repositorios
             string query = @"select
 	                            count(aluno_id) as total,
 	                            turma.ano,
-	                            turma.nome as NomeTurma,
 	                            tipo_ciclo.descricao as Ciclo
                             from recuperacao_paralela rp
 	                            inner join turma on rp.turma_id = turma.turma_id

@@ -149,7 +149,7 @@ namespace SME.SGP.Aplicacao
                 PorcentagemTotal = 100,
                 Anos = totalAlunosPorSeries.Select(x => new RecuperacaoParalelaTotalAnoDto
                 {
-                    AnoDescricao = x.NomeTurma,
+                    AnoDescricao = x.Ano,
                     Quantidade = x.Total,
                     Porcentagem = (x.Total * 100) / total
                 }),
