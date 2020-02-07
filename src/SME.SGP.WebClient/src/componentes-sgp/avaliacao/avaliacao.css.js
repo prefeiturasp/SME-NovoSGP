@@ -206,19 +206,6 @@ export const TabelaColunasFixas = styled.div`
     padding-left: 2px !important;
   }
 
-  .desc-linha-conceito-final {
-    border-left: solid 1px ${Base.CinzaDesabilitado};
-    width: 100%;
-    min-width: 250px;
-    max-width: 250px;
-    left: 55px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    text-align: left;
-    z-index: 2;
-  }
-
   .tamanho-conceito-final {
     width: 126px;
     max-width: 126px;
@@ -226,20 +213,35 @@ export const TabelaColunasFixas = styled.div`
   }
 
   .linha-conceito-final {
-    position: absolute;
-    display: flex;
     border-left: solid 1px ${Base.CinzaDesabilitado};
-    align-items: center;
-    width: 100% !important;
     box-shadow: 0px 0px 7px 3px ${Base.CinzaDesabilitado};
-    z-index: 2;
     border-radius: 3px;
+    width: 400px;
+    overflow: auto;
+
+    ::-webkit-scrollbar-track {
+      background-color: #f4f4f4 !important;
+    }
+
+    ::-webkit-scrollbar {
+      width: 9px !important;
+      background-color: rgba(229, 237, 244, 0.71) !important;
+      border-radius: 2.5px !important;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #a8a8a8 !important;
+      border-radius: 3px !important;
+    }
   }
 
-  .desc-conceito-final {
-    margin: 32px;
+  .desc-linha-conceito-final {
+    margin-left: 20px;
+    margin-top: 32px;
+    margin-right: 37px;
   }
 `;
+
 export const CaixaMarcadores = styled.span`
   border: 1.6px solid ${Base.Roxo};
   border-radius: 9px;
