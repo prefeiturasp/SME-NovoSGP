@@ -46,7 +46,15 @@ namespace SME.SGP.Aplicacao
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
         }
 
-        private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId)
+        public async Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(long dreId, long ueId, int cicloId, int turmaId, int ano)
+        {
+            var totalAlunosPorSeries = await repositorioRecuperacaoParalela.ListarTotalAlunosSeries(dreId, ueId, cicloId, turmaId, ano);
+            if (!totalAlunosPorSeries.Any()) return null;
+            var total = totalAlunosPorSeries.Sum(s => s.Total);
+            return MapearParaDtoTotalEstudantes(total, totalAlunosPorSeries);
+        }
+
+        private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, string turmaId, long periodoId)
         {
             //alunos eol que não estão ainda na tabela de recuperação paralela
             var alunos = alunosEol.Where(w => !alunosRecuperacaoParalela.Select(s => s.AlunoId).Contains(Convert.ToInt32(w.CodigoAluno))).ToList();
@@ -107,7 +115,7 @@ namespace SME.SGP.Aplicacao
                 RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
             }));
 
-            if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento)
+            if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento && alunos.Any())
             {
                 //pegar o dados daquela turma pap
                 var dadosTurma = alunos.FirstOrDefault(w => w.CodigoComponenteCurricular.HasValue);
@@ -130,6 +138,28 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return recuperacaoRetorno;
+        }
+
+        private RecuperacaoParalelaTotalEstudanteDto MapearParaDtoTotalEstudantes(int total, IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto> totalAlunosPorSeries)
+        {
+            //todo: mudar double para um numero que quebre direito a porcentagem
+            return new RecuperacaoParalelaTotalEstudanteDto
+            {
+                QuantidadeTotal = total,
+                PorcentagemTotal = 100,
+                Anos = totalAlunosPorSeries.Select(x => new RecuperacaoParalelaTotalAnoDto
+                {
+                    AnoDescricao = x.Ano,
+                    Quantidade = x.Total,
+                    Porcentagem = (x.Total * 100) / total
+                }),
+                Ciclos = totalAlunosPorSeries.GroupBy(g => g.Ciclo).Select(x => new RecuperacaoParalelaTotalCicloDto
+                {
+                    CicloDescricao = x.First().Ciclo,
+                    Quantidade = x.Sum(c => c.Total),
+                    Porcentagem = (x.Sum(c => c.Total) * 100) / total
+                })
+            };
         }
     }
 }
