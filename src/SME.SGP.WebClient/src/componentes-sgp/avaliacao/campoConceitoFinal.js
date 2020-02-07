@@ -17,7 +17,7 @@ const CampoConceitoFinal = props => {
   };
 
   return (
-    <div style={{ marginRight: '22px' }}>
+    <div style={{ marginRight: '22px', paddingRight: '22px' }}>
       <SelectComponent
         label="Matemática"
         onChange={valorNovo => setarValorNovo(valorNovo)}

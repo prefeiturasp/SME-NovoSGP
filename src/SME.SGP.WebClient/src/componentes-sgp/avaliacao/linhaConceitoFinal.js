@@ -13,14 +13,23 @@ const LinhaConceitoFinal = props => {
 
   const { indexLinha, dados } = props;
 
+  const quantidadeAvaliacoes =
+    dados && dados.avaliacoes && dados.avaliacoes.length
+      ? dados.avaliacoes.length
+      : 0;
   return (
     <>
       {expandirLinha[indexLinha] ? (
         <>
           <tr>
-            <td colSpan="5" style={{ overflow: 'scroll' }}>
-              <div style={{ width: '300px', display: 'flex' }}>
-                Conceitos finais Regência de classe
+            <td
+              colSpan={4 + quantidadeAvaliacoes}
+              className="linha-conceito-final"
+            >
+              <div style={{ width: '400px', display: 'flex' }}>
+                <div className="desc-linha-conceito-final">
+                  Conceitos finais Regência de classe
+                </div>
                 <CampoConceitoFinal />
                 <CampoConceitoFinal />
                 <CampoConceitoFinal />
@@ -30,32 +39,6 @@ const LinhaConceitoFinal = props => {
               </div>
             </td>
           </tr>
-
-          {/* <div style={{ height: '83px' }}>
-            <tr className="linha-conceito-final">
-              <div className="desc-conceito-final">
-                Conceitos finais Regência de classe
-              </div>
-              <CampoConceitoFinal />
-              <CampoConceitoFinal />
-              <CampoConceitoFinal />
-              <CampoConceitoFinal />
-              <CampoConceitoFinal />
-            </tr>
-          </div> */}
-
-          {/* <tr>
-            <td className="sticky-col col-numero-chamada" />
-            <td className="sticky-col col-nome-aluno">
-              Conceitos finais Regência de classe
-            </td>
-            <td className="sticky-col col-nome-aluno">
-              <CampoConceitoFinal />
-            </td>
-            <td className="sticky-col col-nota-final linha-nota-conceito-final"></td>
-
-            <td className="sticky-col col-frequencia linha-frequencia "></td>
-          </tr> */}
         </>
       ) : (
         ''
