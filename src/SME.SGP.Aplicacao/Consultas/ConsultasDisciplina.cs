@@ -72,51 +72,29 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
+                IEnumerable<DisciplinaResposta> disciplinas;
+
                 if (perfilAtual == Perfis.PERFIL_CJ)
                 {
-                    // Carrega Disciplinas da Atribuição do CJ
                     var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
                     if (atribuicoes != null && atribuicoes.Any())
                     {
                         var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
-                        foreach(var disciplinaEOL in disciplinasEol)
-                        {
-                            if (disciplinaEOL.CodigoComponenteCurricularId > 0)
-                            {
-                                var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaEOL.CodigoComponenteCurricularId });
-                                if (consultaDisciplinaPai == null)
-                                    throw new NegocioException($"Disciplina Pai de codigo [{disciplinaEOL.CodigoComponenteCurricularId}] não localizada no EOL.");
-
-                                disciplinasDto.Add(consultaDisciplinaPai.First());
-                            }
-                            else 
-                                disciplinasDto.Add(disciplinaEOL);
-                        }
+                        disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
                     }
+                    else disciplinas = null;
                 }
                 else
+                    disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
+
+                if (disciplinas != null && disciplinas.Any())
                 {
-                    // Carrega disciplinas do professor
-                    IEnumerable<DisciplinaResposta> disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
-                    foreach(var disciplina in disciplinas)
-                    {
-                        if (disciplina.CodigoComponenteCurricularPai > 0)
-                        {
-                            var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina.CodigoComponenteCurricularPai });
-                            if (consultaDisciplinaPai == null)
-                                throw new NegocioException($"Disciplina Pai de codigo [{disciplina.CodigoComponenteCurricularPai}] não localizada no EOL.");
+                    disciplinasDto = await MapearParaDto(disciplinas, turmaPrograma);
 
-                            disciplinasDto.Add(consultaDisciplinaPai.First());
-                        }
-                            disciplinasDto.Add(MapearDisciplinaResposta(disciplina));
-                    }
-                }
-
-                if (disciplinasDto.Any())
                     await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
+                }
             }
-
             return disciplinasDto;
         }
 
