@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            var chaveCache = $"Disciplinas-{codigoTurma}-{login}--{perfilAtual}";
+            var chaveCache = $"Disciplinas-Agrupadas-{codigoTurma}-{login}--{perfilAtual}";
             var disciplinasCacheString = repositorioCache.Obter(chaveCache);
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
@@ -126,11 +126,15 @@ namespace SME.SGP.Aplicacao
                         {
                             if (disciplinaEOL.CodigoComponenteCurricularId > 0)
                             {
-                                var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaEOL.CodigoComponenteCurricularId });
-                                if (consultaDisciplinaPai == null)
-                                    throw new NegocioException($"Disciplina Pai de codigo [{disciplinaEOL.CodigoComponenteCurricularId}] não localizada no EOL.");
+                                // TODO Consulta por disciplina pai não esta funcionando no EOL. Refatorar na proxima sprint
+                                disciplinaEOL.CodigoComponenteCurricularId = 11211124;
+                                disciplinaEOL.Nome = "REG CLASSE INTEGRAL";
 
-                                disciplinasDto.Add(consultaDisciplinaPai.First());
+                                //var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaEOL.CodigoComponenteCurricularId });
+                                //if (consultaDisciplinaPai == null)
+                                //    throw new NegocioException($"Disciplina Pai de codigo [{disciplinaEOL.CodigoComponenteCurricularId}] não localizada no EOL.");
+
+                                //disciplinasDto.Add(consultaDisciplinaPai.First());
                             }
                             else
                                 disciplinasDto.Add(disciplinaEOL);
@@ -145,13 +149,18 @@ namespace SME.SGP.Aplicacao
                     {
                         if (disciplina.CodigoComponenteCurricularPai.HasValue)
                         {
-                            var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina.CodigoComponenteCurricularPai.Value });
-                            if (consultaDisciplinaPai == null)
-                                throw new NegocioException($"Disciplina Pai de codigo [{disciplina.CodigoComponenteCurricularPai}] não localizada no EOL.");
+                            // TODO Consulta por disciplina pai não esta funcionando no EOL. Refatorar na proxima sprint
+                            disciplina.CodigoComponenteCurricular = 11211124;
+                            disciplina.Nome = "REG CLASSE INTEGRAL";
 
-                            disciplinasDto.Add(consultaDisciplinaPai.First());
+                            //var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina.CodigoComponenteCurricularPai.Value });
+                            //if (consultaDisciplinaPai == null)
+                            //    throw new NegocioException($"Disciplina Pai de codigo [{disciplina.CodigoComponenteCurricularPai}] não localizada no EOL.");
+
+                            //disciplinasDto.Add(consultaDisciplinaPai.First());
                         }
-                        disciplinasDto.Add(await MapearParaDto(disciplina, true));
+                        else
+                            disciplinasDto.Add(await MapearParaDto(disciplina, true));
                     }
                 }
 
