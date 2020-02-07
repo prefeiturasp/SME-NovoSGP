@@ -152,6 +152,8 @@ namespace SME.SGP.Aplicacao
                             PeriodoFim = atividadesAvaliativaEBimestres.PeriodoAtual.PeriodoFim
                         });
 
+                        notaConceitoAluno.PodeEditar = notaConceitoAluno.Marcador != null || notaConceitoAluno.Marcador.Tipo == TipoMarcadorFrequencia.Novo;
+
                         notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                         // Carrega Notas do Bimestre
