@@ -11,7 +11,7 @@ const FechamentoRegencia = props => {
 
   return (
     <TrRegencia id={idRegencia} style={{ display: 'none' }}>
-      <td colSpan="2" style={{ verticalAlign: 'middle' }}>
+      <td colSpan="2" className="destaque-label">
         Conceitos finais regência de classe
       </td>
       <TdRegencia colSpan="4">
