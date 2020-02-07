@@ -9,17 +9,15 @@ export const Lista = styled.div`
     opacity: 0.4 !important;
     cursor: unset !important;
   }
-  td {
-    padding-top: 25px !important;
-  }
 
   .tabela-fechamento-final-thead {
     background: ${Base.CinzaFundo} !important;
     text-align: center;
-
     th {
       border-right: solid 1px ${Base.CinzaDesabilitado};
       border-bottom: 1px solid ${Base.CinzaDesabilitado};
+      vertical-align: middle;
+      padding: 4px;
     }
 
     tr {
@@ -38,6 +36,10 @@ export const Lista = styled.div`
     .coluna-ordenacao-tr {
       border-left: none;
     }
+    .col-nome-aluno {
+      text-align: left !important;
+      padding-left: 30px;
+    }
   }
 
   .tabela-fechamento-final-tbody {
@@ -47,18 +49,19 @@ export const Lista = styled.div`
     tr td {
       border-right: solid 1px ${Base.CinzaDesabilitado};
       border-bottom: 1px solid ${Base.CinzaDesabilitado};
+      padding-bottom: 0px;
+      vertical-align: middle;
     }
 
     .border-right-none {
       border-right: none !important;
     }
-  }
-
-  .col-nome-aluno {
-    width: 250px;
-    max-width: 250px;
-    min-width: 250px;
-    text-align: left;
+    .col-nome-aluno {
+      width: 250px;
+      max-width: 250px;
+      min-width: 250px;
+      text-align: left !important;
+    }
   }
 
   .col-nota-conceito {
@@ -89,11 +92,9 @@ export const Lista = styled.div`
     margin-right: 5px;
     margin-left: 5px;
     text-align: center;
-    padding-top: 7px;
+    padding-top: 9px;
     color: #a4a4a4;
-  }
-  .col-notas {
-    display: flex;
+    float: left;
   }
 
   .width-120 {
