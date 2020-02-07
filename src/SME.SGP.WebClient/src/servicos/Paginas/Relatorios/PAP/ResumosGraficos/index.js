@@ -1,15 +1,29 @@
-import axios from 'axios';
 import api from '~/servicos/api';
 
-const MockAPI = axios.create({
-  baseURL: 'http://demo8322243.mockable.io/api',
-});
-
 const ResumosGraficosPAPServico = {
+  ListarTotalEstudantes(params) {
+    return api.get(
+      `https://demo7314211.mockable.io/api/v1/recuperacao-paralela/resumos/total-estudantes`,
+      {
+        params,
+      }
+    );
+  },
   ListarFrequencia(params) {
-    return MockAPI.get(`/v1/recuperacao-paralela/resumos/frequencia`, {
-      params,
-    });
+    return api.get(
+      `http://demo8322243.mockable.io/api/v1/recuperacao-paralela/resumos/frequencia`,
+      {
+        params,
+      }
+    );
+  },
+  ListarResultados(params) {
+    return api.get(
+      `http://demo7314211.mockable.io/api/v1/recuperacao-paralela/resumos/resultado`,
+      {
+        params,
+      }
+    );
   },
 };
 
