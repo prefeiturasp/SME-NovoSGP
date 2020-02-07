@@ -2,10 +2,17 @@ import styled from 'styled-components';
 import { Base } from '~/componentes';
 
 export const TrRegencia = styled.tr`
-  vertical-align: middle;
+  td {
+    vertical-align: middle;
+  }
+  .destaque-label {
+    box-shadow: -5px 0px 9px 5px rgba(0, 0, 0, 0.095);
+  }
 `;
 
 export const TdRegencia = styled.td`
+  box-shadow: 6px 0px 9px 5px rgba(0, 0, 0, 0.095);
+  margin-left: 30px;
   max-width: 300px;
   overflow-x: auto;
   padding-left: 0 !important;
