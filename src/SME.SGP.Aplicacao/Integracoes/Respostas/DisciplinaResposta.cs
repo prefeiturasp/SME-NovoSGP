@@ -21,5 +21,8 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         
         [JsonProperty("registrofrequencia")]
         public bool RegistroFrequencia { get; set; }
+
+        [JsonProperty("lancaNota")]
+        public bool LancaNota { get; set; }
     }
 }
