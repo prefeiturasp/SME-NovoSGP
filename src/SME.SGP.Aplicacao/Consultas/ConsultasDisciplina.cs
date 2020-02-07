@@ -143,15 +143,15 @@ namespace SME.SGP.Aplicacao
                     IEnumerable<DisciplinaResposta> disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
                     foreach (var disciplina in disciplinas)
                     {
-                        if (disciplina.CodigoComponenteCurricularPai > 0)
+                        if (disciplina.CodigoComponenteCurricularPai.HasValue)
                         {
-                            var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina.CodigoComponenteCurricularPai });
+                            var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina.CodigoComponenteCurricularPai.Value });
                             if (consultaDisciplinaPai == null)
                                 throw new NegocioException($"Disciplina Pai de codigo [{disciplina.CodigoComponenteCurricularPai}] não localizada no EOL.");
 
                             disciplinasDto.Add(consultaDisciplinaPai.First());
                         }
-                        disciplinasDto.Add(await MapearParaDto(disciplina));
+                        disciplinasDto.Add(await MapearParaDto(disciplina, true));
                     }
                 }
 
@@ -213,7 +213,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var disciplina in disciplinas)
                 {
-                    retorno.Add(await MapearParaDto(disciplina));
+                    retorno.Add(await MapearParaDto(disciplina, turmaPrograma));
                 }
             }
             return retorno;
