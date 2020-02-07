@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IServicoFechamentoFinal fechamentoFinal;
 
-        public ComandosFechamentoFinal(IServicoFechamentoFinal fechamentoFinal)
+        public ComandosFechamentoFinal(IServicoFechamentoFinal fechamentoFinal, IRepositorioConceito repositorioConceito)
         {
             this.fechamentoFinal = fechamentoFinal ?? throw new System.ArgumentNullException(nameof(fechamentoFinal));
         }
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                 fechamentoFinal.Nota = fechamentoFinalSalvarDto.Nota;
             else
             {
-                fechamentoFinal.Conceito
+                fechamentoFinal.Conceito =
             }
 
             return fechamentoFinal;
