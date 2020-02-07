@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         public int CodigoComponenteCurricular { get; set; }
 
         [JsonProperty("codDisciplinaPai")]
-        public int CodigoComponenteCurricularPai { get; set; }
+        public int? CodigoComponenteCurricularPai { get; set; }
 
         [JsonProperty("disciplina")]
         public string Nome { get; set; }
