@@ -101,5 +101,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and lower(f_unaccent(descricao)) LIKE f_unaccent(@descricao) ");
             }
         }
+
+        public async Task<TipoAvaliacao> ObterTipoAvaliacaoBimestral()
+            => await database.Conexao.QueryFirstAsync<TipoAvaliacao>("select * from tipo_avaliacao where descricao='Avaliação bimestral'");
     }
 }

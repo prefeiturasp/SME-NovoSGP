@@ -154,6 +154,7 @@ namespace SME.SGP.Aplicacao
                         Regencia = disciplina.Regencia,
                         Compartilhada = disciplina.Compartilhada,
                         RegistraFrequencia = disciplina.RegistroFrequencia,
+                        LancaNota = disciplina.LancaNota,
                         PossuiObjetivos = !turmaPrograma && await consultasObjetivoAprendizagem
                         .DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
                     });
