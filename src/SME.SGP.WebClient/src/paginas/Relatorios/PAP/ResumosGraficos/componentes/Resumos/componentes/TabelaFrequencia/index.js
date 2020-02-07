@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useMemo } from 'react';
+import t from 'prop-types';
 
 // Ant
 import { Table } from 'antd';
@@ -7,47 +7,12 @@ import { Table } from 'antd';
 // Componentes
 import { Base } from '~/componentes';
 
-const servico = axios.create({
-  baseURL: 'http://demo7314211.mockable.io/api',
-});
-
-const test = [
-  {
-    QuantidadeTotal: 90,
-    PorcentagemTotal: 90,
-    Frequencia: [
-      {
-        Descricao: 'Frequente',
-        Quantidade: 36,
-        Porcentagem: 40,
-        Anos: [
-          {
-            CodigoAno: 1,
-            DescricaoAno: '1B',
-            Quantidade: 9,
-            Porcentagem: 22,
-          },
-          {
-            CodigoAno: 1,
-            DescricaoAno: '2C',
-            Quantidade: 9,
-            Porcentagem: 22,
-          },
-          {
-            CodigoAno: 1,
-            DescricaoAno: '4D',
-            Quantidade: 9,
-            Porcentagem: 22,
-          },
-        ],
-      },
-    ],
-  },
-];
+// Estilos
+import { ContainerTabela } from './styles';
 
 const dadosBackend = [
   {
-    id: 0,
+    key: '0',
     DescricaoFrequencia: 'Frequente',
     TipoDado: 'Quantidade',
     Cor: Base.Laranja,
@@ -60,7 +25,7 @@ const dadosBackend = [
     Total: 36,
   },
   {
-    id: 1,
+    key: '1',
     DescricaoFrequencia: 'Frequente',
     TipoDado: 'Porcentagem',
     Cor: Base.Laranja,
@@ -73,7 +38,7 @@ const dadosBackend = [
     Total: 36,
   },
   {
-    id: 2,
+    key: '2',
     DescricaoFrequencia: 'Pouco frequente',
     TipoDado: 'Quantidade',
     Cor: Base.Vermelho,
@@ -86,7 +51,7 @@ const dadosBackend = [
     Total: 36,
   },
   {
-    id: 3,
+    key: '3',
     DescricaoFrequencia: 'Pouco frequente',
     TipoDado: 'Porcentagem',
     Cor: Base.Vermelho,
@@ -100,24 +65,33 @@ const dadosBackend = [
   },
 ];
 
-function TabelaFrequencia() {
-  const [dadosTabela, setDadosTabela] = useState([]);
+function TabelaFrequencia({ dados }) {
+  const renderizarCor = descricao => {
+    const mapa = {
+      Frequente: Base.Laranja,
+      'Pouco frequente': Base.Vermelho,
+      'Não comparece': Base.Azul,
+      Total: Base.Verde,
+    };
+    return mapa[descricao];
+  };
 
-  const cores = [Base.Laranja, Base.Vermelho, Base.Azul, Base.Verde];
-
-  const colunas = [
+  const colunasBase = [
     {
       title: 'Ano',
-      dataIndex: 'DescricaoFrequencia',
+      dataIndex: 'FrequenciaDescricao',
       colSpan: 2,
-      fixed: 'left',
+      // fixed: 'left',
       width: 150,
       render: (text, row, index) => {
         return {
           children: text,
           props: {
             rowSpan: index % 2 === 0 ? 2 : 0,
-            style: { borderLeft: `7px solid ${row.Cor}` },
+            style: {
+              borderLeft: `7px solid ${renderizarCor(row.FrequenciaDescricao)}`,
+              fontWeight: 'bold',
+            },
           },
         };
       },
@@ -127,69 +101,92 @@ function TabelaFrequencia() {
       dataIndex: 'TipoDado',
       colSpan: 0,
       width: 150,
-      fixed: 'left',
-    },
-    {
-      title: '3C',
-      dataIndex: '3C',
-    },
-    {
-      title: '4C',
-      dataIndex: '3C',
-    },
-    {
-      title: '4E',
-      dataIndex: '3C',
-    },
-    {
-      title: '5C',
-      dataIndex: '5C',
-    },
-    {
-      title: '6C',
-      dataIndex: '6C',
-    },
-    {
-      title: '6B',
-      dataIndex: '6B',
-    },
-    {
-      title: 'Total',
-      dataIndex: 'Total',
-      width: 100,
-      fixed: 'right',
+      // fixed: 'left',
+      render: (text, row, index) => {
+        return {
+          children: text,
+          props: {
+            style: {
+              fontWeight: 'bold',
+            },
+          },
+        };
+      },
     },
   ];
 
-  // const colunas = () => {
-  // 	return
-  // }
+  const colunasTabela = useMemo(() => {
+    if (!dados) return colunasBase;
 
-  useEffect(async () => {
-    async function buscarDados() {
-      const { data, status } = await servico.get(
-        '/v1/recuperacao-paralela/resumos/frequencia'
-      );
-      if (data && status === 200) {
-        setDadosTabela(data[0]);
-      }
-    }
-    buscarDados();
-  }, []);
+    const colunasParaExcluir = [
+      'TipoDado',
+      'FrequenciaDescricao',
+      'key',
+      'Descricao',
+    ];
+
+    const colunasParaRenderizar = Object.keys(dados[0]).filter(
+      item => colunasParaExcluir.indexOf(item) === -1
+    );
+
+    const colunasParaIncluir = colunasParaRenderizar.map(item => {
+      const novaColuna = { title: item, dataIndex: item };
+      if (item !== 'Total') return novaColuna;
+      return {
+        ...novaColuna,
+        width: 100,
+        // fixed: 'right',
+        // render: (text, row, index) => {
+        //   return {
+        //     children: text,
+        //     props: {
+        //       style: {
+        //         backgroundColor: Base.Roxo,
+        //         color: 'white',
+        //       },
+        //     },
+        //   };
+        // },
+      };
+    });
+
+    return [...colunasBase, ...colunasParaIncluir];
+  }, [colunasBase, dados]);
 
   return (
     <>
-      <Table
-        pagination={false}
-        columns={colunas}
-        dataSource={dadosBackend || []}
-        rowKey="id"
-        key="id"
-        bordered
-        size="small"
-      />
+      <ContainerTabela>
+        <Table
+          pagination={false}
+          columns={colunasTabela}
+          dataSource={dados || []}
+          bordered
+          rowKey="key"
+          key="key"
+          size="small"
+        />
+      </ContainerTabela>
+      {/* {dadosBackend && (
+        <div style={{ height: 400 }}>
+          <Graficos.Barras
+            dados={dadosBackend.filter(x => x.TipoDado === 'Porcentagem')}
+            indice="DescricaoFrequencia"
+            chaves={['3C', '4C', '4E', '5C', '6C', '6B']}
+            legendaBaixo="teste"
+            legendaEsquerda="teste2"
+          />
+        </div>
+      )} */}
     </>
   );
 }
+
+TabelaFrequencia.propTypes = {
+  dados: t.oneOfType([t.any]),
+};
+
+TabelaFrequencia.defaultProps = {
+  dados: [],
+};
 
 export default TabelaFrequencia;

@@ -22,3 +22,5 @@ export { default as LabelSemDados } from './labelSemDados';
 export { default as Alert } from './alert';
 export { default as TabComponent } from './tabs/tabs';
 export { default as PainelCollapse } from './PainelCollapse';
+export { default as LazyLoad } from './LazyLoad';
+export { default as Graficos } from './Graficos';
