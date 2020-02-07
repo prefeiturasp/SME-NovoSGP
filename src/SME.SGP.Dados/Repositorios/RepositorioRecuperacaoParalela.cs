@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<RetornoRecuperacaoParalela>> Listar(long turmaId, long periodoId)
+        public async Task<IEnumerable<RetornoRecuperacaoParalela>> Listar(string turmaId, long periodoId)
         {
             var query = new StringBuilder();
             query.AppendLine(MontaCamposCabecalho());
@@ -24,6 +24,27 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and recRel.periodo_recuperacao_paralela_id = @periodoId ");
             query.AppendLine("and rec.excluido = false ");
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId, periodoId });
+        }
+
+        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(long dreId, long ueId, int cicloId, int turmaId, int ano)
+        {
+            //TODO: colocar os wheres
+            string query = @"select
+	                            count(aluno_id) as total,
+	                            turma.ano,
+	                            turma.nome as NomeTurma,
+	                            tipo_ciclo.descricao as Ciclo
+                            from recuperacao_paralela rp
+	                            inner join turma on rp.turma_id = turma.turma_id
+	                            inner join tipo_ciclo_ano tca on turma.modalidade_codigo = tca.modalidade and turma.ano = tca.ano
+	                            inner join tipo_ciclo on tca.tipo_ciclo_id = tipo_ciclo.id
+	                            inner join recuperacao_paralela_periodo_objetivo_resposta rpp on rp.id = rpp.recuperacao_paralela_id
+	                            where rpp.objetivo_id = 4
+                            group by
+	                            turma.nome,
+	                            turma.ano,
+	                            tipo_ciclo.descricao";
+            return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoDto>(query.ToString(), new { turmaId });
         }
 
         private string MontaCamposCabecalho()
