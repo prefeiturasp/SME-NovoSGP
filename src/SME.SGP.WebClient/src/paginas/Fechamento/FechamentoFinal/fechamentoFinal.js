@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Ordenacao } from '~/componentes-sgp';
 import { Lista } from './fechamentoFinal.css';
 import { Card, Auditoria } from '~/componentes';
-import CampoConceito from '~/componentes-sgp/avaliacao/campoConceito';
-import CampoNota from '~/componentes-sgp/avaliacao/campoNota';
 import CampoNumero from '~/componentes/campoNumero';
 
 const FechamentoFinal = () => {
