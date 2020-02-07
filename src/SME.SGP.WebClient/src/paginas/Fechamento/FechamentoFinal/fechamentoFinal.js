@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Ordenacao } from '~/componentes-sgp';
-import { Lista } from './fechamentoFinal.css';
+import { Lista, MaisMenos } from './fechamentoFinal.css';
 import { Card, Auditoria } from '~/componentes';
 import CampoNumero from '~/componentes/campoNumero';
 
 const FechamentoFinal = () => {
   const [ehNota, setEhNota] = useState(true);
+  const [ehRegencia, setEhRegencia] = useState(true);
   const [auditoria, setAuditoria] = useState({
     criadoPor: '123',
     criadoEm: '',
@@ -18,101 +19,94 @@ const FechamentoFinal = () => {
     {
       nome: 'Alvaro Ramos Grassi',
       numeroChamada: 1,
-      notas: [1, 2, 3, 4],
       totalFaltas: 12,
       totalAusenciasCompensadas: 12,
       frequencia: 70,
-      notasConceito: [8.5],
-    },
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 2,
-      notas: [1, 2, 3, 4],
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceito: [8.5],
-    },
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 3,
-      notas: [1, 2, 3, 4],
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceito: [8.5],
-    },
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 4,
-      notas: [1, 2, 3, 4],
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceito: [8.5],
-    },
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 1,
-      notas: [1, 2, 3, 4],
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceito: [8.5],
-    },
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 1,
-      notas: [1, 2, 3, 4],
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceito: [8.5],
-    },
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 1,
-      notas: [1, 2, 3, 4],
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceito: [8.5],
-    },
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 1,
-      notas: [1, 2, 3, 4],
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceito: [8.5],
-    },
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 1,
-      notas: [1, 2, 3, 4],
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceito: [8.5],
-    },
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 1,
-      notas: [1, 2, 3, 4],
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceito: [8.5],
-    },
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 1,
-      notas: [1, 2, 3, 4],
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceito: [8.5],
+      notasConceitoBimestre: [
+        {
+          notaConceito: 8.5,
+          disciplinaCodigo: 123,
+          bimestre: 1,
+        },
+        {
+          notaConceito: 7.5,
+          disciplinaCodigo: 123,
+          bimestre: 1,
+        },
+        {
+          notaConceito: 1.5,
+          disciplinaCodigo: 222,
+          bimestre: 1,
+        },
+        {
+          notaConceito: 8.5,
+          disciplinaCodigo: 123,
+          bimestre: 1,
+        },
+        {
+          notaConceito: 3.5,
+          disciplinaCodigo: 123,
+          bimestre: 2,
+        },
+        {
+          notaConceito: 6,
+          disciplinaCodigo: 123,
+          bimestre: 2,
+        },
+        {
+          notaConceito: 9,
+          disciplinaCodigo: 222,
+          bimestre: 2,
+        },
+        {
+          notaConceito: 3,
+          disciplinaCodigo: 123,
+          bimestre: 2,
+        },
+      ],
+      notasConceitoFinal: [
+        {
+          notaConceito: 8.5,
+          disciplinaCodigo: 123,
+          bimestre: 1,
+        },
+        {
+          notaConceito: 7.5,
+          disciplinaCodigo: 123,
+          bimestre: 1,
+        },
+        {
+          notaConceito: 1.5,
+          disciplinaCodigo: 222,
+          bimestre: 1,
+        },
+        {
+          notaConceito: 8.5,
+          disciplinaCodigo: 123,
+          bimestre: 1,
+        },
+        {
+          notaConceito: 3.5,
+          disciplinaCodigo: 123,
+          bimestre: 2,
+        },
+        {
+          notaConceito: 6,
+          disciplinaCodigo: 123,
+          bimestre: 2,
+        },
+        {
+          notaConceito: 9,
+          disciplinaCodigo: 222,
+          bimestre: 2,
+        },
+        {
+          notaConceito: 3,
+          disciplinaCodigo: 123,
+          bimestre: 2,
+        },
+      ],
+      regenciaExpandida: false,
     },
   ]);
 
@@ -155,8 +149,8 @@ const FechamentoFinal = () => {
                         {aluno.nome}
                       </td>
                       <td className="sticky-col col-nota-conceito">
-                        {aluno.notas.map(c => (
-                          <div className="input-notas">{c}</div>
+                        {aluno.notasConceitoBimestre.map(c => (
+                          <div className="input-notas">{c.notaConceito}</div>
                         ))}
                       </td>
                       <td className="sticky-col">{aluno.totalFaltas}</td>
@@ -165,15 +159,29 @@ const FechamentoFinal = () => {
                       </td>
                       <td className="sticky-col">{aluno.frequencia}%</td>
                       <td className="sticky-col col-conceito-final">
-                        {aluno.notasConceito.map(nota => (
-                          <CampoNumero
-                            value={nota}
-                            min={0}
-                            max={10}
-                            step={0.5}
-                            placeholder="Nota"
+                        {ehRegencia ? (
+                          <MaisMenos
+                            className={
+                              aluno.regenciaExpandida
+                                ? 'fas fa-minus-circle'
+                                : 'fas fa-plus-circle'
+                            }
+                            onClick={() => {
+                              aluno.regenciaExpandida = !aluno.regenciaExpandida;
+                              setAlunos(alunos);
+                            }}
                           />
-                        ))}
+                        ) : (
+                          aluno.notasConceitoFinal.map(nota => (
+                            <CampoNumero
+                              value={nota.notaConceito}
+                              min={0}
+                              max={10}
+                              step={0.5}
+                              placeholder="Nota"
+                            />
+                          ))
+                        )}
                       </td>
                     </tr>
                   </>

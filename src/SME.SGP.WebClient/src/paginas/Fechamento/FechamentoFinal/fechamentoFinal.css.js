@@ -103,3 +103,9 @@ export const Lista = styled.div`
     min-width: 120px;
   }
 `;
+
+export const MaisMenos = styled.i`
+  color: ${Base.Roxo} !important;
+  font-size: 18px;
+  cursor: pointer;
+`;
