@@ -5,8 +5,11 @@ import t from 'prop-types';
 import { PainelCollapse, LazyLoad } from '~/componentes';
 
 function Resumos({ dados }) {
-  const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
   const filtroFake = 'ciclos';
+  const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
+  const TabelaTotalEstudantes = lazy(() =>
+    import('./componentes/TabelaTotalEstudantes')
+  );
 
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados.Frequencia;
@@ -47,7 +50,6 @@ function Resumos({ dados }) {
       });
     }
 
-    console.log(dadosFormatados);
     return dadosFormatados;
   }, [dados]);
 
@@ -55,7 +57,9 @@ function Resumos({ dados }) {
     <>
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Total de estudantes">
-          <div>Teste</div>
+          <LazyLoad>
+            <TabelaTotalEstudantes />
+          </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
       <PainelCollapse>

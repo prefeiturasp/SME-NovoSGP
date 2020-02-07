@@ -208,7 +208,7 @@ namespace SME.SGP.Dominio
             }
             else if (EhParaDre())
             {
-                var fechamentosDre = fechamentosCadastrados.Where(a => a.EhParaDre());
+                var fechamentosDre = fechamentosCadastrados.Where(a => a.EhParaDre() && a.DreId == DreId);
                 if (!(fechamentosDre is null) && fechamentosDre.Any())
                 {
                     foreach (var fechamento in fechamentosDre)
@@ -220,7 +220,7 @@ namespace SME.SGP.Dominio
             }
             else if (EhParaUe())
             {
-                var fechamentosUe = fechamentosCadastrados.Where(a => a.EhParaUe());
+                var fechamentosUe = fechamentosCadastrados.Where(a => a.EhParaUe() && a.UeId == UeId);
                 if (!(fechamentosUe is null) && fechamentosUe.Any())
                 {
                     foreach (var fechamento in fechamentosUe)
