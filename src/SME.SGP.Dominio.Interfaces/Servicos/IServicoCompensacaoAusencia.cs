@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task Salvar(long id, CompensacaoAusenciaDto compensacaoDto);
         Task Excluir(long[] compensacoesIds);
+        Task<string> Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia);
     }
 }

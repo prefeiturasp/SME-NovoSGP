@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import shortid from 'shortid';
 
 // Redux
@@ -40,11 +41,7 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import LocalOcorrencia from '~/constantes/localOcorrencia';
 
 // Styles
-import {
-  CaixaDiasLetivos,
-  ListaCopiarEventos,
-  TextoDiasLetivos,
-} from './eventos.css';
+import { ListaCopiarEventos } from './eventos.css';
 
 // Utils
 import { parseScreenObject } from '~/utils/parsers/eventRecurrence';
@@ -108,8 +105,10 @@ const EventosForm = ({ match }) => {
     tipoEventoId: '',
     ueId: '',
     recorrenciaEventos: null,
+    podeAlterar: true,
   };
   const [valoresIniciais, setValoresIniciais] = useState(inicial);
+  const [usuarioPodeAlterar, setUsuarioPodeAlterar] = useState(true);
 
   const opcoesLetivo = [
     { label: 'Sim', value: 1 },
@@ -124,6 +123,22 @@ const EventosForm = ({ match }) => {
   const [dataInicioEvento, setDataInicioEvento] = useState(null);
   const [dataAlterada, setDataAlterada] = useState(false);
   const [recorrencia, setRecorrencia] = useState(null);
+
+  const obterUesPorDre = dre => {
+    return api.get(`/v1/abrangencias/false/dres/${dre}/ues`);
+  };
+
+  const carregarUes = async dre => {
+    const ues = await obterUesPorDre(dre);
+    if (ues.data) {
+      ues.data.forEach(
+        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
+      );
+      setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+    } else {
+      setListaUes([]);
+    }
+  };
 
   useEffect(() => {
     const montarConsultas = async () => {
@@ -157,14 +172,61 @@ const EventosForm = ({ match }) => {
       ? somenteConsulta || !permissoesTela.podeIncluir
       : somenteConsulta || !permissoesTela.podeAlterar;
     setDesabilitarCampos(desabilitar);
-  }, [somenteConsulta, novoRegistro]);
+  }, [
+    somenteConsulta,
+    novoRegistro,
+    permissoesTela.podeIncluir,
+    permissoesTela.podeAlterar,
+    usuarioPodeAlterar,
+  ]);
+
+  const montaValidacoes = useCallback(() => {
+    const val = {
+      dataInicio: momentSchema.required('Data obrigatória'),
+      nome: Yup.string().required('Nome obrigatório'),
+      tipoCalendarioId: Yup.string().required('Calendário obrigatório'),
+      tipoEventoId: Yup.string().required('Tipo obrigatório'),
+    };
+
+    if (usuarioStore.possuiPerfilDre) {
+      val.dreId = Yup.string().required('DRE obrigatória');
+    }
+
+    if (!usuarioStore.possuiPerfilSmeOuDre) {
+      val.dreId = Yup.string().required('DRE obrigatória');
+      val.ueId = Yup.string().required('UE obrigatória');
+    }
+
+    if (eventoTipoFeriadoSelecionado) {
+      val.feriadoId = Yup.string().required('Feriado obrigatório');
+    }
+
+    if (!tipoDataUnico) {
+      val.dataFim = Yup.string().required('Data obrigatória');
+    }
+
+    setValidacoes(Yup.object(val));
+  }, [
+    eventoTipoFeriadoSelecionado,
+    tipoDataUnico,
+    usuarioStore.possuiPerfilDre,
+    usuarioStore.possuiPerfilSmeOuDre,
+  ]);
 
   useEffect(() => {
     montaValidacoes();
-  }, [eventoTipoFeriadoSelecionado, tipoDataUnico]);
+  }, [eventoTipoFeriadoSelecionado, montaValidacoes, tipoDataUnico]);
+
+  const filtraSomenteDRE = () =>
+    listaTipoEventoOrigem.filter(
+      element =>
+        element.localOcorrencia === LocalOcorrencia.DRE ||
+        element.localOcorrencia === LocalOcorrencia.TODOS
+    );
 
   useEffect(() => {
     if (
+      !idEvento &&
       listaDres.length === 1 &&
       (usuarioStore.possuiPerfilDre || !usuarioStore.possuiPerfilSmeOuDre)
     ) {
@@ -177,8 +239,20 @@ const EventosForm = ({ match }) => {
     }
   }, [listaDres]);
 
+  const filtraSomenteUE = () =>
+    listaTipoEventoOrigem.filter(
+      element =>
+        element.localOcorrencia === LocalOcorrencia.UE ||
+        element.localOcorrencia === LocalOcorrencia.SMEUE ||
+        element.localOcorrencia === LocalOcorrencia.TODOS
+    );
+
   useEffect(() => {
-    if (listaUes.length === 1) {
+    if (
+      !idEvento &&
+      listaUes.length === 1 &&
+      !usuarioStore.possuiPerfilSmeOuDre
+    ) {
       refFormulario.current.setFieldValue(
         'ueId',
         listaUes[0].codigo.toString()
@@ -187,6 +261,21 @@ const EventosForm = ({ match }) => {
       setListaTipoEvento(filtraSomenteUE());
     }
   }, [listaUes]);
+
+  const filtraSomenteSME = () =>
+    listaTipoEventoOrigem.filter(
+      element =>
+        element.localOcorrencia === LocalOcorrencia.SME ||
+        element.localOcorrencia === LocalOcorrencia.SMEUE ||
+        element.localOcorrencia === LocalOcorrencia.TODOS
+    );
+
+  const filtraTipoEvento = (dre, ue) => {
+    if (ue) return setListaTipoEvento(filtraSomenteUE());
+    if (dre) return setListaTipoEvento(filtraSomenteDRE());
+
+    setListaTipoEvento(filtraSomenteSME());
+  };
 
   useEffect(() => {
     filtraTipoEvento(
@@ -209,7 +298,7 @@ const EventosForm = ({ match }) => {
     } else {
       montarTipoCalendarioPorId(match.params.tipoCalendarioId);
 
-      if (listaDres && listaDres.length == 1) {
+      if (listaDres && listaDres.length === 1) {
         inicial.dreId = String(listaDres[0].codigo);
         const ues = await obterUesPorDre(inicial.dreId);
         if (ues.data) {
@@ -240,65 +329,6 @@ const EventosForm = ({ match }) => {
     }
   };
 
-  const filtraSomenteSME = () =>
-    listaTipoEventoOrigem.filter(
-      element =>
-        element.localOcorrencia === LocalOcorrencia.SME ||
-        element.localOcorrencia === LocalOcorrencia.SMEUE ||
-        element.localOcorrencia === LocalOcorrencia.TODOS
-    );
-
-  const filtraSomenteDRE = () =>
-    listaTipoEventoOrigem.filter(
-      element =>
-        element.localOcorrencia === LocalOcorrencia.DRE ||
-        element.localOcorrencia === LocalOcorrencia.TODOS
-    );
-
-  const filtraSomenteUE = () =>
-    listaTipoEventoOrigem.filter(
-      element =>
-        element.localOcorrencia === LocalOcorrencia.UE ||
-        element.localOcorrencia === LocalOcorrencia.SMEUE ||
-        element.localOcorrencia === LocalOcorrencia.TODOS
-    );
-
-  const filtraTipoEvento = (dre, ue) => {
-    if (ue) return setListaTipoEvento(filtraSomenteUE());
-
-    if (dre) return setListaTipoEvento(filtraSomenteDRE());
-
-    setListaTipoEvento(filtraSomenteSME());
-  };
-
-  const montaValidacoes = () => {
-    const val = {
-      dataInicio: momentSchema.required('Data obrigatória'),
-      nome: Yup.string().required('Nome obrigatório'),
-      tipoCalendarioId: Yup.string().required('Calendário obrigatório'),
-      tipoEventoId: Yup.string().required('Tipo obrigatório'),
-    };
-
-    if (usuarioStore.possuiPerfilDre) {
-      val.dreId = Yup.string().required('DRE obrigatória');
-    }
-
-    if (!usuarioStore.possuiPerfilSmeOuDre) {
-      val.dreId = Yup.string().required('DRE obrigatória');
-      val.ueId = Yup.string().required('UE obrigatória');
-    }
-
-    if (eventoTipoFeriadoSelecionado) {
-      val.feriadoId = Yup.string().required('Feriado obrigatório');
-    }
-
-    if (!tipoDataUnico) {
-      val.dataFim = Yup.string().required('Data obrigatória');
-    }
-
-    setValidacoes(Yup.object(val));
-  };
-
   const eventoCalendarioEdicao = useSelector(
     state => state.calendarioEscolar.eventoCalendarioEdicao
   );
@@ -312,6 +342,7 @@ const EventosForm = ({ match }) => {
       }
 
       montarTipoCalendarioPorId(evento.data.tipoCalendarioId);
+      setUsuarioPodeAlterar(evento.data.podeAlterar);
 
       setValoresIniciais({
         dataFim: evento.data.dataFim ? window.moment(evento.data.dataFim) : '',
@@ -336,6 +367,7 @@ const EventosForm = ({ match }) => {
           : undefined,
         id: evento.data.id,
         recorrenciaEventos: evento.data.recorrenciaEventos,
+        podeAlterar: evento.data.podeAlterar,
       });
       setAuditoria({
         criadoPor: evento.data.criadoPor,
@@ -365,7 +397,7 @@ const EventosForm = ({ match }) => {
   const verificarAlteracaoLetivoEdicao = (listaTipos, idTipoEvento) => {
     if (!listaTipos) return;
 
-    const tipoEdicao = listaTipos.find(x => x.id === idTipoEvento);
+    const tipoEdicao = listaTipos.find(lista => lista.id === idTipoEvento);
 
     if (!tipoEdicao) return;
 
@@ -395,7 +427,7 @@ const EventosForm = ({ match }) => {
   };
 
   const onClickVoltar = async () => {
-    if (modoEdicao) {
+    if (modoEdicao && valoresIniciais.podeAlterar) {
       const confirmado = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -406,12 +438,10 @@ const EventosForm = ({ match }) => {
       } else if (confirmado) {
         history.push('/calendario-escolar/eventos');
       }
+    } else if (Object.entries(eventoCalendarioEdicao).length > 0) {
+      history.push('/calendario-escolar');
     } else {
-      if (Object.entries(eventoCalendarioEdicao).length > 0) {
-        history.push('/calendario-escolar');
-      } else {
-        history.push('/calendario-escolar/eventos');
-      }
+      history.push('/calendario-escolar/eventos');
     }
   };
 
@@ -564,28 +594,19 @@ const EventosForm = ({ match }) => {
     onChangeCampos();
   };
 
-  const carregarUes = async dre => {
-    const ues = await obterUesPorDre(dre);
-    if (ues.data) {
-      ues.data.forEach(
-        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
-      );
-      setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
-    } else {
-      setListaUes([]);
-    }
-  };
-
-  const obterUesPorDre = dre => {
-    return api.get(`/v1/abrangencias/false/dres/${dre}/ues`);
-  };
-
   const onClickRecorrencia = () => {
     setShowModalRecorrencia(true);
   };
 
+  const { turmaSelecionada } = usuarioStore;
+
   const onClickCopiarEvento = async () => {
-    const tiposCalendario = await api.get('v1/calendarios/tipos');
+    const anoAtual = window.moment().format('YYYY');
+    const tiposCalendario = await api.get(
+      usuarioStore && turmaSelecionada && turmaSelecionada.anoLetivo
+        ? `v1/calendarios/tipos/anos/letivos/${turmaSelecionada.anoLetivo}`
+        : `v1/calendarios/tipos/anos/letivos/${anoAtual}`
+    );
     if (
       tiposCalendario &&
       tiposCalendario.data &&
@@ -596,7 +617,7 @@ const EventosForm = ({ match }) => {
         item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
       });
       const listaSemCalendarioAtual = tiposCalendario.data.filter(
-        item => item.id != calendarioEscolarAtual[0].id
+        item => item.id !== calendarioEscolarAtual[0].id
       );
       setListaCalendarioEscolar(listaSemCalendarioAtual);
     } else {
@@ -627,7 +648,7 @@ const EventosForm = ({ match }) => {
   const onChangeTipoEvento = (evento, form) => {
     if (evento) {
       const tipoEventoSelecionado = listaTipoEvento.find(
-        item => item.id == evento
+        item => item.id.toString() === evento.toString()
       );
       if (
         tipoEventoSelecionado &&
@@ -670,7 +691,7 @@ const EventosForm = ({ match }) => {
   };
 
   const montarExibicaoEventosCopiar = () => {
-    return listaCalendarioParaCopiar.map((id, i) => {
+    return listaCalendarioParaCopiar.map(id => {
       const calendario = listaCalendarioEscolar.find(e => e.id === id);
       if (calendario && calendario.descricaoTipoCalendario) {
         return (
@@ -732,7 +753,7 @@ const EventosForm = ({ match }) => {
       form.setFieldTouched(campo, true, true);
     });
     form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length == 0) {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
         form.handleSubmit(e => e);
       }
     });
@@ -740,7 +761,7 @@ const EventosForm = ({ match }) => {
 
   return (
     <>
-      <Cabecalho pagina="Cadastro de Eventos no Calendário Escolar" />
+      <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
       <ModalRecorrencia
         onCloseRecorrencia={onCloseRecorrencia}
         onSaveRecorrencia={onSaveRecorrencia}
@@ -774,16 +795,10 @@ const EventosForm = ({ match }) => {
                     disabled
                   />
                 </div>
-                <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 pb-2">
-                  {/* <div className="row">
-                    <CaixaDiasLetivos>2016</CaixaDiasLetivos>
-                    <TextoDiasLetivos>
-                      Nº de Dias Letivos no Calendário
-                    </TextoDiasLetivos>
-                  </div> */}
-                </div>
+                <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 pb-2" />
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-4 pb-2 d-flex justify-content-end">
                   <Button
+                    id={shortid.generate()}
                     label="Voltar"
                     icon="arrow-left"
                     color={Colors.Azul}
@@ -792,14 +807,16 @@ const EventosForm = ({ match }) => {
                     onClick={onClickVoltar}
                   />
                   <Button
+                    id={shortid.generate()}
                     label="Cancelar"
                     color={Colors.Roxo}
                     border
                     className="mr-2"
                     onClick={() => onClickCancelar(form)}
-                    disabled={!modoEdicao}
+                    disabled={!modoEdicao || !valoresIniciais.podeAlterar}
                   />
                   <Button
+                    id={shortid.generate()}
                     label="Excluir"
                     color={Colors.Vermelho}
                     border
@@ -809,17 +826,24 @@ const EventosForm = ({ match }) => {
                     disabled={
                       somenteConsulta ||
                       !permissoesTela.podeExcluir ||
-                      novoRegistro
+                      novoRegistro ||
+                      !valoresIniciais.podeAlterar
                     }
                   />
                   <Button
+                    id={shortid.generate()}
                     label={novoRegistro ? 'Cadastrar' : 'Alterar'}
                     color={Colors.Roxo}
                     border
                     bold
                     className="mr-2"
                     onClick={() => validaAntesDoSubmit(form)}
-                    disabled={desabilitarCampos}
+                    disabled={
+                      desabilitarCampos ||
+                      (!novoRegistro &&
+                        (somenteConsulta || !permissoesTela.podeAlterar)) ||
+                      !usuarioPodeAlterar
+                    }
                   />
                 </div>
               </div>
@@ -834,7 +858,11 @@ const EventosForm = ({ match }) => {
                     onChange={e => onChangeDre(e, form)}
                     label="Diretoria Regional de Educação (DRE)"
                     placeholder="Diretoria Regional de Educação (DRE)"
-                    disabled={desabilitarCampos || dreDesabilitada}
+                    disabled={
+                      desabilitarCampos ||
+                      dreDesabilitada ||
+                      !usuarioPodeAlterar
+                    }
                   />
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 pb-2">
@@ -847,7 +875,9 @@ const EventosForm = ({ match }) => {
                     onChange={e => onChangeUe(e, form)}
                     label="Unidade Escolar (UE)"
                     placeholder="Unidade Escolar (UE)"
-                    disabled={desabilitarCampos || ueDesabilitada}
+                    disabled={
+                      desabilitarCampos || ueDesabilitada || !usuarioPodeAlterar
+                    }
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-2">
@@ -865,7 +895,7 @@ const EventosForm = ({ match }) => {
                     eventoTipoFeriadoSelecionado
                       ? 'col-md-3 col-lg-3 col-xl-3'
                       : 'col-md-6 col-lg-6 col-xl-6'
-                  } pb-2`}
+                    } pb-2`}
                 >
                   <SelectComponent
                     form={form}
@@ -879,7 +909,7 @@ const EventosForm = ({ match }) => {
                     }}
                     label="Tipo evento"
                     placeholder="Selecione um tipo"
-                    disabled={desabilitarCampos}
+                    disabled={desabilitarCampos || !usuarioPodeAlterar}
                   />
                 </div>
                 {eventoTipoFeriadoSelecionado ? (
@@ -893,12 +923,12 @@ const EventosForm = ({ match }) => {
                       valueText="nome"
                       onChange={onChangeCampos}
                       placeholder="Selecione o feriado"
-                      disabled={desabilitarCampos}
+                      disabled={desabilitarCampos || !usuarioPodeAlterar}
                     />
                   </div>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
                   <CampoData
                     form={form}
@@ -910,26 +940,27 @@ const EventosForm = ({ match }) => {
                     name="dataInicio"
                     onChange={onChangeCampos}
                     desabilitarData={desabilitarData}
-                    desabilitado={desabilitarCampos}
+                    desabilitado={desabilitarCampos || !usuarioPodeAlterar}
                   />
                 </div>
                 {tipoDataUnico ? (
                   ''
                 ) : (
-                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
-                    <CampoData
-                      form={form}
-                      label="Data fim do evento"
-                      placeholder="Data fim do evento"
-                      formatoData="DD/MM/YYYY"
-                      name="dataFim"
-                      onChange={onChangeCampos}
-                      desabilitado={desabilitarCampos}
-                    />
-                  </div>
-                )}
+                    <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
+                      <CampoData
+                        form={form}
+                        label="Data fim do evento"
+                        placeholder="Data fim do evento"
+                        formatoData="DD/MM/YYYY"
+                        name="dataFim"
+                        onChange={onChangeCampos}
+                        desabilitado={desabilitarCampos || !usuarioPodeAlterar}
+                      />
+                    </div>
+                  )}
                 <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
                   <Button
+                    id={shortid.generate()}
                     label="Repetir"
                     icon="fas fa-retweet"
                     color={Colors.Azul}
@@ -939,7 +970,8 @@ const EventosForm = ({ match }) => {
                     disabled={
                       desabilitarCampos ||
                       !habilitaRecorrencia ||
-                      !!valoresIniciais.id
+                      !!valoresIniciais.id ||
+                      !usuarioPodeAlterar
                     }
                   />
                   {!!recorrencia && recorrencia.dataInicio && (
@@ -954,7 +986,11 @@ const EventosForm = ({ match }) => {
                     name="letivo"
                     valorInicial
                     onChange={onChangeCampos}
-                    desabilitado={desabilitarCampos || desabilitarOpcaoLetivo}
+                    desabilitado={
+                      desabilitarCampos ||
+                      desabilitarOpcaoLetivo ||
+                      !usuarioPodeAlterar
+                    }
                   />
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-2">
@@ -965,7 +1001,7 @@ const EventosForm = ({ match }) => {
                     onChange={onChangeCampos}
                     name="descricao"
                     type="textarea"
-                    desabilitado={desabilitarCampos}
+                    desabilitado={desabilitarCampos || !usuarioPodeAlterar}
                   />
                 </div>
               </div>
@@ -973,25 +1009,26 @@ const EventosForm = ({ match }) => {
               <div className="col-md-12 pb-2 ">
                 <div className="row">
                   <Button
+                    id={shortid.generate()}
                     label="Copiar Evento"
                     icon="fas fa-share"
                     color={Colors.Azul}
                     border
                     className="mt-4 mr-3"
                     onClick={onClickCopiarEvento}
-                    disabled={desabilitarCampos}
+                    disabled={desabilitarCampos || !usuarioPodeAlterar}
                   />
                   {listaCalendarioParaCopiar &&
-                  listaCalendarioParaCopiar.length ? (
-                    <ListaCopiarEventos>
-                      <div className="mb-1">
-                        Evento será copiado para os calendários:
+                    listaCalendarioParaCopiar.length ? (
+                      <ListaCopiarEventos>
+                        <div className="mb-1">
+                          Evento será copiado para os calendários:
                       </div>
-                      {montarExibicaoEventosCopiar()}
-                    </ListaCopiarEventos>
-                  ) : (
-                    ''
-                  )}
+                        {montarExibicaoEventosCopiar()}
+                      </ListaCopiarEventos>
+                    ) : (
+                      ''
+                    )}
                 </div>
               </div>
             </Form>
@@ -1007,8 +1044,8 @@ const EventosForm = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
         <ModalConteudoHtml
           key="copiarEvento"
           visivel={exibirModalCopiarEvento}
@@ -1046,25 +1083,33 @@ const EventosForm = ({ match }) => {
           fecharAoClicarEsc={false}
           esconderBotaoPrincipal
         >
-          {listaMensagensCopiarEvento.map((item, i) => (
-            <p key={i}>
+          {listaMensagensCopiarEvento.map(item => (
+            <p key={shortid.generate()}>
               {item.sucesso ? (
                 <strong>
                   <i className="fas fa-check text-success mr-2" />
                   {item.mensagem}
                 </strong>
               ) : (
-                <strong className="text-danger">
-                  <i className="fas fa-times mr-3" />
-                  {item.mensagem}
-                </strong>
-              )}
+                  <strong className="text-danger">
+                    <i className="fas fa-times mr-3" />
+                    {item.mensagem}
+                  </strong>
+                )}
             </p>
           ))}
         </ModalConteudoHtml>
       </Card>
     </>
   );
+};
+
+EventosForm.propTypes = {
+  match: PropTypes.oneOfType([PropTypes.object]),
+};
+
+EventosForm.defaultProps = {
+  match: {},
 };
 
 export default EventosForm;

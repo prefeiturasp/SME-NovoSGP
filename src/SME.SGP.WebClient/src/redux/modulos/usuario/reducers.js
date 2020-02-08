@@ -12,8 +12,7 @@ const inicial = {
   dadosUsuario: [],
   modificarSenha: '',
   meusDados: {
-    foto:
-      'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg',
+    foto: '',
   },
   possuiPerfilSmeOuDre: false,
   possuiPerfilDre: false,
@@ -56,18 +55,9 @@ export default function usuario(state = inicial, action) {
         draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
         break;
       case '@usuario/deslogar':
-        draft.rf = '';
-        draft.token = '';
-        draft.dataLogin = null;
-        draft.logado = false;
-        draft.usuario = '';
-        draft.modificarSenha = '';
-        draft.turmasUsuario = [];
-        draft.turmaSelecionada = [];
-        draft.dadosUsuario = [];
-        draft.menu = [];
-        draft.permissoes = [];
-        draft.ehProfessor = false;
+        draft = inicial;
+        localStorage.clear();
+        window.location.reload(true);
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
@@ -78,7 +68,7 @@ export default function usuario(state = inicial, action) {
       case '@usuario/meusDados':
         draft.meusDados = action.payload;
         break;
-      case '@usuario/SetarConsideraHistorico':
+      case '@usuario/setarConsideraHistorico':
         draft.turmaSelecionada = {
           ...state.turmaSelecionada,
           consideraHistorico: action.payload,
@@ -98,9 +88,6 @@ export default function usuario(state = inicial, action) {
         break;
       case '@usuario/setPermissoes':
         draft.permissoes = action.payload;
-        break;
-      case '@usuario/setExibirMensagemSessaoExpirou':
-        draft.exibirMensagemSessaoExpirou = action.payload;
         break;
       default:
         break;

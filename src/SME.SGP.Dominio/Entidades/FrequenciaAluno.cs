@@ -5,6 +5,7 @@ namespace SME.SGP.Dominio
     public class FrequenciaAluno : EntidadeBase
     {
         public FrequenciaAluno(string codigoAluno,
+                 string turmaId,
                  string disciplinaId,
                  DateTime periodoInicio,
                  DateTime periodoFim,
@@ -16,6 +17,7 @@ namespace SME.SGP.Dominio
         {
             Bimestre = bimestre;
             CodigoAluno = codigoAluno;
+            TurmaId = turmaId;
             DisciplinaId = disciplinaId;
             PeriodoFim = periodoFim;
             PeriodoInicio = periodoInicio;
@@ -31,6 +33,7 @@ namespace SME.SGP.Dominio
 
         public int Bimestre { get; set; }
         public string CodigoAluno { get; set; }
+        public string TurmaId { get; set; }
         public string DisciplinaId { get; set; }
         public double PercentualFrequencia => 100 - ((NumeroFaltasNaoCompensadas / TotalAulas) * 100);
         public DateTime PeriodoFim { get; set; }
