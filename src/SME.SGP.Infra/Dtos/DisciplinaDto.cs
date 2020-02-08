@@ -5,8 +5,7 @@ namespace SME.SGP.Infra
     public class DisciplinaDto
     {
         public int CodigoComponenteCurricular { get; set; }
-        [JsonProperty("codDisciplinaPai")]
-        public int CodigoComponenteCurricularId { get; set; }
+        public int? codDisciplinaPai { get; set; }
         public bool Compartilhada { get; set; }
         public string Nome { get; set; }
         public bool PossuiObjetivos { get; set; }

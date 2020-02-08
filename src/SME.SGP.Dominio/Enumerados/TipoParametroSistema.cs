@@ -26,7 +26,7 @@
         QuantidadeMaximaCompensacaoAusencia = 12,
 
         // Média
-        MediaBimestre = 13,
+        MediaBimestre = 14,
 
         //Sistema
         HabilitarServicosEmBackground = 100
