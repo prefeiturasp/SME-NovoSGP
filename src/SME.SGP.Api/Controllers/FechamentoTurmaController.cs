@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> Inserir([FromBody] FechamentoTurmaDisciplinaDto fechamentoTurma, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
+        public async Task<IActionResult> Inserir([FromBody] IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
             => Ok(await comandos.Inserir(fechamentoTurma));
 
         [HttpPut("{id}")]
@@ -26,7 +26,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar(long id, [FromBody] FechamentoTurmaDisciplinaDto fechamentoTurma, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
+        public async Task<IActionResult> Alterar(long id, [FromBody] IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
             => Ok(await comandos.Alterar(id, fechamentoTurma));
 
     }
