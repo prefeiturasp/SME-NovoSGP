@@ -54,6 +54,14 @@ namespace SME.SGP.Aplicacao
             return MapearParaDtoTotalEstudantes(total, totalAlunosPorSeries);
         }
 
+        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(long dreId, long ueId, int cicloId, int turmaId, int ano)
+        {
+            var totalAlunosPorSeriesFrequencia = await repositorioRecuperacaoParalela.ListarTotalEstudantesPorFrequencia(dreId, ueId, cicloId, turmaId, ano);
+            if (!totalAlunosPorSeriesFrequencia.Any()) return null;
+            var total = totalAlunosPorSeriesFrequencia.Sum(s => s.Total);
+            return MapearParaDtoTotalEstudantesPorFrequencia(total, totalAlunosPorSeriesFrequencia);
+        }
+
         private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, string turmaId, long periodoId)
         {
             //alunos eol que não estão ainda na tabela de recuperação paralela
@@ -158,6 +166,19 @@ namespace SME.SGP.Aplicacao
                     CicloDescricao = x.First().Ciclo,
                     Quantidade = x.Sum(c => c.Total),
                     Porcentagem = (x.Sum(c => c.Total) * 100) / total
+                })
+            };
+        }
+
+        private RecuperacaoParalelaTotalEstudantePorFrequenciaDto MapearParaDtoTotalEstudantesPorFrequencia(int total, IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto> totalAlunosPorSeriesFrequencia)
+        {
+            //todo: mudar double para um numero que quebre direito a porcentagem
+            return new RecuperacaoParalelaTotalEstudantePorFrequenciaDto
+            {
+                QuantidadeTotal = total,
+                PorcentagemTotal = 100,
+                Frequencia = totalAlunosPorSeriesFrequencia.Select(x => new RecuperacaoParalelaResumoFrequenciaDto
+                {
                 })
             };
         }
