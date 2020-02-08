@@ -9,16 +9,24 @@ import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
+import { URL_HOME } from '~/constantes/url';
+import history from '~/servicos/history';
+import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import FechamentoBimestreLista from './fechamento-bimestre-lista/fechamento-bimestre-lista';
 import { FechamentoMock } from './fechamento.mock';
-import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
-import history from '~/servicos/history';
-import { URL_HOME } from '~/constantes/url';
+import RotasDto from '~/dtos/rotasDto';
 
 const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
   const usuario = useSelector(store => store.usuario);
-  const { turmaSelecionada } = usuario;
+  const { turmaSelecionada, permissoes } = usuario;
+  const permissoesTela = permissoes[RotasDto.FechamentoBismestre];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
   const [carregandoBimestres, setCarregandoBimestres] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(null);
@@ -26,7 +34,6 @@ const FechamentoBismestre = () => {
     listaDisciplinas && listaDisciplinas.length === 1
   );
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [bimestreCorrente, setBimestreCorrente] = useState('1Bimestre');
   const [dados, setDados] = useState(FechamentoMock);
 
