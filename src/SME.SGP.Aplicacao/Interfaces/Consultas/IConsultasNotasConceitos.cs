@@ -14,6 +14,8 @@ namespace SME.SGP.Aplicacao
         Task<TipoNota> ObterNotaTipo(long turmaId, int anoLetivo, bool consideraHistorico);
 
         double ObterValorArredondado(long atividadeAvaliativaId, double nota);
+        double ObterValorArredondado(DateTime data, double nota);
+
         IEnumerable<ConceitoDto> ObterConceitos(DateTime data);
     }
 }
