@@ -61,7 +61,7 @@ const TabelaTotalEstudantes = () => {
             // Linha Quantidade
 
             const dadoQuantidade = {};
-            dadoQuantidade.key = shortid.generate();
+            dadoQuantidade.Id = shortid.generate();
             dadoQuantidade.TipoDado = 'Quantidade';
 
             resposta.data[0].Ciclos.forEach(ano => {
@@ -74,7 +74,7 @@ const TabelaTotalEstudantes = () => {
             // Linha Porcentagem
 
             const dadoPorcentagem = {};
-            dadoPorcentagem.key = shortid.generate();
+            dadoPorcentagem.Id = shortid.generate();
             dadoPorcentagem.TipoDado = 'Porcentagem';
 
             resposta.data[0].Ciclos.forEach(ano => {
@@ -100,7 +100,7 @@ const TabelaTotalEstudantes = () => {
             // Linha Quantidade
 
             const dadoQuantidade = {};
-            dadoQuantidade.key = shortid.generate();
+            dadoQuantidade.Id = shortid.generate();
             dadoQuantidade.TipoDado = 'Quantidade';
 
             resposta.data[0].Anos.forEach(ano => {
@@ -113,7 +113,7 @@ const TabelaTotalEstudantes = () => {
             // Linha Porcentagem
 
             const dadoPorcentagem = {};
-            dadoPorcentagem.key = shortid.generate();
+            dadoPorcentagem.Id = shortid.generate();
             dadoPorcentagem.TipoDado = 'Porcentagem';
 
             resposta.data[0].Anos.forEach(ano => {
@@ -142,8 +142,6 @@ const TabelaTotalEstudantes = () => {
             },
           });
 
-          console.log(montaColunas);
-
           setColunas([...colunas, ...montaColunas]);
         }
       })
@@ -162,7 +160,7 @@ const TabelaTotalEstudantes = () => {
         pagination={false}
         columns={colunas}
         dataSource={dadosTabela}
-        rowKey="key"
+        rowKey="Id"
         size="middle"
         className="my-2"
         style={{ borderLeft: `7px solid ${Base.Azul}` }}
