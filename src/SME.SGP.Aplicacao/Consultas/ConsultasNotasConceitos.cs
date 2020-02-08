@@ -83,8 +83,8 @@ namespace SME.SGP.Aplicacao
             if (!bimestre.HasValue)
                 bimestre = ObterBimestreAtual(periodosEscolares);
 
-            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestre);
-            if (periodoEscolar == null)
+            var periodoAtual = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestre);
+            if (periodoAtual == null)
                 throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
             List<AtividadeAvaliativa> atividadesAvaliativaEBimestres = new List<AtividadeAvaliativa>();
@@ -94,11 +94,11 @@ namespace SME.SGP.Aplicacao
             if (disciplinasFilha.Any())
             {
                 foreach(var disciplinaFilha in disciplinasFilha)
-                    atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, disciplinaFilha.CodigoComponenteCurricular.ToString(), periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim));
+                    atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, disciplinaFilha.CodigoComponenteCurricular.ToString(), periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
             }
             else
                 // Disciplina não tem disciplinas filhas então carrega avaliações da propria
-                atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, filtro.DisciplinaCodigo, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim));
+                atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, filtro.DisciplinaCodigo, periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
 
             if (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any())
                 return ObterRetornoGenericoBimestreAtualVazio(periodosEscolares, bimestre.Value);
@@ -119,18 +119,24 @@ namespace SME.SGP.Aplicacao
             var nomeAvaliacaoAuditoriaInclusao = string.Empty;
             var nomeAvaliacaoAuditoriaAlteracao = string.Empty;
 
-            for (int i = 0; i < periodosEscolares.Count(); i++)
+            foreach(var periodoEscolar in periodosEscolares)
             {
                 AtividadeAvaliativa atividadeAvaliativaParaObterTipoNota = null;
-                var valorBimestreAtual = i + 1;
-                var bimestreParaAdicionar = new NotasConceitosBimestreRetornoDto() { Descricao = $"{valorBimestreAtual}º Bimestre", Numero = valorBimestreAtual };
+                var valorBimestreAtual = periodoEscolar.Bimestre;
+                var bimestreParaAdicionar = new NotasConceitosBimestreRetornoDto() 
+                { 
+                    Descricao = $"{valorBimestreAtual}º Bimestre", 
+                    Numero = valorBimestreAtual,
+                    PeriodoInicio = periodoEscolar.PeriodoInicio,
+                    PeriodoFim = periodoEscolar.PeriodoFim
+                };
 
-                if (valorBimestreAtual == periodoEscolar.Bimestre)
+                if (valorBimestreAtual == periodoAtual.Bimestre)
                 {
                     var listaAlunosDoBimestre = new List<NotasConceitosAlunoRetornoDto>();
 
-                    var atividadesAvaliativasdoBimestre = atividadesAvaliativaEBimestres.Where(a => a.DataAvaliacao.Date >= periodoEscolar.PeriodoInicio.Date
-                        && periodoEscolar.PeriodoFim.Date >= a.DataAvaliacao.Date)
+                    var atividadesAvaliativasdoBimestre = atividadesAvaliativaEBimestres.Where(a => a.DataAvaliacao.Date >= periodoAtual.PeriodoInicio.Date
+                        && periodoAtual.PeriodoFim.Date >= a.DataAvaliacao.Date)
                         .OrderBy(a => a.DataAvaliacao)
                         .ToList();
                     var alunosIds = alunos.Select(a => a.CodigoAluno).Distinct();
@@ -194,8 +200,8 @@ namespace SME.SGP.Aplicacao
                         notaConceitoAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolarDto()
                         {
                             Bimestre = valorBimestreAtual,
-                            PeriodoInicio = periodoEscolar.PeriodoInicio,
-                            PeriodoFim = periodoEscolar.PeriodoFim
+                            PeriodoInicio = periodoAtual.PeriodoInicio,
+                            PeriodoFim = periodoAtual.PeriodoFim
                         });
 
                         notaConceitoAluno.PodeEditar = notaConceitoAluno.Marcador != null || notaConceitoAluno.Marcador.Tipo == TipoMarcadorFrequencia.Novo;
@@ -225,7 +231,7 @@ namespace SME.SGP.Aplicacao
                         }
 
                         // Carrega Frequencia Aluno
-                        var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, periodoEscolar.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
+                        var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
                         notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ? 
                                         (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0) :
                                         100;
