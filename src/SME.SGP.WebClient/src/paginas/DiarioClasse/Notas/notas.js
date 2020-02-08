@@ -513,8 +513,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                      ''
-                    )}
+                        ''
+                      )}
                     {segundoBimestre.numero ? (
                       <TabPane
                         tab={segundoBimestre.descricao}
@@ -528,8 +528,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                      ''
-                    )}
+                        ''
+                      )}
                     {terceiroBimestre.numero ? (
                       <TabPane
                         tab={terceiroBimestre.descricao}
@@ -543,8 +543,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                      ''
-                    )}
+                        ''
+                      )}
                     {quartoBimestre.numero ? (
                       <TabPane
                         tab={quartoBimestre.descricao}
@@ -558,8 +558,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                      ''
-                    )}
+                        ''
+                      )}
                   </ContainerTabsCard>
                 </div>
               </div>

@@ -15,6 +15,8 @@ namespace SME.SGP.Infra
         public string AuditoriaBimestreAlterado { get; set; }
         public string AuditoriaBimestreInserido { get; set; }
         public int BimestreAtual { get; set; }
+        public int MinimoAvaliacoesBimestrais { get; set; }
+        public double MediaAprovacaoBimestre { get; set; }
         public List<NotasConceitosBimestreRetornoDto> Bimestres { get; set; }
         public TipoNota NotaTipo { get; set; }
     }
