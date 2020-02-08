@@ -1,11 +1,12 @@
 ﻿using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IComandosFechamentoTurmaDisciplina
     {
-        Task<AuditoriaDto> Inserir(FechamentoTurmaDisciplinaDto fechamentoTurma);
-        Task<AuditoriaDto> Alterar(long id, FechamentoTurmaDisciplinaDto fechamentoTurma);
+        Task<IEnumerable<AuditoriaDto>> Inserir(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma);
+        Task<IEnumerable<AuditoriaDto>> Alterar(long id, IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma);
     }
 }
