@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
             var bimestre = filtro.Bimestre;
-            if (!bimestre.HasValue)
+            if (!bimestre.HasValue || bimestre == 0)
                 bimestre = ObterBimestreAtual(periodosEscolares);
 
             var periodoAtual = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestre);
