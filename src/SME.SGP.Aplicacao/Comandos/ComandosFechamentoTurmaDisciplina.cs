@@ -18,12 +18,12 @@ namespace SME.SGP.Aplicacao
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));
         }
 
-        public async Task<IEnumerable<AuditoriaDto>> Alterar(long id, IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
+        public async Task<IEnumerable<AuditoriaDto>> Alterar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
         {
             var listaAuditoria = new List<AuditoriaDto>();
             foreach(var fechamentoTurma in fechamentosTurma)
             {
-                listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(id, fechamentoTurma));
+                listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma));
             }
 
             return listaAuditoria;
