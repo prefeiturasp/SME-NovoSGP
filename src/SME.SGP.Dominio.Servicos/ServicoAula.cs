@@ -32,6 +32,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoFrequencia servicoFrequencia;
         private readonly IServicoLog servicoLog;
         private readonly IServicoNotificacao servicoNotificacao;
+        private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoWorkflowAprovacao servicoWorkflowAprovacao;
 
         public ServicoAula(IRepositorioAula repositorioAula,
@@ -51,7 +52,8 @@ namespace SME.SGP.Dominio.Servicos
                            IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
                            IRepositorioTurma repositorioTurma,
-                           IServicoWorkflowAprovacao servicoWorkflowAprovacao)
+                           IServicoWorkflowAprovacao servicoWorkflowAprovacao,
+                           IServicoUsuario servicoUsuario)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -71,6 +73,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         private enum Operacao
@@ -112,35 +115,15 @@ namespace SME.SGP.Dominio.Servicos
             if (aula.Id > 0)
                 aula.PodeSerAlterada(usuario);
 
-            IEnumerable<long> disciplinasProfessor = null;
+            var disciplinasProfessor = usuario.EhProfessorCj() ? ObterDisciplinasProfessorCJ(aula, usuario) : ObterDisciplinasProfessor(aula, usuario);
 
-            if (usuario.EhProfessorCj())
-            {
-                IEnumerable<AtribuicaoCJ> lstDisciplinasProfCJ = repositorioAtribuicaoCJ.ObterPorFiltros(null, aula.TurmaId, aula.UeId, 0, usuario.CodigoRf, usuario.Nome, null).Result;
-
-                if (lstDisciplinasProfCJ != null && lstDisciplinasProfCJ.Any())
-                    disciplinasProfessor = lstDisciplinasProfCJ.Select(d => d.DisciplinaId);
-            }
-            else
-            {
-                IEnumerable<DisciplinaResposta> lstDisciplinasProf = servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual).Result;
-
-                if (lstDisciplinasProf != null && lstDisciplinasProf.Any())
-                    disciplinasProfessor = lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular));
-            }
-
-            var usuarioPodeCriarAulaNaTurmaUeEModalidade = repositorioAula.UsuarioPodeCriarAulaNaUeTurmaEModalidade(aula, tipoCalendario.Modalidade);
-
-            if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.ToString() == aula.DisciplinaId) || !usuarioPodeCriarAulaNaTurmaUeEModalidade)
+            if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.ToString() == aula.DisciplinaId))
                 throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
 
             var temLiberacaoExcepcionalNessaData = servicoDiaLetivo.ValidaSeEhLiberacaoExcepcional(aula.DataAula, aula.TipoCalendarioId, aula.UeId);
 
-            if (!temLiberacaoExcepcionalNessaData)
-            {
-                if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId))
-                    throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
-            }
+            if (!temLiberacaoExcepcionalNessaData && !servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId))
+                throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
 
             if (aula.RecorrenciaAula != RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
                 throw new NegocioException("Uma aula do tipo Reposição não pode ser recorrente.");
@@ -151,6 +134,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
+
             if (aula.RecorrenciaAula == RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
             {
                 var aulas = repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf).Result;
@@ -178,11 +162,12 @@ namespace SME.SGP.Dominio.Servicos
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
                 var disciplinas = servicoEOL.ObterDisciplinasPorIds(new[] { Convert.ToInt64(aula.DisciplinaId) });
+
                 if (disciplinas == null || !disciplinas.Any())
-                {
                     throw new NegocioException("Disciplina não encontrada.");
-                }
+
                 var disciplina = disciplinas.First();
+
                 if (!ehInclusao)
                 {
                     if (disciplina.Regencia)
@@ -242,6 +227,21 @@ namespace SME.SGP.Dominio.Servicos
             return "Aula cadastrada com sucesso.";
         }
 
+        private IEnumerable<long> ObterDisciplinasProfessor(Aula aula, Usuario usuario)
+        {
+
+            IEnumerable<DisciplinaResposta> lstDisciplinasProf = servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual).Result;
+
+            return lstDisciplinasProf != null && lstDisciplinasProf.Any() ? lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular)) : null;
+        }
+
+        private IEnumerable<long> ObterDisciplinasProfessorCJ(Aula aula, Usuario usuario)
+        {
+            IEnumerable<AtribuicaoCJ> lstDisciplinasProfCJ = repositorioAtribuicaoCJ.ObterPorFiltros(null, aula.TurmaId, aula.UeId, 0, usuario.CodigoRf, usuario.Nome, null).Result;
+
+            return lstDisciplinasProfCJ != null && lstDisciplinasProfCJ.Any() ? lstDisciplinasProfCJ.Select(d => d.DisciplinaId) : null;
+        }
+
         private static bool ReposicaoDeAulaPrecisaDeAprovacao(int quantidadeAulasExistentesNoDia, Turma turma)
         {
             int.TryParse(turma.Ano, out int anoTurma);
@@ -299,7 +299,9 @@ namespace SME.SGP.Dominio.Servicos
 
             VerificaSeProfessorPodePersistirTurma(CodigoRf, aula.TurmaId, aula.DataAula);
 
-            await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(aula.WorkflowAprovacaoId);
+            if (aula.WorkflowAprovacaoId.HasValue)
+                await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(aula.WorkflowAprovacaoId.Value);
+
             await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
             await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
             aula.Excluido = true;
@@ -516,7 +518,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
         {
-            if (!servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula).Result)
+            if (!servicoUsuario.PodePersistirTurma(codigoRf, turmaId, dataAula).Result)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }

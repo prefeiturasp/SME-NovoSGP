@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task Alterar(long id, CompensacaoAusenciaDto compensacao)
             => await servicoCompensacaoAusencia.Salvar(id, compensacao);
+
+        public async Task<string> Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia)
+            => await servicoCompensacaoAusencia.Copiar(compensacaoCopia);
 
         public async Task Excluir(long[] compensacoesIds)
             => await servicoCompensacaoAusencia.Excluir(compensacoesIds);

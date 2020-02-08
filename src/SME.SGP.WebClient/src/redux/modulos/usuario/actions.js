@@ -45,9 +45,9 @@ export function removerTurma() {
   };
 }
 
-export function DefinirConsideraHistorico(payload) {
+export function setarConsideraHistorico(payload) {
   return {
-    type: '@usuario/SetarConsideraHistorico',
+    type: '@usuario/setarConsideraHistorico',
     payload,
   };
 }
@@ -94,9 +94,3 @@ export function setPermissoes(permissoes) {
   };
 }
 
-export function setExibirMensagemSessaoExpirou(sessaoExpirou) {
-  return {
-    type: '@usuario/setExibirMensagemSessaoExpirou',
-    payload: sessaoExpirou,
-  };
-}

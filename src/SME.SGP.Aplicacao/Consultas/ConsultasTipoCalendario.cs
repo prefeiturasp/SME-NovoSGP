@@ -18,6 +18,13 @@ namespace SME.SGP.Aplicacao
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
         }
 
+        public IEnumerable<TipoCalendarioDto> BuscarPorAnoLetivo(int anoLetivo)
+        {
+            var retorno = repositorio.BuscarPorAnoLetivo(anoLetivo);
+            return from t in retorno
+                   select EntidadeParaDto(t);
+        }
+
         public TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade)
         {
             var entidade = repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
@@ -78,6 +85,13 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<TipoCalendarioDto> Listar()
         {
             var retorno = repositorio.ObterTiposCalendario();
+            return from t in retorno
+                   select EntidadeParaDto(t);
+        }
+
+        public IEnumerable<TipoCalendarioDto> ListarPorAnoLetivo(int anoLetivo)
+        {
+            var retorno = repositorio.ListarPorAnoLetivo(anoLetivo);
             return from t in retorno
                    select EntidadeParaDto(t);
         }
