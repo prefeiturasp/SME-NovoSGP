@@ -21,13 +21,12 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Inserir([FromBody] IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
             => Ok(await comandos.Inserir(fechamentoTurma));
 
-        [HttpPut("{id}")]
+        [HttpPut()]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar(long id, [FromBody] IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
-            => Ok(await comandos.Alterar(id, fechamentoTurma));
-
+        public async Task<IActionResult> Alterar([FromBody] IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
+            => Ok(await comandos.Alterar(fechamentoTurma));
     }
 }
