@@ -27,13 +27,19 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds);
 
+        Task<string[]> ObterAdministradoresSGPParaNotificar(string codigoDreOuUe);
+
+        Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(long turmaId);
+
+        Task<string[]> ObterAdministradoresSGP(string codigoDreOuUe);
+
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo);
 
-        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurma(string codigoTurma);
-
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil);
+
+        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurma(string codigoTurma);
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil);
 
@@ -86,6 +92,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanoAnual(string codigoRf, int componenteCurricularId, int codigoTurma);
 
         Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo);
+
+        Task<bool> PodePersistirTurma(string professorRf, string codigoTurma, DateTime data);
 
         Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data);
 

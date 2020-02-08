@@ -58,7 +58,6 @@ const CompensacaoAusenciaLista = () => {
     {
       title: 'Bimestre',
       dataIndex: 'bimestre',
-      width: '10%',
     },
     {
       title: 'Atividade',

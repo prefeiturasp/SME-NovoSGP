@@ -238,22 +238,6 @@ const DiaCompleto = props => {
                           steady
                         />
                       </Div>
-                      {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
-                        evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
-                        evento.dadosAula && (
-                          <Div cols={1} className="px-1">
-                            <Botao
-                              id={shortid.generate()}
-                              label={window
-                                .moment(evento.dadosAula.horario, 'LT')
-                                .format('LT')}
-                              color={Colors.CinzaBotao}
-                              className="w-100 px-2"
-                              border
-                              steady
-                            />
-                          </Div>
-                        )}
                       <Div
                         cols={
                           evento.tipoEvento === TiposEventoAulaDTO.Aula ||
@@ -264,13 +248,13 @@ const DiaCompleto = props => {
                               : 10
                             : 11
                         }
-                        className="align-self-center font-weight-bold"
+                        className="align-self-center font-weight-bold position-relative"
                       >
                         <Div
-                          className={`${(evento.tipoEvento ===
+                          className={`pl-2 stretched-link ${(evento.tipoEvento ===
                             TiposEventoAulaDTO.Aula ||
                             evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
-                            'pl-3 descricao'}`}
+                            'descricao'}`}
                         >
                           {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
                             evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
@@ -285,10 +269,7 @@ const DiaCompleto = props => {
                     {evento.dadosAula &&
                     evento.dadosAula.permiteRegistroFrequencia &&
                     turmaSelecionada ? (
-                      <Grid
-                        cols={2}
-                        className="pr-0 d-flex align-items-center px-2 p-x-md-3"
-                      >
+                      <Div className="pr-0 d-flex align-items-center px-2 p-x-md-3">
                         <Botao
                           id={shortid.generate()}
                           label="Frequência"
@@ -304,7 +285,7 @@ const DiaCompleto = props => {
                           padding="0 1rem"
                           border
                         />
-                      </Grid>
+                      </Div>
                     ) : null}
                     {evento.dadosAula && evento.dadosAula.atividade.length ? (
                       <Grid
