@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioConceito repositorioConceito;
+        private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
         private readonly IServicoEOL servicoEOL;
@@ -37,7 +38,8 @@ namespace SME.SGP.Aplicacao
             IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioTipoCalendario repositorioTipoCalendario,
             IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina, IRepositorioConceito repositorioConceito,
-            IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioParametrosSistema repositorioParametrosSistema)
+            IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioParametrosSistema repositorioParametrosSistema,
+            IRepositorioTipoAvaliacao repositorioTipoAvaliacao)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAtividadeAvaliativa = consultasAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(consultasAtividadeAvaliativa));
@@ -56,6 +58,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
+            this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new ArgumentNullException(nameof(repositorioTipoAvaliacao));
         }
 
         private int ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
@@ -121,6 +124,8 @@ namespace SME.SGP.Aplicacao
             var usuarioRfUltimaNotaConceitoAlterada = string.Empty;
             var nomeAvaliacaoAuditoriaInclusao = string.Empty;
             var nomeAvaliacaoAuditoriaAlteracao = string.Empty;
+
+            var tipoAvaliacaoBimestral = await repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral();
 
             foreach(var periodoEscolar in periodosEscolares)
             {
@@ -213,7 +218,6 @@ namespace SME.SGP.Aplicacao
                         // Carrega Notas do Bimestre
                         if (fechamentoTurma != null)
                         {
-
                             retorno.AuditoriaBimestreInserido = $"Nota final do bimestre inserida por {fechamentoTurma.CriadoPor} em {fechamentoTurma.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurma.CriadoEm.ToString("hh:mm:ss")}.";
                             if (fechamentoTurma.AlteradoEm.HasValue)
                                 retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {fechamentoTurma.AlteradoPor} em {fechamentoTurma.AlteradoEm.Value.ToString("dd/MM/yyyy")}, às {fechamentoTurma.AlteradoEm.Value.ToString("hh:mm:ss")}.";
@@ -254,7 +258,7 @@ namespace SME.SGP.Aplicacao
                         listaAlunosDoBimestre.Add(notaConceitoAluno);
                     }
 
-                            foreach (var avaliacao in atividadesAvaliativasdoBimestre)
+                    foreach (var avaliacao in atividadesAvaliativasdoBimestre)
                     {
                         var avaliacaoDoBimestre = new NotasConceitosAvaliacaoRetornoDto()
                         {
@@ -278,6 +282,7 @@ namespace SME.SGP.Aplicacao
                             atividadeAvaliativaParaObterTipoNota = avaliacao;
                     }
                     bimestreParaAdicionar.Alunos = listaAlunosDoBimestre;
+                    bimestreParaAdicionar.QtdAvaliacoesBimestral = atividadesAvaliativasdoBimestre.Where(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id).Count();
 
                     if (atividadeAvaliativaParaObterTipoNota != null)
                     {
