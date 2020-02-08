@@ -59,6 +59,7 @@ const FechamentoBimestreLista = props => {
           </thead>
           <tbody>
             {dadosLista.map((item, index) => {
+              const idLinhaRegencia = `fechamento-regencia-${index}`;
               return (
                 <>
                   <tr>
@@ -85,7 +86,10 @@ const FechamentoBimestreLista = props => {
                       }`}
                     >
                       {item.regencia && item.regencia.length > 0 ? (
-                        <BotaoExpandir index={index} />
+                        <BotaoExpandir
+                          index={index}
+                          idLinhaRegencia={idLinhaRegencia}
+                        />
                       ) : (
                         item.notaConceito
                       )}

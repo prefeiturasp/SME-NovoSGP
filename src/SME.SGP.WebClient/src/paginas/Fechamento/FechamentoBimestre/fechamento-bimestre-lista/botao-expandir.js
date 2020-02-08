@@ -2,14 +2,12 @@ import React, { useState } from 'react';
 import { MaisMenos } from './fechamento-bimestre-lista.css';
 
 const BotaoExpandir = props => {
-  const { index } = props;
+  const { index, idLinhaRegencia } = props;
   const [expandido, setExpandido] = useState(false);
 
   const clickExpandirRetrair = () => {
     setExpandido(!expandido);
-    const linhaRegencia = window.document.getElementById(
-      `fechamento-regencia-${index}`
-    );
+    const linhaRegencia = window.document.getElementById(idLinhaRegencia);
     if (linhaRegencia) {
       const display = linhaRegencia.style.display;
       linhaRegencia.style.display = display === 'none' ? 'contents' : 'none';

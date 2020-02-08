@@ -1,5 +1,5 @@
-import { Tabs, Tooltip } from 'antd';
-import React, { useState } from 'react';
+import { Tabs } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Colors, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -11,6 +11,9 @@ import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import FechamentoBimestreLista from './fechamento-bimestre-lista/fechamento-bimestre-lista';
 import { FechamentoMock } from './fechamento.mock';
+import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import history from '~/servicos/history';
+import { URL_HOME } from '~/constantes/url';
 
 const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
@@ -27,17 +30,43 @@ const FechamentoBismestre = () => {
   const [bimestreCorrente, setBimestreCorrente] = useState('1Bimestre');
   const [dados, setDados] = useState(FechamentoMock);
 
-  const onChangeDisciplinas = () => { };
+  const onChangeDisciplinas = id => {
+    setDisciplinaIdSelecionada(id);
+  };
 
-  const onClickVoltar = () => { };
+  const onClickVoltar = () => {
+    history.push(URL_HOME);
+  };
 
-  const onClickCancelar = () => { };
+  const onClickCancelar = () => {};
 
-  const onClickSalvar = () => { };
+  const onClickSalvar = () => {};
 
   const onChangeTab = async numeroBimestre => {
     setBimestreCorrente(numeroBimestre);
   };
+
+  useEffect(() => {
+    const obterDisciplinas = async () => {
+      if (turmaSelecionada && turmaSelecionada.turma) {
+        const lista = await ServicoDisciplina.obterDisciplinasPorTurma(
+          turmaSelecionada.turma
+        );
+        setListaDisciplinas(lista.data);
+        if (lista.data.length === 1) {
+          setDisciplinaIdSelecionada(
+            String(lista.data[0].codigoComponenteCurricular)
+          );
+          setDesabilitarDisciplina(true);
+        }
+      }
+    };
+    obterDisciplinas();
+  }, [turmaSelecionada]);
+
+  useEffect(() => {
+    //implementar o consumo de endpoint de listagem
+  }, [disciplinaIdSelecionada]);
 
   return (
     <>
@@ -114,27 +143,19 @@ const FechamentoBismestre = () => {
                   activeKey={bimestreCorrente}
                 >
                   <TabPane tab="1º Bimestre" key="1Bimestre">
-                    <FechamentoBimestreLista
-                      dados={dados}
-                    />
+                    <FechamentoBimestreLista dados={dados} />
                   </TabPane>
 
                   <TabPane tab="2º Bimestre" key="2Bimestre">
-                    <FechamentoBimestreLista
-                      dados={dados}
-                    />
+                    <FechamentoBimestreLista dados={dados} />
                   </TabPane>
 
                   <TabPane tab="3º Bimestre" key="3Bimestre">
-                    <FechamentoBimestreLista
-                      dados={dados}
-                    />
+                    <FechamentoBimestreLista dados={dados} />
                   </TabPane>
 
                   <TabPane tab="4º Bimestre" key="4Bimestre">
-                    <FechamentoBimestreLista
-                      dados={dados}
-                    />
+                    <FechamentoBimestreLista dados={dados} />
                   </TabPane>
                 </ContainerTabsCard>
               </div>
