@@ -124,10 +124,10 @@ namespace SME.SGP.Aplicacao
 
                         foreach (var disciplinaEOL in disciplinasEol)
                         {
-                            if (disciplinaEOL.CodigoComponenteCurricularId > 0)
+                            if (disciplinaEOL.codDisciplinaPai > 0)
                             {
                                 // TODO Consulta por disciplina pai não esta funcionando no EOL. Refatorar na proxima sprint
-                                disciplinaEOL.CodigoComponenteCurricularId = 11211124;
+                                disciplinaEOL.codDisciplinaPai = 11211124;
                                 disciplinaEOL.Nome = "REG CLASSE INTEGRAL";
 
                                 //var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaEOL.CodigoComponenteCurricularId });
@@ -253,7 +253,7 @@ namespace SME.SGP.Aplicacao
             => new DisciplinaResposta()
             {
                 CodigoComponenteCurricular = disciplinaEol.CodigoComponenteCurricular,
-                CodigoComponenteCurricularPai = disciplinaEol.CodigoComponenteCurricularId,
+                CodigoComponenteCurricularPai = disciplinaEol.codDisciplinaPai,
                 Nome = disciplinaEol.Nome,
                 Regencia = disciplinaEol.Regencia,
                 Compartilhada = disciplinaEol.Compartilhada,

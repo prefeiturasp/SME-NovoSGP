@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -17,10 +18,26 @@ namespace SME.SGP.Aplicacao
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));
         }
 
-        public async Task<AuditoriaDto> Alterar(long id, FechamentoTurmaDisciplinaDto fechamentoTurma)
-            => await servicoFechamentoTurmaDisciplina.Salvar(id, fechamentoTurma);
+        public async Task<IEnumerable<AuditoriaDto>> Alterar(long id, IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
+        {
+            var listaAuditoria = new List<AuditoriaDto>();
+            foreach(var fechamentoTurma in fechamentosTurma)
+            {
+                listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(id, fechamentoTurma));
+            }
 
-        public async Task<AuditoriaDto> Inserir(FechamentoTurmaDisciplinaDto fechamentoTurma)
-            => await servicoFechamentoTurmaDisciplina.Salvar(0, fechamentoTurma);
+            return listaAuditoria;
+        }
+
+        public async Task<IEnumerable<AuditoriaDto>> Inserir(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
+        {
+            var listaAuditoria = new List<AuditoriaDto>();
+            foreach (var fechamentoTurma in fechamentosTurma)
+            {
+                listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(0, fechamentoTurma));
+            }
+
+            return listaAuditoria;
+        }
     }
 }
