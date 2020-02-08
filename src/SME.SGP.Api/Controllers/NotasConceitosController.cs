@@ -3,6 +3,10 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -49,5 +53,19 @@ namespace SME.SGP.Api.Controllers
 
             return Ok();
         }
+
+        [HttpGet("conceitos")]
+        [ProducesResponseType(typeof(IEnumerable<ConceitoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterConceitos([FromQuery] DateTime data, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
+        {
+            var listaConceitos = consultasNotasConceitos.ObterConceitos(data);
+
+            if (listaConceitos == null || !listaConceitos.Any())
+                return NoContent();
+
+            return Ok(listaConceitos);
+        }
+
     }
 }
