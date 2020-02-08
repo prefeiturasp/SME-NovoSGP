@@ -10,5 +10,14 @@
         public double Nota { get; set; }
         public Turma Turma { get; set; }
         public long TurmaId { get; set; }
+
+        public void AtualizarTurma(Turma turma)
+        {
+            if (turma != null)
+            {
+                Turma = turma;
+                TurmaId = turma.Id;
+            }
+        }
     }
 }
