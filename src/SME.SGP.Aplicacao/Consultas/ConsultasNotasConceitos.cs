@@ -208,7 +208,6 @@ namespace SME.SGP.Aplicacao
                         });
 
                         notaConceitoAluno.PodeEditar = notaConceitoAluno.Marcador != null || notaConceitoAluno.Marcador.Tipo == TipoMarcadorFrequencia.Novo;
-
                         notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                         // Carrega Notas do Bimestre
@@ -232,6 +231,19 @@ namespace SME.SGP.Aplicacao
                                 });
                             }
                         }
+                        else
+                        {
+                            // Regencia carrega disciplinas mesmo sem nota de fechamento
+                            if (disciplinaEOL.Regencia)
+                            {
+                                foreach (var disciplinaRegencia in disciplinasRegencia)
+                                    notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
+                                    {
+                                        DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
+                                        Disciplina = disciplinaRegencia.Nome
+                                    });
+                            }
+                        }
 
                         // Carrega Frequencia Aluno
                         var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
@@ -242,7 +254,7 @@ namespace SME.SGP.Aplicacao
                         listaAlunosDoBimestre.Add(notaConceitoAluno);
                     }
 
-                    foreach (var avaliacao in atividadesAvaliativasdoBimestre)
+                            foreach (var avaliacao in atividadesAvaliativasdoBimestre)
                     {
                         var avaliacaoDoBimestre = new NotasConceitosAvaliacaoRetornoDto()
                         {
