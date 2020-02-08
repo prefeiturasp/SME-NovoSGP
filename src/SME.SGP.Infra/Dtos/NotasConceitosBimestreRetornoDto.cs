@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -14,5 +15,7 @@ namespace SME.SGP.Infra
         public List<NotasConceitosAvaliacaoRetornoDto> Avaliacoes { get; set; }
         public string Descricao { get; set; }
         public int Numero { get; set; }
+        public DateTime PeriodoInicio { get; set; }
+        public DateTime PeriodoFim { get; set; }
     }
 }

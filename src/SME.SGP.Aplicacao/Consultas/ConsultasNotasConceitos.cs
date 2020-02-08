@@ -23,6 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
+        private readonly IRepositorioConceito repositorioConceito;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
         private readonly IServicoEOL servicoEOL;
@@ -34,7 +35,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioFrequencia repositorioFrequencia, IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
             IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioTipoCalendario repositorioTipoCalendario,
             IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina, IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina, IRepositorioConceito repositorioConceito,
+            IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAtividadeAvaliativa = consultasAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(consultasAtividadeAvaliativa));
@@ -49,6 +51,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
+            this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
@@ -381,6 +384,23 @@ namespace SME.SGP.Aplicacao
                 notasConceitosRetornoDto.AuditoriaInserido = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoInclusao} inseridos por Nome {usuarioInseriu} em {dataUltimaNotaConceitoInserida.Value.Day}/{dataUltimaNotaConceitoInserida.Value.Month}/{dataUltimaNotaConceitoInserida.Value.Year}, às {dataUltimaNotaConceitoInserida.Value.TimeOfDay.Hours}:{dataUltimaNotaConceitoInserida.Value.TimeOfDay.Minutes}.";
             if (dataUltimaNotaConceitoAlterada.HasValue)
                 notasConceitosRetornoDto.AuditoriaAlterado = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoAlteracao} alterados por Nome {usuarioAlterou} em {dataUltimaNotaConceitoAlterada.Value.Day}/{dataUltimaNotaConceitoAlterada.Value.Month}/{dataUltimaNotaConceitoAlterada.Value.Year}, às {dataUltimaNotaConceitoAlterada.Value.TimeOfDay.Hours}:{dataUltimaNotaConceitoAlterada.Value.TimeOfDay.Minutes}.";
+        }
+
+        public IEnumerable<ConceitoDto> ObterConceitos(DateTime data)
+            => MapearParaDto(repositorioConceito.ObterPorData(data));
+
+        private IEnumerable<ConceitoDto> MapearParaDto(IEnumerable<Conceito> conceitos)
+        {
+            foreach(var conceito in conceitos)
+            {
+                yield return new ConceitoDto()
+                {
+                    Id = conceito.Id,
+                    Valor = conceito.Valor,
+                    Descricao = conceito.Descricao,
+                    Aprovado = conceito.Aprovado
+                };
+            }
         }
     }
 }
