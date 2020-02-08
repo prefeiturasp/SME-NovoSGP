@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -15,13 +14,16 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisor(string dreId, string supervisorId)
+        public IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisor(string dreId, string supervisorId, bool excluidos = true)
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por ");
+            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido ");
             query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where 1=1");
+            query.AppendLine("where 1 = 1");
+
+            if (!excluidos)
+                query.AppendLine("and excluido = false");
 
             if (!string.IsNullOrEmpty(supervisorId))
                 query.AppendLine("and sed.supervisor_id = @supervisorId");
@@ -36,9 +38,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por ");
+            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido  ");
             query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where 1=1");
+            query.AppendLine("where excluido = false");
 
             if (supervisoresId.Length > 0)
             {
@@ -58,9 +60,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por ");
+            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido ");
             query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where escola_id = @ueId");
+            query.AppendLine("where escola_id = @ueId and excluido = false");
 
             return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { ueId })
                 .AsList()
@@ -71,9 +73,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por ");
+            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido ");
             query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where escola_id = @ueId");
+            query.AppendLine("where escola_id = @ueId and excluido = false");
 
             return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { ueId })
                 .AsList();

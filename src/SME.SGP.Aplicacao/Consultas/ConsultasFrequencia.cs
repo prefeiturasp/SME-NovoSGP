@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao
 
             // TODO alterar verificação para checagem de periodo de fechamento e reabertura do fechamento depois de implementado
             if (DateTime.Now < periodo.PeriodoInicio || DateTime.Now > periodo.PeriodoFim)
-                throw new NegocioException($"Período do {bimestre}º Bimestre não esta aberto");
+                throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto");
 
             return periodo;
         }
@@ -200,7 +200,7 @@ namespace SME.SGP.Aplicacao
             if (frequenciaAluno == null)
                 return null;
 
-            int percentualFrequencia = (int)frequenciaAluno.PercentualFrequencia;
+            int percentualFrequencia = (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0);
             // Critico
             if (percentualFrequencia <= percentualCritico)
                 return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequencia};

@@ -1,8 +1,9 @@
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
+import shortid from 'shortid';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
@@ -175,6 +176,8 @@ const EventosLista = () => {
     usuario.possuiPerfilSmeOuDre,
   ]);
 
+  const { turmaSelecionada } = usuario;
+
   useEffect(() => {
     const obterListaEventos = async () => {
       const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
@@ -188,7 +191,12 @@ const EventosLista = () => {
 
     const consultaTipoCalendario = async () => {
       setCarregandoTipos(true);
-      const tiposCalendario = await api.get('v1/calendarios/tipos');
+      const anoAtual = window.moment().format('YYYY');
+      const tiposCalendario = await api.get(
+        usuario && turmaSelecionada && turmaSelecionada.anoLetivo
+          ? `v1/calendarios/tipos/anos/letivos/${turmaSelecionada.anoLetivo}`
+          : `v1/calendarios/tipos/anos/letivos/${anoAtual}`
+      );
 
       if (
         tiposCalendario &&
@@ -307,7 +315,7 @@ const EventosLista = () => {
         'Excluir evento',
         listaNomeExcluir,
         `Deseja realmente excluir ${
-          eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
+        eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
         }?`,
         'Excluir',
         'Cancelar'
@@ -322,7 +330,7 @@ const EventosLista = () => {
             eventosSelecionados.length > 1
               ? 'Eventos excluídos'
               : 'Evento excluído'
-          } com sucesso.`;
+            } com sucesso.`;
           sucesso(mensagemSucesso);
           validarFiltrar();
         }
@@ -404,16 +412,17 @@ const EventosLista = () => {
               tipo: 'warning',
               id: 'AlertaPrincipal',
               mensagem:
-                'Para cadastrar ou listar eventos você precisa selecionar um tipo de calendário.',
+                'Para cadastrar ou listar eventos você precisa selecionar um tipo de calendário',
             }}
             className="mb-0"
           />
         </Grid>
       )}
-      <Cabecalho pagina="Evento do Calendário Escolar" />
+      <Cabecalho pagina="Eventos do calendário escolar" />
       <Card>
         <div className="col-md-12 d-flex justify-content-end pb-4">
           <Button
+            id={shortid.generate()}
             label="Voltar"
             icon="arrow-left"
             color={Colors.Azul}
@@ -422,6 +431,7 @@ const EventosLista = () => {
             onClick={onClickVoltar}
           />
           <Button
+            id={shortid.generate()}
             label="Excluir"
             color={Colors.Vermelho}
             border
@@ -434,6 +444,7 @@ const EventosLista = () => {
             hidden={!selecionouCalendario}
           />
           <Button
+            id={shortid.generate()}
             label="Novo"
             color={Colors.Roxo}
             border
@@ -557,8 +568,8 @@ const EventosLista = () => {
               filtroEhValido={filtroValido.valido}
             />
           ) : (
-            ''
-          )}
+              ''
+            )}
         </div>
       </Card>
     </>
