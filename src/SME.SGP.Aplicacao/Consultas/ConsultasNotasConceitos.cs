@@ -318,7 +318,12 @@ namespace SME.SGP.Aplicacao
             if (atividadeAvaliativa == null)
                 throw new NegocioException("Não foi possível localizar a atividade avaliativa.");
 
-            var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+            return ObterValorArredondado(atividadeAvaliativa.DataAvaliacao, nota);
+        }
+
+        public double ObterValorArredondado(DateTime data, double nota)
+        {
+            var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(data);
             if (notaParametro == null)
                 throw new NegocioException("Não foi possível localizar o parâmetro da nota.");
 
