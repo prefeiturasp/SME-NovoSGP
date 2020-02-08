@@ -38,6 +38,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultaRecuperacaoParalela.TotalEstudantes(filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano));
         }
 
+        [HttpGet("frequencia")]
+        [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ListarTotalEstudantesPorFrequencia([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
+        {
+            return Ok(await consultaRecuperacaoParalela.TotalEstudantesPorFrequencia(filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano));
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
