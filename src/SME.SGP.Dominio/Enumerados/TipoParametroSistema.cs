@@ -25,6 +25,9 @@
         CompensacaoAusenciaPercentualFund2 = 11,
         QuantidadeMaximaCompensacaoAusencia = 12,
 
+        // Média
+        MediaBimestre = 13,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
