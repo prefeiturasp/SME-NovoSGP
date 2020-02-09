@@ -218,6 +218,8 @@ export const TabelaColunasFixas = styled.div`
     border-radius: 3px;
     width: 400px;
     overflow: auto;
+    position: relative;
+    z-index: 3;
 
     ::-webkit-scrollbar-track {
       background-color: #f4f4f4 !important;
