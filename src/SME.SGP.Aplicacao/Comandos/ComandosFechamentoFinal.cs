@@ -1,56 +1,98 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ComandosFechamentoFinal : IComandosFechamentoFinal
     {
-        private readonly IServicoFechamentoFinal fechamentoFinal;
         private readonly IRepositorioConceito repositorioConceito;
         private readonly IRepositorioFechamentoFinal repositorioFechamentoFinal;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
+        private readonly IServicoLog servicoLog;
 
-        public ComandosFechamentoFinal(IServicoFechamentoFinal fechamentoFinal, IRepositorioConceito repositorioConceito,
-            IServicoFechamentoFinal servicoFechamentoFinal, IRepositorioTurma repositorioTurma, IRepositorioFechamentoFinal repositorioFechamentoFinal)
+        public ComandosFechamentoFinal(IRepositorioConceito repositorioConceito,
+            IServicoFechamentoFinal servicoFechamentoFinal, IRepositorioTurma repositorioTurma, IRepositorioFechamentoFinal repositorioFechamentoFinal, IServicoLog servicoLog)
         {
-            this.fechamentoFinal = fechamentoFinal ?? throw new System.ArgumentNullException(nameof(fechamentoFinal));
             this.repositorioConceito = repositorioConceito ?? throw new System.ArgumentNullException(nameof(repositorioConceito));
             this.servicoFechamentoFinal = servicoFechamentoFinal ?? throw new System.ArgumentNullException(nameof(servicoFechamentoFinal));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioFechamentoFinal = repositorioFechamentoFinal ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoFinal));
+            this.servicoLog = servicoLog ?? throw new System.ArgumentNullException(nameof(servicoLog));
         }
 
-        public async Task SalvarAsync(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
+        public async Task<string[]> SalvarAsync(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
-            var fechamentoFinal = TransformarDtoSalvarEmEntidade(fechamentoFinalSalvarDto);
-            await servicoFechamentoFinal.SalvarAsync(fechamentoFinal);
-        }
+            var turma = ObterTurma(fechamentoFinalSalvarDto.TurmaCodigo);
+            await servicoFechamentoFinal.VerificaFechamentoOuReabertura(turma.Id);
 
-        private FechamentoFinal TransformarDtoSalvarEmEntidade(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
-        {
-            FechamentoFinal fechamentoFinal;//= new FechamentoFinal();
+            var fechamentos = await TransformarDtoSalvarEmEntidade(fechamentoFinalSalvarDto, turma);
+            var mensagensDeErro = new List<string>();
 
-            var fechamentosDaTurmaEDisciplina = repositorioFechamentoFinal.ObterPorFiltros(fechamentoFinalSalvarDto.TurmaCodigo, fechamentoFinalSalvarDto.ComponenteCurricularCodigo);
-
-            if (fechamentoFinalSalvarDto.EhNota())
-                fechamentoFinal.Nota = fechamentoFinalSalvarDto.Nota.Value;
-            else
+            foreach (var fechamento in fechamentos)
             {
-                var conceito = repositorioConceito.ObterPorId(fechamentoFinalSalvarDto.ConceitoId.Value);
-                fechamentoFinal.Conceito = conceito ?? throw new NegocioException("Não foi possível localizar o conceito.");
+                try
+                {
+                    await servicoFechamentoFinal.SalvarAsync(fechamento);
+                }
+                catch (NegocioException nEx)
+                {
+                    mensagensDeErro.Add($"Não foi possível salvar o fechamento final do aluno de rf {fechamento.AlunoCodigo}. {nEx.Message}");
+                }
+                catch (System.Exception ex)
+                {
+                    servicoLog.Registrar(ex);
+                    mensagensDeErro.Add($"Não foi possível salvar o fechamento final do aluno de rf {fechamento.AlunoCodigo}. Erro interno.");
+                }
             }
+            return mensagensDeErro.ToArray();
+        }
 
-            var turma = repositorioTurma.ObterPorCodigo(fechamentoFinalSalvarDto.TurmaCodigo);
+        private Turma ObterTurma(string turmaCodigo)
+        {
+            var turma = repositorioTurma.ObterPorCodigo(turmaCodigo);
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma.");
+            return turma;
+        }
 
-            fechamentoFinal.AtualizarTurma(turma);
-            fechamentoFinal.DisciplinaCodigo = fechamentoFinalSalvarDto.ComponenteCurricularCodigo;
+        private async Task<IEnumerable<FechamentoFinal>> TransformarDtoSalvarEmEntidade(FechamentoFinalSalvarDto fechamentoFinalSalvarDto, Turma turma)
+        {
+            var fechamentosFinais = new List<FechamentoFinal>();
 
-            return fechamentoFinal;
+            var fechamentosDaTurmaEDisciplina = await repositorioFechamentoFinal.ObterPorFiltros(fechamentoFinalSalvarDto.TurmaCodigo);
+
+            foreach (var fechamentoItemDto in fechamentoFinalSalvarDto.Itens)
+            {
+                FechamentoFinal fechamentoFinal;
+
+                fechamentoFinal = fechamentosDaTurmaEDisciplina.FirstOrDefault(a => a.AlunoCodigo == fechamentoItemDto.AlunoRf && a.DisciplinaCodigo == fechamentoItemDto.ComponenteCurricularCodigo);
+
+                if (fechamentoFinal == null)
+                {
+                    fechamentoFinal = new FechamentoFinal();
+
+                    fechamentoFinal.AtualizarTurma(turma);
+                    fechamentoFinal.DisciplinaCodigo = fechamentoItemDto.ComponenteCurricularCodigo;
+                }
+
+                if (fechamentoItemDto.EhNota())
+                    fechamentoFinal.Nota = fechamentoItemDto.Nota.Value;
+                else
+                {
+                    var conceito = repositorioConceito.ObterPorId(fechamentoItemDto.ConceitoId.Value);
+                    fechamentoFinal.Conceito = conceito ?? throw new NegocioException("Não foi possível localizar o conceito.");
+                }
+
+                fechamentoFinal.EhRegencia = fechamentoFinalSalvarDto.EhRegencia;
+
+                fechamentosFinais.Add(fechamentoFinal);
+            }
+            return fechamentosFinais;
         }
     }
 }

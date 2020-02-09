@@ -13,11 +13,18 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<FechamentoFinal>> ObterPorFiltros(string turmaCodigo, string componenteCurricularCodigo)
+        public async Task<IEnumerable<FechamentoFinal>> ObterPorFiltros(string turmaCodigo)
         {
-            var query = @"select * from compensacao_ausencia_disciplina_regencia where not excluido and compensacao_ausencia_id = @compensacaoId";
+            var query = @"select
+	                            fn.*
+                            from
+	                            fechamento_final fn
+                            inner join turma t on
+	                            fn.turma_id = t.id
+                            where
+	                            and t.turma_id = @turmaCodigo";
 
-            return await database.Conexao.QueryAsync<FechamentoFinal>(query, new { turmaCodigo, componenteCurricularCodigo });
+            return await database.Conexao.QueryAsync<FechamentoFinal>(query, new { turmaCodigo });
         }
     }
 }

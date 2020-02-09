@@ -5,5 +5,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IServicoFechamentoFinal
     {
         Task SalvarAsync(FechamentoFinal fechamentoFinal);
+
+        Task VerificaFechamentoOuReabertura(long turmaId);
     }
 }
