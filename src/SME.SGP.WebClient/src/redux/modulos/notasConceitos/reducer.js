@@ -12,6 +12,10 @@ export default function NotasConceitos(state = inicial, action) {
         draft.modoEdicaoGeral = action.payload;
         break;
 
+      case '@notasConceitos/setModoEdicaoGeralNotaFinal':
+        draft.modoEdicaoGeralNotaFinal = action.payload;
+        break;
+
       case '@notasConceitos/setExpandirLinha':
         draft.expandirLinha = action.payload;
         break;

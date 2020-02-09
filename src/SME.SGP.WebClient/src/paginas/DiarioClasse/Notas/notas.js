@@ -9,7 +9,10 @@ import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { URL_HOME } from '~/constantes/url';
 import notasConceitos from '~/dtos/notasConceitos';
-import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
+import {
+  setModoEdicaoGeral,
+  setModoEdicaoGeralNotaFinal,
+} from '~/redux/modulos/notasConceitos/actions';
 import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
@@ -70,6 +73,7 @@ const Notas = ({ match }) => {
       auditoriaInserido: '',
     });
     dispatch(setModoEdicaoGeral(false));
+    dispatch(setModoEdicaoGeralNotaFinal(false));
   }, [dispatch]);
 
   const obterBimestres = useCallback(
@@ -206,6 +210,8 @@ const Notas = ({ match }) => {
   useEffect(() => {
     if (usuario.turmaSelecionada.turma) {
       obterDisciplinas();
+      dispatch(setModoEdicaoGeral(false));
+      dispatch(setModoEdicaoGeralNotaFinal(false));
     } else {
       setListaDisciplinas([]);
       setDesabilitarDisciplina(false);
@@ -241,6 +247,8 @@ const Notas = ({ match }) => {
 
   const aposSalvarNotas = () => {
     // resetarBimestres();
+    dispatch(setModoEdicaoGeral(false));
+    dispatch(setModoEdicaoGeralNotaFinal(false));
     obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
   };
 
@@ -380,12 +388,12 @@ const Notas = ({ match }) => {
       });
   };
 
-  const onSalvarNotas = click => {
+  const onSalvarNotas = (click, salvarNotaFinal) => {
     return new Promise((resolve, reject) => {
-      if (false) {
-        return salvarNotasAvaliacoes(resolve, reject, click);
+      if (salvarNotaFinal) {
+        return salvarNotasFinais(resolve, reject, click);
       }
-      return salvarNotasFinais(resolve, reject, click);
+      return salvarNotasAvaliacoes(resolve, reject, click);
     });
   };
 
@@ -403,11 +411,14 @@ const Notas = ({ match }) => {
     }
   };
 
-  const onClickSalvar = () => {
-    onSalvarNotas(true);
+  const onClickSalvar = salvarNotaFinal => {
+    onSalvarNotas(true, salvarNotaFinal);
   };
 
   const onChangeDisciplinas = async disciplinaId => {
+    dispatch(setModoEdicaoGeral(false));
+    dispatch(setModoEdicaoGeralNotaFinal(false));
+
     if (modoEdicaoGeral) {
       const confirmaSalvar = await pergutarParaSalvar();
       if (confirmaSalvar) {
@@ -506,6 +517,7 @@ const Notas = ({ match }) => {
     if (cancelar) {
       obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
       dispatch(setModoEdicaoGeral(false));
+      dispatch(setModoEdicaoGeralNotaFinal(false));
     }
   };
 
