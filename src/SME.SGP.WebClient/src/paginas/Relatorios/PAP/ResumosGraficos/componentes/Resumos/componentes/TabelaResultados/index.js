@@ -79,6 +79,7 @@ const TabelaResultados = () => {
 
       if (data && status === 200) {
         const montaColunas = [];
+        const montaDados = [];
 
         const eixos = [...data[0].Eixos];
 
@@ -92,21 +93,25 @@ const TabelaResultados = () => {
                 title: `${ano.AnoDescricao}`,
                 dataIndex: `${ano.AnoDescricao}`,
               });
+              ano.Respostas.forEach(resposta => {
+                const item = {};
+                item.Id = shortid.generate();
+                item.Eixo = eixo.EixoDescricao;
+                item.Objetivo = objetivo.ObjetivoDescricao;
+                item.Resposta = resposta.RespostaDescricao;
+                objetivo.Anos.forEach(anoResposta => {
+                  item[anoResposta.AnoDescricao] = resposta.Quantidade;
+                });
+                montaDados.push(item);
+              });
               // if (ano.Respostas.length > tamanhoRespostas) {
               //   tamanhoRespostas = ano.Respostas.length;
               // }
-              // ano.Respostas.forEach(resposta => {
-              //   console.log(
-              //     `${eixo.EixoDescricao}\n`,
-              //     `${objetivo.ObjetivoDescricao}\n`,
-              //     `${ano.AnoDescricao}\n`,
-              //     `${resposta.RespostaDescricao}\n`,
-              //     `${resposta.Quantidade}\n`
-              //   );
-              // });
             });
           });
         });
+
+        console.log(montaDados);
 
         montaColunas.push({
           title: 'Total',
