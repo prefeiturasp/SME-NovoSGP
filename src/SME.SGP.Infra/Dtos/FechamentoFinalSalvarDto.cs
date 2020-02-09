@@ -1,16 +1,16 @@
-﻿namespace SME.SGP.Infra
+﻿using System.Collections.Generic;
+
+namespace SME.SGP.Infra
 {
     public class FechamentoFinalSalvarDto
     {
-        public string AlunoRf { get; set; }
-        public string ComponenteCurricularCodigo { get; set; }
-        public long? ConceitoId { get; set; }
-        public double? Nota { get; set; }
-        public string TurmaCodigo { get; set; }
-
-        public bool EhNota()
+        public FechamentoFinalSalvarDto()
         {
-            return ConceitoId.HasValue;
+            Itens = new List<FechamentoFinalSalvarItemDto>();
         }
+
+        public bool EhRegencia { get; set; }
+        public IList<FechamentoFinalSalvarItemDto> Itens { get; set; }
+        public string TurmaCodigo { get; set; }
     }
 }

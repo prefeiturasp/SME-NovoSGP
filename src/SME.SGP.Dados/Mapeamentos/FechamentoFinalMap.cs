@@ -9,6 +9,7 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("fechamento_final");
             Map(a => a.AlunoCodigo).ToColumn("aluno_codigo");
             Map(a => a.DisciplinaCodigo).ToColumn("disciplina_codigo");
+            Map(a => a.EhRegencia).ToColumn("eh_regencia");
 
             Map(a => a.ConceitoId).ToColumn("conceito_id");
             Map(a => a.Conceito).Ignore();
