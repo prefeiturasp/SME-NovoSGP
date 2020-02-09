@@ -46,6 +46,13 @@ namespace SME.SGP.Aplicacao
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
         }
 
+        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(long dreId, long ueId, int cicloId, int turmaId, int ano, int? pagina)
+        {
+            //todo: tratar periodo acompanhamento
+            var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResumo(dreId, ueId, cicloId, turmaId, ano, pagina);
+            return MapearResultadoPaginadoParaDto(totalResumo);
+        }
+
         public async Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(long dreId, long ueId, int cicloId, int turmaId, int ano)
         {
             var totalAlunosPorSeries = await repositorioRecuperacaoParalela.ListarTotalAlunosSeries(dreId, ueId, cicloId, turmaId, ano);
@@ -181,6 +188,21 @@ namespace SME.SGP.Aplicacao
                 {
                 })
             };
+        }
+
+        private PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto> MapearResultadoPaginadoParaDto(PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto> totalResumo)
+        {
+            return new PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>
+            {
+                Items = MapearResultadoParaDto(totalResumo.Items),
+                TotalPaginas = totalResumo.TotalPaginas,
+                TotalRegistros = totalResumo.TotalRegistros
+            };
+        }
+
+        private IEnumerable<RecuperacaoParalelaTotalResultadoDto> MapearResultadoParaDto(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items)
+        {
+            return items.Select(x => new RecuperacaoParalelaTotalResultadoDto { });
         }
     }
 }

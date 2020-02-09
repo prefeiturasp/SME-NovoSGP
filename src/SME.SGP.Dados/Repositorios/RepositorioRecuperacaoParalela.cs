@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -66,7 +67,66 @@ namespace SME.SGP.Dados.Repositorios
 	                            turma.ano,
 	                            tipo_ciclo.descricao,
 	                            resposta.nome";
-            return await database.Conexao.QueryAsync<RecuperacaoParalelaTotalEstudantePorFrequenciaDto>(query, new { turmaId });
+            return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>(query, new { turmaId });
+        }
+
+        public async Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResumo(long dreId, long ueId, int cicloId, int turmaId, int ano, int? pagina)
+        {
+            //a paginação desse ítem é diferente das outras, pois ela é determinada pela paginação da coluna pagina
+            //ela não tem uma quantidade exata de ítens por página, apenas os objetivos daquele eixo, podendo variar para cada um
+            if (pagina == 0) pagina = 1;
+            //TODO: colocar os wheres
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("select");
+            MontarCamposResumo(query);
+            MontarFromResumo(query);
+            query.AppendLine("group by");
+            query.AppendLine("turma.nome,");
+            query.AppendLine("turma.ano,");
+            query.AppendLine("tipo_ciclo.descricao,");
+            query.AppendLine("resposta.nome,");
+            query.AppendLine("o.nome,");
+            query.AppendLine("e.descricao,");
+            query.AppendLine("o.ordem,");
+            query.AppendLine("tipo_ciclo.descricao;");
+            query.AppendLine("select max(pagina) from objetivo;");
+
+            var parametros = new { dreId, ueId, cicloId, turmaId, ano, pagina };
+            var retorno = new PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), parametros))
+            {
+                retorno.Items = multi.Read<RetornoRecuperacaoParalelaTotalResultadoDto>().ToList();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
+            }
+
+            retorno.TotalPaginas = retorno.TotalRegistros;
+
+            return retorno;
+        }
+
+        private static void MontarCamposResumo(StringBuilder query)
+        {
+            query.AppendLine("tipo_ciclo.descricao as ciclo");
+            query.AppendLine("count(aluno_id) as total,");
+            query.AppendLine("turma.ano,");
+            query.AppendLine("tipo_ciclo.descricao,");
+            query.AppendLine("resposta.nome as resposta,");
+            query.AppendLine("o.nome as objetivo,");
+            query.AppendLine("e.descricao as eixo");
+        }
+
+        private static void MontarFromResumo(StringBuilder query)
+        {
+            query.AppendLine("from recuperacao_paralela rp");
+            query.AppendLine("inner join turma on rp.turma_id = turma.turma_id");
+            query.AppendLine("inner join tipo_ciclo_ano tca on turma.modalidade_codigo = tca.modalidade and turma.ano = tca.ano");
+            query.AppendLine("inner join tipo_ciclo on tca.tipo_ciclo_id = tipo_ciclo.id");
+            query.AppendLine("inner join recuperacao_paralela_periodo_objetivo_resposta rpp on rp.id = rpp.recuperacao_paralela_id");
+            query.AppendLine("inner join resposta on rpp.resposta_id = resposta.id");
+            query.AppendLine("inner join objetivo o on rpp.objetivo_id = o.id");
+            query.AppendLine("inner join eixo e on o.eixo_id = e.id");
+            query.AppendLine("where o.pagina = @pagina");
         }
 
         private string MontaCamposCabecalho()
