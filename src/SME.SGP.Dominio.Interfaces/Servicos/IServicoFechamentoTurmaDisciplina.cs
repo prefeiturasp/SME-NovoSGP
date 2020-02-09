@@ -5,6 +5,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoFechamentoTurmaDisciplina
     {
-        Task<AuditoriaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto);
+        Task<AuditoriaFechamentoTurmaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto);
     }
 }

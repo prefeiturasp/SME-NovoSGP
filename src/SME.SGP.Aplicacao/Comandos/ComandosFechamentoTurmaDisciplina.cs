@@ -1,7 +1,9 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -18,26 +20,31 @@ namespace SME.SGP.Aplicacao
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));
         }
 
-        public async Task<IEnumerable<AuditoriaDto>> Alterar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
-        {
-            var listaAuditoria = new List<AuditoriaDto>();
-            foreach(var fechamentoTurma in fechamentosTurma)
-            {
-                listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma));
-            }
+        public async Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Alterar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
+            => await Salvar(fechamentosTurma);
+        public async Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Inserir(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
+            => await Salvar(fechamentosTurma);
 
-            return listaAuditoria;
-        }
-
-        public async Task<IEnumerable<AuditoriaDto>> Inserir(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
+        private async Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
         {
-            var listaAuditoria = new List<AuditoriaDto>();
+            var listaAuditoria = new List<AuditoriaFechamentoTurmaDto>();
             foreach (var fechamentoTurma in fechamentosTurma)
             {
-                listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(0, fechamentoTurma));
+                try
+                {
+                    listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma));
+                }
+                catch (Exception e)
+                {
+                    listaAuditoria.Add(new AuditoriaFechamentoTurmaDto() { Sucesso = false, MensagemConsistencia = e.Message });
+                }
             }
+
+            if (!listaAuditoria.Any(a => a.Sucesso))
+                throw new NegocioException("Erro ao salvar o fechamento da turma: " + string.Join(", ", listaAuditoria.Select(s => s.MensagemConsistencia)));
 
             return listaAuditoria;
         }
+
     }
 }
