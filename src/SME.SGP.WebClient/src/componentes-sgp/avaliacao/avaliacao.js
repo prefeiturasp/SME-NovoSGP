@@ -35,6 +35,13 @@ const Avaliacao = props => {
     }
   };
 
+  const onChangeNotaConceitoFinal = (notaBimestre, valorNovo) => {
+    notaBimestre.notaConceito = valorNovo;
+    notaBimestre.modoEdicao = true;
+    dados.modoEdicao = true;
+    dispatch(setModoEdicaoGeral(true));
+  };
+
   const descricaoAlunoAusente = 'Aluno ausente na data da avaliação';
 
   const montarCabecalhoAvaliacoes = () => {
@@ -110,6 +117,14 @@ const Avaliacao = props => {
   //   expandirLinha[index] = !expandirLinha[index];
   //   setExpandirLinha([...expandirLinha]);
   // };
+
+  const montaNotaFinal = aluno => {
+    if (aluno && aluno.notasBimestre && aluno.notasBimestre.length) {
+      return aluno.notasBimestre[0];
+    }
+    aluno.notasBimestre = [{ notaConceito: '' }];
+    return aluno.notasBimestre[0];
+  };
 
   return (
     <>
@@ -219,14 +234,22 @@ const Avaliacao = props => {
                                 );
                               })
                             : ''}
-                          <td className="sticky-col col-nota-final linha-nota-conceito-final">
-                            <ColunaConceitoFinal indexLinha={i} />
-                          </td>
                           {/* <td className="sticky-col col-nota-final linha-nota-conceito-final">
-                            <CampoNotaFinal />
+                            <ColunaConceitoFinal indexLinha={i} />
                           </td> */}
+                          <td className="sticky-col col-nota-final linha-nota-conceito-final">
+                            <CampoNotaFinal
+                              montaNotaFinal={() => montaNotaFinal(aluno)}
+                              onChangeNotaConceitoFinal={(nota, valor) =>
+                                onChangeNotaConceitoFinal(nota, valor)
+                              }
+                              desabilitarCampo={desabilitarCampos}
+                              podeEditar={aluno.podeEditar}
+                              periodoFim={dados.periodoFim}
+                            />
+                          </td>
                           <td className="sticky-col col-frequencia linha-frequencia ">
-                            100%
+                            {aluno.percentualFrequencia}%
                           </td>
                         </tr>
                         <LinhaConceitoFinal indexLinha={i} dados={dados} />
