@@ -70,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>(query, new { turmaId });
         }
 
-        public async Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResumo(long dreId, long ueId, int cicloId, int turmaId, int ano, int? pagina)
+        public async Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResumo(long dreId, long ueId, int cicloId, int turmaId, int ano, PeriodoRecuperacaoParalela periodo, int? pagina)
         {
             //a paginação desse ítem é diferente das outras, pois ela é determinada pela paginação da coluna pagina
             //ela não tem uma quantidade exata de ítens por página, apenas os objetivos daquele eixo, podendo variar para cada um
@@ -80,6 +80,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("select");
             MontarCamposResumo(query);
             MontarFromResumo(query);
+            //para grafico deve enviar nulo
+            if (pagina.HasValue)
+                query.AppendLine("where o.pagina = @pagina");
             query.AppendLine("group by");
             query.AppendLine("turma.nome,");
             query.AppendLine("turma.ano,");
@@ -88,7 +91,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("o.nome,");
             query.AppendLine("e.descricao,");
             query.AppendLine("o.ordem,");
-            query.AppendLine("tipo_ciclo.descricao;");
+            query.AppendLine("tipo_ciclo.descricao,");
+            query.AppendLine("e.id,");
+            query.AppendLine("o.id,");
+            query.AppendLine("resposta.id;");
             query.AppendLine("select max(pagina) from objetivo;");
 
             var parametros = new { dreId, ueId, cicloId, turmaId, ano, pagina };
@@ -107,13 +113,16 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void MontarCamposResumo(StringBuilder query)
         {
-            query.AppendLine("tipo_ciclo.descricao as ciclo");
+            query.AppendLine("tipo_ciclo.descricao as ciclo,");
             query.AppendLine("count(aluno_id) as total,");
             query.AppendLine("turma.ano,");
             query.AppendLine("tipo_ciclo.descricao,");
             query.AppendLine("resposta.nome as resposta,");
             query.AppendLine("o.nome as objetivo,");
-            query.AppendLine("e.descricao as eixo");
+            query.AppendLine("e.descricao as eixo,");
+            query.AppendLine("e.id as eixoId,");
+            query.AppendLine("o.id as objetivoId,");
+            query.AppendLine("resposta.id as respostaId");
         }
 
         private static void MontarFromResumo(StringBuilder query)
@@ -126,7 +135,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join resposta on rpp.resposta_id = resposta.id");
             query.AppendLine("inner join objetivo o on rpp.objetivo_id = o.id");
             query.AppendLine("inner join eixo e on o.eixo_id = e.id");
-            query.AppendLine("where o.pagina = @pagina");
         }
 
         private string MontaCamposCabecalho()
