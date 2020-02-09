@@ -9,7 +9,10 @@ import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { URL_HOME } from '~/constantes/url';
 import notasConceitos from '~/dtos/notasConceitos';
-import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
+import {
+  setModoEdicaoGeral,
+  setModoEdicaoGeralNotaFinal,
+} from '~/redux/modulos/notasConceitos/actions';
 import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
@@ -70,6 +73,7 @@ const Notas = ({ match }) => {
       auditoriaInserido: '',
     });
     dispatch(setModoEdicaoGeral(false));
+    dispatch(setModoEdicaoGeralNotaFinal(false));
   }, [dispatch]);
 
   const obterBimestres = useCallback(
@@ -103,20 +107,28 @@ const Notas = ({ match }) => {
         if (dados && dados.bimestres && dados.bimestres.length) {
           dados.bimestres.forEach(item => {
             item.alunos.forEach(aluno => {
-              return aluno.notasAvaliacoes.forEach(nota => {
+              aluno.notasAvaliacoes.forEach(nota => {
                 const notaOriginal = nota.notaConceito;
                 /* eslint-disable */
                 nota.notaOriginal = notaOriginal;
                 /* eslint-enable */
-                return nota;
+              });
+              aluno.notasBimestre.forEach(nota => {
+                const notaOriginal = nota.notaConceito;
+                /* eslint-disable */
+                nota.notaOriginal = notaOriginal;
+                /* eslint-enable */
               });
             });
 
             const bimestreAtualizado = {
+              fechamentoTurmaId: item.fechamentoTurmaId,
               descricao: item.descricao,
               numero: item.numero,
               alunos: [...item.alunos],
               avaliacoes: [...item.avaliacoes],
+              periodoInicio: item.periodoInicio,
+              periodoFim: item.periodoFim,
             };
 
             switch (Number(item.numero)) {
@@ -157,7 +169,7 @@ const Notas = ({ match }) => {
   );
 
   const obterDisciplinas = useCallback(async () => {
-    const url = `v1/professores/turmas/${usuario.turmaSelecionada.turma}/disciplinas`;
+    const url = `v1/professores/turmas/${usuario.turmaSelecionada.turma}/disciplinas/agrupadas`;
     const disciplinas = await api.get(url);
 
     setListaDisciplinas(disciplinas.data);
@@ -198,6 +210,8 @@ const Notas = ({ match }) => {
   useEffect(() => {
     if (usuario.turmaSelecionada.turma) {
       obterDisciplinas();
+      dispatch(setModoEdicaoGeral(false));
+      dispatch(setModoEdicaoGeralNotaFinal(false));
     } else {
       setListaDisciplinas([]);
       setDesabilitarDisciplina(false);
@@ -233,6 +247,8 @@ const Notas = ({ match }) => {
 
   const aposSalvarNotas = () => {
     // resetarBimestres();
+    dispatch(setModoEdicaoGeral(false));
+    dispatch(setModoEdicaoGeralNotaFinal(false));
     obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
   };
 
@@ -254,54 +270,130 @@ const Notas = ({ match }) => {
     return valorParaSalvar;
   };
 
-  const onSalvarNotas = click => {
-    return new Promise((resolve, reject) => {
-      const valoresBimestresSalvar = [];
+  const salvarNotasAvaliacoes = (resolve, reject, click) => {
+    const valoresBimestresSalvar = [];
 
-      if (primeiroBimestre.modoEdicao) {
-        valoresBimestresSalvar.push(
-          ...montarBimestreParaSalvar(primeiroBimestre)
-        );
-      }
-      if (segundoBimestre.modoEdicao) {
-        valoresBimestresSalvar.push(
-          ...montarBimestreParaSalvar(segundoBimestre)
-        );
-      }
-      if (terceiroBimestre.modoEdicao) {
-        valoresBimestresSalvar.push(
-          ...montarBimestreParaSalvar(terceiroBimestre)
-        );
-      }
-      if (quartoBimestre.modoEdicao) {
-        valoresBimestresSalvar.push(
-          ...montarBimestreParaSalvar(quartoBimestre)
-        );
-      }
+    if (primeiroBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(
+        ...montarBimestreParaSalvar(primeiroBimestre)
+      );
+    }
+    if (segundoBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(...montarBimestreParaSalvar(segundoBimestre));
+    }
+    if (terceiroBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(
+        ...montarBimestreParaSalvar(terceiroBimestre)
+      );
+    }
+    if (quartoBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(...montarBimestreParaSalvar(quartoBimestre));
+    }
 
-      return api
-        .post(`v1/avaliacoes/notas`, {
-          turmaId: usuario.turmaSelecionada.turma,
-          disciplinaId: disciplinaSelecionada,
-          notasConceitos: valoresBimestresSalvar,
-        })
-        .then(salvouNotas => {
-          if (salvouNotas && salvouNotas.status === 200) {
-            sucesso('Suas informações foram salvas com sucesso.');
-            dispatch(setModoEdicaoGeral(false));
-            if (click) {
-              aposSalvarNotas();
-            }
-            resolve(true);
-            return true;
+    return api
+      .post(`v1/avaliacoes/notas`, {
+        turmaId: usuario.turmaSelecionada.turma,
+        disciplinaId: disciplinaSelecionada,
+        notasConceitos: valoresBimestresSalvar,
+      })
+      .then(salvouNotas => {
+        if (salvouNotas && salvouNotas.status === 200) {
+          sucesso('Suas informações foram salvas com sucesso.');
+          dispatch(setModoEdicaoGeral(false));
+          if (click) {
+            aposSalvarNotas();
           }
-          resolve(false);
-          return false;
-        })
-        .catch(e => {
-          erros(e);
-          reject(e);
-        });
+          resolve(true);
+          return true;
+        }
+        resolve(false);
+        return false;
+      })
+      .catch(e => {
+        erros(e);
+        reject(e);
+      });
+  };
+
+  const montarBimestreParaSalvarNotaFinal = bimestreParaMontar => {
+    const notaConceitoAlunos = [];
+    bimestreParaMontar.alunos.forEach(aluno => {
+      aluno.notasBimestre.forEach(notaFinal => {
+        if (notaFinal.modoEdicao) {
+          notaConceitoAlunos.push({
+            codigoAluno: aluno.id,
+            disciplinaId: notasConceitos.Notas ? disciplinaSelecionada : '',
+            nota:
+              notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : 0,
+            conceitoId:
+              notaTipo === notasConceitos.Conceitos
+                ? notaFinal.notaConceito
+                : 0,
+          });
+        }
+      });
+    });
+    // TODO REVISAR NA EDICAO E NA ADD E INSERT DE CONCEITOS!!!!
+    return {
+      id: bimestreParaMontar.fechamentoTurmaId,
+      turmaId: usuario.turmaSelecionada.turma,
+      bimestre: bimestreParaMontar.numero,
+      disciplinaId: disciplinaSelecionada,
+      notaConceitoAlunos,
+    };
+  };
+
+  const salvarNotasFinais = (resolve, reject, click) => {
+    const valoresBimestresSalvar = [];
+
+    if (primeiroBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(
+        montarBimestreParaSalvarNotaFinal(primeiroBimestre)
+      );
+    }
+    if (segundoBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(
+        montarBimestreParaSalvarNotaFinal(segundoBimestre)
+      );
+    }
+    if (terceiroBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(
+        montarBimestreParaSalvarNotaFinal(terceiroBimestre)
+      );
+    }
+    if (quartoBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(
+        montarBimestreParaSalvarNotaFinal(quartoBimestre)
+      );
+    }
+
+    return api
+      .post(`/v1/fechamentos/turmas`, valoresBimestresSalvar)
+      .then(salvouNotas => {
+        if (salvouNotas && salvouNotas.status === 200) {
+          sucesso('Suas informações foram salvas com sucesso.');
+          dispatch(setModoEdicaoGeral(false));
+          if (click) {
+            aposSalvarNotas();
+          }
+          resolve(true);
+          return true;
+        }
+        resolve(false);
+        return false;
+      })
+      .catch(e => {
+        erros(e);
+        reject(e);
+      });
+  };
+
+  const onSalvarNotas = (click, salvarNotaFinal) => {
+    return new Promise((resolve, reject) => {
+      if (salvarNotaFinal) {
+        return salvarNotasFinais(resolve, reject, click);
+      }
+      return salvarNotasAvaliacoes(resolve, reject, click);
     });
   };
 
@@ -319,11 +411,14 @@ const Notas = ({ match }) => {
     }
   };
 
-  const onClickSalvar = () => {
-    onSalvarNotas(true);
+  const onClickSalvar = salvarNotaFinal => {
+    onSalvarNotas(true, salvarNotaFinal);
   };
 
   const onChangeDisciplinas = async disciplinaId => {
+    dispatch(setModoEdicaoGeral(false));
+    dispatch(setModoEdicaoGeralNotaFinal(false));
+
     if (modoEdicaoGeral) {
       const confirmaSalvar = await pergutarParaSalvar();
       if (confirmaSalvar) {
@@ -373,20 +468,28 @@ const Notas = ({ match }) => {
         );
 
         bimestrePesquisado.alunos.forEach(aluno => {
-          return aluno.notasAvaliacoes.forEach(nota => {
+          aluno.notasAvaliacoes.forEach(nota => {
             const notaOriginal = nota.notaConceito;
             /* eslint-disable */
             nota.notaOriginal = notaOriginal;
             /* eslint-enable */
-            return nota;
+          });
+          aluno.notasBimestre.forEach(nota => {
+            const notaOriginal = nota.notaConceito;
+            /* eslint-disable */
+            nota.notaOriginal = notaOriginal;
+            /* eslint-enable */
           });
         });
 
         const bimestreAtualizado = {
+          fechamentoTurmaId: bimestrePesquisado.fechamentoTurmaId,
           descricao: bimestrePesquisado.descricao,
           numero: bimestrePesquisado.numero,
           alunos: [...bimestrePesquisado.alunos],
           avaliacoes: [...bimestrePesquisado.avaliacoes],
+          periodoInicio: bimestrePesquisado.periodoInicio,
+          periodoFim: bimestrePesquisado.periodoFim,
         };
 
         switch (Number(numeroBimestre)) {
@@ -414,15 +517,19 @@ const Notas = ({ match }) => {
     if (cancelar) {
       obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
       dispatch(setModoEdicaoGeral(false));
+      dispatch(setModoEdicaoGeralNotaFinal(false));
     }
   };
 
   const onChangeOrdenacao = bimestreOrdenado => {
     const bimestreAtualizado = {
+      fechamentoTurmaId: bimestreOrdenado.fechamentoTurmaId,
       descricao: bimestreOrdenado.descricao,
       numero: bimestreOrdenado.numero,
       alunos: [...bimestreOrdenado.alunos],
       avaliacoes: [...bimestreOrdenado.avaliacoes],
+      periodoInicio: bimestreOrdenado.periodoInicio,
+      periodoFim: bimestreOrdenado.periodoFim,
     };
     switch (Number(bimestreOrdenado.numero)) {
       case 1:
@@ -513,8 +620,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                        ''
-                      )}
+                      ''
+                    )}
                     {segundoBimestre.numero ? (
                       <TabPane
                         tab={segundoBimestre.descricao}
@@ -528,8 +635,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                        ''
-                      )}
+                      ''
+                    )}
                     {terceiroBimestre.numero ? (
                       <TabPane
                         tab={terceiroBimestre.descricao}
@@ -543,8 +650,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                        ''
-                      )}
+                      ''
+                    )}
                     {quartoBimestre.numero ? (
                       <TabPane
                         tab={quartoBimestre.descricao}
@@ -558,8 +665,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                        ''
-                      )}
+                      ''
+                    )}
                   </ContainerTabsCard>
                 </div>
               </div>

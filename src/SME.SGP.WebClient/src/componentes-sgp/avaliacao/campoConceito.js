@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import SelectComponent from '~/componentes/select';
 
 const CampoConceito = props => {
@@ -8,10 +9,14 @@ const CampoConceito = props => {
   const [conceitoValorAtual, setConceitoValorAtual] = useState();
   const [conceitoAlterado, setConceitoAlterado] = useState(false);
 
+  const modoEdicaoGeralNotaFinal = useSelector(
+    store => store.notasConceitos.modoEdicaoGeralNotaFinal
+  );
+
   const listaConceitos = [
-    { valor: 1, descricao: 'P' },
-    { valor: 2, descricao: 'S' },
-    { valor: 3, descricao: 'NS' },
+    { valor: '1', descricao: 'P' },
+    { valor: '2', descricao: 'S' },
+    { valor: '3', descricao: 'NS' },
   ];
 
   const validaSeTeveAlteracao = (valorNovo, notaOriginal) => {
@@ -37,14 +42,16 @@ const CampoConceito = props => {
       valueOption="valor"
       valueText="descricao"
       lista={listaConceitos}
-      valueSelect={conceitoValorAtual || undefined}
+      valueSelect={String(conceitoValorAtual) || undefined}
       showSearch
       placeholder="Conceito"
       className={`select-conceitos ${
         conceitoAlterado ? 'border-registro-alterado' : ''
       }`}
       classNameContainer={nota.ausente ? 'aluno-ausente-conceitos' : ''}
-      disabled={desabilitarCampo || !nota.podeEditar}
+      disabled={
+        desabilitarCampo || modoEdicaoGeralNotaFinal || !nota.podeEditar
+      }
     />
   );
 };
@@ -52,11 +59,13 @@ const CampoConceito = props => {
 CampoConceito.defaultProps = {
   nota: {},
   onChangeNotaConceito: PropTypes.func,
+  desabilitarCampo: PropTypes.bool,
 };
 
 CampoConceito.propTypes = {
   nota: {},
   onChangeNotaConceito: () => {},
+  desabilitarCampo: false,
 };
 
 export default CampoConceito;
