@@ -7,6 +7,7 @@
 
         public int CicloId { get; set; }
         public long DreId { get; set; }
+        public int? NumeroPagina { get; set; }
         public int TurmaId { get; set; }
         public long UeId { get; set; }
     }
