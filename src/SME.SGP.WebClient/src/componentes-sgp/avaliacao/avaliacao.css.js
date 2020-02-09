@@ -207,9 +207,9 @@ export const TabelaColunasFixas = styled.div`
   }
 
   .tamanho-conceito-final {
-    width: 126px;
-    max-width: 126px;
-    min-width: 126px;
+    width: 100px;
+    max-width: 100px;
+    min-width: 100px;
   }
 
   .linha-conceito-final {

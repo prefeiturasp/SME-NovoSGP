@@ -5,7 +5,7 @@ import { setExpandirLinha } from '~/redux/modulos/notasConceitos/actions';
 
 import { IconePlusMarcadores } from './avaliacao.css';
 
-const ColunaConceitoFinal = props => {
+const ColunaNotaFinalRegencia = props => {
   const dispatch = useDispatch();
 
   const expandirLinha = useSelector(
@@ -32,12 +32,12 @@ const ColunaConceitoFinal = props => {
   );
 };
 
-ColunaConceitoFinal.defaultProps = {
+ColunaNotaFinalRegencia.defaultProps = {
   indexLinha: PropTypes.number,
 };
 
-ColunaConceitoFinal.propTypes = {
+ColunaNotaFinalRegencia.propTypes = {
   indexLinha: null,
 };
 
-export default ColunaConceitoFinal;
+export default ColunaNotaFinalRegencia;

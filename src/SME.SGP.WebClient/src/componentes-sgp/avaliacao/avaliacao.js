@@ -5,19 +5,21 @@ import { useDispatch } from 'react-redux';
 import shortid from 'shortid';
 import notasConceitos from '~/dtos/notasConceitos';
 import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
+import { setModoEdicaoGeralNotaFinal } from '~/redux/modulos/notasConceitos/actions';
 
 import Ordenacao from '../Ordenacao/ordenacao';
 import {
   CaixaMarcadores,
-  IconePlusMarcadores,
+  // IconePlusMarcadores,
   TabelaColunasFixas,
 } from './avaliacao.css';
 import CampoConceito from './campoConceito';
 import CampoNota from './campoNota';
 import { LabelSemDados } from '~/componentes';
-import ColunaConceitoFinal from './colunaConceitoFinal';
+// import ColunaNotaFinalRegencia from './colunaNotaFinalRegenciaRegencia';
 import LinhaConceitoFinal from './linhaConceitoFinal';
 import CampoNotaFinal from './campoNotaFinal';
+import CampoConceitoFinal from './campoConceitoFinal';
 
 const Avaliacao = props => {
   const dispatch = useDispatch();
@@ -39,7 +41,7 @@ const Avaliacao = props => {
     notaBimestre.notaConceito = valorNovo;
     notaBimestre.modoEdicao = true;
     dados.modoEdicao = true;
-    dispatch(setModoEdicaoGeral(true));
+    dispatch(setModoEdicaoGeralNotaFinal(true));
   };
 
   const descricaoAlunoAusente = 'Aluno ausente na data da avaliação';
@@ -94,29 +96,31 @@ const Avaliacao = props => {
   };
 
   const montarCampoNotaConceito = nota => {
-    return Number(notasConceitos.Notas) === Number(notaTipo) ? (
-      <CampoNota
-        nota={nota}
-        onChangeNotaConceito={valorNovo =>
-          onChangeNotaConceito(nota, valorNovo)
-        }
-        desabilitarCampo={desabilitarCampos}
-      />
-    ) : (
-      <CampoConceito
-        nota={nota}
-        onChangeNotaConceito={valorNovo =>
-          onChangeNotaConceito(nota, valorNovo)
-        }
-        desabilitarCampo={desabilitarCampos}
-      />
-    );
+    switch (Number(notaTipo)) {
+      case Number(notasConceitos.Notas):
+        return (
+          <CampoNota
+            nota={nota}
+            onChangeNotaConceito={valorNovo =>
+              onChangeNotaConceito(nota, valorNovo)
+            }
+            desabilitarCampo={desabilitarCampos}
+          />
+        );
+      case Number(notasConceitos.Conceitos):
+        return (
+          <CampoConceito
+            nota={nota}
+            onChangeNotaConceito={valorNovo =>
+              onChangeNotaConceito(nota, valorNovo)
+            }
+            desabilitarCampo={desabilitarCampos}
+          />
+        );
+      default:
+        return '';
+    }
   };
-
-  // const onClickExpandir = index => {
-  //   expandirLinha[index] = !expandirLinha[index];
-  //   setExpandirLinha([...expandirLinha]);
-  // };
 
   const montaNotaFinal = aluno => {
     if (aluno && aluno.notasBimestre && aluno.notasBimestre.length) {
@@ -125,6 +129,43 @@ const Avaliacao = props => {
     aluno.notasBimestre = [{ notaConceito: '' }];
     return aluno.notasBimestre[0];
   };
+
+  const montarCampoNotaConceitoFinal = aluno => {
+    switch (Number(notaTipo)) {
+      case Number(notasConceitos.Notas):
+        return (
+          <CampoNotaFinal
+            montaNotaFinal={() => montaNotaFinal(aluno)}
+            onChangeNotaConceitoFinal={(nota, valor) =>
+              onChangeNotaConceitoFinal(nota, valor)
+            }
+            desabilitarCampo={desabilitarCampos}
+            podeEditar={aluno.podeEditar}
+            periodoFim={dados.periodoFim}
+          />
+        );
+
+      case Number(notasConceitos.Conceitos):
+        return (
+          <CampoConceitoFinal
+            montaNotaConceitoFinal={() => montaNotaFinal(aluno)}
+            onChangeNotaConceitoFinal={(nota, valor) =>
+              onChangeNotaConceitoFinal(nota, valor)
+            }
+            desabilitarCampo={desabilitarCampos}
+            podeEditar={aluno.podeEditar}
+          />
+        );
+
+      default:
+        return '';
+    }
+  };
+
+  // const onClickExpandir = index => {
+  //   expandirLinha[index] = !expandirLinha[index];
+  //   setExpandirLinha([...expandirLinha]);
+  // };
 
   return (
     <>
@@ -218,9 +259,7 @@ const Avaliacao = props => {
                                 return (
                                   <td
                                     key={shortid.generate()}
-                                    className={`width-150 ${
-                                      nota.podeEditar ? '' : 'desabilitar-nota'
-                                    }`}
+                                    className="width-150"
                                   >
                                     {montarCampoNotaConceito(nota)}
                                     {nota.ausente ? (
@@ -235,19 +274,12 @@ const Avaliacao = props => {
                               })
                             : ''}
                           {/* <td className="sticky-col col-nota-final linha-nota-conceito-final">
-                            <ColunaConceitoFinal indexLinha={i} />
+                            <ColunaNotaFinalRegencia indexLinha={i} />
                           </td> */}
                           <td className="sticky-col col-nota-final linha-nota-conceito-final">
-                            <CampoNotaFinal
-                              montaNotaFinal={() => montaNotaFinal(aluno)}
-                              onChangeNotaConceitoFinal={(nota, valor) =>
-                                onChangeNotaConceitoFinal(nota, valor)
-                              }
-                              desabilitarCampo={desabilitarCampos}
-                              podeEditar={aluno.podeEditar}
-                              periodoFim={dados.periodoFim}
-                            />
+                            {montarCampoNotaConceitoFinal(aluno)}
                           </td>
+
                           <td className="sticky-col col-frequencia linha-frequencia ">
                             {aluno.percentualFrequencia}%
                           </td>

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import CampoNumero from '~/componentes/campoNumero';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -13,21 +14,27 @@ const CampoNotaFinal = props => {
     periodoFim,
   } = props;
 
+  const modoEdicaoGeral = useSelector(
+    store => store.notasConceitos.modoEdicaoGeral
+  );
+
   const [notaBimestre, setNotaBimestre] = useState();
   const [notaValorAtual, setNotaValorAtual] = useState();
-  const [notaAlterada, setNotaAlterada] = useState(false);
 
-  const validaSeTeveAlteracao = useCallback((notaOriginal, notaNova) => {
-    if (
-      notaOriginal != undefined &&
-      notaOriginal != null &&
-      notaOriginal.trim() !== ''
-    ) {
-      setNotaAlterada(
-        Number(notaNova).toFixed(1) !== Number(notaOriginal).toFixed(1)
-      );
-    }
-  }, []);
+  const validaSeTeveAlteracao = useCallback(
+    notaArredondada => {
+      if (
+        notaBimestre.notaOriginal != undefined &&
+        notaBimestre.notaOriginal != null &&
+        notaBimestre.notaOriginal.trim() !== ''
+      ) {
+        notaBimestre.notaAlterada =
+          Number(notaArredondada).toFixed(1) !==
+          Number(notaBimestre.notaOriginal).toFixed(1);
+      }
+    },
+    [notaBimestre]
+  );
 
   useEffect(() => {
     setNotaBimestre(montaNotaFinal());
@@ -35,33 +42,31 @@ const CampoNotaFinal = props => {
 
   useEffect(() => {
     if (notaBimestre) {
+      validaSeTeveAlteracao(notaBimestre.notaConceito);
       setNotaValorAtual(notaBimestre.notaConceito);
-      validaSeTeveAlteracao(
-        notaBimestre.notaOriginal,
-        notaBimestre.notaConceito
-      );
     }
   }, [notaBimestre, validaSeTeveAlteracao]);
 
   const setarValorNovo = async valorNovo => {
-    setNotaValorAtual(valorNovo);
-    const retorno = await api
-      .get(
-        `v1/avaliacoes/notas/${Number(
-          valorNovo
-        )}/arredondamento?data=${periodoFim}`
-      )
-      .catch(e => erros(e));
+    if (!desabilitarCampo && podeEditar) {
+      setNotaValorAtual(valorNovo);
+      const retorno = await api
+        .get(
+          `v1/avaliacoes/notas/${Number(
+            valorNovo
+          )}/arredondamento?data=${periodoFim}`
+        )
+        .catch(e => erros(e));
 
-    let notaArredondada = valorNovo;
-    if (retorno && retorno.data) {
-      notaArredondada = retorno.data;
+      let notaArredondada = valorNovo;
+      if (retorno && retorno.data) {
+        notaArredondada = retorno.data;
+      }
+
+      validaSeTeveAlteracao(notaArredondada);
+      onChangeNotaConceitoFinal(notaBimestre, notaArredondada);
       setNotaValorAtual(notaArredondada);
     }
-
-    validaSeTeveAlteracao(notaBimestre.notaOriginal, notaArredondada);
-    onChangeNotaConceitoFinal(notaBimestre, notaArredondada);
-    validaSeTeveAlteracao(notaBimestre.notaOriginal, notaArredondada);
   };
 
   return (
@@ -72,8 +77,12 @@ const CampoNotaFinal = props => {
       max={10}
       step={0.5}
       placeholder="Nota Final"
-      desabilitado={desabilitarCampo || !podeEditar}
-      className={`${notaAlterada ? 'border-registro-alterado' : ''}`}
+      disabled={desabilitarCampo || modoEdicaoGeral || !podeEditar}
+      className={`${
+        notaBimestre && notaBimestre.notaAlterada
+          ? 'border-registro-alterado'
+          : ''
+      }`}
     />
   );
 };
