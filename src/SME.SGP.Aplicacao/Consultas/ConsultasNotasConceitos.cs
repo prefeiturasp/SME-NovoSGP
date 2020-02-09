@@ -218,6 +218,7 @@ namespace SME.SGP.Aplicacao
                         // Carrega Notas do Bimestre
                         if (fechamentoTurma != null)
                         {
+                            bimestreParaAdicionar.FechamentoTurmaId = fechamentoTurma.Id;
                             retorno.AuditoriaBimestreInserido = $"Nota final do bimestre inserida por {fechamentoTurma.CriadoPor} em {fechamentoTurma.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurma.CriadoEm.ToString("hh:mm:ss")}.";
                             if (fechamentoTurma.AlteradoEm.HasValue)
                                 retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {fechamentoTurma.AlteradoPor} em {fechamentoTurma.AlteradoEm.Value.ToString("dd/MM/yyyy")}, às {fechamentoTurma.AlteradoEm.Value.ToString("hh:mm:ss")}.";
