@@ -15,7 +15,7 @@ export const TabelaColunasFixas = styled.div`
     position: relative;
     overflow: auto;
     white-space: nowrap;
-    height: 300px;
+    height: 400px;
 
     ::-webkit-scrollbar-track {
       background-color: #f4f4f4 !important;
@@ -139,6 +139,12 @@ export const TabelaColunasFixas = styled.div`
     background: ${Base.CinzaFundo};
   }
 
+  .linha-nota-conceito-final-clicada {
+    box-shadow: -8px 0px 8px -4px #8080804d;
+    background: ${Base.Roxo};
+    color: white;
+  }
+
   .linha-frequencia {
     background: ${Base.CinzaFundo};
   }
@@ -199,7 +205,45 @@ export const TabelaColunasFixas = styled.div`
     border-right: solid 22px #d06d12 !important;
     padding-left: 2px !important;
   }
+
+  .tamanho-conceito-final {
+    width: 100px;
+    max-width: 100px;
+    min-width: 100px;
+  }
+
+  .linha-conceito-final {
+    border-left: solid 1px ${Base.CinzaDesabilitado};
+    box-shadow: 0px 0px 7px 3px ${Base.CinzaDesabilitado};
+    border-radius: 3px;
+    width: 400px;
+    overflow: auto;
+    position: relative;
+    z-index: 3;
+
+    ::-webkit-scrollbar-track {
+      background-color: #f4f4f4 !important;
+    }
+
+    ::-webkit-scrollbar {
+      width: 9px !important;
+      background-color: rgba(229, 237, 244, 0.71) !important;
+      border-radius: 2.5px !important;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #a8a8a8 !important;
+      border-radius: 3px !important;
+    }
+  }
+
+  .desc-linha-conceito-final {
+    margin-left: 20px;
+    margin-top: 32px;
+    margin-right: 37px;
+  }
 `;
+
 export const CaixaMarcadores = styled.span`
   border: 1.6px solid ${Base.Roxo};
   border-radius: 9px;
@@ -214,4 +258,6 @@ export const IconePlusMarcadores = styled.i`
   font-size: 16px;
   margin-left: 5px;
   cursor: pointer;
+  font-size: 18px;
+  margin-top: 10px;
 `;
