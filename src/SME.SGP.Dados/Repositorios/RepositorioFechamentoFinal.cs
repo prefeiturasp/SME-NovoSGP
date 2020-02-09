@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join turma t on
 	                            fn.turma_id = t.id
                             where
-	                            and t.turma_id = @turmaCodigo";
+	                            t.turma_id = @turmaCodigo";
 
             return await database.Conexao.QueryAsync<FechamentoFinal>(query, new { turmaCodigo });
         }

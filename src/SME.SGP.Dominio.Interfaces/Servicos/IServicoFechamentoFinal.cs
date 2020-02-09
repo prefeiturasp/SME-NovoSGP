@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task SalvarAsync(FechamentoFinal fechamentoFinal);
 
-        Task VerificaFechamentoOuReabertura(long turmaId);
+        Task VerificaPersistenciaGeral(Turma turma);
     }
 }

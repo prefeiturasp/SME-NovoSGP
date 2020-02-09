@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
         public async Task<string[]> SalvarAsync(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
             var turma = ObterTurma(fechamentoFinalSalvarDto.TurmaCodigo);
-            await servicoFechamentoFinal.VerificaFechamentoOuReabertura(turma.Id);
+            await servicoFechamentoFinal.VerificaPersistenciaGeral(turma);
 
             var fechamentos = await TransformarDtoSalvarEmEntidade(fechamentoFinalSalvarDto, turma);
             var mensagensDeErro = new List<string>();
@@ -49,12 +49,15 @@ namespace SME.SGP.Aplicacao
                     mensagensDeErro.Add($"Não foi possível salvar o fechamento final do aluno de rf {fechamento.AlunoCodigo}. Erro interno.");
                 }
             }
+            if (mensagensDeErro.Any())
+                mensagensDeErro.Add("Fechamento(s) salvo(s) com sucesso!");
+
             return mensagensDeErro.ToArray();
         }
 
         private Turma ObterTurma(string turmaCodigo)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(turmaCodigo);
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma.");
             return turma;
@@ -78,6 +81,7 @@ namespace SME.SGP.Aplicacao
 
                     fechamentoFinal.AtualizarTurma(turma);
                     fechamentoFinal.DisciplinaCodigo = fechamentoItemDto.ComponenteCurricularCodigo;
+                    fechamentoFinal.AlunoCodigo = fechamentoItemDto.AlunoRf;
                 }
 
                 if (fechamentoItemDto.EhNota())
@@ -85,7 +89,10 @@ namespace SME.SGP.Aplicacao
                 else
                 {
                     var conceito = repositorioConceito.ObterPorId(fechamentoItemDto.ConceitoId.Value);
-                    fechamentoFinal.Conceito = conceito ?? throw new NegocioException("Não foi possível localizar o conceito.");
+                    if (conceito == null)
+                        throw new NegocioException("Não foi possível localizar o conceito.");
+
+                    fechamentoFinal.AtualizaConceito(conceito);
                 }
 
                 fechamentoFinal.EhRegencia = fechamentoFinalSalvarDto.EhRegencia;
