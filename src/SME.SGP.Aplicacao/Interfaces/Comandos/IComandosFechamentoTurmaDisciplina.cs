@@ -6,7 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosFechamentoTurmaDisciplina
     {
-        Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Inserir(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma);
-        Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Alterar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma);
+        Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma);
     }
 }
