@@ -103,6 +103,7 @@ namespace SME.SGP.Dominio.Servicos
                 throw e;
             }
         }
+
         private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data)
         {
             if (!servicoUsuario.PodePersistirTurma(codigoRf, turmaId, data).Result)
@@ -155,9 +156,15 @@ namespace SME.SGP.Dominio.Servicos
                 foreach (var notaConceitoAlunoDto in notasConceitosAlunosDto)
                 {
                     var notaConceitoBimestre = notasConceitosBimestre.FirstOrDefault(x => x.CodigoAluno == notaConceitoAlunoDto.CodigoAluno && x.DisciplinaId == notaConceitoAlunoDto.DisciplinaId);
-                    notaConceitoBimestre.Nota = notaConceitoAlunoDto.Nota;
-                    if (notaConceitoAlunoDto.ConceitoId > 0)
-                        notaConceitoBimestre.ConceitoId = notaConceitoAlunoDto.ConceitoId;
+                    if (notaConceitoBimestre != null)
+                    {
+                        notaConceitoBimestre.Nota = notaConceitoAlunoDto.Nota;
+
+                        if (notaConceitoAlunoDto.ConceitoId > 0)
+                            notaConceitoBimestre.ConceitoId = notaConceitoAlunoDto.ConceitoId;
+                    }
+                    else
+                        notasConceitosBimestre.Add(MapearParaEntidade(notaConceitoAlunoDto));
                 }
             }
             else
