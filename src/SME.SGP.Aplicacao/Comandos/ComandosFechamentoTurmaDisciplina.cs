@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ComandosFechamentoTurmaDisciplina: IComandosFechamentoTurmaDisciplina
+    public class ComandosFechamentoTurmaDisciplina : IComandosFechamentoTurmaDisciplina
     {
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina;
@@ -20,12 +20,7 @@ namespace SME.SGP.Aplicacao
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));
         }
 
-        public async Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Alterar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
-            => await Salvar(fechamentosTurma);
-        public async Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Inserir(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
-            => await Salvar(fechamentosTurma);
-
-        private async Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
+        public async Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
         {
             var listaAuditoria = new List<AuditoriaFechamentoTurmaDto>();
             foreach (var fechamentoTurma in fechamentosTurma)
@@ -45,6 +40,5 @@ namespace SME.SGP.Aplicacao
 
             return listaAuditoria;
         }
-
     }
 }
