@@ -55,7 +55,7 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<AuditoriaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto)
+        public async Task<AuditoriaFechamentoTurmaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto)
         {
             var fechamentoTurma = MapearParaEntidade(id, entidadeDto);
 
@@ -69,7 +69,7 @@ namespace SME.SGP.Dominio.Servicos
             var fechamentoBimestre = fechamento?.FechamentosBimestre.FirstOrDefault(x => x.PeriodoEscolar.Bimestre == entidadeDto.Bimestre);
 
             if (fechamento == null || fechamentoBimestre == null)
-                throw new NegocioException("Não localizado período de fechamento em aberto para turma informada");
+                throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
 
             // Valida Permissão do Professor na Turma/Disciplina
             VerificaSeProfessorPodePersistirTurma(servicoUsuario.ObterRf(), entidadeDto.TurmaId, fechamentoBimestre.PeriodoEscolar.PeriodoFim);
@@ -79,7 +79,7 @@ namespace SME.SGP.Dominio.Servicos
             // Valida Avaliações no Bimestre
             var validacoes = await ValidaMinimoAvaliacoesBimestre(tipoCalendario.Id, entidadeDto.TurmaId, entidadeDto.DisciplinaId, entidadeDto.Bimestre);
             if (!string.IsNullOrEmpty(validacoes))
-                throw new NegocioException("Não é possível cadastrar nota do bimestre para turma e disciplina em questão: " + validacoes);
+                throw new NegocioException($"Não é possível cadastrar nota do {entidadeDto.Bimestre}º bimestre para turma e disciplina em questão: " + validacoes);
 
             // Carrega notas alunos
             var notasConceitosBimestre = await MapearParaEntidade(id, entidadeDto.NotaConceitoAlunos);
@@ -95,7 +95,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 unitOfWork.PersistirTransacao();
 
-                return (AuditoriaDto)fechamentoTurma;
+                return (AuditoriaFechamentoTurmaDto)fechamentoTurma;
             }
             catch(Exception e)
             {
@@ -129,7 +129,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var avaliacoes = await repositorioAtividadeAvaliativaRegencia.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaId, disciplina.CodigoComponenteCurricular, bimestre);
                     if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
-                        validacoes.AppendLine($"A disciplina [{disciplina.Nome}] não tem o número mínimo de avaliações bimestral: {tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre}");
+                        validacoes.AppendLine($"A disciplina [{disciplina.Nome}] não tem o número mínimo de avaliações bimestrais: Necessário {tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre}");
                 }
             }
             else
@@ -137,7 +137,7 @@ namespace SME.SGP.Dominio.Servicos
                 var disciplinaEOL = disciplinasEOL.First();
                 var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaId, disciplinaEOL.CodigoComponenteCurricular.ToString(), bimestre);
                 if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
-                    validacoes.AppendLine($"A disciplina [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestral: {tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre}");
+                    validacoes.AppendLine($"A disciplina [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais: Necessário {tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre}");
             }
 
             return validacoes.ToString();
