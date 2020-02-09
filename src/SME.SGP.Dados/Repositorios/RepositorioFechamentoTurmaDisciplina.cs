@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select n.disciplina_id as DisciplinaId, n.nota as Nota, n.conceito_id as ConceitoId
                          from nota_conceito_bimestre n 
-                        where not f.excluido
+                        where not n.excluido
                             and n.fechamento_turma_disciplina_id = @fechamentoTurmaId
                             and n.codigo_aluno = @codigoAluno ";
 

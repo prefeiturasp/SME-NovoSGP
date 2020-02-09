@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     public class FechamentoTurmaController : ControllerBase
     {
         [HttpPost()]
-        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(AuditoriaFechamentoTurmaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
@@ -22,7 +22,7 @@ namespace SME.SGP.Api.Controllers
             => Ok(await comandos.Inserir(fechamentoTurma));
 
         [HttpPut()]
-        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(AuditoriaFechamentoTurmaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_A, Policy = "Bearer")]
