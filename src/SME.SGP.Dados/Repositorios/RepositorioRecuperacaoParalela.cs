@@ -27,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId, periodoId });
         }
 
-        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(long dreId, long ueId, int cicloId, int turmaId, int ano)
+        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano)
         {
             //TODO: colocar os wheres
             string query = @"select
@@ -39,7 +39,6 @@ namespace SME.SGP.Dados.Repositorios
 	                            inner join tipo_ciclo_ano tca on turma.modalidade_codigo = tca.modalidade and turma.ano = tca.ano
 	                            inner join tipo_ciclo on tca.tipo_ciclo_id = tipo_ciclo.id
 	                            inner join recuperacao_paralela_periodo_objetivo_resposta rpp on rp.id = rpp.recuperacao_paralela_id
-	                            where rpp.objetivo_id = 4
                             group by
 	                            turma.nome,
 	                            turma.ano,
@@ -47,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoDto>(query.ToString(), new { turmaId });
         }
 
-        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>> ListarTotalEstudantesPorFrequencia(long dreId, long ueId, int cicloId, int turmaId, int ano)
+        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>> ListarTotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano)
         {
             //TODO: colocar os wheres
             string query = @"select
@@ -70,19 +69,18 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>(query, new { turmaId });
         }
 
-        public async Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResumo(long dreId, long ueId, int cicloId, int turmaId, int ano, PeriodoRecuperacaoParalela periodo, int? pagina)
+        public async Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano, int? pagina)
         {
             //a paginação desse ítem é diferente das outras, pois ela é determinada pela paginação da coluna pagina
             //ela não tem uma quantidade exata de ítens por página, apenas os objetivos daquele eixo, podendo variar para cada um
             if (pagina == 0) pagina = 1;
             //TODO: colocar os wheres
+            //TODO: periodo 1 olhar bimestre 1,2...
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
             MontarCamposResumo(query);
             MontarFromResumo(query);
-            //para grafico deve enviar nulo
-            if (pagina.HasValue)
-                query.AppendLine("where o.pagina = @pagina");
+            //MontarWhere(query, periodo, dreId, ueId, cicloId, turmaId, ano, pagina);
             query.AppendLine("group by");
             query.AppendLine("turma.nome,");
             query.AppendLine("turma.ano,");
@@ -135,6 +133,33 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join resposta on rpp.resposta_id = resposta.id");
             query.AppendLine("inner join objetivo o on rpp.objetivo_id = o.id");
             query.AppendLine("inner join eixo e on o.eixo_id = e.id");
+            query.AppendLine("where e.excluido = false");
+            query.AppendLine("and o.excluido = false");
+            query.AppendLine("and resposta.excluido = false");
+        }
+
+        private static void MontarWhere(StringBuilder query, int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano, int? pagina)
+        {
+            //para grafico deve enviar nulo
+            if (pagina.HasValue)
+                query.AppendLine("and o.pagina = @pagina");
+            if (periodo.HasValue && (PeriodoRecuperacaoParalela)periodo == PeriodoRecuperacaoParalela.Encaminhamento)
+                query.AppendLine("and e.id NOT IN (2)");
+            else
+            {
+                query.AppendLine("and e.id NOT IN (1)");
+            }
+            if (!string.IsNullOrEmpty(ueId))
+                query.AppendLine("and turma.");
+            query.AppendLine("count(aluno_id) as total,");
+            query.AppendLine("turma.ano,");
+            query.AppendLine("tipo_ciclo.descricao,");
+            query.AppendLine("resposta.nome as resposta,");
+            query.AppendLine("o.nome as objetivo,");
+            query.AppendLine("e.descricao as eixo,");
+            query.AppendLine("e.id as eixoId,");
+            query.AppendLine("o.id as objetivoId,");
+            query.AppendLine("resposta.id as respostaId");
         }
 
         private string MontaCamposCabecalho()

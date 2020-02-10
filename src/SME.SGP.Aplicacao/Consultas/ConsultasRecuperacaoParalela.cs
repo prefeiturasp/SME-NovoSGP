@@ -46,24 +46,23 @@ namespace SME.SGP.Aplicacao
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
         }
 
-        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(long dreId, long ueId, int cicloId, int turmaId, int ano, int? pagina)
+        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano, int? pagina)
         {
-            //todo: tratar periodo acompanhamento
-            var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResumo(dreId, ueId, cicloId, turmaId, ano, PeriodoRecuperacaoParalela.AcompanhamentoPrimeiroSemestre, pagina);
+            var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResultado(periodo, dreId, ueId, cicloId, turmaId, ano, pagina);
             return MapearResultadoPaginadoParaDto(totalResumo);
         }
 
-        public async Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(long dreId, long ueId, int cicloId, int turmaId, int ano)
+        public async Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano)
         {
-            var totalAlunosPorSeries = await repositorioRecuperacaoParalela.ListarTotalAlunosSeries(dreId, ueId, cicloId, turmaId, ano);
+            var totalAlunosPorSeries = await repositorioRecuperacaoParalela.ListarTotalAlunosSeries(periodo, dreId, ueId, cicloId, turmaId, ano);
             if (!totalAlunosPorSeries.Any()) return null;
             var total = totalAlunosPorSeries.Sum(s => s.Total);
             return MapearParaDtoTotalEstudantes(total, totalAlunosPorSeries);
         }
 
-        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(long dreId, long ueId, int cicloId, int turmaId, int ano)
+        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano)
         {
-            var totalAlunosPorSeriesFrequencia = await repositorioRecuperacaoParalela.ListarTotalEstudantesPorFrequencia(dreId, ueId, cicloId, turmaId, ano);
+            var totalAlunosPorSeriesFrequencia = await repositorioRecuperacaoParalela.ListarTotalEstudantesPorFrequencia(periodo, dreId, ueId, cicloId, turmaId, ano);
             if (!totalAlunosPorSeriesFrequencia.Any()) return null;
             var total = totalAlunosPorSeriesFrequencia.Sum(s => s.Total);
             return MapearParaDtoTotalEstudantesPorFrequencia(total, totalAlunosPorSeriesFrequencia);
