@@ -315,7 +315,9 @@ const CadastroAula = ({ match }) => {
       const val = {
         tipoAula: buscaAula.data.tipoAula,
         disciplinaId: buscaAula.data.disciplinaId.toString(),
-        disciplinaCompartilhadaId: buscaAula.data.disciplinaCompartilhadaId.toString(),
+        disciplinaCompartilhadaId:
+          buscaAula.data.disciplinaCompartilhadaId &&
+          buscaAula.data.disciplinaCompartilhadaId.toString(),
         dataAula: buscaAula.data.dataAula
           ? window.moment(buscaAula.data.dataAula)
           : window.moment(),
