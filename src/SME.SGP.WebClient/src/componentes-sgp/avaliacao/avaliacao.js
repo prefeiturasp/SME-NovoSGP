@@ -1,6 +1,6 @@
 import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import shortid from 'shortid';
 import { LabelSemDados } from '~/componentes';
