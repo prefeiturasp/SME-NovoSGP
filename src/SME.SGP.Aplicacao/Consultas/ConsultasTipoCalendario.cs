@@ -88,5 +88,12 @@ namespace SME.SGP.Aplicacao
             return from t in retorno
                    select EntidadeParaDto(t);
         }
+
+        public IEnumerable<TipoCalendarioDto> ListarPorAnoLetivo(int anoLetivo)
+        {
+            var retorno = repositorio.ListarPorAnoLetivo(anoLetivo);
+            return from t in retorno
+                   select EntidadeParaDto(t);
+        }
     }
 }
