@@ -135,6 +135,45 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
+        public string ObterTiposIdsDisciplina()
+        {
+            Type t = typeof(DisciplinaResposta);
+
+            string tiposRetorno = String.Empty;
+
+            tiposRetorno += "DISCIPLINARESPOSTA; ";
+
+            foreach (var prop in t.GetProperties())
+                tiposRetorno += String.Format("   {0} ({1})", prop.Name,
+                                  prop.PropertyType.Name);
+
+            t = typeof(ProfessorTitularDisciplinaEol);
+
+            tiposRetorno += "PROFESSORTITULARDISCIPLINAEOL; ";
+
+            foreach (var prop in t.GetProperties())
+                tiposRetorno += String.Format("   {0} ({1})", prop.Name,
+                                  prop.PropertyType.Name);
+
+            t = typeof(RetornoDisciplinaDto);
+
+            tiposRetorno += "RETORNODISCIPLINADTO; ";
+
+            foreach (var prop in t.GetProperties())
+                tiposRetorno += String.Format("   {0} ({1})", prop.Name,
+                                  prop.PropertyType.Name);
+
+            t = typeof(DisciplinaDto);
+
+            tiposRetorno += "DISCIPLINADTO; ";
+
+            foreach (var prop in t.GetProperties())
+                tiposRetorno += String.Format("   {0} ({1})", prop.Name,
+                                  prop.PropertyType.Name);
+
+            return tiposRetorno;
+        }
+
         private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false)
         {
             var retorno = new List<DisciplinaDto>();
