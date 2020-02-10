@@ -8,7 +8,7 @@ namespace SME.SGP.Dto
         public long CodAluno { get; set; }
         public long Id { get; set; }
         public List<ObjetivoRespostaDto> Respostas { get; set; }
-        public int TurmaId { get; set; }
+        public long TurmaId { get; set; }
         public long TurmaRecuperacaoParalelaId { get; set; }
     }
 }

@@ -129,15 +129,24 @@ function RelatorioPAPAcompanhamento() {
         limparTela();
       } else {
         setPeriodo(valor);
+
         const { data } = await AcompanhamentoPAPServico.ListarAlunos({
           TurmaId: turmaSelecionada.turma,
           PeriodoId: valor,
         });
+
+        if (!data) {
+          erro('Nenhum dado encontrado');
+          setCarregando(false);
+          return;
+        }
+
         dispararAlteracoes(data);
         disparar(setarObjetivoAtivo(estado.Objetivos[0]));
         setCarregando(false);
       }
     } catch (err) {
+      console.log(err.response);
       setCarregando(false);
       erro(`Não foi possível completar a requisição: ${JSON.stringify(err)}`);
     }
