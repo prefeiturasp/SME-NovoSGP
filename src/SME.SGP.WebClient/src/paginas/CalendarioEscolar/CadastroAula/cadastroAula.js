@@ -208,7 +208,8 @@ const CadastroAula = ({ match }) => {
   useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
       const disciplina = listaDisciplinas.filter(
-        item => item.codigoComponenteCurricular === idDisciplina
+        item =>
+          item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
       if (disciplina && disciplina[0])
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
