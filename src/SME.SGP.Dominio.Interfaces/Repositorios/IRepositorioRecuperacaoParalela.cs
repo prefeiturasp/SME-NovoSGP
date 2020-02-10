@@ -8,10 +8,10 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<RetornoRecuperacaoParalela>> Listar(string turmaId, long periodoId);
 
-        Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(long dreId, long ueId, int cicloId, int turmaId, int ano);
+        Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano);
 
-        Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>> ListarTotalEstudantesPorFrequencia(long dreId, long ueId, int cicloId, int turmaId, int ano);
+        Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>> ListarTotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano);
 
-        Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResumo(long dreId, long ueId, int cicloId, int turmaId, int ano, PeriodoRecuperacaoParalela periodo, int? pagina);
+        Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano, int? pagina);
     }
 }

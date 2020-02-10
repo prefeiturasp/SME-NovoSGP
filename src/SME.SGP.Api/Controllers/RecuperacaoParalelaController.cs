@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ListarTotalEstudantes([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            return Ok(await consultaRecuperacaoParalela.TotalEstudantes(filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano));
+            return Ok(await consultaRecuperacaoParalela.TotalEstudantes(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano));
         }
 
         [HttpGet("frequencia")]
@@ -43,7 +43,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ListarTotalEstudantesPorFrequencia([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            return Ok(await consultaRecuperacaoParalela.TotalEstudantesPorFrequencia(filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano));
+            return Ok(await consultaRecuperacaoParalela.TotalEstudantesPorFrequencia(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano));
         }
 
         [HttpGet("resultado")]
@@ -51,7 +51,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ListarTotalResultado([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            return Ok(await consultaRecuperacaoParalela.ListarTotalResultado(filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano, filtro.NumeroPagina));
+            return Ok(await consultaRecuperacaoParalela.ListarTotalResultado(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano, filtro.NumeroPagina));
         }
 
         [HttpPost]
