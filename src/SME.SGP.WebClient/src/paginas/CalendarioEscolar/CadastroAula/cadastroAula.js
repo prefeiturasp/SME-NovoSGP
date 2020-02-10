@@ -208,7 +208,8 @@ const CadastroAula = ({ match }) => {
   useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
       const disciplina = listaDisciplinas.filter(
-        item => item.codigoComponenteCurricular === idDisciplina
+        item =>
+          item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
       if (disciplina && disciplina[0])
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
@@ -239,9 +240,12 @@ const CadastroAula = ({ match }) => {
     trataSomenteLeitura();
   }, [somenteLeitura]);
 
+  const buscarDisciplinas = async () => {
+    setListaDisciplinasCompartilhadas(await buscarDisciplinasCompartilhadas());
+  };
+
   useEffect(() => {
-    if (disciplinaCompartilhada)
-      setListaDisciplinasCompartilhadas(buscarDisciplinasCompartilhadas());
+    if (disciplinaCompartilhada) buscarDisciplinas();
   }, [disciplinaCompartilhada]);
 
   const getRecorrenciasHabilitadas = (opcoes, dadosRecorrencia) => {
@@ -493,8 +497,6 @@ const CadastroAula = ({ match }) => {
     const data =
       dados.dataAulaCompleta && dados.dataAulaCompleta.format('YYYY-MM-DD');
     dados.dataAula = moment(`${data}T00:00:00-03:00`);
-
-    console.log(dados.dataAula);
 
     if (dados.quantidadeRadio && dados.quantidadeRadio > 0) {
       dados.quantidade = dados.quantidadeRadio;
