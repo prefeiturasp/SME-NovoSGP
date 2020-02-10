@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina;
+        private readonly IConsultasFechamento consultasFechamento;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
@@ -28,7 +29,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
+        private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioEvento repositorioEvento;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
         private readonly IServicoEOL servicoEOL;
@@ -36,6 +38,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasNotasConceitos(IServicoEOL servicoEOL, IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa,
             IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina, IConsultasDisciplina consultasDisciplina,
+            IConsultasFechamento consultasFechamento,
             IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitos repositorioNotasConceitos,
             IRepositorioFrequencia repositorioFrequencia, IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
             IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioTipoCalendario repositorioTipoCalendario,
@@ -43,12 +46,13 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina, IRepositorioConceito repositorioConceito,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioParametrosSistema repositorioParametrosSistema,
             IRepositorioTipoAvaliacao repositorioTipoAvaliacao, IRepositorioTurma repositorioTurma, IRepositorioUe repositorioUe,
-            IRepositorioPeriodoFechamento repositorioPeriodoFechamento)
+            IRepositorioDre repositorioDre, IRepositorioEvento repositorioEvento)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAtividadeAvaliativa = consultasAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(consultasAtividadeAvaliativa));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasFechamentoTurmaDisciplina = consultasFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(consultasFechamentoTurmaDisciplina));
+            this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
             this.servicoDeNotasConceitos = servicoDeNotasConceitos ?? throw new ArgumentNullException(nameof(servicoDeNotasConceitos));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
@@ -65,7 +69,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new ArgumentNullException(nameof(repositorioTipoAvaliacao));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
+            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
+            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
         }
 
         private int ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
@@ -291,7 +296,7 @@ namespace SME.SGP.Aplicacao
                     }
                     bimestreParaAdicionar.Alunos = listaAlunosDoBimestre;
                     bimestreParaAdicionar.QtdAvaliacoesBimestral = atividadesAvaliativasdoBimestre.Where(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id).Count();
-                    bimestreParaAdicionar.PodeLancarNotaFinal = VerificaPeriodoFechamentoEmAberto(filtro.TurmaCodigo, periodoAtual.PeriodoFim.Month <= 6 ? 1 : 2);
+                    bimestreParaAdicionar.PodeLancarNotaFinal = await VerificaPeriodoFechamentoEmAberto(filtro.TurmaCodigo, periodoAtual.Bimestre);
 
                     if (atividadeAvaliativaParaObterTipoNota != null)
                     {
@@ -310,19 +315,8 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private bool VerificaPeriodoFechamentoEmAberto(string turmaCodigo, int semestre)
-        {
-            var turma = repositorioTurma.ObterPorId(turmaCodigo);
-            var ue = repositorioUe.ObterPorId(turma.UeId);
-
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo
-                    , turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio
-                    , semestre);
-
-            var periodoFechamento = repositorioPeriodoFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendario.Id, ue.DreId, ue.Id);
-
-            return periodoFechamento != null;
-        }
+        private async Task<bool> VerificaPeriodoFechamentoEmAberto(string turmaCodigo, int bimestre)
+            => await consultasFechamento.TurmaEmPeriodoDeFechamento(turmaCodigo, DateTime.Now, bimestre);
 
         public async Task<TipoNota> ObterNotaTipo(long turmaId, int anoLetivo, bool consideraHistorico)
         {
