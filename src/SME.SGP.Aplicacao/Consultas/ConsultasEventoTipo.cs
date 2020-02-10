@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -14,12 +15,16 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, IContextoAplicacao contextoAplicacao,
-            IRepositorioEvento repositorioEvento) : base(contextoAplicacao)
+        public ConsultasEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, 
+                                    IContextoAplicacao contextoAplicacao,
+                                    IRepositorioEvento repositorioEvento,
+                                    IServicoUsuario servicoUsuario) : base(contextoAplicacao)
         {
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<PaginacaoResultadoDto<EventoTipoDto>> Listar(FiltroEventoTipoDto Filtro)
@@ -35,6 +40,18 @@ namespace SME.SGP.Aplicacao
             bool nenhumItemEncontrado = retornoQueryPaginada.Items == null ||
                 !retornoQueryPaginada.Items.Any() ||
                 retornoQueryPaginada.Items.ElementAt(0).Id == 0;
+
+            if (!nenhumItemEncontrado && Filtro.EhCadastro)
+            {
+                var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+                if (usuario.EhPerfilUE())
+                {
+                    retornoQueryPaginada.Items = retornoQueryPaginada.Items
+                                                  .Where(r => r.Id != (long)TipoEvento.LiberacaoExcepcional ||
+                                                              r.Id != (long)TipoEvento.ReposicaoNoRecesso);
+                }
+            }
 
             retornoConsultaPaginada.Items = nenhumItemEncontrado
                 ? null
