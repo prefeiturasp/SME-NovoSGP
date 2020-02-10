@@ -9,6 +9,7 @@ const CampoConceitoFinal = props => {
     onChangeNotaConceitoFinal,
     desabilitarCampo,
     podeEditar,
+    listaTiposConceitos,
   } = props;
 
   const modoEdicaoGeral = useSelector(
@@ -17,12 +18,6 @@ const CampoConceitoFinal = props => {
 
   const [conceitoValorAtual, setConceitoValorAtual] = useState();
   const [notaConceitoBimestre, setNotaConceitoBimestre] = useState();
-
-  const listaConceitos = [
-    { valor: '1', descricao: 'P' },
-    { valor: '2', descricao: 'S' },
-    { valor: '3', descricao: 'NS' },
-  ];
 
   const validaSeTeveAlteracao = useCallback(
     notaConceito => {
@@ -34,19 +29,36 @@ const CampoConceitoFinal = props => {
     [notaConceitoBimestre]
   );
 
+  const validaSeEstaAbaixoDaMedia = useCallback(
+    valorAtual => {
+      const tipoConceito = listaTiposConceitos.find(
+        item => item.id == valorAtual
+      );
+
+      if (tipoConceito && !tipoConceito.aprovado) {
+        notaConceitoBimestre.abaixoDaMedia = true;
+      } else {
+        notaConceitoBimestre.abaixoDaMedia = false;
+      }
+    },
+    [listaTiposConceitos, notaConceitoBimestre]
+  );
+
   useEffect(() => {
     setNotaConceitoBimestre(montaNotaConceitoFinal());
   }, [montaNotaConceitoFinal]);
 
   useEffect(() => {
     if (notaConceitoBimestre) {
+      validaSeEstaAbaixoDaMedia(notaConceitoBimestre.notaConceito);
       validaSeTeveAlteracao(notaConceitoBimestre.notaConceito);
       setConceitoValorAtual(notaConceitoBimestre.notaConceito);
     }
-  }, [notaConceitoBimestre, validaSeTeveAlteracao]);
+  }, [notaConceitoBimestre, validaSeTeveAlteracao, validaSeEstaAbaixoDaMedia]);
 
   const setarValorNovo = valorNovo => {
     if (!desabilitarCampo && podeEditar) {
+      validaSeEstaAbaixoDaMedia(valorNovo);
       validaSeTeveAlteracao(valorNovo);
       onChangeNotaConceitoFinal(notaConceitoBimestre, valorNovo);
       setConceitoValorAtual(valorNovo);
@@ -56,17 +68,19 @@ const CampoConceitoFinal = props => {
   return (
     <SelectComponent
       onChange={valorNovo => setarValorNovo(valorNovo)}
-      valueOption="valor"
-      valueText="descricao"
-      lista={listaConceitos}
-      valueSelect={String(conceitoValorAtual) || undefined}
+      valueOption="id"
+      valueText="valor"
+      lista={listaTiposConceitos}
+      valueSelect={conceitoValorAtual ? String(conceitoValorAtual) : undefined}
       showSearch
       placeholder="Final"
       className={`tamanho-conceito-final ${
-        notaConceitoBimestre && notaConceitoBimestre.conceitoAlterado
+        notaConceitoBimestre && notaConceitoBimestre.abaixoDaMedia
+          ? 'border-abaixo-media'
+          : notaConceitoBimestre && notaConceitoBimestre.conceitoAlterado
           ? 'border-registro-alterado'
           : ''
-      }`}
+      } `}
       disabled={desabilitarCampo || modoEdicaoGeral || !podeEditar}
     />
   );
@@ -77,6 +91,7 @@ CampoConceitoFinal.defaultProps = {
   montaNotaConceitoFinal: PropTypes.func,
   desabilitarCampo: PropTypes.bool,
   podeEditar: PropTypes.bool,
+  listaTiposConceitos: PropTypes.array,
 };
 
 CampoConceitoFinal.propTypes = {
@@ -84,6 +99,7 @@ CampoConceitoFinal.propTypes = {
   montaNotaConceitoFinal: () => {},
   desabilitarCampo: false,
   podeEditar: false,
+  listaTiposConceitos: [],
 };
 
 export default CampoConceitoFinal;

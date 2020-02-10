@@ -12,6 +12,7 @@ const CampoNotaFinal = props => {
     desabilitarCampo,
     podeEditar,
     periodoFim,
+    mediaAprovacaoBimestre,
   } = props;
 
   const modoEdicaoGeral = useSelector(
@@ -36,16 +37,28 @@ const CampoNotaFinal = props => {
     [notaBimestre]
   );
 
+  const validaSeEstaAbaixoDaMedia = useCallback(
+    valorAtual => {
+      if (valorAtual && valorAtual < mediaAprovacaoBimestre) {
+        notaBimestre.abaixoDaMedia = true;
+      } else {
+        notaBimestre.abaixoDaMedia = false;
+      }
+    },
+    [mediaAprovacaoBimestre, notaBimestre]
+  );
+
   useEffect(() => {
     setNotaBimestre(montaNotaFinal());
   }, [montaNotaFinal]);
 
   useEffect(() => {
     if (notaBimestre) {
+      validaSeEstaAbaixoDaMedia(notaBimestre.notaConceito);
       validaSeTeveAlteracao(notaBimestre.notaConceito);
       setNotaValorAtual(notaBimestre.notaConceito);
     }
-  }, [notaBimestre, validaSeTeveAlteracao]);
+  }, [notaBimestre, validaSeTeveAlteracao, validaSeEstaAbaixoDaMedia]);
 
   const setarValorNovo = async valorNovo => {
     if (!desabilitarCampo && podeEditar) {
@@ -63,6 +76,7 @@ const CampoNotaFinal = props => {
         notaArredondada = retorno.data;
       }
 
+      validaSeEstaAbaixoDaMedia(notaArredondada);
       validaSeTeveAlteracao(notaArredondada);
       onChangeNotaConceitoFinal(notaBimestre, notaArredondada);
       setNotaValorAtual(notaArredondada);
@@ -78,11 +92,13 @@ const CampoNotaFinal = props => {
       step={0.5}
       placeholder="Nota Final"
       disabled={desabilitarCampo || modoEdicaoGeral || !podeEditar}
-      className={`${
-        notaBimestre && notaBimestre.notaAlterada
+      className={`tamanho-conceito-final ${
+        notaBimestre && notaBimestre.abaixoDaMedia
+          ? 'border-abaixo-media'
+          : notaBimestre && notaBimestre.notaAlterada
           ? 'border-registro-alterado'
           : ''
-      }`}
+      } `}
     />
   );
 };
@@ -93,6 +109,7 @@ CampoNotaFinal.defaultProps = {
   desabilitarCampo: PropTypes.bool,
   podeEditar: PropTypes.bool,
   periodoFim: PropTypes.string,
+  mediaAprovacaoBimestre: PropTypes.number,
 };
 
 CampoNotaFinal.propTypes = {
@@ -101,6 +118,7 @@ CampoNotaFinal.propTypes = {
   desabilitarCampo: false,
   podeEditar: false,
   periodoFim: '',
+  mediaAprovacaoBimestre: 0,
 };
 
 export default CampoNotaFinal;
