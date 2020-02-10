@@ -30,6 +30,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
     size,
     border,
     color,
+    allowClear,
   } = props;
 
   const Container = styled.div`
@@ -151,7 +152,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       notFoundContent="Sem dados"
       alt={alt}
       optionFilterProp="children"
-      allowClear
+      allowClear={allowClear}
       disabled={disabled}
       component={Select}
       type="input"
@@ -183,7 +184,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       notFoundContent="Sem dados"
       alt={alt}
       optionFilterProp="children"
-      allowClear
+      allowClear={allowClear}
       disabled={disabled}
       ref={ref}
       showSearch={showSearch}
@@ -222,6 +223,11 @@ SelectComponent.propTypes = {
   size: PropTypes.string,
   border: PropTypes.string,
   color: PropTypes.string,
+  allowClear: PropTypes.bool,
+};
+
+SelectComponent.defaultProps = {
+  allowClear: true,
 };
 
 export default SelectComponent;
