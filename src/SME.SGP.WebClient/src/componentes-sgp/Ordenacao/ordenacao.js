@@ -77,8 +77,8 @@ const Ordenacao = props => {
       return a[ordenarColunaTexto] > b[ordenarColunaTexto]
         ? 1
         : b[ordenarColunaTexto] > a[ordenarColunaTexto]
-        ? -1
-        : 0;
+          ? -1
+          : 0;
     };
     const retorno = conteudoParaOrdenar.sort(ordenar);
     retornoOrdenado([...retorno]);
@@ -89,8 +89,8 @@ const Ordenacao = props => {
       return b[ordenarColunaTexto] > a[ordenarColunaTexto]
         ? 1
         : a[ordenarColunaTexto] > b[ordenarColunaTexto]
-        ? -1
-        : 0;
+          ? -1
+          : 0;
     };
     const retorno = conteudoParaOrdenar.sort(ordenar);
     retornoOrdenado([...retorno]);
@@ -110,7 +110,7 @@ const Ordenacao = props => {
   );
 
   return (
-    <Container trigger={['click']} overlay={menu} placement="bottomLeft">
+    <Container trigger={['click']} overlay={menu} placement="bottomLeft" disabled={desabilitado}>
       <Button
         id={shortid.generate()}
         label="Ordenar"
@@ -118,7 +118,7 @@ const Ordenacao = props => {
         color={Colors.Azul}
         border
         className={`mr-2 ${className}`}
-        disabled
+        disabled={desabilitado}
       />
     </Container>
   );
@@ -129,7 +129,8 @@ Ordenacao.defaultProps = {
   conteudoParaOrdenar: [],
   ordenarColunaNumero: 'id',
   ordenarColunaTexto: 'nome',
-  retornoOrdenado: () => {},
+  retornoOrdenado: () => { },
+  desabilitado: false,
 };
 
 Ordenacao.propTypes = {
@@ -138,5 +139,6 @@ Ordenacao.propTypes = {
   ordenarColunaNumero: PropTypes.string,
   ordenarColunaTexto: PropTypes.string,
   retornoOrdenado: PropTypes.func,
+  desabilitado: PropTypes.bool,
 };
 export default Ordenacao;
