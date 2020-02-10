@@ -61,6 +61,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosProcessoExecutando, ComandosProcessoExecutando>();
             services.TryAddScoped<IComandosEventoFechamento, ComandosEventoFechamento>();
             services.TryAddScoped<IComandosFechamento, ComandosFechamento>();
+            services.TryAddScoped<IComandosFechamentoTurmaDisciplina, ComandosFechamentoTurmaDisciplina>();
+            services.TryAddScoped<IComandosNotaConceitoBimestre, ComandosNotaConceitoBimestre>();
             services.TryAddScoped<IComandosFechamentoFinal, ComandosFechamentoFinal>();
         }
 
@@ -108,6 +110,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasCompensacaoAusenciaDisciplinaRegencia, ConsultasCompensacaoAusenciaDisciplinaRegencia>();
             services.TryAddScoped<IConsultasProcessoExecutando, ConsultasProcessoExecutando>();
             services.TryAddScoped<IConsultasFechamento, ConsultasFechamento>();
+            services.TryAddScoped<IConsultasFechamentoTurmaDisciplina, ConsultasFechamentoTurmaDisciplina>();
+            services.TryAddScoped<IConsultasNotaConceitoBimestre, ConsultasNotaConceitoBimestre>();
             services.TryAddScoped<IConsultasEventoFechamento, ConsultasEventoFechamento>();
             services.TryAddScoped<IConsultaRecuperacaoParalela, ConsultasRecuperacaoParalela>();
             services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
@@ -185,6 +189,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPeriodoFechamento, RepositorioPeriodoFechamento>();
             services.TryAddScoped<IRepositorioNotificacaoCompensacaoAusencia, RepositorioNotificacaoCompensacaoAusencia>();
             services.TryAddScoped<IRepositorioEventoFechamento, RepositorioEventoFechamento>();
+            services.TryAddScoped<IRepositorioFechamentoTurmaDisciplina, RepositorioFechamentoTurmaDisciplina>();
+            services.TryAddScoped<IRepositorioNotaConceitoBimestre, RepositorioNotaConceitoBimestre>();
             services.TryAddScoped<IRepositorioRecuperacaoParalela, RepositorioRecuperacaoParalela>();
             services.TryAddScoped<IRepositorioRecuperacaoParalelaPeriodo, RepositorioRecuperacaoParalelaPeriodo>();
             services.TryAddScoped<IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta, RepositorioRecuperacaoParalelaPeriodoObjetivoResposta>();
@@ -223,6 +229,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoFechamentoReabertura, ServicoFechamentoReabertura>();
             services.TryAddScoped<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
             services.TryAddScoped<IServicoFechamento, ServicoFechamento>();
+            services.TryAddScoped<IServicoFechamentoTurmaDisciplina, ServicoFechamentoTurmaDisciplina>();
             services.TryAddScoped<IServicoRecuperacaoParalela, ServicoRecuperacaoParalela>();
             services.TryAddScoped<IServicoFechamentoFinal, ServicoFechamentoFinal>();
         }

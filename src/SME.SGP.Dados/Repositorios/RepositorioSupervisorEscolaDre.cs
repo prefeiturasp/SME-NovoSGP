@@ -14,13 +14,16 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisor(string dreId, string supervisorId)
+        public IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisor(string dreId, string supervisorId, bool excluidos = true)
         {
             StringBuilder query = new StringBuilder();
 
             query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido ");
             query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where excluido = false");
+            query.AppendLine("where 1 = 1");
+
+            if (!excluidos)
+                query.AppendLine("and excluido = false");
 
             if (!string.IsNullOrEmpty(supervisorId))
                 query.AppendLine("and sed.supervisor_id = @supervisorId");
