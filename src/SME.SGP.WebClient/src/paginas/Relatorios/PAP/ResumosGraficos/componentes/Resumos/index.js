@@ -5,7 +5,7 @@ import t from 'prop-types';
 import { PainelCollapse, LazyLoad } from '~/componentes';
 
 function Resumos({ dados }) {
-  const filtroFake = 'ciclos';
+  const filtroFake = 'turma';
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
   const TabelaTotalEstudantes = lazy(() =>
     import('./componentes/TabelaTotalEstudantes')

@@ -166,17 +166,6 @@ function TabelaFrequencia({ dados }) {
           size="small"
         />
       </ContainerTabela>
-      {/* {dadosBackend && (
-        <div style={{ height: 400 }}>
-          <Graficos.Barras
-            dados={dadosBackend.filter(x => x.TipoDado === 'Porcentagem')}
-            indice="DescricaoFrequencia"
-            chaves={['3C', '4C', '4E', '5C', '6C', '6B']}
-            legendaBaixo="teste"
-            legendaEsquerda="teste2"
-          />
-        </div>
-      )} */}
     </>
   );
 }

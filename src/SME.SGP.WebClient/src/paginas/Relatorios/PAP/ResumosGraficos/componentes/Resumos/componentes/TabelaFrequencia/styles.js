@@ -74,4 +74,7 @@ export const ContainerTabela = styled.div`
     > th {
     background: #fafafa;
   }
+
+  margin: 0 !important;
+  padding: 0 !important;
 `;
