@@ -11,6 +11,11 @@ const ResumosGraficosPAPServico = {
       params,
     });
   },
+  ListarTotalEstudantes(params) {
+    return MockAPI.get(`/v1/recuperacao-paralela/resumos/total-estudantes`, {
+      params,
+    });
+  },
 };
 
 export default ResumosGraficosPAPServico;

@@ -34,22 +34,28 @@ const ResumosGraficosPAP = () => {
   const onClickVoltar = () => {};
 
   const Resumos = lazy(() => import('./componentes/Resumos'));
-  const Graficos = lazy(() => import('./componentes/Graficos'));
+  const TabGraficos = lazy(() => import('./componentes/TabGraficos'));
 
   useEffect(() => {
     async function buscarDados() {
       try {
         setCarregandoGraficos(true);
         setCarregandoRelatorios(true);
-        const {
-          data,
-          status,
-        } = await ResumosGraficosPAPServico.ListarFrequencia(filtro);
-        if (data && status === 200) {
-          setCarregandoGraficos(false);
-          setCarregandoRelatorios(false);
-          setDados(data);
-        }
+        const requisicoes = await Promise.all([
+          ResumosGraficosPAPServico.ListarFrequencia(filtro),
+          ResumosGraficosPAPServico.ListarTotalEstudantes(filtro),
+        ]);
+
+        setDados({
+          ...requisicoes[0].data,
+          ...requisicoes[1].data,
+        });
+        console.log({
+          ...requisicoes[0].data,
+          ...requisicoes[1].data,
+        });
+        setCarregandoGraficos(false);
+        setCarregandoRelatorios(false);
       } catch (err) {
         setCarregandoGraficos(false);
         setCarregandoRelatorios(false);
@@ -93,7 +99,7 @@ const ResumosGraficosPAP = () => {
             <Loader loading={carregandoGraficos}>
               {tabAtiva === 'graficos' ? (
                 <LazyLoad>
-                  <Graficos dados={dados} />
+                  <TabGraficos dados={dados} />
                 </LazyLoad>
               ) : (
                 ''
