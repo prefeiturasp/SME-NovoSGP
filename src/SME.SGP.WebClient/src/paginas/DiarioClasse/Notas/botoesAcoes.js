@@ -17,8 +17,12 @@ const BotoesAcoessNotasConceitos = props => {
     store => store.notasConceitos.modoEdicaoGeral
   );
 
+  const modoEdicaoGeralNotaFinal = useSelector(
+    store => store.notasConceitos.modoEdicaoGeralNotaFinal
+  );
+
   const onCancelar = async () => {
-    if (modoEdicaoGeral) {
+    if (modoEdicaoGeral || modoEdicaoGeralNotaFinal) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -47,7 +51,7 @@ const BotoesAcoessNotasConceitos = props => {
         border
         className="mr-2"
         onClick={onCancelar}
-        disabled={!modoEdicaoGeral}
+        disabled={!modoEdicaoGeral && !modoEdicaoGeralNotaFinal}
       />
       <Button
         label="Salvar"
@@ -55,8 +59,10 @@ const BotoesAcoessNotasConceitos = props => {
         border
         bold
         className="mr-2"
-        onClick={onClickSalvar}
-        disabled={desabilitarBotao || !modoEdicaoGeral}
+        onClick={() => onClickSalvar(modoEdicaoGeralNotaFinal)}
+        disabled={
+          desabilitarBotao || (!modoEdicaoGeral && !modoEdicaoGeralNotaFinal)
+        }
       />
     </>
   );
@@ -66,12 +72,14 @@ BotoesAcoessNotasConceitos.defaultProps = {
   onClickVoltar: PropTypes.func,
   onClickCancelar: PropTypes.func,
   onClickSalvar: PropTypes.func,
+  desabilitarBotao: PropTypes.bold,
 };
 
 BotoesAcoessNotasConceitos.propTypes = {
   onClickVoltar: () => {},
   onClickCancelar: () => {},
   onClickSalvar: () => {},
+  desabilitarBotao: false,
 };
 
 export default BotoesAcoessNotasConceitos;
