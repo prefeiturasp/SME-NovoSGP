@@ -12,6 +12,7 @@ import notasConceitos from '~/dtos/notasConceitos';
 import {
   setModoEdicaoGeral,
   setModoEdicaoGeralNotaFinal,
+  setExpandirLinha,
 } from '~/redux/modulos/notasConceitos/actions';
 import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -80,6 +81,7 @@ const Notas = ({ match }) => {
     });
     dispatch(setModoEdicaoGeral(false));
     dispatch(setModoEdicaoGeralNotaFinal(false));
+    dispatch(setExpandirLinha([]));
   }, [dispatch]);
 
   const obterListaConceitos = async periodoFim => {
@@ -205,6 +207,13 @@ const Notas = ({ match }) => {
             auditoriaBimestreAlterado: dados.auditoriaBimestreAlterado,
             auditoriaBimestreInserido: dados.auditoriaBimestreInserido,
           });
+        } else {
+          setAuditoriaInfo({
+            auditoriaAlterado: '',
+            auditoriaInserido: '',
+            auditoriaBimestreAlterado: '',
+            auditoriaBimestreInserido: '',
+          });
         }
         setCarregandoListaBimestres(false);
       } else {
@@ -259,6 +268,7 @@ const Notas = ({ match }) => {
       obterDisciplinas();
       dispatch(setModoEdicaoGeral(false));
       dispatch(setModoEdicaoGeralNotaFinal(false));
+      dispatch(setExpandirLinha([]));
     } else {
       setListaDisciplinas([]);
       setDesabilitarDisciplina(false);
@@ -294,8 +304,6 @@ const Notas = ({ match }) => {
 
   const aposSalvarNotas = () => {
     // resetarBimestres();
-    dispatch(setModoEdicaoGeral(false));
-    dispatch(setModoEdicaoGeralNotaFinal(false));
     obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
   };
 
@@ -347,6 +355,8 @@ const Notas = ({ match }) => {
         if (salvouNotas && salvouNotas.status === 200) {
           sucesso('Suas informações foram salvas com sucesso.');
           dispatch(setModoEdicaoGeral(false));
+          dispatch(setModoEdicaoGeralNotaFinal(false));
+          dispatch(setExpandirLinha([]));
           if (click) {
             aposSalvarNotas();
           }
@@ -363,16 +373,21 @@ const Notas = ({ match }) => {
   };
 
   const pergutarParaSalvarNotaFinal = bimestresSemAvaliacaoBimestral => {
-    const mensagem = bimestresSemAvaliacaoBimestral.map(item => {
-      return `Falta aplicar ${item.qtdAvaliacaoBimestralPendente} ${
-        item.qtdAvaliacaoBimestralPendente > 1 ? 'avaliações' : 'avaliação'
-      } bimestral para o bimestre ${item.bimestre}`;
-    });
-    return confirmar(
-      'Atenção',
-      mensagem,
-      'Deseja continuar mesmo assim com o fechamento do(s) bimestre(s)?'
-    );
+    if (
+      bimestresSemAvaliacaoBimestral &&
+      bimestresSemAvaliacaoBimestral.length
+    ) {
+      const mensagem = `Não foi aplicado o mínimo de avaliações
+       do tipo Avaliação Bimestral no bimestre  ${bimestresSemAvaliacaoBimestral.toString()}`;
+
+      return confirmar(
+        'Atenção',
+        mensagem,
+        'Deseja continuar mesmo assim com o fechamento do(s) bimestre(s)?'
+      );
+    }
+
+    return true;
   };
 
   const montarBimestreParaSalvarNotaFinal = bimestreParaMontar => {
@@ -382,9 +397,10 @@ const Notas = ({ match }) => {
         if (notaFinal.modoEdicao) {
           notaConceitoAlunos.push({
             codigoAluno: aluno.id,
-            disciplinaId: notasConceitos.Notas
-              ? disciplinaSelecionada
-              : notaFinal.disciplinaId,
+            disciplinaId:
+              notasConceitos.Notas == notaTipo
+                ? disciplinaSelecionada
+                : notaFinal.disciplinaId,
             nota:
               notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : 0,
             conceitoId:
@@ -410,10 +426,7 @@ const Notas = ({ match }) => {
     bimestresSemAvaliacaoBimestral
   ) => {
     if (bimestre.qtdAvaliacaoBimestralPendente > 0) {
-      bimestresSemAvaliacaoBimestral.push({
-        bimestre: bimestre.numero,
-        qtdAvaliacaoBimestralPendente: bimestre.qtdAvaliacaoBimestralPendente,
-      });
+      bimestresSemAvaliacaoBimestral.push(bimestre.numero);
     }
   };
 
@@ -467,6 +480,8 @@ const Notas = ({ match }) => {
               if (salvouNotas && salvouNotas.status === 200) {
                 sucesso('Suas informações foram salvas com sucesso.');
                 dispatch(setModoEdicaoGeral(false));
+                dispatch(setModoEdicaoGeralNotaFinal(false));
+                dispatch(setExpandirLinha([]));
                 if (click) {
                   aposSalvarNotas();
                 }
@@ -532,6 +547,7 @@ const Notas = ({ match }) => {
 
     dispatch(setModoEdicaoGeral(false));
     dispatch(setModoEdicaoGeralNotaFinal(false));
+    dispatch(setExpandirLinha([]));
 
     if (modoEdicaoGeral) {
       const confirmaSalvar = await pergutarParaSalvar();
@@ -554,6 +570,7 @@ const Notas = ({ match }) => {
   };
 
   const onChangeTab = async numeroBimestre => {
+    dispatch(setExpandirLinha([]));
     setBimestreCorrente(numeroBimestre);
     let bimestre = {};
     switch (Number(numeroBimestre)) {
@@ -635,6 +652,20 @@ const Notas = ({ match }) => {
           default:
             break;
         }
+
+        setAuditoriaInfo({
+          auditoriaAlterado: dados.auditoriaAlterado,
+          auditoriaInserido: dados.auditoriaInserido,
+          auditoriaBimestreAlterado: dados.auditoriaBimestreAlterado,
+          auditoriaBimestreInserido: dados.auditoriaBimestreInserido,
+        });
+      } else {
+        setAuditoriaInfo({
+          auditoriaAlterado: '',
+          auditoriaInserido: '',
+          auditoriaBimestreAlterado: '',
+          auditoriaBimestreInserido: '',
+        });
       }
       setCarregandoListaBimestres(false);
     }
@@ -645,10 +676,12 @@ const Notas = ({ match }) => {
       obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
       dispatch(setModoEdicaoGeral(false));
       dispatch(setModoEdicaoGeralNotaFinal(false));
+      dispatch(setExpandirLinha([]));
     }
   };
 
   const onChangeOrdenacao = bimestreOrdenado => {
+    dispatch(setExpandirLinha([]));
     const bimestreAtualizado = {
       fechamentoTurmaId: bimestreOrdenado.fechamentoTurmaId,
       descricao: bimestreOrdenado.descricao,
