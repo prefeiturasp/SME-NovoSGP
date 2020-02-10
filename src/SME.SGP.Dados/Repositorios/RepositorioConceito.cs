@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<Conceito> ObterPorDataAvaliacao(DateTime dataAvaliacao)
+        public IEnumerable<Conceito> ObterPorData(DateTime dataAvaliacao)
         {
             var sql = @"select id, valor, descricao, aprovado, ativo, inicio_vigencia, fim_vigencia,
                     criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
