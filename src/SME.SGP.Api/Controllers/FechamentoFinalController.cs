@@ -21,7 +21,14 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public IActionResult Obter([FromQuery]FechamentoFinalConsultaFiltroDto filtroFechamentoFinalConsultDto)
         {
-            var retorno = new FechamentoFinalConsultaRetornoDto() { EhNota = true, EhRegencia = true, EventoData = DateTime.Today };
+            var retorno = new FechamentoFinalConsultaRetornoDto()
+            {
+                EhNota = true,
+                EhRegencia = true,
+                EventoData = DateTime.Today,
+                AuditoriaAlteracao = "Notas(ou conceitos) da avaliação ABC alterados por Nome Usuário(9999999) em 11 / 01 / 2019,às 16:00.",
+                AuditoriaInclusao = "Notas (ou conceitos) da avaliação XYZ inseridos por por Nome Usuário(9999999) em 10/01/2019, às 15:00."
+            };
 
             ///// aluno 2
             ///
