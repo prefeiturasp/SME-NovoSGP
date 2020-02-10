@@ -121,8 +121,12 @@ export const Lista = styled.div`
       height: 110px;
     }
 
-    .col-teste {
+    .coluna-regencia {
       display: flex;
+      .select-conceito {
+        margin: 10px;
+        width: 80px;
+      }
     }
 
     .input-regencia {
@@ -182,6 +186,6 @@ export const Lista = styled.div`
 
 export const MaisMenos = styled.i`
   color: ${Base.Roxo} !important;
-  font-size: 18px;
+  font-size: 19px;
   cursor: pointer;
 `;
