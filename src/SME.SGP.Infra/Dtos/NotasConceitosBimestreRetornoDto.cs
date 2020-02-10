@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -12,7 +13,11 @@ namespace SME.SGP.Infra
 
         public List<NotasConceitosAlunoRetornoDto> Alunos { get; set; }
         public List<NotasConceitosAvaliacaoRetornoDto> Avaliacoes { get; set; }
+        public int QtdAvaliacoesBimestral { get; set; }
         public string Descricao { get; set; }
         public int Numero { get; set; }
+        public long FechamentoTurmaId { get; set; }
+        public DateTime PeriodoInicio { get; set; }
+        public DateTime PeriodoFim { get; set; }
     }
 }

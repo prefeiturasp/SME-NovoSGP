@@ -115,7 +115,7 @@ namespace SME.SGP.Dominio
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                var valoresConceito = repositorioConceito.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                var valoresConceito = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
                 var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
@@ -282,7 +282,7 @@ namespace SME.SGP.Dominio
                 }
                 else
                 {
-                    var conceitos = repositorioConceito.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                    var conceitos = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
                     var conceito = conceitos.FirstOrDefault(c => c.Id.Equals(nota.Conceito));
 
                     if (conceitos == null)
