@@ -4,7 +4,12 @@ import { useSelector } from 'react-redux';
 import SelectComponent from '~/componentes/select';
 
 const CampoConceito = props => {
-  const { nota, onChangeNotaConceito, desabilitarCampo } = props;
+  const {
+    nota,
+    onChangeNotaConceito,
+    desabilitarCampo,
+    listaTiposConceitos,
+  } = props;
 
   const [conceitoValorAtual, setConceitoValorAtual] = useState();
   const [conceitoAlterado, setConceitoAlterado] = useState(false);
@@ -12,12 +17,6 @@ const CampoConceito = props => {
   const modoEdicaoGeralNotaFinal = useSelector(
     store => store.notasConceitos.modoEdicaoGeralNotaFinal
   );
-
-  const listaConceitos = [
-    { valor: '1', descricao: 'P' },
-    { valor: '2', descricao: 'S' },
-    { valor: '3', descricao: 'NS' },
-  ];
 
   const validaSeTeveAlteracao = (valorNovo, notaOriginal) => {
     if (notaOriginal) {
@@ -39,10 +38,10 @@ const CampoConceito = props => {
   return (
     <SelectComponent
       onChange={valorNovo => setarValorNovo(valorNovo)}
-      valueOption="valor"
-      valueText="descricao"
-      lista={listaConceitos}
-      valueSelect={String(conceitoValorAtual) || undefined}
+      valueOption="id"
+      valueText="valor"
+      lista={listaTiposConceitos}
+      valueSelect={conceitoValorAtual ? String(conceitoValorAtual) : undefined}
       showSearch
       placeholder="Conceito"
       className={`select-conceitos ${

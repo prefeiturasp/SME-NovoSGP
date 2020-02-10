@@ -1,6 +1,6 @@
 import { Icon, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import shortid from 'shortid';
 import notasConceitos from '~/dtos/notasConceitos';
@@ -24,9 +24,15 @@ import CampoConceitoFinal from './campoConceitoFinal';
 const Avaliacao = props => {
   const dispatch = useDispatch();
 
-  const { dados, notaTipo, onChangeOrdenacao, desabilitarCampos } = props;
+  const {
+    dados,
+    notaTipo,
+    onChangeOrdenacao,
+    desabilitarCampos,
+    ehProfessorCj,
+  } = props;
 
-  const [expandirLinha, setExpandirLinha] = useState([]);
+  // const [expandirLinha, setExpandirLinha] = useState([]);
 
   const onChangeNotaConceito = (nota, valorNovo) => {
     if (!desabilitarCampos && nota.podeEditar) {
@@ -105,6 +111,7 @@ const Avaliacao = props => {
               onChangeNotaConceito(nota, valorNovo)
             }
             desabilitarCampo={desabilitarCampos}
+            mediaAprovacaoBimestre={dados.mediaAprovacaoBimestre}
           />
         );
       case Number(notasConceitos.Conceitos):
@@ -115,6 +122,7 @@ const Avaliacao = props => {
               onChangeNotaConceito(nota, valorNovo)
             }
             desabilitarCampo={desabilitarCampos}
+            listaTiposConceitos={dados.listaTiposConceitos}
           />
         );
       default:
@@ -139,9 +147,10 @@ const Avaliacao = props => {
             onChangeNotaConceitoFinal={(nota, valor) =>
               onChangeNotaConceitoFinal(nota, valor)
             }
-            desabilitarCampo={desabilitarCampos}
+            desabilitarCampo={ehProfessorCj || desabilitarCampos}
             podeEditar={aluno.podeEditar}
             periodoFim={dados.periodoFim}
+            mediaAprovacaoBimestre={dados.mediaAprovacaoBimestre}
           />
         );
 
@@ -152,8 +161,9 @@ const Avaliacao = props => {
             onChangeNotaConceitoFinal={(nota, valor) =>
               onChangeNotaConceitoFinal(nota, valor)
             }
-            desabilitarCampo={desabilitarCampos}
+            desabilitarCampo={ehProfessorCj || desabilitarCampos}
             podeEditar={aluno.podeEditar}
+            listaTiposConceitos={dados.listaTiposConceitos}
           />
         );
 
@@ -202,7 +212,9 @@ const Avaliacao = props => {
                       className="sticky-col col-nota-final cabecalho-nota-conceito-final "
                       rowSpan="2"
                     >
-                      Nota final
+                      {Number(notasConceitos.Notas) === notaTipo
+                        ? 'NOTA FINAL'
+                        : 'CONCEITO FINAL'}
                     </th>
                     <th
                       className="sticky-col col-frequencia cabecalho-frequencia"

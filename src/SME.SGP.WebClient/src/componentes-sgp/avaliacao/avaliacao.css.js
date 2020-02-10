@@ -191,6 +191,13 @@ export const TabelaColunasFixas = styled.div`
 
   .border-registro-alterado {
     border: solid 2px ${Base.Roxo} !important;
+    border-radius: 7px;
+  }
+
+  // TODO  Validar com UX
+  .border-abaixo-media {
+    border: solid 2px red !important;
+    border-radius: 7px;
   }
 
   .select-conceitos {
