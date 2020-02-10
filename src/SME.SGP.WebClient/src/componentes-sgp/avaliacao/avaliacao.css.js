@@ -59,6 +59,7 @@ export const TabelaColunasFixas = styled.div`
     text-align: left;
     z-index: 2;
     box-shadow: 8px 0px 8px -4px #8080804d;
+    vertical-align: middle;
   }
 
   .col-frequencia {
@@ -266,4 +267,12 @@ export const IconePlusMarcadores = styled.i`
   cursor: pointer;
   font-size: 18px;
   margin-top: 10px;
+`;
+
+export const InfoMarcador = styled.i`
+  color: ${Base.Roxo} !important;
+  font-size: 15px;
+  margin-left: 2px;
+  position: absolute;
+  padding-top: 5px;
 `;
