@@ -83,6 +83,16 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurmaTeste(string codigoTurma)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+
+            var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
+
+            return disciplinas;
+        }
+
         public async Task<List<DisciplinaDto>> ObterDisciplinasPorTurma(string codigoTurma, bool turmaPrograma)
         {
             var disciplinasDto = new List<DisciplinaDto>();
