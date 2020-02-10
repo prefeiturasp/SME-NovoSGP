@@ -48,13 +48,17 @@ namespace SME.SGP.Aplicacao
 
         private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId)
         {
+            //alunos eol que não estão ainda na tabela de recuperação paralela
             var alunos = alunosEol.Where(w => !alunosRecuperacaoParalela.Select(s => s.AlunoId).Contains(Convert.ToInt32(w.CodigoAluno))).ToList();
+
             var respostas = await repositorioResposta.Listar(periodoId);
             var objetivos = await repositorioObjetivo.Listar(periodoId);
             var eixos = await repositorioEixo.Listar(periodoId);
 
             var alunosRecParalela = alunosRecuperacaoParalela.ToList();
+            //adicionar na lista de recuperação paralela com o id zerado, com isso saberá que será um novo registro
             alunos.ForEach(x => alunosRecParalela.Add(new RetornoRecuperacaoParalela { AlunoId = Convert.ToInt64(x.CodigoAluno) }));
+
             var retorno = alunosRecParalela.Select(s => new { s.AlunoId, s.Id }).Distinct();
             var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {
@@ -96,21 +100,36 @@ namespace SME.SGP.Aplicacao
                 }
             };
 
+            //parecer conclusivo
             recuperacaoRetorno.Periodo.Alunos.Where(w => w.Id == 0 && w.ParecerConclusivo.HasValue && char.GetNumericValue(w.ParecerConclusivo.Value) <= 3).ToList().ForEach(x => x.Respostas.Add(new ObjetivoRespostaDto
             {
                 ObjetivoId = 3,
-                RespostaId = ValidarParecerConclusivo(x.ParecerConclusivo.Value)
+                RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
             }));
-            return recuperacaoRetorno;
-        }
 
-        private long ValidarParecerConclusivo(char Parecer)
-        {
-            if (Parecer == (char)ParecerConclusivo.Aprovado)
-                return 3;
-            if (Parecer == (char)ParecerConclusivo.Reprovado)
-                return 6;
-            else return 7;
+            if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento)
+            {
+                //pegar o dados daquela turma pap
+                var dadosTurma = alunos.FirstOrDefault(w => w.CodigoComponenteCurricular.HasValue);
+                //pegar as frequencias de acordo com os critérios
+                var frequencias = await servicoRecuperacaoParalela.ObterFrequencias(alunos.Select(w => w.CodigoAluno).ToArray(), dadosTurma.CodigoComponenteCurricular.ToString(), dadosTurma.Ano, (PeriodoRecuperacaoParalela)periodoId);
+                //frequencias
+                foreach (var frequencia in frequencias)
+                {
+                    if (recuperacaoRetorno.Periodo.Alunos.Any(w => w.CodAluno == Convert.ToInt32(frequencia.Key)))
+                    {
+                        recuperacaoRetorno.Periodo.Alunos
+                            .FirstOrDefault(w => w.CodAluno == Convert.ToInt32(frequencia.Key))
+                            .Respostas
+                            .Add(new ObjetivoRespostaDto
+                            {
+                                ObjetivoId = 4,
+                                RespostaId = frequencia.Value
+                            });
+                    }
+                }
+            }
+            return recuperacaoRetorno;
         }
     }
 }

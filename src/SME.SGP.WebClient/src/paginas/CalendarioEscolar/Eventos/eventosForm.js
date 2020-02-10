@@ -604,8 +604,8 @@ const EventosForm = ({ match }) => {
     const anoAtual = window.moment().format('YYYY');
     const tiposCalendario = await api.get(
       usuarioStore && turmaSelecionada && turmaSelecionada.anoLetivo
-        ? `v1/calendarios/tipos/anos-letivos/${turmaSelecionada.anoLetivo}`
-        : `v1/calendarios/tipos/anos-letivos/${anoAtual}`
+        ? `v1/calendarios/tipos/anos/letivos/${turmaSelecionada.anoLetivo}`
+        : `v1/calendarios/tipos/anos/letivos/${anoAtual}`
     );
     if (
       tiposCalendario &&
@@ -895,7 +895,7 @@ const EventosForm = ({ match }) => {
                     eventoTipoFeriadoSelecionado
                       ? 'col-md-3 col-lg-3 col-xl-3'
                       : 'col-md-6 col-lg-6 col-xl-6'
-                  } pb-2`}
+                    } pb-2`}
                 >
                   <SelectComponent
                     form={form}
@@ -927,8 +927,8 @@ const EventosForm = ({ match }) => {
                     />
                   </div>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
                   <CampoData
                     form={form}
@@ -946,18 +946,18 @@ const EventosForm = ({ match }) => {
                 {tipoDataUnico ? (
                   ''
                 ) : (
-                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
-                    <CampoData
-                      form={form}
-                      label="Data fim do evento"
-                      placeholder="Data fim do evento"
-                      formatoData="DD/MM/YYYY"
-                      name="dataFim"
-                      onChange={onChangeCampos}
-                      desabilitado={desabilitarCampos || !usuarioPodeAlterar}
-                    />
-                  </div>
-                )}
+                    <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
+                      <CampoData
+                        form={form}
+                        label="Data fim do evento"
+                        placeholder="Data fim do evento"
+                        formatoData="DD/MM/YYYY"
+                        name="dataFim"
+                        onChange={onChangeCampos}
+                        desabilitado={desabilitarCampos || !usuarioPodeAlterar}
+                      />
+                    </div>
+                  )}
                 <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
                   <Button
                     id={shortid.generate()}
@@ -1019,16 +1019,16 @@ const EventosForm = ({ match }) => {
                     disabled={desabilitarCampos || !usuarioPodeAlterar}
                   />
                   {listaCalendarioParaCopiar &&
-                  listaCalendarioParaCopiar.length ? (
-                    <ListaCopiarEventos>
-                      <div className="mb-1">
-                        Evento será copiado para os calendários:
+                    listaCalendarioParaCopiar.length ? (
+                      <ListaCopiarEventos>
+                        <div className="mb-1">
+                          Evento será copiado para os calendários:
                       </div>
-                      {montarExibicaoEventosCopiar()}
-                    </ListaCopiarEventos>
-                  ) : (
-                    ''
-                  )}
+                        {montarExibicaoEventosCopiar()}
+                      </ListaCopiarEventos>
+                    ) : (
+                      ''
+                    )}
                 </div>
               </div>
             </Form>
@@ -1044,8 +1044,8 @@ const EventosForm = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
         <ModalConteudoHtml
           key="copiarEvento"
           visivel={exibirModalCopiarEvento}
@@ -1091,11 +1091,11 @@ const EventosForm = ({ match }) => {
                   {item.mensagem}
                 </strong>
               ) : (
-                <strong className="text-danger">
-                  <i className="fas fa-times mr-3" />
-                  {item.mensagem}
-                </strong>
-              )}
+                  <strong className="text-danger">
+                    <i className="fas fa-times mr-3" />
+                    {item.mensagem}
+                  </strong>
+                )}
             </p>
           ))}
         </ModalConteudoHtml>
