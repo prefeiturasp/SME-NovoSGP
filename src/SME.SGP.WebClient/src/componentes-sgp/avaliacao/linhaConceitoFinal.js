@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CampoConceitoFinal from './campoConceitoFinal';
@@ -11,12 +11,13 @@ const LinhaConceitoFinal = props => {
     store => store.notasConceitos.expandirLinha
   );
 
-  const { indexLinha, dados } = props;
+  const { indexLinha, dados, montarCampoNotaConceitoFinal, aluno } = props;
 
   const quantidadeAvaliacoes =
     dados && dados.avaliacoes && dados.avaliacoes.length
       ? dados.avaliacoes.length
       : 0;
+
   return (
     <>
       {expandirLinha[indexLinha] ? (
@@ -30,12 +31,15 @@ const LinhaConceitoFinal = props => {
                 <div className="desc-linha-conceito-final">
                   Conceitos finais Regência de classe
                 </div>
-                <CampoConceitoFinal />
-                <CampoConceitoFinal />
-                <CampoConceitoFinal />
-                <CampoConceitoFinal />
-                <CampoConceitoFinal />
-                <CampoConceitoFinal />
+                {aluno && aluno.notasBimestre && aluno.notasBimestre.length
+                  ? aluno.notasBimestre.map((item, index) => {
+                      return (
+                        <>
+                          {montarCampoNotaConceitoFinal(item.disciplina, index)}
+                        </>
+                      );
+                    })
+                  : ''}
               </div>
             </td>
           </tr>
