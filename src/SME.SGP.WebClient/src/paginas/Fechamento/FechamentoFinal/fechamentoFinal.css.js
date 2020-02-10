@@ -43,6 +43,9 @@ export const Lista = styled.div`
       cursor: pointer;
     }
   }
+  .break-word {
+    word-break: break-all;
+  }
 
   .tabela-fechamento-final-thead {
     background: ${Base.CinzaFundo} !important;
@@ -106,11 +109,6 @@ export const Lista = styled.div`
       text-align: left !important;
     }
 
-    /* .col-conceito-regencia {
-      float: left;
-      margin-right: 5px;
-      width: 79px;
-    } */
     .ant-input-number {
       width: 79px;
     }
@@ -123,25 +121,16 @@ export const Lista = styled.div`
       height: 110px;
     }
 
-    .elevation-3 {
-      box-shadow: 0 0 28px rgba(0, 0, 0, 0.25),
-        2px -6px 10px rgba(0, 0, 0, 0.22);
-    }
-
     .col-teste {
       display: flex;
-      flex-wrap: wrap;
     }
 
-    .input-teste {
-      flex: 1 0 auto; /* explanation below */
+    .input-regencia {
       margin-right: 5px;
       margin-bottom: 5px;
-      height: 70px;
-      background-color: white;
-      border-radius: 3px;
-      border: solid 1px #ced4da;
       padding: 3px;
+      width: 115px;
+      align-self: flex-end;
     }
 
     .input-reg {
@@ -195,31 +184,4 @@ export const MaisMenos = styled.i`
   color: ${Base.Roxo} !important;
   font-size: 18px;
   cursor: pointer;
-`;
-
-export const CampoNumerico = styled.div`
-  /* span {
-    color: ${Base.Vermelho};
-  }
-  .campo {
-    margin-bottom: 5px;
-  }
-  .ant-input-number {
-    height: 38px;
-  }
-
-  .tb-conceito-regencia {
-    table {
-      width: 100%;
-    }
-    thead th,
-    tbody td {
-      border: none;
-    }
-  }
-  float: left;
-  margin-right: 5px;
-  width: 79px;
-  height: 45px; */
-  /* display:flex; */
 `;

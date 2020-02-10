@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Ordenacao } from '~/componentes-sgp';
-import { Lista, MaisMenos } from './fechamentoFinal.css';
+import { Lista } from './fechamentoFinal.css';
 import { Card, Auditoria } from '~/componentes';
-import CampoNumero from '~/componentes/campoNumero';
-import ConceitoFinal from './conceitoFinal';
 import LinhaAluno from './linhaAluno';
+import ServicoFechamentoFinal from '~/servicos/Paginas/DiarioClasse/ServicoFechamentoFinal';
+import { erros } from '~/servicos/alertas';
+import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConceito';
 
-const FechamentoFinal = () => {
+const FechamentoFinal = ({ turmaCodigo, disciplinaCodigo }) => {
   const [ehNota, setEhNota] = useState(true);
   const [ehRegencia, setEhRegencia] = useState(true);
-  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState();
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState('123');
+  const [listaConceitos, setListaConceitos] = useState([]);
   const [exibirLista, setExibirLista] = useState(
     (ehRegencia && !!disciplinaSelecionada) || !ehRegencia
   );
+
   const [disciplinasRegencia, setDisciplinasRegencia] = useState([
     {
       nome: 'Português',
@@ -21,7 +25,7 @@ const FechamentoFinal = () => {
     },
     {
       nome: 'Matemática',
-      codigo: 222,
+      codigo: 122,
       ativa: false,
     },
     {
@@ -47,9 +51,30 @@ const FechamentoFinal = () => {
     },
   ]);
 
+  const [auditoria, setAuditoria] = useState({});
+  const [alunos, setAlunos] = useState([]);
   useEffect(() => {
     setExibirLista((ehRegencia && !!disciplinaSelecionada) || !ehRegencia);
   }, [disciplinaSelecionada, ehRegencia]);
+
+  useEffect(() => {
+    ServicoFechamentoFinal.obter(turmaCodigo, disciplinaCodigo)
+      .then(resposta => {
+        setAlunos(resposta.data.alunos);
+        setEhNota(resposta.data.ehNota);
+        setEhRegencia(resposta.data.ehRegencia);
+      })
+      .catch(e => erros(e));
+  }, [disciplinaCodigo, turmaCodigo]);
+
+  useEffect(() => {
+    if (!ehNota)
+      ServicoNotaConceito.obterTodosConceitos()
+        .then(resposta => {
+          setListaConceitos(resposta.data);
+        })
+        .catch(e => erros(e));
+  }, [ehNota]);
 
   const setDisciplinaAtiva = disciplina => {
     const disciplinas = disciplinasRegencia.map(c => {
@@ -59,174 +84,6 @@ const FechamentoFinal = () => {
     setDisciplinasRegencia([...disciplinas]);
     setDisciplinaSelecionada(disciplina.codigo);
   };
-
-  const [auditoria, setAuditoria] = useState({
-    criadoPor: '123',
-    criadoEm: '',
-    alteradoPor: '123',
-    alteradoEm: '123',
-    criadoRf: '123',
-    alteradoRf: '123',
-  });
-  const [alunos, setAlunos] = useState([
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 1,
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceitoBimestre: [
-        {
-          notaConceito: 8.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-        },
-        {
-          notaConceito: 7.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-        },
-        {
-          notaConceito: 1.5,
-          disciplinaCodigo: 222,
-          bimestre: 1,
-        },
-        {
-          notaConceito: 8.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-        },
-        {
-          notaConceito: 3.5,
-          disciplinaCodigo: 123,
-          bimestre: 2,
-        },
-        {
-          notaConceito: 9,
-          disciplinaCodigo: 222,
-          bimestre: 2,
-        },
-      ],
-      notasConceitoFinal: [
-        {
-          notaConceito: 8.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-          nomeDisciplina: 'Português',
-        },
-        {
-          notaConceito: 7.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-          nomeDisciplina: 'Português',
-        },
-        {
-          notaConceito: 1.5,
-          disciplinaCodigo: 222,
-          bimestre: 1,
-          nomeDisciplina: 'Português',
-        },
-        {
-          notaConceito: 8.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-          nomeDisciplina: 'Português asdf asdf asdf',
-        },
-
-        {
-          notaConceito: 9,
-          disciplinaCodigo: 222,
-          bimestre: 2,
-          nomeDisciplina: 'Português',
-        },
-      ],
-      regenciaExpandida: false,
-    },
-    {
-      nome: 'Alvaro Ramos Grassi',
-      numeroChamada: 1,
-      totalFaltas: 12,
-      totalAusenciasCompensadas: 12,
-      frequencia: 70,
-      notasConceitoBimestre: [
-        {
-          notaConceito: 8.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-        },
-        {
-          notaConceito: 7.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-        },
-        {
-          notaConceito: 1.5,
-          disciplinaCodigo: 222,
-          bimestre: 1,
-        },
-        {
-          notaConceito: 8.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-        },
-        {
-          notaConceito: 3.5,
-          disciplinaCodigo: 123,
-          bimestre: 2,
-        },
-        {
-          notaConceito: 9,
-          disciplinaCodigo: 222,
-          bimestre: 2,
-        },
-      ],
-      notasConceitoFinal: [
-        {
-          notaConceito: 8.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-          nomeDisciplina: 'Português',
-        },
-        {
-          notaConceito: 7.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-          nomeDisciplina: 'Português',
-        },
-        {
-          notaConceito: 1.5,
-          disciplinaCodigo: 222,
-          bimestre: 1,
-          nomeDisciplina: 'Português',
-        },
-        {
-          notaConceito: 8.5,
-          disciplinaCodigo: 123,
-          bimestre: 1,
-          nomeDisciplina: 'Português',
-        },
-        {
-          notaConceito: 3.5,
-          disciplinaCodigo: 123,
-          bimestre: 2,
-          nomeDisciplina: 'Português',
-        },
-        {
-          notaConceito: 6,
-          disciplinaCodigo: 123,
-          bimestre: 2,
-          nomeDisciplina: 'Português asdfasdfas',
-        },
-        {
-          notaConceito: 9,
-          disciplinaCodigo: 222,
-          bimestre: 2,
-          nomeDisciplina: 'Português',
-        },
-      ],
-      regenciaExpandida: false,
-    },
-  ]);
 
   return (
     <Card>
@@ -258,35 +115,43 @@ const FechamentoFinal = () => {
             )}
           </div>
           {exibirLista && (
-            <table className="table mt-4">
-              <thead className="tabela-fechamento-final-thead">
-                <tr>
-                  <th className="col-nome-aluno" colSpan="2">
-                    Nome
-                  </th>
-                  <th className="sticky-col">{ehNota ? 'Nota' : 'Conceito'}</th>
-                  <th className="sticky-col width-120">Total de Faltas</th>
-                  <th className="sticky-col">Total de Ausências Compensadas</th>
-                  <th className="sticky-col">%Freq.</th>
-                  <th className="sticky-col head-conceito">
-                    {ehNota ? 'Nota Final' : 'Conceito Final'}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="tabela-fechamento-final-tbody">
-                {alunos.map((aluno, i) => {
-                  return (
-                    <>
-                      <LinhaAluno
-                        aluno={aluno}
-                        ehRegencia={ehRegencia}
-                        disciplinaSelecionada={disciplinaSelecionada}
-                      />
-                    </>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="table-responsive">
+              <table className="table mt-4">
+                <thead className="tabela-fechamento-final-thead">
+                  <tr>
+                    <th className="col-nome-aluno" colSpan="2">
+                      Nome
+                    </th>
+                    <th className="sticky-col">
+                      {ehNota ? 'Nota' : 'Conceito'}
+                    </th>
+                    <th className="sticky-col width-120">Total de Faltas</th>
+                    <th className="sticky-col">
+                      Total de Ausências Compensadas
+                    </th>
+                    <th className="sticky-col">%Freq.</th>
+                    <th className="sticky-col head-conceito">
+                      {ehNota ? 'Nota Final' : 'Conceito Final'}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="tabela-fechamento-final-tbody">
+                  {alunos.map((aluno, i) => {
+                    return (
+                      <>
+                        <LinhaAluno
+                          aluno={aluno}
+                          ehRegencia={ehRegencia}
+                          ehNota={ehNota}
+                          disciplinaSelecionada={disciplinaSelecionada}
+                          listaConceitos={listaConceitos}
+                        />
+                      </>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
         </Lista>
       </div>
@@ -300,6 +165,16 @@ const FechamentoFinal = () => {
       />
     </Card>
   );
+};
+
+FechamentoFinal.propTypes = {
+  turmaCodigo: PropTypes.string,
+  disciplinaCodigo: PropTypes.string,
+};
+
+FechamentoFinal.defaultProps = {
+  turmaCodigo: '1',
+  disciplinaCodigo: '1',
 };
 
 export default FechamentoFinal;
