@@ -208,7 +208,8 @@ const CadastroAula = ({ match }) => {
   useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
       const disciplina = listaDisciplinas.filter(
-        item => item.codigoComponenteCurricular === idDisciplina
+        item =>
+          item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
       if (disciplina && disciplina[0])
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
@@ -315,7 +316,9 @@ const CadastroAula = ({ match }) => {
       const val = {
         tipoAula: buscaAula.data.tipoAula,
         disciplinaId: buscaAula.data.disciplinaId.toString(),
-        disciplinaCompartilhadaId: buscaAula.data.disciplinaCompartilhadaId.toString(),
+        disciplinaCompartilhadaId:
+          buscaAula.data.disciplinaCompartilhadaId &&
+          buscaAula.data.disciplinaCompartilhadaId.toString(),
         dataAula: buscaAula.data.dataAula
           ? window.moment(buscaAula.data.dataAula)
           : window.moment(),
