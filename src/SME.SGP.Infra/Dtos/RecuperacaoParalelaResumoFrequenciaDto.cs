@@ -1,12 +1,12 @@
-﻿namespace SME.SGP.Infra
+﻿using System.Collections.Generic;
+
+namespace SME.SGP.Infra
 {
     public class RecuperacaoParalelaResumoFrequenciaDto
     {
-        public RecuperacaoParalelaTotalAnoDto Anos { get; set; }
-        public RecuperacaoParalelaTotalCicloDto Ciclos { get; set; }
-        public string FrequenciaDescricao { get; set; }
+        public IEnumerable<RecuperacaoParalelaTotalFrequenciaAnoDto> Anos { get; set; }
+        public IEnumerable<RecuperacaoParalelaTotalFrequenciaCicloDto> Ciclos { get; set; }
         public double PorcentagemTotalFrequencia { get; set; }
         public int QuantidadeTotalFrequencia { get; set; }
-        public RecuperacaoParalelaResumoTotalLihas TotalLinhas { get; set; }
     }
 }
