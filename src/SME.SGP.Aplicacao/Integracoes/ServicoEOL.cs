@@ -182,7 +182,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(string turmaId)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(long turmaId)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
             var resposta = await httpClient.GetAsync($"turmas/{turmaId}/alunos-ativos");
