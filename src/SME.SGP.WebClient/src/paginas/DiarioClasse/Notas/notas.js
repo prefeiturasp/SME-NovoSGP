@@ -57,6 +57,7 @@ const Notas = ({ match }) => {
   const [quartoBimestre, setQuartoBimestre] = useState([]);
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+  const [ehRegencia, setEhRegencia] = useState(false);
 
   useEffect(() => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
@@ -220,6 +221,7 @@ const Notas = ({ match }) => {
     setListaDisciplinas(disciplinas.data);
     if (disciplinas.data && disciplinas.data.length === 1) {
       const disciplina = disciplinas.data[0];
+      setEhRegencia(disciplina.regencia);
       setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
       obterDadosBimestres(disciplina.codigoComponenteCurricular);
@@ -380,7 +382,9 @@ const Notas = ({ match }) => {
         if (notaFinal.modoEdicao) {
           notaConceitoAlunos.push({
             codigoAluno: aluno.id,
-            disciplinaId: notasConceitos.Notas ? disciplinaSelecionada : '',
+            disciplinaId: notasConceitos.Notas
+              ? disciplinaSelecionada
+              : notaFinal.disciplinaId,
             nota:
               notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : 0,
             conceitoId:
@@ -510,7 +514,22 @@ const Notas = ({ match }) => {
     onSalvarNotas(true, salvarNotaFinal);
   };
 
+  const validaSeEhRegencia = disciplinaId => {
+    if (disciplinaId) {
+      const disciplina = listaDisciplinas.find(
+        item => item.codigoComponenteCurricular == disciplinaId
+      );
+      if (disciplina) {
+        setEhRegencia(!!disciplina.regencia);
+      } else {
+        setEhRegencia(false);
+      }
+    }
+  };
+
   const onChangeDisciplinas = async disciplinaId => {
+    validaSeEhRegencia(disciplinaId);
+
     dispatch(setModoEdicaoGeral(false));
     dispatch(setModoEdicaoGeralNotaFinal(false));
 
@@ -732,6 +751,7 @@ const Notas = ({ match }) => {
                             onChangeOrdenacao={onChangeOrdenacao}
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
                           />
                         </TabPane>
                       ) : (
@@ -748,6 +768,7 @@ const Notas = ({ match }) => {
                             onChangeOrdenacao={onChangeOrdenacao}
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
                           />
                         </TabPane>
                       ) : (
@@ -764,6 +785,7 @@ const Notas = ({ match }) => {
                             onChangeOrdenacao={onChangeOrdenacao}
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
                           />
                         </TabPane>
                       ) : (
@@ -780,6 +802,7 @@ const Notas = ({ match }) => {
                             onChangeOrdenacao={onChangeOrdenacao}
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
                           />
                         </TabPane>
                       ) : (

@@ -13,6 +13,7 @@ const CampoNotaFinal = props => {
     podeEditar,
     periodoFim,
     mediaAprovacaoBimestre,
+    label,
   } = props;
 
   const modoEdicaoGeral = useSelector(
@@ -85,6 +86,7 @@ const CampoNotaFinal = props => {
 
   return (
     <CampoNumero
+      label={label ? label : ''}
       onBlur={valorNovo => setarValorNovo(valorNovo.target.value)}
       value={notaValorAtual}
       min={0}

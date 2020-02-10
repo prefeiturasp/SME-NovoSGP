@@ -10,6 +10,7 @@ const CampoConceitoFinal = props => {
     desabilitarCampo,
     podeEditar,
     listaTiposConceitos,
+    label,
   } = props;
 
   const modoEdicaoGeral = useSelector(
@@ -67,6 +68,7 @@ const CampoConceitoFinal = props => {
 
   return (
     <SelectComponent
+      label={label ? label : ''}
       onChange={valorNovo => setarValorNovo(valorNovo)}
       valueOption="id"
       valueText="valor"
