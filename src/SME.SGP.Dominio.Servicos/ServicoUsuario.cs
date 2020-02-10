@@ -190,7 +190,7 @@ namespace SME.SGP.Dominio
             var usuarioLogado = await ObterUsuarioLogado();
 
             if (!usuarioLogado.EhProfessorCj())
-                return await servicoEOL.PodePersistirTurma(codigoRf, turmaId, data);
+                return await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, data);
 
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRf);
 

@@ -1,31 +1,19 @@
-﻿CREATE table
-if not exists public.fechamento_final
-(
-                id int8 NOT NULL GENERATED ALWAYS AS identity,
-                aluno_codigo varchar
-(15) NOT NULL,
-                disciplina_codigo varchar
-(15) NOT NULL,
-                conceito_id int8  NULL,
-                turma_id int8 NOT NULL,
-                migrado boolean default false,
-                nota numeric
-(5,2) NULL,
-                                
-                criado_em timestamp  NOT NULL,
-                criado_por varchar
-(200) NOT NULL,
-                alterado_em timestamp ,
-                alterado_por varchar
-(200),
-                criado_rf varchar
-(200)  NOT NULL,
-                alterado_rf varchar
-(200),                
-    
-                CONSTRAINT fechamento_final_pk PRIMARY KEY
-(id)        
-);
+﻿create table if not exists public.fechamento_final ( id int8 not null generated always as identity,
+aluno_codigo varchar (15) not null,
+disciplina_codigo varchar (15) not null,
+conceito_id int8 null,
+turma_id int8 not null,
+migrado boolean default false,
+nota numeric (5,
+2) null,
+criado_em timestamp not null,
+criado_por varchar (200) not null,
+alterado_em timestamp ,
+alterado_por varchar (200),
+criado_rf varchar (200) not null,
+alterado_rf varchar (200),
+eh_regencia boolean default false,
+constraint fechamento_final_pk primary key (id) );
 
 select f_cria_fk_se_nao_existir('fechamento_final', 'fechamento_final_turma_fk', 'FOREIGN KEY (turma_id) REFERENCES turma(id)');
 select f_cria_fk_se_nao_existir('fechamento_final', 'fechamento_final_conceito_fk', 'FOREIGN KEY (conceito_id) REFERENCES conceito_valores(id)');

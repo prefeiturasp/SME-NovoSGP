@@ -81,6 +81,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new EixoMap());
                config.AddMap(new ObjetivoaMap());
                config.AddMap(new RespostaMap());
+               config.AddMap(new FechamentoFinalMap());
                config.ForDommel();
            });
         }
