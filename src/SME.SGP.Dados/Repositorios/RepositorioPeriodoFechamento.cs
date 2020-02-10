@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -39,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public PeriodoFechamento ObterPorTipoCalendarioDreEUE(long tipoCalendarioId, long? dreId, long? ueId)
+        public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? dreId, long? ueId, long? turmaId)
         {
             var query = new StringBuilder("select f.*,fb.*,p.*, t.*, d.*,u.*");
             query.AppendLine("from");
@@ -52,8 +53,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("p.tipo_calendario_id = t.id");
             query.AppendLine("left join dre d on f.dre_id = d.id");
             query.AppendLine("left join ue u on f.ue_id = u.id");
+            query.AppendLine("left join turma tu on tu.ue_id = u.id");
             query.AppendLine("where 1=1");
-            query.AppendLine("and p.tipo_calendario_id = @tipoCalendarioId");
+
+            if (tipoCalendarioId.HasValue)
+                query.AppendLine("and p.tipo_calendario_id = @tipoCalendarioId");
 
             if (dreId.HasValue)
                 query.AppendLine("and f.dre_id = @dreId");
@@ -62,6 +66,9 @@ namespace SME.SGP.Dados.Repositorios
             if (ueId.HasValue)
                 query.AppendLine("and f.ue_id = @ueId");
             else query.AppendLine("and f.ue_id is null");
+
+            if (turmaId.HasValue)
+                query.AppendLine("and tu.id = @turmaId");
 
             var lookup = new Dictionary<long, PeriodoFechamento>();
 
@@ -84,9 +91,15 @@ namespace SME.SGP.Dados.Repositorios
                {
                    tipoCalendarioId,
                    dreId,
-                   ueId
+                   ueId,
+                   turmaId
                });
             return lookup.Values.FirstOrDefault();
+        }
+
+        public Task<PeriodoFechamento> ObterPorTurma(long turmaId)
+        {
+            throw new NotImplementedException();
         }
 
         public void SalvarBimestres(IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, long fechamentoId)
