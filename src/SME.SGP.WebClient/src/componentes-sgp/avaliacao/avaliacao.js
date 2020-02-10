@@ -1,25 +1,24 @@
-import { Icon, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import shortid from 'shortid';
+import { LabelSemDados } from '~/componentes';
 import notasConceitos from '~/dtos/notasConceitos';
-import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
-import { setModoEdicaoGeralNotaFinal } from '~/redux/modulos/notasConceitos/actions';
+import {
+  setModoEdicaoGeral,
+  setModoEdicaoGeralNotaFinal,
+} from '~/redux/modulos/notasConceitos/actions';
 
 import Ordenacao from '../Ordenacao/ordenacao';
-import {
-  CaixaMarcadores,
-  // IconePlusMarcadores,
-  TabelaColunasFixas,
-} from './avaliacao.css';
+import { CaixaMarcadores, TabelaColunasFixas } from './avaliacao.css';
 import CampoConceito from './campoConceito';
-import CampoNota from './campoNota';
-import { LabelSemDados } from '~/componentes';
-// import ColunaNotaFinalRegencia from './colunaNotaFinalRegenciaRegencia';
-import LinhaConceitoFinal from './linhaConceitoFinal';
-import CampoNotaFinal from './campoNotaFinal';
 import CampoConceitoFinal from './campoConceitoFinal';
+import CampoNota from './campoNota';
+import CampoNotaFinal from './campoNotaFinal';
+
+import LinhaConceitoFinal from './linhaConceitoFinal';
+import ColunaNotaFinalRegencia from './colunaNotaFinalRegencia';
 
 const Avaliacao = props => {
   const dispatch = useDispatch();
@@ -30,6 +29,7 @@ const Avaliacao = props => {
     onChangeOrdenacao,
     desabilitarCampos,
     ehProfessorCj,
+    ehRegencia,
   } = props;
 
   // const [expandirLinha, setExpandirLinha] = useState([]);
@@ -130,46 +130,51 @@ const Avaliacao = props => {
     }
   };
 
-  const montaNotaFinal = aluno => {
+  const montaNotaFinal = (aluno, indexNotaConceito) => {
     if (aluno && aluno.notasBimestre && aluno.notasBimestre.length) {
+      if (ehRegencia) {
+        return aluno.notasBimestre[indexNotaConceito];
+      }
       return aluno.notasBimestre[0];
     }
+
     aluno.notasBimestre = [{ notaConceito: '' }];
     return aluno.notasBimestre[0];
   };
 
-  const montarCampoNotaConceitoFinal = aluno => {
-    switch (Number(notaTipo)) {
-      case Number(notasConceitos.Notas):
-        return (
-          <CampoNotaFinal
-            montaNotaFinal={() => montaNotaFinal(aluno)}
-            onChangeNotaConceitoFinal={(nota, valor) =>
-              onChangeNotaConceitoFinal(nota, valor)
-            }
-            desabilitarCampo={ehProfessorCj || desabilitarCampos}
-            podeEditar={aluno.podeEditar}
-            periodoFim={dados.periodoFim}
-            mediaAprovacaoBimestre={dados.mediaAprovacaoBimestre}
-          />
-        );
-
-      case Number(notasConceitos.Conceitos):
-        return (
-          <CampoConceitoFinal
-            montaNotaConceitoFinal={() => montaNotaFinal(aluno)}
-            onChangeNotaConceitoFinal={(nota, valor) =>
-              onChangeNotaConceitoFinal(nota, valor)
-            }
-            desabilitarCampo={ehProfessorCj || desabilitarCampos}
-            podeEditar={aluno.podeEditar}
-            listaTiposConceitos={dados.listaTiposConceitos}
-          />
-        );
-
-      default:
-        return '';
+  const montarCampoNotaConceitoFinal = (aluno, label, indexNotaConceito) => {
+    if (Number(notaTipo) === Number(notasConceitos.Notas)) {
+      return (
+        <CampoNotaFinal
+          montaNotaFinal={() => montaNotaFinal(aluno, indexNotaConceito)}
+          onChangeNotaConceitoFinal={(nota, valor) =>
+            onChangeNotaConceitoFinal(nota, valor)
+          }
+          desabilitarCampo={ehProfessorCj || desabilitarCampos}
+          podeEditar={aluno.podeEditar}
+          periodoFim={dados.periodoFim}
+          mediaAprovacaoBimestre={dados.mediaAprovacaoBimestre}
+          label={label}
+        />
+      );
     }
+    if (Number(notaTipo) === Number(notasConceitos.Conceitos)) {
+      return (
+        <CampoConceitoFinal
+          montaNotaConceitoFinal={() =>
+            montaNotaFinal(aluno, indexNotaConceito)
+          }
+          onChangeNotaConceitoFinal={(nota, valor) =>
+            onChangeNotaConceitoFinal(nota, valor)
+          }
+          desabilitarCampo={ehProfessorCj || desabilitarCampos}
+          podeEditar={aluno.podeEditar}
+          listaTiposConceitos={dados.listaTiposConceitos}
+          label={label}
+        />
+      );
+    }
+    return '';
   };
 
   // const onClickExpandir = index => {
@@ -285,18 +290,34 @@ const Avaliacao = props => {
                                 );
                               })
                             : ''}
-                          {/* <td className="sticky-col col-nota-final linha-nota-conceito-final">
-                            <ColunaNotaFinalRegencia indexLinha={i} />
-                          </td> */}
                           <td className="sticky-col col-nota-final linha-nota-conceito-final">
-                            {montarCampoNotaConceitoFinal(aluno)}
+                            {ehRegencia ? (
+                              <ColunaNotaFinalRegencia indexLinha={i} />
+                            ) : (
+                              montarCampoNotaConceitoFinal(aluno)
+                            )}
                           </td>
 
                           <td className="sticky-col col-frequencia linha-frequencia ">
                             {aluno.percentualFrequencia}%
                           </td>
                         </tr>
-                        <LinhaConceitoFinal indexLinha={i} dados={dados} />
+                        {/* TODO Testando */}
+                        <LinhaConceitoFinal
+                          indexLinha={i}
+                          dados={dados}
+                          aluno={aluno}
+                          montarCampoNotaConceitoFinal={(
+                            label,
+                            indexNotaConceito
+                          ) =>
+                            montarCampoNotaConceitoFinal(
+                              aluno,
+                              label,
+                              indexNotaConceito
+                            )
+                          }
+                        />
 
                         {/* TODO Padrão de marcador vai ser alterado! */}
                         {/* {expandirLinha[i] ? (
