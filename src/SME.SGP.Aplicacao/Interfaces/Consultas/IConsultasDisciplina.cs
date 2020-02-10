@@ -13,6 +13,8 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurmaTeste(string codigoTurma);
 
+        string ObterTiposIdsDisciplina();
+
         Task<List<DisciplinaDto>> ObterDisciplinasPorTurma(string codigoTurma, bool turmaPrograma);
     }
 }

@@ -37,6 +37,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
+        [HttpGet("tipo-disciplinas-id-teste")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult ObterTiposDisciplinaIdEolRetorno([FromServices]IConsultasDisciplina consultasDisciplina)
+        {
+            var retorno = consultasDisciplina.ObterTiposIdsDisciplina();
+
+            return Ok(retorno);
+        }
+
         [HttpGet("eventos/matriculas")]
         public async Task<IActionResult> EventosMatricula([FromServices] IServicoEventoMatricula eventos)
         {
