@@ -80,7 +80,7 @@ export const TabelaColunasFixas = styled.div`
   .header-fixo {
     position: sticky;
     top: 0;
-    z-index: 3;
+    z-index: 5;
   }
 
   .tabela-avaliacao-thead {
@@ -194,9 +194,8 @@ export const TabelaColunasFixas = styled.div`
     border-radius: 7px;
   }
 
-  // TODO  Validar com UX
   .border-abaixo-media {
-    border: solid 2px red !important;
+    border: solid 2px #b22222 !important;
     border-radius: 7px;
   }
 
@@ -246,7 +245,7 @@ export const TabelaColunasFixas = styled.div`
 
   .desc-linha-conceito-final {
     margin-left: 20px;
-    margin-top: 32px;
+    margin-top: 25px;
     margin-right: 37px;
   }
 `;
