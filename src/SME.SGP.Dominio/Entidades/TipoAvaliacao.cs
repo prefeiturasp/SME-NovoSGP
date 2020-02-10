@@ -7,6 +7,7 @@
         public bool Excluido { get; set; }
         public string Nome { get; set; }
         public bool Situacao { get; set; }
+        public TipoAvaliacaoCodigo Codigo { get; set; }
 
         public void Excluir()
         {

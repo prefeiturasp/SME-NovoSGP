@@ -103,6 +103,9 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<TipoAvaliacao> ObterTipoAvaliacaoBimestral()
-            => await database.Conexao.QueryFirstAsync<TipoAvaliacao>("select * from tipo_avaliacao where descricao='Avaliação bimestral'");
+        {
+            var query = "select * from tipo_avaliacao where codigo = @tipoAvaliacao";
+            return await database.Conexao.QueryFirstAsync<TipoAvaliacao>(query, new { tipoAvaliacao = TipoAvaliacaoCodigo.AvaliacaoBimestral });
+        }
     }
 }
