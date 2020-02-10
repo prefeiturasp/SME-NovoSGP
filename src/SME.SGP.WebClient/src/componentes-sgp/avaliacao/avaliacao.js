@@ -11,14 +11,17 @@ import {
 } from '~/redux/modulos/notasConceitos/actions';
 
 import Ordenacao from '../Ordenacao/ordenacao';
-import { CaixaMarcadores, TabelaColunasFixas } from './avaliacao.css';
+import {
+  CaixaMarcadores,
+  InfoMarcador,
+  TabelaColunasFixas,
+} from './avaliacao.css';
 import CampoConceito from './campoConceito';
 import CampoConceitoFinal from './campoConceitoFinal';
 import CampoNota from './campoNota';
 import CampoNotaFinal from './campoNotaFinal';
-
-import LinhaConceitoFinal from './linhaConceitoFinal';
 import ColunaNotaFinalRegencia from './colunaNotaFinalRegencia';
+import LinhaConceitoFinal from './linhaConceitoFinal';
 
 const Avaliacao = props => {
   const dispatch = useDispatch();
@@ -31,8 +34,6 @@ const Avaliacao = props => {
     ehProfessorCj,
     ehRegencia,
   } = props;
-
-  // const [expandirLinha, setExpandirLinha] = useState([]);
 
   const onChangeNotaConceito = (nota, valorNovo) => {
     if (!desabilitarCampos && nota.podeEditar) {
@@ -177,11 +178,6 @@ const Avaliacao = props => {
     return '';
   };
 
-  // const onClickExpandir = index => {
-  //   expandirLinha[index] = !expandirLinha[index];
-  //   setExpandirLinha([...expandirLinha]);
-  // };
-
   return (
     <>
       {dados && dados.alunos && dados.alunos.length ? (
@@ -192,7 +188,6 @@ const Avaliacao = props => {
               ordenarColunaNumero="numeroChamada"
               ordenarColunaTexto="nome"
               retornoOrdenado={retorno => {
-                // setExpandirLinha([]);
                 dados.alunos = retorno;
                 onChangeOrdenacao(dados);
               }}
@@ -251,25 +246,23 @@ const Avaliacao = props => {
                             {aluno.numeroChamada}
                           </td>
                           <td className="sticky-col col-nome-aluno">
-                            {aluno.nome}
-                            {/* TODO Padrão de marcador vai ser alterado! */}
-                            {/* {aluno.marcador ? (
+                            {aluno.marcador ? (
                               <>
-                                <CaixaMarcadores>
-                                  {aluno.marcador.nome}
-                                </CaixaMarcadores>
-                                <IconePlusMarcadores
-                                  onClick={() => onClickExpandir(i)}
-                                  className={
-                                    expandirLinha[i]
-                                      ? 'fas fa-minus fa-minus-linha-expandida '
-                                      : 'fas fa-plus-circle'
-                                  }
-                                />
+                                <Tooltip
+                                  title={aluno.marcador.descricao}
+                                  placement="top"
+                                >
+                                  <InfoMarcador className="fas fa-circle" />
+                                </Tooltip>
+                                <div style={{ marginLeft: '30px' }}>
+                                  {aluno.nome}
+                                </div>
                               </>
                             ) : (
-                              ''
-                            )} */}
+                              <div style={{ marginLeft: '30px' }}>
+                                {aluno.nome}
+                              </div>
+                            )}
                           </td>
                           {aluno.notasAvaliacoes.length
                             ? aluno.notasAvaliacoes.map(nota => {
@@ -302,7 +295,6 @@ const Avaliacao = props => {
                             {aluno.percentualFrequencia}%
                           </td>
                         </tr>
-                        {/* TODO Testando */}
                         <LinhaConceitoFinal
                           indexLinha={i}
                           dados={dados}
@@ -318,22 +310,6 @@ const Avaliacao = props => {
                             )
                           }
                         />
-
-                        {/* TODO Padrão de marcador vai ser alterado! */}
-                        {/* {expandirLinha[i] ? (
-                          <>
-                            <tr className="linha-expandida">
-                              <td colSpan="1" className="text-center">
-                                <Icon type="double-right" />
-                              </td>
-                              <td colSpan={dados.avaliacoes.length + 2}>
-                                {aluno.marcador.descricao}
-                              </td>
-                            </tr>
-                          </>
-                        ) : (
-                          ''
-                        )} */}
                       </>
                     );
                   })}
