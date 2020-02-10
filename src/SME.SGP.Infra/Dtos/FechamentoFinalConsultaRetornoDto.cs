@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -10,7 +11,10 @@ namespace SME.SGP.Infra
         }
 
         public IList<FechamentoFinalConsultaRetornoAlunoDto> Alunos { get; set; }
+        public string AuditoriaAlteracao { get; set; }
+        public string AuditoriaInclusao { get; set; }
         public bool EhNota { get; set; }
         public bool EhRegencia { get; set; }
+        public DateTime EventoData { get; set; }
     }
 }
