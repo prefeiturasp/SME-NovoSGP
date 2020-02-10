@@ -571,7 +571,8 @@ rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/editar/:id`, {
 });
 
 rotas.set(`${RotasDto.FECHAMENTO_BIMESTRE}`, {
-  breadcrumbName: 'Fechamento',
+  breadcrumbName: 'Fechamento de Bimestre',
+  menu: ['Fechamento'],
   parent: '/',
   component: FechamentoBismestre,
   exact: true,
