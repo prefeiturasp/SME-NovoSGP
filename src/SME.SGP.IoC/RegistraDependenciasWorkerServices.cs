@@ -61,6 +61,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosCompensacaoAusenciaDisciplinaRegencia, ComandosCompensacaoAusenciaDisciplinaRegencia>();
             services.TryAddScopedWorkerService<IComandosProcessoExecutando, ComandosProcessoExecutando>();
             services.TryAddScopedWorkerService<IComandosFechamento, ComandosFechamento>();
+            services.TryAddScopedWorkerService<IComandosFechamentoFinal, ComandosFechamentoFinal>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -180,6 +181,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioNotificacaoCompensacaoAusencia, RepositorioNotificacaoCompensacaoAusencia>();
             services.TryAddScopedWorkerService<IRepositorioEventoFechamento, RepositorioEventoFechamento>();
             services.TryAddScopedWorkerService<IRepositorioFechamentoReabertura, RepositorioFechamentoReabertura>();
+            services.TryAddScopedWorkerService<IRepositorioFechamentoFinal, RepositorioFechamentoFinal>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -210,6 +212,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IServicoDeNotasConceitos, ServicoDeNotasConceitos>();
             services.TryAddScopedWorkerService<IServicoFechamento, ServicoFechamento>();
+            services.TryAddScopedWorkerService<IServicoFechamentoFinal, ServicoFechamentoFinal>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

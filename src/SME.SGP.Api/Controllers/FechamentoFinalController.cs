@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -79,6 +81,15 @@ namespace SME.SGP.Api.Controllers
             retorno.Alunos.Add(aluno1);
 
             return Ok(retorno);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(string[]), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> Salvar([FromBody]FechamentoFinalSalvarDto fechamentoFinalSalvarDto, [FromServices]IComandosFechamentoFinal comandosFechamentoFinal)
+        {
+            return Ok(await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto));
         }
     }
 }
