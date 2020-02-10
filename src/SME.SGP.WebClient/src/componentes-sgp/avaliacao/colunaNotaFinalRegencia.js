@@ -15,9 +15,15 @@ const ColunaNotaFinalRegencia = props => {
   const { indexLinha } = props;
 
   const onClickExpandir = index => {
-    expandirLinha[index] = !expandirLinha[index];
+    let novaLinha = [];
+    if (expandirLinha[index]) {
+      expandirLinha[index] = false;
+      novaLinha = expandirLinha;
+    } else {
+      novaLinha[index] = true;
+    }
 
-    dispatch(setExpandirLinha([...expandirLinha]));
+    dispatch(setExpandirLinha([...novaLinha]));
   };
 
   return (
