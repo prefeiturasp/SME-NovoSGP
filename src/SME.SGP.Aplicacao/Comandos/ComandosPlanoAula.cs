@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
             var aula = repositorioAula.ObterPorId(aulaId);
 
             if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR || usuario.PerfilAtual == Perfis.PERFIL_CJ)
-                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
+                await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula);
 
             await repositorio.ExcluirPlanoDaAula(aulaId);
         }
@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR || usuario.PerfilAtual == Perfis.PERFIL_CJ)
-                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
+                await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula);
 
             PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
             planoAula = MapearParaDominio(planoAulaDto, planoAula);
@@ -145,7 +145,7 @@ namespace SME.SGP.Aplicacao
                 // Caso a disciplina não possui vinculo com Jurema, os objetivos não devem ser exigidos
                 if (!permitePlanoSemObjetivos)
                 {
-                    permitePlanoSemObjetivos = !(await consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt32(aula.DisciplinaId)));
+                    permitePlanoSemObjetivos = !(await consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt64(aula.DisciplinaId)));
                 }
 
                 if (!permitePlanoSemObjetivos)
@@ -278,10 +278,10 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula)
         {
-            if (!await servicoUsuario.PodePersistirTurma(codigoRf, turmaId, dataAula))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+            if (!await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
     }
 }
