@@ -1,15 +1,9 @@
 import { Tooltip } from 'antd';
 import React, { useState } from 'react';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
-import {
-  Info,
-  MarcadorAulas,
-  Marcadores,
-  TabelaFechamento,
-  MaisMenos,
-} from './fechamento-bimestre-lista.css';
-import BotaoExpandir from './botao-expandir';
 import FechamentoRegencia from '../fechamanto-regencia/fechamento-regencia';
+import BotaoExpandir from './botao-expandir';
+import { Info, MarcadorAulas, Marcadores, TabelaFechamento } from './fechamento-bimestre-lista.css';
 
 const FechamentoBimestreLista = props => {
   const { dados } = props;
@@ -27,6 +21,7 @@ const FechamentoBimestreLista = props => {
             retornoOrdenado={retorno => {
               setDadosLista(retorno);
             }}
+            desabilitado={dadosLista ? dadosLista.length <= 0 : true}
           />
         </div>
         <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
@@ -58,73 +53,79 @@ const FechamentoBimestreLista = props => {
             </tr>
           </thead>
           <tbody>
-            {dadosLista.map((item, index) => {
-              const idLinhaRegencia = `fechamento-regencia-${index}`;
-              return (
-                <>
-                  <tr>
-                    <td
-                      className={`text-center ${
-                        !item.ativo ? 'fundo-cinza' : ''
-                      }`}
-                    >
-                      {item.contador}
-                      {item.informacao ? (
-                        <Tooltip title={item.informacao} placement="top">
-                          <Info className="fas fa-circle" />
-                        </Tooltip>
-                      ) : (
-                        ''
-                      )}
-                    </td>
-                    <td className={`${!item.ativo ? 'fundo-cinza' : ''}`}>
-                      {item.nome}
-                    </td>
-                    <td
-                      className={`text-center ${
-                        !item.ativo ? 'fundo-cinza' : ''
-                      }`}
-                    >
-                      {item.regencia && item.regencia.length > 0 ? (
-                        <BotaoExpandir
-                          index={index}
-                          idLinhaRegencia={idLinhaRegencia}
-                        />
-                      ) : (
-                        item.notaConceito
-                      )}
-                    </td>
-                    <td
-                      className={`text-center ${
-                        !item.ativo ? 'fundo-cinza' : ''
-                      }`}
-                    >
-                      {item.faltasBimestre}
-                    </td>
-                    <td
-                      className={`text-center ${
-                        !item.ativo ? 'fundo-cinza' : ''
-                      }`}
-                    >
-                      {item.ausenciasCompensadas}
-                    </td>
-                    <td
-                      className={`text-center ${
-                        !item.ativo ? 'fundo-cinza' : ''
-                      }`}
-                    >
-                      {item.frequencia ? item.frequencia + '%' : ''}
-                    </td>
-                  </tr>
-                  {item.regencia && item.regencia.length > 0 ? (
-                    <FechamentoRegencia
-                      dados={item.regencia}
-                      idRegencia={`fechamento-regencia-${index}`}
-                    />
-                  ) : null}
-                </>
-              );
-            })}
+            {dadosLista && dadosLista.length > 0 ?
+              dadosLista.map((item, index) => {
+                const idLinhaRegencia = `fechamento-regencia-${index}`;
+                return (
+                  <>
+                    <tr>
+                      <td
+                        className={`text-center ${
+                          !item.ativo ? 'fundo-cinza' : ''
+                          }`}
+                      >
+                        {item.contador}
+                        {item.informacao ? (
+                          <Tooltip title={item.informacao} placement="top">
+                            <Info className="fas fa-circle" />
+                          </Tooltip>
+                        ) : (
+                            ''
+                          )}
+                      </td>
+                      <td className={`${!item.ativo ? 'fundo-cinza' : ''}`}>
+                        {item.nome}
+                      </td>
+                      <td
+                        className={`text-center ${
+                          !item.ativo ? 'fundo-cinza' : ''
+                          }`}
+                      >
+                        {item.regencia && item.regencia.length > 0 ? (
+                          <BotaoExpandir
+                            index={index}
+                            idLinhaRegencia={idLinhaRegencia}
+                          />
+                        ) : (
+                            item.notaConceito
+                          )}
+                      </td>
+                      <td
+                        className={`text-center ${
+                          !item.ativo ? 'fundo-cinza' : ''
+                          }`}
+                      >
+                        {item.faltasBimestre}
+                      </td>
+                      <td
+                        className={`text-center ${
+                          !item.ativo ? 'fundo-cinza' : ''
+                          }`}
+                      >
+                        {item.ausenciasCompensadas}
+                      </td>
+                      <td
+                        className={`text-center ${
+                          !item.ativo ? 'fundo-cinza' : ''
+                          }`}
+                      >
+                        {item.frequencia ? item.frequencia + '%' : ''}
+                      </td>
+                    </tr>
+                    {item.regencia && item.regencia.length > 0 ? (
+                      <FechamentoRegencia
+                        dados={item.regencia}
+                        idRegencia={`fechamento-regencia-${index}`}
+                      />
+                    ) : null}
+                  </>
+                );
+              })
+              :
+              <tr>
+                <td colSpan="6" className="text-center">Sem dados</td>
+              </tr>
+            }
           </tbody>
         </table>
       </div>

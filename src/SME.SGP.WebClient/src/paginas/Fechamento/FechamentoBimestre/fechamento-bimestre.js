@@ -16,6 +16,7 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import FechamentoBimestreLista from './fechamento-bimestre-lista/fechamento-bimestre-lista';
 import { FechamentoMock } from './fechamento.mock';
 import RotasDto from '~/dtos/rotasDto';
+import { Fechamento } from './fechamento-bimestre.css';
 
 const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
@@ -27,6 +28,7 @@ const FechamentoBismestre = () => {
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [permissoesTela]);
+
   const [carregandoBimestres, setCarregandoBimestres] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(null);
@@ -45,9 +47,9 @@ const FechamentoBismestre = () => {
     history.push(URL_HOME);
   };
 
-  const onClickCancelar = () => {};
+  const onClickCancelar = () => { };
 
-  const onClickSalvar = () => {};
+  const onClickSalvar = () => { };
 
   const onChangeTab = async numeroBimestre => {
     setBimestreCorrente(numeroBimestre);
@@ -143,7 +145,7 @@ const FechamentoBismestre = () => {
           </div>
           <div className="col-md-12">
             <div className="row">
-              <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+              <Fechamento className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                 <ContainerTabsCard
                   type="card"
                   onChange={onChangeTab}
@@ -164,8 +166,11 @@ const FechamentoBismestre = () => {
                   <TabPane tab="4º Bimestre" key="4Bimestre">
                     <FechamentoBimestreLista dados={dados} />
                   </TabPane>
+
+                  <TabPane tab="Final" key="final">
+                  </TabPane>
                 </ContainerTabsCard>
-              </div>
+              </Fechamento>
             </div>
           </div>
         </Card>
