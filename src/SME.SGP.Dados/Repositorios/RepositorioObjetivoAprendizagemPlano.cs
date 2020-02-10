@@ -56,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
                     and pa.bimestre = @bimestre
                     and pa.componente_curricular_eol_id = @componenteCurricularId
                     and pa.turma_id = @turmaId
-                    and cc.id = @disciplinaId";
+                    and cc.codigo_eol = @disciplinaId";
 
             return database.Conexao.Query<ObjetivoAprendizagemPlano>(query, new { ano, bimestre, componenteCurricularId, turmaId, disciplinaId });
         }
