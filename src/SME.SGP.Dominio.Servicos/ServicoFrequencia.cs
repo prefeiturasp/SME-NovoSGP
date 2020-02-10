@@ -101,7 +101,7 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             ValidaSeUsuarioPodeCriarAula(aula, usuario);
-            await ValidaProfessorPodePersistirTurma(aula.TurmaId, usuario.CodigoRf, aula.DataAula);
+            await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId, aula.DataAula);
 
             var alunos = await ObterAlunos(aula);
 
@@ -183,10 +183,10 @@ namespace SME.SGP.Dominio.Servicos
             return registroFrequencia;
         }
 
-        private async Task ValidaProfessorPodePersistirTurma(string turmaId, string codigoRf, DateTime dataAula)
+        private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, string codigoRf, string disciplinaId, DateTime dataAula)
         {
-            if (!servicoUsuario.PodePersistirTurma(codigoRf, turmaId, dataAula.Local()).Result)
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+            if (!servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula.Local()).Result)
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
 
         private void ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
