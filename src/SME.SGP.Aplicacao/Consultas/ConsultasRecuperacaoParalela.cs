@@ -44,8 +44,7 @@ namespace SME.SGP.Aplicacao
             if (!alunosEol.Any())
                 return null;
 
-            var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(Convert.ToInt64(filtro.TurmaId), filtro.PeriodoId);
-
+            var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
         }
 
