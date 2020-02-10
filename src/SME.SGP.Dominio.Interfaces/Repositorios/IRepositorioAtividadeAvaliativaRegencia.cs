@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<AtividadeAvaliativaRegencia>> Listar(long idAtividadeAvaliativa);
 
-        Task<IEnumerable<AtividadeAvaliativaRegencia>> ObterAvaliacoesBimestrais(long tipoCalendarioId, string turmaId, long disciplinaId, int bimestre);
+        Task<IEnumerable<AtividadeAvaliativaRegencia>> ObterAvaliacoesBimestrais(long tipoCalendarioId, string turmaId, string disciplinaId, int bimestre);
     }
 }
