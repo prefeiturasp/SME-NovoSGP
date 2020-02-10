@@ -1,5 +1,5 @@
-import { Tabs, Tooltip } from 'antd';
-import React, { useState } from 'react';
+import { Tabs } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Colors, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -9,13 +9,26 @@ import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
+import { URL_HOME } from '~/constantes/url';
+import history from '~/servicos/history';
+import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import FechamentoBimestreLista from './fechamento-bimestre-lista/fechamento-bimestre-lista';
 import { FechamentoMock } from './fechamento.mock';
+import RotasDto from '~/dtos/rotasDto';
+import { Fechamento } from './fechamento-bimestre.css';
 
 const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
   const usuario = useSelector(store => store.usuario);
-  const { turmaSelecionada } = usuario;
+  const { turmaSelecionada, permissoes } = usuario;
+  const permissoesTela = permissoes[RotasDto.FechamentoBismestre];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
+
   const [carregandoBimestres, setCarregandoBimestres] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(null);
@@ -23,13 +36,16 @@ const FechamentoBismestre = () => {
     listaDisciplinas && listaDisciplinas.length === 1
   );
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [bimestreCorrente, setBimestreCorrente] = useState('1Bimestre');
   const [dados, setDados] = useState(FechamentoMock);
 
-  const onChangeDisciplinas = () => { };
+  const onChangeDisciplinas = id => {
+    setDisciplinaIdSelecionada(id);
+  };
 
-  const onClickVoltar = () => { };
+  const onClickVoltar = () => {
+    history.push(URL_HOME);
+  };
 
   const onClickCancelar = () => { };
 
@@ -38,6 +54,28 @@ const FechamentoBismestre = () => {
   const onChangeTab = async numeroBimestre => {
     setBimestreCorrente(numeroBimestre);
   };
+
+  useEffect(() => {
+    const obterDisciplinas = async () => {
+      if (turmaSelecionada && turmaSelecionada.turma) {
+        const lista = await ServicoDisciplina.obterDisciplinasPorTurma(
+          turmaSelecionada.turma
+        );
+        setListaDisciplinas(lista.data);
+        if (lista.data.length === 1) {
+          setDisciplinaIdSelecionada(
+            String(lista.data[0].codigoComponenteCurricular)
+          );
+          setDesabilitarDisciplina(true);
+        }
+      }
+    };
+    obterDisciplinas();
+  }, [turmaSelecionada]);
+
+  useEffect(() => {
+    //implementar o consumo de endpoint de listagem
+  }, [disciplinaIdSelecionada]);
 
   return (
     <>
@@ -107,37 +145,32 @@ const FechamentoBismestre = () => {
           </div>
           <div className="col-md-12">
             <div className="row">
-              <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+              <Fechamento className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                 <ContainerTabsCard
                   type="card"
                   onChange={onChangeTab}
                   activeKey={bimestreCorrente}
                 >
                   <TabPane tab="1º Bimestre" key="1Bimestre">
-                    <FechamentoBimestreLista
-                      dados={dados}
-                    />
+                    <FechamentoBimestreLista dados={dados} />
                   </TabPane>
 
                   <TabPane tab="2º Bimestre" key="2Bimestre">
-                    <FechamentoBimestreLista
-                      dados={dados}
-                    />
+                    <FechamentoBimestreLista dados={dados} />
                   </TabPane>
 
                   <TabPane tab="3º Bimestre" key="3Bimestre">
-                    <FechamentoBimestreLista
-                      dados={dados}
-                    />
+                    <FechamentoBimestreLista dados={dados} />
                   </TabPane>
 
                   <TabPane tab="4º Bimestre" key="4Bimestre">
-                    <FechamentoBimestreLista
-                      dados={dados}
-                    />
+                    <FechamentoBimestreLista dados={dados} />
+                  </TabPane>
+
+                  <TabPane tab="Final" key="final">
                   </TabPane>
                 </ContainerTabsCard>
-              </div>
+              </Fechamento>
             </div>
           </div>
         </Card>
