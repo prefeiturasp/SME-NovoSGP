@@ -28,6 +28,9 @@
         //Recuperação Paralela PAP
         RecuperacaoParalelaFrequencia = 13,
 
+        // Média
+        MediaBimestre = 14,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
