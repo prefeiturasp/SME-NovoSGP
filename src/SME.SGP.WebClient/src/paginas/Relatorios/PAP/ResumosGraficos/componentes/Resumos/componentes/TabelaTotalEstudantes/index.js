@@ -43,14 +43,16 @@ const TabelaTotalEstudantes = () => {
 
     ResumosGraficosPAPServico.ListarTotalEstudantes(filtro)
       .then(resposta => {
-        if (resposta.data) {
+        const { data, status } = resposta;
+
+        if (data && status === 200) {
           const montaColunas = [];
 
           if (filtro) {
-            resposta.data[0].Ciclos.forEach(ciclo => {
+            data.ciclos.forEach(ciclo => {
               const coluna = {};
-              coluna.title = ciclo.CicloDescricao;
-              coluna.dataIndex = ciclo.CicloDescricao;
+              coluna.title = ciclo.cicloDescricao;
+              coluna.dataIndex = ciclo.cicloDescricao;
               if (montaColunas.indexOf(coluna) === -1) {
                 montaColunas.push(coluna);
               }
@@ -64,10 +66,10 @@ const TabelaTotalEstudantes = () => {
             dadoQuantidade.Id = shortid.generate();
             dadoQuantidade.TipoDado = 'Quantidade';
 
-            resposta.data[0].Ciclos.forEach(ano => {
-              dadoQuantidade[`${ano.CicloDescricao}`] = ano.Quantidade;
+            data.ciclos.forEach(ano => {
+              dadoQuantidade[`${ano.cicloDescricao}`] = ano.quantidade;
             });
-            dadoQuantidade.Total = resposta.data[0].QuantidadeTotal;
+            dadoQuantidade.Total = data.quantidadeTotal;
 
             montaDados.push(dadoQuantidade);
 
@@ -77,19 +79,19 @@ const TabelaTotalEstudantes = () => {
             dadoPorcentagem.Id = shortid.generate();
             dadoPorcentagem.TipoDado = 'Porcentagem';
 
-            resposta.data[0].Ciclos.forEach(ano => {
-              dadoPorcentagem[`${ano.CicloDescricao}`] = ano.Porcentagem;
+            data.ciclos.forEach(ano => {
+              dadoPorcentagem[`${ano.cicloDescricao}`] = `${ano.porcentagem}%`;
             });
-            dadoPorcentagem.Total = resposta.data[0].PorcentagemTotal;
+            dadoPorcentagem.Total = `${data.porcentagemTotal}%`;
 
             montaDados.push(dadoPorcentagem);
 
             setDadosTabela(montaDados);
           } else {
-            resposta.data[0].Anos.forEach(ano => {
+            data.anos.forEach(ano => {
               const coluna = {};
-              coluna.title = ano.AnoDescricao;
-              coluna.dataIndex = ano.AnoDescricao;
+              coluna.title = ano.anoDescricao;
+              coluna.dataIndex = ano.anoDescricao;
               if (montaColunas.indexOf(coluna) === -1) {
                 montaColunas.push(coluna);
               }
@@ -103,10 +105,10 @@ const TabelaTotalEstudantes = () => {
             dadoQuantidade.Id = shortid.generate();
             dadoQuantidade.TipoDado = 'Quantidade';
 
-            resposta.data[0].Anos.forEach(ano => {
-              dadoQuantidade[`${ano.AnoDescricao}`] = ano.Quantidade;
+            data.anos.forEach(ano => {
+              dadoQuantidade[`${ano.anoDescricao}`] = ano.quantidade;
             });
-            dadoQuantidade.Total = resposta.data[0].QuantidadeTotal;
+            dadoQuantidade.Total = data.quantidadeTotal;
 
             montaDados.push(dadoQuantidade);
 
@@ -116,10 +118,10 @@ const TabelaTotalEstudantes = () => {
             dadoPorcentagem.Id = shortid.generate();
             dadoPorcentagem.TipoDado = 'Porcentagem';
 
-            resposta.data[0].Anos.forEach(ano => {
-              dadoPorcentagem[`${ano.AnoDescricao}`] = ano.Porcentagem;
+            data.anos.forEach(ano => {
+              dadoPorcentagem[`${ano.anoDescricao}`] = `${ano.porcentagem}%`;
             });
-            dadoPorcentagem.Total = resposta.data[0].PorcentagemTotal;
+            dadoPorcentagem.Total = `${data.porcentagemTotal}%`;
 
             montaDados.push(dadoPorcentagem);
 
@@ -136,7 +138,10 @@ const TabelaTotalEstudantes = () => {
               return {
                 children: text,
                 props: {
-                  style: { backgroundColor: Base.CinzaTabela },
+                  style: {
+                    backgroundColor: Base.CinzaTabela,
+                    fontWeight: 'bold',
+                  },
                 },
               };
             },
