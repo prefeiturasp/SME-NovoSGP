@@ -283,7 +283,7 @@ namespace SME.SGP.Dominio
                 else
                 {
                     var conceitos = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
-                    var conceito = conceitos.FirstOrDefault(c => c.Id.Equals(nota.Conceito));
+                    var conceito = conceitos.FirstOrDefault(c => c.Id.Equals(nota.ConceitoId));
 
                     if (conceitos == null)
                         throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
