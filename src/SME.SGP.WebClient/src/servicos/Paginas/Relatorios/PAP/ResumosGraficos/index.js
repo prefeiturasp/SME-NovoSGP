@@ -2,12 +2,9 @@ import api from '~/servicos/api';
 
 const ResumosGraficosPAPServico = {
   ListarTotalEstudantes(params) {
-    return api.get(
-      `https://demo7314211.mockable.io/api/v1/recuperacao-paralela/resumos/total-estudantes`,
-      {
-        params,
-      }
-    );
+    return api.get('v1/recuperacao-paralela/total-estudantes', {
+      params,
+    });
   },
   ListarFrequencia(params) {
     return api.get(
@@ -18,12 +15,9 @@ const ResumosGraficosPAPServico = {
     );
   },
   ListarResultados(params) {
-    return api.get(
-      `http://demo7314211.mockable.io/api/v1/recuperacao-paralela/resumos/resultado`,
-      {
-        params,
-      }
-    );
+    return api.get('v1/recuperacao-paralela/resultado', {
+      params,
+    });
   },
 };
 
