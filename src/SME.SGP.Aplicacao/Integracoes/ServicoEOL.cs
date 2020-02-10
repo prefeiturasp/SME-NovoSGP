@@ -182,17 +182,17 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(long turmaId)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(string turmaId)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
             var resposta = await httpClient.GetAsync($"turmas/{turmaId}/alunos-ativos");
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
-            }
 
-            return alunos;
+            if (resposta.StatusCode == HttpStatusCode.NoContent || !resposta.IsSuccessStatusCode)
+                return alunos;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
         }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId)
