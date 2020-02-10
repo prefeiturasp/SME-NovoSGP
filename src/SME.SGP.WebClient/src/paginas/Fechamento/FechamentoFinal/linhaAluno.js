@@ -39,8 +39,12 @@ export default function LinhaAluno({
       </tr>
       {ehRegencia && regenciaExpandida && (
         <tr className="linha-conceito-regencia">
-          <td colSpan="7" className="elevation-3">
-            <NotaRegencia aluno={aluno} />
+          <td colSpan="7">
+            <NotaRegencia
+              aluno={aluno}
+              ehNota={ehNota}
+              listaConceitos={listaConceitos}
+            />
           </td>
         </tr>
       )}

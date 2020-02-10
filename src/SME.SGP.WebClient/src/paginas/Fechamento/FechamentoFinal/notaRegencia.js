@@ -6,7 +6,7 @@ import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConc
 
 export default function NotaRegencia({ aluno, ehNota, listaConceitos }) {
   return (
-    <div className="col-teste">
+    <div className="coluna-regencia">
       {aluno.notasConceitoFinal.map(nota =>
         ehNota ? (
           <div className="input-regencia">
@@ -25,11 +25,12 @@ export default function NotaRegencia({ aluno, ehNota, listaConceitos }) {
           <SelectComponent
             id="disciplinasId"
             name="disciplinasId"
-            label="Componente curricular"
+            label={nota.disciplina}
             lista={listaConceitos}
             valueOption="id"
             valueText="nome"
             placeholder="Selecione um conceito"
+            classNameContainer="select-conceito"
             valueSelect={nota.notaConceito}
             // onChange={conceito => {
             //   debugger;

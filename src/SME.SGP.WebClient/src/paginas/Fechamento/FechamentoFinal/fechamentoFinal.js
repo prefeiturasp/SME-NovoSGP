@@ -11,7 +11,7 @@ import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConc
 const FechamentoFinal = ({ turmaCodigo, disciplinaCodigo }) => {
   const [ehNota, setEhNota] = useState(true);
   const [ehRegencia, setEhRegencia] = useState(true);
-  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState('123');
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState();
   const [listaConceitos, setListaConceitos] = useState([]);
   const [exibirLista, setExibirLista] = useState(
     (ehRegencia && !!disciplinaSelecionada) || !ehRegencia

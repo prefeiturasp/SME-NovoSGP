@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -18,13 +17,13 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(FechamentoFinalConsultaRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        //[Permissao(Permissao.FB_C, Policy = "Bearer")]
         public IActionResult Obter([FromQuery]FechamentoFinalConsultaFiltroDto filtroFechamentoFinalConsultDto)
         {
             var retorno = new FechamentoFinalConsultaRetornoDto()
             {
-                EhNota = true,
-                EhRegencia = true,
+                EhNota = filtroFechamentoFinalConsultDto.TurmaCodigo == 1,
+                EhRegencia = filtroFechamentoFinalConsultDto.DisciplinaCodigo == "1",
                 EventoData = DateTime.Today,
                 AuditoriaAlteracao = "Notas(ou conceitos) da avaliação ABC alterados por Nome Usuário(9999999) em 11 / 01 / 2019,às 16:00.",
                 AuditoriaInclusao = "Notas (ou conceitos) da avaliação XYZ inseridos por por Nome Usuário(9999999) em 10/01/2019, às 15:00."
@@ -51,12 +50,6 @@ namespace SME.SGP.Api.Controllers
             aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = "5" });
 
             aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "2" });
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = "4" });
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = "2.5" });
-
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 4, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "3.5" });
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 4, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = "9" });
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 4, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = "10" });
 
             retorno.Alunos.Add(aluno2);
 
@@ -81,12 +74,6 @@ namespace SME.SGP.Api.Controllers
             aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = "9" });
 
             aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "3" });
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = "4" });
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = "5" });
-
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 4, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "5" });
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 4, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = "4" });
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 4, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = "3" });
 
             retorno.Alunos.Add(aluno1);
 
@@ -97,7 +84,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(string[]), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_I, Policy = "Bearer")]
+        //[Permissao(Permissao.FB_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromBody]FechamentoFinalSalvarDto fechamentoFinalSalvarDto, [FromServices]IComandosFechamentoFinal comandosFechamentoFinal)
         {
             return Ok(await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto));
