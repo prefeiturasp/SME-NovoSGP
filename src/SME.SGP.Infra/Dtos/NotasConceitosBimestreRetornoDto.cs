@@ -16,6 +16,7 @@ namespace SME.SGP.Infra
         public int QtdAvaliacoesBimestral { get; set; }
         public string Descricao { get; set; }
         public int Numero { get; set; }
+        public bool PodeLancarNotaFinal { get; set; }
         public long FechamentoTurmaId { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
