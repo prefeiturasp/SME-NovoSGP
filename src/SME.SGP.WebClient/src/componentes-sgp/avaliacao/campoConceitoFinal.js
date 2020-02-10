@@ -1,3 +1,4 @@
+import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -67,41 +68,48 @@ const CampoConceitoFinal = props => {
   };
 
   return (
-    <SelectComponent
-      label={label ? label : ''}
-      onChange={valorNovo => setarValorNovo(valorNovo)}
-      valueOption="id"
-      valueText="valor"
-      lista={listaTiposConceitos}
-      valueSelect={conceitoValorAtual ? String(conceitoValorAtual) : undefined}
-      showSearch
-      placeholder="Final"
-      className={`tamanho-conceito-final ${
+    <Tooltip
+      placement="bottom"
+      title={
         notaConceitoBimestre && notaConceitoBimestre.abaixoDaMedia
-          ? 'border-abaixo-media'
-          : notaConceitoBimestre && notaConceitoBimestre.conceitoAlterado
-          ? 'border-registro-alterado'
+          ? 'Abaixo da Média'
           : ''
-      } `}
-      disabled={desabilitarCampo || modoEdicaoGeral || !podeEditar}
-    />
+      }
+    >
+      <div>
+        <SelectComponent
+          label={label ? label : ''}
+          onChange={valorNovo => setarValorNovo(valorNovo)}
+          valueOption="id"
+          valueText="valor"
+          lista={listaTiposConceitos}
+          valueSelect={
+            conceitoValorAtual ? String(conceitoValorAtual) : undefined
+          }
+          showSearch
+          placeholder="Final"
+          className={`tamanho-conceito-final ${
+            notaConceitoBimestre && notaConceitoBimestre.abaixoDaMedia
+              ? 'border-abaixo-media'
+              : notaConceitoBimestre && notaConceitoBimestre.conceitoAlterado
+              ? 'border-registro-alterado'
+              : ''
+          } `}
+          disabled={desabilitarCampo || modoEdicaoGeral || !podeEditar}
+        />
+      </div>
+    </Tooltip>
   );
 };
 
 CampoConceitoFinal.defaultProps = {
   onChangeNotaConceitoFinal: PropTypes.func,
   montaNotaConceitoFinal: PropTypes.func,
-  desabilitarCampo: PropTypes.bool,
-  podeEditar: PropTypes.bool,
-  listaTiposConceitos: PropTypes.array,
 };
 
 CampoConceitoFinal.propTypes = {
   onChangeNotaConceitoFinal: () => {},
   montaNotaConceitoFinal: () => {},
-  desabilitarCampo: false,
-  podeEditar: false,
-  listaTiposConceitos: [],
 };
 
 export default CampoConceitoFinal;

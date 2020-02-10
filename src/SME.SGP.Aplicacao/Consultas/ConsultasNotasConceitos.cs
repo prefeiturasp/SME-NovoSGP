@@ -222,36 +222,52 @@ namespace SME.SGP.Aplicacao
                             retorno.AuditoriaBimestreInserido = $"Nota final do bimestre inserida por {fechamentoTurma.CriadoPor} em {fechamentoTurma.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurma.CriadoEm.ToString("hh:mm:ss")}.";
                             if (fechamentoTurma.AlteradoEm.HasValue)
                                 retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {fechamentoTurma.AlteradoPor} em {fechamentoTurma.AlteradoEm.Value.ToString("dd/MM/yyyy")}, às {fechamentoTurma.AlteradoEm.Value.ToString("hh:mm:ss")}.";
-                            
+
                             var notasConceitoBimestre = await consultasFechamentoTurmaDisciplina.ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
-                            foreach(var notaConceitoBimestre in notasConceitoBimestre)
+                            if (disciplinaEOL.Regencia)
+                            {
+                                // Regencia carrega disciplinas mesmo sem nota de fechamento
+                                foreach (var disciplinaRegencia in disciplinasRegencia)
+                                {
+                                    var nota = new NotaConceitoBimestreRetornoDto()
+                                    {
+                                        DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
+                                        Disciplina = disciplinaRegencia.Nome,
+                                    };
+                                    var notaRegencia = notasConceitoBimestre?.FirstOrDefault(c => c.DisciplinaId == disciplinaRegencia.CodigoComponenteCurricular);
+                                    if (notaRegencia != null)
+                                        nota.NotaConceito = (notaRegencia.Nota > 0 ? notaRegencia.Nota : notaRegencia.ConceitoId).ToString();
+
+                                    notaConceitoAluno.NotasBimestre.Add(nota);
+                                }
+                            }
+                            else
+                                foreach (var notaConceitoBimestre in notasConceitoBimestre)
+                                    notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
+                                    {
+                                        DisciplinaId = notaConceitoBimestre.DisciplinaId,
+                                        Disciplina = disciplinaEOL.Nome,
+                                        NotaConceito = notaConceitoBimestre.Nota > 0 ?
+                                            notaConceitoBimestre.Nota.ToString() :
+                                            notaConceitoBimestre.ConceitoId.ToString()
+                                    });
+                        }
+                        else
+                        if (disciplinaEOL.Regencia)
+                        {
+                            // Regencia carrega disciplinas mesmo sem nota de fechamento
+                            foreach (var disciplinaRegencia in disciplinasRegencia)
                             {
                                 notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
                                 {
-                                    DisciplinaId = notaConceitoBimestre.DisciplinaId,
-                                    Disciplina = disciplinaEOL.Regencia ?
-                                        disciplinasRegencia.First(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
-                                        disciplinaEOL.Nome,
-                                    NotaConceito = (notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota : notaConceitoBimestre.ConceitoId).ToString()
+                                    DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
+                                    Disciplina = disciplinaRegencia.Nome,
                                 });
                             }
                         }
-                        else
-                        {
-                            // Regencia carrega disciplinas mesmo sem nota de fechamento
-                            if (disciplinaEOL.Regencia)
-                            {
-                                foreach (var disciplinaRegencia in disciplinasRegencia)
-                                    notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
-                                    {
-                                        DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
-                                        Disciplina = disciplinaRegencia.Nome
-                                    });
-                            }
-                        }
 
-                        // Carrega Frequencia Aluno
-                        var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
+                                // Carrega Frequencia Aluno
+                                var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
                         notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ? 
                                         (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0) :
                                         100;
