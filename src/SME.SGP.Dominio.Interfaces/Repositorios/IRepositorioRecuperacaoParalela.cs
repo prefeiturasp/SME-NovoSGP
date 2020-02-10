@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioRecuperacaoParalela : IRepositorioBase<RecuperacaoParalela>
     {
-        Task<IEnumerable<RetornoRecuperacaoParalela>> Listar(string turmaId, long periodoId);
+        Task<IEnumerable<RetornoRecuperacaoParalela>> Listar(long turmaId, long periodoId);
 
         Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano);
 
