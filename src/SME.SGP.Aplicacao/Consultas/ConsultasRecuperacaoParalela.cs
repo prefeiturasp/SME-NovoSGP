@@ -40,10 +40,34 @@ namespace SME.SGP.Aplicacao
         public async Task<RecuperacaoParalelaListagemDto> Listar(FiltroRecuperacaoParalelaDto filtro)
         {
             var alunosEol = await servicoEOL.ObterAlunosAtivosPorTurma(filtro.TurmaId);
+
             if (!alunosEol.Any())
                 return null;
+
             var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
+        }
+
+        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano, int? pagina)
+        {
+            var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResultado(periodo, dreId, ueId, cicloId, turmaId, ano, pagina);
+            return MapearResultadoPaginadoParaDto(totalResumo);
+        }
+
+        public async Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano)
+        {
+            var totalAlunosPorSeries = await repositorioRecuperacaoParalela.ListarTotalAlunosSeries(periodo, dreId, ueId, cicloId, turmaId, ano);
+            if (!totalAlunosPorSeries.Any()) return null;
+            var total = totalAlunosPorSeries.Sum(s => s.Total);
+            return MapearParaDtoTotalEstudantes(total, totalAlunosPorSeries);
+        }
+
+        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano)
+        {
+            var totalAlunosPorSeriesFrequencia = await repositorioRecuperacaoParalela.ListarTotalEstudantesPorFrequencia(periodo, dreId, ueId, cicloId, turmaId, ano);
+            if (!totalAlunosPorSeriesFrequencia.Any()) return null;
+            var total = totalAlunosPorSeriesFrequencia.Sum(s => s.Total);
+            return MapearParaDtoTotalEstudantesPorFrequencia(total, totalAlunosPorSeriesFrequencia);
         }
 
         private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId)
@@ -80,7 +104,7 @@ namespace SME.SGP.Aplicacao
                         Concluido = servicoRecuperacaoParalela.ObterStatusRecuperacaoParalela(
                             alunosRecuperacaoParalela
                             .Where(w => w.Id == a.Id)
-                            .Count(),
+                            .Count() - 1,
                             objetivos.Count()),
                         ParecerConclusivo = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.ParecerConclusivo).FirstOrDefault(),
                         Nome = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NomeAluno).FirstOrDefault(),
@@ -107,7 +131,7 @@ namespace SME.SGP.Aplicacao
                 RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
             }));
 
-            if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento)
+            if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento && alunos.Any())
             {
                 //pegar o dados daquela turma pap
                 var dadosTurma = alunos.FirstOrDefault(w => w.CodigoComponenteCurricular.HasValue);
@@ -130,6 +154,92 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return recuperacaoRetorno;
+        }
+
+        private RecuperacaoParalelaTotalEstudanteDto MapearParaDtoTotalEstudantes(int total, IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto> totalAlunosPorSeries)
+        {
+            //todo: mudar double para um numero que quebre direito a porcentagem
+            return new RecuperacaoParalelaTotalEstudanteDto
+            {
+                QuantidadeTotal = total,
+                PorcentagemTotal = 100,
+                Anos = totalAlunosPorSeries.Select(x => new RecuperacaoParalelaTotalAnoDto
+                {
+                    AnoDescricao = x.Ano,
+                    Quantidade = x.Total,
+                    Porcentagem = (x.Total * 100) / total
+                }),
+                Ciclos = totalAlunosPorSeries.GroupBy(g => g.Ciclo).Select(x => new RecuperacaoParalelaTotalCicloDto
+                {
+                    CicloDescricao = x.First().Ciclo,
+                    Quantidade = x.Sum(c => c.Total),
+                    Porcentagem = (x.Sum(c => c.Total) * 100) / total
+                })
+            };
+        }
+
+        private RecuperacaoParalelaTotalEstudantePorFrequenciaDto MapearParaDtoTotalEstudantesPorFrequencia(int total, IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto> totalAlunosPorSeriesFrequencia)
+        {
+            //todo: mudar double para um numero que quebre direito a porcentagem
+            return new RecuperacaoParalelaTotalEstudantePorFrequenciaDto
+            {
+                QuantidadeTotal = total,
+                PorcentagemTotal = 100,
+                Frequencia = totalAlunosPorSeriesFrequencia.Select(x => new RecuperacaoParalelaResumoFrequenciaDto
+                {
+                })
+            };
+        }
+
+        private PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto> MapearResultadoPaginadoParaDto(PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto> totalResumo)
+        {
+            return new PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>
+            {
+                Items = MapearResultadoParaDto(totalResumo.Items),
+                TotalPaginas = totalResumo.TotalPaginas,
+                TotalRegistros = totalResumo.TotalRegistros
+            };
+        }
+
+        private IEnumerable<RecuperacaoParalelaTotalResultadoDto> MapearResultadoParaDto(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items)
+        {
+            var total = items.Sum(s => s.Total);
+            return items.GroupBy(g => new { g.EixoId, g.Eixo }).Select(x => new RecuperacaoParalelaTotalResultadoDto
+            {
+                Eixos = items.Where(w => w.EixoId == x.Key.EixoId).GroupBy(eixo => new { eixo.EixoId, eixo.Eixo }).Select(w => new RecuperacaoParalelaResumoResultadoEixoDto
+                {
+                    EixoDescricao = w.Key.Eixo,
+                    Objetivos = items.Where(obj => obj.EixoId == x.Key.EixoId).GroupBy(objetivo => new { objetivo.ObjetivoId, objetivo.Objetivo }).Select(z => new RecuperacaoParalelaResumoResultadoObjetivoDto
+                    {
+                        ObjetivoDescricao = z.Key.Objetivo,
+                        Anos = items.Where(ano => ano.ObjetivoId == z.Key.ObjetivoId).GroupBy(h => new { h.Ano, h.ObjetivoId }).Select(a => new RecuperacaoParalelaResumoResultadoAnoDto
+                        {
+                            AnoDescricao = a.Key.Ano,
+                            Respostas = items.Where(res => res.ObjetivoId == a.Key.ObjetivoId).Select(r => new RecuperacaoParalelaResumoResultadoRespostaDto
+                            {
+                                RespostaDescricao = r.Resposta,
+                                Quantidade = r.Total,
+                                Porcentagem = ((double)r.Total * 100) / total
+                            })
+                        }),
+                        Ciclos = items.Where(ciclo => ciclo.ObjetivoId == z.Key.ObjetivoId).GroupBy(c => new { c.Ciclo, c.ObjetivoId }).Select(cs => new RecuperacaoParalelaResumoResultadoCicloDto
+                        {
+                            CicloDescricao = cs.Key.Ciclo,
+                            Respostas = items.Where(res => res.ObjetivoId == cs.Key.ObjetivoId).Select(r => new RecuperacaoParalelaResumoResultadoRespostaDto
+                            {
+                                RespostaDescricao = r.Resposta,
+                                Quantidade = r.Total,
+                                Porcentagem = ((double)(r.Total * 100)) / total
+                            })
+                        }),
+                        Total = items.GroupBy(gt => gt.ObjetivoId).Select(tr => new RecuperacaoParalelaResumoResultadoRespostaDto
+                        {
+                            TotalQuantidade = tr.Sum(tq => tq.Total),
+                            TotalPorcentagem = (tr.Sum(tq => tq.Total) * 100) / total
+                        })
+                    })
+                })
+            });
         }
     }
 }
