@@ -1,9 +1,10 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System.Text;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -11,6 +12,17 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioParametrosSistema(ISgpContext database) : base(database)
         {
+        }
+
+        public IEnumerable<KeyValuePair<string, string>> ObterChaveEValorPorTipo(TipoParametroSistema tipo)
+        {
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("select nome as Key, valor as Value");
+            query.AppendLine("from parametros_sistema");
+            query.AppendLine("where ativo and tipo = @tipo");
+
+            return database.Conexao.Query<KeyValuePair<string, string>>(query.ToString(), new { tipo })
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         public string ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null)

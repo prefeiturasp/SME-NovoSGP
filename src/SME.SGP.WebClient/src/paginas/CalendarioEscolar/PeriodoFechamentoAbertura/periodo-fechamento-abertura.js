@@ -475,16 +475,21 @@ const PeriodoFechamentoAbertura = () => {
               </Form>
             )}
           </Formik>
-          {tipoCalendarioSelecionado && ehRegistroExistente && (
-            <Auditoria
-              criadoEm={auditoria.criadoEm}
-              criadoPor={auditoria.criadoPor}
-              criadoRf={auditoria.criadoRf}
-              alteradoPor={auditoria.alteradoPor}
-              alteradoEm={auditoria.alteradoEm}
-              alteradoRf={auditoria.alteradoRf}
-            />
-          )}
+          <div className="col-md-6 d-flex justify-content-start">
+            {tipoCalendarioSelecionado && tipoCalendarioSelecionado !== '' && ehRegistroExistente
+              && auditoria && auditoria.criadoEm ? (
+                <Auditoria
+                  criadoEm={auditoria.criadoEm}
+                  criadoPor={auditoria.criadoPor}
+                  criadoRf={auditoria.criadoRf}
+                  alteradoPor={auditoria.alteradoPor}
+                  alteradoEm={auditoria.alteradoEm}
+                  alteradoRf={auditoria.alteradoRf}
+                />
+              ) : (
+                ''
+              )}
+          </div>
         </Card>
       </Loader>
     </>

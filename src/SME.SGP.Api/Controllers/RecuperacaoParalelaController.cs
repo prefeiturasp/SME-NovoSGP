@@ -30,13 +30,29 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultaRecuperacaoParalela.Listar(filtro));
         }
 
-        //[HttpGet("listar-periodos")]
-        //[ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaDto>), 200)]
-        //[ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //public async Task<IActionResult> ListarPeriodos()
-        //{
-        //    return Ok(await consultaRecuperacaoParalela.ListarPeriodo());
-        //}
+        [HttpGet("total-estudantes")]
+        [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaTotalEstudanteDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ListarTotalEstudantes([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
+        {
+            return Ok(await consultaRecuperacaoParalela.TotalEstudantes(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano));
+        }
+
+        [HttpGet("frequencia")]
+        [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaTotalEstudantePorFrequenciaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ListarTotalEstudantesPorFrequencia([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
+        {
+            return Ok(await consultaRecuperacaoParalela.TotalEstudantesPorFrequencia(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano));
+        }
+
+        [HttpGet("resultado")]
+        [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaTotalResultadoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ListarTotalResultado([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
+        {
+            return Ok(await consultaRecuperacaoParalela.ListarTotalResultado(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano, filtro.NumeroPagina));
+        }
 
         [HttpPost]
         [ProducesResponseType(200)]

@@ -299,7 +299,9 @@ namespace SME.SGP.Dominio.Servicos
 
             VerificaSeProfessorPodePersistirTurma(CodigoRf, aula.TurmaId, aula.DataAula);
 
-            await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(aula.WorkflowAprovacaoId);
+            if (aula.WorkflowAprovacaoId.HasValue)
+                await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(aula.WorkflowAprovacaoId.Value);
+
             await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
             await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
             aula.Excluido = true;

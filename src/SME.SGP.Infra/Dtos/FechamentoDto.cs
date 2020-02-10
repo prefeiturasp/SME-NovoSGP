@@ -13,7 +13,6 @@ namespace SME.SGP.Infra
         public bool ConfirmouAlteracaoHierarquica { get; set; }
         public string DreId { get; set; }
         public IEnumerable<FechamentoBimestreDto> FechamentosBimestres { get; set; }
-        public long Id { get; set; }
         public bool Migrado { get; set; }
 
         [Required(ErrorMessage = "O tipo de calendário é obrigatório")]

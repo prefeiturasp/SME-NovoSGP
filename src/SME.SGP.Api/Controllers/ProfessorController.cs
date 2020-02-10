@@ -57,6 +57,19 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
+        [HttpGet("turmas/{codigoTurma}/disciplinas/agrupadas")]
+        [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> GetDisciplinasAgrupadas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
+        {
+            var retorno = await consultasDisciplina.ObterDisciplinasAgrupadasPorProfessorETurma(codigoTurma, turmaPrograma);
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
         [HttpGet("turmas/{codigoTurma}/docencias-compartilhadas/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
