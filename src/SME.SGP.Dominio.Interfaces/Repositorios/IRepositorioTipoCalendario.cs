@@ -5,7 +5,9 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioTipoCalendario : IRepositorioBase<TipoCalendario>
     {
-        TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade);
+        TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0);
+
+        IEnumerable<TipoCalendario> ListarPorAnoLetivo(int anoLetivo);
 
         IEnumerable<TipoCalendario> BuscarPorAnoLetivo(int anoLetivo);
 

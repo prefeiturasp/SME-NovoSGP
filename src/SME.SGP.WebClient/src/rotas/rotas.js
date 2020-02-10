@@ -36,7 +36,13 @@ import TipoAvaliacaoForm from '~paginas/Configuracoes/TipoAvaliacao/tipoAvaliaca
 import AulaDadaAulaPrevista from '~/paginas/DiarioClasse/AulaDadaAulaPrevista/aulaDadaAulaPrevista';
 import RegistroPOALista from '~/paginas/DiarioClasse/RegistroPOA/Lista';
 import RegistroPOAForm from '~/paginas/DiarioClasse/RegistroPOA/Form';
+import CompensacaoAusenciaLista from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaLista';
+import CompensacaoAusenciaForm from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaForm';
+import PeriodoFechamentoAbertura from '~/paginas/CalendarioEscolar/PeriodoFechamentoAbertura/periodo-fechamento-abertura';
 import PaginaComErro from '~/paginas/Erro/pagina-com-erro';
+import PeriodoFechamentoReaberturaLista from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaLista';
+import PeriodoFechamentoReaberturaForm from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaForm';
+import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento';
 
 const rotas = new Map();
 
@@ -532,13 +538,77 @@ rotas.set(`${RotasDto.REGISTRO_POA}/editar/:id`, {
   chavePermissao: RotasDto.REGISTRO_POA,
 });
 
-rotas.set('*', {
-  breadcrumbName: 'Erro',
+rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}`, {
+  breadcrumbName: 'Compensação de Ausência',
+  menu: ['Diário de Classe'],
   parent: '/',
-  component: PaginaComErro,
+  component: CompensacaoAusenciaLista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
+});
+
+rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/novo`, {
+  breadcrumbName: 'Cadastrar Compensação de Ausência',
+  parent: RotasDto.COMPENSACAO_AUSENCIA,
+  component: CompensacaoAusenciaForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
+});
+
+rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/editar/:id`, {
+  breadcrumbName: 'Editar Compensação de Ausência',
+  parent: RotasDto.COMPENSACAO_AUSENCIA,
+  component: CompensacaoAusenciaForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
+});
+
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_ABERTURA}`, {
+  breadcrumbName: 'Abertura',
+  menu: ['Calendário Escolar', 'Período de Fechamento'],
+  parent: '/',
+  component: PeriodoFechamentoAbertura,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_ABERTURA,
+});
+
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}`, {
+  breadcrumbName: 'Reabertura',
+  menu: ['Calendário Escolar', 'Período de Fechamento'],
+  parent: '/',
+  component: PeriodoFechamentoReaberturaLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+});
+
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/novo`, {
+  breadcrumbName: 'Períodos',
+  parent: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+  component: PeriodoFechamentoReaberturaForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+});
+
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/editar/:id`, {
+  breadcrumbName: 'Períodos',
+  parent: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+  component: PeriodoFechamentoReaberturaForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
 });
 
 rotas.set('/erro', {
@@ -548,6 +618,16 @@ rotas.set('/erro', {
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
+});
+
+rotas.set(RotasDto.RELATORIO_PAP_ACOMPANHAMENTO, {
+  breadcrumbName: 'Acompanhamento',
+  menu: ['Relatórios', 'PAP'],
+  parent: '/',
+  component: RelatorioPAPAcompanhamento,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false, // chavePermissao: RotasDto.REINICIAR_SENHA,
 });
 
 const rotasArray = [];

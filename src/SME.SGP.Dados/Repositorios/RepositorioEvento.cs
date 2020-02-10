@@ -174,7 +174,20 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(")");
             query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
 
-            return (await database.Conexao.QueryAsync<Evento>(query.ToString(), new
+            var lookup = new Dictionary<long, Evento>();
+
+            await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(query.ToString(), (evento, eventoTipo) =>
+            {
+                var eventoRetorno = new Evento();
+                if (!lookup.TryGetValue(evento.Id, out eventoRetorno))
+                {
+                    eventoRetorno = evento;
+                    lookup.Add(evento.Id, eventoRetorno);
+                }
+
+                eventoRetorno.AdicionarTipoEvento(eventoTipo);
+                return eventoRetorno;
+            }, new
             {
                 dataInicio = dataInicio.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
                 dataFim = dataFim.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
@@ -182,7 +195,9 @@ namespace SME.SGP.Dados.Repositorios
                 tipoCalendarioId,
                 UeId,
                 DreId
-            }));
+            });
+
+            return lookup.Values;
         }
 
         public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId, long eventoId)
@@ -1038,7 +1053,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo,");
             query.AppendLine("et.tipo_data,");
             query.AppendLine("et.descricao,");
-            query.AppendLine("et.excluido");
+            query.AppendLine("et.excluido,");
+            query.AppendLine("et.somente_leitura");
         }
 
         private static void MontaQueryFrom(StringBuilder query)
@@ -1185,23 +1201,34 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and extract(month from e.data_inicio) = @mes");
             else query.AppendLine("and extract(month from e.data_fim) = @mes");
 
-            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
-                query.AppendLine("and e.dre_id = @DreId");
-
             if (calendarioEventosMesesFiltro.IdTipoCalendario > 0)
                 query.AppendLine("and e.tipo_calendario_id = @IdTipoCalendario");
 
+            StringBuilder queryDreUe = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
+                queryDreUe.AppendLine("and e.dre_id = @DreId");
+
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
-                query.AppendLine("and e.ue_id = @UeId");
+                queryDreUe.AppendLine("and e.ue_id = @UeId");
+
+            if (!String.IsNullOrEmpty(queryDreUe.ToString()))
+                queryDreUe.AppendLine(")");
 
             if (podeVisualizarEventosLocalOcorrenciaDre)
             {
-                query.AppendLine("and ((e.dre_id is null and e.ue_id is null) or (e.dre_id is not null and e.ue_id is null))");
+                queryDreUe.AppendLine($"{(string.IsNullOrEmpty(queryDreUe.ToString()) ? "and" : "or")} ((e.dre_id is null and e.ue_id is null) or (e.dre_id is not null and e.ue_id is null))");
             }
             else
             {
-                query.AppendLine("and (e.dre_id is null and e.ue_id is null)");
-                query.AppendLine("and et.local_ocorrencia != 2");
+                queryDreUe.AppendLine($"{(string.IsNullOrEmpty(queryDreUe.ToString()) ? "and" : "or")} ((e.dre_id is null and e.ue_id is null)");
+                queryDreUe.AppendLine("and et.local_ocorrencia != 2)");
+            }
+
+            if (!String.IsNullOrEmpty(queryDreUe.ToString()))
+            {
+                queryDreUe.Insert(queryDreUe.ToString().IndexOf("and") + 4, "((").Insert(queryDreUe.ToString().Length - 1, ")");
+                query.AppendLine(queryDreUe.ToString());
             }
 
             if (usuarioTemPerfilSupervisorOuDiretor || podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
@@ -1261,8 +1288,8 @@ namespace SME.SGP.Dados.Repositorios
                 queryDreUe.AppendLine($"{(String.IsNullOrEmpty(queryDreUe.ToString()) ? "and" : "or")} (e.dre_id is null and e.ue_id is null)");
 
             if (!String.IsNullOrEmpty(queryDreUe.ToString()))
-            { 
-                queryDreUe.Insert(queryDreUe.ToString().IndexOf("and") + 4, "(").Insert(queryDreUe.ToString().Length -1, ")");
+            {
+                queryDreUe.Insert(queryDreUe.ToString().IndexOf("and") + 4, "(").Insert(queryDreUe.ToString().Length - 1, ")");
                 query.AppendLine(queryDreUe.ToString());
             }
 

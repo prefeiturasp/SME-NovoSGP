@@ -75,6 +75,11 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Turma>("select * from turma where turma_id = @turmaId", new { turmaId });
         }
 
+        public Turma ObterPorId(long id)
+        {
+            return contexto.QueryFirstOrDefault<Turma>("select * from turma where id = @id", new { id });
+        }
+
         public Turma ObterTurmaComUeEDrePorId(string turmaId)
         {
             var query = @"select
