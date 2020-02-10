@@ -15,9 +15,12 @@ const ResumosGraficosPAPServico = {
     );
   },
   ListarResultados(params) {
-    return api.get('v1/recuperacao-paralela/resultado', {
-      params,
-    });
+    return api.get(
+      'http://demo7314211.mockable.io/api/v1/recuperacao-paralela/resumos/resultado',
+      {
+        params,
+      }
+    );
   },
 };
 
