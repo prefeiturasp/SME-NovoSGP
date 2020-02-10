@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -16,9 +18,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(FechamentoFinalConsultaRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public IActionResult Obter([FromQuery]FechamentoFinalConsultaFiltroDto filtroFechamentoFinalConsultDto)
         {
-            var retorno = new FechamentoFinalConsultaRetornoDto() { EhNota = true, EhRegencia = true };
+            var retorno = new FechamentoFinalConsultaRetornoDto() { EhNota = true, EhRegencia = true, EventoData = DateTime.Today };
 
             ///// aluno 2
             ///
@@ -87,6 +90,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(string[]), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromBody]FechamentoFinalSalvarDto fechamentoFinalSalvarDto, [FromServices]IComandosFechamentoFinal comandosFechamentoFinal)
         {
             return Ok(await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto));
