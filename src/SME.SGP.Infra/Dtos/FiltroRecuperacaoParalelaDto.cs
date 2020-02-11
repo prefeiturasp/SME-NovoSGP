@@ -3,6 +3,6 @@
     public class FiltroRecuperacaoParalelaDto
     {
         public long PeriodoId { get; set; }
-        public string TurmaId { get; set; }
+        public long TurmaId { get; set; }
     }
 }

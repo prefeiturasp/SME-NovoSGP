@@ -22,7 +22,7 @@ function TabelaAlunos({ alunos, respostas, objetivoAtivo, onChangeResposta }) {
           </tr>
         </thead>
         <tbody>
-          {alunos.length > 1 ? (
+          {alunos.length > 0 ? (
             alunos.map((aluno, key) => (
               <tr key={shortid.generate()}>
                 <td>{aluno.numeroChamada}</td>
