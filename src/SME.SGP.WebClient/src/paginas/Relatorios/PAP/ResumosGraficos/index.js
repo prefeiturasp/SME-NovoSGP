@@ -82,7 +82,7 @@ const ResumosGraficosPAP = () => {
             <Loader loading={carregandoRelatorios}>
               {tabAtiva === 'relatorios' ? (
                 <LazyLoad>
-                  <Resumos dados={dados} />
+                  <Resumos filtro={filtro} dados={dados} />
                 </LazyLoad>
               ) : (
                 ''

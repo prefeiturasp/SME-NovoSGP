@@ -1,10 +1,10 @@
 import React, { lazy, useMemo } from 'react';
-import t from 'prop-types';
+import PropTypes from 'prop-types';
 
 // Componentes
 import { PainelCollapse, LazyLoad } from '~/componentes';
 
-function Resumos({ dados }) {
+function Resumos({ dados, filtros }) {
   const filtroFake = 'ciclos';
 
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
@@ -60,7 +60,7 @@ function Resumos({ dados }) {
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Total de estudantes">
           <LazyLoad>
-            <TabelaTotalEstudantes />
+            <TabelaTotalEstudantes filtros={filtros} />
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
@@ -74,7 +74,7 @@ function Resumos({ dados }) {
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Resultados">
           <LazyLoad>
-            <TabelaResultados />
+            <TabelaResultados filtros={filtros} />
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
@@ -83,11 +83,13 @@ function Resumos({ dados }) {
 }
 
 Resumos.propTypes = {
-  dados: t.oneOfType([t.any]),
+  dados: PropTypes.oneOfType([PropTypes.any]),
+  filtros: PropTypes.oneOfType([PropTypes.any]),
 };
 
 Resumos.defaultProps = {
   dados: [],
+  filtros: [],
 };
 
 export default Resumos;
