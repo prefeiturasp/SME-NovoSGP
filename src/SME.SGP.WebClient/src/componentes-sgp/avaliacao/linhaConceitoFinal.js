@@ -1,22 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import CampoConceitoFinal from './campoConceitoFinal';
+import { useSelector } from 'react-redux';
+import shortid from 'shortid';
 
 const LinhaConceitoFinal = props => {
-  const dispatch = useDispatch();
-
   const expandirLinha = useSelector(
     store => store.notasConceitos.expandirLinha
   );
 
-  const { indexLinha, dados } = props;
+  const { indexLinha, dados, montarCampoNotaConceitoFinal, aluno } = props;
 
   const quantidadeAvaliacoes =
     dados && dados.avaliacoes && dados.avaliacoes.length
       ? dados.avaliacoes.length
       : 0;
+
   return (
     <>
       {expandirLinha[indexLinha] ? (
@@ -26,16 +24,22 @@ const LinhaConceitoFinal = props => {
               colSpan={4 + quantidadeAvaliacoes}
               className="linha-conceito-final"
             >
-              <div style={{ width: '400px', display: 'flex' }}>
+              <div style={{ width: '400px', display: 'flex', height: '65px' }}>
                 <div className="desc-linha-conceito-final">
                   Conceitos finais Regência de classe
                 </div>
-                <CampoConceitoFinal />
-                <CampoConceitoFinal />
-                <CampoConceitoFinal />
-                <CampoConceitoFinal />
-                <CampoConceitoFinal />
-                <CampoConceitoFinal />
+                {aluno && aluno.notasBimestre && aluno.notasBimestre.length
+                  ? aluno.notasBimestre.map((item, index) => {
+                      return (
+                        <div
+                          style={{ paddingRight: '22px' }}
+                          key={shortid.generate()}
+                        >
+                          {montarCampoNotaConceitoFinal(item.disciplina, index)}
+                        </div>
+                      );
+                    })
+                  : ''}
               </div>
             </td>
           </tr>
