@@ -1,25 +1,12 @@
+import api from '~/servicos/api';
+
 class ServicoNotaConceito {
-  obterTodosConceitos = () => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({
-          data: [
-            {
-              id: 1,
-              nome: 'P',
-            },
-            {
-              id: 2,
-              nome: 'S',
-            },
-            {
-              id: 3,
-              nome: 'NS',
-            },
-          ],
-        });
-      }, 1000);
-    });
+  obterTodosConceitos = data => {
+    return api.get(`v1/avaliacoes/notas/conceitos?data=${data}`);
+  };
+
+  obterArredondamento = (nota, data) => {
+    return api.get(`v1/avaliacoes/notas/${nota}/arredondamento?data=${data}`);
   };
 }
 export default new ServicoNotaConceito();

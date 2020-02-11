@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { Tooltip } from 'antd';
 import ConceitoFinal from './conceitoFinal';
 import NotaRegencia from './notaRegencia';
+import { Info } from './fechamentoFinal.css';
 
 export default function LinhaAluno({
   aluno,
@@ -8,13 +10,23 @@ export default function LinhaAluno({
   ehNota,
   listaConceitos,
   disciplinaSelecionada,
+  onChange,
 }) {
-  const [regenciaExpandida, setRegenciaExpandida] = useState(true);
+  const [regenciaExpandida, setRegenciaExpandida] = useState(false);
 
   return (
     <>
       <tr>
-        <td className="sticky-col col-numero-chamada">{aluno.numeroChamada}</td>
+        <td className="sticky-col col-numero-chamada">
+          {aluno.numeroChamada}
+          {aluno.temInformacao ? (
+            <Tooltip title={aluno.informacao} placement="top">
+              <Info className="fas fa-circle" />
+            </Tooltip>
+          ) : (
+            ''
+          )}
+        </td>
         <td className="sticky-col col-nome-aluno">{aluno.nome}</td>
         <td className="sticky-col col-nota-conceito">
           {aluno.notasConceitoBimestre
@@ -34,6 +46,7 @@ export default function LinhaAluno({
             onClickConceitoRegencia={expandida => {
               setRegenciaExpandida(expandida);
             }}
+            onChange={onChange}
           />
         </td>
       </tr>
@@ -44,6 +57,7 @@ export default function LinhaAluno({
               aluno={aluno}
               ehNota={ehNota}
               listaConceitos={listaConceitos}
+              onChange={onChange}
             />
           </td>
         </tr>

@@ -1,20 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import { Ordenacao } from '~/componentes-sgp';
 import { Lista } from './fechamentoFinal.css';
-import { Card, Auditoria } from '~/componentes';
+import { Auditoria } from '~/componentes';
 import LinhaAluno from './linhaAluno';
 import ServicoFechamentoFinal from '~/servicos/Paginas/DiarioClasse/ServicoFechamentoFinal';
 import { erros } from '~/servicos/alertas';
 import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConceito';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 
-const FechamentoFinal = ({
-  turmaCodigo,
-  disciplinaCodigo,
-  ehRegencia,
-  turmaPrograma,
-}) => {
+const FechamentoFinal = forwardRef((props, ref) => {
+  const {
+    turmaCodigo,
+    disciplinaCodigo,
+    ehRegencia,
+    turmaPrograma,
+    onChange,
+  } = props;
   const [ehNota, setEhNota] = useState(true);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState();
   const [listaConceitos, setListaConceitos] = useState([]);
@@ -23,6 +32,7 @@ const FechamentoFinal = ({
   );
 
   const [disciplinasRegencia, setDisciplinasRegencia] = useState([]);
+  const [notasEmEdicao, setNotasEmEdicao] = useState([]);
 
   const [auditoria, setAuditoria] = useState({});
   const [alunos, setAlunos] = useState([]);
@@ -46,7 +56,7 @@ const FechamentoFinal = ({
     }
   }, [disciplinaCodigo, ehRegencia, turmaCodigo, turmaPrograma]);
 
-  useEffect(() => {
+  const obterFechamentoFinal = useCallback(() => {
     ServicoFechamentoFinal.obter(turmaCodigo, disciplinaCodigo, ehRegencia)
       .then(resposta => {
         setAlunos(resposta.data.alunos);
@@ -55,9 +65,20 @@ const FechamentoFinal = ({
       .catch(e => erros(e));
   }, [disciplinaCodigo, ehRegencia, turmaCodigo]);
 
+  useImperativeHandle(ref, () => ({
+    cancelar() {
+      obterFechamentoFinal();
+      setNotasEmEdicao([]);
+    },
+  }));
+
+  useEffect(() => {
+    obterFechamentoFinal();
+  }, [obterFechamentoFinal]);
+
   useEffect(() => {
     if (!ehNota)
-      ServicoNotaConceito.obterTodosConceitos()
+      ServicoNotaConceito.obterTodosConceitos(moment().format('YYYY-MM-DD'))
         .then(resposta => {
           setListaConceitos(resposta.data);
         })
@@ -66,13 +87,34 @@ const FechamentoFinal = ({
 
   const setDisciplinaAtiva = disciplina => {
     const disciplinas = disciplinasRegencia.map(c => {
-      c.ativa = c.codigo == disciplina.codigo;
+      c.ativa =
+        c.codigoComponenteCurricular == disciplina.codigoComponenteCurricular;
       return c;
     });
     setDisciplinasRegencia([...disciplinas]);
-    setDisciplinaSelecionada(disciplina.codigo);
+    setDisciplinaSelecionada(disciplina.codigoComponenteCurricular);
   };
 
+  const onChangeNotaAluno = (aluno, nota, disciplina) => {
+    const notas = notasEmEdicao;
+    const notaEmEdicao = notasEmEdicao.find(
+      c =>
+        c.alunoRf == aluno.numeroChamada &&
+        c.componenteCurricularCodigo == disciplina
+    );
+    if (notaEmEdicao) {
+      notaEmEdicao.conceitoId = ehNota ? 0 : Number(nota);
+      notaEmEdicao.nota = ehNota ? nota : 0;
+    } else
+      notas.push({
+        alunoRf: aluno.numeroChamada,
+        componenteCurricularCodigo: disciplina,
+        conceitoId: ehNota ? 0 : Number(nota),
+        nota: ehNota ? nota : 0,
+      });
+    setNotasEmEdicao([...notas]);
+    onChange(notas);
+  };
   return (
     <>
       <Lista>
@@ -128,6 +170,7 @@ const FechamentoFinal = ({
                         ehNota={ehNota}
                         disciplinaSelecionada={disciplinaSelecionada}
                         listaConceitos={listaConceitos}
+                        onChange={onChangeNotaAluno}
                       />
                     </>
                   );
@@ -147,13 +190,14 @@ const FechamentoFinal = ({
       />
     </>
   );
-};
+});
 
 FechamentoFinal.propTypes = {
   turmaCodigo: PropTypes.string,
   disciplinaCodigo: PropTypes.string,
   ehRegencia: PropTypes.bool,
   turmaPrograma: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
 FechamentoFinal.defaultProps = {
@@ -161,6 +205,7 @@ FechamentoFinal.defaultProps = {
   disciplinaCodigo: '1',
   ehRegencia: false,
   turmaPrograma: false,
+  onChange: () => {},
 };
 
 export default FechamentoFinal;

@@ -1,10 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import moment from 'moment';
 import { InputNumber } from 'antd';
 import { Label, SelectComponent } from '~/componentes';
-import { CampoNumerico } from './fechamentoFinal.css';
 import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConceito';
+import { erros } from '~/servicos/alertas';
 
-export default function NotaRegencia({ aluno, ehNota, listaConceitos }) {
+export default function NotaRegencia({
+  aluno,
+  ehNota,
+  listaConceitos,
+  onChange,
+}) {
+  const onChangeNota = (alunoSelecionado, nota, notaConceito) => {
+    debugger;
+    ServicoNotaConceito.obterArredondamento(
+      notaConceito,
+      moment().format('YYYY-MM-DD')
+    )
+      .then(resposta => {
+        nota.notaConceito = resposta.data;
+        onChange(alunoSelecionado, resposta.data, nota.disciplinaCodigo);
+      })
+      .catch(e => erros(e));
+  };
   return (
     <div className="coluna-regencia">
       {aluno.notasConceitoFinal.map(nota =>
@@ -16,26 +34,24 @@ export default function NotaRegencia({ aluno, ehNota, listaConceitos }) {
               min={1}
               max={10}
               defaultValue={nota.notaConceito}
-              onChange={value => {
-                nota.notaConceito = value;
-              }}
+              onChange={value => onChangeNota(aluno, nota, value)}
             />
           </div>
         ) : (
           <SelectComponent
-            id="disciplinasId"
-            name="disciplinasId"
+            id={`conceitosNota-${nota.disciplina}-${aluno.numeroChamada}`}
+            name={`conceitosNota-${nota.disciplina}-${aluno.numeroChamada}`}
             label={nota.disciplina}
             lista={listaConceitos}
             valueOption="id"
-            valueText="nome"
+            valueText="valor"
             placeholder="Selecione um conceito"
             classNameContainer="select-conceito"
             valueSelect={nota.notaConceito}
-            // onChange={conceito => {
-            //   debugger;
-            //   nota.notaConceito = conceito;
-            // }}
+            onChange={conceito => {
+              nota.notaConceito = conceito;
+              onChange(aluno, nota.notaConceito, nota.disciplinaCodigo);
+            }}
           />
         )
       )}
