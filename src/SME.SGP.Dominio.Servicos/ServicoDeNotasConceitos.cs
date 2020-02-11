@@ -115,7 +115,7 @@ namespace SME.SGP.Dominio
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                var valoresConceito = repositorioConceito.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                var valoresConceito = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
                 var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
@@ -260,7 +260,7 @@ namespace SME.SGP.Dominio
             var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
 
             if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR)
-                await VerificaSeProfessorPodePersistirTurma(professorRf, atividadeAvaliativa.TurmaId, dataAtual);
+                await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, atividadeAvaliativa.TurmaId, disciplinaId, dataAtual);
 
             foreach (var notaConceito in notasConceitos)
             {
@@ -282,7 +282,7 @@ namespace SME.SGP.Dominio
                 }
                 else
                 {
-                    var conceitos = repositorioConceito.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                    var conceitos = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
                     var conceito = conceitos.FirstOrDefault(c => c.Id.Equals(nota.Conceito));
 
                     if (conceitos == null)
@@ -352,10 +352,10 @@ namespace SME.SGP.Dominio
             return result;
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula)
         {
-            if (!await servicoUsuario.PodePersistirTurma(codigoRf, turmaId, dataAula))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+            if (!await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
     }
 }
