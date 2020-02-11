@@ -44,12 +44,38 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
+        [HttpGet("{codigoRF}/escolas/{codigoEscola}/turmas/anos-letivos/{anoLetivo}")]
+        [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Get(string codigoRF, string codigoEscola, int anoLetivo, [FromServices]IConsultasProfessor consultasProfessor)
+        {
+            var retorno = await consultasProfessor.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(codigoRF, codigoEscola, anoLetivo);
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
         [HttpGet("turmas/{codigoTurma}/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Get(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
+        public async Task<IActionResult> ObterDisciplinas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
             var retorno = await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma, turmaPrograma);
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
+        [HttpGet("turmas/{codigoTurma}/disciplinas/agrupadas")]
+        [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> GetDisciplinasAgrupadas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
+        {
+            var retorno = await consultasDisciplina.ObterDisciplinasAgrupadasPorProfessorETurma(codigoTurma, turmaPrograma);
 
             if (!retorno.Any())
                 return NoContent();
@@ -63,19 +89,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterDisciplinasCompartilhadas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
             return Ok(await consultasDisciplina.ObterDisciplinasPorTurma(codigoTurma, turmaPrograma));
-        }
-
-        [HttpGet("{codigoRF}/escolas/{codigoEscola}/turmas/anos-letivos/{anoLetivo}")]
-        [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Get(string codigoRF, string codigoEscola, int anoLetivo, [FromServices]IConsultasProfessor consultasProfessor)
-        {
-            var retorno = await consultasProfessor.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(codigoRF, codigoEscola, anoLetivo);
-
-            if (!retorno.Any())
-                return NoContent();
-
-            return Ok(retorno);
         }
 
         [HttpGet("turmas/{codigoTurma}/disciplinas/planejamento")]
