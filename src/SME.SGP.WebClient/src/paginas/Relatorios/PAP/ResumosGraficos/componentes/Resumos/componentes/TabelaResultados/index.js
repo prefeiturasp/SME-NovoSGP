@@ -21,7 +21,7 @@ function objetoExistaNaLista(objeto, lista) {
   );
 }
 
-const TabelaResultados = () => {
+const TabelaResultados = ({ dados }) => {
   let tamanhoObjetivos = 0;
   let tamanhoRespostas = 0;
 
@@ -83,7 +83,7 @@ const TabelaResultados = () => {
   const [filtro] = useState(true);
   const [unidadeSelecionada, setUnidadeSelecionada] = useState('quantidade');
 
-  const buscarDadosApi = useCallback(() => {
+  const montaColunasDados = useCallback(() => {
     ResumosGraficosPAPServico.ListarResultados(filtro).then(retorno => {
       const { data, status } = retorno;
 
@@ -150,11 +150,11 @@ const TabelaResultados = () => {
         setColunas([...colunasFixas, ...montaColunas]);
       }
     });
-  }, [unidadeSelecionada]);
+  }, [unidadeSelecionada, dados]);
 
   useEffect(() => {
-    buscarDadosApi();
-  }, [buscarDadosApi]);
+    montaColunasDados();
+  }, [montaColunasDados]);
 
   const listaUnidades = [
     {
