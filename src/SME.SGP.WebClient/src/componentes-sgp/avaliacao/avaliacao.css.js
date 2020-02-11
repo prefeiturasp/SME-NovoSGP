@@ -59,6 +59,7 @@ export const TabelaColunasFixas = styled.div`
     text-align: left;
     z-index: 2;
     box-shadow: 8px 0px 8px -4px #8080804d;
+    vertical-align: middle;
   }
 
   .col-frequencia {
@@ -80,7 +81,7 @@ export const TabelaColunasFixas = styled.div`
   .header-fixo {
     position: sticky;
     top: 0;
-    z-index: 3;
+    z-index: 5;
   }
 
   .tabela-avaliacao-thead {
@@ -194,9 +195,8 @@ export const TabelaColunasFixas = styled.div`
     border-radius: 7px;
   }
 
-  // TODO  Validar com UX
   .border-abaixo-media {
-    border: solid 2px red !important;
+    border: solid 2px #b22222 !important;
     border-radius: 7px;
   }
 
@@ -246,7 +246,7 @@ export const TabelaColunasFixas = styled.div`
 
   .desc-linha-conceito-final {
     margin-left: 20px;
-    margin-top: 32px;
+    margin-top: 25px;
     margin-right: 37px;
   }
 `;
@@ -267,4 +267,12 @@ export const IconePlusMarcadores = styled.i`
   cursor: pointer;
   font-size: 18px;
   margin-top: 10px;
+`;
+
+export const InfoMarcador = styled.i`
+  color: ${Base.Roxo} !important;
+  font-size: 15px;
+  margin-left: 2px;
+  position: absolute;
+  padding-top: 5px;
 `;

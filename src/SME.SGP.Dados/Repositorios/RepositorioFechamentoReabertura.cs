@@ -169,6 +169,32 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoReabertura>(query, new { turmaId });
         }
 
+        public async Task<IEnumerable<FechamentoReabertura>> ObterReaberturaFechamentoBimestre(int bimestre, DateTime dataInicio, DateTime dataFim, long tipoCalendarioId, string dreCodigo, string ueCodigo)
+        {
+            var query = @"select fr.* 
+                          from fechamento_reabertura_bimestre frb
+                         inner join fechamento_reabertura fr on fr.id = frb.fechamento_reabertura_id
+                         inner join dre on dre.id = fr.dre_id
+                         inner join ue on ue.id = fr.ue_id
+                         where not fr.excluido
+                           and frb.bimestre = @bimestre
+                           and fr.inicio = @dataInicio
+                           and fr.fim = @dataFim
+                           and fr.tipo_calendario_id = @tipoCalendarioId
+                           and dre.dre_id = @dreCodigo
+                           and ue.ue_id = @ueCodigo";
+
+            return await database.Conexao.QueryAsync<FechamentoReabertura>(query, new
+            {
+                bimestre,
+                dataInicio,
+                dataFim,
+                tipoCalendarioId,
+                dreCodigo,
+                ueCodigo
+            });
+        }
+
         public async Task SalvarBimestreAsync(FechamentoReaberturaBimestre fechamentoReabertura)
         {
             await database.Conexao.InsertAsync(fechamentoReabertura);
