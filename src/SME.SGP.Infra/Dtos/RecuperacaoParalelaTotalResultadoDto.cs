@@ -5,6 +5,7 @@ namespace SME.SGP.Infra
 {
     public class RecuperacaoParalelaTotalResultadoDto
     {
-        public IEnumerable<RecuperacaoParalelaResumoResultadoEixoDto> Eixos { get; set; }
+        public string EixoDescricao { get; set; }
+        public IEnumerable<RecuperacaoParalelaResumoResultadoObjetivoDto> Objetivos { get; set; }
     }
 }
