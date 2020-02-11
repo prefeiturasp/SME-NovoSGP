@@ -168,25 +168,28 @@ namespace SME.SGP.Aplicacao
                 // Indicativo de frequencia do aluno
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(aluno, aula.DisciplinaId, bimestre, percentualAlerta, percentualCritico);
 
-                if (disciplinaAula.FirstOrDefault().RegistraFrequencia)
+                if (!disciplinaAula.FirstOrDefault().RegistraFrequencia)
                 {
-                    var ausenciasAluno = ausencias.Where(c => c.CodigoAluno == aluno.CodigoAluno);
-
-                    for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
-                    {
-                        registroFrequenciaAluno.Aulas.Add(new FrequenciaAulaDto
-                        {
-                            NumeroAula = numeroAula,
-                            Compareceu = !ausenciasAluno.Any(c => c.NumeroAula == numeroAula)
-                        });
-                    }
+                    registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
+                    continue;
                 }
+
+                var ausenciasAluno = ausencias.Where(c => c.CodigoAluno == aluno.CodigoAluno);
+
+                for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
+                {
+                    registroFrequenciaAluno.Aulas.Add(new FrequenciaAulaDto
+                    {
+                        NumeroAula = numeroAula,
+                        Compareceu = !ausenciasAluno.Any(c => c.NumeroAula == numeroAula)
+                    });
+                }
+
                 registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
             }
-            if (registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado))
-            {
-                registroFrequenciaDto.Desabilitado = true;
-            }
+
+            registroFrequenciaDto.Desabilitado = registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado);
+
             return registroFrequenciaDto;
         }
 
