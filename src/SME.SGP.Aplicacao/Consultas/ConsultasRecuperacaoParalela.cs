@@ -178,11 +178,13 @@ namespace SME.SGP.Aplicacao
 
         private RecuperacaoParalelaTotalEstudantePorFrequenciaDto MapearParaDtoTotalEstudantesPorFrequencia(int total, IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto> items)
         {
-            return new RecuperacaoParalelaTotalEstudantePorFrequenciaDto
+            var ret =  new RecuperacaoParalelaTotalEstudantePorFrequenciaDto
             {
                 Frequencia = items.GroupBy(fg => new { fg.RespostaId, fg.Frequencia }).Select(freq => new RecuperacaoParalelaTotalEstudanteFrequenciaDto
                 {
                     FrequenciaDescricao = freq.Key.Frequencia,
+                    PorcentagemTotalFrequencia = 50.0,
+                    QuantidadeTotalFrequencia = 304,
                     Linhas = items.Where(wlinha => wlinha.RespostaId == freq.Key.RespostaId).GroupBy(glinha => new { glinha.RespostaId }).Select(lin => new RecuperacaoParalelaResumoFrequenciaDto
                     {
                         Anos = items.Where(wano => wano.RespostaId == lin.Key.RespostaId).GroupBy(gano => new { gano.Ano }).Select(ano => new RecuperacaoParalelaTotalFrequenciaAnoDto
@@ -208,6 +210,8 @@ namespace SME.SGP.Aplicacao
                     })
                 })
             };
+
+            return ret;
         }
 
         private PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto> MapearResultadoPaginadoParaDto(PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto> totalResumo)
