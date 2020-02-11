@@ -112,7 +112,6 @@ namespace SME.SGP.Aplicacao
             var disciplinasFilha = disciplinasProfessor.Where(d => d.CdComponenteCurricularPai == int.Parse(filtro.DisciplinaCodigo));
 
             if (disciplinasFilha.Any())
-            if (disciplinasFilha.Any())
             {
                 foreach(var disciplinaFilha in disciplinasFilha)
                     atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, disciplinaFilha.CodigoComponenteCurricular.ToString(), periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
