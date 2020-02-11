@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -22,29 +21,6 @@ namespace SME.SGP.Api.Controllers
         public ProfessorController(IConsultasProfessor consultasProfessor)
         {
             this.consultasProfessor = consultasProfessor;
-        }
-
-        [HttpGet("teste/turmas/{codigoTurma}/disciplinas/")]
-        [ProducesResponseType(typeof(IEnumerable<DisciplinaResposta>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDisciplinasTeste(string codigoTurma, [FromServices]IConsultasDisciplina consultasDisciplina)
-        {
-            var retorno = await consultasDisciplina.ObterDisciplinasPorProfessorETurmaTeste(codigoTurma);
-
-            if (!retorno.Any())
-                return NoContent();
-
-            return Ok(retorno);
-        }
-
-        [HttpGet("tipo-disciplinas-id-teste")]
-        [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterTiposDisciplinaIdEolRetorno([FromServices]IConsultasDisciplina consultasDisciplina)
-        {
-            var retorno = consultasDisciplina.ObterTiposIdsDisciplina();
-
-            return Ok(retorno);
         }
 
         [HttpGet("eventos/matriculas")]
