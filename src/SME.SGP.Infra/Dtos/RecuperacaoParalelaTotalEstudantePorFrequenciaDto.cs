@@ -4,6 +4,6 @@ namespace SME.SGP.Infra
 {
     public class RecuperacaoParalelaTotalEstudantePorFrequenciaDto
     {
-        public IEnumerable<RecuperacaoParalelaTotalEstudanteFrequenciaDto> Frequencia { get; set; }
+        public List<RecuperacaoParalelaTotalEstudanteFrequenciaDto> Frequencia { get; set; }
     }
 }
