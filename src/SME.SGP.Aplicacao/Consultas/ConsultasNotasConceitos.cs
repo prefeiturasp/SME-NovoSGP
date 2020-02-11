@@ -341,18 +341,21 @@ namespace SME.SGP.Aplicacao
         {
             if (disciplinaEOL.Regencia)
             {
+                var disciplinasObservacao = new List<string>();
                 foreach (var disciplinaRegencia in disciplinasRegencia)
                 {
                     var avaliacoes = await repositorioAtividadeAvaliativaRegencia.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaRegencia.CodigoComponenteCurricular.ToString(), bimestre);
                     if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
-                        bimestreDto.Observacoes.Add($"A disciplina [{disciplinaRegencia.Nome}] não tem o número mínimo de avaliações bimestrais");
+                        disciplinasObservacao.Add(disciplinaRegencia.Nome);
                 }
+                if (disciplinasObservacao.Count > 0)
+                    bimestreDto.Observacoes.Add($"A(s) disciplina(s) [{string.Join(",", disciplinasObservacao)}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
             else
             {
                 var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaEOL.CodigoComponenteCurricular.ToString(), bimestre);
                 if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
-                    bimestreDto.Observacoes.Add($"A disciplina [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais");
+                    bimestreDto.Observacoes.Add($"A disciplina [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
         }
 
