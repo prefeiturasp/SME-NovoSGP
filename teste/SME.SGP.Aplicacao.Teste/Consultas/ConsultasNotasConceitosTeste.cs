@@ -11,6 +11,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultaAtividadeAvaliativa> consultaAtividadeAvaliativa;
         private readonly Mock<IConsultasFechamentoTurmaDisciplina> consultasFechamentoTurmaDisciplina;
         private readonly Mock<IConsultasDisciplina> consultasDisciplina;
+        private readonly Mock<IConsultasFechamento> consultasFechamento;
         private readonly ConsultasNotasConceitos consultasNotasConceito;
         private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
         private readonly Mock<IRepositorioFrequencia> repositorioFrequencia;
@@ -27,6 +28,10 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioParametrosSistema> repositorioParametrosSistema;
         private readonly Mock<IRepositorioTipoAvaliacao> repositorioTipoAvaliacao;
+        private readonly Mock<IRepositorioTurma> repositorioTurma;
+        private readonly Mock<IRepositorioUe> repositorioUe;
+        private readonly Mock<IRepositorioDre> repositorioDre;
+        private readonly Mock<IRepositorioEvento> repositorioEvento;
 
         public ConsultasNotasConceitosTeste()
         {
@@ -34,6 +39,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultaAtividadeAvaliativa = new Mock<IConsultaAtividadeAvaliativa>();
             consultasFechamentoTurmaDisciplina = new Mock<IConsultasFechamentoTurmaDisciplina>();
             consultasDisciplina = new Mock<IConsultasDisciplina>();
+            consultasFechamento = new Mock<IConsultasFechamento>();
             servicoDeNotasConceitos = new Mock<IServicoDeNotasConceitos>();
             repositorioNotasConceitos = new Mock<IRepositorioNotasConceitos>();
             repositorioFrequencia = new Mock<IRepositorioFrequencia>();
@@ -48,11 +54,16 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
             repositorioTipoAvaliacao = new Mock<IRepositorioTipoAvaliacao>();
+            repositorioTurma = new Mock<IRepositorioTurma>();
+            repositorioUe = new Mock<IRepositorioUe>();
+            repositorioDre = new Mock<IRepositorioDre>();
+            repositorioEvento = new Mock<IRepositorioEvento>();
 
             consultasNotasConceito = new ConsultasNotasConceitos(servicoEOL.Object,
                     consultaAtividadeAvaliativa.Object,
                     consultasFechamentoTurmaDisciplina.Object,
                     consultasDisciplina.Object,
+                    consultasFechamento.Object,
                     servicoDeNotasConceitos.Object,
                     repositorioNotasConceitos.Object,
                     repositorioFrequencia.Object,
@@ -66,7 +77,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                     repositorioConceito.Object,
                     repositorioPeriodoEscolar.Object,
                     repositorioParametrosSistema.Object,
-                    repositorioTipoAvaliacao.Object );
+                    repositorioTipoAvaliacao.Object,
+                    repositorioTurma.Object,
+                    repositorioUe.Object,
+                    repositorioDre.Object,
+                    repositorioEvento.Object);
         }
 
         [Theory]
