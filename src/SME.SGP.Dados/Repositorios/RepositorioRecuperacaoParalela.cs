@@ -97,7 +97,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("tipo_ciclo.descricao,");
             query.AppendLine("e.id,");
             query.AppendLine("o.id,");
-            query.AppendLine("resposta.id;");
+            query.AppendLine("resposta.id");
+            query.AppendLine("order by o.id;");
             query.AppendLine("select max(pagina) from objetivo;");
 
             var parametros = new { dreId, ueId, cicloId, turmaId, ano, pagina };
@@ -133,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.id,");
             query.AppendLine("o.id,");
             query.AppendLine("resposta.id");
-
+            query.AppendLine("order by o.id");
             var parametros = new { dreId, ueId, cicloId, turmaId, ano, pagina };
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalResultadoDto>(query.ToString(), parametros);
         }
