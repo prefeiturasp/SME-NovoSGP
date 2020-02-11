@@ -12,6 +12,7 @@ const CampoConceitoFinal = props => {
     podeEditar,
     listaTiposConceitos,
     label,
+    podeLancarNotaFinal,
   } = props;
 
   const modoEdicaoGeral = useSelector(
@@ -95,7 +96,12 @@ const CampoConceitoFinal = props => {
               ? 'border-registro-alterado'
               : ''
           } `}
-          disabled={desabilitarCampo || modoEdicaoGeral || !podeEditar}
+          disabled={
+            desabilitarCampo ||
+            !podeEditar ||
+            !podeLancarNotaFinal ||
+            modoEdicaoGeral
+          }
         />
       </div>
     </Tooltip>

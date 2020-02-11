@@ -122,16 +122,6 @@ const Notas = ({ match }) => {
     ]
   );
 
-  const qtdAvaliacaoBimestralPendente = (
-    bimestre,
-    minimoAvaliacoesBimestrais
-  ) => {
-    if (bimestre.qtdAvaliacoesBimestral < minimoAvaliacoesBimestrais) {
-      return minimoAvaliacoesBimestrais - bimestre.qtdAvaliacoesBimestral;
-    }
-    return 0;
-  };
-
   // Só é chamado quando: Seta, remove ou troca a disciplina e quando cancelar a edição;
   const obterDadosBimestres = useCallback(
     async (disciplinaId, numeroBimestre) => {
@@ -172,10 +162,8 @@ const Notas = ({ match }) => {
               periodoFim: item.periodoFim,
               mediaAprovacaoBimestre: dados.mediaAprovacaoBimestre,
               listaTiposConceitos,
-              qtdAvaliacaoBimestralPendente: qtdAvaliacaoBimestralPendente(
-                item,
-                dados.minimoAvaliacoesBimestrais
-              ),
+              observacoes: item.observacoes,
+              podeLancarNotaFinal: item.podeLancarNotaFinal,
             };
 
             switch (Number(item.numero)) {
@@ -377,17 +365,14 @@ const Notas = ({ match }) => {
       bimestresSemAvaliacaoBimestral &&
       bimestresSemAvaliacaoBimestral.length
     ) {
-      const mensagem = `Não foi aplicado o mínimo de avaliações
-       do tipo Avaliação Bimestral no bimestre  ${bimestresSemAvaliacaoBimestral.toString()}`;
-
       return confirmar(
         'Atenção',
-        mensagem,
+        bimestresSemAvaliacaoBimestral,
         'Deseja continuar mesmo assim com o fechamento do(s) bimestre(s)?'
       );
     }
 
-    return true;
+    return new Promise(resolve => resolve(true));
   };
 
   const montarBimestreParaSalvarNotaFinal = bimestreParaMontar => {
@@ -425,8 +410,10 @@ const Notas = ({ match }) => {
     bimestre,
     bimestresSemAvaliacaoBimestral
   ) => {
-    if (bimestre.qtdAvaliacaoBimestralPendente > 0) {
-      bimestresSemAvaliacaoBimestral.push(bimestre.numero);
+    if (bimestre.observacoes && bimestre.observacoes.length) {
+      bimestre.observacoes.forEach(item => {
+        bimestresSemAvaliacaoBimestral.push(item);
+      });
     }
   };
 
@@ -630,10 +617,8 @@ const Notas = ({ match }) => {
           periodoFim: bimestrePesquisado.periodoFim,
           mediaAprovacaoBimestre: dados.mediaAprovacaoBimestre,
           listaTiposConceitos,
-          qtdAvaliacaoBimestralPendente: qtdAvaliacaoBimestralPendente(
-            bimestrePesquisado,
-            dados.minimoAvaliacoesBimestrais
-          ),
+          observacoes: bimestrePesquisado.observacoes,
+          podeLancarNotaFinal: bimestrePesquisado.podeLancarNotaFinal,
         };
 
         switch (Number(numeroBimestre)) {
@@ -692,8 +677,8 @@ const Notas = ({ match }) => {
       periodoFim: bimestreOrdenado.periodoFim,
       mediaAprovacaoBimestre: bimestreOrdenado.mediaAprovacaoBimestre,
       listaTiposConceitos: bimestreOrdenado.listaTiposConceitos,
-      qtdAvaliacaoBimestralPendente:
-        bimestreOrdenado.qtdAvaliacaoBimestralPendente,
+      observacoes: bimestreOrdenado.observacoes,
+      podeLancarNotaFinal: bimestreOrdenado.podeLancarNotaFinal,
     };
     switch (Number(bimestreOrdenado.numero)) {
       case 1:
