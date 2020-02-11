@@ -1,4 +1,4 @@
-import React, { lazy, useMemo } from 'react';
+import React, { lazy, useMemo, useEffect } from 'react';
 import t from 'prop-types';
 
 // Componentes
@@ -12,37 +12,37 @@ function Resumos({ dados }) {
   );
 
   const dadosTabelaFrequencia = useMemo(() => {
-    const frequenciaDados = dados.Frequencia;
+    const frequenciaDados = dados.length > 0 && dados[1].frequencia;
     const dadosFormatados = [];
-    const mapa = { turma: 'Anos', ciclos: 'Ciclos' };
+    const mapa = { turma: 'anos', ciclos: 'ciclos' };
 
     if (frequenciaDados) {
       frequenciaDados.forEach(x => {
         let quantidade = {
-          FrequenciaDescricao: x.FrequenciaDescricao,
+          FrequenciaDescricao: x.frequenciaDescricao,
           TipoDado: 'Quantidade',
         };
 
         let porcentagem = {
-          FrequenciaDescricao: x.FrequenciaDescricao,
+          FrequenciaDescricao: x.frequenciaDescricao,
           TipoDado: 'Porcentagem',
         };
 
-        x.Linhas[mapa[filtroFake]].forEach((y, key) => {
+        x.linhas[0][mapa[filtroFake]].forEach((y, key) => {
           quantidade = {
             ...quantidade,
             key: String(key),
-            Descricao: y.Descricao,
-            [y.Chave]: y.Quantidade,
-            Total: y.TotalQuantidade,
+            Descricao: y.descricao,
+            [y.chave]: y.quantidade,
+            Total: y.totalQuantidade,
           };
 
           porcentagem = {
             ...porcentagem,
             key: String(key),
-            Descricao: y.Descricao,
-            [y.Chave]: `${y.Porcentagem * 10}%`,
-            Total: `${y.TotalPorcentagem * 10}%`,
+            Descricao: y.descricao,
+            [y.chave]: `${Math.round(y.porcentagem, 2)}%`,
+            Total: `${Math.round(y.totalPorcentagem, 2)}%`,
           };
         });
 

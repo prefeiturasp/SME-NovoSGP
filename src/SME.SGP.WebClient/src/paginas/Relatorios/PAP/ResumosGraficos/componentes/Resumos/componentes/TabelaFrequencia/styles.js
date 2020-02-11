@@ -1,5 +1,8 @@
 import styled from 'styled-components';
 
+// Componentes
+import { Base } from '~/componentes';
+
 export const ContainerTabela = styled.div`
   .ant-table-thead > tr.ant-table-row-hover:not(.ant-table-expanded-row) > td,
   .ant-table-tbody > tr.ant-table-row-hover:not(.ant-table-expanded-row) > td,
@@ -77,4 +80,43 @@ export const ContainerTabela = styled.div`
 
   margin: 0 !important;
   padding: 0 !important;
+
+  table {
+    tr {
+      th,
+      td {
+        color: ${Base.CinzaBotao} !important;
+      }
+
+      td,
+      th {
+        &.primeirasColunas {
+          color: ${Base.CinzaMako} !important;
+        }
+
+        &:not(.primeirasColunas) {
+          text-align: center !important;
+        }
+      }
+
+      // td:not(.primeirasColunas),
+      // th {
+      //   text-align: center !important;
+      // }
+
+      th {
+        font-weight: bold;
+      }
+
+      td.headerTotal {
+        background-color: ${Base.CinzaBadge} !important;
+        font-weight: bold;
+      }
+    }
+  }
+
+  th.headerTotal {
+    background-color: ${Base.Roxo} !important;
+    color: ${Base.Branco} !important;
+  }
 `;

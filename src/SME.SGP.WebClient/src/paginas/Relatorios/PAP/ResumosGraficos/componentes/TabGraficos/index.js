@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import t from 'prop-types';
 
 // Componentes
@@ -64,6 +64,60 @@ function TabGraficos({ dados }) {
     },
   ];
 
+  const eixos = [
+    {
+      eixoDescricao: 'Frequência',
+      objetivos: [
+        {
+          objetivoDescricao: 'Frequência na turma de PAP',
+          dados: dadosBackend,
+        },
+      ],
+    },
+  ];
+
+  const dadosTabelaFrequencia = useMemo(() => {
+    const frequenciaDados = dados.frequencia;
+    const dadosFormatados = [];
+    const mapa = { turma: 'anos', ciclos: 'ciclos' };
+
+    if (frequenciaDados) {
+      frequenciaDados.forEach(x => {
+        let quantidade = {
+          FrequenciaDescricao: x.frequenciaDescricao,
+          TipoDado: 'Quantidade',
+        };
+
+        let porcentagem = {
+          FrequenciaDescricao: x.frequenciaDescricao,
+          TipoDado: 'Porcentagem',
+        };
+
+        x.linhas[0][mapa['turma']].forEach((y, key) => {
+          quantidade = {
+            ...quantidade,
+            key: String(key),
+            Descricao: y.descricao,
+            [y.chave]: y.quantidade,
+            Total: y.totalQuantidade,
+          };
+
+          porcentagem = {
+            ...porcentagem,
+            key: String(key),
+            Descricao: y.descricao,
+            [y.chave]: `${Math.round(y.porcentagem, 2)}%`,
+            Total: `${Math.round(y.totalPorcentagem, 2)}%`,
+          };
+        });
+
+        dadosFormatados.push(quantidade, porcentagem);
+      });
+    }
+
+    return dadosFormatados;
+  }, [dados]);
+
   return (
     <>
       <Linha style={{ marginBottom: '8px' }}>
@@ -74,10 +128,12 @@ function TabGraficos({ dados }) {
       </Linha>
       <Linha style={{ marginBottom: '35px', textAlign: 'center' }}>
         <h3>Quantidade</h3>
-        {dadosBackend && (
+        {dadosTabelaFrequencia && (
           <div style={{ height: 400 }}>
             <Graficos.Barras
-              dados={dadosBackend.filter(x => x.TipoDado === 'Quantidade')}
+              dados={dadosTabelaFrequencia.filter(
+                x => x.TipoDado === 'Quantidade'
+              )}
               indice="DescricaoFrequencia"
               chaves={['3C', '4C', '4E', '5C', '6C', '6B']}
               legendaBaixo="teste"
@@ -88,10 +144,12 @@ function TabGraficos({ dados }) {
       </Linha>
       <Linha style={{ marginBottom: '35px', textAlign: 'center' }}>
         <h3>Porcentagem</h3>
-        {dadosBackend && (
+        {dadosTabelaFrequencia && (
           <div style={{ height: 400 }}>
             <Graficos.Barras
-              dados={dadosBackend.filter(x => x.TipoDado === 'Porcentagem')}
+              dados={dadosTabelaFrequencia.filter(
+                x => x.TipoDado === 'Porcentagem'
+              )}
               indice="DescricaoFrequencia"
               chaves={['3C', '4C', '4E', '5C', '6C', '6B']}
               legendaBaixo="teste"

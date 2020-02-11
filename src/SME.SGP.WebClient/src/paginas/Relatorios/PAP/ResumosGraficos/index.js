@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy } from 'react';
+import React, { useState, useEffect, useMemo, lazy } from 'react';
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -36,24 +36,34 @@ const ResumosGraficosPAP = () => {
   const Resumos = lazy(() => import('./componentes/Resumos'));
   const TabGraficos = lazy(() => import('./componentes/TabGraficos'));
 
+  const filtroTela = useMemo(() => {
+    return {
+      DreId: filtro.dreId,
+      UeId: filtro.ueId,
+      CicloId: filtro.cicloId,
+      TurmaId: filtro.turmaId,
+      Periodo: filtro.periodo,
+      Ano: filtro.ano,
+    };
+  }, [filtro]);
+
   useEffect(() => {
     async function buscarDados() {
       try {
         setCarregandoGraficos(true);
         setCarregandoRelatorios(true);
         const requisicoes = await Promise.all([
-          ResumosGraficosPAPServico.ListarFrequencia(filtro),
-          ResumosGraficosPAPServico.ListarTotalEstudantes(filtro),
+          ResumosGraficosPAPServico.ListarTotalEstudantes(filtroTela),
+          ResumosGraficosPAPServico.ListarFrequencia(filtroTela),
+          ResumosGraficosPAPServico.ListarResultados(filtroTela),
         ]);
 
         setDados({
-          ...requisicoes[0].data,
-          ...requisicoes[1].data,
+          totalEstudantes: { ...requisicoes[0].data },
+          frequencia: [...requisicoes[1].data.frequencia],
+          resultados: { ...requisicoes[2].data },
         });
-        console.log({
-          ...requisicoes[0].data,
-          ...requisicoes[1].data,
-        });
+
         setCarregandoGraficos(false);
         setCarregandoRelatorios(false);
       } catch (err) {
@@ -63,7 +73,7 @@ const ResumosGraficosPAP = () => {
       }
     }
     buscarDados();
-  }, [filtro]);
+  }, [filtroTela]);
 
   return (
     <>
