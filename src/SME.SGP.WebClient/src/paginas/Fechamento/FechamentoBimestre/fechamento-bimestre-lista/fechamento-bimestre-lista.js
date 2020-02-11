@@ -3,11 +3,18 @@ import React, { useState } from 'react';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
 import FechamentoRegencia from '../fechamanto-regencia/fechamento-regencia';
 import BotaoExpandir from './botao-expandir';
-import { Info, MarcadorAulas, Marcadores, TabelaFechamento } from './fechamento-bimestre-lista.css';
+import {
+  Info,
+  MarcadorAulas,
+  Marcadores,
+  TabelaFechamento,
+} from './fechamento-bimestre-lista.css';
 
 const FechamentoBimestreLista = props => {
-  const { dados } = props;
-  const [dadosLista, setDadosLista] = useState(dados.lista);
+  const { dados, ehRegencia } = props;
+  const [dadosLista, setDadosLista] = useState(
+    dados ? dados.alunos : undefined
+  );
 
   return (
     <TabelaFechamento>
@@ -16,7 +23,7 @@ const FechamentoBimestreLista = props => {
           <Ordenacao
             className="botao-ordenacao-avaliacao"
             conteudoParaOrdenar={dadosLista}
-            ordenarColunaNumero="contador"
+            ordenarColunaNumero="numeroChamada"
             ordenarColunaTexto="nome"
             retornoOrdenado={retorno => {
               setDadosLista(retorno);
@@ -27,11 +34,17 @@ const FechamentoBimestreLista = props => {
         <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
           <MarcadorAulas>
             <span>Aulas previstas </span>
-            <span className="numero">{dados.totalAulasPrevistas}</span>
+            <span className="numero">
+              {dados && dados.totalAulasPrevistas
+                ? dados.totalAulasPrevistas
+                : 0}
+            </span>
           </MarcadorAulas>
           <MarcadorAulas className="ml-2">
             <span>Aulas dadas </span>
-            <span className="numero">{dados.totalAulasDadas}</span>
+            <span className="numero">
+              {dados && dados.totalAulasDadas ? dados.totalAulasDadas : 0}
+            </span>
           </MarcadorAulas>
         </Marcadores>
       </div>
@@ -53,7 +66,7 @@ const FechamentoBimestreLista = props => {
             </tr>
           </thead>
           <tbody>
-            {dadosLista && dadosLista.length > 0 ?
+            {dadosLista && dadosLista.length > 0 ? (
               dadosLista.map((item, index) => {
                 const idLinhaRegencia = `fechamento-regencia-${index}`;
                 return (
@@ -62,16 +75,16 @@ const FechamentoBimestreLista = props => {
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
-                        {item.contador}
+                        {item.numeroChamada}
                         {item.informacao ? (
                           <Tooltip title={item.informacao} placement="top">
                             <Info className="fas fa-circle" />
                           </Tooltip>
                         ) : (
-                            ''
-                          )}
+                          ''
+                        )}
                       </td>
                       <td className={`${!item.ativo ? 'fundo-cinza' : ''}`}>
                         {item.nome}
@@ -79,53 +92,57 @@ const FechamentoBimestreLista = props => {
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
-                        {item.regencia && item.regencia.length > 0 ? (
+                        {ehRegencia && item.notas ? (
                           <BotaoExpandir
                             index={index}
                             idLinhaRegencia={idLinhaRegencia}
                           />
-                        ) : (
-                            item.notaConceito
-                          )}
+                        ) : item.notas && item.notas.length > 0 ? (
+                          item.notas[0].notaConceito
+                        ) : null}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
-                        {item.faltasBimestre}
+                        {item.quantidadeFaltas}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
-                        {item.ausenciasCompensadas}
+                        {item.quantidadeCompensacoes}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
-                        {item.frequencia ? item.frequencia + '%' : ''}
+                        {item.percentualFrequencia
+                          ? item.percentualFrequencia + '%'
+                          : ''}
                       </td>
                     </tr>
-                    {item.regencia && item.regencia.length > 0 ? (
+                    {ehRegencia ? (
                       <FechamentoRegencia
-                        dados={item.regencia}
+                        dados={item.notas}
                         idRegencia={`fechamento-regencia-${index}`}
                       />
                     ) : null}
                   </>
                 );
               })
-              :
+            ) : (
               <tr>
-                <td colSpan="6" className="text-center">Sem dados</td>
+                <td colSpan="6" className="text-center">
+                  Sem dados
+                </td>
               </tr>
-            }
+            )}
           </tbody>
         </table>
       </div>

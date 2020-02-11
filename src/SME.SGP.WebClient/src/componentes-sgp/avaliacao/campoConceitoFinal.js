@@ -1,3 +1,4 @@
+import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -10,6 +11,8 @@ const CampoConceitoFinal = props => {
     desabilitarCampo,
     podeEditar,
     listaTiposConceitos,
+    label,
+    podeLancarNotaFinal,
   } = props;
 
   const modoEdicaoGeral = useSelector(
@@ -89,17 +92,11 @@ const CampoConceitoFinal = props => {
 CampoConceitoFinal.defaultProps = {
   onChangeNotaConceitoFinal: PropTypes.func,
   montaNotaConceitoFinal: PropTypes.func,
-  desabilitarCampo: PropTypes.bool,
-  podeEditar: PropTypes.bool,
-  listaTiposConceitos: PropTypes.array,
 };
 
 CampoConceitoFinal.propTypes = {
   onChangeNotaConceitoFinal: () => {},
   montaNotaConceitoFinal: () => {},
-  desabilitarCampo: false,
-  podeEditar: false,
-  listaTiposConceitos: [],
 };
 
 export default CampoConceitoFinal;

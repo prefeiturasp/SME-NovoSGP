@@ -12,6 +12,7 @@ import notasConceitos from '~/dtos/notasConceitos';
 import {
   setModoEdicaoGeral,
   setModoEdicaoGeralNotaFinal,
+  setExpandirLinha,
 } from '~/redux/modulos/notasConceitos/actions';
 import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -57,6 +58,7 @@ const Notas = ({ match }) => {
   const [quartoBimestre, setQuartoBimestre] = useState([]);
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+  const [ehRegencia, setEhRegencia] = useState(false);
 
   useEffect(() => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
@@ -79,6 +81,7 @@ const Notas = ({ match }) => {
     });
     dispatch(setModoEdicaoGeral(false));
     dispatch(setModoEdicaoGeralNotaFinal(false));
+    dispatch(setExpandirLinha([]));
   }, [dispatch]);
 
   const obterListaConceitos = async periodoFim => {
@@ -118,16 +121,6 @@ const Notas = ({ match }) => {
       usuario.turmaSelecionada.turma,
     ]
   );
-
-  const qtdAvaliacaoBimestralPendente = (
-    bimestre,
-    minimoAvaliacoesBimestrais
-  ) => {
-    if (bimestre.qtdAvaliacoesBimestral < minimoAvaliacoesBimestrais) {
-      return minimoAvaliacoesBimestrais - bimestre.qtdAvaliacoesBimestral;
-    }
-    return 0;
-  };
 
   // Só é chamado quando: Seta, remove ou troca a disciplina e quando cancelar a edição;
   const obterDadosBimestres = useCallback(
@@ -169,10 +162,8 @@ const Notas = ({ match }) => {
               periodoFim: item.periodoFim,
               mediaAprovacaoBimestre: dados.mediaAprovacaoBimestre,
               listaTiposConceitos,
-              qtdAvaliacaoBimestralPendente: qtdAvaliacaoBimestralPendente(
-                item,
-                dados.minimoAvaliacoesBimestrais
-              ),
+              observacoes: item.observacoes,
+              podeLancarNotaFinal: item.podeLancarNotaFinal,
             };
 
             switch (Number(item.numero)) {
@@ -204,6 +195,13 @@ const Notas = ({ match }) => {
             auditoriaBimestreAlterado: dados.auditoriaBimestreAlterado,
             auditoriaBimestreInserido: dados.auditoriaBimestreInserido,
           });
+        } else {
+          setAuditoriaInfo({
+            auditoriaAlterado: '',
+            auditoriaInserido: '',
+            auditoriaBimestreAlterado: '',
+            auditoriaBimestreInserido: '',
+          });
         }
         setCarregandoListaBimestres(false);
       } else {
@@ -220,6 +218,7 @@ const Notas = ({ match }) => {
     setListaDisciplinas(disciplinas.data);
     if (disciplinas.data && disciplinas.data.length === 1) {
       const disciplina = disciplinas.data[0];
+      setEhRegencia(disciplina.regencia);
       setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
       obterDadosBimestres(disciplina.codigoComponenteCurricular);
@@ -257,6 +256,7 @@ const Notas = ({ match }) => {
       obterDisciplinas();
       dispatch(setModoEdicaoGeral(false));
       dispatch(setModoEdicaoGeralNotaFinal(false));
+      dispatch(setExpandirLinha([]));
     } else {
       setListaDisciplinas([]);
       setDesabilitarDisciplina(false);
@@ -292,8 +292,6 @@ const Notas = ({ match }) => {
 
   const aposSalvarNotas = () => {
     // resetarBimestres();
-    dispatch(setModoEdicaoGeral(false));
-    dispatch(setModoEdicaoGeralNotaFinal(false));
     obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
   };
 
@@ -345,6 +343,8 @@ const Notas = ({ match }) => {
         if (salvouNotas && salvouNotas.status === 200) {
           sucesso('Suas informações foram salvas com sucesso.');
           dispatch(setModoEdicaoGeral(false));
+          dispatch(setModoEdicaoGeralNotaFinal(false));
+          dispatch(setExpandirLinha([]));
           if (click) {
             aposSalvarNotas();
           }
@@ -361,16 +361,18 @@ const Notas = ({ match }) => {
   };
 
   const pergutarParaSalvarNotaFinal = bimestresSemAvaliacaoBimestral => {
-    const mensagem = bimestresSemAvaliacaoBimestral.map(item => {
-      return `Falta aplicar ${item.qtdAvaliacaoBimestralPendente} ${
-        item.qtdAvaliacaoBimestralPendente > 1 ? 'avaliações' : 'avaliação'
-      } bimestral para o bimestre ${item.bimestre}`;
-    });
-    return confirmar(
-      'Atenção',
-      mensagem,
-      'Deseja continuar mesmo assim com o fechamento do(s) bimestre(s)?'
-    );
+    if (
+      bimestresSemAvaliacaoBimestral &&
+      bimestresSemAvaliacaoBimestral.length
+    ) {
+      return confirmar(
+        'Atenção',
+        bimestresSemAvaliacaoBimestral,
+        'Deseja continuar mesmo assim com o fechamento do(s) bimestre(s)?'
+      );
+    }
+
+    return new Promise(resolve => resolve(true));
   };
 
   const montarBimestreParaSalvarNotaFinal = bimestreParaMontar => {
@@ -380,7 +382,10 @@ const Notas = ({ match }) => {
         if (notaFinal.modoEdicao) {
           notaConceitoAlunos.push({
             codigoAluno: aluno.id,
-            disciplinaId: notasConceitos.Notas ? disciplinaSelecionada : '',
+            disciplinaId:
+              notasConceitos.Notas == notaTipo
+                ? disciplinaSelecionada
+                : notaFinal.disciplinaId,
             nota:
               notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : 0,
             conceitoId:
@@ -405,10 +410,9 @@ const Notas = ({ match }) => {
     bimestre,
     bimestresSemAvaliacaoBimestral
   ) => {
-    if (bimestre.qtdAvaliacaoBimestralPendente > 0) {
-      bimestresSemAvaliacaoBimestral.push({
-        bimestre: bimestre.numero,
-        qtdAvaliacaoBimestralPendente: bimestre.qtdAvaliacaoBimestralPendente,
+    if (bimestre.observacoes && bimestre.observacoes.length) {
+      bimestre.observacoes.forEach(item => {
+        bimestresSemAvaliacaoBimestral.push(item);
       });
     }
   };
@@ -463,6 +467,8 @@ const Notas = ({ match }) => {
               if (salvouNotas && salvouNotas.status === 200) {
                 sucesso('Suas informações foram salvas com sucesso.');
                 dispatch(setModoEdicaoGeral(false));
+                dispatch(setModoEdicaoGeralNotaFinal(false));
+                dispatch(setExpandirLinha([]));
                 if (click) {
                   aposSalvarNotas();
                 }
@@ -510,9 +516,25 @@ const Notas = ({ match }) => {
     onSalvarNotas(true, salvarNotaFinal);
   };
 
+  const validaSeEhRegencia = disciplinaId => {
+    if (disciplinaId) {
+      const disciplina = listaDisciplinas.find(
+        item => item.codigoComponenteCurricular == disciplinaId
+      );
+      if (disciplina) {
+        setEhRegencia(!!disciplina.regencia);
+      } else {
+        setEhRegencia(false);
+      }
+    }
+  };
+
   const onChangeDisciplinas = async disciplinaId => {
+    validaSeEhRegencia(disciplinaId);
+
     dispatch(setModoEdicaoGeral(false));
     dispatch(setModoEdicaoGeralNotaFinal(false));
+    dispatch(setExpandirLinha([]));
 
     if (modoEdicaoGeral) {
       const confirmaSalvar = await pergutarParaSalvar();
@@ -535,6 +557,7 @@ const Notas = ({ match }) => {
   };
 
   const onChangeTab = async numeroBimestre => {
+    dispatch(setExpandirLinha([]));
     setBimestreCorrente(numeroBimestre);
     let bimestre = {};
     switch (Number(numeroBimestre)) {
@@ -594,10 +617,8 @@ const Notas = ({ match }) => {
           periodoFim: bimestrePesquisado.periodoFim,
           mediaAprovacaoBimestre: dados.mediaAprovacaoBimestre,
           listaTiposConceitos,
-          qtdAvaliacaoBimestralPendente: qtdAvaliacaoBimestralPendente(
-            bimestrePesquisado,
-            dados.minimoAvaliacoesBimestrais
-          ),
+          observacoes: bimestrePesquisado.observacoes,
+          podeLancarNotaFinal: bimestrePesquisado.podeLancarNotaFinal,
         };
 
         switch (Number(numeroBimestre)) {
@@ -616,6 +637,20 @@ const Notas = ({ match }) => {
           default:
             break;
         }
+
+        setAuditoriaInfo({
+          auditoriaAlterado: dados.auditoriaAlterado,
+          auditoriaInserido: dados.auditoriaInserido,
+          auditoriaBimestreAlterado: dados.auditoriaBimestreAlterado,
+          auditoriaBimestreInserido: dados.auditoriaBimestreInserido,
+        });
+      } else {
+        setAuditoriaInfo({
+          auditoriaAlterado: '',
+          auditoriaInserido: '',
+          auditoriaBimestreAlterado: '',
+          auditoriaBimestreInserido: '',
+        });
       }
       setCarregandoListaBimestres(false);
     }
@@ -626,10 +661,12 @@ const Notas = ({ match }) => {
       obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
       dispatch(setModoEdicaoGeral(false));
       dispatch(setModoEdicaoGeralNotaFinal(false));
+      dispatch(setExpandirLinha([]));
     }
   };
 
   const onChangeOrdenacao = bimestreOrdenado => {
+    dispatch(setExpandirLinha([]));
     const bimestreAtualizado = {
       fechamentoTurmaId: bimestreOrdenado.fechamentoTurmaId,
       descricao: bimestreOrdenado.descricao,
@@ -640,8 +677,8 @@ const Notas = ({ match }) => {
       periodoFim: bimestreOrdenado.periodoFim,
       mediaAprovacaoBimestre: bimestreOrdenado.mediaAprovacaoBimestre,
       listaTiposConceitos: bimestreOrdenado.listaTiposConceitos,
-      qtdAvaliacaoBimestralPendente:
-        bimestreOrdenado.qtdAvaliacaoBimestralPendente,
+      observacoes: bimestreOrdenado.observacoes,
+      podeLancarNotaFinal: bimestreOrdenado.podeLancarNotaFinal,
     };
     switch (Number(bimestreOrdenado.numero)) {
       case 1:
@@ -732,6 +769,7 @@ const Notas = ({ match }) => {
                             onChangeOrdenacao={onChangeOrdenacao}
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
                           />
                         </TabPane>
                       ) : (
@@ -748,6 +786,7 @@ const Notas = ({ match }) => {
                             onChangeOrdenacao={onChangeOrdenacao}
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
                           />
                         </TabPane>
                       ) : (
@@ -764,6 +803,7 @@ const Notas = ({ match }) => {
                             onChangeOrdenacao={onChangeOrdenacao}
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
                           />
                         </TabPane>
                       ) : (
@@ -780,6 +820,7 @@ const Notas = ({ match }) => {
                             onChangeOrdenacao={onChangeOrdenacao}
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
                           />
                         </TabPane>
                       ) : (
