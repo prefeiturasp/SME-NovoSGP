@@ -20,10 +20,12 @@ namespace SME.SGP.Api.Controllers
         //[Permissao(Permissao.FB_C, Policy = "Bearer")]
         public IActionResult Obter([FromQuery]FechamentoFinalConsultaFiltroDto filtroFechamentoFinalConsultDto)
         {
+            var ehRegencia = filtroFechamentoFinalConsultDto.EhRegencia;
+            var ehNota = filtroFechamentoFinalConsultDto.TurmaCodigo == 1;
             var retorno = new FechamentoFinalConsultaRetornoDto()
             {
-                EhNota = filtroFechamentoFinalConsultDto.TurmaCodigo == 1,
-                EhRegencia = filtroFechamentoFinalConsultDto.DisciplinaCodigo == "1",
+                EhNota = ehNota,
+                EhRegencia = ehRegencia,
                 EventoData = DateTime.Today,
                 AuditoriaAlteracao = "Notas(ou conceitos) da avaliação ABC alterados por Nome Usuário(9999999) em 11 / 01 / 2019,às 16:00.",
                 AuditoriaInclusao = "Notas (ou conceitos) da avaliação XYZ inseridos por por Nome Usuário(9999999) em 10/01/2019, às 15:00."
@@ -33,23 +35,24 @@ namespace SME.SGP.Api.Controllers
             ///
             var aluno2 = new FechamentoFinalConsultaRetornoAlunoDto() { Nome = "Joselito Alves", Frequencia = 35, NumeroChamada = 2, TotalAusenciasCompensadas = 3 };
 
-            aluno2.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "7" });
+            aluno2.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "7" : "PS" });
 
-            aluno2.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "3" });
+            aluno2.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "3" : "PS" });
 
-            aluno2.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "2" });
+            aluno2.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "2" : "PS" });
 
-            aluno2.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 4, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "3.5" });
+            aluno2.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 4, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "3.5" : "PS" });
 
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "7" });
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = "8" });
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = "7.5" });
-
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "3" });
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = "6" });
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = "5" });
-
-            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "2" });
+            aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "7" : "PS" });
+            if (ehRegencia)
+            {
+                aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = ehNota ? "8" : "PS" });
+                aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = ehNota ? "7.5" : "PS" });
+                aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "3" : "PS" });
+                aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = ehNota ? "6" : "PS" });
+                aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = ehNota ? "5" : "PS" });
+                aluno2.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "2" : "PS" });
+            }
 
             retorno.Alunos.Add(aluno2);
 
@@ -57,24 +60,25 @@ namespace SME.SGP.Api.Controllers
             ///
             var aluno1 = new FechamentoFinalConsultaRetornoAlunoDto() { Nome = "Analisa Tonha", Frequencia = 1, NumeroChamada = 1, TotalAusenciasCompensadas = 10 };
 
-            aluno1.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "8.5" });
+            aluno1.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "8.5" : "PS" });
 
-            aluno1.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "6" });
+            aluno1.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "6" : "PS" });
 
-            aluno1.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "9" });
+            aluno1.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "9" : "PS" });
 
-            aluno1.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 4, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "10" });
+            aluno1.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 4, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "10" : "PS" });
 
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "4" });
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = "6" });
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = "9.5" });
+            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "4" : "PS" });
 
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "7" });
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = "6.5" });
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = "9" });
-
-            aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = "3" });
-
+            if (ehRegencia)
+            {
+                aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = ehNota ? "6" : "PS" });
+                aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = ehNota ? "9.5" : "PS" });
+                aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "7" : "PS" });
+                aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "12", Disciplina = "Geografia", NotaConceito = ehNota ? "6.5" : "PS" });
+                aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 2, DisciplinaCodigo = "122", Disciplina = "Ciências", NotaConceito = ehNota ? "9" : "PS" });
+                aluno1.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 3, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "3" : "PS" });
+            }
             retorno.Alunos.Add(aluno1);
 
             return Ok(retorno);

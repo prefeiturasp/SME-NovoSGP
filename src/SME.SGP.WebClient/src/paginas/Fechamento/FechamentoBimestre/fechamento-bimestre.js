@@ -17,6 +17,7 @@ import FechamentoBimestreLista from './fechamento-bimestre-lista/fechamento-bime
 import { FechamentoMock } from './fechamento.mock';
 import RotasDto from '~/dtos/rotasDto';
 import { Fechamento } from './fechamento-bimestre.css';
+import FechamentoFinal from '../FechamentoFinal/fechamentoFinal';
 
 const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
@@ -40,6 +41,8 @@ const FechamentoBismestre = () => {
   const [dados, setDados] = useState(FechamentoMock);
 
   const onChangeDisciplinas = id => {
+    const disciplina = listaDisciplinas.find(c => c.disciplinaId == id);
+    setEhRegencia(disciplina.regencia);
     setDisciplinaIdSelecionada(id);
   };
 
@@ -47,9 +50,9 @@ const FechamentoBismestre = () => {
     history.push(URL_HOME);
   };
 
-  const onClickCancelar = () => { };
+  const onClickCancelar = () => {};
 
-  const onClickSalvar = () => { };
+  const onClickSalvar = () => {};
 
   const onChangeTab = async numeroBimestre => {
     setBimestreCorrente(numeroBimestre);
@@ -77,6 +80,22 @@ const FechamentoBismestre = () => {
     //implementar o consumo de endpoint de listagem
   }, [disciplinaIdSelecionada]);
 
+  //FechamentoFinal
+  const [ehRegencia, setEhRegencia] = useState(false);
+  const [turmaPrograma, setTurmaPrograma] = useState(false);
+
+  useEffect(() => {
+    const programa = !!(turmaSelecionada.ano === '0');
+    setTurmaPrograma(programa);
+  }, [turmaSelecionada.ano]);
+
+  const [fechamentoFinal, setFechamentoFinal] = useState();
+
+  const onChangeFechamentoFinal = fechamentoFinal => {
+    setFechamentoFinal(fechamentoFinal);
+    setModoEdicao(true);
+  };
+  //FechamentoFinal
   return (
     <>
       {!turmaSelecionada.turma ? (
@@ -168,6 +187,13 @@ const FechamentoBismestre = () => {
                   </TabPane>
 
                   <TabPane tab="Final" key="final">
+                    <FechamentoFinal
+                      turmaCodigo={turmaSelecionada.turma}
+                      disciplinaCodigo={disciplinaIdSelecionada}
+                      ehRegencia={ehRegencia}
+                      turmaPrograma={turmaPrograma}
+                      onChange={onChangeFechamentoFinal}
+                    />
                   </TabPane>
                 </ContainerTabsCard>
               </Fechamento>
