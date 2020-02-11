@@ -59,42 +59,27 @@ namespace SME.SGP.Aplicacao
         public async Task<List<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma, bool turmaPrograma)
         {
             var disciplinasDto = new List<DisciplinaDto>();
+            string chaveCache;
 
             var login = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
+            var ehPefilCJ = perfilAtual == Perfis.PERFIL_CJ;
 
-            var chaveCache = $"Disciplinas-{codigoTurma}-{login}--{perfilAtual}";
-            var disciplinasCacheString = repositorioCache.Obter(chaveCache);
+            var disciplinasCacheString = ObterDisciplinasRedis(codigoTurma, login, perfilAtual, out chaveCache);
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-            {
-                disciplinasDto = JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
-            }
-            else
-            {
-                IEnumerable<DisciplinaResposta> disciplinas;
+                return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
 
-                if (perfilAtual == Perfis.PERFIL_CJ)
-                {
-                    var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
-                    if (atribuicoes != null && atribuicoes.Any())
-                    {
-                        var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+            var disciplinas = ehPefilCJ ? await ObterDisciplinasPerfilCJ(codigoTurma, login) :
+                await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
 
-                        disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
-                    }
-                    else disciplinas = null;
-                }
-                else
-                    disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
+            if (disciplinas == null || !disciplinas.Any())
+                return disciplinasDto;
 
-                if (disciplinas != null && disciplinas.Any())
-                {
-                    disciplinasDto = await MapearParaDto(disciplinas, turmaPrograma);
+            disciplinasDto = await MapearParaDto(disciplinas, turmaPrograma);
 
-                    await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
-                }
-            }
+            await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
+
             return disciplinasDto;
         }
 
@@ -226,6 +211,25 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return retorno;
+        }
+
+        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login)
+        {
+            var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
+
+            if (atribuicoes == null || !atribuicoes.Any())
+                return null;
+
+            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+
+            return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
+        }
+
+        private string ObterDisciplinasRedis(string codigoTurma, string login, Guid perfilAtual, out string chaveCache)
+        {
+            chaveCache = $"Disciplinas-{codigoTurma}-{login}--{perfilAtual}";
+
+            return repositorioCache.Obter(chaveCache);
         }
 
         private async Task<DisciplinaDto> MapearParaDto(DisciplinaResposta disciplina, bool turmaPrograma = false)
