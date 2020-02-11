@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina;
+        private readonly IConsultasFechamento consultasFechamento;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
@@ -26,6 +27,11 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioConceito repositorioConceito;
         private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
+        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
         private readonly IServicoEOL servicoEOL;
@@ -33,18 +39,21 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasNotasConceitos(IServicoEOL servicoEOL, IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa,
             IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina, IConsultasDisciplina consultasDisciplina,
+            IConsultasFechamento consultasFechamento,
             IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitos repositorioNotasConceitos,
             IRepositorioFrequencia repositorioFrequencia, IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
             IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioTipoCalendario repositorioTipoCalendario,
             IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina, IRepositorioConceito repositorioConceito,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioParametrosSistema repositorioParametrosSistema,
-            IRepositorioTipoAvaliacao repositorioTipoAvaliacao)
+            IRepositorioTipoAvaliacao repositorioTipoAvaliacao, IRepositorioTurma repositorioTurma, IRepositorioUe repositorioUe,
+            IRepositorioDre repositorioDre, IRepositorioEvento repositorioEvento, IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAtividadeAvaliativa = consultasAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(consultasAtividadeAvaliativa));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasFechamentoTurmaDisciplina = consultasFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(consultasFechamentoTurmaDisciplina));
+            this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
             this.servicoDeNotasConceitos = servicoDeNotasConceitos ?? throw new ArgumentNullException(nameof(servicoDeNotasConceitos));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
@@ -59,6 +68,11 @@ namespace SME.SGP.Aplicacao
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new ArgumentNullException(nameof(repositorioTipoAvaliacao));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
+            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
         }
 
         private int ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
@@ -96,6 +110,7 @@ namespace SME.SGP.Aplicacao
             // Carrega disciplinas filhas da disciplina passada como parametro
             var disciplinasProfessor = await consultasDisciplina.ObterDisciplinasPorProfessorETurma(filtro.TurmaCodigo, true);
             var disciplinasFilha = disciplinasProfessor.Where(d => d.CdComponenteCurricularPai == int.Parse(filtro.DisciplinaCodigo));
+
             if (disciplinasFilha.Any())
             {
                 foreach(var disciplinaFilha in disciplinasFilha)
@@ -222,36 +237,52 @@ namespace SME.SGP.Aplicacao
                             retorno.AuditoriaBimestreInserido = $"Nota final do bimestre inserida por {fechamentoTurma.CriadoPor} em {fechamentoTurma.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurma.CriadoEm.ToString("hh:mm:ss")}.";
                             if (fechamentoTurma.AlteradoEm.HasValue)
                                 retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {fechamentoTurma.AlteradoPor} em {fechamentoTurma.AlteradoEm.Value.ToString("dd/MM/yyyy")}, às {fechamentoTurma.AlteradoEm.Value.ToString("hh:mm:ss")}.";
-                            
+
                             var notasConceitoBimestre = await consultasFechamentoTurmaDisciplina.ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
-                            foreach(var notaConceitoBimestre in notasConceitoBimestre)
+                            if (disciplinaEOL.Regencia)
+                            {
+                                // Regencia carrega disciplinas mesmo sem nota de fechamento
+                                foreach (var disciplinaRegencia in disciplinasRegencia)
+                                {
+                                    var nota = new NotaConceitoBimestreRetornoDto()
+                                    {
+                                        DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
+                                        Disciplina = disciplinaRegencia.Nome,
+                                    };
+                                    var notaRegencia = notasConceitoBimestre?.FirstOrDefault(c => c.DisciplinaId == disciplinaRegencia.CodigoComponenteCurricular);
+                                    if (notaRegencia != null)
+                                        nota.NotaConceito = (notaRegencia.Nota > 0 ? notaRegencia.Nota : notaRegencia.ConceitoId).ToString();
+
+                                    notaConceitoAluno.NotasBimestre.Add(nota);
+                                }
+                            }
+                            else
+                                foreach (var notaConceitoBimestre in notasConceitoBimestre)
+                                    notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
+                                    {
+                                        DisciplinaId = notaConceitoBimestre.DisciplinaId,
+                                        Disciplina = disciplinaEOL.Nome,
+                                        NotaConceito = notaConceitoBimestre.Nota > 0 ?
+                                            notaConceitoBimestre.Nota.ToString() :
+                                            notaConceitoBimestre.ConceitoId.ToString()
+                                    });
+                        }
+                        else
+                        if (disciplinaEOL.Regencia)
+                        {
+                            // Regencia carrega disciplinas mesmo sem nota de fechamento
+                            foreach (var disciplinaRegencia in disciplinasRegencia)
                             {
                                 notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
                                 {
-                                    DisciplinaId = notaConceitoBimestre.DisciplinaId,
-                                    Disciplina = disciplinaEOL.Regencia ?
-                                        disciplinasRegencia.First(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
-                                        disciplinaEOL.Nome,
-                                    NotaConceito = (notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota : notaConceitoBimestre.ConceitoId).ToString()
+                                    DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
+                                    Disciplina = disciplinaRegencia.Nome,
                                 });
                             }
                         }
-                        else
-                        {
-                            // Regencia carrega disciplinas mesmo sem nota de fechamento
-                            if (disciplinaEOL.Regencia)
-                            {
-                                foreach (var disciplinaRegencia in disciplinasRegencia)
-                                    notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
-                                    {
-                                        DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
-                                        Disciplina = disciplinaRegencia.Nome
-                                    });
-                            }
-                        }
 
-                        // Carrega Frequencia Aluno
-                        var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
+                                // Carrega Frequencia Aluno
+                                var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
                         notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ? 
                                         (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0) :
                                         100;
@@ -283,7 +314,11 @@ namespace SME.SGP.Aplicacao
                             atividadeAvaliativaParaObterTipoNota = avaliacao;
                     }
                     bimestreParaAdicionar.Alunos = listaAlunosDoBimestre;
-                    bimestreParaAdicionar.QtdAvaliacoesBimestral = atividadesAvaliativasdoBimestre.Where(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id).Count();
+                    bimestreParaAdicionar.QtdAvaliacoesBimestrais = atividadesAvaliativasdoBimestre.Where(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id).Count();
+                    bimestreParaAdicionar.PodeLancarNotaFinal = await VerificaPeriodoFechamentoEmAberto(filtro.TurmaCodigo, periodoAtual.Bimestre);
+
+                    // Valida Avaliações Bimestrais
+                    await ValidaMinimoAvaliacoesBimestrais(disciplinaEOL, disciplinasRegencia, tipoCalendario.Id, filtro.TurmaCodigo, valorBimestreAtual, tipoAvaliacaoBimestral, bimestreParaAdicionar);
 
                     if (atividadeAvaliativaParaObterTipoNota != null)
                     {
@@ -301,6 +336,28 @@ namespace SME.SGP.Aplicacao
 
             return retorno;
         }
+
+        private async Task ValidaMinimoAvaliacoesBimestrais(DisciplinaDto disciplinaEOL, IEnumerable<DisciplinaResposta> disciplinasRegencia, long tipoCalendarioId, string turmaCodigo, int bimestre, TipoAvaliacao tipoAvaliacaoBimestral, NotasConceitosBimestreRetornoDto bimestreDto)
+        {
+            if (disciplinaEOL.Regencia)
+            {
+                foreach (var disciplinaRegencia in disciplinasRegencia)
+                {
+                    var avaliacoes = await repositorioAtividadeAvaliativaRegencia.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaRegencia.CodigoComponenteCurricular.ToString(), bimestre);
+                    if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
+                        bimestreDto.Observacoes.Add($"A disciplina [{disciplinaRegencia.Nome}] não tem o número mínimo de avaliações bimestrais");
+                }
+            }
+            else
+            {
+                var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaEOL.CodigoComponenteCurricular.ToString(), bimestre);
+                if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
+                    bimestreDto.Observacoes.Add($"A disciplina [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais");
+            }
+        }
+
+        private async Task<bool> VerificaPeriodoFechamentoEmAberto(string turmaCodigo, int bimestre)
+            => await consultasFechamento.TurmaEmPeriodoDeFechamento(turmaCodigo, DateTime.Now, bimestre);
 
         public async Task<TipoNota> ObterNotaTipo(long turmaId, int anoLetivo, bool consideraHistorico)
         {
