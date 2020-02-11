@@ -69,7 +69,8 @@ namespace SME.SGP.Dados.Repositorios
 	                            tipo_ciclo.descricao,
 	                            resposta.nome,
                                 resposta.id,
-                                tipo_ciclo.id";
+                                tipo_ciclo.id
+                            order by resposta.id";
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>(query, new { turmaId });
         }
 
