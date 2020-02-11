@@ -41,10 +41,12 @@ const FechamentoBismestre = () => {
   const [dadosBimestre2, setDadosBimestre2] = useState(undefined);
   const [dadosBimestre3, setDadosBimestre3] = useState(undefined);
   const [dadosBimestre4, setDadosBimestre4] = useState(undefined);
-  const [ehRegencia, setEhRegencia] = useState(true);
+  const [ehRegencia, setEhRegencia] = useState(false);
 
   const onChangeDisciplinas = id => {
-    const disciplina = listaDisciplinas.find(c => c.id === id);
+    const disciplina = listaDisciplinas.find(
+      c => String(c.codigoComponenteCurricular) === id
+    );
     setEhRegencia(disciplina.regencia);
     setDisciplinaIdSelecionada(id);
   };
@@ -68,6 +70,7 @@ const FechamentoBismestre = () => {
           setDisciplinaIdSelecionada(
             String(lista.data[0].codigoComponenteCurricular)
           );
+          setEhRegencia(lista.data[0].regencia);
           setDesabilitarDisciplina(true);
         }
       }
