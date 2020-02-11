@@ -16,12 +16,14 @@ const FechamentoRegencia = props => {
       </td>
       <TdRegencia colSpan="4">
         <LinhaNotaRegencia>
-          {dados.map(item => (
-            <CampoNotaRegencia>
-              <span className="centro disciplina">{item.disciplina}</span>
-              <span className="centro nota">{item.notaConceito}</span>
-            </CampoNotaRegencia>
-          ))}
+          {dados
+            ? dados.map(item => (
+                <CampoNotaRegencia>
+                  <span className="centro disciplina">{item.disciplina}</span>
+                  <span className="centro nota">{item.notaConceito}</span>
+                </CampoNotaRegencia>
+              ))
+            : null}
         </LinhaNotaRegencia>
       </TdRegencia>
     </TrRegencia>

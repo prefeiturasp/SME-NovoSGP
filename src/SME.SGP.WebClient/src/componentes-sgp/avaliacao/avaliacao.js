@@ -1,25 +1,27 @@
-import { Icon, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import shortid from 'shortid';
+import { LabelSemDados } from '~/componentes';
 import notasConceitos from '~/dtos/notasConceitos';
-import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
-import { setModoEdicaoGeralNotaFinal } from '~/redux/modulos/notasConceitos/actions';
+import {
+  setModoEdicaoGeral,
+  setModoEdicaoGeralNotaFinal,
+} from '~/redux/modulos/notasConceitos/actions';
 
 import Ordenacao from '../Ordenacao/ordenacao';
 import {
   CaixaMarcadores,
-  // IconePlusMarcadores,
+  InfoMarcador,
   TabelaColunasFixas,
 } from './avaliacao.css';
 import CampoConceito from './campoConceito';
-import CampoNota from './campoNota';
-import { LabelSemDados } from '~/componentes';
-// import ColunaNotaFinalRegencia from './colunaNotaFinalRegenciaRegencia';
-import LinhaConceitoFinal from './linhaConceitoFinal';
-import CampoNotaFinal from './campoNotaFinal';
 import CampoConceitoFinal from './campoConceitoFinal';
+import CampoNota from './campoNota';
+import CampoNotaFinal from './campoNotaFinal';
+import ColunaNotaFinalRegencia from './colunaNotaFinalRegencia';
+import LinhaConceitoFinal from './linhaConceitoFinal';
 
 const Avaliacao = props => {
   const dispatch = useDispatch();
@@ -30,9 +32,8 @@ const Avaliacao = props => {
     onChangeOrdenacao,
     desabilitarCampos,
     ehProfessorCj,
+    ehRegencia,
   } = props;
-
-  // const [expandirLinha, setExpandirLinha] = useState([]);
 
   const onChangeNotaConceito = (nota, valorNovo) => {
     if (!desabilitarCampos && nota.podeEditar) {
@@ -130,52 +131,54 @@ const Avaliacao = props => {
     }
   };
 
-  const montaNotaFinal = aluno => {
+  const montaNotaFinal = (aluno, indexNotaConceito) => {
     if (aluno && aluno.notasBimestre && aluno.notasBimestre.length) {
+      if (ehRegencia) {
+        return aluno.notasBimestre[indexNotaConceito];
+      }
       return aluno.notasBimestre[0];
     }
+
     aluno.notasBimestre = [{ notaConceito: '' }];
     return aluno.notasBimestre[0];
   };
 
-  const montarCampoNotaConceitoFinal = aluno => {
-    switch (Number(notaTipo)) {
-      case Number(notasConceitos.Notas):
-        return (
-          <CampoNotaFinal
-            montaNotaFinal={() => montaNotaFinal(aluno)}
-            onChangeNotaConceitoFinal={(nota, valor) =>
-              onChangeNotaConceitoFinal(nota, valor)
-            }
-            desabilitarCampo={ehProfessorCj || desabilitarCampos}
-            podeEditar={aluno.podeEditar}
-            periodoFim={dados.periodoFim}
-            mediaAprovacaoBimestre={dados.mediaAprovacaoBimestre}
-          />
-        );
-
-      case Number(notasConceitos.Conceitos):
-        return (
-          <CampoConceitoFinal
-            montaNotaConceitoFinal={() => montaNotaFinal(aluno)}
-            onChangeNotaConceitoFinal={(nota, valor) =>
-              onChangeNotaConceitoFinal(nota, valor)
-            }
-            desabilitarCampo={ehProfessorCj || desabilitarCampos}
-            podeEditar={aluno.podeEditar}
-            listaTiposConceitos={dados.listaTiposConceitos}
-          />
-        );
-
-      default:
-        return '';
+  const montarCampoNotaConceitoFinal = (aluno, label, indexNotaConceito) => {
+    if (Number(notaTipo) === Number(notasConceitos.Notas)) {
+      return (
+        <CampoNotaFinal
+          montaNotaFinal={() => montaNotaFinal(aluno, indexNotaConceito)}
+          onChangeNotaConceitoFinal={(nota, valor) =>
+            onChangeNotaConceitoFinal(nota, valor)
+          }
+          desabilitarCampo={ehProfessorCj || desabilitarCampos}
+          podeEditar={aluno.podeEditar}
+          periodoFim={dados.periodoFim}
+          mediaAprovacaoBimestre={dados.mediaAprovacaoBimestre}
+          label={label}
+          podeLancarNotaFinal={dados.podeLancarNotaFinal}
+        />
+      );
     }
+    if (Number(notaTipo) === Number(notasConceitos.Conceitos)) {
+      return (
+        <CampoConceitoFinal
+          montaNotaConceitoFinal={() =>
+            montaNotaFinal(aluno, indexNotaConceito)
+          }
+          onChangeNotaConceitoFinal={(nota, valor) =>
+            onChangeNotaConceitoFinal(nota, valor)
+          }
+          desabilitarCampo={ehProfessorCj || desabilitarCampos}
+          podeEditar={aluno.podeEditar}
+          listaTiposConceitos={dados.listaTiposConceitos}
+          label={label}
+          podeLancarNotaFinal={dados.podeLancarNotaFinal}
+        />
+      );
+    }
+    return '';
   };
-
-  // const onClickExpandir = index => {
-  //   expandirLinha[index] = !expandirLinha[index];
-  //   setExpandirLinha([...expandirLinha]);
-  // };
 
   return (
     <>
@@ -187,7 +190,6 @@ const Avaliacao = props => {
               ordenarColunaNumero="numeroChamada"
               ordenarColunaTexto="nome"
               retornoOrdenado={retorno => {
-                // setExpandirLinha([]);
                 dados.alunos = retorno;
                 onChangeOrdenacao(dados);
               }}
@@ -246,25 +248,23 @@ const Avaliacao = props => {
                             {aluno.numeroChamada}
                           </td>
                           <td className="sticky-col col-nome-aluno">
-                            {aluno.nome}
-                            {/* TODO Padrão de marcador vai ser alterado! */}
-                            {/* {aluno.marcador ? (
+                            {aluno.marcador ? (
                               <>
-                                <CaixaMarcadores>
-                                  {aluno.marcador.nome}
-                                </CaixaMarcadores>
-                                <IconePlusMarcadores
-                                  onClick={() => onClickExpandir(i)}
-                                  className={
-                                    expandirLinha[i]
-                                      ? 'fas fa-minus fa-minus-linha-expandida '
-                                      : 'fas fa-plus-circle'
-                                  }
-                                />
+                                <Tooltip
+                                  title={aluno.marcador.descricao}
+                                  placement="top"
+                                >
+                                  <InfoMarcador className="fas fa-circle" />
+                                </Tooltip>
+                                <div style={{ marginLeft: '30px' }}>
+                                  {aluno.nome}
+                                </div>
                               </>
                             ) : (
-                              ''
-                            )} */}
+                              <div style={{ marginLeft: '30px' }}>
+                                {aluno.nome}
+                              </div>
+                            )}
                           </td>
                           {aluno.notasAvaliacoes.length
                             ? aluno.notasAvaliacoes.map(nota => {
@@ -285,34 +285,33 @@ const Avaliacao = props => {
                                 );
                               })
                             : ''}
-                          {/* <td className="sticky-col col-nota-final linha-nota-conceito-final">
-                            <ColunaNotaFinalRegencia indexLinha={i} />
-                          </td> */}
                           <td className="sticky-col col-nota-final linha-nota-conceito-final">
-                            {montarCampoNotaConceitoFinal(aluno)}
+                            {ehRegencia ? (
+                              <ColunaNotaFinalRegencia indexLinha={i} />
+                            ) : (
+                              montarCampoNotaConceitoFinal(aluno)
+                            )}
                           </td>
 
                           <td className="sticky-col col-frequencia linha-frequencia ">
                             {aluno.percentualFrequencia}%
                           </td>
                         </tr>
-                        <LinhaConceitoFinal indexLinha={i} dados={dados} />
-
-                        {/* TODO Padrão de marcador vai ser alterado! */}
-                        {/* {expandirLinha[i] ? (
-                          <>
-                            <tr className="linha-expandida">
-                              <td colSpan="1" className="text-center">
-                                <Icon type="double-right" />
-                              </td>
-                              <td colSpan={dados.avaliacoes.length + 2}>
-                                {aluno.marcador.descricao}
-                              </td>
-                            </tr>
-                          </>
-                        ) : (
-                          ''
-                        )} */}
+                        <LinhaConceitoFinal
+                          indexLinha={i}
+                          dados={dados}
+                          aluno={aluno}
+                          montarCampoNotaConceitoFinal={(
+                            label,
+                            indexNotaConceito
+                          ) =>
+                            montarCampoNotaConceitoFinal(
+                              aluno,
+                              label,
+                              indexNotaConceito
+                            )
+                          }
+                        />
                       </>
                     );
                   })}

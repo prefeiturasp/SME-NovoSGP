@@ -267,7 +267,12 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         foreach (var adminSgpUe in adminsSgpDre)
                         {
-                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
+                            var rf = "";
+                            if (long.TryParse(adminSgpUe, out long rfLong))
+                            {
+                                rf = adminSgpUe;
+                            }
+                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(rf, adminSgpUe);
                             notificacao.UsuarioId = usuario.Id;
 
                             servicoNotificacao.Salvar(notificacao);
