@@ -6,11 +6,13 @@ namespace SME.SGP.Infra
 {
     public class NotaConceitoAlunoBimestreDto
     {
-        public string AlunoCodigo { get; set; }
-        public string AlunoNome { get; set; }
+        public int NumeroChamada { get; set; }
+        public string Nome { get; set; }
+        public string Informacao { get; set; }
+        public bool Ativo { get; set; }
         public IEnumerable<NotaConceitoBimestreRetornoDto> Notas { get; set; }
-        public int QuantidadeFaltas { get; set; }
-        public int QuantidadeCompensacoes { get; set; }
+        public double QuantidadeFaltas { get; set; }
+        public double QuantidadeCompensacoes { get; set; }
         public double PercentualFrequencia { get; set; }
     }
 }
