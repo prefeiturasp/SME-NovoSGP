@@ -53,6 +53,7 @@ const Ordenacao = props => {
     ordenarColunaNumero,
     ordenarColunaTexto,
     retornoOrdenado,
+    desabilitado,
   } = props;
 
   const ordenarMenorParaMaior = () => {
@@ -117,6 +118,7 @@ const Ordenacao = props => {
         color={Colors.Azul}
         border
         className={`mr-2 ${className}`}
+        disabled
       />
     </Container>
   );
@@ -132,7 +134,7 @@ Ordenacao.defaultProps = {
 
 Ordenacao.propTypes = {
   className: PropTypes.string,
-  conteudoParaOrdenar: PropTypes.array,
+  conteudoParaOrdenar: PropTypes.oneOfType([PropTypes.array]),
   ordenarColunaNumero: PropTypes.string,
   ordenarColunaTexto: PropTypes.string,
   retornoOrdenado: PropTypes.func,

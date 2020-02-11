@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
+
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoNotificacao
     {
+        Task ExcluirFisicamenteAsync(long[] ids);
+
         void GeraNovoCodigo(Notificacao notificacao);
 
         long ObtemNovoCodigo();

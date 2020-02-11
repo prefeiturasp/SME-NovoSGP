@@ -139,7 +139,7 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = evento.CriadoRF,
                 TipoEvento = MapearTipoEvento(evento.TipoEvento),
                 Migrado = evento.Migrado,
-                PodeAlterar = podeAlterar
+                PodeAlterar = podeAlterar != null ? podeAlterar.Value && !evento.TipoEvento.SomenteLeitura : !evento.TipoEvento.SomenteLeitura
             };
         }
 
