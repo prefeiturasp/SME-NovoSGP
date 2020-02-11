@@ -225,7 +225,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Quantidade = s.Sum(x => x.Total),
                     TotalQuantidade = total,
-                    Porcentagem = ((double)s.Sum(x => x.Total) * total) / 100,
+                    Porcentagem = ((double)s.Sum(x => x.Total) * 100) / total,
                     TotalPorcentagem = 100,
                     Chave = s.Key.ToString(),
                     CodigoAno = s.Key,
@@ -236,7 +236,7 @@ namespace SME.SGP.Aplicacao
                     Descricao = s.Key.Ciclo,
                     Chave = s.Key.Ciclo,
                     Quantidade = s.Sum(c => c.Total),
-                    Porcentagem = ((double)s.Sum(x => x.Total) * total) / 100,
+                    Porcentagem = ((double)s.Sum(x => x.Total) * 100) / total,
                     TotalQuantidade = total,
                     TotalPorcentagem = 100
                 })
