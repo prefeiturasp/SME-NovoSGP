@@ -69,23 +69,42 @@ const CampoConceitoFinal = props => {
   };
 
   return (
-    <SelectComponent
-      onChange={valorNovo => setarValorNovo(valorNovo)}
-      valueOption="id"
-      valueText="valor"
-      lista={listaTiposConceitos}
-      valueSelect={conceitoValorAtual ? String(conceitoValorAtual) : undefined}
-      showSearch
-      placeholder="Final"
-      className={`tamanho-conceito-final ${
+    <Tooltip
+      placement="bottom"
+      title={
         notaConceitoBimestre && notaConceitoBimestre.abaixoDaMedia
-          ? 'border-abaixo-media'
-          : notaConceitoBimestre && notaConceitoBimestre.conceitoAlterado
-          ? 'border-registro-alterado'
+          ? 'Abaixo da Média'
           : ''
-      } `}
-      disabled={desabilitarCampo || modoEdicaoGeral || !podeEditar}
-    />
+      }
+    >
+      <div>
+        <SelectComponent
+          label={label ? label : ''}
+          onChange={valorNovo => setarValorNovo(valorNovo)}
+          valueOption="id"
+          valueText="valor"
+          lista={listaTiposConceitos}
+          valueSelect={
+            conceitoValorAtual ? String(conceitoValorAtual) : undefined
+          }
+          showSearch
+          placeholder="Final"
+          className={`tamanho-conceito-final ${
+            notaConceitoBimestre && notaConceitoBimestre.abaixoDaMedia
+              ? 'border-abaixo-media'
+              : notaConceitoBimestre && notaConceitoBimestre.conceitoAlterado
+              ? 'border-registro-alterado'
+              : ''
+          } `}
+          disabled={
+            desabilitarCampo ||
+            !podeEditar ||
+            !podeLancarNotaFinal ||
+            modoEdicaoGeral
+          }
+        />
+      </div>
+    </Tooltip>
   );
 };
 
