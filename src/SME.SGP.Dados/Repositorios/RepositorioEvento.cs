@@ -174,7 +174,20 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(")");
             query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
 
-            return (await database.Conexao.QueryAsync<Evento>(query.ToString(), new
+            var lookup = new Dictionary<long, Evento>();
+
+            await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(query.ToString(), (evento, eventoTipo) =>
+            {
+                var eventoRetorno = new Evento();
+                if (!lookup.TryGetValue(evento.Id, out eventoRetorno))
+                {
+                    eventoRetorno = evento;
+                    lookup.Add(evento.Id, eventoRetorno);
+                }
+
+                eventoRetorno.AdicionarTipoEvento(eventoTipo);
+                return eventoRetorno;
+            }, new
             {
                 dataInicio = dataInicio.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
                 dataFim = dataFim.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
@@ -182,7 +195,9 @@ namespace SME.SGP.Dados.Repositorios
                 tipoCalendarioId,
                 UeId,
                 DreId
-            }));
+            });
+
+            return lookup.Values;
         }
 
         public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId, long eventoId)
@@ -1038,7 +1053,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo,");
             query.AppendLine("et.tipo_data,");
             query.AppendLine("et.descricao,");
-            query.AppendLine("et.excluido");
+            query.AppendLine("et.excluido,");
+            query.AppendLine("et.somente_leitura");
         }
 
         private static void MontaQueryFrom(StringBuilder query)

@@ -9,5 +9,12 @@
         public string Nome { get; set; }
         public Periodo Periodo { get; set; }
         public bool Situacao { get; set; }
+
+        public int QuantidadeDeBimestres()
+        {
+            if (Modalidade == ModalidadeTipoCalendario.EJA)
+                return 2;
+            else return 4;
+        }
     }
 }

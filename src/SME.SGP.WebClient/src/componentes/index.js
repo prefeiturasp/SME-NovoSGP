@@ -19,3 +19,4 @@ export { default as CheckboxComponent } from './checkbox';
 export { default as CampoTextoBusca } from './campoTextoBusca';
 export { default as TextEditor } from './textEditor';
 export { default as LabelSemDados } from './labelSemDados';
+export { default as Alert } from './alert';
