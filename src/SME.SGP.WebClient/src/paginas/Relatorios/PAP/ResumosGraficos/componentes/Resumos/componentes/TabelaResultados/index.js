@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
-import shortid from 'shortid';
 
 // Ant
 import { Table } from 'antd';
@@ -26,152 +25,7 @@ const TabelaResultados = () => {
   let tamanhoObjetivos = 0;
   let tamanhoRespostas = 0;
 
-  const [dados, setDados] = useState([
-    {
-      Id: shortid.generate(),
-      Eixo: 'Analisa, interpreta e soluciona problemas envolvendo',
-      Objetivo: 'Dados apresentados em tabelas e gráficos',
-      Resposta: 'Realizou Plenamente',
-      '3ºC': 13,
-      '4ºC': 2,
-      Total: 15,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Analisa, interpreta e soluciona problemas envolvendo',
-      Objetivo: 'Dados apresentados em tabelas e gráficos',
-      Resposta: 'Realizou',
-      '3ºC': 11,
-      '4ºC': 2,
-      Total: 13,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Analisa, interpreta e soluciona problemas envolvendo',
-      Objetivo: 'Dados apresentados em tabelas e gráficos',
-      Resposta: 'Não Realizou',
-      '3ºC': 1,
-      '4ºC': 2,
-      Total: 3,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Analisa, interpreta e soluciona problemas envolvendo',
-      Objetivo: 'Dados apresentados em tabelas e gráficos',
-      Resposta: 'Não avaliado',
-      '3ºC': 0,
-      '4ºC': 1,
-      Total: 1,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Analisa, interpreta e soluciona problemas envolvendo',
-      Objetivo: 'Significados do campo multiplicativo',
-      Resposta: 'Realizou Plenamente',
-      '3ºC': 1,
-      '4ºC': 2,
-      Total: 3,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Analisa, interpreta e soluciona problemas envolvendo',
-      Objetivo: 'Significados do campo multiplicativo',
-      Resposta: 'Realizou',
-      '3ºC': 1,
-      '4ºC': 2,
-      Total: 3,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Analisa, interpreta e soluciona problemas envolvendo',
-      Objetivo: 'Significados do campo multiplicativo',
-      Resposta: 'Não Realizou',
-      '3ºC': 1,
-      '4ºC': 2,
-      Total: 3,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Analisa, interpreta e soluciona problemas envolvendo',
-      Objetivo: 'Significados do campo multiplicativo',
-      Resposta: 'Não avaliado',
-      '3ºC': 1,
-      '4ºC': 2,
-      Total: 3,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Faz outra coisa mas também analisa',
-      Objetivo: 'Bem legal',
-      Resposta: 'Realizou Plenamente',
-      '3ºC': 2,
-      '4ºC': 5,
-      Total: 7,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Faz outra coisa mas também analisa',
-      Objetivo: 'Bem legal',
-      Resposta: 'Realizou',
-      '3ºC': 8,
-      '4ºC': 9,
-      Total: 17,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Faz outra coisa mas também analisa',
-      Objetivo: 'Bem legal',
-      Resposta: 'Não Realizou',
-      '3ºC': 10,
-      '4ºC': 11,
-      Total: 21,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Faz outra coisa mas também analisa',
-      Objetivo: 'Bem legal',
-      Resposta: 'Não avaliado',
-      '3ºC': 1,
-      '4ºC': 0,
-      Total: 1,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Faz outra coisa mas também analisa',
-      Objetivo: 'Outra coisa',
-      Resposta: 'Realizou Plenamente',
-      '3ºC': 2,
-      '4ºC': 5,
-      Total: 7,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Faz outra coisa mas também analisa',
-      Objetivo: 'Outra coisa',
-      Resposta: 'Realizou',
-      '3ºC': 8,
-      '4ºC': 9,
-      Total: 17,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Faz outra coisa mas também analisa',
-      Objetivo: 'Outra coisa',
-      Resposta: 'Não Realizou',
-      '3ºC': 10,
-      '4ºC': 11,
-      Total: 21,
-    },
-    {
-      Id: shortid.generate(),
-      Eixo: 'Faz outra coisa mas também analisa',
-      Objetivo: 'Outra coisa',
-      Resposta: 'Não avaliado',
-      '3ºC': 1,
-      '4ºC': 0,
-      Total: 1,
-    },
-  ]);
+  const [dados, setDados] = useState([]);
 
   const colunasFixas = [
     {
@@ -227,7 +81,7 @@ const TabelaResultados = () => {
   const [colunas, setColunas] = useState([]);
 
   const [filtro] = useState(true);
-  const [unidadeSelecionada, setUnidadeSelecionada] = useState('Quantidade');
+  const [unidadeSelecionada, setUnidadeSelecionada] = useState('quantidade');
 
   const buscarDadosApi = useCallback(() => {
     ResumosGraficosPAPServico.ListarResultados(filtro).then(retorno => {
@@ -237,37 +91,41 @@ const TabelaResultados = () => {
         const montaColunas = [];
         const montaDados = [];
 
-        const eixos = [...data[0].Eixos];
+        const eixos = [...data.items];
 
         eixos.forEach(eixo => {
-          eixo.Objetivos.forEach(objetivo => {
-            objetivo.Anos.forEach(ano => {
-              montaColunas.push({
-                title: `${ano.AnoDescricao}`,
-                dataIndex: `${ano.AnoDescricao}`,
-              });
+          eixo.objetivos.forEach(objetivo => {
+            objetivo.anos.forEach(ano => {
+              const coluna = {
+                title: `${ano.anoDescricao}`,
+                dataIndex: `${ano.anoDescricao}`,
+              };
 
-              ano.Respostas.forEach(resposta => {
+              if (!objetoExistaNaLista(coluna, montaColunas)) {
+                montaColunas.push(coluna);
+              }
+
+              ano.respostas.forEach(resposta => {
                 const dado = {};
-                dado.Eixo = eixo.EixoDescricao;
-                dado.Objetivo = objetivo.ObjetivoDescricao;
-                dado.Resposta = resposta.RespostaDescricao;
-                objetivo.Anos.forEach(anoResposta => {
-                  dado[anoResposta.AnoDescricao] = resposta[unidadeSelecionada];
+                dado.Eixo = eixo.eixoDescricao;
+                dado.Objetivo = objetivo.objetivoDescricao;
+                dado.Resposta = resposta.respostaDescricao;
+                objetivo.anos.forEach(anoResposta => {
+                  dado[anoResposta.anoDescricao] = resposta[unidadeSelecionada];
                 });
                 if (!objetoExistaNaLista(dado, montaDados)) {
                   montaDados.push(dado);
                 }
               });
 
-              if (ano.Respostas.length > tamanhoRespostas) {
-                tamanhoRespostas = ano.Respostas.length;
+              if (ano.respostas.length > tamanhoRespostas) {
+                tamanhoRespostas = ano.respostas.length;
               }
             });
           });
 
-          if (eixo.Objetivos.length > tamanhoObjetivos) {
-            tamanhoObjetivos = eixo.Objetivos.length;
+          if (eixo.objetivos.length > tamanhoObjetivos) {
+            tamanhoObjetivos = eixo.objetivos.length;
           }
         });
 
@@ -301,11 +159,11 @@ const TabelaResultados = () => {
   const listaUnidades = [
     {
       desc: 'Quantidade',
-      valor: 'Quantidade',
+      valor: 'quantidade',
     },
     {
       desc: 'Porcentagem',
-      valor: 'Porcentagem',
+      valor: 'porcentagem',
     },
   ];
 
