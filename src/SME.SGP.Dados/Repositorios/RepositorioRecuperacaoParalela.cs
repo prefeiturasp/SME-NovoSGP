@@ -39,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            inner join tipo_ciclo_ano tca on turma.modalidade_codigo = tca.modalidade and turma.ano = tca.ano
 	                            inner join tipo_ciclo on tca.tipo_ciclo_id = tipo_ciclo.id
 	                            inner join recuperacao_paralela_periodo_objetivo_resposta rpp on rp.id = rpp.recuperacao_paralela_id
-                            group by
+                             group by
 	                            turma.nome,
 	                            turma.ano,
 	                            tipo_ciclo.descricao";
