@@ -7,12 +7,17 @@ const MockAPI = axios.create({
 
 const ResumosGraficosPAPServico = {
   ListarFrequencia(params) {
-    return MockAPI.get(`/v1/recuperacao-paralela/resumos/frequencia`, {
+    return api.get(`/v1/recuperacao-paralela/grafico/frequencia`, {
       params,
     });
   },
   ListarTotalEstudantes(params) {
-    return MockAPI.get(`/v1/recuperacao-paralela/resumos/total-estudantes`, {
+    return api.get(`/v1/recuperacao-paralela/total-estudantes`, {
+      params,
+    });
+  },
+  ListarResultados(params) {
+    return api.get(`/v1/recuperacao-paralela/resultado`, {
       params,
     });
   },
