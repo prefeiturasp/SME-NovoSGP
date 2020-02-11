@@ -110,6 +110,7 @@ namespace SME.SGP.Aplicacao
             // Carrega disciplinas filhas da disciplina passada como parametro
             var disciplinasProfessor = await consultasDisciplina.ObterDisciplinasPorProfessorETurma(filtro.TurmaCodigo, true);
             var disciplinasFilha = disciplinasProfessor.Where(d => d.CdComponenteCurricularPai == int.Parse(filtro.DisciplinaCodigo));
+
             if (disciplinasFilha.Any())
             if (disciplinasFilha.Any())
             {

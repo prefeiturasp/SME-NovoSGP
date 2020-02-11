@@ -9,6 +9,7 @@ namespace SME.SGP.Infra
         {
             Avaliacoes = new List<NotasConceitosAvaliacaoRetornoDto>();
             Alunos = new List<NotasConceitosAlunoRetornoDto>();
+            Observacoes = new List<string>();
         }
 
         public List<NotasConceitosAlunoRetornoDto> Alunos { get; set; }

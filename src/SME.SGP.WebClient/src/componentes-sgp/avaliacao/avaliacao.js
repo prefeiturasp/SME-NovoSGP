@@ -156,6 +156,7 @@ const Avaliacao = props => {
           periodoFim={dados.periodoFim}
           mediaAprovacaoBimestre={dados.mediaAprovacaoBimestre}
           label={label}
+          podeLancarNotaFinal={dados.podeLancarNotaFinal}
         />
       );
     }
@@ -172,6 +173,7 @@ const Avaliacao = props => {
           podeEditar={aluno.podeEditar}
           listaTiposConceitos={dados.listaTiposConceitos}
           label={label}
+          podeLancarNotaFinal={dados.podeLancarNotaFinal}
         />
       );
     }

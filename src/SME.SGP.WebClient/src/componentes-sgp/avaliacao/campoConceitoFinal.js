@@ -12,6 +12,7 @@ const CampoConceitoFinal = props => {
     podeEditar,
     listaTiposConceitos,
     label,
+    podeLancarNotaFinal,
   } = props;
 
   const modoEdicaoGeral = useSelector(
@@ -68,37 +69,23 @@ const CampoConceitoFinal = props => {
   };
 
   return (
-    <Tooltip
-      placement="bottom"
-      title={
+    <SelectComponent
+      onChange={valorNovo => setarValorNovo(valorNovo)}
+      valueOption="id"
+      valueText="valor"
+      lista={listaTiposConceitos}
+      valueSelect={conceitoValorAtual ? String(conceitoValorAtual) : undefined}
+      showSearch
+      placeholder="Final"
+      className={`tamanho-conceito-final ${
         notaConceitoBimestre && notaConceitoBimestre.abaixoDaMedia
-          ? 'Abaixo da Média'
+          ? 'border-abaixo-media'
+          : notaConceitoBimestre && notaConceitoBimestre.conceitoAlterado
+          ? 'border-registro-alterado'
           : ''
-      }
-    >
-      <div>
-        <SelectComponent
-          label={label ? label : ''}
-          onChange={valorNovo => setarValorNovo(valorNovo)}
-          valueOption="id"
-          valueText="valor"
-          lista={listaTiposConceitos}
-          valueSelect={
-            conceitoValorAtual ? String(conceitoValorAtual) : undefined
-          }
-          showSearch
-          placeholder="Final"
-          className={`tamanho-conceito-final ${
-            notaConceitoBimestre && notaConceitoBimestre.abaixoDaMedia
-              ? 'border-abaixo-media'
-              : notaConceitoBimestre && notaConceitoBimestre.conceitoAlterado
-              ? 'border-registro-alterado'
-              : ''
-          } `}
-          disabled={desabilitarCampo || modoEdicaoGeral || !podeEditar}
-        />
-      </div>
-    </Tooltip>
+      } `}
+      disabled={desabilitarCampo || modoEdicaoGeral || !podeEditar}
+    />
   );
 };
 
