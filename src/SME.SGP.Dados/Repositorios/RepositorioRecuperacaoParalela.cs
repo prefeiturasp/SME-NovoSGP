@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            inner join tipo_ciclo_ano tca on turma.modalidade_codigo = tca.modalidade and turma.ano = tca.ano
 	                            inner join tipo_ciclo on tca.tipo_ciclo_id = tipo_ciclo.id
 	                            inner join recuperacao_paralela_periodo_objetivo_resposta rpp on rp.id = rpp.recuperacao_paralela_id
-                            group by
+                             group by
 	                            turma.nome,
 	                            turma.ano,
 	                            tipo_ciclo.descricao";
@@ -53,7 +53,9 @@ namespace SME.SGP.Dados.Repositorios
             string query = @"select
 	                            count(aluno_id) as total,
 	                            turma.ano,
-	                            tipo_ciclo.descricao,
+	                            tipo_ciclo.descricao as Ciclo,
+                                tipo_ciclo.id as CicloId,
+                                resposta.id as RespostaId,
 	                            resposta.nome as frequencia
                             from recuperacao_paralela rp
 	                            inner join turma on rp.turma_id = turma.turma_id
@@ -66,7 +68,9 @@ namespace SME.SGP.Dados.Repositorios
 	                            turma.nome,
 	                            turma.ano,
 	                            tipo_ciclo.descricao,
-	                            resposta.nome";
+	                            resposta.nome,
+                                resposta.id,
+                                tipo_ciclo.id";
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>(query, new { turmaId });
         }
 
@@ -82,6 +86,7 @@ namespace SME.SGP.Dados.Repositorios
             MontarCamposResumo(query);
             MontarFromResumo(query);
             //MontarWhere(query, periodo, dreId, ueId, cicloId, turmaId, ano, pagina);
+            query.AppendLine("and e.id NOT IN (1)");
             query.AppendLine("group by");
             query.AppendLine("turma.nome,");
             query.AppendLine("turma.ano,");
@@ -108,6 +113,30 @@ namespace SME.SGP.Dados.Repositorios
             retorno.TotalPaginas = retorno.TotalRegistros;
 
             return retorno;
+        }
+
+        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano, int? pagina)
+        {
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("select");
+            MontarCamposResumo(query);
+            MontarFromResumo(query);
+            query.AppendLine("and e.id = 1");
+            query.AppendLine("group by");
+            query.AppendLine("turma.nome,");
+            query.AppendLine("turma.ano,");
+            query.AppendLine("tipo_ciclo.descricao,");
+            query.AppendLine("resposta.nome,");
+            query.AppendLine("o.nome,");
+            query.AppendLine("e.descricao,");
+            query.AppendLine("o.ordem,");
+            query.AppendLine("tipo_ciclo.descricao,");
+            query.AppendLine("e.id,");
+            query.AppendLine("o.id,");
+            query.AppendLine("resposta.id");
+
+            var parametros = new { dreId, ueId, cicloId, turmaId, ano, pagina };
+            return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalResultadoDto>(query.ToString(), parametros);
         }
 
         private static void MontarCamposResumo(StringBuilder query)
@@ -146,10 +175,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and o.pagina = @pagina");
             if (periodo.HasValue && (PeriodoRecuperacaoParalela)periodo == PeriodoRecuperacaoParalela.Encaminhamento)
                 query.AppendLine("and e.id NOT IN (2)");
-            else
-            {
-                query.AppendLine("and e.id NOT IN (1)");
-            }
+
             if (!string.IsNullOrEmpty(ueId))
                 query.AppendLine("and turma.");
             query.AppendLine("count(aluno_id) as total,");

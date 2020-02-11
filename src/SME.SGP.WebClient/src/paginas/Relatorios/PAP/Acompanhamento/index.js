@@ -136,7 +136,7 @@ function RelatorioPAPAcompanhamento() {
         });
 
         if (!data) {
-          erro('Nenhum dado encontrado');
+          erro('Não foi encontrado dados de acompanhamento PAP');
           setCarregando(false);
           return;
         }
@@ -146,9 +146,11 @@ function RelatorioPAPAcompanhamento() {
         setCarregando(false);
       }
     } catch (err) {
-      console.log(err.response);
       setCarregando(false);
-      erro(`Não foi possível completar a requisição: ${JSON.stringify(err)}`);
+
+      if (console.log(err.response))
+        erro(`Não foi possível completar a requisição: ${JSON.stringify(err)}`);
+      else erro('Ocorreu um erro interno, por favor contate o suporte');
     }
   };
 
