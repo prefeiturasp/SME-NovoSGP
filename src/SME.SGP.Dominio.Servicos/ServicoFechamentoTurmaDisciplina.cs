@@ -76,11 +76,6 @@ namespace SME.SGP.Dominio.Servicos
 
             fechamentoTurma.PeriodoFechamentoBimestreId = fechamentoBimestre.Id;
 
-            // Valida Avaliações no Bimestre
-            var validacoes = await ValidaMinimoAvaliacoesBimestre(tipoCalendario.Id, entidadeDto.TurmaId, entidadeDto.DisciplinaId, entidadeDto.Bimestre);
-            if (!string.IsNullOrEmpty(validacoes))
-                throw new NegocioException($"Não é possível cadastrar nota do {entidadeDto.Bimestre}º bimestre para turma e disciplina em questão: " + validacoes);
-
             // Carrega notas alunos
             var notasConceitosBimestre = await MapearParaEntidade(id, entidadeDto.NotaConceitoAlunos);
 
