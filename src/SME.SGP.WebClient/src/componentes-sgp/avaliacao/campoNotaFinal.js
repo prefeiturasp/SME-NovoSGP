@@ -15,6 +15,7 @@ const CampoNotaFinal = props => {
     periodoFim,
     mediaAprovacaoBimestre,
     label,
+    podeLancarNotaFinal,
   } = props;
 
   const modoEdicaoGeral = useSelector(
@@ -101,7 +102,12 @@ const CampoNotaFinal = props => {
           max={10}
           step={0.5}
           placeholder="Nota Final"
-          disabled={desabilitarCampo || modoEdicaoGeral || !podeEditar}
+          disabled={
+            desabilitarCampo ||
+            !podeEditar ||
+            !podeLancarNotaFinal ||
+            modoEdicaoGeral
+          }
           className={`tamanho-conceito-final ${
             notaBimestre && notaBimestre.abaixoDaMedia
               ? 'border-abaixo-media'
