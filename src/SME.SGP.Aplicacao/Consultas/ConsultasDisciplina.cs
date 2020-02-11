@@ -83,16 +83,6 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurmaTeste(string codigoTurma)
-        {
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfilAtual = servicoUsuario.ObterPerfilAtual();
-
-            var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
-
-            return disciplinas;
-        }
-
         public async Task<List<DisciplinaDto>> ObterDisciplinasPorTurma(string codigoTurma, bool turmaPrograma)
         {
             var disciplinasDto = new List<DisciplinaDto>();
@@ -133,45 +123,6 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return disciplinasDto;
-        }
-
-        public string ObterTiposIdsDisciplina()
-        {
-            Type t = typeof(DisciplinaResposta);
-
-            string tiposRetorno = String.Empty;
-
-            tiposRetorno += "DISCIPLINARESPOSTA; ";
-
-            foreach (var prop in t.GetProperties())
-                tiposRetorno += String.Format("   {0} ({1})", prop.Name,
-                                  prop.PropertyType.Name);
-
-            t = typeof(ProfessorTitularDisciplinaEol);
-
-            tiposRetorno += "PROFESSORTITULARDISCIPLINAEOL; ";
-
-            foreach (var prop in t.GetProperties())
-                tiposRetorno += String.Format("   {0} ({1})", prop.Name,
-                                  prop.PropertyType.Name);
-
-            t = typeof(RetornoDisciplinaDto);
-
-            tiposRetorno += "RETORNODISCIPLINADTO; ";
-
-            foreach (var prop in t.GetProperties())
-                tiposRetorno += String.Format("   {0} ({1})", prop.Name,
-                                  prop.PropertyType.Name);
-
-            t = typeof(DisciplinaDto);
-
-            tiposRetorno += "DISCIPLINADTO; ";
-
-            foreach (var prop in t.GetProperties())
-                tiposRetorno += String.Format("   {0} ({1})", prop.Name,
-                                  prop.PropertyType.Name);
-
-            return tiposRetorno;
         }
 
         private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false)
