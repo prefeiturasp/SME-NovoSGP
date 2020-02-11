@@ -1,9 +1,10 @@
-﻿namespace SME.SGP.Infra.Dtos
+﻿namespace SME.SGP.Infra
 {
     public class FechamentoFinalConsultaFiltroDto
     {
-        public string DisciplinaCodigo { get; set; }
+        public long DisciplinaCodigo { get; set; }
+        public bool EhRegencia { get; set; }
 
-        public long TurmaCodigo { get; set; }
+        public string TurmaCodigo { get; set; }
     }
 }
