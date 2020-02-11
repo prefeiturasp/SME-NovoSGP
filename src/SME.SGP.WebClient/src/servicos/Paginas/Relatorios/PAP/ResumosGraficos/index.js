@@ -7,20 +7,14 @@ const ResumosGraficosPAPServico = {
     });
   },
   ListarFrequencia(params) {
-    return api.get(
-      `http://demo8322243.mockable.io/api/v1/recuperacao-paralela/resumos/frequencia`,
-      {
-        params,
-      }
-    );
+    return api.get('v1/recuperacao-paralela/frequencia', {
+      params,
+    });
   },
   ListarResultados(params) {
-    return api.get(
-      'http://demo7314211.mockable.io/api/v1/recuperacao-paralela/resumos/resultado',
-      {
-        params,
-      }
-    );
+    return api.get('v1/recuperacao-paralela/resultado', {
+      params,
+    });
   },
 };
 

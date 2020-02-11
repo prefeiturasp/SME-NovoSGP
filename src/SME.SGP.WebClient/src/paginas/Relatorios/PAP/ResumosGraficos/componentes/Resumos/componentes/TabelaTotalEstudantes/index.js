@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import shortid from 'shortid';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 // Ant
 import { Table } from 'antd';
@@ -16,44 +17,53 @@ const Tabela = styled(Table)`
   }
 `;
 
-const TabelaTotalEstudantes = () => {
-  const [colunas, setColunas] = useState([
-    {
-      title: 'Ano',
-      dataIndex: 'TipoDado',
-      fixed: 'left',
-      width: 150,
-      render: text => {
-        return {
-          children: text,
-          props: {
-            style: { fontWeight: 'bold' },
-          },
-        };
-      },
-    },
-  ]);
+function objetoExistaNaLista(objeto, lista) {
+  return lista.some(
+    elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
+  );
+}
 
-  const [filtro] = useState(true);
+const TabelaTotalEstudantes = ({ filtros }) => {
+  const [colunas, setColunas] = useState([]);
+
   const [dadosTabela, setDadosTabela] = useState([]);
   const [carregandoDados, setCarregandoDados] = useState(false);
 
-  const buscarDadosApi = () => {
+  const buscarDadosApi = useCallback(() => {
+    const colunasFixas = [
+      {
+        title: 'Ano',
+        dataIndex: 'TipoDado',
+        fixed: 'left',
+        width: 150,
+        render: text => {
+          return {
+            children: text,
+            props: {
+              style: { fontWeight: 'bold' },
+            },
+          };
+        },
+      },
+    ];
+
     setCarregandoDados(true);
 
-    ResumosGraficosPAPServico.ListarTotalEstudantes(filtro)
+    ResumosGraficosPAPServico.ListarTotalEstudantes(filtros)
       .then(resposta => {
         const { data, status } = resposta;
 
         if (data && status === 200) {
           const montaColunas = [];
 
-          if (filtro) {
+          if (data.ciclos.length) {
             data.ciclos.forEach(ciclo => {
-              const coluna = {};
-              coluna.title = ciclo.cicloDescricao;
-              coluna.dataIndex = ciclo.cicloDescricao;
-              if (montaColunas.indexOf(coluna) === -1) {
+              const coluna = {
+                title: ciclo.cicloDescricao,
+                dataIndex: ciclo.cicloDescricao,
+              };
+
+              if (!objetoExistaNaLista(coluna, montaColunas)) {
                 montaColunas.push(coluna);
               }
             });
@@ -147,17 +157,17 @@ const TabelaTotalEstudantes = () => {
             },
           });
 
-          setColunas([...colunas, ...montaColunas]);
+          setColunas([...colunasFixas, ...montaColunas]);
         }
       })
       .finally(() => {
         setCarregandoDados(false);
       });
-  };
+  }, [filtros]);
 
   useEffect(() => {
     buscarDadosApi();
-  }, []);
+  }, [buscarDadosApi]);
 
   return (
     <Loader loading={carregandoDados}>
@@ -173,6 +183,14 @@ const TabelaTotalEstudantes = () => {
       />
     </Loader>
   );
+};
+
+TabelaTotalEstudantes.propTypes = {
+  filtros: PropTypes.oneOfType([PropTypes.any]),
+};
+
+TabelaTotalEstudantes.defaultProps = {
+  filtros: [],
 };
 
 export default TabelaTotalEstudantes;
