@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -28,15 +29,15 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
-        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turmaCodigo, int disciplina, string semana, DateTime dataAula, string codigoRf = null)
+        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turmaCodigo, long disciplina, string semana, DateTime dataAula, string codigoRf = null)
         {
             var ue = repositorioUe.ObterUEPorTurma(turmaCodigo);
             if (ue == null)
-                throw new NegocioException("Turma não localizada.");
+                throw new NegocioException("Ue não localizada.");
 
             var turma = repositorioTurma.ObterPorId(turmaCodigo);
-            if (ue == null)
-                throw new NegocioException("Ue localizada.");
+            if (turma == null)
+                throw new NegocioException("Turma não localizada.");
 
             // Busca grade a partir dos dados da abrangencia da turma
             var grade = await ObterGradeTurma(ue.TipoEscola, turma.ModalidadeCodigo, turma.QuantidadeDuracaoAula);
@@ -44,33 +45,20 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             // Busca disciplina no EOL para validar se é regente
-            var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina });
+            var disciplinaEOL = await servicoEOL.ObterDisciplinasPorIdsSemAgrupamento(new long[] { disciplina });
             if (disciplinaEOL == null)
                 throw new NegocioException("Disciplina não localizada.");
 
             bool ehRegencia = disciplinaEOL.FirstOrDefault().Regencia;
 
-            int horasGrade;
+            bool ehTerritorio = disciplinaEOL.Any(x => x.TerritorioSaber);
 
             // verifica se é regencia de classe
-            if (ehRegencia)
-                horasGrade = turma.ModalidadeCodigo == Modalidade.EJA ? 5 : 1;
-            else if (disciplina == 1030)
-                horasGrade = 4;
-            else
-                // Busca carga horaria na grade da disciplina para o ano da turma
-                horasGrade = await ObterHorasGradeComponente(grade.Id, disciplina, int.Parse(turma.Ano));
-
+            var horasGrade = await TratarHorasGrade(disciplina, turma, grade, ehRegencia, disciplinaEOL.Select(x => x.CodigoComponenteCurricular), ehTerritorio);
             if (horasGrade == 0)
                 return null;
 
-            int horascadastradas;
-
-            if (ehRegencia)
-                horascadastradas = await consultasAula.ObterQuantidadeAulasTurmaDiaProfessor(turma.CodigoTurma, disciplina.ToString(), dataAula, codigoRf);
-            else
-                // Busca horas aula cadastradas para a disciplina na turma
-                horascadastradas = await consultasAula.ObterQuantidadeAulasTurmaSemanaProfessor(turma.CodigoTurma, disciplina.ToString(), semana, codigoRf);
+            var horascadastradas = await ObtenhaHorasCadastradas(disciplina, semana, dataAula, codigoRf, turma, ehRegencia);
 
             return new GradeComponenteTurmaAulasDto
             {
@@ -84,7 +72,7 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(await repositorioGrade.ObterGradeTurma(tipoEscola, modalidade, duracao));
         }
 
-        public async Task<int> ObterHorasGradeComponente(long grade, int componenteCurricular, int ano)
+        public async Task<int> ObterHorasGradeComponente(long grade, long componenteCurricular, int ano)
         {
             return await repositorioGrade.ObterHorasComponente(grade, componenteCurricular, ano);
         }
@@ -96,6 +84,38 @@ namespace SME.SGP.Aplicacao
                 Id = grade.Id,
                 Nome = grade.Nome
             };
+        }
+
+        private async Task<int> ObtenhaHorasCadastradas(long disciplina, string semana, DateTime dataAula, string codigoRf, Turma turma, bool ehRegencia)
+        {
+            if (ehRegencia)
+                return await consultasAula.ObterQuantidadeAulasTurmaDiaProfessor(turma.CodigoTurma, disciplina.ToString(), dataAula, codigoRf);
+
+            // Busca horas aula cadastradas para a disciplina na turma
+            return await consultasAula.ObterQuantidadeAulasTurmaSemanaProfessor(turma.CodigoTurma, disciplina.ToString(), semana, codigoRf);
+        }
+
+        private async Task<int> TratarHorasGrade(long disciplina, Turma turma, GradeDto grade, bool ehRegencia,
+            IEnumerable<long> codigosDisciplinaEol, bool ehTerritorio)
+        {
+            int horasGrade = 0;
+
+            if (ehRegencia)
+                return turma.ModalidadeCodigo == Modalidade.EJA ? 5 : 1;
+
+            if (disciplina == 1030)
+                return 4;
+
+            // Busca carga horaria na grade da disciplina para o ano da turma
+            if (!ehTerritorio)
+                return await ObterHorasGradeComponente(grade.Id, disciplina, int.Parse(turma.Ano));
+
+            foreach (var codigoDisciplinaEol in codigosDisciplinaEol)
+            {
+                horasGrade += await ObterHorasGradeComponente(grade.Id, codigoDisciplinaEol, int.Parse(turma.Ano));
+            }
+
+            return horasGrade;
         }
     }
 }
