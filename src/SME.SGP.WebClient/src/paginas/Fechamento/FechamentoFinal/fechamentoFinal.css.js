@@ -160,6 +160,9 @@ export const Lista = styled.div`
     line-height: normal;
     letter-spacing: normal;
     color: #42474a;
+    i {
+      padding-top: 0;
+    }
   }
 
   .input-notas {
@@ -188,4 +191,12 @@ export const MaisMenos = styled.i`
   color: ${Base.Roxo} !important;
   font-size: 19px;
   cursor: pointer;
+`;
+
+export const Info = styled.i`
+  color: ${Base.Roxo} !important;
+  font-size: 10px;
+  margin-left: 2px;
+  position: absolute;
+  padding-top: 5px;
 `;

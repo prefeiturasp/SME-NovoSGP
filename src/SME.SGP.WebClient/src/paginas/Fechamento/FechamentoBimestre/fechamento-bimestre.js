@@ -1,5 +1,5 @@
 import { Tabs } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Colors, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -18,6 +18,8 @@ import { FechamentoMock } from './fechamento.mock';
 import RotasDto from '~/dtos/rotasDto';
 import { Fechamento } from './fechamento-bimestre.css';
 import FechamentoFinal from '../FechamentoFinal/fechamentoFinal';
+import ServicoFechamentoFinal from '~/servicos/Paginas/DiarioClasse/ServicoFechamentoFinal';
+import { erros, sucesso, confirmar } from '~/servicos/alertas';
 
 const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
@@ -41,16 +43,32 @@ const FechamentoBismestre = () => {
   const [dados, setDados] = useState(FechamentoMock);
 
   const onChangeDisciplinas = id => {
-    const disciplina = listaDisciplinas.find(c => c.disciplinaId == id);
-    setEhRegencia(disciplina.regencia);
     setDisciplinaIdSelecionada(id);
   };
 
-  const onClickVoltar = () => {
-    history.push(URL_HOME);
+  const onClickVoltar = async () => {
+    let confirmou = true;
+    if (modoEdicao) {
+      confirmou = await confirmar(
+        'Atenção',
+        'Existem alterações pendetes, deseja realmente sair da tela de fechamento?'
+      );
+    }
+    if (confirmou) {
+      history.push(URL_HOME);
+    }
   };
 
-  const onClickCancelar = () => {};
+  const onClickCancelar = async () => {
+    const confirmou = await confirmar(
+      'Atenção',
+      'Existem alterações pendetes, deseja realmente cancelar?'
+    );
+    if (confirmou) {
+      refFechamentoFinal.current.cancelar();
+      setModoEdicao(false);
+    }
+  };
 
   const onClickSalvar = () => {};
 
@@ -81,6 +99,7 @@ const FechamentoBismestre = () => {
   }, [disciplinaIdSelecionada]);
 
   //FechamentoFinal
+  const refFechamentoFinal = useRef();
   const [ehRegencia, setEhRegencia] = useState(false);
   const [turmaPrograma, setTurmaPrograma] = useState(false);
 
@@ -89,12 +108,36 @@ const FechamentoBismestre = () => {
     setTurmaPrograma(programa);
   }, [turmaSelecionada.ano]);
 
-  const [fechamentoFinal, setFechamentoFinal] = useState();
+  useEffect(() => {
+    if (listaDisciplinas && listaDisciplinas.length > 0) {
+      const disciplina = listaDisciplinas.find(
+        c => c.disciplinaId == disciplinaIdSelecionada
+      );
+      if (disciplina) setEhRegencia(disciplina.regencia);
+    }
+  }, [disciplinaIdSelecionada, listaDisciplinas]);
 
-  const onChangeFechamentoFinal = fechamentoFinal => {
-    setFechamentoFinal(fechamentoFinal);
+  const [fechamentoFinal, setFechamentoFinal] = useState({
+    ehRegencia,
+    turmaCodigo: turmaSelecionada.turma,
+    itens: [],
+  });
+
+  const onChangeFechamentoFinal = alunosAlterados => {
+    const fechamentoFinalDto = fechamentoFinal;
+    fechamentoFinalDto.itens = alunosAlterados;
+    setFechamentoFinal(fechamentoFinalDto);
     setModoEdicao(true);
   };
+  const salvarFechamentoFinal = () => {
+    ServicoFechamentoFinal.salvar(fechamentoFinal)
+      .then(resposta => {
+        sucesso('Fechamento final salvo com sucesso.');
+        setModoEdicao(false);
+      })
+      .catch(e => erros(e));
+  };
+
   //FechamentoFinal
   return (
     <>
@@ -139,7 +182,7 @@ const FechamentoBismestre = () => {
                   border
                   bold
                   className="mr-2"
-                  onClick={onClickSalvar}
+                  onClick={salvarFechamentoFinal}
                   disabled={!modoEdicao || somenteConsulta}
                 />
               </div>
@@ -193,6 +236,7 @@ const FechamentoBismestre = () => {
                       ehRegencia={ehRegencia}
                       turmaPrograma={turmaPrograma}
                       onChange={onChangeFechamentoFinal}
+                      ref={refFechamentoFinal}
                     />
                   </TabPane>
                 </ContainerTabsCard>

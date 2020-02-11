@@ -21,7 +21,7 @@ namespace SME.SGP.Api.Controllers
         public IActionResult Obter([FromQuery]FechamentoFinalConsultaFiltroDto filtroFechamentoFinalConsultDto)
         {
             var ehRegencia = filtroFechamentoFinalConsultDto.EhRegencia;
-            var ehNota = filtroFechamentoFinalConsultDto.TurmaCodigo == 1;
+            var ehNota = filtroFechamentoFinalConsultDto.TurmaCodigo != 1;
             var retorno = new FechamentoFinalConsultaRetornoDto()
             {
                 EhNota = ehNota,
@@ -33,7 +33,7 @@ namespace SME.SGP.Api.Controllers
 
             ///// aluno 2
             ///
-            var aluno2 = new FechamentoFinalConsultaRetornoAlunoDto() { Nome = "Joselito Alves", Frequencia = 35, NumeroChamada = 2, TotalAusenciasCompensadas = 3 };
+            var aluno2 = new FechamentoFinalConsultaRetornoAlunoDto() { Nome = "Joselito Alves", Frequencia = 35, NumeroChamada = 2, TotalAusenciasCompensadas = 3, Informacao = "Exemplo de informação no tooltip" };
 
             aluno2.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = 1, DisciplinaCodigo = "123", Disciplina = "Matemática", NotaConceito = ehNota ? "7" : "PS" });
 
