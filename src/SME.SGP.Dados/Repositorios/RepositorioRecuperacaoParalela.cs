@@ -85,6 +85,7 @@ namespace SME.SGP.Dados.Repositorios
             MontarCamposResumo(query);
             MontarFromResumo(query);
             //MontarWhere(query, periodo, dreId, ueId, cicloId, turmaId, ano, pagina);
+            query.AppendLine("and e.id NOT IN (1)");
             query.AppendLine("group by");
             query.AppendLine("turma.nome,");
             query.AppendLine("turma.ano,");
@@ -111,6 +112,30 @@ namespace SME.SGP.Dados.Repositorios
             retorno.TotalPaginas = retorno.TotalRegistros;
 
             return retorno;
+        }
+
+        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano, int? pagina)
+        {
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("select");
+            MontarCamposResumo(query);
+            MontarFromResumo(query);
+            query.AppendLine("and e.id = 1");
+            query.AppendLine("group by");
+            query.AppendLine("turma.nome,");
+            query.AppendLine("turma.ano,");
+            query.AppendLine("tipo_ciclo.descricao,");
+            query.AppendLine("resposta.nome,");
+            query.AppendLine("o.nome,");
+            query.AppendLine("e.descricao,");
+            query.AppendLine("o.ordem,");
+            query.AppendLine("tipo_ciclo.descricao,");
+            query.AppendLine("e.id,");
+            query.AppendLine("o.id,");
+            query.AppendLine("resposta.id");
+
+            var parametros = new { dreId, ueId, cicloId, turmaId, ano, pagina };
+            return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalResultadoDto>(query.ToString(), parametros);
         }
 
         private static void MontarCamposResumo(StringBuilder query)
@@ -149,10 +174,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and o.pagina = @pagina");
             if (periodo.HasValue && (PeriodoRecuperacaoParalela)periodo == PeriodoRecuperacaoParalela.Encaminhamento)
                 query.AppendLine("and e.id NOT IN (2)");
-            else
-            {
-                query.AppendLine("and e.id NOT IN (1)");
-            }
+
             if (!string.IsNullOrEmpty(ueId))
                 query.AppendLine("and turma.");
             query.AppendLine("count(aluno_id) as total,");
