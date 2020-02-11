@@ -24,8 +24,9 @@ export const LinhaNotaRegencia = styled.div`
 `;
 
 export const CampoNotaRegencia = styled.div`
-  justify-content: center;
+  justify-items: center;
   align-items: center;
+  display: grid;
   margin-left: 30px;
   .disciplina {
     font-size: 11px;

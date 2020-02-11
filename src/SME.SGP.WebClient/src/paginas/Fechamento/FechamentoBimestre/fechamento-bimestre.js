@@ -14,9 +14,9 @@ import history from '~/servicos/history';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import FechamentoBimestreLista from './fechamento-bimestre-lista/fechamento-bimestre-lista';
-import { FechamentoMock } from './fechamento.mock';
 import RotasDto from '~/dtos/rotasDto';
 import { Fechamento } from './fechamento-bimestre.css';
+import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFechamentoBimestre';
 
 const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
@@ -37,9 +37,15 @@ const FechamentoBismestre = () => {
   );
   const [modoEdicao, setModoEdicao] = useState(false);
   const [bimestreCorrente, setBimestreCorrente] = useState('1Bimestre');
-  const [dados, setDados] = useState(FechamentoMock);
+  const [dadosBimestre1, setDadosBimestre1] = useState(undefined);
+  const [dadosBimestre2, setDadosBimestre2] = useState(undefined);
+  const [dadosBimestre3, setDadosBimestre3] = useState(undefined);
+  const [dadosBimestre4, setDadosBimestre4] = useState(undefined);
+  const [ehRegencia, setEhRegencia] = useState(true);
 
   const onChangeDisciplinas = id => {
+    const disciplina = listaDisciplinas.find(c => c.id === id);
+    setEhRegencia(disciplina.regencia);
     setDisciplinaIdSelecionada(id);
   };
 
@@ -47,13 +53,9 @@ const FechamentoBismestre = () => {
     history.push(URL_HOME);
   };
 
-  const onClickCancelar = () => { };
+  const onClickCancelar = () => {};
 
-  const onClickSalvar = () => { };
-
-  const onChangeTab = async numeroBimestre => {
-    setBimestreCorrente(numeroBimestre);
-  };
+  const onClickSalvar = () => {};
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -74,8 +76,54 @@ const FechamentoBismestre = () => {
   }, [turmaSelecionada]);
 
   useEffect(() => {
-    //implementar o consumo de endpoint de listagem
+    if (disciplinaIdSelecionada) obterDados();
   }, [disciplinaIdSelecionada]);
+
+  const obterDados = async (bimestre = 0) => {
+    setCarregandoBimestres(true);
+    const fechamento = await ServicoFechamentoBimestre.buscarDados(
+      turmaSelecionada.turma,
+      disciplinaIdSelecionada,
+      bimestre
+    ).finally(() => {
+      setCarregandoBimestres(false);
+    });
+    if (fechamento && fechamento.data) {
+      const dadosFechamento = fechamento.data;
+      setBimestreCorrente(`${dadosFechamento.bimestre}`);
+      setDadosBimestre(dadosFechamento.bimestre, dadosFechamento);
+    }
+  };
+
+  const setDadosBimestre = (bimestre, dados) => {
+    switch (bimestre) {
+      case 1:
+        setDadosBimestre1(undefined);
+        setDadosBimestre1(dados);
+        break;
+      case 2:
+        setDadosBimestre2(undefined);
+        setDadosBimestre2(dados);
+        break;
+      case 3:
+        setDadosBimestre3(undefined);
+        setDadosBimestre3(dados);
+        break;
+      case 4:
+        setDadosBimestre4(undefined);
+        setDadosBimestre4(dados);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const onChangeTab = async numeroBimestre => {
+    setBimestreCorrente(numeroBimestre);
+    if (numeroBimestre != 'final') {
+      obterDados(numeroBimestre);
+    }
+  };
 
   return (
     <>
@@ -151,24 +199,43 @@ const FechamentoBismestre = () => {
                   onChange={onChangeTab}
                   activeKey={bimestreCorrente}
                 >
-                  <TabPane tab="1º Bimestre" key="1Bimestre">
-                    <FechamentoBimestreLista dados={dados} />
+                  <TabPane tab="1º Bimestre" key="1">
+                    {dadosBimestre1 ? (
+                      <FechamentoBimestreLista
+                        dados={dadosBimestre1}
+                        ehRegencia={ehRegencia}
+                      />
+                    ) : null}
                   </TabPane>
 
-                  <TabPane tab="2º Bimestre" key="2Bimestre">
-                    <FechamentoBimestreLista dados={dados} />
+                  <TabPane tab="2º Bimestre" key="2">
+                    {dadosBimestre2 ? (
+                      <FechamentoBimestreLista
+                        dados={dadosBimestre2}
+                        ehRegencia={ehRegencia}
+                      />
+                    ) : null}
                   </TabPane>
 
-                  <TabPane tab="3º Bimestre" key="3Bimestre">
-                    <FechamentoBimestreLista dados={dados} />
+                  <TabPane tab="3º Bimestre" key="3">
+                    {dadosBimestre3 ? (
+                      <FechamentoBimestreLista
+                        dados={dadosBimestre3}
+                        ehRegencia={ehRegencia}
+                      />
+                    ) : null}
                   </TabPane>
 
-                  <TabPane tab="4º Bimestre" key="4Bimestre">
-                    <FechamentoBimestreLista dados={dados} />
+                  <TabPane tab="4º Bimestre" key="4">
+                    {dadosBimestre4 ? (
+                      <FechamentoBimestreLista
+                        dados={dadosBimestre4}
+                        ehRegencia={ehRegencia}
+                      />
+                    ) : null}
                   </TabPane>
 
-                  <TabPane tab="Final" key="final">
-                  </TabPane>
+                  <TabPane tab="Final" key="final"></TabPane>
                 </ContainerTabsCard>
               </Fechamento>
             </div>
