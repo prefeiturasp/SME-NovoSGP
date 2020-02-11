@@ -80,8 +80,9 @@ function TabelaFrequencia({ dados }) {
     {
       title: 'Ano',
       dataIndex: 'FrequenciaDescricao',
+      className: 'primeirasColunas',
       colSpan: 2,
-      // fixed: 'left',
+      fixed: 'left',
       width: 150,
       render: (text, row, index) => {
         return {
@@ -99,9 +100,10 @@ function TabelaFrequencia({ dados }) {
     {
       title: 'TipoDado',
       dataIndex: 'TipoDado',
+      className: 'primeirasColunas',
       colSpan: 0,
       width: 150,
-      // fixed: 'left',
+      fixed: 'left',
       render: (text, row, index) => {
         return {
           children: text,
@@ -125,29 +127,28 @@ function TabelaFrequencia({ dados }) {
       'Descricao',
     ];
 
-    const colunasParaRenderizar = Object.keys(dados[0]).filter(
+    debugger;
+    const colunasParaRenderizar = Object.keys(dados).filter(
       item => colunasParaExcluir.indexOf(item) === -1
     );
 
     const colunasParaIncluir = colunasParaRenderizar.map(item => {
       const novaColuna = { title: item, dataIndex: item };
-      if (item !== 'Total') return novaColuna;
-      return {
-        ...novaColuna,
-        width: 100,
-        // fixed: 'right',
-        // render: (text, row, index) => {
-        //   return {
-        //     children: text,
-        //     props: {
-        //       style: {
-        //         backgroundColor: Base.Roxo,
-        //         color: 'white',
-        //       },
-        //     },
-        //   };
-        // },
-      };
+      if (item === 'Total') {
+        return {
+          ...novaColuna,
+          width: 100,
+          className: 'headerTotal',
+          fixed: 'right',
+          render: (text, row, index) => {
+            return {
+              children: text,
+              className: 'itemColunaTotal',
+            };
+          },
+        };
+      }
+      return novaColuna;
     });
 
     return [...colunasBase, ...colunasParaIncluir];
@@ -166,17 +167,6 @@ function TabelaFrequencia({ dados }) {
           size="small"
         />
       </ContainerTabela>
-      {/* {dadosBackend && (
-        <div style={{ height: 400 }}>
-          <Graficos.Barras
-            dados={dadosBackend.filter(x => x.TipoDado === 'Porcentagem')}
-            indice="DescricaoFrequencia"
-            chaves={['3C', '4C', '4E', '5C', '6C', '6B']}
-            legendaBaixo="teste"
-            legendaEsquerda="teste2"
-          />
-        </div>
-      )} */}
     </>
   );
 }

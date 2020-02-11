@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 
 // Componentes
 import { Grid, SelectComponent, Loader } from '~/componentes';
-import PeriodosDropDown from '../../../Acompanhamento/componentes/PeriodosDropDown';
+import PeriodosDropDown from './componentes/PeriodosDropDown';
 import { DreDropDown, UeDropDown } from '~/componentes-sgp';
 
 // Styles
@@ -246,6 +246,7 @@ function Filtro({ onFiltrar }) {
             <Grid cols={5}>
               <PeriodosDropDown
                 valor={periodo}
+                form={form}
                 onChangePeriodo={valor => setPeriodo(valor)}
               />
             </Grid>

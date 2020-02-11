@@ -4,47 +4,48 @@ import PropTypes from 'prop-types';
 // Componentes
 import { PainelCollapse, LazyLoad } from '~/componentes';
 
-function Resumos({ dados, filtros }) {
-  const filtroFake = 'ciclos';
-
+function Resumos({ dados }) {
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
   const TabelaTotalEstudantes = lazy(() =>
     import('./componentes/TabelaTotalEstudantes')
   );
   const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
 
+  const filtroFake = 'turma';
+
   const dadosTabelaFrequencia = useMemo(() => {
-    const frequenciaDados = dados.Frequencia;
+    const frequenciaDados =
+      dados.length > 0 && dados[1].frequencia && dados[1].frequencia;
     const dadosFormatados = [];
-    const mapa = { turma: 'Anos', ciclos: 'Ciclos' };
+    const mapa = { turma: 'anos', ciclos: 'ciclos' };
 
     if (frequenciaDados) {
       frequenciaDados.forEach(x => {
         let quantidade = {
-          FrequenciaDescricao: x.FrequenciaDescricao,
+          FrequenciaDescricao: x.frequenciaDescricao,
           TipoDado: 'Quantidade',
         };
 
         let porcentagem = {
-          FrequenciaDescricao: x.FrequenciaDescricao,
+          FrequenciaDescricao: x.frequenciaDescricao,
           TipoDado: 'Porcentagem',
         };
 
-        x.Linhas[mapa[filtroFake]].forEach((y, key) => {
+        x.linhas[0][mapa[filtroFake]].forEach((y, key) => {
           quantidade = {
             ...quantidade,
             key: String(key),
-            Descricao: y.Descricao,
-            [y.Chave]: y.Quantidade,
-            Total: y.TotalQuantidade,
+            Descricao: y.descricao,
+            [y.chave]: y.quantidade,
+            Total: y.totalQuantidade,
           };
 
           porcentagem = {
             ...porcentagem,
             key: String(key),
-            Descricao: y.Descricao,
-            [y.Chave]: `${y.Porcentagem * 10}%`,
-            Total: `${y.TotalPorcentagem * 10}%`,
+            Descricao: y.descricao,
+            [y.chave]: `${Math.round(y.porcentagem, 2)}%`,
+            Total: `${Math.round(y.totalPorcentagem, 2)}%`,
           };
         });
 
@@ -60,7 +61,7 @@ function Resumos({ dados, filtros }) {
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Total de estudantes">
           <LazyLoad>
-            <TabelaTotalEstudantes filtros={filtros} />
+            <TabelaTotalEstudantes dados={dados.totalEstudantes} />
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
@@ -74,7 +75,7 @@ function Resumos({ dados, filtros }) {
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Resultados">
           <LazyLoad>
-            <TabelaResultados filtros={filtros} />
+            <TabelaResultados dados={dados.resultados} />
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
@@ -84,12 +85,10 @@ function Resumos({ dados, filtros }) {
 
 Resumos.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.any]),
-  filtros: PropTypes.oneOfType([PropTypes.any]),
 };
 
 Resumos.defaultProps = {
   dados: [],
-  filtros: [],
 };
 
 export default Resumos;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy } from 'react';
+import React, { useState, useEffect, useMemo, lazy } from 'react';
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -34,22 +34,38 @@ const ResumosGraficosPAP = () => {
   const onClickVoltar = () => {};
 
   const Resumos = lazy(() => import('./componentes/Resumos'));
-  const Graficos = lazy(() => import('./componentes/Graficos'));
+  const TabGraficos = lazy(() => import('./componentes/TabGraficos'));
+
+  const filtroTela = useMemo(() => {
+    return {
+      DreId: filtro.dreId,
+      UeId: filtro.ueId,
+      CicloId: filtro.cicloId,
+      TurmaId: filtro.turmaId,
+      Periodo: filtro.periodo,
+      Ano: filtro.ano,
+    };
+  }, [filtro]);
 
   useEffect(() => {
     async function buscarDados() {
       try {
         setCarregandoGraficos(true);
         setCarregandoRelatorios(true);
-        const {
-          data,
-          status,
-        } = await ResumosGraficosPAPServico.ListarFrequencia(filtro);
-        if (data && status === 200) {
-          setCarregandoGraficos(false);
-          setCarregandoRelatorios(false);
-          setDados(data);
-        }
+        const requisicoes = await Promise.all([
+          ResumosGraficosPAPServico.ListarTotalEstudantes(filtroTela),
+          // ResumosGraficosPAPServico.ListarFrequencia(filtroTela),
+          ResumosGraficosPAPServico.ListarResultados(filtroTela),
+        ]);
+
+        setDados({
+          totalEstudantes: { ...requisicoes[0].data },
+          // frequencia: [...requisicoes[1].data.frequencia],
+          resultados: { ...requisicoes[1].data },
+        });
+
+        setCarregandoGraficos(false);
+        setCarregandoRelatorios(false);
       } catch (err) {
         setCarregandoGraficos(false);
         setCarregandoRelatorios(false);
@@ -57,7 +73,7 @@ const ResumosGraficosPAP = () => {
       }
     }
     buscarDados();
-  }, [filtro]);
+  }, [filtroTela]);
 
   return (
     <>
@@ -82,7 +98,7 @@ const ResumosGraficosPAP = () => {
             <Loader loading={carregandoRelatorios}>
               {tabAtiva === 'relatorios' ? (
                 <LazyLoad>
-                  <Resumos filtro={filtro} dados={dados} />
+                  <Resumos dados={dados} />
                 </LazyLoad>
               ) : (
                 ''
@@ -93,7 +109,7 @@ const ResumosGraficosPAP = () => {
             <Loader loading={carregandoGraficos}>
               {tabAtiva === 'graficos' ? (
                 <LazyLoad>
-                  <Graficos dados={dados} />
+                  <TabGraficos dados={dados} />
                 </LazyLoad>
               ) : (
                 ''
