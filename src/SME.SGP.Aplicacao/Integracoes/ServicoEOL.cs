@@ -258,13 +258,29 @@ namespace SME.SGP.Aplicacao.Integracoes
             httpClient.DefaultRequestHeaders.Clear();
 
             var resposta = httpClient.PostAsync("disciplinas", new StringContent(JsonConvert.SerializeObject(ids), Encoding.UTF8, "application/json-patch+json")).Result;
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = resposta.Content.ReadAsStringAsync().Result;
-                var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
-                return MapearParaDtoDisciplinas(retorno);
-            }
-            return null;
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+            return MapearParaDtoDisciplinas(retorno);
+        }
+
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = await httpClient.PostAsync("disciplinas/SemAgrupamento", new StringContent(JsonConvert.SerializeObject(ids), Encoding.UTF8, "application/json-patch+json"));
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+
+            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+
+            return MapearParaDtoDisciplinas(retorno);
         }
 
         public IEnumerable<DreRespostaEolDto> ObterDres()
@@ -595,7 +611,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanoAnual(string codigoRf, int componenteCurricularId, int codigoTurma)
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanoAnual(string codigoRf, long componenteCurricularId, int codigoTurma)
         {
             httpClient.DefaultRequestHeaders.Clear();
 
@@ -637,6 +653,21 @@ namespace SME.SGP.Aplicacao.Integracoes
             var dataString = data.ToString("s");
 
             var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}");
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+            return JsonConvert.DeserializeObject<bool>(json);
+        }
+
+        public async Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var dataString = data.ToString("s");
+
+            var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{disciplinaId}/atribuicao/verificar/data?dataConsulta={dataString}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
@@ -707,7 +738,8 @@ namespace SME.SGP.Aplicacao.Integracoes
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
-                RegistraFrequencia = x.RegistraFrequencia
+                RegistraFrequencia = x.RegistraFrequencia,
+                TerritorioSaber = x.Territorio
             });
         }
 
