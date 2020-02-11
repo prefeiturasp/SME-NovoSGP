@@ -13,7 +13,8 @@ namespace SME.SGP.Infra
 
         public List<NotasConceitosAlunoRetornoDto> Alunos { get; set; }
         public List<NotasConceitosAvaliacaoRetornoDto> Avaliacoes { get; set; }
-        public int QtdAvaliacoesBimestral { get; set; }
+        public int QtdAvaliacoesBimestrais { get; set; }
+        public List<string> Observacoes { get; set; }
         public string Descricao { get; set; }
         public int Numero { get; set; }
         public bool PodeLancarNotaFinal { get; set; }
