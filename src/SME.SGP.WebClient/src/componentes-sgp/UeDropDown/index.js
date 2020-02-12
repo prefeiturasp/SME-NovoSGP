@@ -13,27 +13,26 @@ import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 function UeDropDown({ form, onChange, dreId, label, url, desabilitado }) {
   const [listaUes, setListaUes] = useState([]);
 
-  async function buscarUes() {
-    const { data } = await AbrangenciaServico.buscarUes(dreId, url);
-    if (data) {
-      setListaUes(
-        data
-          .map(item => ({
-            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
-            valor: item.codigo,
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'))
-      );
-    }
-  }
-
   useEffect(() => {
+    async function buscarUes() {
+      const { data } = await AbrangenciaServico.buscarUes(dreId, url);
+      if (data) {
+        setListaUes(
+          data
+            .map(item => ({
+              desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
+              valor: item.codigo,
+            }))
+            .sort(FiltroHelper.ordenarLista('desc'))
+        );
+      }
+    }
     if (dreId) {
       buscarUes();
     } else {
       setListaUes([]);
     }
-  }, [dreId]);
+  }, [dreId, url]);
 
   useEffect(() => {
     if (listaUes.length === 1) {

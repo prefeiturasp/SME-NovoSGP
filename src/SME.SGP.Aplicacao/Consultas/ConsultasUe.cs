@@ -33,6 +33,12 @@ namespace SME.SGP.Aplicacao
             else return null;
         }
 
+        public async Task<Ue> ObterPorId(long id)
+            => repositorioUe.ObterPorId(id);
+
+        public async Task<Ue> ObterPorCodigo(string codigoUe)
+            => repositorioUe.ObterPorCodigo(codigoUe);
+
         public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmas(string ueCodigo, int modalidadeId, int ano)
         {
             var listaTurmas = await repositorioUe.ObterTurmas(ueCodigo, (Modalidade)modalidadeId, ano);

@@ -88,6 +88,7 @@ const ListaPaginada = props => {
   };
 
   const filtrar = () => {
+    setLinhasSelecionadas([]);
     setCarregando(true);
     api
       .get(urlBusca, { params: filtro })
@@ -111,6 +112,7 @@ const ListaPaginada = props => {
 
   useEffect(() => {
     if (filtroEhValido) {
+      setLinhasSelecionadas([]);
       filtrar();
     }
   }, [filtroEhValido, filtro, paginaAtual]);
