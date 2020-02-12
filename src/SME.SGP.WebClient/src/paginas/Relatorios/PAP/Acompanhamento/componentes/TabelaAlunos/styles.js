@@ -63,6 +63,7 @@ export const Tabela = styled.table`
 
   tbody {
     max-height: 400px;
+    min-height: 100px;
     overflow-y: scroll;
     display: flex;
     flex-direction: column;

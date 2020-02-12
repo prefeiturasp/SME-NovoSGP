@@ -26,6 +26,7 @@ const Base = {
   CinzaMako: '#42474A',
   CinzaMenu: '#EEEEEE',
   CinzaMenuItem: '#686868',
+  CinzaTabela: '#FAFAFA',
   Laranja: '#F39200',
   Preto: '#000',
   RosaCalendario: '#FEE4E2',
