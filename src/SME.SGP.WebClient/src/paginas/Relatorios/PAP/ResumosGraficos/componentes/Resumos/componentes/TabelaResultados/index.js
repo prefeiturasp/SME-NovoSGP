@@ -19,8 +19,67 @@ function objetoExistaNaLista(objeto, lista) {
   );
 }
 
+<<<<<<< HEAD
+const TabelaResultados = ({ dadosParametro }) => {
+  let tamanhoObjetivos = 0;
+  let tamanhoRespostas = 0;
+
+  const [dados, setDados] = useState([]);
+
+  const colunasFixas = [
+    {
+      title: 'Eixo',
+      dataIndex: 'Eixo',
+      colSpan: 3,
+      width: 200,
+      render: (text, row, index) => {
+        return {
+          children: text,
+          props: {
+            rowSpan:
+              index % (tamanhoObjetivos * tamanhoRespostas) === 0
+                ? tamanhoObjetivos * tamanhoRespostas
+                : 0,
+            style: { fontWeight: 'bold' },
+          },
+        };
+      },
+    },
+    {
+      title: 'Objetivo',
+      dataIndex: 'Objetivo',
+      colSpan: 0,
+      width: 150,
+      render: (text, row, index) => {
+        return {
+          children: text,
+          props: {
+            rowSpan: index % tamanhoRespostas === 0 ? tamanhoRespostas : 0,
+            style: { fontWeight: 'bold' },
+          },
+        };
+      },
+    },
+    {
+      title: 'Resposta',
+      dataIndex: 'Resposta',
+      colSpan: 0,
+      width: 150,
+      render: text => {
+        return {
+          children: text,
+          props: {
+            rowSpan: 1,
+            style: { fontWeight: 'bold' },
+          },
+        };
+      },
+    },
+  ];
+=======
 const TabelaResultados = ({ dados }) => {
   const [dadosTabela, setDadosTabela] = useState([]);
+>>>>>>> ac36cae9de5d6d4a4d4613c0f083cd85ded0404c
 
   const [colunas, setColunas] = useState([]);
 
@@ -122,6 +181,31 @@ const TabelaResultados = ({ dados }) => {
             });
           }
         });
+<<<<<<< HEAD
+
+        setDados([...montaDados]);
+
+        montaColunas.push({
+          title: 'Total',
+          dataIndex: 'Total',
+          width: 100,
+          fixed: 'right',
+          className: 'headerTotal',
+          render: text => {
+            return {
+              children: text,
+              props: {
+                style: { backgroundColor: Base.CinzaTabela },
+              },
+            };
+          },
+        });
+
+        setColunas([...colunasFixas, ...montaColunas]);
+      }
+    });
+  }, [unidadeSelecionada, dadosParametro]);
+=======
       });
 
       setDadosTabela([...montaDados]);
@@ -145,6 +229,7 @@ const TabelaResultados = ({ dados }) => {
       setColunas([...colunasFixas, ...montaColunas]);
     }
   }, [unidadeSelecionada, dados]);
+>>>>>>> ac36cae9de5d6d4a4d4613c0f083cd85ded0404c
 
   useEffect(() => {
     montaColunasDados();
