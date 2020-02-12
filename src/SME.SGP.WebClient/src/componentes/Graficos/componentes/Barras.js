@@ -6,25 +6,34 @@ import { ResponsiveBar } from '@nivo/bar';
 // Componentes
 import { Base } from '~/componentes';
 
-function Barras({ dados, indice, chaves, legendaBaixo, legendaEsquerda }) {
+function Barras({
+  dados,
+  indice,
+  chaves,
+  legendaBaixo,
+  legendaEsquerda,
+  porcentagem,
+}) {
+  const format = v => `${v}%`;
+
   return (
     <ResponsiveBar
       data={dados}
       keys={chaves}
       indexBy={indice}
-      margin={{ top: 50, right: 70, bottom: 50, left: 60 }}
+      margin={{ top: 50, right: 100, bottom: 50, left: 60 }}
       padding={0.3}
       groupMode="grouped"
-      // colors={[
-      //   Base.Laranja,
-      //   Base.Vermelho,
-      //   Base.Azul,
-      //   Base.Verde,
-      //   Base.Preto,
-      //   Base.Roxo,
-      //   Base.CinzaBarras,
-      // ]}
-      color={{ scheme: 'set3' }}
+      colors={[
+        Base.Laranja,
+        Base.Vermelho,
+        Base.Azul,
+        Base.Verde,
+        Base.Preto,
+        Base.Roxo,
+        Base.CinzaBarras,
+      ]}
+      // color={{ scheme: 'set3' }}
       borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
       axisTop={null}
       axisRight={null}
@@ -49,6 +58,7 @@ function Barras({ dados, indice, chaves, legendaBaixo, legendaEsquerda }) {
       labelTextColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
       legends={[
         {
+          format: porcentagem ? format : null,
           dataFrom: 'keys',
           anchor: 'bottom-right',
           direction: 'column',
@@ -74,6 +84,8 @@ function Barras({ dados, indice, chaves, legendaBaixo, legendaEsquerda }) {
       animate
       motionStiffness={90}
       motionDamping={15}
+      labelFormat={porcentagem && format}
+      tooltipFormat={porcentagem && format}
     />
   );
 }

@@ -94,7 +94,7 @@ const ResumosGraficosPAP = () => {
           activeKey={tabAtiva}
           defaultActiveKey="relatorios"
         >
-          <Tabs.TabPane tab="Relatórios" key="relatorios">
+          <Tabs.TabPane tab="Resumos" key="relatorios">
             <Loader loading={carregandoRelatorios}>
               {tabAtiva === 'relatorios' ? (
                 <LazyLoad>
