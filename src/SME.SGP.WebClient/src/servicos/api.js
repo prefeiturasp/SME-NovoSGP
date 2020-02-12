@@ -23,7 +23,6 @@ api.interceptors.request.use(async config => {
   const token = store.getState().usuario.token;
 
   if (!url) url = await urlBase();
-
   if (token) config.headers.Authorization = `Bearer ${token}`;
 
   config.cancelToken = CancelToken.token;

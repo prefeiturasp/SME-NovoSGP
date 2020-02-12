@@ -58,8 +58,15 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("and a.turma_id = @turmaId ");
 
-            return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
-        }
+            try
+            {
+                return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
+            }
+            catch
+            {
+                return 0;
+            }
+       }
 
         public AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId)
         {
