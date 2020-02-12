@@ -1,4 +1,5 @@
 import React from 'react';
+import shortid from 'shortid';
 import Card from '~/componentes/card';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
@@ -14,13 +15,13 @@ const PaginaComErro = () => {
   return (
     <Card>
       <Corpo className="col-md-12">
-        <i className="far fa-frown not-found"></i>
-        {/* <span className="not-found">404</span> */}
+        <i className="far fa-frown not-found" />
         <span className="msg-principal">Ocorreu um erro!</span>
         <span>
           A página que você tentou acessar não está disponível no momento.
         </span>
         <Button
+          id={shortid.generate()}
           label="Voltar"
           icon="arrow-left"
           color={Colors.Azul}
