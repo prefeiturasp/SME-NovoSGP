@@ -6,6 +6,7 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -119,7 +120,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigos });
         }
 
-        public async Task<IEnumerable<RecuperacaoParalelaFrequenciaDto>> ObterFrequenciaAusencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
+        public async Task<IEnumerable<RecuperacaoParalelaFrequenciaDto>> ObterFrequenciaAusencias(string[] CodigoAlunos, IEnumerable<string> CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
         {
             var query = new StringBuilder();
             query.AppendLine("select codigo_aluno CodigoAluno,");
@@ -129,12 +130,12 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where codigo_aluno::varchar(100) = ANY(@CodigoAlunos)");
             query.AppendLine("and date_part('year',periodo_inicio) = @Ano");
             query.AppendLine("and date_part('year',periodo_fim) = @Ano");
-            query.AppendLine("and disciplina_id = @CodigoDisciplina");
+            query.AppendLine("and disciplina_id = ANY(@CodigoDisciplina)");
             if (Periodo == PeriodoRecuperacaoParalela.AcompanhamentoPrimeiroSemestre)
                 query.AppendLine("and bimestre IN  (1,2)");
             query.AppendLine("group by codigo_aluno");
       
-            return await database.Conexao.QueryAsync<RecuperacaoParalelaFrequenciaDto>(query.ToString(), new { CodigoAlunos, CodigoDisciplina, Ano });
+            return await database.Conexao.QueryAsync<RecuperacaoParalelaFrequenciaDto>(query.ToString(), new { CodigoAlunos, CodigoDisciplina = CodigoDisciplina.ToArray(), Ano });
         }
 
         public IEnumerable<RegistroAusenciaAluno> ObterListaFrequenciaPorAula(long aulaId)
