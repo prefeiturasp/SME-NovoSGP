@@ -14,8 +14,7 @@ function Resumos({ dados }) {
   const filtroFake = 'turma';
 
   const dadosTabelaFrequencia = useMemo(() => {
-    const frequenciaDados =
-      dados.length > 0 && dados[1].frequencia && dados[1].frequencia;
+    const frequenciaDados = dados && dados.frequencia;
     const dadosFormatados = [];
     const mapa = { turma: 'anos', ciclos: 'ciclos' };
 
