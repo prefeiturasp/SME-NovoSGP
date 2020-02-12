@@ -21,7 +21,7 @@ function objetoExistaNaLista(objeto, lista) {
   );
 }
 
-const TabelaResultados = ({ dados }) => {
+const TabelaResultados = ({ dadosParametro }) => {
   let tamanhoObjetivos = 0;
   let tamanhoRespostas = 0;
 
@@ -150,7 +150,7 @@ const TabelaResultados = ({ dados }) => {
         setColunas([...colunasFixas, ...montaColunas]);
       }
     });
-  }, [unidadeSelecionada, dados]);
+  }, [unidadeSelecionada, dadosParametro]);
 
   useEffect(() => {
     montaColunasDados();
