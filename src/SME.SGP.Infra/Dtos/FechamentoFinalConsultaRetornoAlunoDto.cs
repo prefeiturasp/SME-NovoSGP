@@ -11,10 +11,12 @@ namespace SME.SGP.Infra
         }
 
         public decimal Frequencia { get; set; }
+        public string Informacao { get; set; }
         public string Nome { get; set; }
         public IList<FechamentoFinalConsultaRetornoAlunoNotaConceitoDto> NotasConceitoBimestre { get; set; }
         public IList<FechamentoFinalConsultaRetornoAlunoNotaConceitoDto> NotasConceitoFinal { get; set; }
         public int NumeroChamada { get; set; }
+        public bool TemInformacao => !string.IsNullOrWhiteSpace(Informacao);
         public int TotalAusenciasCompensadas { get; set; }
     }
 }
