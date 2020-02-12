@@ -54,14 +54,14 @@ const ResumosGraficosPAP = () => {
         setCarregandoRelatorios(true);
         const requisicoes = await Promise.all([
           ResumosGraficosPAPServico.ListarTotalEstudantes(filtroTela),
-          // ResumosGraficosPAPServico.ListarFrequencia(filtroTela),
+          ResumosGraficosPAPServico.ListarFrequencia(filtroTela),
           ResumosGraficosPAPServico.ListarResultados(filtroTela),
         ]);
 
         setDados({
           totalEstudantes: { ...requisicoes[0].data },
-          // frequencia: [...requisicoes[1].data.frequencia],
-          resultados: { ...requisicoes[1].data },
+          frequencia: [...requisicoes[1].data.frequencia],
+          resultados: { ...requisicoes[2].data },
         });
 
         setCarregandoGraficos(false);
