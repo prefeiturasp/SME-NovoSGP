@@ -127,8 +127,7 @@ function TabelaFrequencia({ dados }) {
       'Descricao',
     ];
 
-    debugger;
-    const colunasParaRenderizar = Object.keys(dados).filter(
+    const colunasParaRenderizar = Object.keys(dados[0]).filter(
       item => colunasParaExcluir.indexOf(item) === -1
     );
 
