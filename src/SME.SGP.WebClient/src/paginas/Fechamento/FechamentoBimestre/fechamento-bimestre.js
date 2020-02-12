@@ -1,5 +1,5 @@
 import { Tabs } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Colors, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -16,6 +16,9 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import FechamentoBimestreLista from './fechamento-bimestre-lista/fechamento-bimestre-lista';
 import RotasDto from '~/dtos/rotasDto';
 import { Fechamento } from './fechamento-bimestre.css';
+import FechamentoFinal from '../FechamentoFinal/fechamentoFinal';
+import ServicoFechamentoFinal from '~/servicos/Paginas/DiarioClasse/ServicoFechamentoFinal';
+import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFechamentoBimestre';
 import periodo from '~/dtos/periodo';
 
@@ -53,11 +56,29 @@ const FechamentoBismestre = () => {
     setDisciplinaIdSelecionada(id);
   };
 
-  const onClickVoltar = () => {
-    history.push(URL_HOME);
+  const onClickVoltar = async () => {
+    let confirmou = true;
+    if (modoEdicao) {
+      confirmou = await confirmar(
+        'Atenção',
+        'Existem alterações pendetes, deseja realmente sair da tela de fechamento?'
+      );
+    }
+    if (confirmou) {
+      history.push(URL_HOME);
+    }
   };
 
-  const onClickCancelar = () => { };
+  const onClickCancelar = async () => {
+    const confirmou = await confirmar(
+      'Atenção',
+      'Existem alterações pendetes, deseja realmente cancelar?'
+    );
+    if (confirmou) {
+      refFechamentoFinal.current.cancelar();
+      setModoEdicao(false);
+    }
+  };
 
   const onClickSalvar = () => { };
 
@@ -134,6 +155,46 @@ const FechamentoBismestre = () => {
     }
   };
 
+  //FechamentoFinal
+  const refFechamentoFinal = useRef();
+  const [turmaPrograma, setTurmaPrograma] = useState(false);
+
+  useEffect(() => {
+    const programa = !!(turmaSelecionada.ano === '0');
+    setTurmaPrograma(programa);
+  }, [turmaSelecionada.ano]);
+
+  useEffect(() => {
+    if (listaDisciplinas && listaDisciplinas.length > 0) {
+      const disciplina = listaDisciplinas.find(
+        c => c.disciplinaId == disciplinaIdSelecionada
+      );
+      if (disciplina) setEhRegencia(disciplina.regencia);
+    }
+  }, [disciplinaIdSelecionada, listaDisciplinas]);
+
+  const [fechamentoFinal, setFechamentoFinal] = useState({
+    ehRegencia,
+    turmaCodigo: turmaSelecionada.turma,
+    itens: [],
+  });
+
+  const onChangeFechamentoFinal = alunosAlterados => {
+    const fechamentoFinalDto = fechamentoFinal;
+    fechamentoFinalDto.itens = alunosAlterados;
+    setFechamentoFinal(fechamentoFinalDto);
+    setModoEdicao(true);
+  };
+  const salvarFechamentoFinal = () => {
+    ServicoFechamentoFinal.salvar(fechamentoFinal)
+      .then(resposta => {
+        sucesso('Fechamento final salvo com sucesso.');
+        setModoEdicao(false);
+      })
+      .catch(e => erros(e));
+  };
+
+  //FechamentoFinal
   return (
     <>
       {!turmaSelecionada.turma ? (
@@ -177,7 +238,7 @@ const FechamentoBismestre = () => {
                   border
                   bold
                   className="mr-2"
-                  onClick={onClickSalvar}
+                  onClick={salvarFechamentoFinal}
                   disabled={!modoEdicao || somenteConsulta}
                 />
               </div>
@@ -245,7 +306,16 @@ const FechamentoBismestre = () => {
                       ) : null}
                     </TabPane>) : null
                   }
-                  <TabPane tab="Final" key="final"></TabPane>
+                  <TabPane tab="Final" key="final">
+                    <FechamentoFinal
+                      turmaCodigo={turmaSelecionada.turma}
+                      disciplinaCodigo={disciplinaIdSelecionada}
+                      ehRegencia={ehRegencia}
+                      turmaPrograma={turmaPrograma}
+                      onChange={onChangeFechamentoFinal}
+                      ref={refFechamentoFinal}
+                    />
+                  </TabPane>
                 </ContainerTabsCard>
               </Fechamento>
             </div>
