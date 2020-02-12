@@ -160,6 +160,15 @@ namespace SME.SGP.Aplicacao
                     }
                 }
             }
+            else
+            {
+                //setar não como default para não os que ainda não foram salvos
+                foreach (var item in recuperacaoRetorno.Periodo.Alunos.Where(w => w.Id == 0))
+                {
+                    item.Respostas.Add(new ObjetivoRespostaDto { ObjetivoId = 1, RespostaId = 2 });
+                    item.Respostas.Add(new ObjetivoRespostaDto { ObjetivoId = 2, RespostaId = 2 });
+                };
+            }
             return recuperacaoRetorno;
         }
 
