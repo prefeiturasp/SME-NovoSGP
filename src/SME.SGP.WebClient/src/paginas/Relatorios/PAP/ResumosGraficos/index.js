@@ -54,13 +54,13 @@ const ResumosGraficosPAP = () => {
         setCarregandoRelatorios(true);
         const requisicoes = await Promise.all([
           ResumosGraficosPAPServico.ListarTotalEstudantes(filtroTela),
-          // ResumosGraficosPAPServico.ListarFrequencia(filtroTela),
+          ResumosGraficosPAPServico.ListarFrequencia(filtroTela),
           ResumosGraficosPAPServico.ListarResultados(filtroTela),
         ]);
 
         setDados({
           totalEstudantes: { ...requisicoes[0].data },
-          // frequencia: [...requisicoes[1].data.frequencia],
+          frequencia: [...requisicoes[1].data.frequencia],
           resultados: { ...requisicoes[1].data },
         });
 
@@ -94,7 +94,7 @@ const ResumosGraficosPAP = () => {
           activeKey={tabAtiva}
           defaultActiveKey="relatorios"
         >
-          <Tabs.TabPane tab="Relatórios" key="relatorios">
+          <Tabs.TabPane tab="Resumos" key="relatorios">
             <Loader loading={carregandoRelatorios}>
               {tabAtiva === 'relatorios' ? (
                 <LazyLoad>
