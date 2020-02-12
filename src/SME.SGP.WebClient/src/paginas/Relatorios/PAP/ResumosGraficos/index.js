@@ -61,11 +61,7 @@ const ResumosGraficosPAP = () => {
         setDados({
           totalEstudantes: { ...requisicoes[0].data },
           frequencia: [...requisicoes[1].data.frequencia],
-<<<<<<< HEAD
-          resultados: { ...requisicoes[1].data },
-=======
           resultados: { ...requisicoes[2].data },
->>>>>>> ac36cae9de5d6d4a4d4613c0f083cd85ded0404c
         });
 
         setCarregandoGraficos(false);
