@@ -4,7 +4,7 @@
     {
         public long Aluno_id { get; set; }
         public bool Excluido { get; set; }
-        public string TurmaId { get; set; }
-        public string TurmaRecuperacaoParalelaId { get; set; }
+        public long TurmaId { get; set; }
+        public long TurmaRecuperacaoParalelaId { get; set; }
     }
 }
