@@ -50,8 +50,8 @@ const Container = styled.div`
 function EixoObjetivo({ eixo, objetivo }) {
   return (
     <Container>
-      <div className="topico">{eixo.descricao}</div>
-      <div className="pergunta">{objetivo.descricao}</div>
+      <div className="topico">{eixo && eixo.descricao}</div>
+      <div className="pergunta">{objetivo && objetivo.descricao}</div>
     </Container>
   );
 }
