@@ -69,16 +69,18 @@ function ButtonGroup({
           onClick={onClickExcluir}
         />
       )}
-      <Button
-        id={shortid.generate()}
-        label={labelBotaoPrincipal}
-        color={Colors.Roxo}
-        border
-        bold
-        className="btnGroupItem"
-        onClick={onClickBotaoPrincipal}
-        disabled={!permissoesTela.podeIncluir || desabilitarBotaoPrincipal}
-      />
+      {typeof onClickBotaoPrincipal === 'function' && (
+        <Button
+          id={shortid.generate()}
+          label={labelBotaoPrincipal}
+          color={Colors.Roxo}
+          border
+          bold
+          className="btnGroupItem"
+          onClick={onClickBotaoPrincipal}
+          disabled={!permissoesTela.podeIncluir || desabilitarBotaoPrincipal}
+        />
+      )}
     </ButtonGroupEstilo>
   );
 }

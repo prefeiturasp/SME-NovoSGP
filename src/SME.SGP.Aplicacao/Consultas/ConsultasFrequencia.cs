@@ -12,6 +12,7 @@ namespace SME.SGP.Aplicacao
     public class ConsultasFrequencia : IConsultasFrequencia
     {
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
@@ -24,15 +25,18 @@ namespace SME.SGP.Aplicacao
         public ConsultasFrequencia(IServicoFrequencia servicoFrequencia,
                                    IServicoEOL servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
+                                   IConsultasTipoCalendario consultasTipoCalendario,
                                    IRepositorioAula repositorioAula,
                                    IRepositorioFrequencia repositorioFrequencia,
                                    IRepositorioTurma repositorioTurma,
                                    IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
-                                   IRepositorioParametrosSistema repositorioParametrosSistema, IServicoAluno servicoAluno)
+                                   IRepositorioParametrosSistema repositorioParametrosSistema, 
+                                   IServicoAluno servicoAluno)
         {
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
@@ -43,6 +47,69 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
             => await repositorioFrequencia.FrequenciaAulaRegistrada(aulaId);
+
+        public async Task<IEnumerable<AlunoAusenteDto>> ObterListaAlunosComAusencia(string turmaId, string disciplinaId, int bimestre)
+        {
+            var alunosAusentesDto = new List<AlunoAusenteDto>();
+            // Busca dados da turma
+            var turma = BuscaTurma(turmaId);
+
+            // Busca periodo
+            var periodo = BuscaPeriodo(turma.AnoLetivo, turma.ModalidadeCodigo, bimestre, turma.Semestre);
+
+            var alunosEOL = await servicoEOL.ObterAlunosPorTurma(turmaId);
+            if (alunosEOL == null || !alunosEOL.Any())
+                throw new NegocioException("Não foram localizados alunos para a turma selecionada.");
+
+            var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(disciplinaId) });
+            if (disciplinasEOL == null || !disciplinasEOL.Any())
+                throw new NegocioException("Disciplina informada não localizada no EOL.");
+
+            var quantidadeMaximaCompensacoes = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia));
+            var percentualFrequenciaAlerta = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+
+            foreach(var alunoEOL in alunosEOL)
+            {
+                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(alunoEOL.CodigoAluno, disciplinaId, periodo.PeriodoFim);
+                if (frequenciaAluno == null || frequenciaAluno.NumeroFaltasNaoCompensadas == 0)
+                    continue;
+
+                var faltasNaoCompensadas = int.Parse(frequenciaAluno.NumeroFaltasNaoCompensadas.ToString());
+
+                alunosAusentesDto.Add(new AlunoAusenteDto()
+                {
+                    Id = alunoEOL.CodigoAluno,
+                    Nome = alunoEOL.NomeAluno,
+                    QuantidadeFaltasTotais = faltasNaoCompensadas,
+                    MaximoCompensacoesPermitidas = quantidadeMaximaCompensacoes > faltasNaoCompensadas ? faltasNaoCompensadas : quantidadeMaximaCompensacoes,
+                    PercentualFrequencia = frequenciaAluno.PercentualFrequencia,
+                    Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta
+                });
+            }
+
+            return alunosAusentesDto;
+        }
+
+        private PeriodoEscolarDto BuscaPeriodo(int anoLetivo, Modalidade modalidadeCodigo, int bimestre, int semestre)
+        {
+            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio);
+            var periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos.FirstOrDefault(p => p.Bimestre == bimestre);
+
+            // TODO alterar verificação para checagem de periodo de fechamento e reabertura do fechamento depois de implementado
+            if (DateTime.Now < periodo.PeriodoInicio || DateTime.Now > periodo.PeriodoFim)
+                throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto");
+
+            return periodo;
+        }
+
+        private Turma BuscaTurma(string turmaId)
+        {
+            var turma = repositorioTurma.ObterPorId(turmaId);
+            if (turma == null)
+                throw new NegocioException("Turma não localizada!");
+
+            return turma;
+        }
 
         public async Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId)
         {
@@ -126,6 +193,9 @@ namespace SME.SGP.Aplicacao
             return registroFrequenciaDto;
         }
 
+        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
+            => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual);
+
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(AlunoPorTurmaResposta aluno, string disciplinaId, PeriodoEscolarDto bimestre, int percentualAlerta, int percentualCritico)
         {
             var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(aluno.CodigoAluno, disciplinaId, bimestre.PeriodoInicio, bimestre.PeriodoFim, TipoFrequenciaAluno.PorDisciplina);
@@ -133,11 +203,10 @@ namespace SME.SGP.Aplicacao
             if (frequenciaAluno == null)
                 return null;
 
-            var percentualFrequencia = (int)(100 - (frequenciaAluno.TotalAusencias / frequenciaAluno.TotalAulas * 100));
-
+            int percentualFrequencia = (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0);
             // Critico
             if (percentualFrequencia <= percentualCritico)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequencia };
+                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequencia};
 
             // Alerta
             if (percentualFrequencia <= percentualAlerta)
