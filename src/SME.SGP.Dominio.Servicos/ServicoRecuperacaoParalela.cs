@@ -20,7 +20,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }
 
-        public async Task<IEnumerable<KeyValuePair<string, int>>> ObterFrequencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
+        public async Task<IEnumerable<KeyValuePair<string, int>>> ObterFrequencias(string[] CodigoAlunos, IEnumerable<string> CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
         {
             var retorno = new List<KeyValuePair<string, int>>();
             var parametrosFrequencia = repositorioParametrosSistema.ObterChaveEValorPorTipo(TipoParametroSistema.RecuperacaoParalelaFrequencia);
@@ -34,7 +34,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (CodigoAlunos.Contains(aluno.CodigoAluno))
                 {
-                    double frequencia = 100 - ((aluno.TotalAusencias * aluno.TotalAulas) / 100);
+                    double frequencia = 100 - (aluno.TotalAusencias / (double)aluno.TotalAulas * 100);
                     if (frequencia >= frequente)
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente));
                     else if (frequencia >= naoComparece && frequencia < frequente)
@@ -43,6 +43,14 @@ namespace SME.SGP.Dominio.Servicos
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.NaoComparete));
                 }
             }
+
+            CodigoAlunos.ToList().ForEach(codigoAluno =>
+            {
+                if (retorno.Any(x => x.Key.Equals(codigoAluno)))
+                    return;
+
+                retorno.Add(new KeyValuePair<string, int>(codigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente)); 
+            });
 
             return retorno;
         }
