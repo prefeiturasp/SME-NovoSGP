@@ -34,8 +34,8 @@ namespace SME.SGP.Dados.Repositorios
             {
                 //TODO: colocar os wheres
                 var query = new StringBuilder();
-                query.Append(@"    select
-                                count(aluno_id) as total,
+                query.Append(@" select
+                                count ( distinct aluno_id) as total,
                                 turma.ano,
                                 tipo_ciclo.descricao as Ciclo
                             from recuperacao_paralela rp
