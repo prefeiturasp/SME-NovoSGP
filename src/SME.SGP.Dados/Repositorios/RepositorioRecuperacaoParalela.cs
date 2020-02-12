@@ -30,8 +30,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano)
         {
-            try
-            {
+            
                 //TODO: colocar os wheres
                 var query = new StringBuilder();
                 query.Append(@" select
@@ -53,20 +52,14 @@ namespace SME.SGP.Dados.Repositorios
                 var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId };
                 return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoDto>(query.ToString(), parametros);
 
-            }
-            catch (System.Exception ex)
-            {
-
-                throw ex;
-            }
+            
+          
         }
 
         public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>> ListarTotalEstudantesPorFrequencia(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano)
         {
             //TODO: colocar os wheres
 
-            try
-            {
                 var query = new StringBuilder();
                 query.Append(@"select
 	                            count(aluno_id) as total,
@@ -97,18 +90,12 @@ namespace SME.SGP.Dados.Repositorios
 
                 return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>(query.ToString(), parametros);
 
-            }
-            catch (System.Exception ex)
-            {
-
-                throw ex;
-            }
+            
+         
         }
 
         public async Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? pagina)
         {
-            try
-            {
                 //a paginação desse ítem é diferente das outras, pois ela é determinada pela paginação da coluna pagina
                 //ela não tem uma quantidade exata de ítens por página, apenas os objetivos daquele eixo, podendo variar para cada um
                 if (pagina == 0) pagina = 1;
@@ -150,12 +137,6 @@ namespace SME.SGP.Dados.Repositorios
 
                 return retorno;
 
-            }
-            catch (System.Exception ex)
-            {
-
-                throw ex;
-            }
         }
 
         public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? pagina)
@@ -211,7 +192,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join resposta on rpp.resposta_id = resposta.id");
             query.AppendLine("inner join objetivo o on rpp.objetivo_id = o.id");
             query.AppendLine("inner join eixo e on o.eixo_id = e.id");
-
+            query.AppendLine("inner join  ue on ue.id = turma.ue_id");
+            query.AppendLine("inner join dre on dre.id = ue.dre_id");
         }
 
         private static void MontarWhere(StringBuilder query, string dreId, string ueId, int? cicloId, string ano, int? periodoId, string turmaId, int? pagina)
