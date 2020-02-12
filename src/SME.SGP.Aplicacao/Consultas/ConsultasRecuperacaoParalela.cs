@@ -46,20 +46,20 @@ namespace SME.SGP.Aplicacao
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
         }
 
-        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano, int? pagina)
+        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? pagina)
         {
             var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResultado(periodo, dreId, ueId, cicloId, turmaId, ano, pagina);
             return MapearResultadoPaginadoParaDto(totalResumo);
         }
 
-        public async Task<IEnumerable<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano, int? pagina)
+        public async Task<IEnumerable<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? pagina)
         {
             if (periodo.HasValue && periodo.Value != (int)PeriodoRecuperacaoParalela.Encaminhamento) return null;
             var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResultadoEncaminhamento(periodo, dreId, ueId, cicloId, turmaId, ano, pagina);
             return MapearResultadoParaDto(totalResumo);
         }
 
-        public async Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano)
+        public async Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano)
         {
             var totalAlunosPorSeries = await repositorioRecuperacaoParalela.ListarTotalAlunosSeries(periodo, dreId, ueId, cicloId, turmaId, ano);
             if (!totalAlunosPorSeries.Any()) return null;
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
             return MapearParaDtoTotalEstudantes(total, totalAlunosPorSeries);
         }
 
-        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano)
+        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano)
         {
             var totalAlunosPorSeriesFrequencia = await repositorioRecuperacaoParalela.ListarTotalEstudantesPorFrequencia(periodo, dreId, ueId, cicloId, turmaId, ano);
             if (!totalAlunosPorSeriesFrequencia.Any()) return null;
