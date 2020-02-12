@@ -7,7 +7,7 @@ const ResumosGraficosPAPServico = {
     });
   },
   ListarFrequencia(params) {
-    return api.get('v1/recuperacao-paralela/frequencia', {
+    return api.get('v1/recuperacao-paralela/grafico/frequencia', {
       params,
     });
   },

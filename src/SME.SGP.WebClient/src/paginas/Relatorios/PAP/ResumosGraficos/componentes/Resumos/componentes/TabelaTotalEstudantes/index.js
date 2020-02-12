@@ -51,7 +51,7 @@ const TabelaTotalEstudantes = ({ dados }) => {
     if (dados && Object.entries(dados).length) {
       const montaColunas = [];
 
-      if (dados.ciclos.length) {
+      if (!dados.ciclos.length) {
         dados.ciclos.forEach(ciclo => {
           const coluna = {
             title: ciclo.cicloDescricao,
