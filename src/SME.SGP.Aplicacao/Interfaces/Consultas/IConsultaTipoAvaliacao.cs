@@ -8,5 +8,7 @@ namespace SME.SGP.Aplicacao
         Task<PaginacaoResultadoDto<TipoAvaliacaoCompletaDto>> ListarPaginado(string nome, string descricao, bool? situacao);
 
         TipoAvaliacaoCompletaDto ObterPorId(long id);
+
+        Task<TipoAvaliacaoCompletaDto> ObterTipoAvaliacaoBimestral();
     }
 }

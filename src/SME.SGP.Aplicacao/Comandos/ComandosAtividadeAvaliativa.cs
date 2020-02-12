@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
 
             atividadeAvaliativa.PodeSerAlterada(usuario);
 
-            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao);
+            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, dto.DisciplinasId[0], atividadeAvaliativa.DataAvaliacao);
 
             unitOfWork.IniciarTransacao();
 
@@ -127,11 +127,14 @@ namespace SME.SGP.Aplicacao
 
             atividadeAvaliativa.PodeSerAlterada(usuario);
 
-            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao);
-
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(idAtividadeAvaliativa);
 
-            unitOfWork.IniciarTransacao();
+            foreach (var atividadeDisciplina in atividadeDisciplinas)
+            {
+                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeDisciplina.DisciplinaId, atividadeAvaliativa.DataAvaliacao);
+            }
+
+                unitOfWork.IniciarTransacao();
 
             atividadeAvaliativa.Excluir();
             await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
@@ -335,7 +338,10 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            await VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao.Date);
+            foreach (var id in dto.DisciplinasId)
+            {
+                await VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, id, atividadeAvaliativa.DataAvaliacao.Date);
+            }
 
             unitOfWork.IniciarTransacao();
 
@@ -425,10 +431,10 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula)
         {
-            if (!await servicoUsuario.PodePersistirTurma(codigoRf, turmaId, dataAula))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+            if (!await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
     }
 }

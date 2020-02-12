@@ -3,7 +3,7 @@
 [Environment]::SetEnvironmentVariable("ConnectionStrings__SGP-Postgres", "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=sgp_db;Pooling=true", "Machine")
 [Environment]::SetEnvironmentVariable("JwtTokenSettings__IssuerSigningKey", "2A3B40C8D2215897C5EF1CC6D7D8469C687D17FDF85E675B6EBD9FBA26615B93805556652B9DDFD96CA9565C8D42EA83EF44CAC3B79AF64B343461B52FBB62EA", "Machine")
 [Environment]::SetEnvironmentVariable("Logging__LogLevel__Default", "Debug", "Machine")
-[Environment]::SetEnvironmentVariable("Nome-Instancia-Redis", "localhost", "Machine")
+[Environment]::SetEnvironmentVariable("Nome-Instancia-Redis", "NovoSgp-", "Machine")
 [Environment]::SetEnvironmentVariable("ExpiracaoCache__ObjetivosAprendizagem", "720", "Machine")
 [Environment]::SetEnvironmentVariable("Logging__LogLevel__Microsoft", "Information", "Machine")
 [Environment]::SetEnvironmentVariable("UrlApiJurema", "https://curriculo.sme.prefeitura.sp.gov.br/api/", "Machine")

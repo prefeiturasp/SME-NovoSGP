@@ -356,5 +356,14 @@
 
         [PermissaoMenu(Menu = "Acompanhamento PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pap/acompanhamento")]
         RAP_C = 116,
+
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhConsulta = true, Url = "/fechamento/fechamento-bimestre")]
+        FB_C = 124,
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhInclusao = true, Url = "/fechamento/fechamento-bimestre")]
+        FB_I = 125,
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhExclusao = true, Url = "/fechamento/fechamento-bimestre")]
+        FB_E = 126,
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhAlteracao = true, Url = "/fechamento/fechamento-bimestre")]
+        FB_A = 127,
     }
 }

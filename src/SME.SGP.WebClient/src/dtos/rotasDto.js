@@ -25,8 +25,10 @@ const RotasDto = {
   AULA_DADA_AULA_PREVISTA: '/diario-classe/aula-dada-aula-prevista',
   REGISTRO_POA: '/diario-classe/registro-poa',
   COMPENSACAO_AUSENCIA: '/diario-classe/compensacao-ausencia',
+  FECHAMENTO_BIMESTRE: '/fechamento/fechamento-bimestre',
   PERIODO_FECHAMENTO_ABERTURA:
     '/calendario-escolar/periodo-fechamento-abertura',
+  PAP: '/recuperacao-paralela',
   PERIODO_FECHAMENTO_REABERTURA:
     '/calendario-escolar/periodo-fechamento-reabertura',
   RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/acompanhamento',
