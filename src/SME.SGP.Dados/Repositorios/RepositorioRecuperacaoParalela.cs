@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<RetornoRecuperacaoParalela>> Listar(string turmaId, long periodoId)
+        public async Task<IEnumerable<RetornoRecuperacaoParalela>> Listar(long turmaId, long periodoId)
         {
             var query = new StringBuilder();
             query.AppendLine(MontaCamposCabecalho());
@@ -24,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where rec.turma_recuperacao_paralela_id = @turmaId ");
             query.AppendLine("and recRel.periodo_recuperacao_paralela_id = @periodoId ");
             query.AppendLine("and rec.excluido = false ");
-            return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId, periodoId });
+            return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId = turmaId.ToString(), periodoId });
         }
 
         public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano)

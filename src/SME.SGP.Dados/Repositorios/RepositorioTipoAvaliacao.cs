@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -38,7 +37,9 @@ namespace SME.SGP.Dados.Repositorios
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new
             {
-                nome, descricao, situacao
+                nome,
+                descricao,
+                situacao
             }))
             {
                 retornoPaginado.Items = multi.Read<TipoAvaliacao>().ToList();
@@ -49,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        public async Task<bool> VerificarSeJaExistePorNome(string nome,string descricao, bool situacao, long id)
+        public async Task<bool> VerificarSeJaExistePorNome(string nome, string descricao, bool situacao, long id)
         {
             var query = new StringBuilder();
             MontaCabecalho(query, false);
@@ -75,14 +76,15 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("criado_rf,");
                 query.AppendLine("alterado_rf,");
                 query.AppendLine("alterado_rf,");
-                query.AppendLine("excluido");
+                query.AppendLine("excluido,");
+                query.AppendLine("avaliacoes_necessarias_bimestre");
             }
         }
 
         private static void MontaFromWhere(StringBuilder query, string nome, string descricao, bool? situacao, long id)
         {
             query.AppendLine("from tipo_avaliacao");
-        
+
             query.AppendLine("where excluido = false");
             if (situacao.HasValue)
             {
@@ -98,8 +100,12 @@ namespace SME.SGP.Dados.Repositorios
             {
                 query.AppendLine("and lower(f_unaccent(descricao)) LIKE f_unaccent(@descricao) ");
             }
+        }
 
-
+        public async Task<TipoAvaliacao> ObterTipoAvaliacaoBimestral()
+        {
+            var query = "select * from tipo_avaliacao where codigo = @tipoAvaliacao";
+            return await database.Conexao.QueryFirstAsync<TipoAvaliacao>(query, new { tipoAvaliacao = TipoAvaliacaoCodigo.AvaliacaoBimestral });
         }
     }
 }
