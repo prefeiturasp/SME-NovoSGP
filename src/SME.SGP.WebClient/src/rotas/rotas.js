@@ -40,12 +40,21 @@ import CompensacaoAusenciaLista from '~/paginas/DiarioClasse/CompensacaoAusencia
 import CompensacaoAusenciaForm from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaForm';
 import FechamentoBismestre from '~/paginas/Fechamento/FechamentoBimestre/fechamento-bimestre';
 import PeriodoFechamentoAbertura from '~/paginas/CalendarioEscolar/PeriodoFechamentoAbertura/periodo-fechamento-abertura';
+import ResumosGraficosPAP from '~/paginas/Relatorios/PAP/ResumosGraficos';
 import PaginaComErro from '~/paginas/Erro/pagina-com-erro';
 import PeriodoFechamentoReaberturaLista from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaLista';
 import PeriodoFechamentoReaberturaForm from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaForm';
 import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento';
 
 const rotas = new Map();
+
+rotas.set(`${RotasDto.PAP}/resumos`, {
+  breadcrumbName: 'ResumosGraficosPAP',
+  parent: RotasDto.PAP,
+  component: ResumosGraficosPAP,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+});
 
 rotas.set(RotasDto.CALENDARIO_ESCOLAR, {
   breadcrumbName: 'Calendário Escolar',
