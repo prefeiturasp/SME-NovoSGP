@@ -37,9 +37,16 @@ function UeDropDown({
           }))
           .sort(FiltroHelper.ordenarLista('desc'));
       }
-      if (opcaoTodas) {
-        lista.unshift({ desc: 'Todas', valor: '0' });
-        setForcaDesabilitado(true);
+      if (lista.length > 1) {
+        if (opcaoTodas) {
+          lista.unshift({ desc: 'Todas', valor: '0' });
+          setForcaDesabilitado(true);
+        }
+      } else if (!lista.length) {
+        if (opcaoTodas) {
+          lista.unshift({ desc: 'Todas', valor: '0' });
+          setForcaDesabilitado(true);
+        }
       }
       setListaUes(lista);
       setCarregando(false);
