@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 
@@ -110,6 +111,7 @@ namespace SME.SGP.Dominio.Servicos
                 var alunoEol = alunosTurma.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
                 alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
                 {
+                    NumeroAluno = alunoEol.NumeroAlunoChamada,
                     CodigoAluno = aluno.CodigoAluno,
                     NomeAluno = alunoEol.NomeAluno,
                     QuantidadeCompensacoes = aluno.QuantidadeFaltasCompensadas
@@ -124,11 +126,14 @@ namespace SME.SGP.Dominio.Servicos
                     var notificacaoId = NotificarCompensacaoAusencia(compensacaoId
                             , gestor.Usuario
                             , professor.Nome
+                            , professor.CodigoRf
                             , disciplinaEOL
                             , turma.CodigoTurma
                             , turma.Nome
+                            , turma.ModalidadeCodigo.GetAttribute<DisplayAttribute>().ShortName
                             , ue.CodigoUe
                             , ue.Nome
+                            , ue.TipoEscola.GetAttribute<DisplayAttribute>().ShortName
                             , dre.CodigoDre
                             , dre.Nome
                             , compensacao.Bimestre
@@ -352,24 +357,28 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private long NotificarCompensacaoAusencia(long compensacaoId, Usuario usuario, string professor, string disciplina,
-            string codigoTurma, string turma, string codigoUe, string escola, string codigoDre, string dre,
+        private long NotificarCompensacaoAusencia(long compensacaoId, Usuario usuario, string professor, string professorRf, string disciplina,
+            string codigoTurma, string turma, string modalidade, string codigoUe, string escola, string tipoEscola, string codigoDre, string dre,
             int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos)
         {
             var tituloMensagem = $"Atividade de compensação da turma {turma}";
 
             StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.AppendLine($"<p>A atividade de compensação '{atividade}' da disciplina de {disciplina} foi cadastrada para a turma {turma} da {escola} (DRE {dre}) no {bimestre}º Bimestre pelo professor {professor}.</p>");
+            mensagemUsuario.AppendLine($"<p>A atividade de compensação <b>'{atividade}'</b> do componente curricular de <b>{disciplina}</b> foi cadastrada para a turma <b>{turma} {modalidade}</b> da <b>{tipoEscola} {escola} ({dre})</b> no <b>{bimestre}º</b> Bimestre pelo professor <b>{professor} ({professorRf})</b>.</p>");
             mensagemUsuario.AppendLine("<p>O(s) seguinte(s) aluno(s) foi(ram) vinculado(s) a atividade:</p>");
 
             mensagemUsuario.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagemUsuario.AppendLine("<tr>");
-            mensagemUsuario.AppendLine("<td>Nº</td><td>Nome do aluno</td><td>Quantidade de aulas compensadas</td>");
+            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Nº</td>");
+            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
+            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Quantidade de aulas compensadas</td>");
             mensagemUsuario.AppendLine("</tr>");
             foreach (var aluno in alunos)
             {
                 mensagemUsuario.AppendLine("<tr>");
-                mensagemUsuario.Append($"<td>{aluno.CodigoAluno} </td><td> {aluno.NomeAluno} </td><td style='text-aign: center;'> {aluno.QuantidadeCompensacoes}</td>");
+                mensagemUsuario.Append($"<td style='padding: 5px;'>{aluno.NumeroAluno}</td>");
+                mensagemUsuario.Append($"<td style='padding: 5px;'>{aluno.NomeAluno}</td>");
+                mensagemUsuario.Append($"<td style='text-align: center;'>{aluno.QuantidadeCompensacoes}</td>");
                 mensagemUsuario.AppendLine("</tr>");
             }
             mensagemUsuario.AppendLine("</table>");
