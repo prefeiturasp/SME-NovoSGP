@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 // Componentes
 import { PainelCollapse, LazyLoad } from '~/componentes';
 
-function Resumos({ dados }) {
+function Resumos({ dados, ciclos, anos }) {
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
   const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
   const TabelaInformacoesEscolares = lazy(() =>
@@ -63,7 +63,11 @@ function Resumos({ dados }) {
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Total de estudantes">
           <LazyLoad>
-            <TabelaTotalEstudantes dados={dados.totalEstudantes} />
+            <TabelaTotalEstudantes
+              dados={dados.totalEstudantes}
+              ciclos={ciclos}
+              anos={anos}
+            />
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
@@ -77,14 +81,22 @@ function Resumos({ dados }) {
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Frequência">
           <LazyLoad>
-            <TabelaFrequencia dados={dadosTabelaFrequencia} />
+            <TabelaFrequencia
+              dados={dadosTabelaFrequencia}
+              ciclos={ciclos}
+              anos={anos}
+            />
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Resultados">
           <LazyLoad>
-            <TabelaResultados dados={dados.resultados} />
+            <TabelaResultados
+              dados={dados.resultados}
+              ciclos={ciclos}
+              anos={anos}
+            />
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
@@ -94,10 +106,14 @@ function Resumos({ dados }) {
 
 Resumos.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.any]),
+  ciclos: PropTypes.oneOfType([PropTypes.bool]),
+  anos: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 Resumos.defaultProps = {
   dados: [],
+  ciclos: false,
+  anos: false,
 };
 
 export default Resumos;

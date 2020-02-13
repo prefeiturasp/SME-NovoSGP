@@ -22,7 +22,7 @@ function objetoExistaNaLista(objeto, lista) {
   );
 }
 
-const TabelaTotalEstudantes = ({ dados }) => {
+const TabelaTotalEstudantes = ({ dados, ciclos, anos }) => {
   const [colunas, setColunas] = useState([]);
 
   const [dadosTabela, setDadosTabela] = useState([]);
@@ -51,7 +51,7 @@ const TabelaTotalEstudantes = ({ dados }) => {
     if (dados && Object.entries(dados).length) {
       const montaColunas = [];
 
-      if (!dados.ciclos.length) {
+      if (ciclos && dados.ciclos.length) {
         dados.ciclos.forEach(ciclo => {
           const coluna = {
             title: ciclo.cicloDescricao,
@@ -95,7 +95,7 @@ const TabelaTotalEstudantes = ({ dados }) => {
         montaDados.push(dadoPorcentagem);
 
         setDadosTabela(montaDados);
-      } else {
+      } else if (anos && dados.anos.length) {
         dados.anos.forEach(ano => {
           const coluna = {
             title: ano.anoDescricao,
@@ -163,7 +163,7 @@ const TabelaTotalEstudantes = ({ dados }) => {
       setColunas([...colunasFixas, ...montaColunas]);
       setCarregandoDados(false);
     }
-  }, [dados]);
+  }, [anos, ciclos, dados]);
 
   useEffect(() => {
     montaColunasDados();
@@ -187,10 +187,14 @@ const TabelaTotalEstudantes = ({ dados }) => {
 
 TabelaTotalEstudantes.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.any]),
+  ciclos: PropTypes.oneOfType([PropTypes.bool]),
+  anos: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 TabelaTotalEstudantes.defaultProps = {
   dados: [],
+  ciclos: false,
+  anos: false,
 };
 
 export default TabelaTotalEstudantes;

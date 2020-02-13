@@ -94,11 +94,15 @@ function Filtro({ onFiltrar }) {
       switch (id) {
         case '1':
           // Alfabetização
-          setListaAnos([{ desc: '3', valor: '3' }]);
+          setListaAnos([
+            { desc: 'Todos', valor: '0' },
+            { desc: '3', valor: '3' },
+          ]);
           break;
         case '2':
           // Interdisciplinar
           setListaAnos([
+            { desc: 'Todos', valor: '0' },
             { desc: '4', valor: '4' },
             { desc: '5', valor: '5' },
             { desc: '6', valor: '6' },
@@ -107,6 +111,7 @@ function Filtro({ onFiltrar }) {
         case '3':
           // Autoral
           setListaAnos([
+            { desc: 'Todos', valor: '0' },
             { desc: '7', valor: '7' },
             { desc: '8', valor: '8' },
             { desc: '9', valor: '9' },
@@ -137,6 +142,8 @@ function Filtro({ onFiltrar }) {
 
   const [listaTurmas, setListaTurmas] = useState([]);
 
+  const [anoDesabilitado, setAnoDesabilitado] = useState(false);
+
   useEffect(() => {
     if (ueId) {
       if (ueId === '0') {
@@ -147,24 +154,34 @@ function Filtro({ onFiltrar }) {
     }
   }, [buscarTurmas, ueId]);
 
-  useEffect(() => {
-    if (ano) {
+  const aoTrocarAno = valorAno => {
+    if (valorAno) {
       const turmas = [];
       listaTodasTurmas.forEach(turma => {
         const valor = turma.nome.split('');
         if (
           typeof parseInt(valor[0], 10) === 'number' &&
-          valor[0] === ano &&
+          valor[0] === valorAno &&
           turmas.indexOf(turma) === -1
         ) {
           turmas.push(turma);
         }
       });
-      setListaTurmas(turmas.sort(FiltroHelper.ordenarLista('nome')));
+      turmas.sort(FiltroHelper.ordenarLista('nome'));
+      turmas.unshift({ nome: 'Todas', codigo: '0' });
+      setListaTurmas(turmas);
+
+      if (turmas.length === 1) {
+        setAnoDesabilitado(true);
+        setTurmaId(turmas[0].codigo);
+        refForm.setFieldValue('turmaId', turmas[0].codigo);
+      }
     } else {
+      setTurmaId(undefined);
       setListaTurmas([]);
     }
-  }, [ano, listaTodasTurmas]);
+    setAno(valorAno);
+  };
 
   return (
     <Formik
@@ -220,7 +237,7 @@ function Filtro({ onFiltrar }) {
                   form={form}
                   name="ano"
                   lista={listaAnos}
-                  onChange={valor => setAno(valor)}
+                  onChange={valor => aoTrocarAno(valor)}
                   containerVinculoId="containerFiltro"
                   valueOption="valor"
                   valueText="desc"
@@ -240,7 +257,7 @@ function Filtro({ onFiltrar }) {
                 valueOption="codigo"
                 valueText="nome"
                 placeholder="Selec. a turma"
-                disabled={!listaTurmas.length}
+                disabled={!ano || anoDesabilitado}
               />
             </Grid>
             <Grid cols={5}>
