@@ -14,7 +14,7 @@ function Resumos({ dados, ciclos, anos }) {
     import('./componentes/TabelaTotalEstudantes')
   );
 
-  const filtroFake = 'turma';
+  const filtro = ciclos ? 'ciclos' : 'turma';
 
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados && dados.frequencia;
@@ -22,32 +22,32 @@ function Resumos({ dados, ciclos, anos }) {
     const mapa = { turma: 'anos', ciclos: 'ciclos' };
 
     if (frequenciaDados) {
-      frequenciaDados.forEach(x => {
+      frequenciaDados.forEach(frequencia => {
         let quantidade = {
-          FrequenciaDescricao: x.frequenciaDescricao,
+          FrequenciaDescricao: frequencia.frequenciaDescricao,
           TipoDado: 'Quantidade',
         };
 
         let porcentagem = {
-          FrequenciaDescricao: x.frequenciaDescricao,
+          FrequenciaDescricao: frequencia.frequenciaDescricao,
           TipoDado: 'Porcentagem',
         };
 
-        x.linhas[0][mapa[filtroFake]].forEach((y, key) => {
+        frequencia.linhas[0][mapa[filtro]].forEach((linha, indice) => {
           quantidade = {
             ...quantidade,
-            key: String(key),
-            Descricao: y.descricao,
-            [y.chave]: y.quantidade,
-            Total: y.totalQuantidade,
+            indice: String(indice),
+            Descricao: linha.descricao,
+            [linha.chave]: linha.quantidade,
+            Total: linha.totalQuantidade,
           };
 
           porcentagem = {
             ...porcentagem,
-            key: String(key),
-            Descricao: y.descricao,
-            [y.chave]: `${Math.round(y.porcentagem, 2)}%`,
-            Total: `${Math.round(y.totalPorcentagem, 2)}%`,
+            indice: String(indice),
+            Descricao: linha.descricao,
+            [linha.chave]: `${Math.round(linha.porcentagem, 2)}%`,
+            Total: `${Math.round(linha.totalPorcentagem, 2)}%`,
           };
         });
 
@@ -56,7 +56,7 @@ function Resumos({ dados, ciclos, anos }) {
     }
 
     return dadosFormatados;
-  }, [dados]);
+  }, [dados, filtro]);
 
   return (
     <>
