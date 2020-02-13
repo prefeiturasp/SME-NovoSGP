@@ -10,6 +10,7 @@ import EixoObjetivo from './componentes/EixoObjetivo';
 import { Linha } from '~/componentes/EstilosGlobais';
 
 function TabGraficos({ dados }) {
+  const [itemAtivo, setItemAtivo] = useState(null);
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados.frequencia;
     const dadosFormatados = [];
@@ -83,20 +84,18 @@ function TabGraficos({ dados }) {
 
   const [objetivos, setObjetivos] = useState([
     {
-      id: 1,
+      id: shortid.generate(),
       eixoDescricao: 'Frequência',
       objetivoDescricao: 'Frequência na turma de PAP',
       dados: dadosTabelaFrequencia,
     },
     {
-      id: 2,
+      id: shortid.generate(),
       eixoDescricao: 'Total',
       objetivoDescricao: 'Total de alunos no PAP',
       dados: dadosTabelaTotalEstudantes,
     },
   ]);
-
-  const [itemAtivo, setItemAtivo] = useState(objetivos[0]);
 
   const objetoExistaNaLista = (objeto, lista) => {
     return lista.some(
@@ -171,7 +170,13 @@ function TabGraficos({ dados }) {
 
   useEffect(() => {
     setObjetivos(atual => [...atual, ...dadosTabelaResultados]);
+    // setItemAtivo(objetivos[0].dados[0]);
+    console.log('executou objetivos', objetivos);
   }, [dadosTabelaResultados]);
+
+  useEffect(() => {
+    console.log(itemAtivo);
+  }, [itemAtivo]);
 
   return (
     <>
