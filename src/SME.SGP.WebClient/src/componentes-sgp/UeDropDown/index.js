@@ -22,6 +22,7 @@ function UeDropDown({
 }) {
   const [carregando, setCarregando] = useState(false);
   const [listaUes, setListaUes] = useState([]);
+  const [forcaDesabilitado, setForcaDesabilitado] = useState(false);
 
   useEffect(() => {
     async function buscarUes() {
@@ -36,8 +37,10 @@ function UeDropDown({
           }))
           .sort(FiltroHelper.ordenarLista('desc'));
       }
-      if (opcaoTodas && dreId === '0')
+      if (opcaoTodas && dreId === '0') {
         lista.unshift({ desc: 'Todas', valor: '0' });
+        setForcaDesabilitado(true);
+      }
       setListaUes(lista);
       setCarregando(false);
     }
@@ -46,7 +49,7 @@ function UeDropDown({
     } else {
       setListaUes([]);
     }
-  }, [dreId, url]);
+  }, [dreId, opcaoTodas, url]);
 
   useEffect(() => {
     if (listaUes.length === 1) {
@@ -69,7 +72,7 @@ function UeDropDown({
         placeholder="Unidade Escolar (UE)"
         disabled={
           dreId === '0'
-            ? false
+            ? forcaDesabilitado || desabilitado
             : listaUes.length === 0 || listaUes.length === 1 || desabilitado
         }
       />

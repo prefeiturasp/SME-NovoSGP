@@ -21,6 +21,7 @@ import { erro } from '~/servicos/alertas';
 import ResumosGraficosPAPServico from '~/servicos/Paginas/Relatorios/PAP/ResumosGraficos';
 
 import RotasDto from '~/dtos/rotasDto';
+import history from '~/servicos/history';
 
 const ResumosGraficosPAP = () => {
   const permissoesTela = useSelector(store => store.usuario.permissoes);
@@ -31,7 +32,9 @@ const ResumosGraficosPAP = () => {
   const [carregandoRelatorios, setCarregandoRelatorios] = useState(false);
   const [carregandoGraficos, setCarregandoGraficos] = useState(false);
 
-  const onClickVoltar = () => {};
+  const onClickVoltar = () => {
+    history.push('/');
+  };
 
   const Resumos = lazy(() => import('./componentes/Resumos'));
   const TabGraficos = lazy(() => import('./componentes/TabGraficos'));
@@ -60,7 +63,8 @@ const ResumosGraficosPAP = () => {
 
         setDados({
           totalEstudantes: { ...requisicoes[0].data },
-          frequencia: [...requisicoes[1].data.frequencia],
+          frequencia: [],
+          // frequencia: [...requisicoes[1].data.frequencia],
           resultados: { ...requisicoes[2].data },
         });
 
@@ -72,7 +76,14 @@ const ResumosGraficosPAP = () => {
         erro(`Não foi possível completar a requisição! ${err}`);
       }
     }
-    buscarDados();
+    if (
+      filtroTela.DreId &&
+      filtroTela.UeId &&
+      filtroTela.CicloId &&
+      filtroTela.Periodo
+    ) {
+      buscarDados();
+    }
   }, [filtroTela]);
 
   return (
@@ -86,37 +97,50 @@ const ResumosGraficosPAP = () => {
           desabilitarBotaoPrincipal
         />
         <Filtro onFiltrar={filtroAtual => setFiltro(filtroAtual)} />
-        <ContainerTabs
-          tabPosition="top"
-          type="card"
-          tabBarGutter={10}
-          onChange={key => setTabAtiva(key)}
-          activeKey={tabAtiva}
-          defaultActiveKey="relatorios"
-        >
-          <Tabs.TabPane tab="Resumos" key="relatorios">
-            <Loader loading={carregandoRelatorios}>
-              {tabAtiva === 'relatorios' ? (
-                <LazyLoad>
-                  <Resumos dados={dados} />
-                </LazyLoad>
-              ) : (
-                ''
-              )}
-            </Loader>
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Gráficos" key="graficos">
-            <Loader loading={carregandoGraficos}>
-              {tabAtiva === 'graficos' ? (
-                <LazyLoad>
-                  <TabGraficos dados={dados} />
-                </LazyLoad>
-              ) : (
-                ''
-              )}
-            </Loader>
-          </Tabs.TabPane>
-        </ContainerTabs>
+        {filtroTela.DreId &&
+        filtroTela.UeId &&
+        filtroTela.CicloId &&
+        filtroTela.Periodo ? (
+          <ContainerTabs
+            tabPosition="top"
+            type="card"
+            tabBarGutter={10}
+            onChange={key => setTabAtiva(key)}
+            activeKey={tabAtiva}
+            defaultActiveKey="relatorios"
+          >
+            <Tabs.TabPane tab="Resumos" key="relatorios">
+              <Loader loading={carregandoRelatorios}>
+                {tabAtiva === 'relatorios' ? (
+                  <LazyLoad>
+                    <Resumos
+                      dados={dados}
+                      ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
+                      anos={!!filtroTela.Ano}
+                    />
+                  </LazyLoad>
+                ) : (
+                  ''
+                )}
+              </Loader>
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Gráficos" key="graficos">
+              <Loader loading={carregandoGraficos}>
+                {tabAtiva === 'graficos' ? (
+                  <LazyLoad>
+                    <TabGraficos
+                      dados={dados}
+                      ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
+                      anos={!!filtroTela.Ano}
+                    />
+                  </LazyLoad>
+                ) : (
+                  ''
+                )}
+              </Loader>
+            </Tabs.TabPane>
+          </ContainerTabs>
+        ) : null}
       </Card>
     </>
   );

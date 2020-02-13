@@ -19,14 +19,29 @@ function objetoExistaNaLista(objeto, lista) {
   );
 }
 
-const TabelaResultados = ({ dados }) => {
+const TabelaResultados = ({ dados, ciclos, anos }) => {
   const [dadosTabela, setDadosTabela] = useState([]);
 
   const [colunas, setColunas] = useState([]);
 
   const [unidadeSelecionada, setUnidadeSelecionada] = useState('quantidade');
 
+  const renderizarCor = () => {
+    const cores = [
+      Base.AzulCalendario,
+      Base.CinzaCalendario,
+      Base.Laranja,
+      Base.RosaCalendario,
+      Base.Roxo,
+      Base.Verde,
+      Base.Vermelho,
+    ];
+    return cores[Math.floor(Math.random() * 6)];
+  };
+
   const montaColunasDados = useCallback(() => {
+    setDadosTabela([]);
+
     const colunasFixas = [
       {
         title: 'Eixo',
@@ -40,7 +55,10 @@ const TabelaResultados = ({ dados }) => {
               rowSpan: row.AgrupaEixo
                 ? row.TamanhoObjetivos * row.TamanhoRespostas
                 : 0,
-              style: { fontWeight: 'bold' },
+              style: {
+                borderLeft: `7px solid ${renderizarCor()}`,
+                fontWeight: 'bold',
+              },
             },
           };
         },
@@ -84,8 +102,51 @@ const TabelaResultados = ({ dados }) => {
       const eixos = [...dados.items];
 
       eixos.forEach(eixo => {
-        eixo.objetivos.forEach(objetivo => {
-          if (objetivo.anos.length) {
+        eixo.objetivos.forEach((objetivo, o) => {
+          if (ciclos && objetivo.ciclos.length) {
+            // Ciclos
+            objetivo.ciclos.forEach(ciclo => {
+              // Colunas
+              const coluna = {
+                title: `${ciclo.cicloDescricao}`,
+                dataIndex: `${ciclo.cicloDescricao}`,
+              };
+
+              if (!objetoExistaNaLista(coluna, montaColunas))
+                montaColunas.push(coluna);
+
+              // Dados
+              ciclo.respostas.forEach((resposta, r) => {
+                const dado = {};
+                dado.Eixo = eixo.eixoDescricao;
+                dado.Objetivo = objetivo.objetivoDescricao;
+                dado.TamanhoObjetivos = eixo.objetivos.length;
+                dado.Resposta = resposta.respostaDescricao;
+                dado.TamanhoRespostas = ciclo.respostas.length;
+                dado.AgrupaEixo = o === 0 && r === 0;
+                dado.AgrupaObjetivo = r === 0;
+
+                let total = 0;
+
+                objetivo.ciclos.forEach(cicloResposta => {
+                  dado[cicloResposta.cicloDescricao] =
+                    unidadeSelecionada === 'quantidade'
+                      ? resposta[unidadeSelecionada]
+                      : `${Math.round(resposta[unidadeSelecionada], 2)}%`;
+                  total += resposta[unidadeSelecionada];
+                });
+
+                dado.Total =
+                  unidadeSelecionada === 'quantidade'
+                    ? total
+                    : `${Math.round(total, 2)}%`;
+
+                if (!objetoExistaNaLista(dado, montaDados))
+                  montaDados.push(dado);
+              });
+            });
+          } else if (anos && objetivo.anos.length) {
+            // Anos
             objetivo.anos.forEach(ano => {
               // Colunas
               const coluna = {
@@ -97,24 +158,30 @@ const TabelaResultados = ({ dados }) => {
                 montaColunas.push(coluna);
 
               // Dados
-              ano.respostas.forEach((resposta, indice) => {
+              ano.respostas.forEach((resposta, r) => {
                 const dado = {};
                 dado.Eixo = eixo.eixoDescricao;
                 dado.Objetivo = objetivo.objetivoDescricao;
                 dado.TamanhoObjetivos = eixo.objetivos.length;
                 dado.Resposta = resposta.respostaDescricao;
                 dado.TamanhoRespostas = ano.respostas.length;
-                dado.AgrupaEixo = indice === 0;
-                dado.AgrupaObjetivo = indice === 0;
+                dado.AgrupaEixo = o === 0 && r === 0;
+                dado.AgrupaObjetivo = r === 0;
 
                 let total = 0;
 
                 objetivo.anos.forEach(anoResposta => {
-                  dado[anoResposta.anoDescricao] = resposta[unidadeSelecionada];
+                  dado[anoResposta.anoDescricao] =
+                    unidadeSelecionada === 'quantidade'
+                      ? resposta[unidadeSelecionada]
+                      : `${Math.round(resposta[unidadeSelecionada], 2)}%`;
                   total += resposta[unidadeSelecionada];
                 });
 
-                dado.Total = total;
+                dado.Total =
+                  unidadeSelecionada === 'quantidade'
+                    ? total
+                    : `${Math.round(total, 2)}%`;
 
                 if (!objetoExistaNaLista(dado, montaDados))
                   montaDados.push(dado);
@@ -144,7 +211,7 @@ const TabelaResultados = ({ dados }) => {
 
       setColunas([...colunasFixas, ...montaColunas]);
     }
-  }, [unidadeSelecionada, dados]);
+  }, [dados, ciclos, anos, unidadeSelecionada]);
 
   useEffect(() => {
     montaColunasDados();
@@ -174,6 +241,7 @@ const TabelaResultados = ({ dados }) => {
         valueText="desc"
         valueOption="valor"
         className="w-25"
+        allowClear={false}
       />
       <Tabela
         pagination={false}
@@ -190,10 +258,14 @@ const TabelaResultados = ({ dados }) => {
 
 TabelaResultados.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.any]),
+  ciclos: PropTypes.oneOfType([PropTypes.bool]),
+  anos: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 TabelaResultados.defaultProps = {
   dados: [],
+  ciclos: false,
+  anos: false,
 };
 
 export default TabelaResultados;
