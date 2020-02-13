@@ -163,7 +163,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("turma.ano,");
             query.AppendLine("tipo_ciclo.descricao,");
             query.AppendLine("resposta.nome as resposta,");
-            query.AppendLine("o.nome as objetivo,");
+            query.AppendLine("o.descricao as objetivo,");
             query.AppendLine("e.descricao as eixo,");
             query.AppendLine("e.id as eixoId,");
             query.AppendLine("o.id as objetivoId,");
