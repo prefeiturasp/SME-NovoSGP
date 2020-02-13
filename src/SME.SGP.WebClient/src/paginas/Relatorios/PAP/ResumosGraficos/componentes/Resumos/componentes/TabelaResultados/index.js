@@ -246,7 +246,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         allowClear={false}
       />
       <Tabela
-        pagination
+        pagination={false}
         columns={colunas}
         dataSource={dadosTabela}
         rowKey="Id"
