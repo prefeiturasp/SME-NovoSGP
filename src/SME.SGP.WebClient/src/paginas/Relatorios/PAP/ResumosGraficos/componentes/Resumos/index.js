@@ -6,10 +6,13 @@ import { PainelCollapse, LazyLoad } from '~/componentes';
 
 function Resumos({ dados }) {
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
+  const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
+  const TabelaInformacoesEscolares = lazy(() =>
+    import('./componentes/TabelaInformacoesEscolares')
+  );
   const TabelaTotalEstudantes = lazy(() =>
     import('./componentes/TabelaTotalEstudantes')
   );
-  const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
 
   const filtroFake = 'turma';
 
@@ -61,6 +64,13 @@ function Resumos({ dados }) {
         <PainelCollapse.Painel temBorda header="Total de estudantes">
           <LazyLoad>
             <TabelaTotalEstudantes dados={dados.totalEstudantes} />
+          </LazyLoad>
+        </PainelCollapse.Painel>
+      </PainelCollapse>
+      <PainelCollapse>
+        <PainelCollapse.Painel temBorda header="Informações Escolares">
+          <LazyLoad>
+            <TabelaInformacoesEscolares dados={dados.informacoesEscolares} />
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
