@@ -59,6 +59,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
             return await consultaRecuperacaoParalela.Listar(new Infra.FiltroRecuperacaoParalelaDto
             {
+                Ordenacao = recuperacaoParalelaDto.Ordenacao,
                 PeriodoId = recuperacaoParalelaDto.Periodo.Id,
                 TurmaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId
             });
