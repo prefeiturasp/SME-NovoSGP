@@ -93,6 +93,10 @@ const ResumosGraficosPAP = () => {
     }
   }, [filtroTela]);
 
+  const dadosTela = useMemo(() => {
+    return dados;
+  }, [dados]);
+
   return (
     <>
       <Cabecalho pagina="Resumos e gráficos PAP" />
@@ -121,7 +125,7 @@ const ResumosGraficosPAP = () => {
                 {tabAtiva === 'relatorios' ? (
                   <LazyLoad>
                     <Resumos
-                      dados={dados}
+                      dados={dadosTela}
                       ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
                       anos={!!filtroTela.Ano}
                     />
@@ -136,7 +140,7 @@ const ResumosGraficosPAP = () => {
                 {tabAtiva === 'graficos' ? (
                   <LazyLoad>
                     <TabGraficos
-                      dados={dados}
+                      dados={dadosTela}
                       ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
                       anos={!!filtroTela.Ano}
                     />
