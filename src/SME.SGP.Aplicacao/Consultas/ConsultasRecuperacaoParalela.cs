@@ -142,10 +142,10 @@ namespace SME.SGP.Aplicacao
             {
                 //pegar o dados daquela turma pap
                 var dadosTurma = alunos.FirstOrDefault(w => w.CodigoComponenteCurricular.HasValue);
-                var codigosDisciplina = alunos.GroupBy(x => x.CodigoComponenteCurricular).Select(x => x.Key.ToString());
+                var codigoDisciplina = alunos.FirstOrDefault().CodigoComponenteCurricular.ToString();
 
                 //pegar as frequencias de acordo com os critérios
-                var frequencias = await servicoRecuperacaoParalela.ObterFrequencias(alunosEol.Select(w => w.CodigoAluno).ToArray(), codigosDisciplina, dadosTurma.Ano, (PeriodoRecuperacaoParalela)periodoId);
+                var frequencias = await servicoRecuperacaoParalela.ObterFrequencias(alunosEol.Select(w => w.CodigoAluno).ToArray(), codigoDisciplina, dadosTurma.Ano, (PeriodoRecuperacaoParalela)periodoId);
 
                 recuperacaoRetorno.Periodo.Alunos.ForEach(aluno =>
                 {
