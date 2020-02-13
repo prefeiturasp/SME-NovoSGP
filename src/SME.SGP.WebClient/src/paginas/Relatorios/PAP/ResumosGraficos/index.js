@@ -64,8 +64,7 @@ const ResumosGraficosPAP = () => {
 
         setDados({
           totalEstudantes: { ...requisicoes[0].data },
-          frequencia: [],
-          // frequencia: [...requisicoes[1].data.frequencia],
+          frequencia: [...requisicoes[1].data.frequencia],
           resultados: { ...requisicoes[2].data },
           informacoesEscolares: { ...requisicoes[3].data },
         });
@@ -87,6 +86,10 @@ const ResumosGraficosPAP = () => {
       buscarDados();
     }
   }, [filtroTela]);
+
+  const dadosTela = useMemo(() => {
+    return dados;
+  }, [dados]);
 
   return (
     <>
@@ -116,7 +119,7 @@ const ResumosGraficosPAP = () => {
                 {tabAtiva === 'relatorios' ? (
                   <LazyLoad>
                     <Resumos
-                      dados={dados}
+                      dados={dadosTela}
                       ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
                       anos={!!filtroTela.Ano}
                     />
@@ -131,7 +134,7 @@ const ResumosGraficosPAP = () => {
                 {tabAtiva === 'graficos' ? (
                   <LazyLoad>
                     <TabGraficos
-                      dados={dados}
+                      dados={dadosTela}
                       ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
                       anos={!!filtroTela.Ano}
                     />
