@@ -20,6 +20,12 @@ import AtribuicaoCJServico from '~/servicos/Paginas/AtribuicaoCJ';
 // Funções
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
+function objetoExistaNaLista(objeto, lista) {
+  return lista.some(
+    elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
+  );
+}
+
 function Filtro({ onFiltrar }) {
   const [refForm, setRefForm] = useState({});
 
@@ -104,32 +110,39 @@ function Filtro({ onFiltrar }) {
           if (
             typeof parseInt(valor[0], 10) === 'number' &&
             valor[0].toString() === valorAno.toString() &&
-            turmas.indexOf(turma) === -1
+            !objetoExistaNaLista(turma, turmas)
           ) {
             turmas.push(turma);
           }
         });
 
         turmas.sort(FiltroHelper.ordenarLista('nome'));
-        turmas.unshift({ nome: 'Todas', codigo: '0' });
-        setListaTurmas(turmas);
+        if (!turmas.length || turmas.length > 1)
+          turmas.unshift({ nome: 'Todas', codigo: '0' });
 
-        if (turmas.length === 1) {
-          setAnoDesabilitado(true);
-          setTurmaId(turmas[0].codigo);
-          refForm.setFieldValue('turmaId', turmas[0].codigo);
-        } else {
-          setAnoDesabilitado(false);
-        }
+        setListaTurmas(turmas);
       } else {
-        setTurmaId(undefined);
-        refForm.setFieldValue('turmaId', undefined);
         setListaTurmas([]);
       }
+      setTurmaId(undefined);
+      refForm.setFieldValue('turmaId', undefined);
+
       setAno(valorAno);
     },
     [listaTodasTurmas, refForm]
   );
+
+  useEffect(() => {
+    if (listaTurmas) {
+      if (listaTurmas.length === 1) {
+        setTurmaId(listaTurmas[0].codigo);
+        refForm.setFieldValue('turmaId', listaTurmas[0].codigo);
+        setAnoDesabilitado(true);
+      } else {
+        setAnoDesabilitado(false);
+      }
+    }
+  }, [listaTurmas, refForm]);
 
   const aoTrocarCiclo = id => {
     setCarregandoAnos(true);
@@ -168,11 +181,15 @@ function Filtro({ onFiltrar }) {
           setListaAnos([]);
       }
     } else {
-      setAno(undefined);
-      refForm.setFieldValue('ano', undefined);
       setListaAnos([]);
       aoTrocarAno(undefined);
     }
+
+    setAno(undefined);
+    refForm.setFieldValue('ano', undefined);
+
+    setTurmaId(undefined);
+    refForm.setFieldValue('turmaId', undefined);
 
     setCicloId(id);
     setCarregandoAnos(false);

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 // Ant
-import { Table } from 'antd';
+import { Table, Tooltip } from 'antd';
 import { Base, SelectComponent } from '~/componentes';
 
 const Tabela = styled(Table)`
@@ -69,8 +69,10 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         colSpan: 0,
         width: 150,
         render: (text, row) => {
+          let valor = text;
+          if (valor.length > 100) valor = `${text.substr(0, 100)}...`;
           return {
-            children: text,
+            children: <Tooltip title={text}>{valor}</Tooltip>,
             props: {
               rowSpan: row.AgrupaObjetivo ? row.TamanhoRespostas : 0,
               style: { fontWeight: 'bold' },
@@ -244,13 +246,14 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         allowClear={false}
       />
       <Tabela
-        pagination={false}
+        pagination
         columns={colunas}
         dataSource={dadosTabela}
         rowKey="Id"
         size="middle"
         className="my-2"
         bordered
+        locale={{ emptyText: 'Sem dados' }}
       />
     </>
   );

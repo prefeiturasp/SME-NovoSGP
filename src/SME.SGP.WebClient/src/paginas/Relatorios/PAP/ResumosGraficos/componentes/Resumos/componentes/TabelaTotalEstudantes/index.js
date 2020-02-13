@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { Table } from 'antd';
 
 // Componentes
-import { Base, Loader } from '~/componentes';
+import { Base } from '~/componentes';
 
 const Tabela = styled(Table)`
   th.headerTotal {
@@ -26,7 +26,6 @@ const TabelaTotalEstudantes = ({ dados, ciclos, anos }) => {
   const [colunas, setColunas] = useState([]);
 
   const [dadosTabela, setDadosTabela] = useState([]);
-  const [carregandoDados, setCarregandoDados] = useState(false);
 
   const montaColunasDados = useCallback(() => {
     const colunasFixas = [
@@ -45,8 +44,6 @@ const TabelaTotalEstudantes = ({ dados, ciclos, anos }) => {
         },
       },
     ];
-
-    setCarregandoDados(true);
 
     if (dados && Object.entries(dados).length) {
       const montaColunas = [];
@@ -161,7 +158,6 @@ const TabelaTotalEstudantes = ({ dados, ciclos, anos }) => {
       });
 
       setColunas([...colunasFixas, ...montaColunas]);
-      setCarregandoDados(false);
     }
   }, [anos, ciclos, dados]);
 
@@ -170,18 +166,17 @@ const TabelaTotalEstudantes = ({ dados, ciclos, anos }) => {
   }, [montaColunasDados]);
 
   return (
-    <Loader loading={carregandoDados}>
-      <Tabela
-        pagination={false}
-        columns={colunas}
-        dataSource={dadosTabela}
-        rowKey="Id"
-        size="middle"
-        className="my-2"
-        style={{ borderLeft: `7px solid ${Base.Azul}` }}
-        bordered
-      />
-    </Loader>
+    <Tabela
+      pagination={false}
+      columns={colunas}
+      dataSource={dadosTabela}
+      rowKey="Id"
+      size="middle"
+      className="my-2"
+      style={{ borderLeft: `7px solid ${Base.Azul}` }}
+      bordered
+      locale={{ emptyText: 'Sem dados' }}
+    />
   );
 };
 
