@@ -37,7 +37,7 @@ function UeDropDown({
           }))
           .sort(FiltroHelper.ordenarLista('desc'));
       }
-      if (opcaoTodas && dreId === '0') {
+      if (opcaoTodas) {
         lista.unshift({ desc: 'Todas', valor: '0' });
         setForcaDesabilitado(true);
       }
@@ -52,6 +52,8 @@ function UeDropDown({
   }, [dreId, opcaoTodas, url]);
 
   useEffect(() => {
+    form.setFieldValue('ueId', undefined);
+
     if (listaUes.length === 1) {
       form.setFieldValue('ueId', listaUes[0].valor);
       onChange(listaUes[0].valor);

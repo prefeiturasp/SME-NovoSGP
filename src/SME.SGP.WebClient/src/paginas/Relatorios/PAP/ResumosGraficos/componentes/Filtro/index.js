@@ -51,7 +51,10 @@ function Filtro({ onFiltrar }) {
   };
 
   const aoTrocarDreId = id => {
-    if (!id) refForm.setFieldValue('ueId', undefined);
+    if (!id) {
+      setUeId(undefined);
+      refForm.setFieldValue('ueId', undefined);
+    }
     setDreId(id);
   };
 
@@ -86,6 +89,47 @@ function Filtro({ onFiltrar }) {
 
   const [listaAnos, setListaAnos] = useState([]);
   const [carregandoAnos, setCarregandoAnos] = useState(false);
+
+  const [listaTurmas, setListaTurmas] = useState([]);
+  const [listaTodasTurmas, setListaTodasTurmas] = useState([]);
+
+  const [anoDesabilitado, setAnoDesabilitado] = useState(false);
+
+  const aoTrocarAno = useCallback(
+    valorAno => {
+      if (valorAno) {
+        const turmas = [];
+        listaTodasTurmas.forEach(turma => {
+          const valor = turma.nome.split('');
+          if (
+            typeof parseInt(valor[0], 10) === 'number' &&
+            valor[0].toString() === valorAno.toString() &&
+            turmas.indexOf(turma) === -1
+          ) {
+            turmas.push(turma);
+          }
+        });
+
+        turmas.sort(FiltroHelper.ordenarLista('nome'));
+        turmas.unshift({ nome: 'Todas', codigo: '0' });
+        setListaTurmas(turmas);
+
+        if (turmas.length === 1) {
+          setAnoDesabilitado(true);
+          setTurmaId(turmas[0].codigo);
+          refForm.setFieldValue('turmaId', turmas[0].codigo);
+        } else {
+          setAnoDesabilitado(false);
+        }
+      } else {
+        setTurmaId(undefined);
+        refForm.setFieldValue('turmaId', undefined);
+        setListaTurmas([]);
+      }
+      setAno(valorAno);
+    },
+    [listaTodasTurmas, refForm]
+  );
 
   const aoTrocarCiclo = id => {
     setCarregandoAnos(true);
@@ -124,14 +168,15 @@ function Filtro({ onFiltrar }) {
           setListaAnos([]);
       }
     } else {
+      setAno(undefined);
+      refForm.setFieldValue('ano', undefined);
       setListaAnos([]);
+      aoTrocarAno(undefined);
     }
 
     setCicloId(id);
     setCarregandoAnos(false);
   };
-
-  const [listaTodasTurmas, setListaTodasTurmas] = useState([]);
 
   const buscarTurmas = useCallback(async () => {
     const turmas = await AtribuicaoCJServico.buscarTurmas(ueId, 5);
@@ -139,10 +184,6 @@ function Filtro({ onFiltrar }) {
 
     if (data) setListaTodasTurmas(data);
   }, [ueId]);
-
-  const [listaTurmas, setListaTurmas] = useState([]);
-
-  const [anoDesabilitado, setAnoDesabilitado] = useState(false);
 
   useEffect(() => {
     if (ueId) {
@@ -154,33 +195,11 @@ function Filtro({ onFiltrar }) {
     }
   }, [buscarTurmas, ueId]);
 
-  const aoTrocarAno = valorAno => {
-    if (valorAno) {
-      const turmas = [];
-      listaTodasTurmas.forEach(turma => {
-        const valor = turma.nome.split('');
-        if (
-          typeof parseInt(valor[0], 10) === 'number' &&
-          valor[0] === valorAno &&
-          turmas.indexOf(turma) === -1
-        ) {
-          turmas.push(turma);
-        }
-      });
-      turmas.sort(FiltroHelper.ordenarLista('nome'));
-      turmas.unshift({ nome: 'Todas', codigo: '0' });
-      setListaTurmas(turmas);
-
-      if (turmas.length === 1) {
-        setAnoDesabilitado(true);
-        setTurmaId(turmas[0].codigo);
-        refForm.setFieldValue('turmaId', turmas[0].codigo);
-      }
-    } else {
-      setTurmaId(undefined);
-      setListaTurmas([]);
-    }
-    setAno(valorAno);
+  const aoTrocarUeId = valorUe => {
+    setCicloId(undefined);
+    refForm.setFieldValue('cicloId', undefined);
+    aoTrocarCiclo(undefined);
+    setUeId(valorUe);
   };
 
   return (
@@ -208,7 +227,7 @@ function Filtro({ onFiltrar }) {
               <UeDropDown
                 form={form}
                 dreId={form.values.dreId}
-                onChange={ue => setUeId(ue)}
+                onChange={ue => aoTrocarUeId(ue)}
                 opcaoTodas
               />
             </Grid>
@@ -226,7 +245,7 @@ function Filtro({ onFiltrar }) {
                   valueOption="id"
                   valueText="descricao"
                   placeholder="Selec. o ciclo"
-                  disabled={!listaCiclos.length}
+                  disabled={!ueId || !listaCiclos.length}
                 />
               </Loader>
             </Grid>
