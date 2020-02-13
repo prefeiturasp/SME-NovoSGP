@@ -29,16 +29,16 @@ function Barras({
       // label={value => `Teste: ${JSON.stringify(value)}`}
       // labelLinkColor="red"
       // enableLabel
-      colors={[
-        Base.Laranja,
-        Base.Vermelho,
-        Base.Azul,
-        Base.Verde,
-        Base.Preto,
-        Base.Roxo,
-        Base.CinzaBarras,
-      ]}
-      // color={{ scheme: 'set3' }}
+      // colors={[
+      //   Base.Laranja,
+      //   Base.Vermelho,
+      //   Base.Azul,
+      //   Base.Verde,
+      //   Base.Preto,
+      //   Base.Roxo,
+      //   Base.CinzaBarras,
+      // ]}
+      color={{ scheme: 'set3' }}
       borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
       axisTop={null}
       axisRight={null}
