@@ -20,7 +20,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }
 
-        public async Task<IEnumerable<KeyValuePair<string, int>>> ObterFrequencias(string[] CodigoAlunos, IEnumerable<string> CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
+        public async Task<IEnumerable<KeyValuePair<string, int>>> ObterFrequencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
         {
             var retorno = new List<KeyValuePair<string, int>>();
             var parametrosFrequencia = repositorioParametrosSistema.ObterChaveEValorPorTipo(TipoParametroSistema.RecuperacaoParalelaFrequencia);

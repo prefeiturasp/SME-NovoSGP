@@ -120,7 +120,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigos });
         }
 
-        public async Task<IEnumerable<RecuperacaoParalelaFrequenciaDto>> ObterFrequenciaAusencias(string[] CodigoAlunos, IEnumerable<string> CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
+        public async Task<IEnumerable<RecuperacaoParalelaFrequenciaDto>> ObterFrequenciaAusencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
         {
             var query = new StringBuilder();
             query.AppendLine("select codigo_aluno CodigoAluno,");
@@ -130,7 +130,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where codigo_aluno::varchar(100) = ANY(@CodigoAlunos)");
             query.AppendLine("and date_part('year',periodo_inicio) = @Ano");
             query.AppendLine("and date_part('year',periodo_fim) = @Ano");
-            query.AppendLine("and disciplina_id = ANY(@CodigoDisciplina)");
+            query.AppendLine("and disciplina_id = @CodigoDisciplina");
             if (Periodo == PeriodoRecuperacaoParalela.AcompanhamentoPrimeiroSemestre)
                 query.AppendLine("and bimestre IN  (1,2)");
             query.AppendLine("group by codigo_aluno");
