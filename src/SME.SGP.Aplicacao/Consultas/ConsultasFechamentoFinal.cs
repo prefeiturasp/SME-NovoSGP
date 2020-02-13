@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IServicoEOL servicoEOL, IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre,
             IRepositorioFechamentoFinal repositorioFechamentoFinal, IServicoAluno servicoAluno,
-            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo)
+            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioNotasConceitos repositorioNotasConceitos)
         {
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
@@ -173,13 +173,13 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi encontrado fechamento para o bimestre {periodo.Bimestre}.");
 
             var notasEConceitos = await repositorioNotaConceitoBimestre.ObterPorFechamentoTurma(fechamentoDoBimestre.Id);
-            if (notasEConceitos == null || !notasEConceitos.Any())
-                throw new NegocioException($"Não foram encontrados notas e conceitos para a turma e bimestre {periodo.Bimestre}.");
-
-            foreach (var notaEConceito in notasEConceitos)
+            if (notasEConceitos != null || notasEConceitos.Any())
             {
-                var fechamentoFinalConsultaRetornoAlunoDto = new FechamentoFinalConsultaRetornoAlunoDto();
-                listaAlunosNotas.Add((notaEConceito.CodigoAluno, (notaEConceito.ConceitoId.HasValue ? notaEConceito.ConceitoId.ToString() : notaEConceito.Nota.ToString()), notaEConceito.DisciplinaId, periodo.Bimestre));
+                foreach (var notaEConceito in notasEConceitos)
+                {
+                    var fechamentoFinalConsultaRetornoAlunoDto = new FechamentoFinalConsultaRetornoAlunoDto();
+                    listaAlunosNotas.Add((notaEConceito.CodigoAluno, (notaEConceito.ConceitoId.HasValue ? notaEConceito.ConceitoId.ToString() : notaEConceito.Nota.ToString()), notaEConceito.DisciplinaId, periodo.Bimestre));
+                }
             }
         }
 
