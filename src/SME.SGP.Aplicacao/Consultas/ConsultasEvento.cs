@@ -59,9 +59,14 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
-            bool podeAlterarSME = !EhEventoSME(evento) || EhEventoSME(evento) && usuario.EhPerfilSME();
+            bool podeAlterar = !EhEventoSME(evento) || (EhEventoSME(evento) && usuario.EhPerfilSME());
 
-            return MapearParaDto(evento, podeAlterarSME);
+            if (!EhEventoSME(evento) && 
+                (evento.TipoEventoId == (long)TipoEvento.LiberacaoExcepcional || 
+                 evento.TipoEventoId == (long)TipoEvento.ReposicaoNoRecesso))
+                podeAlterar = !usuario.TemPerfilGestaoUes();
+           
+            return MapearParaDto(evento, podeAlterar);
         }
 
         public async Task<IEnumerable<CalendarioTipoEventoPorDiaDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)

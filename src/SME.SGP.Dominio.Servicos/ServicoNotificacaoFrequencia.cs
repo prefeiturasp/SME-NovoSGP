@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 
@@ -13,19 +14,19 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoNotificacaoFrequencia : IServicoNotificacaoFrequencia
     {
         private readonly IConfiguration configuration;
-        private readonly IRepositorioFrequencia repositorioFrequencia;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno;
-        private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
+        private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno;
+        private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
+        private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioDre repositorioDre;
-        private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -68,6 +69,7 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         #region Metodos Publicos
+
         public void ExecutaNotificacaoFrequencia()
         {
             var cargosNotificados = new List<(string, Cargo?)>();
@@ -79,6 +81,92 @@ namespace SME.SGP.Dominio.Servicos
             NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.GestorUe, ref cargosNotificados);
 
             Console.WriteLine($"Rotina finalizada.");
+        }
+
+        public void NotificarCompensacaoAusencia(long compensacaoId)
+        {
+            // Verifica se compensação possui alunos vinculados
+            var alunos = repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId).Result;
+            if (alunos == null || !alunos.Any())
+                return;
+
+            // Verifica se possui aluno não notificado na compensação
+            alunos = alunos.Where(a => !a.Notificado);
+            if (!alunos.Any())
+                return;
+
+            // Carrega dados da compensacao a notificar
+            var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
+            var turma = repositorioTurma.ObterPorId(compensacao.TurmaId);
+            var ue = repositorioUe.ObterUEPorTurma(turma.CodigoTurma);
+            var dre = repositorioDre.ObterPorId(ue.DreId);
+            var disciplinaEOL = ObterNomeDisciplina(compensacao.DisciplinaId);
+            MeusDadosDto professor = servicoEOL.ObterMeusDados(compensacao.CriadoRF).Result;
+
+            // Carrega dados dos alunos não notificados
+            var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
+            var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
+            foreach (var aluno in alunos)
+            {
+                var alunoEol = alunosTurma.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
+                alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
+                {
+                    NumeroAluno = alunoEol.NumeroAlunoChamada,
+                    CodigoAluno = aluno.CodigoAluno,
+                    NomeAluno = alunoEol.NomeAluno,
+                    QuantidadeCompensacoes = aluno.QuantidadeFaltasCompensadas
+                });
+            }
+
+            var gestores = BuscaGestoresUe(ue.CodigoUe);
+            if (gestores != null && gestores.Any())
+            {
+                foreach (var gestor in gestores)
+                {
+                    var notificacaoId = NotificarCompensacaoAusencia(compensacaoId
+                            , gestor.Usuario
+                            , professor.Nome
+                            , professor.CodigoRf
+                            , disciplinaEOL
+                            , turma.CodigoTurma
+                            , turma.Nome
+                            , turma.ModalidadeCodigo.GetAttribute<DisplayAttribute>().ShortName
+                            , ue.CodigoUe
+                            , ue.Nome
+                            , ue.TipoEscola.GetAttribute<DisplayAttribute>().ShortName
+                            , dre.CodigoDre
+                            , dre.Nome
+                            , compensacao.Bimestre
+                            , compensacao.Nome
+                            , alunosDto);
+
+                    // Grava vinculo de notificação x compensação
+                    repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
+                }
+
+                // Marca aluno como notificado
+                alunosDto.ForEach(alunoDto =>
+                {
+                    var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == alunoDto.CodigoAluno);
+                    aluno.Notificado = true;
+                    repositorioCompensacaoAusenciaAluno.Salvar(aluno);
+                });
+            }
+        }
+
+        public void VerificaNotificacaoBimestral()
+        {
+            var dataAtual = DateTime.Now.Date;
+
+            // Verifica Notificação Fund e Medio
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.FundamentalMedio);
+            if (tipoCalendario != null)
+                VerificaNotificacaoBimestralCalendario(tipoCalendario, dataAtual, ModalidadeTipoCalendario.FundamentalMedio);
+
+            // Verifica Notificação EJA
+            tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.EJA, dataAtual.Month > 6 ? 2 : 1);
+            if (tipoCalendario != null)
+                VerificaNotificacaoBimestralCalendario(tipoCalendario, dataAtual, ModalidadeTipoCalendario.EJA);
         }
 
         public void VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId)
@@ -116,247 +204,9 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public void NotificarCompensacaoAusencia(long compensacaoId)
-        {
-            // Verifica se compensação possui alunos vinculados
-            var alunos = repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId).Result;
-            if (alunos == null || !alunos.Any())
-                return;
-
-            // Verifica se possui aluno não notificado na compensação
-            alunos = alunos.Where(a => !a.Notificado);
-            if (!alunos.Any())
-                return;
-
-            // Carrega dados da compensacao a notificar
-            var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
-            var turma = repositorioTurma.ObterPorId(compensacao.TurmaId);
-            var ue = repositorioUe.ObterUEPorTurma(turma.CodigoTurma);
-            var dre = repositorioDre.ObterPorId(ue.DreId);
-            var disciplinaEOL = ObterNomeDisciplina(compensacao.DisciplinaId);
-            MeusDadosDto professor = servicoEOL.ObterMeusDados(compensacao.CriadoRF).Result;
-
-            // Carrega dados dos alunos não notificados
-            var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
-            var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
-            foreach (var aluno in alunos)
-            {
-                var alunoEol = alunosTurma.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-                alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
-                {
-                    CodigoAluno = aluno.CodigoAluno,
-                    NomeAluno = alunoEol.NomeAluno,
-                    QuantidadeCompensacoes = aluno.QuantidadeFaltasCompensadas
-                });
-            }
-
-            var gestores = BuscaGestoresUe(ue.CodigoUe);
-            if (gestores != null && gestores.Any())
-            {
-                foreach (var gestor in gestores)
-                {
-                    var notificacaoId = NotificarCompensacaoAusencia(compensacaoId
-                            , gestor.Usuario
-                            , professor.Nome
-                            , disciplinaEOL
-                            , turma.CodigoTurma
-                            , turma.Nome
-                            , ue.CodigoUe
-                            , ue.Nome
-                            , dre.CodigoDre
-                            , dre.Nome
-                            , compensacao.Bimestre
-                            , compensacao.Nome
-                            , alunosDto);
-
-                    // Grava vinculo de notificação x compensação
-                    repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
-                }
-
-                // Marca aluno como notificado
-                alunosDto.ForEach(alunoDto =>
-                {
-                    var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == alunoDto.CodigoAluno);
-                    aluno.Notificado = true;
-                    repositorioCompensacaoAusenciaAluno.Salvar(aluno);
-                });
-            }
-        }
-
-        public void VerificaNotificacaoBimestral()
-        {
-            var dataAtual = DateTime.Now.Date;
-
-            // Verifica Notificação Fund e Medio
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.FundamentalMedio);
-            if (tipoCalendario != null)
-                VerificaNotificacaoBimestralCalendario(tipoCalendario, dataAtual, ModalidadeTipoCalendario.FundamentalMedio);
-
-            // Verifica Notificação EJA
-            tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.EJA, dataAtual.Month > 6 ? 2 : 1);
-            if (tipoCalendario != null)
-                VerificaNotificacaoBimestralCalendario(tipoCalendario, dataAtual, ModalidadeTipoCalendario.EJA);
-        }
-        #endregion
+        #endregion Metodos Publicos
 
         #region Metodos Privados
-        private void VerificaNotificacaoBimestralCalendario(TipoCalendario tipoCalendario, DateTime dataAtual, ModalidadeTipoCalendario modalidade)
-        {
-            var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
-            var periodoAtual = periodos.FirstOrDefault(p => p.PeriodoInicio <= dataAtual && p.PeriodoFim >= dataAtual);
-
-            if (periodoAtual == null)
-                return;
-
-            var ultimoBimestre = periodoAtual == periodos.OrderBy(x => x.PeriodoInicio).Last();
-            // Ultimo dia do bimestre e primeiro dia do ultimo mes quando ser tratar do ultimo bimestre
-            var dataReferencia = ultimoBimestre ?
-                                    new DateTime(periodoAtual.PeriodoFim.Year, periodoAtual.PeriodoFim.Month, 1) :
-                                    periodoAtual.PeriodoFim;
-
-            if (dataAtual == dataReferencia)
-            {
-                var alunosAusentes = repositorioFrequenciaAluno.ObterAlunosComAusenciaNoBimestre(periodoAtual.Bimestre);
-
-                // Carrega dados das disciplinas do EOL
-                var disciplinasIds = alunosAusentes.Select(a => long.Parse(a.DisciplinaId)).ToArray();
-                var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(disciplinasIds);
-
-                // Carrega dados das turmas (ue e dre)
-                var turmas = new List<Turma>();
-                alunosAusentes.Select(a => a.TurmaId).Distinct().ToList()
-                    .ForEach(turmaId => turmas.Add(repositorioTurma.ObterTurmaComUeEDrePorId(turmaId)));
-
-                var percentualFrequenciaFund = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
-                var percentualFrequenciaRegencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
-
-                // Agrupa por DRE / UE / Turma / Disciplina
-                foreach (var turmasDRE in turmas.GroupBy(t => t.Ue.Dre))
-                {
-                    foreach (var turmasUE in turmasDRE.GroupBy(x => x.Ue))
-                    {
-                        var gestores = BuscaGestoresUe(turmasUE.Key.CodigoUe);
-
-                        foreach (var turma in turmasUE)
-                        {
-                            var alunosEOL = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
-
-                            var alunosTurma = alunosAusentes.Where(c => c.TurmaId == turma.CodigoTurma);
-                            alunosTurma.Select(a => a.DisciplinaId).Distinct().ToList()
-                                .ForEach(disciplinaId =>
-                                {
-                                    var alunosDisciplina = alunosTurma.Where(c => c.DisciplinaId == disciplinaId);
-
-                                    var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
-
-                                    foreach (var alunoDisciplina in alunosDisciplina)
-                                    {
-                                        if (alunoDisciplina.PercentualFrequencia < (modalidade == ModalidadeTipoCalendario.FundamentalMedio ? percentualFrequenciaFund : percentualFrequenciaRegencia))
-                                        {
-                                            alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
-                                            {
-                                                CodigoAluno = alunoDisciplina.CodigoAluno,
-                                                NomeAluno = alunosEOL.FirstOrDefault(x => x.CodigoAluno == alunoDisciplina.CodigoAluno).NomeAluno,
-                                                PercentualFrequencia = alunoDisciplina.PercentualFrequencia
-                                            });
-                                        }
-                                    };
-
-                                    var disciplinaEOL = disciplinasEol.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString() == disciplinaId);
-                                    foreach (var gestor in gestores)
-                                    {
-                                        NotificarFrequenciaBimestre(turma.CodigoTurma,
-                                                            turma.Nome,
-                                                            periodoAtual.Bimestre,
-                                                            turmasUE.Key.CodigoUe,
-                                                            turmasUE.Key.Nome,
-                                                            turmasDRE.Key.CodigoDre,
-                                                            turmasDRE.Key.Nome,
-                                                            disciplinaEOL.Nome,
-                                                            gestor.Usuario.Id,
-                                                            alunosDto);
-                                    }
-                                });
-                        }
-                    };
-                };
-            }
-        }
-
-        private void NotificarFrequenciaBimestre(string codigoTurma, string turma, int bimestre, string codigoUe, string ue, string codigoDre, string dre, string disciplina, long usuarioId, List<CompensacaoAusenciaAlunoQtdDto> alunos)
-        {
-            var tituloMensagem = $"Alunos com frequência irregular na turma {turma} ({bimestre}º Bimestre)";
-
-            StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.AppendLine($"<p>O(s) seguinte(s) aluno(s) da turma {turma} da {ue} ({dre}) estão com frequência irregular na disciplina {disciplina} no {bimestre}º Bimestre.</p>");
-
-            mensagemUsuario.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
-            mensagemUsuario.AppendLine("<tr>");
-            mensagemUsuario.AppendLine("<td>Nº</td><td>Nome do aluno</td><td>Percentual de Frequência</td>");
-            mensagemUsuario.AppendLine("</tr>");
-            foreach (var aluno in alunos)
-            {
-                mensagemUsuario.AppendLine("<tr>");
-                mensagemUsuario.Append($"<td>{aluno.CodigoAluno} </td><td> {aluno.NomeAluno} </td><td style='text-align: center;'> {aluno.PercentualFrequencia}</td>");
-                mensagemUsuario.AppendLine("</tr>");
-            }
-            mensagemUsuario.AppendLine("</table>");
-
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Alerta,
-                Tipo = NotificacaoTipo.Frequencia,
-                Titulo = tituloMensagem,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuarioId,
-                TurmaId = codigoTurma,
-                UeId = codigoUe,
-                DreId = codigoDre,
-            };
-            servicoNotificacao.Salvar(notificacao);
-        }
-
-        private long NotificarCompensacaoAusencia(long compensacaoId, Usuario usuario, string professor, string disciplina,
-            string codigoTurma, string turma, string codigoUe, string escola, string codigoDre, string dre,
-            int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos)
-        {
-            var tituloMensagem = $"Atividade de compensação da turma {turma}";
-
-            StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.AppendLine($"<p>A atividade de compensação '{atividade}' da disciplina de {disciplina} foi cadastrada para a turma {turma} da {escola} (DRE {dre}) no {bimestre}º Bimestre pelo professor {professor}.</p>");
-            mensagemUsuario.AppendLine("<p>O(s) seguinte(s) aluno(s) foi(ram) vinculado(s) a atividade:</p>");
-
-            mensagemUsuario.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
-            mensagemUsuario.AppendLine("<tr>");
-            mensagemUsuario.AppendLine("<td>Nº</td><td>Nome do aluno</td><td>Quantidade de aulas compensadas</td>");
-            mensagemUsuario.AppendLine("</tr>");
-            foreach (var aluno in alunos)
-            {
-                mensagemUsuario.AppendLine("<tr>");
-                mensagemUsuario.Append($"<td>{aluno.CodigoAluno} </td><td> {aluno.NomeAluno} </td><td style='text-aign: center;'> {aluno.QuantidadeCompensacoes}</td>");
-                mensagemUsuario.AppendLine("</tr>");
-            }
-            mensagemUsuario.AppendLine("</table>");
-
-            var hostAplicacao = configuration["UrlFrontEnd"];
-            mensagemUsuario.Append($"<a href='{hostAplicacao}/diario-classe/compensacao-ausencia/editar/{compensacaoId}'>Para consultar detalhes da atividade clique aqui.</a>");
-
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                Tipo = NotificacaoTipo.Frequencia,
-                Titulo = tituloMensagem,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuario.Id,
-                TurmaId = codigoTurma,
-                UeId = codigoUe,
-                DreId = codigoDre,
-            };
-            servicoNotificacao.Salvar(notificacao);
-            return notificacao.Id;
-        }
 
         private IEnumerable<(Cargo? Cargo, Usuario Usuario)> BuscaGestoresUe(string codigoUe)
         {
@@ -449,7 +299,7 @@ namespace SME.SGP.Dominio.Servicos
             mensagemUsuario.Append($"O Professor {usuarioAlteracao} realizou alterações no registro de frequência do dia {registroFrequencia.DataAula} da turma {registroFrequencia.NomeTurma} ({registroFrequencia.NomeUe}) na disciplina {disciplina}.");
 
             var hostAplicacao = configuration["UrlFrontEnd"];
-            mensagemUsuario.Append($"<a href='{hostAplicacao}/diario-classe/frequencia-plano-aula'>Clique aqui para acessar esse registro.</a>");
+            mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/frequencia-plano-aula'>Clique aqui para acessar esse registro.</a>");
 
             var notificacao = new Notificacao()
             {
@@ -505,6 +355,51 @@ namespace SME.SGP.Dominio.Servicos
                         Console.WriteLine($"Notificação não necessária pois quantidade de aulas sem frequência: {turma.Aulas?.Count() ?? 0 } está dentro do limite: {qtdAulasNotificacao}.");
                 }
             }
+        }
+
+        private long NotificarCompensacaoAusencia(long compensacaoId, Usuario usuario, string professor, string professorRf, string disciplina,
+            string codigoTurma, string turma, string modalidade, string codigoUe, string escola, string tipoEscola, string codigoDre, string dre,
+            int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos)
+        {
+            var tituloMensagem = $"Atividade de compensação da turma {turma}";
+
+            StringBuilder mensagemUsuario = new StringBuilder();
+            mensagemUsuario.AppendLine($"<p>A atividade de compensação <b>'{atividade}'</b> do componente curricular de <b>{disciplina}</b> foi cadastrada para a turma <b>{turma} {modalidade}</b> da <b>{tipoEscola} {escola} ({dre})</b> no <b>{bimestre}º</b> Bimestre pelo professor <b>{professor} ({professorRf})</b>.</p>");
+            mensagemUsuario.AppendLine("<p>O(s) seguinte(s) aluno(s) foi(ram) vinculado(s) a atividade:</p>");
+
+            mensagemUsuario.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
+            mensagemUsuario.AppendLine("<tr>");
+            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Nº</td>");
+            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
+            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Quantidade de aulas compensadas</td>");
+            mensagemUsuario.AppendLine("</tr>");
+            foreach (var aluno in alunos)
+            {
+                mensagemUsuario.AppendLine("<tr>");
+                mensagemUsuario.Append($"<td style='padding: 5px;'>{aluno.NumeroAluno}</td>");
+                mensagemUsuario.Append($"<td style='padding: 5px;'>{aluno.NomeAluno}</td>");
+                mensagemUsuario.Append($"<td style='text-align: center;'>{aluno.QuantidadeCompensacoes}</td>");
+                mensagemUsuario.AppendLine("</tr>");
+            }
+            mensagemUsuario.AppendLine("</table>");
+
+            var hostAplicacao = configuration["UrlFrontEnd"];
+            mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/compensacao-ausencia/editar/{compensacaoId}'>Para consultar detalhes da atividade clique aqui.</a>");
+
+            var notificacao = new Notificacao()
+            {
+                Ano = DateTime.Now.Year,
+                Categoria = NotificacaoCategoria.Aviso,
+                Tipo = NotificacaoTipo.Frequencia,
+                Titulo = tituloMensagem,
+                Mensagem = mensagemUsuario.ToString(),
+                UsuarioId = usuario.Id,
+                TurmaId = codigoTurma,
+                UeId = codigoUe,
+                DreId = codigoDre,
+            };
+            servicoNotificacao.Salvar(notificacao);
+            return notificacao.Id;
         }
 
         private void NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
@@ -565,6 +460,42 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        private void NotificarFrequenciaBimestre(string codigoTurma, string turma, int bimestre, string codigoUe, string ue, string codigoDre, string dre, string disciplina, long usuarioId, List<CompensacaoAusenciaAlunoQtdDto> alunos)
+        {
+            var tituloMensagem = $"Alunos com frequência irregular na turma {turma} ({bimestre}º Bimestre)";
+
+            StringBuilder mensagemUsuario = new StringBuilder();
+            mensagemUsuario.AppendLine($"<p>O(s) seguinte(s) aluno(s) da turma {turma} da {ue} ({dre}) estão com frequência irregular na disciplina {disciplina} no {bimestre}º Bimestre.</p>");
+
+            mensagemUsuario.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
+            mensagemUsuario.AppendLine("<tr>");
+            mensagemUsuario.AppendLine("<td>Nº</td><td>Nome do aluno</td><td>Percentual de Frequência</td>");
+            mensagemUsuario.AppendLine("</tr>");
+            foreach (var aluno in alunos)
+            {
+                int percentualFrequencia = (int)Math.Round(aluno.PercentualFrequencia, 0);
+
+                mensagemUsuario.AppendLine("<tr>");
+                mensagemUsuario.Append($"<td>{aluno.CodigoAluno} </td><td> {aluno.NomeAluno} </td><td style='text-align: center;'> {percentualFrequencia}</td>");
+                mensagemUsuario.AppendLine("</tr>");
+            }
+            mensagemUsuario.AppendLine("</table>");
+
+            var notificacao = new Notificacao()
+            {
+                Ano = DateTime.Now.Year,
+                Categoria = NotificacaoCategoria.Alerta,
+                Tipo = NotificacaoTipo.Frequencia,
+                Titulo = tituloMensagem,
+                Mensagem = mensagemUsuario.ToString(),
+                UsuarioId = usuarioId,
+                TurmaId = codigoTurma,
+                UeId = codigoUe,
+                DreId = codigoDre,
+            };
+            servicoNotificacao.Salvar(notificacao);
+        }
+
         private string ObterNomeDisciplina(string codigoDisciplina)
         {
             long[] disciplinaId = { long.Parse(codigoDisciplina) };
@@ -581,7 +512,99 @@ namespace SME.SGP.Dominio.Servicos
                                         tipo == TipoNotificacaoFrequencia.Professor ? TipoParametroSistema.QuantidadeAulasNotificarProfessor
                                             : tipo == TipoNotificacaoFrequencia.GestorUe ? TipoParametroSistema.QuantidadeAulasNotificarGestorUE
                                             : TipoParametroSistema.QuantidadeAulasNotificarSupervisorUE,
-                                        DateTime.Now.Year)); 
-        #endregion
+                                        DateTime.Now.Year));
+
+        private void VerificaNotificacaoBimestralCalendario(TipoCalendario tipoCalendario, DateTime dataAtual, ModalidadeTipoCalendario modalidade)
+        {
+            var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+            var periodoAtual = periodos.FirstOrDefault(p => p.PeriodoInicio <= dataAtual && p.PeriodoFim >= dataAtual);
+
+            if (periodoAtual == null)
+                return;
+
+            var ultimoBimestre = periodoAtual == periodos.OrderBy(x => x.PeriodoInicio).Last();
+            // Ultimo dia do bimestre e primeiro dia do ultimo mes quando ser tratar do ultimo bimestre
+            var dataReferencia = ultimoBimestre ?
+                                    new DateTime(periodoAtual.PeriodoFim.Year, periodoAtual.PeriodoFim.Month, 1) :
+                                    periodoAtual.PeriodoFim;
+
+            if (dataAtual == dataReferencia)
+            {
+                var alunosAusentes = repositorioFrequenciaAluno.ObterAlunosComAusenciaPorDisciplinaNoPeriodo(periodoAtual.Id);
+
+                // Carrega dados das disciplinas do EOL
+                var disciplinasIds = alunosAusentes.Select(a => long.Parse(a.DisciplinaId)).ToArray();
+                var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(disciplinasIds);
+
+                // Carrega dados das turmas (ue e dre)
+                var turmas = new List<Turma>();
+                alunosAusentes.Select(a => a.TurmaId).Distinct().ToList()
+                    .ForEach(turmaId =>
+                    {
+                        if (turmaId != null)
+                            turmas.Add(repositorioTurma.ObterTurmaComUeEDrePorId(turmaId));
+                    });
+
+                var percentualFrequenciaFund = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+                var percentualFrequenciaRegencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
+
+                // Agrupa por DRE / UE / Turma / Disciplina
+                foreach (var turmasDRE in turmas.GroupBy(t => t.Ue.Dre))
+                {
+                    foreach (var turmasUE in turmasDRE.GroupBy(x => x.Ue))
+                    {
+                        var gestores = BuscaGestoresUe(turmasUE.Key.CodigoUe);
+
+                        foreach (var turma in turmasUE)
+                        {
+                            var alunosEOL = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
+
+                            var alunosTurma = alunosAusentes.Where(c => c.TurmaId == turma.CodigoTurma);
+                            alunosTurma.Select(a => a.DisciplinaId).Distinct().ToList()
+                                .ForEach(disciplinaId =>
+                                {
+                                    var alunosDisciplina = alunosTurma.Where(c => c.DisciplinaId == disciplinaId);
+
+                                    var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
+                                    var disciplinaEOL = disciplinasEol.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString() == disciplinaId);
+
+                                    foreach (var alunoDisciplina in alunosDisciplina)
+                                    {
+                                        if (alunoDisciplina.PercentualFrequencia < 
+                                                (disciplinaEOL.Regencia ? percentualFrequenciaRegencia : percentualFrequenciaFund))
+                                        {
+                                            alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
+                                            {
+                                                CodigoAluno = alunoDisciplina.CodigoAluno,
+                                                NomeAluno = alunosEOL.FirstOrDefault(x => x.CodigoAluno == alunoDisciplina.CodigoAluno).NomeAluno,
+                                                PercentualFrequencia = alunoDisciplina.PercentualFrequencia
+                                            });
+                                        }
+                                    };
+
+                                    if (alunosDto.Any())
+                                    {
+                                        foreach (var gestor in gestores)
+                                        {
+                                            NotificarFrequenciaBimestre(turma.CodigoTurma,
+                                                                turma.Nome,
+                                                                periodoAtual.Bimestre,
+                                                                turmasUE.Key.CodigoUe,
+                                                                turmasUE.Key.Nome,
+                                                                turmasDRE.Key.CodigoDre,
+                                                                turmasDRE.Key.Nome,
+                                                                disciplinaEOL.Nome,
+                                                                gestor.Usuario.Id,
+                                                                alunosDto);
+                                        }
+                                    }
+                                });
+                        }
+                    };
+                };
+            }
+        }
+
+        #endregion Metodos Privados
     }
 }

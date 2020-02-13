@@ -19,9 +19,9 @@ namespace SME.SGP.Aplicacao
 
         public void AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto)
         {
-            var escolasAtribuidas = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId);
+            var escolasAtribuidas = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId, true);
 
-            var codigosEscolasDominio = escolasAtribuidas?.Select(c => c.EscolaId);
+            var codigosEscolasDominio = escolasAtribuidas?.Where(e => !e.Excluido).Select(c => c.EscolaId);
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
             if (escolasAtribuidas != null)
                 foreach (var atribuicao in escolasAtribuidas)
                 {
-                    if (atribuicaoSupervisorEscolaDto.UESIds == null || !atribuicaoSupervisorEscolaDto.UESIds.Contains(atribuicao.EscolaId))
+                    if (atribuicaoSupervisorEscolaDto.UESIds == null || !atribuicaoSupervisorEscolaDto.UESIds.Contains(atribuicao.EscolaId) || atribuicao.Excluido)
                     {
                         repositorioSupervisorEscolaDre.Remover(atribuicao.Id);
                     }

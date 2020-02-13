@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
 {
     public class AulaDto
     {
-        [Required(ErrorMessage = "A data e hora devem ser informadas")]
+        [Required(ErrorMessage = "A data deve ser informada")]
         public DateTime DataAula { get; set; }
 
         [Required(ErrorMessage = "A disciplina deve ser informada")]

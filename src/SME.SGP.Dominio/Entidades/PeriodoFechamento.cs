@@ -5,10 +5,11 @@ namespace SME.SGP.Dominio
 {
     public class PeriodoFechamento : EntidadeBase
     {
-        public PeriodoFechamento(long? dreId, long? ueId)
+        public PeriodoFechamento(Dre dre, Ue ue)
         {
-            DreId = dreId;
-            UeId = ueId;
+            AdicionarDre(dre);
+            AdicionarUe(ue);
+
             fechamentosBimestre = new List<PeriodoFechamentoBimestre>();
         }
 
@@ -27,7 +28,11 @@ namespace SME.SGP.Dominio
 
         public void AdicionarDre(Dre dre)
         {
-            Dre = dre;
+            if (dre != null)
+            {
+                DreId = dre.Id;
+                Dre = dre;
+            }
         }
 
         public void AdicionarFechamentoBimestre(PeriodoFechamentoBimestre fechamentoBimestre)
@@ -68,7 +73,11 @@ namespace SME.SGP.Dominio
 
         public void AdicionarUe(Ue ue)
         {
-            Ue = ue;
+            if (ue != null)
+            {
+                UeId = ue.Id;
+                Ue = ue;
+            }
         }
 
         public PeriodoFechamentoBimestre ObterFechamentoBimestre(long periodoEscolarId)
@@ -90,13 +99,13 @@ namespace SME.SGP.Dominio
                 {
                     throw new NegocioException($"O período de fechamento da {tipoFechamentoASerValidado} no {periodoSME.PeriodoEscolar.Bimestre}º Bimestre não foi encontrado.");
                 }
-                if (periodoUE.InicioDoFechamento < periodoSME.InicioDoFechamento)
+                if (periodoUE.InicioDoFechamento.Date < periodoSME.InicioDoFechamento.Date)
                 {
-                    throw new NegocioException($"A data de início de fechamento da {tipoFechamentoASerValidado} no {periodoSME.PeriodoEscolar.Bimestre}º deve ser maior que {periodoSME.InicioDoFechamento.ToString("DD/MM/YYYY")}.");
+                    throw new NegocioException($"A data de início de fechamento da {tipoFechamentoASerValidado} no {periodoSME.PeriodoEscolar.Bimestre}º Bimestre deve ser maior que {periodoSME.InicioDoFechamento.ToString("dd/MM/yyyy")}.");
                 }
-                if (periodoUE.FinalDoFechamento > periodoSME.FinalDoFechamento)
+                if (periodoUE.FinalDoFechamento.Date > periodoSME.FinalDoFechamento.Date)
                 {
-                    throw new NegocioException($"A data final do fechamento da {tipoFechamentoASerValidado} no {periodoSME.PeriodoEscolar.Bimestre}º deve ser menor que {periodoSME.FinalDoFechamento.ToString("DD/MM/YYYY")}.");
+                    throw new NegocioException($"A data final do fechamento da {tipoFechamentoASerValidado} no {periodoSME.PeriodoEscolar.Bimestre}º Bimestre deve ser menor que {periodoSME.FinalDoFechamento.ToString("dd/MM/yyyy")}.");
                 }
             }
         }

@@ -84,24 +84,27 @@ namespace SME.SGP.Aplicacao.Servicos
                 else
                     consultaEol = servicoEOL.ObterAbrangenciaCompactaVigente(login, perfil);
 
-                // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
-                var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil);
+                if (consultaEol != null)
+                {
+                    // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
+                    var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil);
 
-                var abrangenciaEol = await consultaEol;
-                var abrangenciaSintetica = await consultaAbrangenciaSintetica;
+                    var abrangenciaEol = await consultaEol;
+                    var abrangenciaSintetica = await consultaAbrangenciaSintetica;
 
-                if (abrangenciaEol == null)
-                    throw new NegocioException("Não foi possível localizar registros de abrangência para este usuário.");
+                    if (abrangenciaEol == null)
+                        throw new NegocioException("Não foi possível localizar registros de abrangência para este usuário.");
 
-                IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
-                IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
-                IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
+                    IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
+                    IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
+                    IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
 
-                // sincronizamos as dres, ues e turmas
-                MaterializarEstruturaInstitucional(abrangenciaEol, ref dres, ref ues, ref turmas);
+                    // sincronizamos as dres, ues e turmas
+                    MaterializarEstruturaInstitucional(abrangenciaEol, ref dres, ref ues, ref turmas);
 
-                // sincronizamos a abrangencia do login + perfil
-                SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
+                    // sincronizamos a abrangencia do login + perfil
+                    SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
+                }
             }
             catch (Exception ex)
             {
@@ -143,17 +146,18 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private Task<AbrangenciaRetornoEolDto> ObterAbrangenciaEolSupervisor(string login)
         {
-            Task<AbrangenciaRetornoEolDto> consultaEol;
+            Task<AbrangenciaRetornoEolDto> consultaEol = null;
             var listaEscolasDresSupervior = consultasSupervisor.ObterPorDreESupervisor(login, string.Empty);
 
-            if (!listaEscolasDresSupervior.Any())
-                throw new NegocioException($"Não foi possível obter as escolas atribuidas ao supervisor {login}.");
+            if (listaEscolasDresSupervior.Any())
+            {
+                var escolas = from a in listaEscolasDresSupervior
+                              from b in a.Escolas
+                              select b.Codigo;
 
-            var escolas = from a in listaEscolasDresSupervior
-                          from b in a.Escolas
-                          select b.Codigo;
+                consultaEol = servicoEOL.ObterAbrangenciaParaSupervisor(escolas.ToArray());
+            }
 
-            consultaEol = servicoEOL.ObterAbrangenciaParaSupervisor(escolas.ToArray());
             return consultaEol;
         }
 

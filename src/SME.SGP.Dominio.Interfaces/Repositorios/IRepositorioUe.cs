@@ -7,6 +7,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         IEnumerable<Ue> ListarPorCodigos(string[] codigos);
 
+        IEnumerable<Ue> MaterializarCodigosUe(string[] idUes, out string[] codigosNaoEncontrados);
+
         Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano);
 
         Ue ObterPorCodigo(string ueId);
@@ -21,6 +23,5 @@ namespace SME.SGP.Dominio.Interfaces
         Ue ObterUEPorTurma(string turmaId);
 
         IEnumerable<Ue> Sincronizar(IEnumerable<Ue> entidades, IEnumerable<Dre> dres);
-        IEnumerable<Ue> MaterializarCodigosUe(string[] idUes, out string[] codigosNaoEncontrados);
     }
 }

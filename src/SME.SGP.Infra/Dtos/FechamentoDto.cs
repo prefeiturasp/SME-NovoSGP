@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
 {
@@ -12,9 +13,12 @@ namespace SME.SGP.Infra
         public bool ConfirmouAlteracaoHierarquica { get; set; }
         public string DreId { get; set; }
         public IEnumerable<FechamentoBimestreDto> FechamentosBimestres { get; set; }
-        public long Id { get; set; }
         public bool Migrado { get; set; }
-        public long TipoCalendarioId { get; set; }
+
+        [Required(ErrorMessage = "O tipo de calendário é obrigatório")]
+        public long? TipoCalendarioId { get; set; }
+
         public string UeId { get; set; }
+        public bool EhRegistroExistente { get; set; }
     }
 }

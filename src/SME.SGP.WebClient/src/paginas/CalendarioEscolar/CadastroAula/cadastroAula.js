@@ -33,12 +33,12 @@ import { removerAlerta } from '~/redux/modulos/alertas/actions';
 import { store } from '~/redux';
 
 const CadastroAula = ({ match }) => {
-  const usuario = useSelector(store => store.usuario);
+  const usuario = useSelector(state => state.usuario);
   const permissaoTela = useSelector(
-    store => store.usuario.permissoes[RotasDTO.CALENDARIO_PROFESSOR]
+    state => state.usuario.permissoes[RotasDTO.CALENDARIO_PROFESSOR]
   );
   const diaAula = useSelector(
-    store => store.calendarioProfessor.diaSelecionado
+    state => state.calendarioProfessor.diaSelecionado
   );
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
@@ -208,7 +208,8 @@ const CadastroAula = ({ match }) => {
   useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
       const disciplina = listaDisciplinas.filter(
-        item => item.codigoComponenteCurricular === idDisciplina
+        item =>
+          item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
       if (disciplina && disciplina[0])
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
@@ -239,9 +240,12 @@ const CadastroAula = ({ match }) => {
     trataSomenteLeitura();
   }, [somenteLeitura]);
 
+  const buscarDisciplinas = async () => {
+    setListaDisciplinasCompartilhadas(await buscarDisciplinasCompartilhadas());
+  };
+
   useEffect(() => {
-    if (disciplinaCompartilhada)
-      setListaDisciplinasCompartilhadas(buscarDisciplinasCompartilhadas());
+    if (disciplinaCompartilhada) buscarDisciplinas();
   }, [disciplinaCompartilhada]);
 
   const getRecorrenciasHabilitadas = (opcoes, dadosRecorrencia) => {
@@ -311,10 +315,10 @@ const CadastroAula = ({ match }) => {
 
       const val = {
         tipoAula: buscaAula.data.tipoAula,
-        disciplinaId: String(buscaAula.data.disciplinaId),
-        disciplinaCompartilhadaId: String(
-          buscaAula.data.disciplinaCompartilhadaId
-        ),
+        disciplinaId: buscaAula.data.disciplinaId.toString(),
+        disciplinaCompartilhadaId:
+          buscaAula.data.disciplinaCompartilhadaId &&
+          buscaAula.data.disciplinaCompartilhadaId.toString(),
         dataAula: buscaAula.data.dataAula
           ? window.moment(buscaAula.data.dataAula)
           : window.moment(),
@@ -373,9 +377,7 @@ const CadastroAula = ({ match }) => {
       setListaDisciplinas(disciplinas.data);
 
       if (disciplinas.data && disciplinas.data.length === 1) {
-        inicial.disciplinaId = String(
-          disciplinas.data[0].codigoComponenteCurricular
-        );
+        inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
         if (Object.keys(refForm).length > 0) {
           onChangeDisciplinas(
             disciplinas.data[0].codigoComponenteCurricular,
@@ -415,7 +417,6 @@ const CadastroAula = ({ match }) => {
     const val = {
       tipoAula: Yup.string().required('Tipo obrigatório'),
       disciplinaId: Yup.string().required('Componente curricular obrigatório'),
-      dataAula: momentSchema.required('Hora obrigatória'),
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
       quantidadeTexto: controlaQuantidadeAula
@@ -425,6 +426,12 @@ const CadastroAula = ({ match }) => {
           )
         : validacaoQuantidade,
     };
+
+    if (disciplinaCompartilhada) {
+      val.disciplinaCompartilhadaId = Yup.string().required(
+        'Componente curricular compartilhado'
+      );
+    }
 
     if (!ehReposicao) {
       // TODO
@@ -490,11 +497,11 @@ const CadastroAula = ({ match }) => {
 
   const salvar = async valoresForm => {
     const dados = { ...valoresForm };
+
     const data =
       dados.dataAulaCompleta && dados.dataAulaCompleta.format('YYYY-MM-DD');
-    const hora = dados.dataAula && dados.dataAula.format('HH:mm');
+    dados.dataAula = moment(`${data}T00:00:00-03:00`);
 
-    dados.dataAula = moment(`${data}T${hora}`);
     if (dados.quantidadeRadio && dados.quantidadeRadio > 0) {
       dados.quantidade = dados.quantidadeRadio;
     } else if (dados.quantidadeTexto && dados.quantidadeTexto > 0) {
@@ -506,6 +513,8 @@ const CadastroAula = ({ match }) => {
       dados.ueId = ueId;
       dados.turmaId = turmaId;
     }
+
+    dados.dataAula = dados.dataAula.format();
 
     const cadastrado = await ServicoAula.salvar(idAula, dados).catch(e =>
       erros(e)
@@ -815,18 +824,6 @@ const CadastroAula = ({ match }) => {
                       ) ||
                       !novoRegistro
                     }
-                  />
-                </div>
-                <div className="col-sm-12 col-md-4 col-lg-4 col-xl-3 pb-2">
-                  <CampoData
-                    form={form}
-                    label="Horário do início da aula"
-                    placeholder="Formato 24 horas"
-                    formatoData="HH:mm"
-                    desabilitado={somenteLeitura}
-                    name="dataAula"
-                    onChange={onChangeCampos}
-                    somenteHora
                   />
                 </div>
                 {disciplinaCompartilhada && (

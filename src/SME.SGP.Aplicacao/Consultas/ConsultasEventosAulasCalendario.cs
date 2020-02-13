@@ -83,9 +83,13 @@ namespace SME.SGP.Aplicacao
             if (temTurmaInformada)
                 disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil);
 
-            var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct().Concat(
-                                      aulas.Where(a => !String.IsNullOrEmpty(a.DisciplinaCompartilhadaId))
-                                           .Select(a => long.Parse(a.DisciplinaCompartilhadaId)).Distinct());
+            var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct().ToList();
+
+            var idsDisciplinasCompartilhadas = aulas.Where(a => !String.IsNullOrEmpty(a.DisciplinaCompartilhadaId) && !a.DisciplinaCompartilhadaId.Equals("null"))
+                .Select(a => long.Parse(a.DisciplinaCompartilhadaId)).Distinct();                                           
+
+            if (idsDisciplinasCompartilhadas != null && idsDisciplinasCompartilhadas.Any())
+                idsDisciplinasAulas.AddRange(idsDisciplinasCompartilhadas);
 
             var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
 

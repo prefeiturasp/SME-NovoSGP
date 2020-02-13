@@ -45,7 +45,6 @@ namespace SME.Background.Hangfire
                            .ConfigureAppConfiguration((hostContext, config) =>
                            {
                                config.SetBasePath(Directory.GetCurrentDirectory());
-                               config.AddJsonFile("appsettings.json", optional: false);
                                config.AddEnvironmentVariables();
                            })
                            .UseStartup<Startup>()

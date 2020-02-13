@@ -90,8 +90,8 @@ namespace SME.SGP.Aplicacao
                 PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
                 if (planoAnual != null)
                 {
-                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoEOL.ProfessorPodePersistirTurma(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), DateTime.Now).Result)
-                        throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), planoAnualDto.ComponenteCurricularEolId.ToString(),  DateTime.Now).Result)
+                        throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
                 }
                 planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao);
                 Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
