@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -16,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         public IEnumerable<ComponenteCurricularSimplificadoDto> ObterDisciplinasDoBimestrePlanoAula(int ano, int bimestre, long turmaId, long componenteCurricularId)
         {
             var query = @"select distinct c.id, c.descricao_eol as descricao
-                   from plano_anual pa 
+                   from plano_anual pa
                   inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id
                   inner join componente_curricular c on c.id = o.componente_curricular_id
                   where pa.ano = @ano
@@ -31,7 +30,6 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId,
                 componenteCurricularId
             });
-
         }
 
         public long ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId)
@@ -49,14 +47,14 @@ namespace SME.SGP.Dados.Repositorios
         public IEnumerable<ObjetivoAprendizagemPlano> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId)
         {
             var query = @"select o.*
-                   from plano_anual pa 
+                   from plano_anual pa
                   inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id
                   inner join componente_curricular cc on cc.id = o.componente_curricular_id
                   where pa.ano = @ano
                     and pa.bimestre = @bimestre
                     and pa.componente_curricular_eol_id = @componenteCurricularId
-                    and pa.turma_id = @turmaId
-                    and cc.codigo_eol = @disciplinaId";
+                    and pa.turma_id = @turmaId";
+            //and cc.codigo_jurema = @disciplinaId";
 
             return database.Conexao.Query<ObjetivoAprendizagemPlano>(query, new { ano, bimestre, componenteCurricularId, turmaId, disciplinaId });
         }
