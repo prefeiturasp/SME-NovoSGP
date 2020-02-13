@@ -48,9 +48,10 @@ import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento'
 
 const rotas = new Map();
 
-rotas.set(`${RotasDto.PAP}/resumos`, {
-  breadcrumbName: 'ResumosGraficosPAP',
-  parent: RotasDto.PAP,
+rotas.set(`${RotasDto.PAP}`, {
+  breadcrumbName: 'Resumos e Gráficos PAP',
+  menu: ['Relatórios', 'PAP'],
+  parent: '/',
   component: ResumosGraficosPAP,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
