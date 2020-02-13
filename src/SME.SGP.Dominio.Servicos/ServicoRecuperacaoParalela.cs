@@ -34,7 +34,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (CodigoAlunos.Contains(aluno.CodigoAluno))
                 {
-                    double frequencia = 100 - ((aluno.TotalAusencias * aluno.TotalAulas) / 100);
+                    double frequencia = 100 - (aluno.TotalAusencias / (double)aluno.TotalAulas * 100);
                     if (frequencia >= frequente)
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente));
                     else if (frequencia >= naoComparece && frequencia < frequente)
@@ -43,6 +43,14 @@ namespace SME.SGP.Dominio.Servicos
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.NaoComparete));
                 }
             }
+
+            CodigoAlunos.ToList().ForEach(codigoAluno =>
+            {
+                if (retorno.Any(x => x.Key.Equals(codigoAluno)))
+                    return;
+
+                retorno.Add(new KeyValuePair<string, int>(codigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente)); 
+            });
 
             return retorno;
         }

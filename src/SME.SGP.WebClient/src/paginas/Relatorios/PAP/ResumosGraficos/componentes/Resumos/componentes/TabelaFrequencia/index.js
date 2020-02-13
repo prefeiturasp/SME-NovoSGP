@@ -10,61 +10,6 @@ import { Base } from '~/componentes';
 // Estilos
 import { ContainerTabela } from './styles';
 
-const dadosBackend = [
-  {
-    key: '0',
-    DescricaoFrequencia: 'Frequente',
-    TipoDado: 'Quantidade',
-    Cor: Base.Laranja,
-    '3C': 11,
-    '4C': 15,
-    '4E': 20,
-    '5C': 25,
-    '6C': 25,
-    '6B': 25,
-    Total: 36,
-  },
-  {
-    key: '1',
-    DescricaoFrequencia: 'Frequente',
-    TipoDado: 'Porcentagem',
-    Cor: Base.Laranja,
-    '3C': 11,
-    '4C': 15,
-    '4E': 20,
-    '5C': 25,
-    '6C': 25,
-    '6B': 25,
-    Total: 36,
-  },
-  {
-    key: '2',
-    DescricaoFrequencia: 'Pouco frequente',
-    TipoDado: 'Quantidade',
-    Cor: Base.Vermelho,
-    '3C': 11,
-    '4C': 15,
-    '4E': 20,
-    '5C': 25,
-    '6C': 25,
-    '6B': 25,
-    Total: 36,
-  },
-  {
-    key: '3',
-    DescricaoFrequencia: 'Pouco frequente',
-    TipoDado: 'Porcentagem',
-    Cor: Base.Vermelho,
-    '3C': 11,
-    '4C': 15,
-    '4E': 20,
-    '5C': 25,
-    '6C': 25,
-    '6B': 25,
-    Total: 36,
-  },
-];
-
 function TabelaFrequencia({ dados }) {
   const renderizarCor = descricao => {
     const mapa = {
@@ -104,7 +49,7 @@ function TabelaFrequencia({ dados }) {
       colSpan: 0,
       width: 150,
       fixed: 'left',
-      render: (text, row, index) => {
+      render: text => {
         return {
           children: text,
           props: {
@@ -118,7 +63,7 @@ function TabelaFrequencia({ dados }) {
   ];
 
   const colunasTabela = useMemo(() => {
-    if (!dados) return colunasBase;
+    if (!Object.entries(dados).length) return colunasBase;
 
     const colunasParaExcluir = [
       'TipoDado',
@@ -139,7 +84,7 @@ function TabelaFrequencia({ dados }) {
           width: 100,
           className: 'headerTotal',
           fixed: 'right',
-          render: (text, row, index) => {
+          render: text => {
             return {
               children: text,
               className: 'itemColunaTotal',
@@ -164,6 +109,7 @@ function TabelaFrequencia({ dados }) {
           rowKey="key"
           key="key"
           size="small"
+          locale={{ emptyText: 'Sem dados' }}
         />
       </ContainerTabela>
     </>
