@@ -8,6 +8,11 @@ import SelectRespostas from './componentes/SelectRespostas';
 
 // Estilos
 import { Tabela, ContainerTabela } from './styles';
+import styled from 'styled-components';
+
+const NumeroChamada = styled.td`
+  min-width: 20px;
+`;
 
 function TabelaAlunos({ alunos, respostas, objetivoAtivo, onChangeResposta }) {
   return (
@@ -25,7 +30,7 @@ function TabelaAlunos({ alunos, respostas, objetivoAtivo, onChangeResposta }) {
           {alunos.length > 0 ? (
             alunos.map((aluno, key) => (
               <tr key={shortid.generate()}>
-                <td>{aluno.numeroChamada}</td>
+                <NumeroChamada>{aluno.numeroChamada}</NumeroChamada>
                 <td>{aluno.nome}</td>
                 <td>
                   <IconeStatus status={aluno.concluido} />

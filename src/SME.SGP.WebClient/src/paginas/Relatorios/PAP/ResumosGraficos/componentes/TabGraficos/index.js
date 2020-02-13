@@ -3,68 +3,13 @@ import t from 'prop-types';
 import shortid from 'shortid';
 
 // Componentes
-import { BarraNavegacao, Base, Graficos } from '~/componentes';
+import { BarraNavegacao, Graficos } from '~/componentes';
 import EixoObjetivo from './componentes/EixoObjetivo';
 
 // Estilos
 import { Linha } from '~/componentes/EstilosGlobais';
 
 function TabGraficos({ dados }) {
-  const dadosBackend = [
-    {
-      key: '0',
-      DescricaoFrequencia: 'Frequente',
-      TipoDado: 'Quantidade',
-      Cor: Base.Laranja,
-      '3C': 11,
-      '4C': 15,
-      '4E': 20,
-      '5C': 25,
-      '6C': 25,
-      '6B': 25,
-      Total: 36,
-    },
-    {
-      key: '1',
-      DescricaoFrequencia: 'Frequente',
-      TipoDado: 'Porcentagem',
-      Cor: Base.Laranja,
-      '3C': 11,
-      '4C': 15,
-      '4E': 20,
-      '5C': 25,
-      '6C': 25,
-      '6B': 25,
-      Total: 36,
-    },
-    {
-      key: '2',
-      DescricaoFrequencia: 'Pouco frequente',
-      TipoDado: 'Quantidade',
-      Cor: Base.Vermelho,
-      '3C': 11,
-      '4C': 15,
-      '4E': 20,
-      '5C': 25,
-      '6C': 25,
-      '6B': 25,
-      Total: 36,
-    },
-    {
-      key: '3',
-      DescricaoFrequencia: 'Pouco frequente',
-      TipoDado: 'Porcentagem',
-      Cor: Base.Vermelho,
-      '3C': 11,
-      '4C': 15,
-      '4E': 20,
-      '5C': 25,
-      '6C': 25,
-      '6B': 25,
-      Total: 36,
-    },
-  ];
-
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados.frequencia;
     const dadosFormatados = [];
@@ -108,21 +53,17 @@ function TabGraficos({ dados }) {
   }, [dados]);
 
   const dadosTabelaTotalEstudantes = useMemo(() => {
-    //Linha Quantidade
     const montaDados = [];
-
     const dadoQuantidade = {};
     dadoQuantidade.Id = shortid.generate();
     dadoQuantidade.TipoDado = 'Quantidade';
     dadoQuantidade.FrequenciaDescricao = 'Total';
 
-    console.log(dados.totalEstudantes);
     dados.totalEstudantes.anos.forEach(ano => {
       dadoQuantidade[`${ano.anoDescricao}`] = ano.quantidade;
     });
     dadoQuantidade.Total = dados.totalEstudantes.quantidadeTotal;
 
-    // Linha Porcentagem
     montaDados.push(dadoQuantidade);
 
     const dadoPorcentagem = {};
@@ -140,7 +81,7 @@ function TabGraficos({ dados }) {
     return montaDados;
   }, [dados]);
 
-  const objetivos = [
+  const [objetivos, setObjetivos] = useState([
     {
       id: 1,
       eixoDescricao: 'Frequência',
@@ -153,29 +94,85 @@ function TabGraficos({ dados }) {
       objetivoDescricao: 'Total de alunos no PAP',
       dados: dadosTabelaTotalEstudantes,
     },
-  ];
+  ]);
+
   const [itemAtivo, setItemAtivo] = useState(objetivos[0]);
 
-  useEffect(() => {
-    console.log(dadosTabelaTotalEstudantes);
-  }, [dadosTabelaTotalEstudantes]);
+  const objetoExistaNaLista = (objeto, lista) => {
+    return lista.some(
+      elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
+    );
+  };
+
+  const dadosTabelaResultados = useMemo(() => {
+    const resultados = [];
+    dados.resultados.items.forEach(item => {
+      let objetivo = {
+        id: shortid.generate(),
+        eixoDescricao: item.eixoDescricao,
+        dados: [],
+      };
+
+      item.objetivos.forEach(obj => {
+        objetivo = {
+          ...objetivo,
+          objetivoDescricao: obj.objetivoDescricao,
+        };
+
+        const dadosObjetivo = [];
+        obj.anos.forEach(y => {
+          let objetivoQuantidade = {};
+          let objetivoPorcentagem = {};
+
+          y.respostas.forEach(z => {
+            objetivoQuantidade = {
+              TipoDado: 'Quantidade',
+              FrequenciaDescricao: z.respostaDescricao,
+            };
+
+            objetivoPorcentagem = {
+              TipoDado: 'Porcentagem',
+              FrequenciaDescricao: z.respostaDescricao,
+            };
+
+            obj.anos.forEach(years => {
+              objetivoQuantidade = {
+                ...objetivoQuantidade,
+                [years.anoDescricao]: z.quantidade,
+              };
+
+              objetivoPorcentagem = {
+                ...objetivoPorcentagem,
+                [years.anoDescricao]: z.porcentagem,
+              };
+            });
+
+            if (!objetoExistaNaLista(objetivoQuantidade, dadosObjetivo)) {
+              dadosObjetivo.push(objetivoQuantidade);
+            } else if (
+              !objetoExistaNaLista(objetivoPorcentagem, dadosObjetivo)
+            ) {
+              dadosObjetivo.push(objetivoPorcentagem);
+            }
+          });
+        });
+
+        objetivo = {
+          ...objetivo,
+          dados: dadosObjetivo,
+        };
+      });
+
+      resultados.push(objetivo);
+    });
+
+    return resultados;
+  }, [dados]);
 
   useEffect(() => {
-    console.log(
-      Object.keys(itemAtivo.dados[0]).filter(
-        x =>
-          [
-            'TipoDado',
-            'FrequenciaDescricao',
-            'key',
-            'Descricao',
-            'Total',
-            'Id',
-          ].indexOf(x) === -1
-      ),
-      dadosTabelaTotalEstudantes
-    );
-  }, [itemAtivo]);
+    setObjetivos(atual => [...atual, ...dadosTabelaResultados]);
+  }, [dadosTabelaResultados]);
+
   return (
     <>
       <Linha style={{ marginBottom: '8px' }}>
