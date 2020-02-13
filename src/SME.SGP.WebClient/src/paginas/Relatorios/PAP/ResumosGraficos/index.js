@@ -63,10 +63,16 @@ const ResumosGraficosPAP = () => {
         ]);
 
         setDados({
-          totalEstudantes: { ...requisicoes[0].data },
-          frequencia: [...requisicoes[1].data.frequencia],
-          resultados: { ...requisicoes[2].data },
-          informacoesEscolares: { ...requisicoes[3].data },
+          totalEstudantes: requisicoes[0].data
+            ? { ...requisicoes[0].data }
+            : [],
+          frequencia: requisicoes[1].data
+            ? [...requisicoes[1].data.frequencia]
+            : [],
+          resultados: requisicoes[2].data ? { ...requisicoes[2].data } : [],
+          informacoesEscolares: requisicoes[3].data
+            ? { ...requisicoes[3].data }
+            : [],
         });
 
         setCarregandoGraficos(false);
