@@ -141,7 +141,7 @@
         //[PermissaoMenu(Menu = "Relatório Consulta", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 2)]
         //R_C = 46,
 
-        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 1, Url = "/usuarios/reiniciar-senha", EhAlteracao = true,
+        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 8, OrdemMenu = 1, Url = "/usuarios/reiniciar-senha", EhAlteracao = true,
            EhSubMenu = true, EhConsulta = true, SubMenu = "Reiniciar Senha")]
         AS_C = 47,
 
@@ -231,17 +231,17 @@
 
         /*Retirar comentário após a implementação dos menus*/
 
-        //[PermissaoMenu(Menu = "Períodos de fechamento (Reabertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 6, EhConsulta = true)]
-        //PFR_C = 76,
+        [PermissaoMenu(Menu = "Períodos de fechamento (Reabertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 6, EhConsulta = true, Url = "/calendario-escolar/periodo-fechamento-reabertura")]
+        PFR_C = 76,
 
-        //[PermissaoMenu(Menu = "Períodos de fechamento (Reabertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 6, EhInclusao = true)]
-        //PFR_I = 77,
+        [PermissaoMenu(Menu = "Períodos de fechamento (Reabertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 6, EhInclusao = true, Url = "/calendario-escolar/periodo-fechamento-reabertura")]
+        PFR_I = 77,
 
-        //[PermissaoMenu(Menu = "Períodos de fechamento (Reabertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 6, EhExclusao = true)]
-        //PFR_E = 78,
+        [PermissaoMenu(Menu = "Períodos de fechamento (Reabertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 6, EhExclusao = true, Url = "/calendario-escolar/periodo-fechamento-reabertura")]
+        PFR_E = 78,
 
-        //[PermissaoMenu(Menu = "Períodos de fechamento (Reabertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 6, EhAlteracao = true)]
-        //PFR_A = 79,
+        [PermissaoMenu(Menu = "Períodos de fechamento (Reabertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 6, EhAlteracao = true, Url = "/calendario-escolar/periodo-fechamento-reabertura")]
+        PFR_A = 79,
 
         [PermissaoMenu(Menu = "Tipo de Feriado", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 7, EhConsulta = true, Url = "/calendario-escolar/tipo-feriado")]
         TF_C = 80,
@@ -303,16 +303,16 @@
         [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhAlteracao = true, Url = "/gestao/atribuicao-supervisor-lista")]
         ASP_A = 99,
 
-        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/configuracoes/tipo-avaliacao")]
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_C = 100,
 
-        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true, Url = "/configuracoes/tipo-avaliacao")]
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 8, OrdemMenu = 2, EhInclusao = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_I = 101,
 
-        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true, Url = "/configuracoes/tipo-avaliacao")]
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 8, OrdemMenu = 2, EhExclusao = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_E = 102,
 
-        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/configuracoes/tipo-avaliacao")]
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_A = 103,
 
         [PermissaoMenu(Menu = "Aula prevista X Aula dada", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhInclusao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
@@ -341,11 +341,29 @@
 
         [PermissaoMenu(Menu = "Compensação de Ausência", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 6, EhConsulta = true, Url = "/diario-classe/compensacao-ausencia")]
         CA_C = 112,
+
         [PermissaoMenu(Menu = "Compensação de Ausência", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 6, EhInclusao = true, Url = "/diario-classe/compensacao-ausencia")]
         CA_I = 113,
+
         [PermissaoMenu(Menu = "Compensação de Ausência", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 6, EhExclusao = true, Url = "/diario-classe/compensacao-ausencia")]
         CA_E = 114,
+
         [PermissaoMenu(Menu = "Compensação de Ausência", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 6, EhAlteracao = true, Url = "/diario-classe/compensacao-ausencia")]
         CA_A = 115,
+
+        [PermissaoMenu(Menu = "Resumos e gráficos PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 1, EhConsulta = true,  Url = "/recuperacao-paralela/resumos/")]
+        RGP_C = 120,
+
+        [PermissaoMenu(Menu = "Acompanhamento PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pap/acompanhamento")]
+        RAP_C = 116,
+
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhConsulta = true, Url = "/fechamento/fechamento-bimestre")]
+        FB_C = 124,
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhInclusao = true, Url = "/fechamento/fechamento-bimestre")]
+        FB_I = 125,
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhExclusao = true, Url = "/fechamento/fechamento-bimestre")]
+        FB_E = 126,
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhAlteracao = true, Url = "/fechamento/fechamento-bimestre")]
+        FB_A = 127,
     }
 }

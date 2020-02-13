@@ -8,7 +8,7 @@ import { Spin, Icon } from 'antd';
 import styled from 'styled-components';
 
 // Componentes
-import { Base } from '~/componentes';
+import { Base } from './colors';
 
 const LoaderWrapper = styled.div`
   .ant-spin-text {

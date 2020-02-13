@@ -78,7 +78,7 @@ function Filtro({ onFiltrar }) {
           </Linha>
           <Linha className="row mb-2">
             <Grid cols={2}>
-              <MesesDropDown form={form} />
+              <MesesDropDown form={form} name="bimestre" />
             </Grid>
             <Grid cols={10}>
               <CampoTexto

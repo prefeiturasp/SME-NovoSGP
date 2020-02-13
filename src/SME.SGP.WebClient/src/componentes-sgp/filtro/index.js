@@ -6,7 +6,7 @@ import {
   selecionarTurma,
   turmasUsuario,
   removerTurma,
-  DefinirConsideraHistorico,
+  setarConsideraHistorico,
 } from '~/redux/modulos/usuario/actions';
 import Grid from '~/componentes/grid';
 import Button from '~/componentes/button';
@@ -121,8 +121,9 @@ const Filtro = () => {
   );
 
   const aoSelecionarHistorico = () => {
-    setAnoLetivoSelecionado();
-    dispatch(DefinirConsideraHistorico(!consideraHistorico));
+    setTextoAutocomplete('');
+    dispatch(removerTurma());
+    dispatch(setarConsideraHistorico(!consideraHistorico));
   };
 
   const obterDres = useCallback(
@@ -200,6 +201,7 @@ const Filtro = () => {
     }
   }, [
     anoLetivoSelecionado,
+    consideraHistorico,
     dispatch,
     dreSelecionada,
     modalidadeSelecionada,
@@ -256,15 +258,12 @@ const Filtro = () => {
 
   useEffect(() => {
     dispatch(limparDadosFiltro());
-    setAnoLetivoSelecionado();
   }, [consideraHistorico, dispatch]);
 
   useEffect(() => {
     let estado = true;
 
     const obterAnosLetivos = async deveSalvarAnosLetivos => {
-      const anoAtual = window.moment().format('YYYY');
-
       if (!deveSalvarAnosLetivos) return;
 
       const anosLetivo = await ServicoFiltro.listarAnosLetivos({
@@ -284,6 +283,8 @@ const Filtro = () => {
         .catch(() => []);
 
       if (!anosLetivo.length) {
+        const anoAtual = window.moment().format('YYYY');
+
         anosLetivo.push({
           desc: anoAtual,
           valor: anoAtual,
@@ -305,13 +306,15 @@ const Filtro = () => {
   useEffect(() => {
     let estado = true;
 
-    setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo || '');
-    setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade || '');
-    setPeriodoSelecionado(turmaUsuarioSelecionada.periodo || '');
-    setDreSelecionada(turmaUsuarioSelecionada.dre || '');
-    setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar || '');
-    setTurmaSelecionada(turmaUsuarioSelecionada.turma || '');
-    setTextoAutocomplete(turmaUsuarioSelecionada.desc || '');
+    setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo || undefined);
+    setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade || undefined);
+    setPeriodoSelecionado(turmaUsuarioSelecionada.periodo || undefined);
+    setDreSelecionada(turmaUsuarioSelecionada.dre || undefined);
+    setUnidadeEscolarSelecionada(
+      turmaUsuarioSelecionada.unidadeEscolar || undefined
+    );
+    setTurmaSelecionada(turmaUsuarioSelecionada.turma || undefined);
+    setTextoAutocomplete(turmaUsuarioSelecionada.desc || undefined);
     setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
 
     if (!turmaUsuarioSelecionada.length) setCampoAnoLetivoDesabilitado(false);
@@ -361,8 +364,9 @@ const Filtro = () => {
   }, [anoLetivoSelecionado, consideraHistorico, dispatch]);
 
   useEffect(() => {
-    if (modalidades && modalidades.length === 1)
+    if (modalidades && modalidades.length === 1) {
       setModalidadeSelecionada(modalidades[0].valor);
+    }
   }, [modalidades]);
 
   useEffect(() => {

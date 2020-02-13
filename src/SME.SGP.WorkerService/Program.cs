@@ -10,33 +10,29 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Worker.Service
 {
-    class Program
+    internal class Program
     {
-
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             // Run with console or service
             var asService = !(Debugger.IsAttached || args.Contains("--console"));
-        
+
             var builder = new HostBuilder()
             .ConfigureAppConfiguration((hostContext, config) =>
             {
                 config.SetBasePath(Directory.GetCurrentDirectory());
-                config.AddJsonFile("appsettings.json", optional: false);
                 config.AddEnvironmentVariables();
             })
             .ConfigureLogging((context, logging) =>
             {
                 logging.AddConfiguration(context.Configuration);
                 logging.AddSentry();
-
             })
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddHostedService<WorkerService>();
                 WorkerService.ConfigurarDependencias(hostContext.Configuration, services);
                 WorkerService.Configurar(hostContext.Configuration, services);
-
 
                 services.AddDistributedRedisCache(options =>
                 {

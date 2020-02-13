@@ -37,15 +37,17 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public IEnumerable<FrequenciaAluno> ObterAlunosComAusenciaNoBimestre(int bimestre)
+        public IEnumerable<FrequenciaAluno> ObterAlunosComAusenciaPorDisciplinaNoPeriodo(long periodoId)
         {
-            var query = @"select * 
-                         from frequencia_aluno 
-                        where not excluido
-                          and tipo = 1
-                          and bimestre = @bimestre
-                          and total_ausencias - total_compensacoes > 0 ";
-            return database.Conexao.Query<FrequenciaAluno>(query, new { bimestre });
+            var query = @"select f.* 
+                          from frequencia_aluno f
+                         inner join periodo_escolar p on p.periodo_fim = f.periodo_fim and p.periodo_inicio = f.periodo_inicio
+                        where not f.excluido
+                          and p.id = @periodoId
+                          and f.tipo = 1
+                          and f.total_ausencias - f.total_compensacoes > 0 ";
+
+            return database.Conexao.Query<FrequenciaAluno>(query, new { periodoId });
         }
 
         public FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")

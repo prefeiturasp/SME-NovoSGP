@@ -41,6 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.Background.Hangfire", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Background", "src\Bibliotecas\SME.SGP.Background\SME.SGP.Background.csproj", "{84395D16-A142-4344-B483-15D23886B543}"
 EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

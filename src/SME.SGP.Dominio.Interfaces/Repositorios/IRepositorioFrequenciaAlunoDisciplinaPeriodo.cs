@@ -11,6 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual);
 
-        IEnumerable<FrequenciaAluno> ObterAlunosComAusenciaNoBimestre(int bimestre);
+        IEnumerable<FrequenciaAluno> ObterAlunosComAusenciaPorDisciplinaNoPeriodo(long periodoId);
     }
 }

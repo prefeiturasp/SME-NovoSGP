@@ -1,5 +1,4 @@
 using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -135,6 +134,11 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         #endregion Obter paginado
+
+        public async Task ExcluirPorIdsAsync(long[] ids)
+        {
+            await database.Conexao.ExecuteAsync("DELETE FROM NOTIFICACAO WHERE ID = ANY(@ids)", new { ids });
+        }
 
         public IEnumerable<Notificacao> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite)
         {

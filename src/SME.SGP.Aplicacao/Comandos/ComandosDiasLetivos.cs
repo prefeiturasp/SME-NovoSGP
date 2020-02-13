@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             //buscar os dados
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId);
             var diasLetivosCalendario = BuscarDiasLetivos(periodoEscolar);
-            var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId);
+            var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, false, false);
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(filtro.TipoCalendarioId);
 
             var anoLetivo = tipoCalendario.AnoLetivo;

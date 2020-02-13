@@ -89,7 +89,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
                                           repositorioAtividadeAvaliativa.Object,
                                           repositorioAtribuicaoCJ.Object,
                                           repositorioTurma.Object,
-                                          servicoWorkflowAprovacao.Object);
+                                          servicoWorkflowAprovacao.Object,
+                                          servicoUsuario.Object);
 
             Setup();
         }

@@ -50,6 +50,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
   const [listaDisciplinasRegencia, setListaDisciplinasRegencia] = useState([]);
   const [temRegencia, setTemRegencia] = useState(false);
   const [refForm, setRefForm] = useState({});
+  const [bimestreSugeridoCopia, setBimestreSugeridoCopia] = useState(null);
 
   const [
     alunosAusenciaTurmaOriginal,
@@ -337,6 +338,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
           atividade: dadosEdicao.data.atividade,
           descricao: dadosEdicao.data.descricao,
         });
+        setBimestreSugeridoCopia(String(dadosEdicao.data.bimestre));
         if (dadosEdicao.data.alunos && dadosEdicao.data.alunos.length) {
           setAlunosAusenciaCompensada(dadosEdicao.data.alunos);
         }
@@ -519,6 +521,8 @@ const CompensacaoAusenciaForm = ({ match }) => {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
         validaAntesDoSubmit(form);
+      } else {
+        history.push('/diario-classe/compensacao-ausencia')
       }
     } else {
       history.push('/diario-classe/compensacao-ausencia');
@@ -554,11 +558,17 @@ const CompensacaoAusenciaForm = ({ match }) => {
     if (cadastrado && cadastrado.status == 200) {
       if (
         compensacoesParaCopiar &&
-        compensacoesParaCopiar.compensacaoOrigemId
+        compensacoesParaCopiar.compensacaoOrigemId &&
+        compensacoesParaCopiar.dadosTurmas &&
+        compensacoesParaCopiar.dadosTurmas.length
       ) {
         await ServicoCompensacaoAusencia.copiarCompensacao(
           compensacoesParaCopiar
-        ).catch(e => erros(e));
+        ).then(resposta => {
+          if (resposta.status === 200) {
+            sucesso(resposta.data);
+          }
+        }).catch(e => erros(e));
       }
       if (idCompensacaoAusencia) {
         sucesso('Compensação alterada com sucesso.');
@@ -737,10 +747,11 @@ const CompensacaoAusenciaForm = ({ match }) => {
           onCloseCopiarCompensacao={fecharCopiarCompensacao}
           onCopiarCompensacoes={onCopiarCompensacoes}
           compensacoesParaCopiar={compensacoesParaCopiar}
+          bimestreSugerido={bimestreSugeridoCopia}
         />
       ) : (
-        ''
-      )}
+          ''
+        )}
 
       <Cabecalho pagina="Cadastrar Compensação de Ausência" />
       <Card>
@@ -792,7 +803,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     id="btn-salvar"
                     label={`${
                       idCompensacaoAusencia > 0 ? 'Alterar' : 'Cadastrar'
-                    }`}
+                      }`}
                     color={Colors.Roxo}
                     border
                     bold
@@ -937,8 +948,8 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     alteradoEm={auditoria.alteradoEm}
                   />
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
                 <div className="row mt-3">
                   <div className="col-md-12">
                     <Button
@@ -951,22 +962,22 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       disabled={novoRegistro || desabilitarCampos}
                     />
                     {compensacoesParaCopiar &&
-                    compensacoesParaCopiar.compensacaoOrigemId ? (
-                      <ListaCopiarCompensacoes>
-                        <div className="mb-1">
-                          Compensação será copiada para:
-                        </div>
-                        <div
-                          className="font-weight-bold"
-                          key={`bimestre-${shortid.generate()}`}
-                        >
-                          - Bimestre {compensacoesParaCopiar.bimestre}
-                        </div>
-                        {montarExibicaoCompensacoesCopiar()}
-                      </ListaCopiarCompensacoes>
-                    ) : (
-                      ''
-                    )}
+                      compensacoesParaCopiar.compensacaoOrigemId && compensacoesParaCopiar.dadosTurmas.length ? (
+                        <ListaCopiarCompensacoes>
+                          <div className="mb-1">
+                            Compensação será copiada para:
+                          </div>
+                          <div
+                            className="font-weight-bold"
+                            key={`bimestre-${shortid.generate()}`}
+                          >
+                            - Bimestre {compensacoesParaCopiar.bimestre}
+                          </div>
+                          {montarExibicaoCompensacoesCopiar()}
+                        </ListaCopiarCompensacoes>
+                      ) : (
+                        ''
+                      )}
                   </div>
                 </div>
               </Form>

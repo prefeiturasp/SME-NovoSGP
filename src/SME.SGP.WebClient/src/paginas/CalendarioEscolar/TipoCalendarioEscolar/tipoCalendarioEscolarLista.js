@@ -39,19 +39,23 @@ const TipoCalendarioEscolarLista = () => {
     },
   ];
 
-  useEffect(() => {
-    onFiltrar();
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, []);
-
   const onFiltrar = async () => {
     setIdTiposSelecionados([]);
     const tipos = await api.get('v1/calendarios/tipos');
     setListaTiposCalendarioEscolar(tipos.data);
   };
 
+  useEffect(() => {
+    onFiltrar();
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, []);
+
   const onSelectRow = ids => {
     setIdTiposSelecionados(ids);
+  };
+
+  const onClickEditar = id => {
+    history.push(`/calendario-escolar/tipo-calendario-escolar/editar/${id}`);
   };
 
   const onClickRow = row => {
@@ -64,10 +68,6 @@ const TipoCalendarioEscolarLista = () => {
 
   const onClickNovo = () => {
     history.push(`/calendario-escolar/tipo-calendario-escolar/novo`);
-  };
-
-  const onClickEditar = id => {
-    history.push(`/calendario-escolar/tipo-calendario-escolar/editar/${id}`);
   };
 
   const onClickExcluir = async () => {
@@ -108,7 +108,7 @@ const TipoCalendarioEscolarLista = () => {
 
   return (
     <>
-      <Cabecalho pagina="Tipo de Calendário Escolar" />
+      <Cabecalho pagina="Tipo de calendário escolar" />
 
       <Card>
         <div className="col-md-12 d-flex justify-content-end pb-4">

@@ -75,8 +75,8 @@ function RegistroPOAForm({ match }) {
       bimestre: Yup.number().required('Campo obrigatório!'),
       titulo: Yup.string().required('O campo "Título" é obrigatório!'),
       professorRf: Yup.number()
-        .typeError('Informar um número inteiro')
-        .required('Campo obrigatório'),
+        .typeError('Informar um número inteiro!')
+        .required('Campo obrigatório!'),
     });
   };
 
@@ -86,8 +86,8 @@ function RegistroPOAForm({ match }) {
       form.setFieldTouched(campo, true, true);
     });
 
-    if (form.values.descricao === '<p><br></p>') {
-      erro('É necessário informar a descrição');
+    if (!form.values.descricao.length) {
+      erro('O campo "Descrição" é obrigatório!');
       return;
     }
 
@@ -160,6 +160,7 @@ function RegistroPOAForm({ match }) {
     );
     if (confirmou) {
       form.resetForm();
+      setDescricao('');
       setModoEdicao(false);
     }
   };
@@ -324,12 +325,12 @@ function RegistroPOAForm({ match }) {
                 </Row>
                 <Row className="row">
                   <Grid cols={12}>
-                    <Label text="Descrição" />
+                    <Label text="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente" />
                     <TextEditor
                       className="form-control w-100"
                       ref={textEditorRef}
                       id="descricao"
-                      alt="Descrição"
+                      alt="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente"
                       name="descricao"
                       onBlur={valor => setDescricao(valor)}
                       value={descricao}

@@ -182,7 +182,7 @@ pipeline {
                  timeout(time: 24, unit: "HOURS") {
                
                  telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
-                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira'
+                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira,marlon_goncalves'
             }
                  sh 'echo Deploying homologacao'
                 
@@ -213,7 +213,7 @@ pipeline {
          script {
             step([$class: "RundeckNotifier",
               includeRundeckLogs: true,
-              jobId: "ec4238e5-4aab-4b5d-b949-aa46d6b2b09d",
+              jobId: "124f1ff0-d903-40fd-9455-fc91907293a7",
               nodeFilters: "",
               //options: """
               //     PARAM_1=value1
@@ -230,6 +230,63 @@ pipeline {
        
             }
         }
+	    
+	stage('Deploy HOM-R2') {
+            when {
+                branch 'release-r2'
+            }
+            steps {
+                 timeout(time: 24, unit: "HOURS") {
+               
+                 telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
+                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira,marlon_goncalves'
+            }
+                 sh 'echo Deploying homologacao'
+                
+        // Start JOB Rundeck para build das imagens Docker e push registry SME
+      
+          script {
+           step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+                
+               
+              //JOB DE BUILD
+              jobId: "e15cd478-1155-40a2-842c-11d1de0512eb",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+                
+       //Start JOB Rundeck para update de imagens no host homologação 
+         
+         script {
+            step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+              jobId: "b45bb11d-889a-4783-b70d-4406ea6817d7",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+      
+       
+            }
+        }    
 
 
         stage('Deploy PROD') {
@@ -241,7 +298,7 @@ pipeline {
                  timeout(time: 24, unit: "HOURS") {
                
                  telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
-                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira'
+                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira,marlon_goncalves'
             }
                  sh 'echo Deploy produção'
                 

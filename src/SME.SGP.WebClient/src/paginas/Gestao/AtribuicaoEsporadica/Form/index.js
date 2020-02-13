@@ -8,7 +8,6 @@ import * as Yup from 'yup';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
-import { setLoaderSecao } from '~/redux/modulos/loader/actions';
 
 // Serviços
 import RotasDto from '~/dtos/rotasDto';
@@ -44,7 +43,7 @@ import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
 
 function AtribuicaoEsporadicaForm({ match }) {
   const dispatch = useDispatch();
-  const carregando = useSelector(store => store.loader.loaderSecao);
+  const [carregando, setCarregando] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
   const somenteConsulta = verificaSomenteConsulta(
     permissoesTela[RotasDto.ATRIBUICAO_ESPORADICA_LISTA]
@@ -99,7 +98,7 @@ function AtribuicaoEsporadicaForm({ match }) {
 
   const onSubmitFormulario = async valores => {
     try {
-      dispatch(setLoaderSecao(true));
+      setCarregando(true);
       const cadastrado = await AtribuicaoEsporadicaServico.salvarAtribuicaoEsporadica(
         {
           ...filtroListagem,
@@ -107,13 +106,13 @@ function AtribuicaoEsporadicaForm({ match }) {
         }
       );
       if (cadastrado && cadastrado.status === 200) {
-        dispatch(setLoaderSecao(false));
+        setCarregando(false);
         sucesso('Atribuição esporádica salva com sucesso.');
         history.push('/gestao/atribuicao-esporadica');
       }
     } catch (err) {
       if (err) {
-        dispatch(setLoaderSecao(false));
+        setCarregando(false);
         erro(err.response.data.mensagens[0]);
       }
     }
@@ -170,7 +169,7 @@ function AtribuicaoEsporadicaForm({ match }) {
 
   const buscarPorId = async id => {
     try {
-      dispatch(setLoaderSecao(true));
+      setCarregando(true);
       const registro = await AtribuicaoEsporadicaServico.buscarAtribuicaoEsporadica(
         id
       );
@@ -190,10 +189,10 @@ function AtribuicaoEsporadicaForm({ match }) {
           alteradoEm: registro.data.alteradoEm,
         });
         setValoresCarregados(true);
-        dispatch(setLoaderSecao(false));
+        setCarregando(false);
       }
     } catch (err) {
-      dispatch(setLoaderSecao(false));
+      setCarregando(false);
       erros(err);
     }
   };

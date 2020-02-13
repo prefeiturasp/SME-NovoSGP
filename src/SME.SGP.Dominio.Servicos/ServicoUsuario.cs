@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio
         private const string CLAIM_PERMISSAO = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
         private const string CLAIM_RF = "rf";
         private readonly IContextoAplicacao contextoAplicacao;
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
@@ -28,7 +29,8 @@ namespace SME.SGP.Dominio
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
                               IUnitOfWork unitOfWork,
                               IContextoAplicacao contextoAplicacao,
-                              IRepositorioCache repositorioCache)
+                              IRepositorioCache repositorioCache,
+                              IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -36,6 +38,7 @@ namespace SME.SGP.Dominio
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
         }
 
         public async Task AlterarEmailUsuarioPorLogin(string login, string novoEmail)
@@ -182,6 +185,30 @@ namespace SME.SGP.Dominio
                 throw new NegocioException($"O usuário {login} não possui acesso ao perfil {perfilParaModificar}");
         }
 
+        public async Task<bool> PodePersistirTurma(string codigoRf, string turmaId, DateTime data)
+        {
+            var usuarioLogado = await ObterUsuarioLogado();
+
+            if (!usuarioLogado.EhProfessorCj())
+                return await servicoEOL.PodePersistirTurma(codigoRf, turmaId, data);
+
+            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRf);
+
+            return atribuicaoCj != null && atribuicaoCj.Any();
+        }
+
+        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data)
+        {
+            var usuarioLogado = await ObterUsuarioLogado();
+
+            if (!usuarioLogado.EhProfessorCj())
+                return await servicoEOL.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, data);
+
+            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRf);
+
+            return atribuicaoCj != null && atribuicaoCj.Any();
+        }
+
         public void RemoverPerfisUsuarioAtual()
         {
             var login = ObterLoginAtual();
@@ -219,7 +246,6 @@ namespace SME.SGP.Dominio
             usuario.DefinirEmail(novoEmail);
             repositorioUsuario.Salvar(usuario);
             await servicoEOL.AlterarEmail(usuario.Login, novoEmail);
-
         }
     }
 }
