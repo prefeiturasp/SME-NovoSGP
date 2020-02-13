@@ -321,11 +321,11 @@ namespace SME.SGP.Dominio.Servicos
         private PeriodoFechamento MapearParaDominio(FechamentoDto fechamentoDto)
         {
             var (dre, ue) = ObterDreEUe(fechamentoDto.DreId, fechamentoDto.UeId);
-            var fechamento = repositorioFechamento.ObterPorTipoCalendarioDreEUE(fechamentoDto.TipoCalendarioId, dre?.Id, ue?.Id);
+            var fechamento = repositorioFechamento.ObterPorTipoCalendarioDreEUE(fechamentoDto.TipoCalendarioId.Value, dre?.Id, ue?.Id);
             if (fechamento == null)
-                fechamento = new PeriodoFechamento(dre?.Id, ue?.Id);
+                fechamento = new PeriodoFechamento(dre, ue);
 
-            var tipoCalendario = repositorioTipoCalendario.ObterPorId(fechamentoDto.TipoCalendarioId);
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(fechamentoDto.TipoCalendarioId.Value);
             if (tipoCalendario == null)
             {
                 throw new NegocioException("Tipo calendário não encontrado.");

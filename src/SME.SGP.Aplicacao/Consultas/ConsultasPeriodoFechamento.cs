@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasFechamento : IConsultasFechamento
+    public class ConsultasPeriodoFechamento : IConsultasPeriodoFechamento
     {
-        private readonly IServicoFechamento servicoFechamento;
+        private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioDre repositorioDre;
@@ -17,9 +17,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IServicoPeriodoFechamento servicoFechamento;
 
-        public ConsultasFechamento(IServicoPeriodoFechamento servicoFechamento,
+        public ConsultasPeriodoFechamento(IServicoPeriodoFechamento servicoPeriodoFechamento,
                                 IRepositorioTurma repositorioTurma,
                                 IRepositorioUe repositorioUe,
                                 IRepositorioDre repositorioDre,
@@ -28,7 +27,7 @@ namespace SME.SGP.Aplicacao
                                 IRepositorioEventoFechamento repositorioEventoFechamento,
                                 IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
-            this.servicoFechamento = servicoFechamento ?? throw new System.ArgumentNullException(nameof(servicoFechamento));
+            this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new System.ArgumentNullException(nameof(servicoPeriodoFechamento));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioUe = repositorioUe ?? throw new System.ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new System.ArgumentNullException(nameof(repositorioDre));
@@ -40,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(FiltroFechamentoDto fechamentoDto)
         {
-            return await servicoFechamento.ObterPorTipoCalendarioDreEUe(fechamentoDto.TipoCalendarioId, fechamentoDto.DreId, fechamentoDto.UeId);
+            return await servicoPeriodoFechamento.ObterPorTipoCalendarioDreEUe(fechamentoDto.TipoCalendarioId, fechamentoDto.DreId, fechamentoDto.UeId);
         }
 
         public async Task<bool> TurmaEmPeriodoDeFechamento(string turmaCodigo, DateTime dataReferencia, int bimestre)
