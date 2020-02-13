@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ComandosFechamento : IComandosFechamento
+    public class ComandosPeriodoFechamento : IComandosPeriodoFechamento
     {
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
 
-        public ComandosFechamento(IServicoPeriodoFechamento servicoPeriodoFechamento)
+        public ComandosPeriodoFechamento(IServicoPeriodoFechamento servicoPeriodoFechamento)
         {
             this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new System.ArgumentNullException(nameof(servicoPeriodoFechamento));
         }

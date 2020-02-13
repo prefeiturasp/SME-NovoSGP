@@ -15,7 +15,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PFA_C, Policy = "Bearer")]
-        public async Task<IActionResult> Get([FromQuery]FiltroFechamentoDto fechamentoDto, [FromServices] IConsultasFechamento consultasFechamento)
+        public async Task<IActionResult> Get([FromQuery]FiltroFechamentoDto fechamentoDto, [FromServices] IConsultasPeriodoFechamento consultasFechamento)
         {
             return Ok(await consultasFechamento.ObterPorTipoCalendarioDreEUe(fechamentoDto));
         }
@@ -24,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PFA_I, Permissao.PFA_A, Policy = "Bearer")]
-        public async Task<IActionResult> Post([FromBody]FechamentoDto fechamentoDto, [FromServices] IComandosFechamento comandosFechamento)
+        public async Task<IActionResult> Post([FromBody]FechamentoDto fechamentoDto, [FromServices] IComandosPeriodoFechamento comandosFechamento)
         {
             await comandosFechamento.Salvar(fechamentoDto);
             return Ok();

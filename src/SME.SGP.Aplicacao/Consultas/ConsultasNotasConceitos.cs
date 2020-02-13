@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina;
-        private readonly IConsultasFechamento consultasFechamento;
+        private readonly IConsultasPeriodoFechamento consultasFechamento;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasNotasConceitos(IServicoEOL servicoEOL, IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa,
             IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina, IConsultasDisciplina consultasDisciplina,
-            IConsultasFechamento consultasFechamento,
+            IConsultasPeriodoFechamento consultasFechamento,
             IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitos repositorioNotasConceitos,
             IRepositorioFrequencia repositorioFrequencia, IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
             IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioTipoCalendario repositorioTipoCalendario,
