@@ -19,19 +19,18 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEOL servicoEOL;
-        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasFechamentoFinal(IRepositorioTurma repositorioTurma, IRepositorioTipoCalendario repositorioTipoCalendario,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
-            IServicoEOL servicoEOL, IServicoUsuario servicoUsuario, IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre,
-            IRepositorioFechamentoFinal repositorioFechamentoFinal, IServicoAluno servicoAluno, IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo)
+            IServicoEOL servicoEOL, IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre,
+            IRepositorioFechamentoFinal repositorioFechamentoFinal, IServicoAluno servicoAluno,
+            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo)
         {
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
-            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioNotaConceitoBimestre = repositorioNotaConceitoBimestre ?? throw new System.ArgumentNullException(nameof(repositorioNotaConceitoBimestre));
             this.repositorioFechamentoFinal = repositorioFechamentoFinal ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoFinal));
             this.servicoAluno = servicoAluno ?? throw new System.ArgumentNullException(nameof(servicoAluno));
@@ -66,19 +65,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var periodo in periodosEscolares)
             {
-                var fechamentoDoBimestre = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turma.CodigoTurma, filtros.DisciplinaCodigo, periodo.Bimestre);
-                if (fechamentoDoBimestre == null)
-                    throw new NegocioException($"Não foi encontrado fechamento para o bimestre {periodo.Bimestre}.");
-
-                var notasEConceitos = await repositorioNotaConceitoBimestre.ObterPorFechamentoTurma(fechamentoDoBimestre.Id);
-                if (notasEConceitos == null || !notasEConceitos.Any())
-                    throw new NegocioException($"Não foram encontrados notas e conceitos para a turma e bimestre {periodo.Bimestre}.");
-
-                foreach (var notaEConceito in notasEConceitos)
-                {
-                    var fechamentoFinalConsultaRetornoAlunoDto = new FechamentoFinalConsultaRetornoAlunoDto();
-                    listaAlunosNotas.Add((notaEConceito.CodigoAluno, (notaEConceito.ConceitoId.HasValue ? notaEConceito.ConceitoId.ToString() : notaEConceito.Nota.ToString()), notaEConceito.DisciplinaId, periodo.Bimestre));
-                }
+                await TrataPeriodosEscolares(filtros, turma, listaAlunosNotas, periodo);
             }
 
             var fechamentos = await repositorioFechamentoFinal.ObterPorFiltros(turma.CodigoTurma);
@@ -96,25 +83,20 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var periodo in periodosEscolares)
                 {
-                    var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(aluno.CodigoAluno, periodo.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtros.DisciplinaCodigo.ToString());
-                    if (frequenciaAluno != null)
-                    {
-                        totalAusencias += frequenciaAluno.TotalAusencias;
-                        totalAusenciasCompensadas += frequenciaAluno.TotalCompensacoes;
-                        totalDeAulas += frequenciaAluno.TotalAulas;
-                    }
+                    TrataPeriodosEscolaresParaAluno(filtros, aluno, ref totalAusencias, ref totalAusenciasCompensadas, ref totalDeAulas, periodo);
                 }
                 var percentualFrequencia = 100;
                 if (totalDeAulas != 0)
                     percentualFrequencia = (((totalDeAulas - totalAusencias) + totalAusenciasCompensadas) / totalDeAulas) * 100;
 
-                var fechamentoFinalAluno = new FechamentoFinalConsultaRetornoAlunoDto();
-                fechamentoFinalAluno.Nome = aluno.NomeAluno;
-                fechamentoFinalAluno.TotalAusenciasCompensadas = totalAusenciasCompensadas;
-                fechamentoFinalAluno.Frequencia = percentualFrequencia;
-                fechamentoFinalAluno.TotalFaltas = totalAusencias;
-
-                fechamentoFinalAluno.NumeroChamada = aluno.NumeroAlunoChamada;
+                var fechamentoFinalAluno = new FechamentoFinalConsultaRetornoAlunoDto
+                {
+                    Nome = aluno.NomeAluno,
+                    TotalAusenciasCompensadas = totalAusenciasCompensadas,
+                    Frequencia = percentualFrequencia,
+                    TotalFaltas = totalAusencias,
+                    NumeroChamada = aluno.NumeroAlunoChamada
+                };
 
                 var marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolarDto() { PeriodoFim = retorno.EventoData });
                 if (marcador != null)
@@ -125,37 +107,91 @@ namespace SME.SGP.Aplicacao
                 var notasDosBimestres = listaAlunosNotas.Where(a => a.Item1 == aluno.CodigoAluno).ToList();
                 foreach (var notaDoBimestre in notasDosBimestres)
                 {
-                    var alunoNotaConceitoDoBimestre = new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = notaDoBimestre.Item4 };
-                    var disciplinaDto = disciplinas.FirstOrDefault(a => a.CodigoComponenteCurricular == notaDoBimestre.Item3);
-                    if (disciplinaDto == null)
-                        throw new NegocioException("Não foi possível localizar o componente curricular.");
-
-                    alunoNotaConceitoDoBimestre.Disciplina = disciplinaDto.Nome;
-                    alunoNotaConceitoDoBimestre.DisciplinaCodigo = disciplinaDto.CodigoComponenteCurricular;
-                    alunoNotaConceitoDoBimestre.NotaConceito = notaDoBimestre.Item2;
-
-                    fechamentoFinalAluno.NotasConceitoBimestre.Add(alunoNotaConceitoDoBimestre);
+                    TrataNotasBimestresDoAluno(disciplinas, fechamentoFinalAluno, notaDoBimestre);
                 }
 
                 var notasFechamentoFinal = fechamentos.Where(a => a.AlunoCodigo == aluno.CodigoAluno).ToList();
                 foreach (var notaFechamentoFinal in notasFechamentoFinal)
                 {
-                    var disciplinaFechamentoFinalDto = disciplinas.FirstOrDefault(a => a.CodigoComponenteCurricular == notaFechamentoFinal.DisciplinaCodigo);
-                    if (disciplinaFechamentoFinalDto == null)
-                        throw new NegocioException("Não foi possível localizar o componente curricular.");
-
-                    var fechamentoFinalConsultaRetornoAlunoNotaConceitoDto = new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto();
-                    fechamentoFinalConsultaRetornoAlunoNotaConceitoDto.Disciplina = disciplinaFechamentoFinalDto.Nome;
-                    fechamentoFinalConsultaRetornoAlunoNotaConceitoDto.DisciplinaCodigo = disciplinaFechamentoFinalDto.CodigoComponenteCurricular;
-                    fechamentoFinalConsultaRetornoAlunoNotaConceitoDto.NotaConceito = notaFechamentoFinal.ConceitoId.HasValue ? notaFechamentoFinal.ConceitoId.Value.ToString() : notaFechamentoFinal.Nota.ToString();
-
-                    fechamentoFinalAluno.NotasConceitoFinal.Add(fechamentoFinalConsultaRetornoAlunoNotaConceitoDto);
+                    TrataNotasFinalDoAluno(disciplinas, fechamentoFinalAluno, notaFechamentoFinal);
                 }
 
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
 
+            var ultimaInclusao = fechamentos.OrderBy(a => a.CriadoEm).FirstOrDefault();
+            var ultimaAlteracao = fechamentos.OrderBy(a => a.AlteradoEm).FirstOrDefault();
+
+            retorno.AuditoriaAlteracao = ultimaAlteracao == null ? string.Empty : MontaTextoAuditoriaAlteracao(ultimaAlteracao); ;
+            retorno.AuditoriaInclusao = ultimaInclusao == null ? string.Empty : MontaTextoAuditoriaInclusao(ultimaInclusao);
+
             return retorno;
+        }
+
+        private static void TrataNotasBimestresDoAluno(IEnumerable<DisciplinaDto> disciplinas, FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno, (string, string, long, int) notaDoBimestre)
+        {
+            var alunoNotaConceitoDoBimestre = new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto() { Bimestre = notaDoBimestre.Item4 };
+            var disciplinaDto = disciplinas.FirstOrDefault(a => a.CodigoComponenteCurricular == notaDoBimestre.Item3);
+            if (disciplinaDto == null)
+                throw new NegocioException("Não foi possível localizar o componente curricular.");
+
+            alunoNotaConceitoDoBimestre.Disciplina = disciplinaDto.Nome;
+            alunoNotaConceitoDoBimestre.DisciplinaCodigo = disciplinaDto.CodigoComponenteCurricular;
+            alunoNotaConceitoDoBimestre.NotaConceito = notaDoBimestre.Item2;
+
+            fechamentoFinalAluno.NotasConceitoBimestre.Add(alunoNotaConceitoDoBimestre);
+        }
+
+        private static void TrataNotasFinalDoAluno(IEnumerable<DisciplinaDto> disciplinas, FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno, FechamentoFinal notaFechamentoFinal)
+        {
+            var disciplinaFechamentoFinalDto = disciplinas.FirstOrDefault(a => a.CodigoComponenteCurricular == notaFechamentoFinal.DisciplinaCodigo);
+            if (disciplinaFechamentoFinalDto == null)
+                throw new NegocioException("Não foi possível localizar o componente curricular.");
+
+            var fechamentoFinalConsultaRetornoAlunoNotaConceitoDto = new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto();
+            fechamentoFinalConsultaRetornoAlunoNotaConceitoDto.Disciplina = disciplinaFechamentoFinalDto.Nome;
+            fechamentoFinalConsultaRetornoAlunoNotaConceitoDto.DisciplinaCodigo = disciplinaFechamentoFinalDto.CodigoComponenteCurricular;
+            fechamentoFinalConsultaRetornoAlunoNotaConceitoDto.NotaConceito = notaFechamentoFinal.ConceitoId.HasValue ? notaFechamentoFinal.ConceitoId.Value.ToString() : notaFechamentoFinal.Nota.ToString();
+
+            fechamentoFinalAluno.NotasConceitoFinal.Add(fechamentoFinalConsultaRetornoAlunoNotaConceitoDto);
+        }
+
+        private string MontaTextoAuditoriaAlteracao(FechamentoFinal ultimaAlteracao)
+        {
+            return $"Notas(ou conceitos) finais alterados por {ultimaAlteracao.AlteradoPor}({ultimaAlteracao.AlteradoRF}) em {ultimaAlteracao.AlteradoEm.Value.ToString("dd/MM/yyyy")},às {ultimaAlteracao.AlteradoEm.Value.ToString("H:mm")}.";
+        }
+
+        private string MontaTextoAuditoriaInclusao(FechamentoFinal ultimaInclusao)
+        {
+            return $"Notas(ou conceitos) finais incluidos por {ultimaInclusao.CriadoPor}({ultimaInclusao.CriadoRF}) em {ultimaInclusao.CriadoEm.ToString("dd/MM/yyyy")},às {ultimaInclusao.CriadoEm.ToString("H:mm")}.";
+        }
+
+        private async Task TrataPeriodosEscolares(FechamentoFinalConsultaFiltroDto filtros, Turma turma, List<(string, string, long, int)> listaAlunosNotas, PeriodoEscolar periodo)
+        {
+            var fechamentoDoBimestre = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turma.CodigoTurma, filtros.DisciplinaCodigo, periodo.Bimestre);
+            if (fechamentoDoBimestre == null)
+                throw new NegocioException($"Não foi encontrado fechamento para o bimestre {periodo.Bimestre}.");
+
+            var notasEConceitos = await repositorioNotaConceitoBimestre.ObterPorFechamentoTurma(fechamentoDoBimestre.Id);
+            if (notasEConceitos == null || !notasEConceitos.Any())
+                throw new NegocioException($"Não foram encontrados notas e conceitos para a turma e bimestre {periodo.Bimestre}.");
+
+            foreach (var notaEConceito in notasEConceitos)
+            {
+                var fechamentoFinalConsultaRetornoAlunoDto = new FechamentoFinalConsultaRetornoAlunoDto();
+                listaAlunosNotas.Add((notaEConceito.CodigoAluno, (notaEConceito.ConceitoId.HasValue ? notaEConceito.ConceitoId.ToString() : notaEConceito.Nota.ToString()), notaEConceito.DisciplinaId, periodo.Bimestre));
+            }
+        }
+
+        private void TrataPeriodosEscolaresParaAluno(FechamentoFinalConsultaFiltroDto filtros, AlunoPorTurmaResposta aluno, ref int totalAusencias, ref int totalAusenciasCompensadas, ref int totalDeAulas, PeriodoEscolar periodo)
+        {
+            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(aluno.CodigoAluno, periodo.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtros.DisciplinaCodigo.ToString());
+            if (frequenciaAluno != null)
+            {
+                totalAusencias += frequenciaAluno.TotalAusencias;
+                totalAusenciasCompensadas += frequenciaAluno.TotalCompensacoes;
+                totalDeAulas += frequenciaAluno.TotalAulas;
+            }
         }
     }
 }
