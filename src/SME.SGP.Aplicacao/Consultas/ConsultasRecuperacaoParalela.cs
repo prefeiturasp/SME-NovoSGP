@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
-            return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
+            return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao);
         }
 
         public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? pagina)
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
             return MapearParaDtoTotalEstudantesPorFrequencia(total, totalAlunosPorSeriesFrequencia);
         }
 
-        private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId)
+        private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId, RecuperacaoParalelaOrdenacao? ordenacao)
         {
             //alunos eol que não estão ainda na tabela de recuperação paralela
             var alunos = alunosEol.Where(w => !alunosRecuperacaoParalela.Select(s => s.AlunoId).Contains(Convert.ToInt32(w.CodigoAluno))).ToList();
@@ -93,6 +93,7 @@ namespace SME.SGP.Aplicacao
             var retorno = alunosRecParalela.Select(s => new { s.AlunoId, s.Id }).Distinct();
             var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {
+                Ordenacao = ordenacao,
                 Eixos = eixos,
                 Objetivos = objetivos,
                 Respostas = respostas,
@@ -142,8 +143,22 @@ namespace SME.SGP.Aplicacao
             {
                 //pegar o dados daquela turma pap
                 var dadosTurma = alunos.FirstOrDefault(w => w.CodigoComponenteCurricular.HasValue);
+                var codigoDisciplina = alunos.FirstOrDefault().CodigoComponenteCurricular.ToString();
+
                 //pegar as frequencias de acordo com os critérios
-                var frequencias = await servicoRecuperacaoParalela.ObterFrequencias(alunos.Select(w => w.CodigoAluno).ToArray(), dadosTurma.CodigoComponenteCurricular.ToString(), dadosTurma.Ano, (PeriodoRecuperacaoParalela)periodoId);
+                var frequencias = await servicoRecuperacaoParalela.ObterFrequencias(alunosEol.Select(w => w.CodigoAluno).ToArray(), codigoDisciplina, dadosTurma.Ano, (PeriodoRecuperacaoParalela)periodoId);
+
+                recuperacaoRetorno.Periodo.Alunos.ForEach(aluno =>
+                {
+                    var frequencia = frequencias.FirstOrDefault(x => Convert.ToInt32(x.Key) == aluno.CodAluno);
+
+                    aluno.Respostas.Add(new ObjetivoRespostaDto
+                    {
+                        ObjetivoId = 4,
+                        RespostaId = frequencia.Value
+                    });
+                });
+
                 //frequencias
                 foreach (var frequencia in frequencias)
                 {
