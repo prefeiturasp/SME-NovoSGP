@@ -31,12 +31,19 @@ export const TabelaFechamento = styled.div`
 
 export const Marcadores = styled.div`
   vertical-align: bottom;
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+
+  @media screen and (max-width: 800px) {
+    justify-content: flex-start;
+  }
 `;
 
 export const MarcadorAulas = styled.div`
   background-color: ${Base.Roxo};
   color: ${Base.Branco};
-  height: 22px;
+  height: 20px;
   min-width: 123px;
   display: 'flex';
   align-items: 'center';
@@ -44,11 +51,33 @@ export const MarcadorAulas = styled.div`
   font-size: 12px;
   text-align: center;
   border-radius: 4px;
-  margin-top: 15px;
 
   .numero {
     font-weight: bold;
   }
+`;
+
+export const Situacao = styled.div`
+  display: flex;
+  justify-content: flex-end;
+
+  @media screen and (max-width: 800px) {
+    justify-content: flex-start;
+  }
+`;
+
+export const MarcadorSituacao = styled.span`
+  background-color: ${Base.CinzaBadge};
+  min-height: 20px;
+  min-width: 123px;
+  display: 'flex';
+  align-items: 'center';
+  justify-content: 'center';
+  font-size: 12px;
+  text-align: center;
+  border-radius: 4px;
+  border: solid 1px ${Base.CinzaDesabilitado};
+  font-weight: normal;
 `;
 
 export const Info = styled.i`

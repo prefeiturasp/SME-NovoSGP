@@ -1,5 +1,6 @@
 import { Tooltip } from 'antd';
 import React, { useState } from 'react';
+import shortid from 'shortid';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
 import FechamentoRegencia from '../fechamanto-regencia/fechamento-regencia';
 import BotaoExpandir from './botao-expandir';
@@ -7,19 +8,31 @@ import {
   Info,
   MarcadorAulas,
   Marcadores,
-  TabelaFechamento,
+  Situacao,
+  MarcadorSituacao,
+  TabelaFechamento
 } from './fechamento-bimestre-lista.css';
+import Button from '~/componentes/button';
+import { Colors } from '~/componentes';
 
 const FechamentoBimestreLista = props => {
   const { dados, ehRegencia } = props;
   const [dadosLista, setDadosLista] = useState(
     dados ? dados.alunos : undefined
   );
+  const situacoes = {
+    NAO_EXECUTADO: 'Não executado',
+    PROCESSADO_COM_SUCESSO: 'Processado com sucesso',
+    PROCESSADO_COM_PENDENCIA: 'Processado com pendências',
+  };
+  const [situacao, setSituacao] = useState(situacoes.PROCESSADO_COM_PENDENCIA);
+
+  const reprocessar = () => { }
 
   return (
     <TabelaFechamento>
       <div className="row pb-4">
-        <div className="col-md-6 col-sm-12 d-flex justify-content-start">
+        <div className="col-md-6 col-sm-12 d-flex justify-content-start mt-3">
           <Ordenacao
             className="botao-ordenacao-avaliacao"
             conteudoParaOrdenar={dadosLista}
@@ -30,23 +43,40 @@ const FechamentoBimestreLista = props => {
             }}
             desabilitado={dadosLista ? dadosLista.length <= 0 : true}
           />
+          {situacao === situacoes.PROCESSADO_COM_PENDENCIA ? (
+            <Button
+              id={shortid.generate()}
+              label="Reprocessar"
+              icon="sync-alt"
+              color={Colors.Azul}
+              onClick={reprocessar}
+              border
+              className="ml-2"
+            />) : <></>
+          }
         </div>
-        <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
-          <MarcadorAulas>
-            <span>Aulas previstas </span>
-            <span className="numero">
-              {dados && dados.totalAulasPrevistas
-                ? dados.totalAulasPrevistas
-                : 0}
-            </span>
-          </MarcadorAulas>
-          <MarcadorAulas className="ml-2">
-            <span>Aulas dadas </span>
-            <span className="numero">
-              {dados && dados.totalAulasDadas ? dados.totalAulasDadas : 0}
-            </span>
-          </MarcadorAulas>
-        </Marcadores>
+        <div className="col-md-6 m-0 p-0">
+          <Situacao className="col-md-12 col-sm-12 mt-2">
+            <span>Situação do fechamento: </span>
+            <MarcadorSituacao className="ml-2 pl-2 pr-2">{situacao}</MarcadorSituacao>
+          </Situacao>
+          <Marcadores className="col-md-12 col-sm-12">
+            <MarcadorAulas>
+              <span>Aulas previstas </span>
+              <span className="numero">
+                {dados && dados.totalAulasPrevistas
+                  ? dados.totalAulasPrevistas
+                  : 0}
+              </span>
+            </MarcadorAulas>
+            <MarcadorAulas className="ml-2">
+              <span className="ml-2">Aulas dadas </span>
+              <span className="numero mr-2">
+                {dados && dados.totalAulasDadas ? dados.totalAulasDadas : 0}
+              </span>
+            </MarcadorAulas>
+          </Marcadores>
+        </div>
       </div>
       <div className="col-md-12 p-0 container-table">
         <table className="table mb-0" id="table-fechamento-bimestre">
@@ -75,7 +105,7 @@ const FechamentoBimestreLista = props => {
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                        }`}
+                          }`}
                       >
                         {item.numeroChamada}
                         {item.informacao ? (
@@ -83,8 +113,8 @@ const FechamentoBimestreLista = props => {
                             <Info className="fas fa-circle" />
                           </Tooltip>
                         ) : (
-                          ''
-                        )}
+                            ''
+                          )}
                       </td>
                       <td className={`${!item.ativo ? 'fundo-cinza' : ''}`}>
                         {item.nome}
@@ -92,7 +122,7 @@ const FechamentoBimestreLista = props => {
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                        }`}
+                          }`}
                       >
                         {ehRegencia && item.notas ? (
                           <BotaoExpandir
@@ -106,21 +136,21 @@ const FechamentoBimestreLista = props => {
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                        }`}
+                          }`}
                       >
                         {item.quantidadeFaltas}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                        }`}
+                          }`}
                       >
                         {item.quantidadeCompensacoes}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                        }`}
+                          }`}
                       >
                         {item.percentualFrequencia
                           ? item.percentualFrequencia + '%'
@@ -137,16 +167,16 @@ const FechamentoBimestreLista = props => {
                 );
               })
             ) : (
-              <tr>
-                <td colSpan="6" className="text-center">
-                  Sem dados
+                <tr>
+                  <td colSpan="6" className="text-center">
+                    Sem dados
                 </td>
-              </tr>
-            )}
+                </tr>
+              )}
           </tbody>
         </table>
       </div>
-    </TabelaFechamento>
+    </TabelaFechamento >
   );
 };
 

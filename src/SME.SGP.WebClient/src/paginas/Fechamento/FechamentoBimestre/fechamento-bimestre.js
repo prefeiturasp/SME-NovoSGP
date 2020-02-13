@@ -55,9 +55,9 @@ const FechamentoBismestre = () => {
     history.push(URL_HOME);
   };
 
-  const onClickCancelar = () => {};
+  const onClickCancelar = () => { };
 
-  const onClickSalvar = () => {};
+  const onClickSalvar = () => { };
 
   useEffect(() => {
     const obterDisciplinas = async () => {
