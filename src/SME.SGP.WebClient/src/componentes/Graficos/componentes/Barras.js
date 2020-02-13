@@ -14,7 +14,7 @@ function Barras({
   legendaEsquerda,
   porcentagem,
 }) {
-  const format = v => `${v}%`;
+  const format = v => `${Math.round(v, 2)}%`;
 
   return (
     <ResponsiveBar
@@ -23,7 +23,12 @@ function Barras({
       indexBy={indice}
       margin={{ top: 50, right: 100, bottom: 50, left: 60 }}
       padding={0.3}
+      innerPadding={1}
       groupMode="grouped"
+      // labelTextColor={param => console.log(param)}
+      // label={value => `Teste: ${JSON.stringify(value)}`}
+      // labelLinkColor="red"
+      // enableLabel
       colors={[
         Base.Laranja,
         Base.Vermelho,

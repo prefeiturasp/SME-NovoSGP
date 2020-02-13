@@ -56,12 +56,14 @@ const ResumosGraficosPAP = () => {
           ResumosGraficosPAPServico.ListarTotalEstudantes(filtroTela),
           ResumosGraficosPAPServico.ListarFrequencia(filtroTela),
           ResumosGraficosPAPServico.ListarResultados(filtroTela),
+          ResumosGraficosPAPServico.ListarInformacoesEscolares(filtroTela),
         ]);
 
         setDados({
           totalEstudantes: { ...requisicoes[0].data },
           frequencia: [...requisicoes[1].data.frequencia],
           resultados: { ...requisicoes[2].data },
+          informacoesEscolares: { ...requisicoes[3].data },
         });
 
         setCarregandoGraficos(false);
