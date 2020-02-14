@@ -14,7 +14,7 @@ const Tabela = styled(Table)`
   }
 `;
 
-function objetoExistaNaLista(objeto, lista) {
+function objetoExisteNaLista(objeto, lista) {
   return lista.some(
     elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
   );
@@ -25,7 +25,12 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
   const [colunas, setColunas] = useState([]);
 
-  const [unidadeSelecionada, setUnidadeSelecionada] = useState('quantidade');
+  const UNIDADES = {
+    Q: 'quantidade',
+    P: 'porcentagem',
+  };
+
+  const [unidadeSelecionada, setUnidadeSelecionada] = useState(UNIDADES.Q);
 
   const montaColunasDados = useCallback(() => {
     setDadosTabela([]);
@@ -121,11 +126,24 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         if (!eixosSize[eixo.eixoDescricao]) eixosSize[eixo.eixoDescricao] = 0;
 
         eixo.objetivos.forEach(objetivo => {
-          if (anos && objetivo.anos.length) {
+          // Anos
+          if (anos && objetivo.anos && objetivo.anos.length) {
             const respostas = [];
             objetivo.anos.forEach(ano => {
               ano.respostas.forEach(resposta => {
-                if (!objetoExistaNaLista(resposta.respostaDescricao, respostas))
+                if (!objetoExisteNaLista(resposta.respostaDescricao, respostas))
+                  respostas.push(resposta.respostaDescricao);
+              });
+            });
+            eixosSize[eixo.eixoDescricao] += parseInt(respostas.length, 10);
+          }
+
+          // Ciclos
+          if (ciclos && objetivo.ciclos && objetivo.ciclos.length) {
+            const respostas = [];
+            objetivo.ciclos.forEach(ciclo => {
+              ciclo.respostas.forEach(resposta => {
+                if (!objetoExisteNaLista(resposta.respostaDescricao, respostas))
                   respostas.push(resposta.respostaDescricao);
               });
             });
@@ -142,7 +160,64 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
           if (ciclos && objetivo.ciclos && objetivo.ciclos.length) {
             // Ciclos
+            let ciclosSize = 0;
+            objetivo.ciclos.forEach(ciclo => {
+              ciclosSize =
+                ciclo.respostas.length > ciclosSize
+                  ? ciclo.respostas.length
+                  : ciclosSize;
+            });
 
+            objetivo.ciclos.forEach((ciclo, c) => {
+              ciclo.respostas.forEach((resposta, r) => {
+                if (
+                  !item.find(
+                    dado => dado.Resposta === resposta.respostaDescricao
+                  )
+                ) {
+                  item.push({
+                    Eixo: eixo.eixoDescricao,
+                    EixoGrupo: o === 0 && c === 0 && r === 0,
+                    EixoSize: eixosSize[eixo.eixoDescricao],
+                    Objetivo: objetivo.objetivoDescricao,
+                    ObjetivoGrupo: c === 0 && r === 0,
+                    Resposta: resposta.respostaDescricao,
+                    Total: 0,
+                  });
+                }
+              });
+            });
+
+            item.map(i => {
+              i.ObjetivoSize = item.length;
+              return i;
+            });
+
+            objetivo.ciclos.forEach(ciclo => {
+              ciclo.respostas.forEach(resposta => {
+                item
+                  .filter(i => i.Resposta === resposta.respostaDescricao)
+                  .map(i => {
+                    i[ciclo.cicloDescricao] =
+                      unidadeSelecionada === UNIDADES.Q
+                        ? resposta[unidadeSelecionada]
+                        : `${(
+                            (resposta[unidadeSelecionada] * 100) /
+                            10
+                          ).toFixed(2)}%`;
+                    i.Total += resposta[unidadeSelecionada];
+                    return item;
+                  });
+              });
+            });
+
+            if (unidadeSelecionada === UNIDADES.P) {
+              item.forEach(i => {
+                i.Total = `${((i.Total * 100) / 10).toFixed(2)}%`;
+              });
+            }
+
+            // Ciclos
             objetivo.ciclos.forEach(ciclo => {
               // Colunas
               const coluna = {
@@ -150,40 +225,11 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                 dataIndex: `${ciclo.cicloDescricao}`,
               };
 
-              if (!objetoExistaNaLista(coluna, montaColunas))
+              if (!objetoExisteNaLista(coluna, montaColunas))
                 montaColunas.push(coluna);
-
-              // Dados
-              ciclo.respostas.forEach((resposta, r) => {
-                const dado = {};
-                dado.EixoSize = eixosSize[eixo.eixoDescricao];
-                dado.Eixo = `${eixo.eixoDescricao}`;
-                dado.Objetivo = objetivo.objetivoDescricao;
-                dado.Resposta = resposta.respostaDescricao;
-                dado.ObjetivoSize = ciclo.respostas.length;
-                dado.AgrupaEixo = o === 0 && r === 0;
-                dado.AgrupaObjetivo = r === 0;
-
-                let total = 0;
-
-                objetivo.ciclos.forEach(cicloResposta => {
-                  dado[cicloResposta.cicloDescricao] =
-                    unidadeSelecionada === 'quantidade'
-                      ? resposta[unidadeSelecionada]
-                      : `${Math.round(resposta[unidadeSelecionada], 2)}%`;
-                  total += resposta[unidadeSelecionada];
-                });
-
-                dado.Total =
-                  unidadeSelecionada === 'quantidade'
-                    ? total
-                    : `${Math.round(total, 2)}%`;
-
-                if (!objetoExistaNaLista(dado, montaDados))
-                  montaDados.push(dado);
-              });
             });
-          } else if (anos && objetivo.anos.length) {
+          } else if (anos && objetivo.anos && objetivo.anos.length) {
+            // Anos
             let anosSize = 0;
             objetivo.anos.forEach(ano => {
               anosSize =
@@ -220,14 +266,26 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
             objetivo.anos.forEach(ano => {
               ano.respostas.forEach(resposta => {
                 item
-                  .filter(dado => dado.Resposta === resposta.respostaDescricao)
-                  .map(dado => {
-                    dado[ano.anoDescricao] = resposta.quantidade;
-                    dado.Total += parseInt(resposta.quantidade, 10);
-                    return dado;
+                  .filter(i => i.Resposta === resposta.respostaDescricao)
+                  .map(i => {
+                    i[ano.anoDescricao] =
+                      unidadeSelecionada === UNIDADES.Q
+                        ? resposta[unidadeSelecionada]
+                        : `${(
+                            (resposta[unidadeSelecionada] * 100) /
+                            10
+                          ).toFixed(2)}%`;
+                    i.Total += resposta[unidadeSelecionada];
+                    return item;
                   });
               });
             });
+
+            if (unidadeSelecionada === UNIDADES.P) {
+              item.forEach(i => {
+                i.Total = `${((i.Total * 100) / 10).toFixed(2)}%`;
+              });
+            }
 
             // Anos
             objetivo.anos.forEach(ano => {
@@ -237,7 +295,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                 dataIndex: `${ano.anoDescricao}`,
               };
 
-              if (!objetoExistaNaLista(coluna, montaColunas))
+              if (!objetoExisteNaLista(coluna, montaColunas))
                 montaColunas.push(coluna);
             });
           }
