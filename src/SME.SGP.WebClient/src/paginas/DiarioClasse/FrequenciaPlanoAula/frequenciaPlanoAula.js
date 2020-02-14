@@ -276,8 +276,9 @@ const FrequenciaPlanoAula = () => {
 
   const obterPlanoAula = useCallback(
     async aula => {
+      const idAula = aula.idAula || aula[0].idAula;
       const plano = await api
-        .get(`v1/planos/aulas/${aula.idAula}`)
+        .get(`v1/planos/aulas/${idAula}`)
         .then(resp => {
           setPlanoAulaExpandido(true);
           return resp;
@@ -330,8 +331,9 @@ const FrequenciaPlanoAula = () => {
             setMaterias([...disciplinasRegencia]);
           }
         } else {
+          const dataAula = aula.data || aula[0].data;
           disciplinas = await api.get(
-            `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}?dataAula=${aula.data}`
+            `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}?dataAula=${dataAula}`
           );
           const dadosDisciplinas = disciplinas.data;
           if (dadosDisciplinas) {
@@ -450,11 +452,12 @@ const FrequenciaPlanoAula = () => {
 
   const obterAulaSelecionada = useCallback(
     data => {
-      const aulaDataSelecionada = listaDatasAulas.filter(
-        item =>
+      const aulaDataSelecionada = listaDatasAulas.filter(item => {
+        return (
           window.moment(item.data).format('DD/MM/YYYY') ===
           window.moment(data).format('DD/MM/YYYY')
-      );
+        );
+      });
 
       return aulaDataSelecionada;
     },
