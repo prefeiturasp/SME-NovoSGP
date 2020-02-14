@@ -71,7 +71,7 @@ const ResumosGraficosPAP = () => {
             : [],
           resultados: requisicoes[2].data ? { ...requisicoes[2].data } : [],
           informacoesEscolares: requisicoes[3].data
-            ? { ...requisicoes[3].data }
+            ? [...requisicoes[3].data]
             : [],
         });
 
@@ -128,6 +128,7 @@ const ResumosGraficosPAP = () => {
                       dados={dadosTela}
                       ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
                       anos={!!filtroTela.Ano}
+                      periodo={filtroTela.Periodo}
                     />
                   </LazyLoad>
                 ) : (
@@ -143,6 +144,7 @@ const ResumosGraficosPAP = () => {
                       dados={dadosTela}
                       ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
                       anos={!!filtroTela.Ano}
+                      periodo={filtroTela.Periodo}
                     />
                   </LazyLoad>
                 ) : (

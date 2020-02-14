@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 // Componentes
 import { PainelCollapse, LazyLoad } from '~/componentes';
 
-function Resumos({ dados, ciclos, anos }) {
+function Resumos({ dados, ciclos, anos, periodo }) {
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
   const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
   const TabelaInformacoesEscolares = lazy(() =>
@@ -71,17 +71,19 @@ function Resumos({ dados, ciclos, anos }) {
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
-      <PainelCollapse>
-        <PainelCollapse.Painel temBorda header="Informações Escolares">
-          <LazyLoad>
-            <TabelaInformacoesEscolares
-              dados={dados.informacoesEscolares}
-              ciclos={ciclos}
-              anos={anos}
-            />
-          </LazyLoad>
-        </PainelCollapse.Painel>
-      </PainelCollapse>
+      {periodo === '1' && (
+        <PainelCollapse>
+          <PainelCollapse.Painel temBorda header="Informações escolares">
+            <LazyLoad>
+              <TabelaInformacoesEscolares
+                dados={dados.informacoesEscolares}
+                ciclos={ciclos}
+                anos={anos}
+              />
+            </LazyLoad>
+          </PainelCollapse.Painel>
+        </PainelCollapse>
+      )}
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Frequência">
           <LazyLoad>
