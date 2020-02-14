@@ -2,7 +2,7 @@
 {
     public class Pendencia : EntidadeBase
     {
-        public Pendencia(string titulo, string descricao, long fechamentoId, TipoPendencia tipo)
+        public Pendencia(string titulo, string descricao, TipoPendencia tipo)
         {
             if (string.IsNullOrWhiteSpace(titulo))
                 throw new NegocioException("O título é obrigatório.");
@@ -11,7 +11,6 @@
                 throw new NegocioException("A descrição é obrigatória.");
 
             Descricao = descricao;
-            FechamentoId = fechamentoId;
             Situacao = SituacaoPendencia.Pendente;
             Tipo = tipo;
             Titulo = titulo;
@@ -22,7 +21,6 @@
         }
 
         public string Descricao { get; set; }
-        public Fechamento Fechamento { get; set; }
         public long FechamentoId { get; set; }
         public SituacaoPendencia Situacao { get; set; }
         public TipoPendencia Tipo { get; set; }
