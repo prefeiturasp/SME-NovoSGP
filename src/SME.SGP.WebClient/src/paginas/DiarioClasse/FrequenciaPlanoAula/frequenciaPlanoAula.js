@@ -960,6 +960,7 @@ const FrequenciaPlanoAula = () => {
                   temObjetivos={temObjetivos}
                   temAvaliacao={temAvaliacao}
                   auditoria={auditoriaPlano}
+                  ehRegencia={disciplinaSelecionada.regencia}
                 />
               </div>
             </div>
