@@ -165,6 +165,8 @@ function TabGraficos({ dados }) {
       resultados.push(objetivo);
     });
 
+    console.log(resultados);
+
     return resultados;
   }, [dados]);
 
