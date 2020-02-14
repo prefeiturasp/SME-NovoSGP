@@ -109,9 +109,14 @@ namespace SME.SGP.Aplicacao
             return repositorioObjetivosPlano.ObterIdPorObjetivoAprendizagemJurema(planoId, objetivoAprendizagemJuremaId);
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId)
+        public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false)
         {
-            var objetivosPlano = repositorioObjetivosPlano.ObterObjetivosPlanoDisciplina(ano, bimestre, turmaId, componenteCurricularId, disciplinaId);
+            var objetivosPlano = repositorioObjetivosPlano.ObterObjetivosPlanoDisciplina(ano,
+                                                                                         bimestre,
+                                                                                         turmaId,
+                                                                                         componenteCurricularId,
+                                                                                         disciplinaId,
+                                                                                         regencia);
 
             var objetivosJurema = await Listar();
 
