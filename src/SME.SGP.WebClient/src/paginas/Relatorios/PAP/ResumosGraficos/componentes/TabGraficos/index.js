@@ -11,6 +11,13 @@ import { Linha } from '~/componentes/EstilosGlobais';
 
 function TabGraficos({ dados, periodo }) {
   const [itemAtivo, setItemAtivo] = useState(null);
+
+  const objetoExistaNaLista = (objeto, lista) => {
+    return lista.some(
+      elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
+    );
+  };
+
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados.frequencia;
     const dadosFormatados = [];
@@ -82,21 +89,6 @@ function TabGraficos({ dados, periodo }) {
     return montaDados;
   }, [dados]);
 
-  const [objetivos, setObjetivos] = useState([
-    {
-      id: shortid.generate(),
-      eixoDescricao: 'Total',
-      objetivoDescricao: 'Total de alunos no PAP',
-      dados: dadosTabelaTotalEstudantes,
-    },
-  ]);
-
-  const objetoExistaNaLista = (objeto, lista) => {
-    return lista.some(
-      elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
-    );
-  };
-
   const dadosTabelaResultados = useMemo(() => {
     const resultados = [];
     dados.resultados.items.forEach(item => {
@@ -162,15 +154,96 @@ function TabGraficos({ dados, periodo }) {
     return resultados;
   }, [dados]);
 
+  const dadosTabelaInformacoesEscolares = useMemo(() => {
+    const resultados = [];
+    dados.informacoesEscolares.forEach(item => {
+      let objetivo = {
+        eixoDescricao: item.eixoDescricao,
+        dados: [],
+      };
+
+      item.objetivos.forEach(obj => {
+        const dadosObjetivo = [];
+        objetivo = {
+          ...objetivo,
+          objetivoDescricao: obj.objetivoDescricao,
+        };
+
+        obj.anos.forEach(y => {
+          let objetivoQuantidade = {};
+          let objetivoPorcentagem = {};
+
+          y.respostas.forEach(z => {
+            objetivoQuantidade = {
+              TipoDado: 'Quantidade',
+              FrequenciaDescricao: z.respostaDescricao,
+            };
+
+            objetivoPorcentagem = {
+              TipoDado: 'Porcentagem',
+              FrequenciaDescricao: z.respostaDescricao,
+            };
+
+            obj.anos.forEach(years => {
+              objetivoQuantidade = {
+                ...objetivoQuantidade,
+                [years.anoDescricao]: z.quantidade,
+              };
+
+              objetivoPorcentagem = {
+                ...objetivoPorcentagem,
+                [years.anoDescricao]: z.porcentagem,
+              };
+            });
+
+            if (!objetoExistaNaLista(objetivoQuantidade, dadosObjetivo)) {
+              dadosObjetivo.push(objetivoQuantidade);
+            } else if (
+              !objetoExistaNaLista(objetivoPorcentagem, dadosObjetivo)
+            ) {
+              dadosObjetivo.push(objetivoPorcentagem);
+            }
+          });
+        });
+
+        objetivo = {
+          ...objetivo,
+          id: shortid.generate(),
+          dados: dadosObjetivo,
+        };
+
+        resultados.push(objetivo);
+      });
+    });
+
+    return resultados;
+  }, [dados]);
+
+  const [objetivos, setObjetivos] = useState([
+    {
+      id: shortid.generate(),
+      eixoDescricao: 'Total',
+      objetivoDescricao: 'Total de alunos no PAP',
+      dados: dadosTabelaTotalEstudantes,
+    },
+  ]);
+
   useEffect(() => {
-    // {
-    //   id: shortid.generate(),
-    //   eixoDescricao: 'Frequência',
-    //   objetivoDescricao: 'Frequência na turma de PAP',
-    //   dados: dadosTabelaFrequencia,
-    // }
-    setObjetivos(atual => [...atual, ...dadosTabelaResultados]);
-  }, [dadosTabelaFrequencia, dadosTabelaResultados, periodo]);
+    if (periodo === '1') {
+      setObjetivos(atual => [
+        ...atual,
+        ...dadosTabelaInformacoesEscolares,
+        ...dadosTabelaResultados,
+      ]);
+    } else {
+      setObjetivos(atual => [...atual, ...dadosTabelaResultados]);
+    }
+  }, [
+    dadosTabelaFrequencia,
+    dadosTabelaInformacoesEscolares,
+    dadosTabelaResultados,
+    periodo,
+  ]);
 
   useEffect(() => {
     setItemAtivo(objetivos[0]);
