@@ -8,8 +8,7 @@ import React, {
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Ordenacao } from '~/componentes-sgp';
-import { Lista } from './fechamentoFinal.css';
-import { Auditoria } from '~/componentes';
+import { Lista, ContainerAuditoria } from './fechamentoFinal.css';
 import LinhaAluno from './linhaAluno';
 import ServicoFechamentoFinal from '~/servicos/Paginas/DiarioClasse/ServicoFechamentoFinal';
 import { erros } from '~/servicos/alertas';
@@ -34,7 +33,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
   const [disciplinasRegencia, setDisciplinasRegencia] = useState([]);
   const [notasEmEdicao, setNotasEmEdicao] = useState([]);
 
-  const [auditoria, setAuditoria] = useState({});
+  const [auditoria, setAuditoria] = useState();
   const [alunos, setAlunos] = useState([]);
 
   useEffect(() => {
@@ -59,8 +58,14 @@ const FechamentoFinal = forwardRef((props, ref) => {
   const obterFechamentoFinal = useCallback(() => {
     ServicoFechamentoFinal.obter(turmaCodigo, disciplinaCodigo, ehRegencia)
       .then(resposta => {
-        setAlunos(resposta.data.alunos);
-        setEhNota(resposta.data.ehNota);
+        if (resposta && resposta.data) {
+          setAlunos(resposta.data.alunos);
+          setEhNota(resposta.data.ehNota);
+          setAuditoria({
+            auditoriaAlteracao: resposta.data.auditoriaAlteracao,
+            auditoriaInclusao: resposta.data.auditoriaInclusao,
+          });
+        }
       })
       .catch(e => erros(e));
   }, [disciplinaCodigo, ehRegencia, turmaCodigo]);
@@ -144,50 +149,62 @@ const FechamentoFinal = forwardRef((props, ref) => {
           )}
         </div>
         {exibirLista && (
-          <div className="table-responsive">
-            <table className="table mt-4">
-              <thead className="tabela-fechamento-final-thead">
-                <tr>
-                  <th className="col-nome-aluno" colSpan="2">
-                    Nome
-                  </th>
-                  <th className="sticky-col">{ehNota ? 'Nota' : 'Conceito'}</th>
-                  <th className="sticky-col width-120">Total de Faltas</th>
-                  <th className="sticky-col">Total de Ausências Compensadas</th>
-                  <th className="sticky-col">%Freq.</th>
-                  <th className="sticky-col head-conceito">
-                    {ehNota ? 'Nota Final' : 'Conceito Final'}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="tabela-fechamento-final-tbody">
-                {alunos.map((aluno, i) => {
-                  return (
-                    <>
-                      <LinhaAluno
-                        aluno={aluno}
-                        ehRegencia={ehRegencia}
-                        ehNota={ehNota}
-                        disciplinaSelecionada={disciplinaSelecionada}
-                        listaConceitos={listaConceitos}
-                        onChange={onChangeNotaAluno}
-                      />
-                    </>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <div className="table-responsive">
+              <table className="table mt-4">
+                <thead className="tabela-fechamento-final-thead">
+                  <tr>
+                    <th className="col-nome-aluno" colSpan="2">
+                      Nome
+                    </th>
+                    <th className="sticky-col">
+                      {ehNota ? 'Nota' : 'Conceito'}
+                    </th>
+                    <th className="sticky-col width-120">Total de Faltas</th>
+                    <th className="sticky-col">
+                      Total de Ausências Compensadas
+                    </th>
+                    <th className="sticky-col">%Freq.</th>
+                    <th className="sticky-col head-conceito">
+                      {ehNota ? 'Nota Final' : 'Conceito Final'}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="tabela-fechamento-final-tbody">
+                  {alunos.map((aluno, i) => {
+                    return (
+                      <>
+                        <LinhaAluno
+                          aluno={aluno}
+                          ehRegencia={ehRegencia}
+                          ehNota={ehNota}
+                          disciplinaSelecionada={disciplinaSelecionada}
+                          listaConceitos={listaConceitos}
+                          onChange={onChangeNotaAluno}
+                        />
+                      </>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {auditoria ? (
+              <div className="row mt-2 mb-2 mt-2">
+                <div className="col-md-12">
+                  <ContainerAuditoria style={{ float: 'left' }}>
+                    <span>
+                      <p>{auditoria.auditoriaAlteracao || ''}</p>
+                      <p>{auditoria.auditoriaInclusao || ''}</p>
+                    </span>
+                  </ContainerAuditoria>
+                </div>
+              </div>
+            ) : (
+              ''
+            )}
+          </>
         )}
       </Lista>
-      <Auditoria
-        criadoPor={auditoria.criadoPor}
-        criadoEm={auditoria.criadoEm}
-        alteradoPor={auditoria.alteradoPor}
-        alteradoEm={auditoria.alteradoEm}
-        criadoRf={auditoria.criadoRf}
-        alteradoRf={auditoria.alteradoRf}
-      />
     </>
   );
 });

@@ -200,3 +200,17 @@ export const Info = styled.i`
   position: absolute;
   padding-top: 5px;
 `;
+export const ContainerAuditoria = styled.div`
+  object-fit: contain;
+  font-family: Roboto;
+  font-size: 9px;
+  font-weight: bold;
+  color: #42474a;
+  float: left;
+
+  p {
+    margin-top: 0px;
+    margin-bottom: 0px
+  }
+`;
+
