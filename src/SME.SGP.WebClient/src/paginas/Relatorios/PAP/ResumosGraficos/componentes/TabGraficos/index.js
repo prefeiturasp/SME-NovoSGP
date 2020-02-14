@@ -216,6 +216,8 @@ function TabGraficos({ dados, periodo }) {
       });
     });
 
+    console.log(resultados);
+
     return resultados;
   }, [dados]);
 
