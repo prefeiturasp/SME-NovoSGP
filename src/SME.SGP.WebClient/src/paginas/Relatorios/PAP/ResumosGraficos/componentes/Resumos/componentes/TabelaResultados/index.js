@@ -213,7 +213,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
             if (unidadeSelecionada === UNIDADES.P) {
               item.forEach(i => {
-                i.Total = `${((i.Total * 100) / 10).toFixed(2)}%`;
+                i.Total = `${i.Total.toFixed(2)}%`;
               });
             }
 
@@ -283,7 +283,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
             if (unidadeSelecionada === UNIDADES.P) {
               item.forEach(i => {
-                i.Total = `${((i.Total * 100) / 10).toFixed(2)}%`;
+                i.Total = `${i.Total.toFixed(2)}%`;
               });
             }
 
