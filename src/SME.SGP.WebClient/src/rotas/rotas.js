@@ -234,7 +234,7 @@ rotas.set(RotasDto.NOTIFICACOES, {
 rotas.set(RotasDto.MEUS_DADOS, {
   breadcrumbName: 'Perfil',
   parent: '/',
-  component: FechamentoBismestre,
+  component: MeusDados,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
