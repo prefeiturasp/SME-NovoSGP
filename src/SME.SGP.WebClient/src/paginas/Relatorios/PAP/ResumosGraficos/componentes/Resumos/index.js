@@ -73,9 +73,13 @@ function Resumos({ dados, ciclos, anos, isEncaminhamento }) {
       </PainelCollapse>
       {isEncaminhamento ? (
         <PainelCollapse>
-          <PainelCollapse.Painel temBorda header="Informações Escolares">
+          <PainelCollapse.Painel temBorda header="Informações escolares">
             <LazyLoad>
-              <TabelaInformacoesEscolares dados={dados.informacoesEscolares} />
+              <TabelaInformacoesEscolares
+                dados={dados.informacoesEscolares}
+                ciclos={ciclos}
+                anos={anos}
+              />
             </LazyLoad>
           </PainelCollapse.Painel>
         </PainelCollapse>
