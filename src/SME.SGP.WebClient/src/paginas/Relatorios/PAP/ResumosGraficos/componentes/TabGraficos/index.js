@@ -84,12 +84,13 @@ function TabGraficos({ dados, periodo, ciclos }) {
     dados.totalEstudantes[cicloOuAno].forEach(ano => {
       dadoPorcentagem[
         `${cicloOuAno === 'ciclos' ? ano.cicloDescricao : ano.anoDescricao}`
-      ] = Math.round(ano.porcentagem, 2);
+      ] = ano.porcentagem; //Math.round(ano.porcentagem, 2);
     });
 
     dadoPorcentagem.Total = dados.totalEstudantes.porcentagemTotal;
     montaDados.push(dadoPorcentagem);
 
+    console.log(montaDados);
     return montaDados;
   }, [cicloOuAno, dados.totalEstudantes]);
 
