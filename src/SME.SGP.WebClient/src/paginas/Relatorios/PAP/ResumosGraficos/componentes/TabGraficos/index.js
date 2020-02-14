@@ -9,8 +9,15 @@ import EixoObjetivo from './componentes/EixoObjetivo';
 // Estilos
 import { Linha } from '~/componentes/EstilosGlobais';
 
-function TabGraficos({ dados }) {
+function TabGraficos({ dados, periodo }) {
   const [itemAtivo, setItemAtivo] = useState(null);
+
+  const objetoExistaNaLista = (objeto, lista) => {
+    return lista.some(
+      elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
+    );
+  };
+
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados.frequencia;
     const dadosFormatados = [];
@@ -82,43 +89,21 @@ function TabGraficos({ dados }) {
     return montaDados;
   }, [dados]);
 
-  const [objetivos, setObjetivos] = useState([
-    {
-      id: shortid.generate(),
-      eixoDescricao: 'Frequência',
-      objetivoDescricao: 'Frequência na turma de PAP',
-      dados: dadosTabelaFrequencia,
-    },
-    {
-      id: shortid.generate(),
-      eixoDescricao: 'Total',
-      objetivoDescricao: 'Total de alunos no PAP',
-      dados: dadosTabelaTotalEstudantes,
-    },
-  ]);
-
-  const objetoExistaNaLista = (objeto, lista) => {
-    return lista.some(
-      elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
-    );
-  };
-
   const dadosTabelaResultados = useMemo(() => {
     const resultados = [];
     dados.resultados.items.forEach(item => {
       let objetivo = {
-        id: shortid.generate(),
         eixoDescricao: item.eixoDescricao,
         dados: [],
       };
 
       item.objetivos.forEach(obj => {
+        const dadosObjetivo = [];
         objetivo = {
           ...objetivo,
           objetivoDescricao: obj.objetivoDescricao,
         };
 
-        const dadosObjetivo = [];
         obj.anos.forEach(y => {
           let objetivoQuantidade = {};
           let objetivoPorcentagem = {};
@@ -158,11 +143,77 @@ function TabGraficos({ dados }) {
 
         objetivo = {
           ...objetivo,
+          id: shortid.generate(),
           dados: dadosObjetivo,
         };
-      });
 
-      resultados.push(objetivo);
+        resultados.push(objetivo);
+      });
+    });
+
+    return resultados;
+  }, [dados]);
+
+  const dadosTabelaInformacoesEscolares = useMemo(() => {
+    const resultados = [];
+    dados.informacoesEscolares.forEach(item => {
+      let objetivo = {
+        eixoDescricao: item.eixoDescricao,
+        dados: [],
+      };
+
+      item.objetivos.forEach(obj => {
+        const dadosObjetivo = [];
+        objetivo = {
+          ...objetivo,
+          objetivoDescricao: obj.objetivoDescricao,
+        };
+
+        obj.anos.forEach(y => {
+          let objetivoQuantidade = {};
+          let objetivoPorcentagem = {};
+
+          y.respostas.forEach(z => {
+            objetivoQuantidade = {
+              TipoDado: 'Quantidade',
+              FrequenciaDescricao: z.respostaDescricao,
+            };
+
+            objetivoPorcentagem = {
+              TipoDado: 'Porcentagem',
+              FrequenciaDescricao: z.respostaDescricao,
+            };
+
+            obj.anos.forEach(years => {
+              objetivoQuantidade = {
+                ...objetivoQuantidade,
+                [years.anoDescricao]: z.quantidade,
+              };
+
+              objetivoPorcentagem = {
+                ...objetivoPorcentagem,
+                [years.anoDescricao]: z.porcentagem,
+              };
+            });
+
+            if (!objetoExistaNaLista(objetivoQuantidade, dadosObjetivo)) {
+              dadosObjetivo.push(objetivoQuantidade);
+            } else if (
+              !objetoExistaNaLista(objetivoPorcentagem, dadosObjetivo)
+            ) {
+              dadosObjetivo.push(objetivoPorcentagem);
+            }
+          });
+        });
+
+        objetivo = {
+          ...objetivo,
+          id: shortid.generate(),
+          dados: dadosObjetivo,
+        };
+
+        resultados.push(objetivo);
+      });
     });
 
     console.log(resultados);
@@ -170,15 +221,35 @@ function TabGraficos({ dados }) {
     return resultados;
   }, [dados]);
 
-  useEffect(() => {
-    setObjetivos(atual => [...atual, ...dadosTabelaResultados]);
-    // setItemAtivo(objetivos[0].dados[0]);
-    console.log('executou objetivos', objetivos);
-  }, [dadosTabelaResultados]);
+  const [objetivos, setObjetivos] = useState([
+    {
+      id: shortid.generate(),
+      eixoDescricao: 'Total',
+      objetivoDescricao: 'Total de alunos no PAP',
+      dados: dadosTabelaTotalEstudantes,
+    },
+  ]);
 
   useEffect(() => {
-    console.log(itemAtivo);
-  }, [itemAtivo]);
+    if (periodo === '1') {
+      setObjetivos(atual => [
+        ...atual,
+        ...dadosTabelaInformacoesEscolares,
+        ...dadosTabelaResultados,
+      ]);
+    } else {
+      setObjetivos(atual => [...atual, ...dadosTabelaResultados]);
+    }
+  }, [
+    dadosTabelaFrequencia,
+    dadosTabelaInformacoesEscolares,
+    dadosTabelaResultados,
+    periodo,
+  ]);
+
+  useEffect(() => {
+    setItemAtivo(objetivos[0]);
+  }, [objetivos]);
 
   return (
     <>
@@ -252,10 +323,12 @@ function TabGraficos({ dados }) {
 
 TabGraficos.propTypes = {
   dados: t.oneOfType([t.any]),
+  periodo: t.string,
 };
 
 TabGraficos.defaultProps = {
   dados: [],
+  periodo: '',
 };
 
 export default TabGraficos;
