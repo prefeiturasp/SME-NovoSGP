@@ -105,7 +105,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
       eixos.forEach(eixo => {
         eixo.objetivos.forEach((objetivo, o) => {
-          if (ciclos && objetivo.ciclos.length) {
+          if (ciclos && objetivo.ciclos && objetivo.ciclos.length) {
             // Ciclos
             objetivo.ciclos.forEach(ciclo => {
               // Colunas
