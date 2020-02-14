@@ -74,7 +74,11 @@ function Resumos({ dados, ciclos, anos }) {
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Informações Escolares">
           <LazyLoad>
-            <TabelaInformacoesEscolares dados={dados.informacoesEscolares} />
+            <TabelaInformacoesEscolares
+              dados={dados.informacoesEscolares}
+              ciclos={ciclos}
+              anos={anos}
+            />
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
