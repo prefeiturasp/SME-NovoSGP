@@ -65,6 +65,7 @@ namespace SME.SGP.Aplicacao
             if (tipoNota == null)
                 throw new NegocioException("Não foi possível localizar o tipo de nota para esta turma.");
 
+            retorno.EhNota = tipoNota.EhNota();
             //Codigo aluno / NotaConceito / Código Disciplina / bimestre
 
             var listaAlunosNotas = new List<(string, string, long, int)>();
