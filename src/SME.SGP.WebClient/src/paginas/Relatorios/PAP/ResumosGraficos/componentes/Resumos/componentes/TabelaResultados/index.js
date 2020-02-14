@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
@@ -37,7 +38,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
     const renderizarCor = eixo => {
       const cores = [
         Base.AzulCalendario,
-        Base.CinzaTabela,
+        Base.LaranjaAlerta,
         Base.Laranja,
         Base.RosaCalendario,
         Base.Roxo,
@@ -60,10 +61,10 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
           return {
             children: <Tooltip title={text}>{valor}</Tooltip>,
             props: {
-              rowSpan: row.AgrupaEixo ? row.ObjetivoSize : 0,
+              rowSpan: row.EixoGrupo ? row.EixoSize : 0,
               style: {
                 borderLeft: `${
-                  row.AgrupaEixo ? `7px solid ${renderizarCor(text)}` : ``
+                  row.EixoGrupo ? `7px solid ${renderizarCor(text)}` : ``
                 }`,
                 fontWeight: 'bold',
               },
@@ -83,8 +84,10 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
           return {
             children: <Tooltip title={text}>{valor}</Tooltip>,
             props: {
-              rowSpan: row.AgrupaObjetivo ? row.RespostaSize : 0,
-              style: { fontWeight: 'bold' },
+              rowSpan: row.ObjetivoGrupo ? row.ObjetivoSize : 0,
+              style: {
+                fontWeight: 'bold',
+              },
             },
           };
         },
@@ -115,19 +118,18 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
       const eixosSize = [];
       eixos.forEach(eixo => {
-        if (!objetoExistaNaLista(eixo.eixoDescricao, eixosSize))
-          eixosSize[eixo.eixoDescricao] = 0;
+        if (!eixosSize[eixo.eixoDescricao]) eixosSize[eixo.eixoDescricao] = 0;
+
         eixo.objetivos.forEach(objetivo => {
           if (anos && objetivo.anos.length) {
-            eixosSize[eixo.eixoDescricao] += parseInt(
-              objetivo.anos[0].respostas.length,
-              10
-            );
-          } else if (ciclos && objetivo.ciclos.length) {
-            eixosSize[eixo.eixoDescricao] += parseInt(
-              objetivo.ciclos[0].respostas.length,
-              10
-            );
+            const respostas = [];
+            objetivo.anos.forEach(ano => {
+              ano.respostas.forEach(resposta => {
+                if (!objetoExistaNaLista(resposta.respostaDescricao, respostas))
+                  respostas.push(resposta.respostaDescricao);
+              });
+            });
+            eixosSize[eixo.eixoDescricao] += parseInt(respostas.length, 10);
           }
         });
       });
@@ -136,6 +138,8 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
       eixos.forEach(eixo => {
         eixo.objetivos.forEach((objetivo, o) => {
+          const item = [];
+
           if (ciclos && objetivo.ciclos && objetivo.ciclos.length) {
             // Ciclos
 
@@ -152,11 +156,11 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
               // Dados
               ciclo.respostas.forEach((resposta, r) => {
                 const dado = {};
-                dado.Eixo = eixo.eixoDescricao;
+                dado.EixoSize = eixosSize[eixo.eixoDescricao];
+                dado.Eixo = `${eixo.eixoDescricao}`;
                 dado.Objetivo = objetivo.objetivoDescricao;
-                dado.ObjetivoSize = eixosSize[eixo.eixoDescricao];
                 dado.Resposta = resposta.respostaDescricao;
-                dado.RespostaSize = ciclo.respostas.length;
+                dado.ObjetivoSize = ciclo.respostas.length;
                 dado.AgrupaEixo = o === 0 && r === 0;
                 dado.AgrupaObjetivo = r === 0;
 
@@ -180,6 +184,51 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
               });
             });
           } else if (anos && objetivo.anos.length) {
+            let anosSize = 0;
+            objetivo.anos.forEach(ano => {
+              anosSize =
+                ano.respostas.length > anosSize
+                  ? ano.respostas.length
+                  : anosSize;
+            });
+
+            objetivo.anos.forEach((ano, a) => {
+              ano.respostas.forEach((resposta, r) => {
+                if (
+                  !item.find(
+                    dado => dado.Resposta === resposta.respostaDescricao
+                  )
+                ) {
+                  item.push({
+                    Eixo: eixo.eixoDescricao,
+                    EixoGrupo: o === 0 && a === 0 && r === 0,
+                    EixoSize: eixosSize[eixo.eixoDescricao],
+                    Objetivo: objetivo.objetivoDescricao,
+                    ObjetivoGrupo: a === 0 && r === 0,
+                    Resposta: resposta.respostaDescricao,
+                    Total: 0,
+                  });
+                }
+              });
+            });
+
+            item.map(i => {
+              i.ObjetivoSize = item.length;
+              return i;
+            });
+
+            objetivo.anos.forEach(ano => {
+              ano.respostas.forEach(resposta => {
+                item
+                  .filter(dado => dado.Resposta === resposta.respostaDescricao)
+                  .map(dado => {
+                    dado[ano.anoDescricao] = resposta.quantidade;
+                    dado.Total += parseInt(resposta.quantidade, 10);
+                    return dado;
+                  });
+              });
+            });
+
             // Anos
             objetivo.anos.forEach(ano => {
               // Colunas
@@ -190,42 +239,12 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
               if (!objetoExistaNaLista(coluna, montaColunas))
                 montaColunas.push(coluna);
-
-              // Dados
-              ano.respostas.forEach((resposta, r) => {
-                const dado = {};
-                dado.Eixo = eixo.eixoDescricao;
-                dado.Objetivo = objetivo.objetivoDescricao;
-                dado.ObjetivoSize = eixosSize[eixo.eixoDescricao];
-                dado.Resposta = resposta.respostaDescricao;
-                dado.RespostaSize = ano.respostas.length;
-                dado.AgrupaEixo = o === 0 && r === 0;
-                dado.AgrupaObjetivo = r === 0;
-
-                let total = 0;
-
-                objetivo.anos.forEach(anoResposta => {
-                  dado[anoResposta.anoDescricao] =
-                    unidadeSelecionada === 'quantidade'
-                      ? resposta[unidadeSelecionada]
-                      : `${Math.round(resposta[unidadeSelecionada], 2)}%`;
-                  total += resposta[unidadeSelecionada];
-                });
-
-                dado.Total =
-                  unidadeSelecionada === 'quantidade'
-                    ? total
-                    : `${Math.round(total, 2)}%`;
-
-                if (!objetoExistaNaLista(dado, montaDados))
-                  montaDados.push(dado);
-              });
             });
           }
+
+          montaDados.push(...item);
         });
       });
-
-      console.log([...montaDados]);
 
       setDadosTabela([...montaDados]);
 
@@ -244,8 +263,6 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
           };
         },
       });
-
-      console.log([...colunasFixas, ...montaColunas]);
 
       setColunas([...colunasFixas, ...montaColunas]);
     }
