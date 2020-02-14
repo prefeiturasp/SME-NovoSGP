@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre;
+        private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
@@ -24,7 +25,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IServicoEOL servicoEOL, IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre,
             IRepositorioFechamentoFinal repositorioFechamentoFinal, IServicoAluno servicoAluno,
-            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioNotasConceitos repositorioNotasConceitos)
+            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioNotaTipoValor repositorioNotaTipoValor)
         {
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
@@ -35,6 +36,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoFinal = repositorioFechamentoFinal ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoFinal));
             this.servicoAluno = servicoAluno ?? throw new System.ArgumentNullException(nameof(servicoAluno));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new System.ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
+            this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new System.ArgumentNullException(nameof(repositorioNotaTipoValor));
         }
 
         public async Task<FechamentoFinalConsultaRetornoDto> ObterFechamentos(FechamentoFinalConsultaFiltroDto filtros)
@@ -59,6 +61,10 @@ namespace SME.SGP.Aplicacao
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrandos alunos para a turma informada.");
 
+            var tipoNota = repositorioNotaTipoValor.ObterPorTurmaId(turma.Id);
+            if (tipoNota == null)
+                throw new NegocioException("Não foi possível localizar o tipo de nota para esta turma.");
+
             //Codigo aluno / NotaConceito / Código Disciplina / bimestre
 
             var listaAlunosNotas = new List<(string, string, long, int)>();
@@ -75,7 +81,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinas = servicoEOL.ObterDisciplinasPorIds(idsDisciplinas.ToArray());
 
-            foreach (var aluno in alunosDaTurma)
+            foreach (var aluno in alunosDaTurma.OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeAluno))
             {
                 var totalAusencias = 0;
                 var totalAusenciasCompensadas = 0;
