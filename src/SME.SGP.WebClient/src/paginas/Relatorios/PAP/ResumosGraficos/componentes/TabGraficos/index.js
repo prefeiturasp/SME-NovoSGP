@@ -229,6 +229,8 @@ function TabGraficos({ dados, periodo, ciclos }) {
       });
     });
 
+    console.log(resultados);
+
     return resultados;
   }, [cicloOuAno, dados.informacoesEscolares]);
 

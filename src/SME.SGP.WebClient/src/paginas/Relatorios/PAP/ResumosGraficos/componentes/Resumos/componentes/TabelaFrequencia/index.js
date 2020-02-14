@@ -63,7 +63,7 @@ function TabelaFrequencia({ dados }) {
   ];
 
   const colunasTabela = useMemo(() => {
-    if (!Object.entries(dados).length) return colunasBase;
+    if (!Object.entries(dados).length) return [];
 
     const colunasParaExcluir = [
       'TipoDado',

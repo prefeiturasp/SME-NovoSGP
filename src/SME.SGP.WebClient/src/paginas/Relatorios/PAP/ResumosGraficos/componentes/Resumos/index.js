@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 // Componentes
 import { PainelCollapse, LazyLoad } from '~/componentes';
 
-function Resumos({ dados, ciclos, anos, periodo }) {
+function Resumos({ dados, ciclos, anos, isEncaminhamento }) {
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
   const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
   const TabelaInformacoesEscolares = lazy(() =>
@@ -71,7 +71,7 @@ function Resumos({ dados, ciclos, anos, periodo }) {
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
-      {periodo === '1' && (
+      {isEncaminhamento ? (
         <PainelCollapse>
           <PainelCollapse.Painel temBorda header="Informações escolares">
             <LazyLoad>
@@ -83,8 +83,7 @@ function Resumos({ dados, ciclos, anos, periodo }) {
             </LazyLoad>
           </PainelCollapse.Painel>
         </PainelCollapse>
-      )}
-      {periodo !== '1' && (
+      ) : (
         <PainelCollapse>
           <PainelCollapse.Painel temBorda header="Frequência">
             <LazyLoad>
@@ -116,12 +115,14 @@ Resumos.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.any]),
   ciclos: PropTypes.oneOfType([PropTypes.bool]),
   anos: PropTypes.oneOfType([PropTypes.bool]),
+  isEncaminhamento: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 Resumos.defaultProps = {
   dados: [],
   ciclos: false,
   anos: false,
+  isEncaminhamento: false,
 };
 
 export default Resumos;

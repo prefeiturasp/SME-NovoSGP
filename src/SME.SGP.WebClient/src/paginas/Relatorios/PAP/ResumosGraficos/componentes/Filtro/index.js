@@ -203,14 +203,38 @@ function Filtro({ onFiltrar }) {
   }, [ueId]);
 
   useEffect(() => {
+    if (!dreId && refForm && Object.entries(refForm).length) {
+      refForm.setFieldValue('cicloId', undefined);
+      setCicloId(undefined);
+      refForm.setFieldValue('ano', undefined);
+      setAno(undefined);
+      setListaTurmas([]);
+      refForm.setFieldValue('turmaId', undefined);
+      setTurmaId(undefined);
+      refForm.setFieldValue('periodo', undefined);
+      setPeriodo(undefined);
+    }
+  }, [dreId, refForm]);
+
+  useEffect(() => {
     if (ueId) {
-      if (ueId === '0') {
+      if (cicloId && ano && ueId === '0') {
         setListaTurmas([{ codigo: '0', nome: 'Todas' }]);
       } else {
         buscarTurmas();
       }
+    } else if (refForm && Object.entries(refForm).length) {
+      refForm.setFieldValue('cicloId', undefined);
+      setCicloId(undefined);
+      refForm.setFieldValue('ano', undefined);
+      setAno(undefined);
+      setListaTurmas([]);
+      refForm.setFieldValue('turmaId', undefined);
+      setTurmaId(undefined);
+      refForm.setFieldValue('periodo', undefined);
+      setPeriodo(undefined);
     }
-  }, [buscarTurmas, ueId]);
+  }, [ano, buscarTurmas, cicloId, refForm, ueId]);
 
   const aoTrocarUeId = valorUe => {
     setCicloId(undefined);
@@ -301,6 +325,7 @@ function Filtro({ onFiltrar }) {
                 valor={periodo}
                 form={form}
                 onChangePeriodo={valor => setPeriodo(valor)}
+                desabilitado={!dreId || !ueId || !cicloId}
               />
             </Grid>
           </Linha>
