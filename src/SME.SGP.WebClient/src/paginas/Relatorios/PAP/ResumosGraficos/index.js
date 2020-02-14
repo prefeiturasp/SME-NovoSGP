@@ -128,7 +128,11 @@ const ResumosGraficosPAP = () => {
                       dados={dadosTela}
                       ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
                       anos={!!filtroTela.Ano}
-                      periodo={filtroTela.Periodo}
+                      isEncaminhamento={
+                        filtroTela &&
+                        filtroTela.Periodo &&
+                        filtroTela.Periodo.toString() === '1'
+                      }
                     />
                   </LazyLoad>
                 ) : (

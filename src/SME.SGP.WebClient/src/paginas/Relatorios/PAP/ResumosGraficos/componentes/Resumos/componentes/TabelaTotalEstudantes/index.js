@@ -173,7 +173,7 @@ const TabelaTotalEstudantes = ({ dados, ciclos, anos }) => {
       rowKey="Id"
       size="middle"
       className="my-2"
-      style={{ borderLeft: `7px solid ${Base.Azul}` }}
+      style={dadosTabela.length ? { borderLeft: `7px solid ${Base.Azul}` } : {}}
       bordered
       locale={{ emptyText: 'Sem dados' }}
     />
