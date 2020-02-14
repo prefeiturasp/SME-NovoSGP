@@ -149,6 +149,12 @@ namespace SME.SGP.Dominio.Servicos
             return avaliacoesSemNotaParaNenhumAluno.Count();
         }
 
+        public int ValidarPercentualAlunosAbaixoDaMedia(long id, Turma turma, long disciplinaId, DateTime periodoInicio, DateTime periodoFim)
+        {
+            // TODO implementar na task 11717
+            throw new NotImplementedException();
+        }
+
         private void GerarPendencia(long fechamentoId, TipoPendencia tipoPendencia, string mensagem)
         {
             using (var transacao = unitOfWork.IniciarTransacao())

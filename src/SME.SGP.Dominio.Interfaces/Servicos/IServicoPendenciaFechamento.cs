@@ -11,5 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         int ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo);
 
         int ValidarAvaliacoesSemNotasParaNenhumAluno(long fechamentoId, string codigoTurma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo);
+
+        int ValidarPercentualAlunosAbaixoDaMedia(long id, Turma turma, long disciplinaId, DateTime periodoInicio, DateTime periodoFim);
     }
 }
