@@ -113,7 +113,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
       eixos.forEach(eixo => {
         eixo.objetivos.forEach((objetivo, o) => {
-          if (ciclos && objetivo.ciclos.length) {
+          if (ciclos && objetivo.ciclos && objetivo.ciclos.length) {
             // Ciclos
             // let tamanhoRespostas = 0;
 

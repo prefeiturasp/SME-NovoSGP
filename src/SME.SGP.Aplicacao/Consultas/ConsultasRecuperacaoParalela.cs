@@ -290,40 +290,71 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<RecuperacaoParalelaTotalResultadoDto> MapearResultadoParaDto(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items)
         {
-            var total = items.Sum(s => s.Total);
-            return items.GroupBy(g => new { g.EixoId, g.Eixo }).Select(x => new RecuperacaoParalelaTotalResultadoDto
-            {
-                EixoDescricao = x.Key.Eixo,
-                Objetivos = items.Where(obj => obj.EixoId == x.Key.EixoId).GroupBy(objetivo => new { objetivo.ObjetivoId, objetivo.Objetivo }).Select(z => new RecuperacaoParalelaResumoResultadoObjetivoDto
+            return items
+                .GroupBy(g => new { g.EixoId, g.Eixo })
+                .Select(eixo => new RecuperacaoParalelaTotalResultadoDto
                 {
-                    ObjetivoDescricao = z.Key.Objetivo,
-                    Anos = items.Where(ano => ano.ObjetivoId == z.Key.ObjetivoId).GroupBy(h => new { h.Ano, h.ObjetivoId }).Select(a => new RecuperacaoParalelaResumoResultadoAnoDto
-                    {
-                        AnoDescricao = a.Key.Ano,
-                        Respostas = items.Where(res => res.ObjetivoId == a.Key.ObjetivoId).GroupBy(gre => new { gre.Resposta, gre.RespostaId }).Select(r => new RecuperacaoParalelaResumoResultadoRespostaDto
-                        {
-                            RespostaDescricao = r.Key.Resposta,
-                            Quantidade = r.Sum(q => q.Total),
-                            Porcentagem = ((double)r.Sum(q => q.Total) * 100) / total
-                        })
-                    }),
-                    Ciclos = items.Where(ciclo => ciclo.ObjetivoId == z.Key.ObjetivoId).GroupBy(c => new { c.Ciclo, c.ObjetivoId }).Select(cs => new RecuperacaoParalelaResumoResultadoCicloDto
-                    {
-                        CicloDescricao = cs.Key.Ciclo,
-                        Respostas = items.Where(res => res.ObjetivoId == cs.Key.ObjetivoId).GroupBy(gre => new { gre.Resposta, gre.RespostaId }).Select(r => new RecuperacaoParalelaResumoResultadoRespostaDto
-                        {
-                            RespostaDescricao = r.Key.Resposta,
-                            Quantidade = r.Sum(q => q.Total),
-                            Porcentagem = ((double)r.Sum(q => q.Total) * 100) / total
-                        })
-                    }),
-                    Total = items.Where(tot => tot.ObjetivoId == z.Key.ObjetivoId).GroupBy(gt => gt.ObjetivoId).Select(tr => new RecuperacaoParalelaResumoResultadoRespostaDto
-                    {
-                        TotalQuantidade = tr.Sum(tq => tq.Total),
-                        TotalPorcentagem = (tr.Sum(tq => tq.Total) * 100) / total
-                    })
-                })
-            });
+                    EixoDescricao = eixo.Key.Eixo,
+                    Objetivos = ObterObjetivos(items, eixo.Key.EixoId, items.Sum(s => s.Total))
+                });
+        }
+
+        private IEnumerable<RecuperacaoParalelaResumoResultadoAnoDto> ObterAnos(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int objetivoId, int total)
+        {
+            return items.Where(ano => ano.ObjetivoId == objetivoId)
+                .GroupBy(h => new { h.Ano, h.ObjetivoId })
+                .Select(ano => new RecuperacaoParalelaResumoResultadoAnoDto
+                {
+                    AnoDescricao = ano.Key.Ano,
+                    Respostas = ObterRespostas(items, objetivoId, ehAno: true, ano.Key.Ano, total)
+                });
+        }
+
+        private IEnumerable<RecuperacaoParalelaResumoResultadoCicloDto> ObterCiclos(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int objetivoId, int total)
+        {
+            return items.Where(ano => ano.ObjetivoId == objetivoId)
+                .GroupBy(h => new { h.Ciclo, h.CicloId, h.ObjetivoId })
+                .Select(ciclo => new RecuperacaoParalelaResumoResultadoCicloDto
+                {
+                    CicloDescricao = ciclo.Key.Ciclo,
+                    Respostas = ObterRespostas(items, objetivoId, ehAno: false, ciclo.Key.CicloId, total)
+                });
+        }
+
+        private IEnumerable<RecuperacaoParalelaResumoResultadoObjetivoDto> ObterObjetivos(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int eixoId, int total)
+        {
+            return items.Where(obj => obj.EixoId == eixoId)
+                .GroupBy(objetivo => new { objetivo.ObjetivoId, objetivo.Objetivo })
+                .Select(objetivo => new RecuperacaoParalelaResumoResultadoObjetivoDto
+                {
+                    Anos = ObterAnos(items, objetivo.Key.ObjetivoId, total),
+                    Ciclos = ObterCiclos(items, objetivo.Key.ObjetivoId, total),
+                    ObjetivoDescricao = objetivo.Key.Objetivo,
+                    Total = ObterTotalPorObjetivo(items, objetivo.Key.ObjetivoId, total)
+                });
+        }
+
+        private IEnumerable<RecuperacaoParalelaResumoResultadoRespostaDto> ObterRespostas(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int objetivoId, bool ehAno, int anoCiclo, int total)
+        {
+            return items.Where(res => res.ObjetivoId == objetivoId && (ehAno ? res.Ano == anoCiclo : res.CicloId == anoCiclo))
+                .GroupBy(gre => (gre.Resposta, gre.RespostaId))
+                .Select(resposta => new RecuperacaoParalelaResumoResultadoRespostaDto
+                {
+                    RespostaDescricao = resposta.Key.Resposta,
+                    Quantidade = resposta.Sum(q => q.Total),
+                    Porcentagem = ((double)resposta.Sum(q => q.Total) * 100) / total
+                });
+        }
+
+        private IEnumerable<RecuperacaoParalelaResumoResultadoRespostaDto> ObterTotalPorObjetivo(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int objetivoId, int total)
+        {
+            return items.Where(tot => tot.ObjetivoId == objetivoId)
+                .GroupBy(gt => gt.ObjetivoId)
+                .Select(objetivoTotal => new RecuperacaoParalelaResumoResultadoRespostaDto
+                {
+                    TotalQuantidade = objetivoTotal.Sum(x => x.Total),
+                    TotalPorcentagem = (objetivoTotal.Sum(x => x.Total) * 100) / total
+                });
         }
     }
 }
