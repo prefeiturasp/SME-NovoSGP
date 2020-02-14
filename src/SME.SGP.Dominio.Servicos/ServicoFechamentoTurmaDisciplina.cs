@@ -121,30 +121,19 @@ namespace SME.SGP.Dominio.Servicos
             var situacaoFechamento = SituacaoFechamento.ProcessadoComSucesso;
 
             var avaliacoesSemnota = servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-            if (avaliacoesSemnota > 0)
-                situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
-
             var aulasReposicaoPendentes = servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-            if (aulasReposicaoPendentes > 0)
-                situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
-
             var aulasSemPlanoAula = servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-            if (aulasSemPlanoAula > 0)
-                situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
-
             var aulasSemFrequencia = servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-            if (aulasSemFrequencia > 0)
-                situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
-
             //TODO VALIDAR PERCENTUAL DE ALUNOS ABAIXO DA MEDIA QUANDO HISTORIA 9269 ESTIVER CONCLUIDA
 
-            fechamento.AtualizarSituacao(situacaoFechamento);
             var quantidadePendencias = avaliacoesSemnota + aulasReposicaoPendentes + aulasSemPlanoAula + aulasSemFrequencia;
-            if (situacaoFechamento != SituacaoFechamento.ProcessadoComSucesso && quantidadePendencias > 0)
+            if (quantidadePendencias > 0)
             {
+                situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
                 GerarNotificacaoFechamento(fechamento, turma, quantidadePendencias, usuarioLogado);
             }
 
+            fechamento.AtualizarSituacao(situacaoFechamento);
             await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamento);
         }
 
