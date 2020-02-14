@@ -5,6 +5,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioFechamentoFinal : IRepositorioBase<FechamentoFinal>
     {
-        Task<IEnumerable<FechamentoFinal>> ObterPorFiltros(string turmaCodigo);
+        Task<IEnumerable<FechamentoFinal>> ObterPorFiltros(string turmaCodigo, string disciplinaCodigo = "");
     }
 }

@@ -8,7 +8,7 @@ namespace SME.SGP.Infra
         public string AlunoRf { get; set; }
 
         [Required(ErrorMessage = "É necessário informar o componente curricular.")]
-        public string ComponenteCurricularCodigo { get; set; }
+        public long ComponenteCurricularCodigo { get; set; }
 
         public long? ConceitoId { get; set; }
         public double? Nota { get; set; }
