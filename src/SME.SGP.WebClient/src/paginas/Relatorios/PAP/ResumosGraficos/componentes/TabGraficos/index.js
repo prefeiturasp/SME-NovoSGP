@@ -9,6 +9,9 @@ import EixoObjetivo from './componentes/EixoObjetivo';
 // Estilos
 import { Linha } from '~/componentes/EstilosGlobais';
 
+// Funcões
+import { removerCaracteresEspeciais } from '~/utils/funcoes/gerais';
+
 function TabGraficos({ dados, periodo, ciclos }) {
   const [itemAtivo, setItemAtivo] = useState(null);
   const [cicloOuAno] = useState(ciclos ? 'ciclos' : 'anos');
@@ -67,6 +70,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
     dadoQuantidade.TipoDado = 'Quantidade';
     dadoQuantidade.FrequenciaDescricao = 'Total';
 
+    if (!dados.totalEstudantes[cicloOuAno]) return false;
     dados.totalEstudantes[cicloOuAno].forEach(ano => {
       dadoQuantidade[
         `${cicloOuAno === 'ciclos' ? ano.cicloDescricao : ano.anoDescricao}`
@@ -96,64 +100,91 @@ function TabGraficos({ dados, periodo, ciclos }) {
 
   const dadosTabelaResultados = useMemo(() => {
     const resultados = [];
-    dados.resultados.items.forEach(item => {
+    dados.resultados.items.forEach(resultado => {
       let objetivo = {
-        eixoDescricao: item.eixoDescricao,
+        eixoDescricao: resultado.eixoDescricao,
         dados: [],
       };
 
-      item.objetivos.forEach(obj => {
-        const dadosObjetivo = [];
+      resultado.objetivos.forEach(obj => {
         objetivo = {
           ...objetivo,
           objetivoDescricao: obj.objetivoDescricao,
         };
 
-        obj.anos.forEach(y => {
-          let objetivoQuantidade = {};
-          let objetivoPorcentagem = {};
-
-          y.respostas.forEach(z => {
-            objetivoQuantidade = {
-              TipoDado: 'Quantidade',
-              FrequenciaDescricao: z.respostaDescricao,
-            };
-
-            objetivoPorcentagem = {
-              TipoDado: 'Porcentagem',
-              FrequenciaDescricao: z.respostaDescricao,
-            };
-
-            obj[cicloOuAno].forEach(years => {
-              objetivoQuantidade = {
-                ...objetivoQuantidade,
-                [cicloOuAno === 'ciclos'
-                  ? years.cicloDescricao
-                  : years.anoDescricao]: z.quantidade,
-              };
-
-              objetivoPorcentagem = {
-                ...objetivoPorcentagem,
-                [cicloOuAno === 'ciclos'
-                  ? years.cicloDescricao
-                  : years.anoDescricao]: z.porcentagem,
-              };
-            });
-
-            if (!objetoExistaNaLista(objetivoQuantidade, dadosObjetivo)) {
-              dadosObjetivo.push(objetivoQuantidade);
-            } else if (
-              !objetoExistaNaLista(objetivoPorcentagem, dadosObjetivo)
+        const item = [];
+        obj[cicloOuAno].forEach((atual, a) => {
+          atual.respostas.forEach((resposta, r) => {
+            if (
+              !item.find(
+                dado => dado.FrequenciaDescricao === resposta.respostaDescricao
+              )
             ) {
-              dadosObjetivo.push(objetivoPorcentagem);
+              item.push({
+                eixoDescricao: resultado.eixoDescricao,
+                objetivoDescricao: obj.objetivoDescricao,
+                FrequenciaDescricao:
+                  cicloOuAno === 'ciclos'
+                    ? removerCaracteresEspeciais(resposta.respostaDescricao)
+                    : resposta.respostaDescricao,
+                TipoDado: 'Quantidade',
+              });
+
+              item.push({
+                eixoDescricao: resultado.eixoDescricao,
+                objetivoDescricao: obj.objetivoDescricao,
+                FrequenciaDescricao:
+                  cicloOuAno === 'ciclos'
+                    ? removerCaracteresEspeciais(resposta.respostaDescricao)
+                    : resposta.respostaDescricao,
+                TipoDado: 'Porcentagem',
+              });
             }
+          });
+        });
+
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
+            item
+              .filter(
+                dado =>
+                  dado.FrequenciaDescricao === resposta.respostaDescricao &&
+                  dado.TipoDado === 'Quantidade'
+              )
+              .map(dado => {
+                dado[
+                  cicloOuAno === 'ciclos'
+                    ? atual.cicloDescricao
+                    : atual.anoDescricao
+                ] = resposta.quantidade;
+                return dado;
+              });
+          });
+        });
+
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
+            item
+              .filter(
+                dado =>
+                  dado.FrequenciaDescricao === resposta.respostaDescricao &&
+                  dado.TipoDado === 'Porcentagem'
+              )
+              .map(dado => {
+                dado[
+                  cicloOuAno === 'ciclos'
+                    ? atual.cicloDescricao
+                    : atual.anoDescricao
+                ] = resposta.porcentagem;
+                return dado;
+              });
           });
         });
 
         objetivo = {
           ...objetivo,
           id: shortid.generate(),
-          dados: dadosObjetivo,
+          dados: item,
         };
 
         resultados.push(objetivo);
@@ -165,71 +196,96 @@ function TabGraficos({ dados, periodo, ciclos }) {
 
   const dadosTabelaInformacoesEscolares = useMemo(() => {
     const resultados = [];
-    dados.informacoesEscolares.forEach(item => {
+    dados.informacoesEscolares.forEach(resultado => {
       let objetivo = {
-        eixoDescricao: item.eixoDescricao,
+        eixoDescricao: resultado.eixoDescricao,
         dados: [],
       };
 
-      item.objetivos.forEach(obj => {
-        const dadosObjetivo = [];
+      resultado.objetivos.forEach(obj => {
         objetivo = {
           ...objetivo,
           objetivoDescricao: obj.objetivoDescricao,
         };
 
-        obj[cicloOuAno].forEach(y => {
-          let objetivoQuantidade = {};
-          let objetivoPorcentagem = {};
-
-          y.respostas.forEach(z => {
-            objetivoQuantidade = {
-              TipoDado: 'Quantidade',
-              FrequenciaDescricao: z.respostaDescricao,
-            };
-
-            objetivoPorcentagem = {
-              TipoDado: 'Porcentagem',
-              FrequenciaDescricao: z.respostaDescricao,
-            };
-
-            obj[cicloOuAno].forEach(years => {
-              objetivoQuantidade = {
-                ...objetivoQuantidade,
-                [cicloOuAno === 'ciclos'
-                  ? years.cicloDescricao
-                  : years.anoDescricao]: z.quantidade,
-              };
-
-              objetivoPorcentagem = {
-                ...objetivoPorcentagem,
-                [cicloOuAno === 'ciclos'
-                  ? years.cicloDescricao
-                  : years.anoDescricao]: z.porcentagem,
-              };
-            });
-
-            if (!objetoExistaNaLista(objetivoQuantidade, dadosObjetivo)) {
-              dadosObjetivo.push(objetivoQuantidade);
-            } else if (
-              !objetoExistaNaLista(objetivoPorcentagem, dadosObjetivo)
+        const item = [];
+        obj[cicloOuAno].forEach((atual, a) => {
+          atual.respostas.forEach((resposta, r) => {
+            if (
+              !item.find(
+                dado => dado.FrequenciaDescricao === resposta.respostaDescricao
+              )
             ) {
-              dadosObjetivo.push(objetivoPorcentagem);
+              item.push({
+                eixoDescricao: resultado.eixoDescricao,
+                objetivoDescricao: obj.objetivoDescricao,
+                FrequenciaDescricao:
+                  cicloOuAno === 'ciclos'
+                    ? removerCaracteresEspeciais(resposta.respostaDescricao)
+                    : resposta.respostaDescricao,
+                TipoDado: 'Quantidade',
+              });
+
+              item.push({
+                eixoDescricao: resultado.eixoDescricao,
+                objetivoDescricao: obj.objetivoDescricao,
+                FrequenciaDescricao:
+                  cicloOuAno === 'ciclos'
+                    ? removerCaracteresEspeciais(resposta.respostaDescricao)
+                    : resposta.respostaDescricao,
+                TipoDado: 'Porcentagem',
+              });
             }
+          });
+        });
+
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
+            item
+              .filter(
+                dado =>
+                  dado.FrequenciaDescricao === resposta.respostaDescricao &&
+                  dado.TipoDado === 'Quantidade'
+              )
+              .map(dado => {
+                dado[
+                  cicloOuAno === 'ciclos'
+                    ? atual.cicloDescricao
+                    : atual.anoDescricao
+                ] = resposta.quantidade;
+                return dado;
+              });
+          });
+        });
+
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
+            item
+              .filter(
+                dado =>
+                  dado.FrequenciaDescricao === resposta.respostaDescricao &&
+                  dado.TipoDado === 'Porcentagem'
+              )
+              .map(dado => {
+                dado[
+                  cicloOuAno === 'ciclos'
+                    ? atual.cicloDescricao
+                    : atual.anoDescricao
+                ] = resposta.porcentagem;
+                return dado;
+              });
           });
         });
 
         objetivo = {
           ...objetivo,
           id: shortid.generate(),
-          dados: dadosObjetivo,
+          dados: item,
         };
 
         resultados.push(objetivo);
       });
     });
-
-    console.log(resultados);
 
     return resultados;
   }, [cicloOuAno, dados.informacoesEscolares]);
@@ -299,6 +355,8 @@ function TabGraficos({ dados, periodo, ciclos }) {
                     'Descricao',
                     'Total',
                     'Id',
+                    'eixoDescricao',
+                    'objetivoDescricao',
                   ].indexOf(x) === -1
               )}
             />
@@ -323,6 +381,9 @@ function TabGraficos({ dados, periodo, ciclos }) {
                     'key',
                     'Descricao',
                     'Total',
+                    'Id',
+                    'eixoDescricao',
+                    'objetivoDescricao',
                   ].indexOf(x) === -1
               )}
               porcentagem
