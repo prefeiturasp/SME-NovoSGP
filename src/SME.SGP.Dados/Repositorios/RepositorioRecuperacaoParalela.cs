@@ -103,6 +103,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("group by");
             query.AppendLine("turma.nome,");
             query.AppendLine("turma.ano,");
+            query.AppendLine("tipo_ciclo.id,");            
             query.AppendLine("tipo_ciclo.descricao,");
             query.AppendLine("resposta.nome,");
             query.AppendLine("o.nome,");
@@ -142,6 +143,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("group by");
             query.AppendLine("turma.nome,");
             query.AppendLine("turma.ano,");
+            query.AppendLine("tipo_ciclo.id,");
             query.AppendLine("tipo_ciclo.descricao,");
             query.AppendLine("resposta.nome,");
             query.AppendLine("o.nome,");
@@ -160,6 +162,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             query.AppendLine("tipo_ciclo.descricao as ciclo,");
             query.AppendLine("count(aluno_id) as total,");
+            query.AppendLine("tipo_ciclo.id as cicloId,");
             query.AppendLine("turma.ano,");
             query.AppendLine("tipo_ciclo.descricao,");
             query.AppendLine("resposta.nome as resposta,");
