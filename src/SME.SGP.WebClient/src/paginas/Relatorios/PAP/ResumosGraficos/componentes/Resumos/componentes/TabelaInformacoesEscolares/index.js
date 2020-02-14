@@ -14,6 +14,11 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
     );
   };
 
+  const UNIDADES = {
+    Q: 'quantidade',
+    P: 'porcentagem',
+  };
+
   const montaColunasDados = useCallback(() => {
     setDadosTabela([]);
 
@@ -30,6 +35,57 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
 
         if (ciclos && objetivo.ciclos.length) {
           // Ciclos
+          let ciclosSize = 0;
+          objetivo.ciclos.forEach(ciclo => {
+            ciclosSize =
+              ciclo.respostas.length > ciclosSize
+                ? ciclo.respostas.length
+                : ciclosSize;
+          });
+
+          objetivo.ciclos.forEach((ciclo, c) => {
+            ciclo.respostas.forEach((resposta, r) => {
+              if (
+                !item.find(dado => dado.Resposta === resposta.respostaDescricao)
+              ) {
+                item.push({
+                  Eixo: eixo.eixoDescricao,
+                  Objetivo: objetivo.objetivoDescricao,
+                  ObjetivoGrupo: c === 0 && r === 0,
+                  Resposta: resposta.respostaDescricao,
+                  Total: 0,
+                });
+              }
+            });
+          });
+
+          item.map(i => {
+            i.ObjetivoSize = item.length;
+            return i;
+          });
+
+          objetivo.ciclos.forEach(ciclo => {
+            ciclo.respostas.forEach(resposta => {
+              item
+                .filter(i => i.Resposta === resposta.respostaDescricao)
+                .map(i => {
+                  i[ciclo.cicloDescricao] =
+                    unidadeSelecionada === UNIDADES.Q
+                      ? resposta[unidadeSelecionada]
+                      : `${resposta[unidadeSelecionada].toFixed(2)}%`;
+                  i.Total += resposta[unidadeSelecionada];
+                  return item;
+                });
+            });
+          });
+
+          if (unidadeSelecionada === UNIDADES.P) {
+            item.forEach(i => {
+              i.Total = `${i.Total.toFixed(2)}%`;
+            });
+          }
+
+          // Ciclos
           objetivo.ciclos.forEach(ciclo => {
             // Colunas
             const coluna = {
@@ -37,37 +93,8 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
               dataIndex: `${ciclo.cicloDescricao}`,
             };
 
-            if (!objetoExistaNaLista(coluna, montaColunas))
+            if (!objetoExisteNaLista(coluna, montaColunas))
               montaColunas.push(coluna);
-
-            // Dados
-            ciclo.respostas.forEach((resposta, r) => {
-              const dado = {};
-              dado.Eixo = eixo.eixoDescricao;
-              dado.Objetivo = objetivo.objetivoDescricao;
-              dado.TamanhoObjetivos = eixo.objetivos.length;
-              dado.Resposta = resposta.respostaDescricao;
-              dado.TamanhoRespostas = ciclo.respostas.length;
-              dado.AgrupaEixo = o === 0 && r === 0;
-              dado.AgrupaObjetivo = r === 0;
-
-              let total = 0;
-
-              objetivo.ciclos.forEach(cicloResposta => {
-                dado[cicloResposta.cicloDescricao] =
-                  unidadeSelecionada === 'quantidade'
-                    ? resposta[unidadeSelecionada]
-                    : `${Math.round(resposta[unidadeSelecionada], 2)}%`;
-                total += resposta[unidadeSelecionada];
-              });
-
-              dado.Total =
-                unidadeSelecionada === 'quantidade'
-                  ? total
-                  : `${Math.round(total, 2)}%`;
-
-              if (!objetoExistaNaLista(dado, montaDados)) montaDados.push(dado);
-            });
           });
         } else if (anos && objetivo.anos.length) {
           let anosSize = 0;
@@ -151,6 +178,16 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
     montaColunasDados();
   }, [montaColunasDados]);
 
+  function objetoExisteNaLista(objeto, lista) {
+    return lista.some(
+      elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
+    );
+  }
+
+  const onTrocaUnidade = unidade => {
+    setUnidadeSelecionada(unidade);
+  };
+
   const listaUnidades = [
     {
       desc: 'Quantidade',
@@ -161,10 +198,6 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
       valor: 'porcentagem',
     },
   ];
-
-  const onTrocaUnidade = unidade => {
-    setUnidadeSelecionada(unidade);
-  };
 
   return (
     <>
