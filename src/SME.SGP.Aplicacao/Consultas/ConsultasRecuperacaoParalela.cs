@@ -295,7 +295,7 @@ namespace SME.SGP.Aplicacao
                 .Select(eixo => new RecuperacaoParalelaTotalResultadoDto
                 {
                     EixoDescricao = eixo.Key.Eixo,
-                    Objetivos = ObterObjetivos(items, eixo.Key.EixoId, items.Sum(s => s.Total))
+                    Objetivos = ObterObjetivos(items, eixo.Key.EixoId)
                 });
         }
 
@@ -321,16 +321,16 @@ namespace SME.SGP.Aplicacao
                 });
         }
 
-        private IEnumerable<RecuperacaoParalelaResumoResultadoObjetivoDto> ObterObjetivos(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int eixoId, int total)
+        private IEnumerable<RecuperacaoParalelaResumoResultadoObjetivoDto> ObterObjetivos(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int eixoId)
         {
             return items.Where(obj => obj.EixoId == eixoId)
                 .GroupBy(objetivo => new { objetivo.ObjetivoId, objetivo.Objetivo })
                 .Select(objetivo => new RecuperacaoParalelaResumoResultadoObjetivoDto
                 {
-                    Anos = ObterAnos(items, objetivo.Key.ObjetivoId, total),
-                    Ciclos = ObterCiclos(items, objetivo.Key.ObjetivoId, total),
+                    Anos = ObterAnos(items, objetivo.Key.ObjetivoId, items.Where(x => x.ObjetivoId == objetivo.Key.ObjetivoId).Sum(s => s.Total)),
+                    Ciclos = ObterCiclos(items, objetivo.Key.ObjetivoId, items.Where(x => x.ObjetivoId == objetivo.Key.ObjetivoId).Sum(s => s.Total)),
                     ObjetivoDescricao = objetivo.Key.Objetivo,
-                    Total = ObterTotalPorObjetivo(items, objetivo.Key.ObjetivoId, total)
+                    Total = ObterTotalPorObjetivo(items, objetivo.Key.ObjetivoId, items.Where(x => x.ObjetivoId == objetivo.Key.ObjetivoId).Sum(s => s.Total))
                 });
         }
 

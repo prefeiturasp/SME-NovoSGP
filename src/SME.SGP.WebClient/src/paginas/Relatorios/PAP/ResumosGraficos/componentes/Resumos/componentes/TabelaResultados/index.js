@@ -201,10 +201,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                     i[ciclo.cicloDescricao] =
                       unidadeSelecionada === UNIDADES.Q
                         ? resposta[unidadeSelecionada]
-                        : `${(
-                            (resposta[unidadeSelecionada] * 100) /
-                            10
-                          ).toFixed(2)}%`;
+                        : `${resposta[unidadeSelecionada].toFixed(2)}%`;
                     i.Total += resposta[unidadeSelecionada];
                     return item;
                   });
@@ -271,10 +268,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                     i[ano.anoDescricao] =
                       unidadeSelecionada === UNIDADES.Q
                         ? resposta[unidadeSelecionada]
-                        : `${(
-                            (resposta[unidadeSelecionada] * 100) /
-                            10
-                          ).toFixed(2)}%`;
+                        : `${resposta[unidadeSelecionada].toFixed(2)}%`;
                     i.Total += resposta[unidadeSelecionada];
                     return item;
                   });
