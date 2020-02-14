@@ -4,11 +4,7 @@ import PropTypes from 'prop-types';
 // Componentes
 import { PainelCollapse, LazyLoad } from '~/componentes';
 
-<<<<<<< HEAD
 function Resumos({ dados, ciclos, anos, isEncaminhamento }) {
-=======
-function Resumos({ dados, ciclos, anos, periodo }) {
->>>>>>> c875485f8beb4d02250d1fc803f674b98831d10e
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
   const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
   const TabelaInformacoesEscolares = lazy(() =>
