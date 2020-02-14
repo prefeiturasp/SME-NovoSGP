@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 // Componentes
 import { PainelCollapse, LazyLoad } from '~/componentes';
 
-function Resumos({ dados, ciclos, anos }) {
+function Resumos({ dados, ciclos, anos, isEncaminhamento }) {
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
   const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
   const TabelaInformacoesEscolares = lazy(() =>
@@ -71,24 +71,27 @@ function Resumos({ dados, ciclos, anos }) {
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
-      <PainelCollapse>
-        <PainelCollapse.Painel temBorda header="Informações Escolares">
-          <LazyLoad>
-            <TabelaInformacoesEscolares dados={dados.informacoesEscolares} />
-          </LazyLoad>
-        </PainelCollapse.Painel>
-      </PainelCollapse>
-      <PainelCollapse>
-        <PainelCollapse.Painel temBorda header="Frequência">
-          <LazyLoad>
-            <TabelaFrequencia
-              dados={dadosTabelaFrequencia}
-              ciclos={ciclos}
-              anos={anos}
-            />
-          </LazyLoad>
-        </PainelCollapse.Painel>
-      </PainelCollapse>
+      {isEncaminhamento ? (
+        <PainelCollapse>
+          <PainelCollapse.Painel temBorda header="Informações Escolares">
+            <LazyLoad>
+              <TabelaInformacoesEscolares dados={dados.informacoesEscolares} />
+            </LazyLoad>
+          </PainelCollapse.Painel>
+        </PainelCollapse>
+      ) : (
+        <PainelCollapse>
+          <PainelCollapse.Painel temBorda header="Frequência">
+            <LazyLoad>
+              <TabelaFrequencia
+                dados={dadosTabelaFrequencia}
+                ciclos={ciclos}
+                anos={anos}
+              />
+            </LazyLoad>
+          </PainelCollapse.Painel>
+        </PainelCollapse>
+      )}
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Resultados">
           <LazyLoad>
@@ -108,12 +111,14 @@ Resumos.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.any]),
   ciclos: PropTypes.oneOfType([PropTypes.bool]),
   anos: PropTypes.oneOfType([PropTypes.bool]),
+  isEncaminhamento: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 Resumos.defaultProps = {
   dados: [],
   ciclos: false,
   anos: false,
+  isEncaminhamento: false,
 };
 
 export default Resumos;

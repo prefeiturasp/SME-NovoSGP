@@ -42,15 +42,21 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
   const montaColunasDados = useCallback(() => {
     setDadosTabela([]);
 
+    if (Object.entries(dados).length && !Object.entries(dados.items).length)
+      return;
+
     const colunasFixas = [
       {
         title: 'Eixo',
         dataIndex: 'Eixo',
-        colSpan: 3,
+        colSpan: 1,
+        fixed: 'left',
         width: 200,
         render: (text, row) => {
+          let valor = text;
+          if (valor.length > 50) valor = `${text.substr(0, 50)}...`;
           return {
-            children: text,
+            children: <Tooltip title={text}>{valor}</Tooltip>,
             props: {
               rowSpan: row.AgrupaEixo
                 ? row.TamanhoObjetivos * row.TamanhoRespostas
@@ -66,11 +72,12 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
       {
         title: 'Objetivo',
         dataIndex: 'Objetivo',
-        colSpan: 0,
+        colSpan: 1,
+        fixed: 'left',
         width: 150,
         render: (text, row) => {
           let valor = text;
-          if (valor.length > 100) valor = `${text.substr(0, 100)}...`;
+          if (valor.length > 50) valor = `${text.substr(0, 50)}...`;
           return {
             children: <Tooltip title={text}>{valor}</Tooltip>,
             props: {
@@ -83,7 +90,8 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
       {
         title: 'Resposta',
         dataIndex: 'Resposta',
-        colSpan: 0,
+        colSpan: 1,
+        fixed: 'left',
         width: 150,
         render: text => {
           return {
@@ -107,12 +115,16 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         eixo.objetivos.forEach((objetivo, o) => {
           if (ciclos && objetivo.ciclos.length) {
             // Ciclos
+            // let tamanhoRespostas = 0;
+
             objetivo.ciclos.forEach(ciclo => {
               // Colunas
               const coluna = {
                 title: `${ciclo.cicloDescricao}`,
                 dataIndex: `${ciclo.cicloDescricao}`,
               };
+
+              console.log(ciclo.respostas.length);
 
               if (!objetoExistaNaLista(coluna, montaColunas))
                 montaColunas.push(coluna);
@@ -198,8 +210,8 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
       montaColunas.push({
         title: 'Total',
         dataIndex: 'Total',
-        width: 100,
         fixed: 'right',
+        width: 100,
         className: 'headerTotal',
         render: text => {
           return {
@@ -249,7 +261,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         pagination={false}
         columns={colunas}
         dataSource={dadosTabela}
-        rowKey="Id"
+        rowKey="Resposta"
         size="middle"
         className="my-2"
         bordered
