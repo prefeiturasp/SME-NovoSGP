@@ -9,7 +9,7 @@ import EixoObjetivo from './componentes/EixoObjetivo';
 // Estilos
 import { Linha } from '~/componentes/EstilosGlobais';
 
-function TabGraficos({ dados }) {
+function TabGraficos({ dados, periodo }) {
   const [itemAtivo, setItemAtivo] = useState(null);
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados.frequencia;
@@ -85,12 +85,6 @@ function TabGraficos({ dados }) {
   const [objetivos, setObjetivos] = useState([
     {
       id: shortid.generate(),
-      eixoDescricao: 'Frequência',
-      objetivoDescricao: 'Frequência na turma de PAP',
-      dados: dadosTabelaFrequencia,
-    },
-    {
-      id: shortid.generate(),
       eixoDescricao: 'Total',
       objetivoDescricao: 'Total de alunos no PAP',
       dados: dadosTabelaTotalEstudantes,
@@ -107,18 +101,17 @@ function TabGraficos({ dados }) {
     const resultados = [];
     dados.resultados.items.forEach(item => {
       let objetivo = {
-        id: shortid.generate(),
         eixoDescricao: item.eixoDescricao,
         dados: [],
       };
 
       item.objetivos.forEach(obj => {
+        const dadosObjetivo = [];
         objetivo = {
           ...objetivo,
           objetivoDescricao: obj.objetivoDescricao,
         };
 
-        const dadosObjetivo = [];
         obj.anos.forEach(y => {
           let objetivoQuantidade = {};
           let objetivoPorcentagem = {};
@@ -158,25 +151,30 @@ function TabGraficos({ dados }) {
 
         objetivo = {
           ...objetivo,
+          id: shortid.generate(),
           dados: dadosObjetivo,
         };
-      });
 
-      resultados.push(objetivo);
+        resultados.push(objetivo);
+      });
     });
 
     return resultados;
   }, [dados]);
 
   useEffect(() => {
+    // {
+    //   id: shortid.generate(),
+    //   eixoDescricao: 'Frequência',
+    //   objetivoDescricao: 'Frequência na turma de PAP',
+    //   dados: dadosTabelaFrequencia,
+    // }
     setObjetivos(atual => [...atual, ...dadosTabelaResultados]);
-    // setItemAtivo(objetivos[0].dados[0]);
-    console.log('executou objetivos', objetivos);
-  }, [dadosTabelaResultados]);
+  }, [dadosTabelaFrequencia, dadosTabelaResultados, periodo]);
 
   useEffect(() => {
-    console.log(itemAtivo);
-  }, [itemAtivo]);
+    setItemAtivo(objetivos[0]);
+  }, [objetivos]);
 
   return (
     <>
@@ -250,10 +248,12 @@ function TabGraficos({ dados }) {
 
 TabGraficos.propTypes = {
   dados: t.oneOfType([t.any]),
+  periodo: t.string,
 };
 
 TabGraficos.defaultProps = {
   dados: [],
+  periodo: '',
 };
 
 export default TabGraficos;
