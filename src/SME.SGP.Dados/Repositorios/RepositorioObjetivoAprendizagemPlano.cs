@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -44,19 +45,22 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<ObjetivoAprendizagemPlano>("select * from objetivo_aprendizagem_plano where plano_id = @Id", new { Id = idPlano });
         }
 
-        public IEnumerable<ObjetivoAprendizagemPlano> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId)
+        public IEnumerable<ObjetivoAprendizagemPlano> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool ehRegencia = false)
         {
-            var query = @"select o.*
-                   from plano_anual pa
-                  inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id
-                  inner join componente_curricular cc on cc.id = o.componente_curricular_id
-                  where pa.ano = @ano
-                    and pa.bimestre = @bimestre
-                    and pa.componente_curricular_eol_id = @componenteCurricularId
-                    and pa.turma_id = @turmaId";
-            //and cc.codigo_jurema = @disciplinaId";
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("select o.*");
+            query.AppendLine(" from plano_anual pa");
+            query.AppendLine("inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id");
+            query.AppendLine("inner join componente_curricular cc on cc.id = o.componente_curricular_id");
+            query.AppendLine("where pa.ano = @ano");
+            query.AppendLine("and pa.bimestre = @bimestre");
+            query.AppendLine("and pa.componente_curricular_eol_id = @componenteCurricularId");
+            query.AppendLine("and pa.turma_id = @turmaId");
 
-            return database.Conexao.Query<ObjetivoAprendizagemPlano>(query, new { ano, bimestre, componenteCurricularId, turmaId, disciplinaId });
+            if (ehRegencia)
+                query.AppendLine("and cc.codigo_eol = @disciplinaId");
+
+            return database.Conexao.Query<ObjetivoAprendizagemPlano>(query.ToString(), new { ano, bimestre, componenteCurricularId, turmaId, disciplinaId });
         }
     }
 }

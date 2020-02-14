@@ -23,18 +23,21 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano;
+        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoJurema servicoJurema;
 
         public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema,
                                                      IRepositorioCache repositorioCache,
                                                      IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                                      IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano,
-                                                     IConfiguration configuration)
+                                                     IConfiguration configuration,
+                                                     IRepositorioTurma repositorioTurma)
         {
             this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioObjetivosPlano = repositorioObjetivosPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivosPlano));
         }
 
@@ -109,9 +112,18 @@ namespace SME.SGP.Aplicacao
             return repositorioObjetivosPlano.ObterIdPorObjetivoAprendizagemJurema(planoId, objetivoAprendizagemJuremaId);
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId)
+        public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false)
         {
-            var objetivosPlano = repositorioObjetivosPlano.ObterObjetivosPlanoDisciplina(ano, bimestre, turmaId, componenteCurricularId, disciplinaId);
+            var turma = repositorioTurma.ObterPorId(turmaId.ToString());
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada;");
+
+            var objetivosPlano = repositorioObjetivosPlano.ObterObjetivosPlanoDisciplina(ano,
+                                                                                         bimestre,
+                                                                                         turmaId,
+                                                                                         componenteCurricularId,
+                                                                                         disciplinaId,
+                                                                                         regencia);
 
             var objetivosJurema = await Listar();
 
