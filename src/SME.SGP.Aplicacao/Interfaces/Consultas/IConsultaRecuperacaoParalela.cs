@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dto;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -8,10 +9,12 @@ namespace SME.SGP.Aplicacao
     {
         Task<RecuperacaoParalelaListagemDto> Listar(FiltroRecuperacaoParalelaDto filtro);
 
-        Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano, int? pagina);
+        Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? pagina);
 
-        Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano);
+        Task<IEnumerable<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? numeroPagina);
 
-        Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, int? ano);
+        Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano);
+
+        Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano);
     }
 }

@@ -3,7 +3,7 @@
     public class FiltroRecuperacaoParalelaResumoDto
     {
         //TODO: data anotations
-        public int? Ano { get; set; }
+        public string Ano { get; set; }
 
         public int? CicloId { get; set; }
         public string DreId { get; set; }
