@@ -16,7 +16,7 @@ const ColunasFixas = () => [
       return {
         children: <Tooltip title={text}>{valor}</Tooltip>,
         props: {
-          rowSpan: row.AgrupaObjetivo ? row.TamanhoRespostas : 0,
+          rowSpan: row.ObjetivoGrupo ? row.ObjetivoSize : 0,
           style: { fontWeight: 'bold' },
         },
       };
