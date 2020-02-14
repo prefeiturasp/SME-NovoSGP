@@ -77,23 +77,25 @@ function TabelaFrequencia({ dados }) {
       item => colunasParaExcluir.indexOf(item) === -1
     );
 
-    const colunasParaIncluir = colunasParaRenderizar.map(item => {
-      const novaColuna = { title: item, dataIndex: item };
-      if (item === 'Total') {
+    const colunasParaIncluir = colunasParaRenderizar
+      .map(item => {
+        if (item !== 'Total') return { title: item, dataIndex: item };
+        return null;
+      })
+      .filter(x => x !== null);
+
+    colunasParaIncluir.push({
+      title: 'Total',
+      dataIndex: 'Total',
+      width: 100,
+      className: 'headerTotal',
+      fixed: 'right',
+      render: text => {
         return {
-          ...novaColuna,
-          width: 100,
-          className: 'headerTotal',
-          fixed: 'right',
-          render: text => {
-            return {
-              children: text,
-              className: 'itemColunaTotal',
-            };
-          },
+          children: text,
+          className: 'itemColunaTotal',
         };
-      }
-      return novaColuna;
+      },
     });
 
     return [...colunasBase, ...colunasParaIncluir];
