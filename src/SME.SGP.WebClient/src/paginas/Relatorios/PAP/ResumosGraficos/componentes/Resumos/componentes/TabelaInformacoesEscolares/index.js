@@ -30,7 +30,7 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
 
       const eixo = dados[0];
 
-      eixo.objetivos.forEach((objetivo, o) => {
+      eixo.objetivos.forEach(objetivo => {
         const item = [];
 
         if (ciclos && objetivo.ciclos.length) {
@@ -129,12 +129,21 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
               item
                 .filter(dado => dado.Resposta === resposta.respostaDescricao)
                 .map(dado => {
-                  dado[ano.anoDescricao] = resposta.quantidade;
-                  dado.Total += parseInt(resposta.quantidade, 10);
+                  dado[ano.anoDescricao] =
+                    unidadeSelecionada === UNIDADES.Q
+                      ? resposta[unidadeSelecionada]
+                      : `${resposta[unidadeSelecionada].toFixed(2)}%`;
+                  dado.Total += resposta[unidadeSelecionada];
                   return dado;
                 });
             });
           });
+
+          if (unidadeSelecionada === UNIDADES.P) {
+            item.forEach(i => {
+              i.Total = `${i.Total.toFixed(2)}%`;
+            });
+          }
 
           // Anos
           objetivo.anos.forEach(ano => {
@@ -172,7 +181,7 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
 
       setColunas([...colunasFixas, ...montaColunas]);
     }
-  }, [dados, ciclos, anos, unidadeSelecionada]);
+  }, [dados, ciclos, anos, unidadeSelecionada, UNIDADES.P, UNIDADES.Q]);
 
   useEffect(() => {
     montaColunasDados();
