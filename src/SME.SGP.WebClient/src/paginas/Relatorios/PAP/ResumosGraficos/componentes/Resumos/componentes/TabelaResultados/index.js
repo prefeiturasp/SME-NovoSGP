@@ -26,37 +26,45 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
   const [unidadeSelecionada, setUnidadeSelecionada] = useState('quantidade');
 
-  const renderizarCor = () => {
-    const cores = [
-      Base.AzulCalendario,
-      Base.CinzaCalendario,
-      Base.Laranja,
-      Base.RosaCalendario,
-      Base.Roxo,
-      Base.Verde,
-      Base.Vermelho,
-    ];
-    return cores[Math.floor(Math.random() * 6)];
-  };
-
   const montaColunasDados = useCallback(() => {
     setDadosTabela([]);
+
+    if (Object.entries(dados).length && !Object.entries(dados.items).length)
+      return;
+
+    let eixoCores = [];
+
+    const renderizarCor = eixo => {
+      const cores = [
+        Base.AzulCalendario,
+        Base.CinzaTabela,
+        Base.Laranja,
+        Base.RosaCalendario,
+        Base.Roxo,
+        Base.Verde,
+        Base.Vermelho,
+      ];
+      return cores[eixoCores.indexOf(eixo)];
+    };
 
     const colunasFixas = [
       {
         title: 'Eixo',
         dataIndex: 'Eixo',
-        colSpan: 3,
+        colSpan: 1,
+        fixed: 'left',
         width: 200,
         render: (text, row) => {
+          let valor = text;
+          if (valor.length > 50) valor = `${text.substr(0, 50)}...`;
           return {
-            children: text,
+            children: <Tooltip title={text}>{valor}</Tooltip>,
             props: {
-              rowSpan: row.AgrupaEixo
-                ? row.TamanhoObjetivos * row.TamanhoRespostas
-                : 0,
+              rowSpan: row.AgrupaEixo ? row.ObjetivoSize : 0,
               style: {
-                borderLeft: `7px solid ${renderizarCor()}`,
+                borderLeft: `${
+                  row.AgrupaEixo ? `7px solid ${renderizarCor(text)}` : ``
+                }`,
                 fontWeight: 'bold',
               },
             },
@@ -66,15 +74,16 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
       {
         title: 'Objetivo',
         dataIndex: 'Objetivo',
-        colSpan: 0,
+        colSpan: 1,
+        fixed: 'left',
         width: 150,
         render: (text, row) => {
           let valor = text;
-          if (valor.length > 100) valor = `${text.substr(0, 100)}...`;
+          if (valor.length > 50) valor = `${text.substr(0, 50)}...`;
           return {
             children: <Tooltip title={text}>{valor}</Tooltip>,
             props: {
-              rowSpan: row.AgrupaObjetivo ? row.TamanhoRespostas : 0,
+              rowSpan: row.AgrupaObjetivo ? row.RespostaSize : 0,
               style: { fontWeight: 'bold' },
             },
           };
@@ -83,7 +92,8 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
       {
         title: 'Resposta',
         dataIndex: 'Resposta',
-        colSpan: 0,
+        colSpan: 1,
+        fixed: 'left',
         width: 150,
         render: text => {
           return {
@@ -103,10 +113,32 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
       const eixos = [...dados.items];
 
+      const eixosSize = [];
+      eixos.forEach(eixo => {
+        if (!objetoExistaNaLista(eixo.eixoDescricao, eixosSize))
+          eixosSize[eixo.eixoDescricao] = 0;
+        eixo.objetivos.forEach(objetivo => {
+          if (anos && objetivo.anos.length) {
+            eixosSize[eixo.eixoDescricao] += parseInt(
+              objetivo.anos[0].respostas.length,
+              10
+            );
+          } else if (ciclos && objetivo.ciclos.length) {
+            eixosSize[eixo.eixoDescricao] += parseInt(
+              objetivo.ciclos[0].respostas.length,
+              10
+            );
+          }
+        });
+      });
+
+      eixoCores = Object.keys(eixosSize);
+
       eixos.forEach(eixo => {
         eixo.objetivos.forEach((objetivo, o) => {
-          if (ciclos && objetivo.ciclos.length) {
+          if (ciclos && objetivo.ciclos && objetivo.ciclos.length) {
             // Ciclos
+
             objetivo.ciclos.forEach(ciclo => {
               // Colunas
               const coluna = {
@@ -122,9 +154,9 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                 const dado = {};
                 dado.Eixo = eixo.eixoDescricao;
                 dado.Objetivo = objetivo.objetivoDescricao;
-                dado.TamanhoObjetivos = eixo.objetivos.length;
+                dado.ObjetivoSize = eixosSize[eixo.eixoDescricao];
                 dado.Resposta = resposta.respostaDescricao;
-                dado.TamanhoRespostas = ciclo.respostas.length;
+                dado.RespostaSize = ciclo.respostas.length;
                 dado.AgrupaEixo = o === 0 && r === 0;
                 dado.AgrupaObjetivo = r === 0;
 
@@ -164,9 +196,9 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                 const dado = {};
                 dado.Eixo = eixo.eixoDescricao;
                 dado.Objetivo = objetivo.objetivoDescricao;
-                dado.TamanhoObjetivos = eixo.objetivos.length;
+                dado.ObjetivoSize = eixosSize[eixo.eixoDescricao];
                 dado.Resposta = resposta.respostaDescricao;
-                dado.TamanhoRespostas = ano.respostas.length;
+                dado.RespostaSize = ano.respostas.length;
                 dado.AgrupaEixo = o === 0 && r === 0;
                 dado.AgrupaObjetivo = r === 0;
 
@@ -193,13 +225,15 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         });
       });
 
+      console.log([...montaDados]);
+
       setDadosTabela([...montaDados]);
 
       montaColunas.push({
         title: 'Total',
         dataIndex: 'Total',
-        width: 100,
         fixed: 'right',
+        width: 100,
         className: 'headerTotal',
         render: text => {
           return {
@@ -210,6 +244,8 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
           };
         },
       });
+
+      console.log([...colunasFixas, ...montaColunas]);
 
       setColunas([...colunasFixas, ...montaColunas]);
     }
@@ -249,7 +285,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         pagination={false}
         columns={colunas}
         dataSource={dadosTabela}
-        rowKey="Id"
+        rowKey="Resposta"
         size="middle"
         className="my-2"
         bordered

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Base, SelectComponent } from '~/componentes';
 import { ColunasFixas, Tabela } from './index.css';
 
@@ -175,6 +176,18 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
       />
     </>
   );
+};
+
+TabelaInformacoesEscolares.propTypes = {
+  dados: PropTypes.oneOfType([PropTypes.any]),
+  ciclos: PropTypes.oneOfType([PropTypes.bool]),
+  anos: PropTypes.oneOfType([PropTypes.bool]),
+};
+
+TabelaInformacoesEscolares.defaultProps = {
+  dados: [],
+  ciclos: false,
+  anos: false,
 };
 
 export default TabelaInformacoesEscolares;
