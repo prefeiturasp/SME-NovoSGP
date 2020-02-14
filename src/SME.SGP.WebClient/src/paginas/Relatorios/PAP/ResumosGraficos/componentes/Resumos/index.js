@@ -84,17 +84,19 @@ function Resumos({ dados, ciclos, anos, periodo }) {
           </PainelCollapse.Painel>
         </PainelCollapse>
       )}
-      <PainelCollapse>
-        <PainelCollapse.Painel temBorda header="Frequência">
-          <LazyLoad>
-            <TabelaFrequencia
-              dados={dadosTabelaFrequencia}
-              ciclos={ciclos}
-              anos={anos}
-            />
-          </LazyLoad>
-        </PainelCollapse.Painel>
-      </PainelCollapse>
+      {periodo !== '1' && (
+        <PainelCollapse>
+          <PainelCollapse.Painel temBorda header="Frequência">
+            <LazyLoad>
+              <TabelaFrequencia
+                dados={dadosTabelaFrequencia}
+                ciclos={ciclos}
+                anos={anos}
+              />
+            </LazyLoad>
+          </PainelCollapse.Painel>
+        </PainelCollapse>
+      )}
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Resultados">
           <LazyLoad>
