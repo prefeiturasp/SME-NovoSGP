@@ -20,3 +20,8 @@ export { default as CampoTextoBusca } from './campoTextoBusca';
 export { default as TextEditor } from './textEditor';
 export { default as LabelSemDados } from './labelSemDados';
 export { default as Alert } from './alert';
+export { default as TabComponent } from './tabs/tabs';
+export { default as PainelCollapse } from './PainelCollapse';
+export { default as LazyLoad } from './LazyLoad';
+export { default as Graficos } from './Graficos';
+export { default as BarraNavegacao } from './BarraNavegacao';

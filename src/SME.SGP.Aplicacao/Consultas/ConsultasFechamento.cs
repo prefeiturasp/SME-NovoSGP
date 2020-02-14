@@ -52,8 +52,8 @@ namespace SME.SGP.Aplicacao
                     , turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio
                     , dataReferencia.Month <= 6 ? 1 : 2);
 
-            var ueEmFechamento = await repositorioEventoFechamento.UeEmFechamento(dataReferencia, ue.CodigoUe, dre.CodigoDre, bimestre, tipoCalendario.Id);
-
+            var ueEmFechamento = await repositorioEventoFechamento.UeEmFechamento(dataReferencia, dre.CodigoDre, ue.CodigoUe, bimestre, tipoCalendario.Id);
+            
             return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario.Id, ue.CodigoUe, dre.CodigoDre, bimestre, dataReferencia);
         }
 

@@ -144,8 +144,7 @@ namespace SME.SGP.Aplicacao
 
                             //disciplinasDto.Add(consultaDisciplinaPai.First());
                         }
-                        else
-                            disciplinasDto.Add(await MapearParaDto(disciplina, true));
+                        disciplinasDto.Add(await MapearParaDto(disciplina, true));
                     }
                 }
 
@@ -235,6 +234,7 @@ namespace SME.SGP.Aplicacao
         private async Task<DisciplinaDto> MapearParaDto(DisciplinaResposta disciplina, bool turmaPrograma = false)
             => new DisciplinaDto()
             {
+                CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
                 CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
                 Nome = disciplina.Nome,
                 Regencia = disciplina.Regencia,
