@@ -46,6 +46,7 @@ const PlanoAula = props => {
     expandido,
     auditoria,
     temAvaliacao,
+    ehRegencia,
   } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
@@ -141,7 +142,7 @@ const PlanoAula = props => {
     materia.selecionada = !materia.selecionada;
     if (materia.selecionada) {
       const objetivos = await api.get(
-        `v1/objetivos-aprendizagem/objetivos/turmas/${turmaId}/componentes/${disciplinaIdSelecionada}/disciplinas/${id}?dataAula=${dataAula}`
+        `v1/objetivos-aprendizagem/objetivos/turmas/${turmaId}/componentes/${disciplinaIdSelecionada}/disciplinas/${id}?dataAula=${dataAula}&regencia=${ehRegencia}`
       );
       if (objetivos && objetivos.data && objetivos.data.length > 0) {
         materia.objetivos = objetivos.data;
