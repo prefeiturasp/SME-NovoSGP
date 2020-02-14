@@ -197,7 +197,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioResposta, RepositorioResposta>();
             services.TryAddScoped<IRepositorioObjetivo, RepositorioObjetivo>();
             services.TryAddScoped<IRepositorioPendencia, RepositorioPendencia>();
-            services.TryAddScoped<IRepositorioFechamento, RepositorioFechamento>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -229,7 +228,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoFechamentoReabertura, ServicoFechamentoReabertura>();
             services.TryAddScoped<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
             services.TryAddScoped<IServicoPeriodoFechamento, ServicoPeriodoFechamento>();
-            services.TryAddScoped<IServicoFechamento, ServicoFechamento>();
             services.TryAddScoped<IServicoFechamentoTurmaDisciplina, ServicoFechamentoTurmaDisciplina>();
             services.TryAddScoped<IServicoRecuperacaoParalela, ServicoRecuperacaoParalela>();
             services.TryAddScoped<IServicoPendenciaFechamento, ServicoPendenciaFechamento>();

@@ -1,4 +1,6 @@
-﻿using SME.SGP.Aplicacao;
+﻿using Microsoft.Extensions.Configuration;
+using SME.Background.Core;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -16,7 +18,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioPeriodoFechamento repositorioFechamento;
+        private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
@@ -25,26 +27,36 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IConfiguration configuration;
+        private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IServicoNotificacao servicoNotificacao;
+        private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
 
         public ServicoFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                                 IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre,
+                                                IRepositorioDre repositorioDre,
                                                 IRepositorioTurma repositorioTurma,
                                                 IRepositorioUe repositorioUe,
-                                                IRepositorioPeriodoFechamento repositorioFechamento,
+                                                IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
+                                                IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                                 IRepositorioTipoCalendario repositorioTipoCalendario,
                                                 IRepositorioTipoAvaliacao repositorioTipoAvaliacao,
                                                 IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
                                                 IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
                                                 IConsultasDisciplina consultasDisciplina,
+                                                IServicoNotificacao servicoNotificacao,
+                                                IServicoPendenciaFechamento servicoPendenciaFechamento,
                                                 IServicoEOL servicoEOL,
                                                 IServicoUsuario servicoUsuario,
-                                                IUnitOfWork unitOfWork)
+                                                IUnitOfWork unitOfWork,
+                                                IConfiguration configuration)
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioNotaConceitoBimestre = repositorioNotaConceitoBimestre ?? throw new ArgumentNullException(nameof(repositorioNotaConceitoBimestre));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioFechamento = repositorioFechamento ?? throw new ArgumentNullException(nameof(repositorioFechamento));
+            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new ArgumentNullException(nameof(repositorioTipoAvaliacao));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
@@ -53,7 +65,12 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        }
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
+            this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
+    }
 
         public async Task<AuditoriaFechamentoTurmaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto)
         {
@@ -65,16 +82,16 @@ namespace SME.SGP.Dominio.Servicos
                                                                 , DateTime.Now.Month > 6 ? 2 : 1);
 
             var ue = repositorioUe.ObterPorId(fechamentoTurma.Turma.UeId);
-            var fechamento = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendario.Id, ue.DreId, ue.Id);
-            var fechamentoBimestre = fechamento?.FechamentosBimestre.FirstOrDefault(x => x.PeriodoEscolar.Bimestre == entidadeDto.Bimestre);
+            var periodoFechamento = repositorioPeriodoFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendario.Id, ue.DreId, ue.Id);
+            var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestre.FirstOrDefault(x => x.PeriodoEscolar.Bimestre == entidadeDto.Bimestre);
 
-            if (fechamento == null || fechamentoBimestre == null)
+            if (periodoFechamento == null || periodoFechamentoBimestre == null)
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
 
             // Valida Permissão do Professor na Turma/Disciplina
-            VerificaSeProfessorPodePersistirTurma(servicoUsuario.ObterRf(), entidadeDto.TurmaId, fechamentoBimestre.PeriodoEscolar.PeriodoFim);
+            VerificaSeProfessorPodePersistirTurma(servicoUsuario.ObterRf(), entidadeDto.TurmaId, periodoFechamentoBimestre.PeriodoEscolar.PeriodoFim);
 
-            fechamentoTurma.PeriodoFechamentoBimestreId = fechamentoBimestre.Id;
+            fechamentoTurma.PeriodoEscolarId = periodoFechamentoBimestre.PeriodoEscolarId;
 
             // Carrega notas alunos
             var notasConceitosBimestre = await MapearParaEntidade(id, entidadeDto.NotaConceitoAlunos);
@@ -97,6 +114,135 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        public async Task GerarPendenciasFechamento(long disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, FechamentoTurmaDisciplina fechamento, Usuario usuarioLogado)
+        {
+            var situacaoFechamento = SituacaoFechamento.ProcessadoComSucesso;
+
+            var avaliacoesSemnota = servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            if (avaliacoesSemnota > 0)
+                situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
+
+            var aulasReposicaoPendentes = servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            if (aulasReposicaoPendentes > 0)
+                situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
+
+            var aulasSemPlanoAula = servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            if (aulasSemPlanoAula > 0)
+                situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
+
+            var aulasSemFrequencia = servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            if (aulasSemFrequencia > 0)
+                situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
+
+            //TODO VALIDAR PERCENTUAL DE ALUNOS ABAIXO DA MEDIA QUANDO HISTORIA 9269 ESTIVER CONCLUIDA
+
+            fechamento.AtualizarSituacao(situacaoFechamento);
+            var quantidadePendencias = avaliacoesSemnota + aulasReposicaoPendentes + aulasSemPlanoAula + aulasSemFrequencia;
+            if (situacaoFechamento != SituacaoFechamento.ProcessadoComSucesso && quantidadePendencias > 0)
+            {
+                GerarNotificacaoFechamento(fechamento, turma, quantidadePendencias, usuarioLogado);
+            }
+
+            await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamento);
+        }
+
+        public async Task RealizarFechamento(string codigoTurma, long disciplinaId, long periodoEscolarId, Usuario usuarioLogado)
+        {
+            var (turma, periodoEscolar) = ValidarTurmaEPeriodoEscolar(codigoTurma, periodoEscolarId);
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(periodoEscolar.TipoCalendarioId);
+            if (tipoCalendario == null)
+            {
+                throw new NegocioException("Tipo de calendário não encontrado.");
+            }
+
+            if (!turma.MesmaModalidadePeriodoEscolar(tipoCalendario.Modalidade))
+            {
+                throw new NegocioException("Essa turma não pertence ao tipo de calendário informado.");
+            }
+            var fechamento = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turma.CodigoTurma, disciplinaId, periodoEscolar.Bimestre);
+            if (fechamento == null)
+            {
+                fechamento = new FechamentoTurmaDisciplina(turma.Id, disciplinaId, periodoEscolar.Id);
+            }
+            fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
+            repositorioFechamentoTurmaDisciplina.Salvar(fechamento);
+
+            Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuarioLogado));
+        }
+
+        public async Task Reprocessar(long fechamentoId)
+        {
+            var fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(fechamentoId);
+            if (fechamento == null)
+            {
+                throw new NegocioException("Fechamento ainda não realizado para essa turma.");
+            }
+            var turma = repositorioTurma.ObterPorId(fechamento.TurmaId);
+            if (turma == null)
+            {
+                throw new NegocioException("Turma não encontrada.");
+            }
+
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(fechamento.PeriodoEscolarId);
+            if (periodoEscolar == null)
+            {
+                throw new NegocioException("Período escolar não encontrado.");
+            }
+            fechamento.AdicionarPeriodoEscolar(periodoEscolar);
+            fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
+            repositorioFechamentoTurmaDisciplina.Salvar(fechamento);
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+
+            Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuarioLogado));
+        }
+
+        private void GerarNotificacaoFechamento(FechamentoTurmaDisciplina fechamento, Turma turma, int quantidadePendencias, Usuario usuarioLogado)
+        {
+            var componentes = servicoEOL.ObterDisciplinasPorIds(new long[] { fechamento.DisciplinaId });
+            if (componentes == null || !componentes.Any())
+            {
+                throw new NegocioException("Componente curricular não encontrado.");
+            }
+            var ue = repositorioUe.ObterPorId(turma.UeId);
+            if (ue == null)
+                throw new NegocioException("UE não encontrada.");
+
+            var dre = repositorioDre.ObterPorId(ue.DreId);
+            if (dre == null)
+                throw new NegocioException("DRE não encontrada.");
+
+            var urlFrontEnd = configuration["UrlFrontEnd"];
+            if (string.IsNullOrWhiteSpace(urlFrontEnd))
+                throw new NegocioException("Url do frontend não encontrada.");
+
+            var notificacao = new Notificacao()
+            {
+                UsuarioId = usuarioLogado.Id,
+                Ano = DateTime.Now.Year,
+                Categoria = NotificacaoCategoria.Aviso,
+                Titulo = $"Pendência no fechamento da turma {turma.Nome}",
+                Tipo = NotificacaoTipo.Fechamento,
+                Mensagem = $"O fechamento do {fechamento.PeriodoEscolar.Bimestre}Nº bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {quantidadePendencias} pendência(s). Clique <a href='{urlFrontEnd}'>aqui</a> para mais detalhes."
+            };
+            servicoNotificacao.Salvar(notificacao);
+        }
+
+        private (Turma, PeriodoEscolar) ValidarTurmaEPeriodoEscolar(string codigoTurma, long periodoEscolarId)
+        {
+            var turma = repositorioTurma.ObterPorId(codigoTurma);
+            if (turma == null)
+            {
+                throw new NegocioException("Turma não encontrada.");
+            }
+
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(periodoEscolarId);
+            if (periodoEscolar == null)
+            {
+                throw new NegocioException("Período escolar não encontrado.");
+            }
+            return (turma, periodoEscolar);
         }
 
         private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data)
