@@ -9,8 +9,9 @@ import EixoObjetivo from './componentes/EixoObjetivo';
 // Estilos
 import { Linha } from '~/componentes/EstilosGlobais';
 
-function TabGraficos({ dados, periodo }) {
+function TabGraficos({ dados, periodo, ciclos }) {
   const [itemAtivo, setItemAtivo] = useState(null);
+  const [cicloOuAno] = useState(ciclos ? 'ciclos' : 'anos');
 
   const objetoExistaNaLista = (objeto, lista) => {
     return lista.some(
@@ -21,7 +22,6 @@ function TabGraficos({ dados, periodo }) {
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados.frequencia;
     const dadosFormatados = [];
-    const mapa = { turma: 'anos', ciclos: 'ciclos' };
 
     if (frequenciaDados) {
       frequenciaDados.forEach(x => {
@@ -35,7 +35,7 @@ function TabGraficos({ dados, periodo }) {
           TipoDado: 'Porcentagem',
         };
 
-        x.linhas[0][mapa.turma].forEach((y, key) => {
+        x.linhas[0][cicloOuAno].forEach((y, key) => {
           quantidade = {
             ...quantidade,
             key: String(key),
@@ -58,7 +58,7 @@ function TabGraficos({ dados, periodo }) {
     }
 
     return dadosFormatados;
-  }, [dados]);
+  }, [cicloOuAno, dados.frequencia]);
 
   const dadosTabelaTotalEstudantes = useMemo(() => {
     const montaDados = [];
@@ -67,8 +67,10 @@ function TabGraficos({ dados, periodo }) {
     dadoQuantidade.TipoDado = 'Quantidade';
     dadoQuantidade.FrequenciaDescricao = 'Total';
 
-    dados.totalEstudantes.anos.forEach(ano => {
-      dadoQuantidade[`${ano.anoDescricao}`] = ano.quantidade;
+    dados.totalEstudantes[cicloOuAno].forEach(ano => {
+      dadoQuantidade[
+        `${cicloOuAno === 'ciclos' ? ano.cicloDescricao : ano.anoDescricao}`
+      ] = ano.quantidade;
     });
     dadoQuantidade.Total = dados.totalEstudantes.quantidadeTotal;
 
@@ -79,15 +81,17 @@ function TabGraficos({ dados, periodo }) {
     dadoPorcentagem.TipoDado = 'Porcentagem';
     dadoPorcentagem.FrequenciaDescricao = 'Total';
 
-    dados.totalEstudantes.anos.forEach(ano => {
-      dadoPorcentagem[`${ano.anoDescricao}`] = Math.round(ano.porcentagem, 2);
+    dados.totalEstudantes[cicloOuAno].forEach(ano => {
+      dadoPorcentagem[
+        `${cicloOuAno === 'ciclos' ? ano.cicloDescricao : ano.anoDescricao}`
+      ] = Math.round(ano.porcentagem, 2);
     });
 
     dadoPorcentagem.Total = dados.totalEstudantes.porcentagemTotal;
     montaDados.push(dadoPorcentagem);
 
     return montaDados;
-  }, [dados]);
+  }, [cicloOuAno, dados.totalEstudantes]);
 
   const dadosTabelaResultados = useMemo(() => {
     const resultados = [];
@@ -119,15 +123,19 @@ function TabGraficos({ dados, periodo }) {
               FrequenciaDescricao: z.respostaDescricao,
             };
 
-            obj.anos.forEach(years => {
+            obj[cicloOuAno].forEach(years => {
               objetivoQuantidade = {
                 ...objetivoQuantidade,
-                [years.anoDescricao]: z.quantidade,
+                [cicloOuAno === 'ciclos'
+                  ? years.cicloDescricao
+                  : years.anoDescricao]: z.quantidade,
               };
 
               objetivoPorcentagem = {
                 ...objetivoPorcentagem,
-                [years.anoDescricao]: z.porcentagem,
+                [cicloOuAno === 'ciclos'
+                  ? years.cicloDescricao
+                  : years.anoDescricao]: z.porcentagem,
               };
             });
 
@@ -152,7 +160,7 @@ function TabGraficos({ dados, periodo }) {
     });
 
     return resultados;
-  }, [dados]);
+  }, [cicloOuAno, dados.resultados.items]);
 
   const dadosTabelaInformacoesEscolares = useMemo(() => {
     const resultados = [];
@@ -169,7 +177,7 @@ function TabGraficos({ dados, periodo }) {
           objetivoDescricao: obj.objetivoDescricao,
         };
 
-        obj.anos.forEach(y => {
+        obj[cicloOuAno].forEach(y => {
           let objetivoQuantidade = {};
           let objetivoPorcentagem = {};
 
@@ -184,15 +192,19 @@ function TabGraficos({ dados, periodo }) {
               FrequenciaDescricao: z.respostaDescricao,
             };
 
-            obj.anos.forEach(years => {
+            obj[cicloOuAno].forEach(years => {
               objetivoQuantidade = {
                 ...objetivoQuantidade,
-                [years.anoDescricao]: z.quantidade,
+                [cicloOuAno === 'ciclos'
+                  ? years.cicloDescricao
+                  : years.anoDescricao]: z.quantidade,
               };
 
               objetivoPorcentagem = {
                 ...objetivoPorcentagem,
-                [years.anoDescricao]: z.porcentagem,
+                [cicloOuAno === 'ciclos'
+                  ? years.cicloDescricao
+                  : years.anoDescricao]: z.porcentagem,
               };
             });
 
@@ -219,7 +231,7 @@ function TabGraficos({ dados, periodo }) {
     console.log(resultados);
 
     return resultados;
-  }, [dados]);
+  }, [cicloOuAno, dados.informacoesEscolares]);
 
   const [objetivos, setObjetivos] = useState([
     {
