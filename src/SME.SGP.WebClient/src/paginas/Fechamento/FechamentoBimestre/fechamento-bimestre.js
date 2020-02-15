@@ -151,7 +151,6 @@ const FechamentoBismestre = () => {
 
   //FechamentoFinal
   const refFechamentoFinal = useRef();
-  const [ehRegencia, setEhRegencia] = useState(false);
   const [turmaPrograma, setTurmaPrograma] = useState(false);
 
   useEffect(() => {
