@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
         {
             var fechamentosFinais = new List<FechamentoFinal>();
 
-            var fechamentosDaTurmaEDisciplina = await repositorioFechamentoFinal.ObterPorFiltros(fechamentoFinalSalvarDto.TurmaCodigo);
+            var fechamentosDaTurmaEDisciplina = await repositorioFechamentoFinal.ObterPorFiltros(fechamentoFinalSalvarDto.TurmaCodigo, null);
 
             foreach (var fechamentoItemDto in fechamentoFinalSalvarDto.Itens)
             {
