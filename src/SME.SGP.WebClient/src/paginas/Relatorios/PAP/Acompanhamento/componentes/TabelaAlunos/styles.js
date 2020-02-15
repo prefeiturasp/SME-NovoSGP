@@ -63,6 +63,7 @@ export const Tabela = styled.table`
 
   tbody {
     max-height: 400px;
+    min-height: 100px;
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
@@ -88,6 +89,10 @@ export const Tabela = styled.table`
         padding: 0.7rem 0.5rem;
         display: flex;
         align-items: center;
+
+        &:first-child {
+          min-width: 35px;
+        }
 
         &:last-child {
           width: 49.4%;

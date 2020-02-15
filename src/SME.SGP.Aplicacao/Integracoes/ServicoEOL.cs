@@ -187,7 +187,10 @@ namespace SME.SGP.Aplicacao.Integracoes
             var alunos = new List<AlunoPorTurmaResposta>();
             var resposta = await httpClient.GetAsync($"turmas/{turmaId}/alunos-ativos");
 
-            if (resposta.StatusCode == HttpStatusCode.NoContent || !resposta.IsSuccessStatusCode)
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException($"Não foi encontrado alunos ativos para a turma {turmaId}");
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
                 return alunos;
 
             var json = await resposta.Content.ReadAsStringAsync();

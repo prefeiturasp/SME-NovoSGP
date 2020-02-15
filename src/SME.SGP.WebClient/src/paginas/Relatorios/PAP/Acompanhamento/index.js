@@ -45,6 +45,7 @@ import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 function RelatorioPAPAcompanhamento() {
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
   const [periodo, setPeriodo] = useState(undefined);
+  const [ordenacao, setOrdenacao] = useState(2);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [estadoOriginalAlunos, setEstadoOriginalAlunos] = useState(null);
@@ -66,6 +67,7 @@ function RelatorioPAPAcompanhamento() {
       try {
         setCarregando(true);
         const req = await AcompanhamentoPAPServico.Salvar({
+          ordenacao,
           periodo: {
             ...estado.Periodo,
             alunos: estado.Alunos,
@@ -85,7 +87,7 @@ function RelatorioPAPAcompanhamento() {
         erro(`${err.response.data.mensagens[0]}`);
       }
     },
-    [estado.Alunos, estado.Periodo]
+    [estado.Alunos, estado.Periodo, ordenacao]
   );
 
   const onChangeObjetivoHandler = useCallback(
@@ -136,9 +138,9 @@ function RelatorioPAPAcompanhamento() {
         });
 
         if (!data) {
-          erro('Nenhum dado encontrado');
+          erro('Não foi encontrado dados de acompanhamento PAP');
           setCarregando(false);
-          return;
+          return false;
         }
 
         dispararAlteracoes(data);
@@ -146,9 +148,11 @@ function RelatorioPAPAcompanhamento() {
         setCarregando(false);
       }
     } catch (err) {
-      console.log(err.response);
       setCarregando(false);
-      erro(`Não foi possível completar a requisição: ${JSON.stringify(err)}`);
+
+      if (err.response)
+        erro(`Não foi possível completar a requisição: ${JSON.stringify(err)}`);
+      else erro('Ocorreu um erro interno, por favor contate o suporte');
     }
   };
 
@@ -317,7 +321,8 @@ function RelatorioPAPAcompanhamento() {
               ordenarColunaNumero="numeroChamada"
               ordenarColunaTexto="nome"
               conteudoParaOrdenar={estado.Alunos}
-              desabilitado={estado.Alunos.length > 1}
+              desabilitado={estado.Alunos.length <= 0}
+              onChangeOrdenacao={valor => setOrdenacao(valor)}
             />
           </Grid>
           <Grid className="p-0 mt-2" cols={12}>
