@@ -16,22 +16,20 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre;
         private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
-        //private var ultimaAlteracao = fechamentos.OrderBy(a => a.AlteradoEm).FirstOrDefault();
-
-        //private var ultimaInclusao = fechamentos.OrderBy(a => a.CriadoEm).FirstOrDefault();
 
         public ConsultasFechamentoFinal(IRepositorioTurma repositorioTurma, IRepositorioTipoCalendario repositorioTipoCalendario,
                             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IServicoEOL servicoEOL, IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre,
             IRepositorioFechamentoFinal repositorioFechamentoFinal, IServicoAluno servicoAluno,
             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioNotaTipoValor repositorioNotaTipoValor,
-            IServicoUsuario servicoUsuario)
+            IServicoUsuario servicoUsuario, IRepositorioParametrosSistema repositorioParametrosSistema)
         {
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
@@ -44,6 +42,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new System.ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new System.ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new System.ArgumentNullException(nameof(repositorioParametrosSistema));
         }
 
         public async Task<FechamentoFinalConsultaRetornoDto> ObterFechamentos(FechamentoFinalConsultaFiltroDto filtros)
@@ -61,6 +60,8 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
+
+            VerificaSePodeFazerFechamentoFinal(periodosEscolares, turma);
 
             retorno.EventoData = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault().PeriodoFim;
 
@@ -114,19 +115,20 @@ namespace SME.SGP.Aplicacao
                     fechamentoFinalAluno.Informacao = marcador.Descricao;
                 }
 
-                foreach (var periodo in periodosEscolares)
+                foreach (var periodo in periodosEscolares.OrderBy(a => a.Bimestre))
                 {
                     foreach (var disciplinaParaAdicionar in disciplinas)
                     {
                         //BIMESTRE / NOTA / DISCIPLINA ID / ALUNO CODIGO
                         var nota = notasFechamentosBimestres.FirstOrDefault(a => a.Item1 == periodo.Bimestre && a.Item3 == disciplinaParaAdicionar.CodigoComponenteCurricular && a.Item4 == aluno.CodigoAluno);
-                        var notaParaAdicionar = (nota.GetType() == null ? string.Empty : nota.Item2);
+                        var notaParaAdicionar = (nota.GetType() == null ? null : nota.Item2);
 
                         fechamentoFinalAluno.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                         {
                             Bimestre = periodo.Bimestre,
                             Disciplina = disciplinaParaAdicionar.Nome,
-                            DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular
+                            DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular,
+                            NotaConceito = notaParaAdicionar
                         });
                     }
                 }
@@ -152,8 +154,11 @@ namespace SME.SGP.Aplicacao
             var ultimaInclusao = notasFechamentosFinais.OrderBy(a => a.CriadoEm).FirstOrDefault();
             var ultimaAlteracao = notasFechamentosFinais.OrderBy(a => a.AlteradoEm).FirstOrDefault();
 
-            retorno.AuditoriaAlteracao = ultimaAlteracao == null ? string.Empty : MontaTextoAuditoriaAlteracao(ultimaAlteracao); ;
+            retorno.AuditoriaAlteracao = ultimaAlteracao == null ? string.Empty : MontaTextoAuditoriaAlteracao(ultimaAlteracao);
             retorno.AuditoriaInclusao = ultimaInclusao == null ? string.Empty : MontaTextoAuditoriaInclusao(ultimaInclusao);
+
+            retorno.NotaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            retorno.FrequenciaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(filtros.EhRegencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
 
             return retorno;
         }
@@ -224,6 +229,16 @@ namespace SME.SGP.Aplicacao
                 totalAusenciasCompensadas += frequenciaAluno.TotalCompensacoes;
                 totalDeAulas += frequenciaAluno.TotalAulas;
             }
+        }
+
+        private async void VerificaSePodeFazerFechamentoFinal(IEnumerable<PeriodoEscolar> periodosEscolares, Turma turma)
+        {
+            var ultimoBimestre = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault().Bimestre;
+
+            var fechamentoDoUltimoBimestre = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, null, ultimoBimestre);
+
+            if (fechamentoDoUltimoBimestre == null)
+                throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoBimestre}º  bimestre.");
         }
     }
 }

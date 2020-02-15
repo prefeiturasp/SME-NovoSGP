@@ -15,5 +15,7 @@ namespace SME.SGP.Infra
         public string AuditoriaInclusao { get; set; }
         public bool EhNota { get; set; }
         public DateTime EventoData { get; set; }
+        public double FrequenciaMedia { get; set; }
+        public double NotaMedia { get; set; }
     }
 }
