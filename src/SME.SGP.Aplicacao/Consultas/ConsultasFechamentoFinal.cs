@@ -80,9 +80,11 @@ namespace SME.SGP.Aplicacao
 
             var disciplinas = new List<DisciplinaResposta>();
 
+            var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
+
             if (filtros.EhRegencia)
             {
-                var disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turma.CodigoTurma), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
+                var disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turma.CodigoTurma), usuarioAtual.Login, usuarioAtual.PerfilAtual);
                 if (disciplinasRegencia == null || !disciplinasRegencia.Any())
                     throw new NegocioException("Não foi encontrado componentes curriculares para a regencia informada.");
 
@@ -100,6 +102,10 @@ namespace SME.SGP.Aplicacao
 
             var notasFechamentosFinais = await repositorioFechamentoFinal.ObterPorFiltros(turma.CodigoTurma, disciplinas.Select(a => a.CodigoComponenteCurricular.ToString()).ToArray());
             var notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
+
+            var professorTitular = await ObterRfProfessorTitularDisciplina(turma.CodigoTurma, filtros.DisciplinaCodigo);
+            if (string.IsNullOrEmpty(professorTitular))
+                throw new NegocioException("Não foi possível localizar o professor titular.");
 
             foreach (var aluno in alunosDaTurma.OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeAluno))
             {
@@ -148,6 +154,8 @@ namespace SME.SGP.Aplicacao
                     });
                 }
 
+                fechamentoFinalAluno.PodeEditar = PodeEditarNotaOuConceito(usuarioAtual, professorTitular, aluno);
+
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
 
@@ -161,6 +169,20 @@ namespace SME.SGP.Aplicacao
             retorno.FrequenciaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(filtros.EhRegencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
 
             return retorno;
+        }
+
+        private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf, AlunoPorTurmaResposta aluno)
+        {
+            if (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo &&
+                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
+                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado &&
+                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade)
+                return false;
+
+            if (usuarioLogado.CodigoRf != professorTitularDaTurmaDisciplinaRf)
+                return false;
+
+            return true;
         }
 
         private string MontaTextoAuditoriaAlteracao(FechamentoFinal ultimaAlteracao)
@@ -197,6 +219,13 @@ namespace SME.SGP.Aplicacao
             }
 
             return listaRetorno;
+        }
+
+        private async Task<string> ObterRfProfessorTitularDisciplina(string turmaCodigo, long disciplinaCodigo)
+        {
+            var professoresTitularesDaTurma = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaCodigo);
+            var professorTitularDaDisciplina = professoresTitularesDaTurma.FirstOrDefault(a => a.DisciplinaId == disciplinaCodigo && a.ProfessorRf != string.Empty);
+            return professorTitularDaDisciplina == null ? string.Empty : professorTitularDaDisciplina.ProfessorRf;
         }
 
         private FechamentoFinalConsultaRetornoAlunoDto TrataFrequenciaAluno(FechamentoFinalConsultaFiltroDto filtros, IEnumerable<PeriodoEscolar> periodosEscolares, AlunoPorTurmaResposta aluno, ref int totalAusencias, ref int totalAusenciasCompensadas, ref int totalDeAulas)
