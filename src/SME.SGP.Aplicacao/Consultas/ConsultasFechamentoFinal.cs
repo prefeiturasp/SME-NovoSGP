@@ -155,7 +155,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 fechamentoFinalAluno.PodeEditar = PodeEditarNotaOuConceito(usuarioAtual, professorTitular, aluno);
-
+                fechamentoFinalAluno.Codigo = aluno.CodigoAluno;
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
 
