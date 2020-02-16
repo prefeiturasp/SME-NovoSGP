@@ -1,6 +1,7 @@
 import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
+import { erros } from 'servicos/alertas';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
@@ -193,22 +194,28 @@ export default function ReiniciarSenha() {
     }
   };
 
-  const onConfirmarReiniciarSenha = async form => {
-    const parametro = { novoEmail: form.emailUsuario };
-    await api.put(`v1/usuarios/${linhaSelecionada.codigoRf}/email`, parametro);
-    onCloseModalReiniciarSenha();
-    reiniciarSenha(linhaSelecionada);
-    refForm.resetForm();
-  };
-
-  const onCancelarReiniciarSenha = () => {
-    onCloseModalReiniciarSenha();
-  };
-
   const onCloseModalReiniciarSenha = () => {
     setExibirModalReiniciarSenha(false);
     setSemEmailCadastrado(false);
     refForm.resetForm();
+  };
+
+  const onConfirmarReiniciarSenha = async form => {
+    const parametro = { novoEmail: form.emailUsuario };
+    api
+      .put(`v1/usuarios/${linhaSelecionada.codigoRf}/email`, parametro)
+      .then(resposta => {
+        reiniciarSenha(linhaSelecionada);
+        refForm.resetForm();
+      })
+      .catch(e => erros(e))
+      .finally(() => {
+        onCloseModalReiniciarSenha();
+      });
+  };
+
+  const onCancelarReiniciarSenha = () => {
+    onCloseModalReiniciarSenha();
   };
 
   const validaSeTemEmailCadastrado = () => {
