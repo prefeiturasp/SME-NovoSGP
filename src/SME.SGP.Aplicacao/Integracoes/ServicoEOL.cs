@@ -19,10 +19,12 @@ namespace SME.SGP.Aplicacao.Integracoes
     {
         private readonly IRepositorioCache cache;
         private readonly HttpClient httpClient;
+        private readonly IServicoLog servicoLog;
 
-        public ServicoEOL(HttpClient httpClient, IRepositorioCache cache)
+        public ServicoEOL(HttpClient httpClient, IRepositorioCache cache, IServicoLog servicoLog)
         {
             this.httpClient = httpClient;
+            this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.cache = cache;
         }
 
@@ -260,10 +262,14 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             httpClient.DefaultRequestHeaders.Clear();
 
-            var resposta = httpClient.PostAsync("disciplinas", new StringContent(JsonConvert.SerializeObject(ids), Encoding.UTF8, "application/json-patch+json")).Result;
+            var parametros = JsonConvert.SerializeObject(ids);
+            var resposta = httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json")).Result;
 
-            if (!resposta.IsSuccessStatusCode)
+            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                RegistrarLogSentry(resposta, "obter as disciplinas", parametros);
                 return null;
+            }
 
             var json = resposta.Content.ReadAsStringAsync().Result;
             var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
@@ -274,10 +280,14 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             httpClient.DefaultRequestHeaders.Clear();
 
-            var resposta = await httpClient.PostAsync("disciplinas/SemAgrupamento", new StringContent(JsonConvert.SerializeObject(ids), Encoding.UTF8, "application/json-patch+json"));
+            var parametros = JsonConvert.SerializeObject(ids);
+            var resposta = await httpClient.PostAsync("disciplinas/SemAgrupamento", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
-            if (!resposta.IsSuccessStatusCode)
+            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                RegistrarLogSentry(resposta, "obter as disciplinas", parametros);
                 return null;
+            }
 
             var json = resposta.Content.ReadAsStringAsync().Result;
 
@@ -773,12 +783,28 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var resposta = await httpClient.GetAsync(url);
 
-            if (resposta.IsSuccessStatusCode)
+            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
             }
+            RegistrarLogSentry(resposta, "ObterDisciplinas", string.Empty);
             return null;
+        }
+
+        /// <summary>
+        /// Registra log no sentry dos erros do EOL
+        /// </summary>
+        /// <param name="resposta">HttpResponse para registrar o request realizado</param>
+        /// <param name="rotina">Nome da rotina executada, Ex: Obter Disciplinas</param>
+        /// <param name="parametros">Parâmetros do requet caso utilize, Ex:Ids, Datas, Códigos</param>
+        private void RegistrarLogSentry(HttpResponseMessage resposta, string rotina, string parametros)
+        {
+            if (resposta.StatusCode != HttpStatusCode.NotFound)
+            {
+                var mensagem = resposta.Content.ReadAsStringAsync().Result;
+                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
+            }
         }
     }
 }
