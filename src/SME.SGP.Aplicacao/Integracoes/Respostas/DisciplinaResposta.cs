@@ -10,6 +10,9 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         [JsonProperty("compartilhada")]
         public bool Compartilhada { get; set; }
 
+        [JsonProperty("codDisciplinaPai")]
+        public int? CodigoComponenteCurricularPai { get; set; }
+
         [JsonProperty("disciplina")]
         public string Nome { get; set; }
 
@@ -21,5 +24,8 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
 
         [JsonProperty("territoriosaber")]
         public bool TerritorioSaber { get; set; }
+
+        [JsonProperty("lancaNota")]
+        public bool LancaNota { get; set; }
     }
 }
