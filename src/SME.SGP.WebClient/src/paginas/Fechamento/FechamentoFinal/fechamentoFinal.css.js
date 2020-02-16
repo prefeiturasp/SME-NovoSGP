@@ -5,10 +5,6 @@ export const Lista = styled.div`
   max-width: 100%;
   min-width: 100%;
 
-  .desabilitar-nota {
-    opacity: 0.4 !important;
-    cursor: unset !important;
-  }
   .btn-disciplina {
     height: 38px !important;
     border-radius: 4px;
@@ -24,6 +20,7 @@ export const Lista = styled.div`
     color: #42474a;
     padding: 10px;
     margin: 5px;
+    cursor: pointer;
 
     &.ativa {
       color: #ffffff;
@@ -43,9 +40,8 @@ export const Lista = styled.div`
       cursor: pointer;
     }
   }
-  .break-word {
-    word-break: break-all;
-  }
+
+
 
   .tabela-fechamento-final-thead {
     background: ${Base.CinzaFundo} !important;
@@ -61,26 +57,20 @@ export const Lista = styled.div`
       border-left: solid 1px ${Base.CinzaDesabilitado};
     }
 
-    .border-right-none {
-      border-right: none !important;
-    }
-
-    .coluna-ordenacao-th {
-      border-top: none;
-      background-color: white;
-    }
 
     .coluna-ordenacao-tr {
       border-left: none;
     }
+
     .col-nome-aluno {
       text-align: left !important;
       padding-left: 30px;
     }
+
     .head-conceito {
-      width: 75px;
-      min-width: 75px;
-      max-width: 75px;
+      width: 100px;
+      min-width: 100px;
+      max-width: 100px;
     }
   }
 
@@ -103,7 +93,7 @@ export const Lista = styled.div`
       border-right: none !important;
     }
     .col-nome-aluno {
-      width: 250px;
+      width: 100%;
       max-width: 250px;
       min-width: 250px;
       text-align: left !important;
@@ -129,17 +119,9 @@ export const Lista = styled.div`
       }
     }
 
-    .input-regencia {
-      margin-right: 5px;
-      margin-bottom: 5px;
-      padding: 3px;
-      width: 115px;
-      align-self: flex-end;
-    }
 
-    .input-reg {
-      float: left;
-      padding-left: 5px;
+    .linha-nome-aluno {
+      display: inline !important;
     }
   }
 
@@ -150,6 +132,7 @@ export const Lista = styled.div`
   }
 
   .col-numero-chamada {
+    min-width: 54px;
     width: 54px;
     height: 49px;
     font-family: Roboto;
@@ -185,6 +168,35 @@ export const Lista = styled.div`
     max-width: 120px;
     min-width: 120px;
   }
+
+  .tamanho-conceito-final {
+    width: 100px;
+    max-width: 100px;
+    min-width: 100px;
+  }
+
+  .border-abaixo-media {
+    border: solid 2px #b22222 !important;
+    border-radius: 7px;
+  }
+
+  .border-registro-alterado {
+    border: solid 2px ${Base.Roxo} !important;
+    border-radius: 7px;
+  }
+
+  .lista-disciplinas {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .indicativo-alerta {
+    background-color: #ffff30;
+    color: black;
+    border-radius: 8px;
+    border-right: solid 5px #ffff30;
+    border-left: solid 5px #ffff30;
+  }
 `;
 
 export const MaisMenos = styled.i`
@@ -195,11 +207,13 @@ export const MaisMenos = styled.i`
 
 export const Info = styled.i`
   color: ${Base.Roxo} !important;
-  font-size: 10px;
+  font-size: 15px;
   margin-left: 2px;
-  position: absolute;
+  margin-right: 5px;
   padding-top: 5px;
+  display: inline !important;
 `;
+
 export const ContainerAuditoria = styled.div`
   object-fit: contain;
   font-family: Roboto;
@@ -210,7 +224,6 @@ export const ContainerAuditoria = styled.div`
 
   p {
     margin-top: 0px;
-    margin-bottom: 0px
+    margin-bottom: 0px;
   }
 `;
-
