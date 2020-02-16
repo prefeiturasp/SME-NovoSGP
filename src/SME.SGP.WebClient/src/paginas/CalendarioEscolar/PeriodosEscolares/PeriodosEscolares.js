@@ -117,8 +117,8 @@ const PeriodosEscolares = () => {
       const anoAtual = window.moment().format('YYYY');
       const listaTipo = await api.get(
         usuario && turmaSelecionada && turmaSelecionada.anoLetivo
-          ? `v1/calendarios/tipos/anos-letivos/${turmaSelecionada.anoLetivo}`
-          : `v1/calendarios/tipos/anos-letivos/${anoAtual}`
+          ? `v1/calendarios/tipos/anos/letivos/${turmaSelecionada.anoLetivo}`
+          : `v1/calendarios/tipos/anos/letivos/${anoAtual}`
       );
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         listaTipo.data.map(item => {
@@ -532,24 +532,24 @@ const PeriodosEscolares = () => {
                 </div>
               </div>
               {listaCalendarioEscolar &&
-              listaCalendarioEscolar.length &&
-              calendarioEscolarSelecionado ? (
-                <>
-                  {primeiroBimestre(form)}
-                  {segundoBimestre(form)}
+                listaCalendarioEscolar.length &&
+                calendarioEscolarSelecionado ? (
+                  <>
+                    {primeiroBimestre(form)}
+                    {segundoBimestre(form)}
 
-                  {isTipoCalendarioAnual ? (
-                    <>
-                      {terceiroBimestre(form)}
-                      {quartoBimestre(form)}
-                    </>
-                  ) : (
-                    ''
-                  )}
-                </>
-              ) : (
-                ''
-              )}
+                    {isTipoCalendarioAnual ? (
+                      <>
+                        {terceiroBimestre(form)}
+                        {quartoBimestre(form)}
+                      </>
+                    ) : (
+                        ''
+                      )}
+                  </>
+                ) : (
+                  ''
+                )}
             </Form>
           )}
         </Formik>
