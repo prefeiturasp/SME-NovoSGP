@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
             PodeEditar = true;
         }
 
+        public string Codigo { get; set; }
         public double Frequencia { get; set; }
         public string Informacao { get; set; }
         public string Nome { get; set; }
