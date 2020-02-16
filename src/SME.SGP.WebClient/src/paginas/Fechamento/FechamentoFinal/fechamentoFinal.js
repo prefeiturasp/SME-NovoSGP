@@ -1,19 +1,22 @@
+import PropTypes from 'prop-types';
 import React, {
   forwardRef,
+  useCallback,
+  useEffect,
   useImperativeHandle,
   useState,
-  useEffect,
-  useCallback,
 } from 'react';
-import PropTypes from 'prop-types';
-import moment from 'moment';
+import { useDispatch } from 'react-redux';
+import shortid from 'shortid';
 import { Ordenacao } from '~/componentes-sgp';
-import { Lista, ContainerAuditoria } from './fechamentoFinal.css';
-import LinhaAluno from './linhaAluno';
-import ServicoFechamentoFinal from '~/servicos/Paginas/DiarioClasse/ServicoFechamentoFinal';
 import { erros } from '~/servicos/alertas';
+import ServicoFechamentoFinal from '~/servicos/Paginas/DiarioClasse/ServicoFechamentoFinal';
 import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConceito';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+
+import { ContainerAuditoria, Lista } from './fechamentoFinal.css';
+import LinhaAluno from './linhaAluno';
+import { setExpandirLinha } from '~/redux/modulos/notasConceitos/actions';
 
 const FechamentoFinal = forwardRef((props, ref) => {
   const {
@@ -23,6 +26,9 @@ const FechamentoFinal = forwardRef((props, ref) => {
     turmaPrograma,
     onChange,
   } = props;
+
+  const dispatch = useDispatch();
+
   const [ehNota, setEhNota] = useState(true);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState();
   const [listaConceitos, setListaConceitos] = useState([]);
@@ -35,6 +41,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
 
   const [auditoria, setAuditoria] = useState();
   const [alunos, setAlunos] = useState([]);
+  const [dadosFechamentoFinal, setDadosFechamentoFinal] = useState();
 
   useEffect(() => {
     setExibirLista((ehRegencia && !!disciplinaSelecionada) || !ehRegencia);
@@ -55,16 +62,30 @@ const FechamentoFinal = forwardRef((props, ref) => {
     }
   }, [disciplinaCodigo, ehRegencia, turmaCodigo, turmaPrograma]);
 
+  const obterListaConceitos = data => {
+    return ServicoNotaConceito.obterTodosConceitos(data)
+      .then(resposta => {
+        setListaConceitos(resposta.data);
+      })
+      .catch(e => erros(e));
+  };
+
   const obterFechamentoFinal = useCallback(() => {
+    dispatch(setExpandirLinha([]));
     ServicoFechamentoFinal.obter(turmaCodigo, disciplinaCodigo, ehRegencia)
       .then(resposta => {
         if (resposta && resposta.data) {
+          setDadosFechamentoFinal(resposta.data);
           setAlunos(resposta.data.alunos);
           setEhNota(resposta.data.ehNota);
           setAuditoria({
             auditoriaAlteracao: resposta.data.auditoriaAlteracao,
             auditoriaInclusao: resposta.data.auditoriaInclusao,
           });
+
+          if (!resposta.data.ehNota) {
+            obterListaConceitos(resposta.data.eventoData);
+          }
         }
       })
       .catch(e => erros(e));
@@ -81,15 +102,6 @@ const FechamentoFinal = forwardRef((props, ref) => {
     obterFechamentoFinal();
   }, [obterFechamentoFinal]);
 
-  useEffect(() => {
-    if (!ehNota)
-      ServicoNotaConceito.obterTodosConceitos(moment().format('YYYY-MM-DD'))
-        .then(resposta => {
-          setListaConceitos(resposta.data);
-        })
-        .catch(e => erros(e));
-  }, [ehNota]);
-
   const setDisciplinaAtiva = disciplina => {
     const disciplinas = disciplinasRegencia.map(c => {
       c.ativa =
@@ -101,53 +113,64 @@ const FechamentoFinal = forwardRef((props, ref) => {
   };
 
   const onChangeNotaAluno = (aluno, nota, disciplina) => {
-    const notas = notasEmEdicao;
+    let notas = notasEmEdicao;
     const notaEmEdicao = notasEmEdicao.find(
       c =>
-        c.alunoRf == aluno.numeroChamada &&
-        c.componenteCurricularCodigo == disciplina
+        c.alunoRf == aluno.codigo && c.componenteCurricularCodigo == disciplina
     );
     if (notaEmEdicao) {
-      notaEmEdicao.conceitoId = ehNota ? 0 : Number(nota);
-      notaEmEdicao.nota = ehNota ? nota : 0;
+      notaEmEdicao.conceitoId = ehNota ? '' : Number(nota);
+      notaEmEdicao.nota = ehNota ? nota : '';
     } else
       notas.push({
-        alunoRf: aluno.numeroChamada,
+        alunoRf: aluno.codigo,
         componenteCurricularCodigo: disciplina,
-        conceitoId: ehNota ? 0 : Number(nota),
-        nota: ehNota ? nota : 0,
+        conceitoId: ehNota ? '' : Number(nota),
+        nota: ehNota ? nota : '',
       });
+
+    notas = notas.filter(item => !(item.conceitoId === '' && item.nota === ''));
     setNotasEmEdicao([...notas]);
     onChange(notas);
   };
   return (
     <>
       <Lista>
-        <div className={`${ehRegencia && 'botao-ordenacao-avaliacao'}`}>
-          <Ordenacao
-            conteudoParaOrdenar={alunos}
-            ordenarColunaNumero="numeroChamada"
-            ordenarColunaTexto="nome"
-            retornoOrdenado={retorno => {
-              setAlunos(retorno);
-            }}
-            className="btn-ordenacao"
-          />
-          {ehRegencia && (
-            <div className="lista-disciplinas">
-              {disciplinasRegencia.map(disciplina => (
-                <span
-                  className={`btn-disciplina ${
-                    disciplina.ativa ? 'ativa' : ''
-                  }`}
-                  onClick={() => setDisciplinaAtiva(disciplina)}
-                >
-                  {disciplina.nome}
-                </span>
-              ))}
+        {alunos && alunos.length ? (
+          <div className="row pb-4" style={{ alignItems: 'center' }}>
+            <div className="col-sm-12 col-md-12 col-lg-2 col-xl-3 d-flex justify-content-start">
+              <Ordenacao
+                conteudoParaOrdenar={alunos}
+                ordenarColunaNumero="numeroChamada"
+                ordenarColunaTexto="nome"
+                retornoOrdenado={retorno => {
+                  setAlunos(retorno);
+                  dispatch(setExpandirLinha([]));
+                }}
+                className="btn-ordenacao"
+              />
             </div>
-          )}
-        </div>
+            <div className="col-sm-12 col-md-12 col-lg-10 col-xl-9 d-flex justify-content-end">
+              {ehRegencia && (
+                <div className="lista-disciplinas">
+                  {disciplinasRegencia.map(disciplina => (
+                    <span
+                      key={shortid.generate()}
+                      className={`btn-disciplina ${
+                        disciplina.ativa ? 'ativa' : ''
+                      }`}
+                      onClick={() => setDisciplinaAtiva(disciplina)}
+                    >
+                      {disciplina.nome}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          ''
+        )}
         {exibirLista && (
           <>
             <div className="table-responsive">
@@ -157,17 +180,13 @@ const FechamentoFinal = forwardRef((props, ref) => {
                     <th className="col-nome-aluno" colSpan="2">
                       Nome
                     </th>
-                    <th className="sticky-col">
-                      {ehNota ? 'Nota' : 'Conceito'}
-                    </th>
-                    <th className="sticky-col width-120">Total de Faltas</th>
-                    <th className="sticky-col">
-                      Total de Ausências Compensadas
-                    </th>
-                    <th className="sticky-col">%Freq.</th>
-                    <th className="sticky-col head-conceito">
+                    <th>{ehNota ? 'Nota' : 'Conceito'}</th>
+                    <th className="width-120">Total de Faltas</th>
+                    <th>Total de Ausências Compensadas</th>
+                    <th className="head-conceito">
                       {ehNota ? 'Nota Final' : 'Conceito Final'}
                     </th>
+                    <th>%Freq.</th>
                   </tr>
                 </thead>
                 <tbody className="tabela-fechamento-final-tbody">
@@ -181,6 +200,10 @@ const FechamentoFinal = forwardRef((props, ref) => {
                           disciplinaSelecionada={disciplinaSelecionada}
                           listaConceitos={listaConceitos}
                           onChange={onChangeNotaAluno}
+                          eventoData={dadosFechamentoFinal.eventoData}
+                          notaMedia={dadosFechamentoFinal.notaMedia}
+                          frequenciaMedia={dadosFechamentoFinal.frequenciaMedia}
+                          indexAluno={i}
                         />
                       </>
                     );
