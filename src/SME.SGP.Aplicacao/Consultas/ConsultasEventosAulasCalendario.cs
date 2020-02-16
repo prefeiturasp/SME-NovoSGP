@@ -86,12 +86,14 @@ namespace SME.SGP.Aplicacao
             var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct().ToList();
 
             var idsDisciplinasCompartilhadas = aulas.Where(a => !String.IsNullOrEmpty(a.DisciplinaCompartilhadaId) && !a.DisciplinaCompartilhadaId.Equals("null"))
-                .Select(a => long.Parse(a.DisciplinaCompartilhadaId)).Distinct();                                           
+                .Select(a => long.Parse(a.DisciplinaCompartilhadaId)).Distinct();
 
             if (idsDisciplinasCompartilhadas != null && idsDisciplinasCompartilhadas.Any())
                 idsDisciplinasAulas.AddRange(idsDisciplinasCompartilhadas);
 
-            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
+            IEnumerable<DisciplinaDto> disciplinasEol = new List<DisciplinaDto>();
+            if (idsDisciplinasAulas != null && idsDisciplinasAulas.Any())
+                disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
 
             aulas
             .ToList()
