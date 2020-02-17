@@ -50,6 +50,7 @@ const FechamentoBismestre = () => {
   const [dadosBimestre3, setDadosBimestre3] = useState(undefined);
   const [dadosBimestre4, setDadosBimestre4] = useState(undefined);
   const [ehRegencia, setEhRegencia] = useState(false);
+  const [ehSintese, setEhSintese] = useState(false);
   const [periodoFechamento, setPeriodoFechamento] = useState(periodo.Anual);
   const [desabilitaAbaFinal, setDesabilitaAbaFinal] = useState(false);
 
@@ -118,6 +119,7 @@ const FechamentoBismestre = () => {
       });
       if (fechamento && fechamento.data) {
         const dadosFechamento = fechamento.data;
+        setEhSintese(dadosFechamento.ehSintese);
         setPeriodoFechamento(dadosFechamento.periodo);
         setBimestreCorrente(`${dadosFechamento.bimestre}`);
         setDadosBimestre(dadosFechamento.bimestre, dadosFechamento);
@@ -244,6 +246,7 @@ const FechamentoBismestre = () => {
                   className="mr-2"
                   onClick={onClickCancelar}
                   disabled={!modoEdicao || somenteConsulta}
+                  hidden={ehSintese}
                 />
                 <Button
                   label="Salvar"
@@ -253,6 +256,7 @@ const FechamentoBismestre = () => {
                   className="mr-2"
                   onClick={salvarFechamentoFinal}
                   disabled={!modoEdicao || somenteConsulta}
+                  hidden={ehSintese}
                 />
               </div>
             </div>
@@ -287,6 +291,7 @@ const FechamentoBismestre = () => {
                       <FechamentoBimestreLista
                         dados={dadosBimestre1}
                         ehRegencia={ehRegencia}
+                        ehSintese={ehSintese}
                       />
                     ) : null}
                   </TabPane>
@@ -296,6 +301,7 @@ const FechamentoBismestre = () => {
                       <FechamentoBimestreLista
                         dados={dadosBimestre2}
                         ehRegencia={ehRegencia}
+                        ehSintese={ehSintese}
                       />
                     ) : null}
                   </TabPane>
@@ -305,6 +311,7 @@ const FechamentoBismestre = () => {
                         <FechamentoBimestreLista
                           dados={dadosBimestre3}
                           ehRegencia={ehRegencia}
+                          ehSintese={ehSintese}
                         />
                       ) : null}
                     </TabPane>) : null
@@ -315,6 +322,7 @@ const FechamentoBismestre = () => {
                         <FechamentoBimestreLista
                           dados={dadosBimestre4}
                           ehRegencia={ehRegencia}
+                          ehSintese={ehSintese}
                         />
                       ) : null}
                     </TabPane>) : null

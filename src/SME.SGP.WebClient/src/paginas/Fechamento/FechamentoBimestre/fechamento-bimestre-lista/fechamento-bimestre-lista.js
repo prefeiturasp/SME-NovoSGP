@@ -11,7 +11,7 @@ import {
 } from './fechamento-bimestre-lista.css';
 
 const FechamentoBimestreLista = props => {
-  const { dados, ehRegencia } = props;
+  const { dados, ehRegencia, ehSintese } = props;
   const [dadosLista, setDadosLista] = useState(
     dados ? dados.alunos : undefined
   );
@@ -59,7 +59,9 @@ const FechamentoBimestreLista = props => {
               >
                 Nome
               </th>
-              <th className="text-center fundo-cinza">Nota/Conceito</th>
+              <th className="text-center fundo-cinza">
+                {ehSintese ? 'Síntese' : 'Nota/Conceito'}
+              </th>
               <th className="text-center fundo-cinza">Faltas no Bimestre</th>
               <th className="text-center fundo-cinza">Ausências Compensadas</th>
               <th className="text-center fundo-cinza">Frequência</th>
@@ -75,7 +77,7 @@ const FechamentoBimestreLista = props => {
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {item.numeroChamada}
                         {item.informacao ? (
@@ -83,8 +85,8 @@ const FechamentoBimestreLista = props => {
                             <Info className="fas fa-circle" />
                           </Tooltip>
                         ) : (
-                            ''
-                          )}
+                          ''
+                        )}
                       </td>
                       <td className={`${!item.ativo ? 'fundo-cinza' : ''}`}>
                         {item.nome}
@@ -92,40 +94,46 @@ const FechamentoBimestreLista = props => {
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
-                        {ehRegencia && item.notas ? (
+                        {ehSintese ? (
+                          item.sintese
+                        ) : ehRegencia && item.notas ? (
                           <BotaoExpandir
                             index={index}
                             idLinhaRegencia={idLinhaRegencia}
                           />
                         ) : item.notas && item.notas.length > 0 ? (
                           item.notas[0].notaConceito
-                        ) : null}
+                        ) : (
+                          ''
+                        )}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {item.quantidadeFaltas}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {item.quantidadeCompensacoes}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
-                        {item.percentualFrequencia ? `${item.percentualFrequencia} %` : ''}
+                        {item.percentualFrequencia
+                          ? `${item.percentualFrequencia} %`
+                          : ''}
                       </td>
                     </tr>
-                    {ehRegencia ? (
+                    {!ehSintese && ehRegencia ? (
                       <FechamentoRegencia
                         dados={item.notas}
                         idRegencia={`fechamento-regencia-${index}`}
@@ -135,12 +143,12 @@ const FechamentoBimestreLista = props => {
                 );
               })
             ) : (
-                <tr>
-                  <td colSpan="6" className="text-center">
-                    Sem dados
+              <tr>
+                <td colSpan="6" className="text-center">
+                  Sem dados
                 </td>
-                </tr>
-              )}
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
