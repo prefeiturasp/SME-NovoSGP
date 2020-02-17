@@ -121,20 +121,9 @@ const CalendarioProfessor = () => {
     }
   };
 
-  const listarTiposCalendario = async () => {
-    listarTiposCalendarioPorTurmaSelecionada(
-      await obterTiposCalendario(listarModalidadesPorAbrangencia())
-    );
-  };
-
   const eventoAulaCalendarioEdicao = useSelector(
     state => state.calendarioProfessor.eventoAulaCalendarioEdicao
   );
-
-  useEffect(() => {
-    listarTiposCalendario();
-    return () => store.dispatch(zeraCalendario());
-  }, []);
 
   const [eventoSme, setEventoSme] = useState(true);
 
@@ -168,8 +157,8 @@ const CalendarioProfessor = () => {
   }, [tiposCalendario, turmaSelecionadaStore]);
 
   useEffect(() => {
-    listarTiposCalendarioPorTurmaSelecionada();
-  }, [turmaSelecionadaStore, anosLetivosAbrangencia]);
+    if (turmaSelecionadaStore.turma) listarTiposCalendarioPorTurmaSelecionada();
+  }, [turmaSelecionadaStore]);
 
   const [dreSelecionada, setDreSelecionada] = useState(undefined);
   const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(

@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from './navbar';
+import Navbar from '~/componentes-sgp/navbar/navbar';
 import Sider from './sider';
 import Conteudo from './conteudo';
 
