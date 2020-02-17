@@ -25,6 +25,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
     ehRegencia,
     turmaPrograma,
     onChange,
+    desabilitarCampo,
   } = props;
 
   const dispatch = useDispatch();
@@ -164,7 +165,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
                       key={shortid.generate()}
                       className={`btn-disciplina ${
                         disciplina.ativa ? 'ativa' : ''
-                      }`}
+                        }`}
                       onClick={() => setDisciplinaAtiva(disciplina)}
                     >
                       {disciplina.nome}
@@ -175,8 +176,8 @@ const FechamentoFinal = forwardRef((props, ref) => {
             </div>
           </div>
         ) : (
-          ''
-        )}
+            ''
+          )}
         {exibirLista && (
           <>
             <div className="table-responsive">
@@ -210,6 +211,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
                           notaMedia={dadosFechamentoFinal.notaMedia}
                           frequenciaMedia={dadosFechamentoFinal.frequenciaMedia}
                           indexAluno={i}
+                          desabilitarCampo={desabilitarCampo}
                         />
                       </>
                     );
@@ -229,8 +231,8 @@ const FechamentoFinal = forwardRef((props, ref) => {
                 </div>
               </div>
             ) : (
-              ''
-            )}
+                ''
+              )}
           </>
         )}
       </Lista>
@@ -244,6 +246,7 @@ FechamentoFinal.propTypes = {
   ehRegencia: PropTypes.bool,
   turmaPrograma: PropTypes.bool,
   onChange: PropTypes.func,
+  desabilitarCampo: PropTypes.bool,
 };
 
 FechamentoFinal.defaultProps = {
@@ -251,7 +254,8 @@ FechamentoFinal.defaultProps = {
   disciplinaCodigo: '1',
   ehRegencia: false,
   turmaPrograma: false,
-  onChange: () => {},
+  onChange: () => { },
+  desabilitarCampo: false,
 };
 
 export default FechamentoFinal;

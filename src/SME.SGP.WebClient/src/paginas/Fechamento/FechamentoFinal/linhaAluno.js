@@ -19,6 +19,7 @@ const LinhaAluno = ({
   notaMedia,
   frequenciaMedia,
   indexAluno,
+  desabilitarCampo
 }) => {
   const montaLinhaNotasConceitos = () => {
     if (ehNota) {
@@ -56,7 +57,7 @@ const LinhaAluno = ({
           onChangeNotaConceitoFinal={(nota, valor) =>
             onChangeNotaConceitoFinal(nota, valor)
           }
-          desabilitarCampo={false}
+          desabilitarCampo={desabilitarCampo}
           podeEditar={aluno.podeEditar}
           eventoData={eventoData}
           mediaAprovacaoBimestre={notaMedia}
@@ -96,10 +97,10 @@ const LinhaAluno = ({
               <div className="linha-nome-aluno">{aluno.nome}</div>
             </>
           ) : (
-            <div className="linha-nome-aluno" style={{ marginLeft: '22px' }}>
-              {aluno.nome}
-            </div>
-          )}
+              <div className="linha-nome-aluno" style={{ marginLeft: '22px' }}>
+                {aluno.nome}
+              </div>
+            )}
         </td>
         <td className="col-nota-conceito">{montaLinhaNotasConceitos()}</td>
         <td>{aluno.totalFaltas}</td>
@@ -108,8 +109,8 @@ const LinhaAluno = ({
           {ehRegencia ? (
             <ColunaNotaFinalRegencia indexLinha={indexAluno} />
           ) : (
-            montarCampoNotaConceitoFinal(aluno)
-          )}
+              montarCampoNotaConceitoFinal(aluno)
+            )}
         </td>
         <td>
           <span
@@ -117,7 +118,7 @@ const LinhaAluno = ({
               frequenciaMedia && aluno.frequencia < frequenciaMedia
                 ? 'indicativo-alerta'
                 : ''
-            } `}
+              } `}
           >
             {aluno.frequencia}%
           </span>
@@ -136,10 +137,12 @@ const LinhaAluno = ({
 
 LinhaAluno.propTypes = {
   onChange: PropTypes.func,
+  desabilitarCampo: PropTypes.bool,
 };
 
 LinhaAluno.defaultProps = {
-  onChange: () => {},
+  onChange: () => { },
+  desabilitarCampo: false,
 };
 
 export default LinhaAluno;
