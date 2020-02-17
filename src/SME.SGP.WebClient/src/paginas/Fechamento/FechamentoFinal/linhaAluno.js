@@ -19,7 +19,8 @@ const LinhaAluno = ({
   notaMedia,
   frequenciaMedia,
   indexAluno,
-  desabilitarCampo
+  desabilitarCampo,
+  ehSintese,
 }) => {
   const montaLinhaNotasConceitos = () => {
     if (ehNota) {
@@ -87,7 +88,7 @@ const LinhaAluno = ({
   return (
     <>
       <tr>
-      <td className="col-numero-chamada">
+        <td className="col-numero-chamada">
           {aluno.informacao ? (
             <>
               <div className="linha-numero-chamada">{aluno.numeroChamada}</div>
@@ -100,23 +101,32 @@ const LinhaAluno = ({
           )}
         </td>
         <td className="col-nome-aluno"> {aluno.nome}</td>
-        <td className="col-nota-conceito">{montaLinhaNotasConceitos()}</td>
+        {ehSintese ? (
+          <td className="col-nota-conceito">{aluno.sintese}</td>
+        ) : (
+          <td className="col-nota-conceito">{montaLinhaNotasConceitos()}</td>
+        )}
         <td>{aluno.totalFaltas}</td>
         <td>{aluno.totalAusenciasCompensadas}</td>
-        <td className="col-conceito-final">
-          {ehRegencia ? (
-            <ColunaNotaFinalRegencia indexLinha={indexAluno} />
-          ) : (
+        {ehSintese ? (
+          ''
+        ) : (
+          <td className="col-conceito-final">
+            {ehRegencia ? (
+              <ColunaNotaFinalRegencia indexLinha={indexAluno} />
+            ) : (
               montarCampoNotaConceitoFinal(aluno)
             )}
-        </td>
+          </td>
+        )}
+
         <td>
           <span
             className={`${
               frequenciaMedia && aluno.frequencia < frequenciaMedia
                 ? 'indicativo-alerta'
                 : ''
-              } `}
+            } `}
           >
             {aluno.frequencia}%
           </span>
@@ -136,11 +146,13 @@ const LinhaAluno = ({
 LinhaAluno.propTypes = {
   onChange: PropTypes.func,
   desabilitarCampo: PropTypes.bool,
+  ehSintese: PropTypes.bool,
 };
 
 LinhaAluno.defaultProps = {
-  onChange: () => { },
+  onChange: () => {},
   desabilitarCampo: false,
+  ehSintese: false,
 };
 
 export default LinhaAluno;

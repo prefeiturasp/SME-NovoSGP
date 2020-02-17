@@ -31,6 +31,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
   const dispatch = useDispatch();
 
   const [ehNota, setEhNota] = useState(true);
+  const [ehSintese, setEhSintese] = useState(false);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState();
   const [listaConceitos, setListaConceitos] = useState([]);
   const [exibirLista, setExibirLista] = useState(
@@ -85,6 +86,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
           setDadosFechamentoFinal(resposta.data);
           setAlunos(resposta.data.alunos);
           setEhNota(resposta.data.ehNota);
+          setEhSintese(resposta.data.ehSintese);
           setAuditoria({
             auditoriaAlteracao: resposta.data.auditoriaAlteracao,
             auditoriaInclusao: resposta.data.auditoriaInclusao,
@@ -162,14 +164,14 @@ const FechamentoFinal = forwardRef((props, ref) => {
               />
             </div>
             <div className="col-sm-12 col-md-12 col-lg-10 col-xl-9 d-flex justify-content-end">
-              {ehRegencia && (
+              {!ehSintese && ehRegencia && (
                 <div className="lista-disciplinas">
                   {disciplinasRegencia.map(disciplina => (
                     <span
                       key={shortid.generate()}
                       className={`btn-disciplina ${
                         disciplina.ativa ? 'ativa' : ''
-                        }`}
+                      }`}
                       onClick={() => setDisciplinaAtiva(disciplina)}
                     >
                       {disciplina.nome}
@@ -180,8 +182,8 @@ const FechamentoFinal = forwardRef((props, ref) => {
             </div>
           </div>
         ) : (
-            ''
-          )}
+          ''
+        )}
         {exibirLista && (
           <>
             <div className="table-responsive">
@@ -191,12 +193,18 @@ const FechamentoFinal = forwardRef((props, ref) => {
                     <th className="col-nome-aluno" colSpan="2">
                       Nome
                     </th>
-                    <th>{ehNota ? 'Nota' : 'Conceito'}</th>
+                    <th>
+                      {ehSintese ? 'Síntese' : ehNota ? 'Nota' : 'Conceito'}
+                    </th>
                     <th className="width-120">Total de Faltas</th>
                     <th>Total de Ausências Compensadas</th>
-                    <th className="head-conceito">
-                      {ehNota ? 'Nota Final' : 'Conceito Final'}
-                    </th>
+                    {ehSintese ? (
+                      ''
+                    ) : (
+                      <th className="head-conceito">
+                        {ehNota ? 'Nota Final' : 'Conceito Final'}
+                      </th>
+                    )}
                     <th>%Freq.</th>
                   </tr>
                 </thead>
@@ -216,6 +224,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
                           frequenciaMedia={dadosFechamentoFinal.frequenciaMedia}
                           indexAluno={i}
                           desabilitarCampo={desabilitarCampo}
+                          ehSintese={ehSintese}
                         />
                       </>
                     );
@@ -235,8 +244,8 @@ const FechamentoFinal = forwardRef((props, ref) => {
                 </div>
               </div>
             ) : (
-                ''
-              )}
+              ''
+            )}
           </>
         )}
       </Lista>
