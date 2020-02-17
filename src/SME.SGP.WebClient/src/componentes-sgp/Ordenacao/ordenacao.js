@@ -54,6 +54,7 @@ const Ordenacao = props => {
     ordenarColunaTexto,
     retornoOrdenado,
     desabilitado,
+    onChangeOrdenacao,
   } = props;
 
   const ordenarMenorParaMaior = () => {
@@ -61,6 +62,7 @@ const Ordenacao = props => {
       return a[ordenarColunaNumero] - b[ordenarColunaNumero];
     };
     const retorno = conteudoParaOrdenar.sort(ordenar);
+    onChangeOrdenacao(3);
     retornoOrdenado([...retorno]);
   };
 
@@ -69,6 +71,7 @@ const Ordenacao = props => {
       return b[ordenarColunaNumero] - a[ordenarColunaNumero];
     };
     const retorno = conteudoParaOrdenar.sort(ordenar);
+    onChangeOrdenacao(4);
     retornoOrdenado([...retorno]);
   };
 
@@ -77,10 +80,11 @@ const Ordenacao = props => {
       return a[ordenarColunaTexto] > b[ordenarColunaTexto]
         ? 1
         : b[ordenarColunaTexto] > a[ordenarColunaTexto]
-          ? -1
-          : 0;
+        ? -1
+        : 0;
     };
     const retorno = conteudoParaOrdenar.sort(ordenar);
+    onChangeOrdenacao(1);
     retornoOrdenado([...retorno]);
   };
 
@@ -89,10 +93,11 @@ const Ordenacao = props => {
       return b[ordenarColunaTexto] > a[ordenarColunaTexto]
         ? 1
         : a[ordenarColunaTexto] > b[ordenarColunaTexto]
-          ? -1
-          : 0;
+        ? -1
+        : 0;
     };
     const retorno = conteudoParaOrdenar.sort(ordenar);
+    onChangeOrdenacao(2);
     retornoOrdenado([...retorno]);
   };
 
@@ -110,7 +115,12 @@ const Ordenacao = props => {
   );
 
   return (
-    <Container trigger={['click']} overlay={menu} placement="bottomLeft" disabled={desabilitado}>
+    <Container
+      trigger={['click']}
+      overlay={menu}
+      placement="bottomLeft"
+      disabled={desabilitado}
+    >
       <Button
         id={shortid.generate()}
         label="Ordenar"
@@ -129,7 +139,7 @@ Ordenacao.defaultProps = {
   conteudoParaOrdenar: [],
   ordenarColunaNumero: 'id',
   ordenarColunaTexto: 'nome',
-  retornoOrdenado: () => { },
+  retornoOrdenado: () => {},
   desabilitado: false,
 };
 
