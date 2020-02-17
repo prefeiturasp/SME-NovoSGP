@@ -33,6 +33,7 @@ namespace SME.SGP.Dados.Repositorios
             //se não for encaminhamento, não traz os específicos do período
             if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento)
                 query.AppendLine("and e.recuperacao_paralela_periodo_id is null");
+            query.AppendLine("order by ob.ordem, r.ordem");
             return await database.Conexao.QueryAsync<RespostaDto>(query.ToString());
         }
     }
