@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
                     mensagensDeErro.Add($"Não foi possível salvar o fechamento final do aluno de rf {fechamento.AlunoCodigo}. Erro interno.");
                 }
             }
-            if (mensagensDeErro.Any())
+            if (!mensagensDeErro.Any())
                 mensagensDeErro.Add("Fechamento(s) salvo(s) com sucesso!");
 
             return mensagensDeErro.ToArray();
