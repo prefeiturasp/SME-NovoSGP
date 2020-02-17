@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
                     {
                         Disciplina = disciplinaParaAdicionar.Nome,
                         DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular,
-                        NotaConceito = notaParaAdicionar == string.Empty ? null : notaParaAdicionar
+                        NotaConceito = notaParaAdicionar == string.Empty ? null : notaParaAdicionar,
                     });
                 }
 
@@ -268,7 +268,7 @@ namespace SME.SGP.Aplicacao
 
             var fechamentoDoUltimoBimestre = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, null, ultimoBimestre);
 
-            if (fechamentoDoUltimoBimestre == null)
+              if (fechamentoDoUltimoBimestre == null)
                 throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoBimestre}º  bimestre.");
         }
     }
