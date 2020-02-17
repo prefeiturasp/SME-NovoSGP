@@ -88,30 +88,30 @@ const NavbarNotificacoes = props => {
 
   const anoAtual = window.moment().format('YYYY');
 
-  // useEffect(() => {
-  //   let consultaJaRetornou = true;
-  //   const interval = setInterval(() => {
-  //     if (!loaderGeral && consultaJaRetornou && usuario.rf.length > 0) {
-  //       consultaJaRetornou = false;
-  //       servicoNotificacao
-  //         .buscaNotificacoesPorAnoRf(anoAtual, usuario.rf)
-  //         .then(() => {
-  //           consultaJaRetornou = true;
-  //         })
-  //         .catch(e => {
-  //           erros(e);
-  //           consultaJaRetornou = true;
-  //         });
-  //     }
-  //   }, 60000);
-  //   return () => clearInterval(interval);
-  // }, [usuario.rf, loaderGeral, anoAtual]);
+  useEffect(() => {
+    let consultaJaRetornou = true;
+    const interval = setInterval(() => {
+      if (!loaderGeral && consultaJaRetornou && usuario.rf.length > 0) {
+        consultaJaRetornou = false;
+        servicoNotificacao
+          .buscaNotificacoesPorAnoRf(anoAtual, usuario.rf)
+          .then(() => {
+            consultaJaRetornou = true;
+          })
+          .catch(e => {
+            erros(e);
+            consultaJaRetornou = true;
+          });
+      }
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [usuario.rf, loaderGeral, anoAtual]);
 
-  // useEffect(() => {
-  //   if (usuario.rf.length > 0)
-  //     if (notificacoes.notificacoes.length === 0)
-  //       servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
-  // }, [anoAtual, notificacoes.notificacoes.length, usuario.rf]);
+  useEffect(() => {
+    if (usuario.rf.length > 0)
+      if (notificacoes.notificacoes.length === 0)
+        servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
+  }, [anoAtual, notificacoes.notificacoes.length, usuario.rf]);
 
   useLayoutEffect(() => {
     const handleClickFora = event => {
