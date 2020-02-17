@@ -87,21 +87,19 @@ const LinhaAluno = ({
   return (
     <>
       <tr>
-        <td className="col-numero-chamada">{aluno.numeroChamada}</td>
-        <td className="col-nome-aluno">
+      <td className="col-numero-chamada">
           {aluno.informacao ? (
             <>
+              <div className="linha-numero-chamada">{aluno.numeroChamada}</div>
               <Tooltip title={aluno.informacao} placement="top">
                 <Info className="fas fa-circle" />
               </Tooltip>
-              <div className="linha-nome-aluno">{aluno.nome}</div>
             </>
           ) : (
-              <div className="linha-nome-aluno" style={{ marginLeft: '22px' }}>
-                {aluno.nome}
-              </div>
-            )}
+            <div style={{ display: 'inline' }}>{aluno.numeroChamada}</div>
+          )}
         </td>
+        <td className="col-nome-aluno"> {aluno.nome}</td>
         <td className="col-nota-conceito">{montaLinhaNotasConceitos()}</td>
         <td>{aluno.totalFaltas}</td>
         <td>{aluno.totalAusenciasCompensadas}</td>
