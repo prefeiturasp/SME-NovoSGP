@@ -151,7 +151,6 @@ namespace SME.SGP.Aplicacao
                         Disciplina = disciplinaParaAdicionar.Nome,
                         DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular,
                         NotaConceito = notaParaAdicionar == string.Empty ? null : notaParaAdicionar,
-                        NotaConceitoAtual = notaParaAdicionar == string.Empty ? null : notaParaAdicionar,
                     });
                 }
 
@@ -163,8 +162,8 @@ namespace SME.SGP.Aplicacao
             var ultimaInclusao = notasFechamentosFinais.OrderBy(a => a.CriadoEm).FirstOrDefault();
             var ultimaAlteracao = notasFechamentosFinais.OrderBy(a => a.AlteradoEm).FirstOrDefault();
 
-            retorno.AuditoriaAlteracao = ultimaAlteracao == null ? string.Empty : MontaTextoAuditoriaAlteracao(ultimaAlteracao);
-            retorno.AuditoriaInclusao = ultimaInclusao == null ? string.Empty : MontaTextoAuditoriaInclusao(ultimaInclusao);
+           retorno.AuditoriaAlteracao = ultimaAlteracao == null ? string.Empty : MontaTextoAuditoriaAlteracao(ultimaAlteracao);
+           retorno.AuditoriaInclusao = ultimaInclusao == null ? string.Empty : MontaTextoAuditoriaInclusao(ultimaInclusao);
 
             retorno.NotaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
             retorno.FrequenciaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(filtros.EhRegencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));

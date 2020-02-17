@@ -75,6 +75,12 @@ const FechamentoFinal = forwardRef((props, ref) => {
     ServicoFechamentoFinal.obter(turmaCodigo, disciplinaCodigo, ehRegencia)
       .then(resposta => {
         if (resposta && resposta.data) {
+
+          resposta.data.alunos.forEach(item => {
+            item.notasConceitoFinal.forEach(aluno => {
+              aluno.notaConceitoAtual = aluno.notaConceito;
+            });
+          });
           setDadosFechamentoFinal(resposta.data);
           setAlunos(resposta.data.alunos);
           setEhNota(resposta.data.ehNota);
