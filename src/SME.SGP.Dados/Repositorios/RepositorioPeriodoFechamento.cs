@@ -53,7 +53,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("p.tipo_calendario_id = t.id");
             query.AppendLine("left join dre d on f.dre_id = d.id");
             query.AppendLine("left join ue u on f.ue_id = u.id");
-            query.AppendLine("left join turma tu on tu.ue_id = u.id");
+            if (turmaId.HasValue)
+                query.AppendLine("join turma tu on tu.ue_id = u.id");
             query.AppendLine("where 1=1");
 
             if (tipoCalendarioId.HasValue)
