@@ -195,11 +195,14 @@ const FechamentoBismestre = () => {
     setModoEdicao(true);
   };
   const salvarFechamentoFinal = () => {
+    fechamentoFinal.turmaCodigo = turmaSelecionada.turma;
+    fechamentoFinal.ehRegencia = ehRegencia;
     ServicoFechamentoFinal.salvar(fechamentoFinal)
       .then(() => {
         sucesso('Fechamento final salvo com sucesso.');
         setModoEdicao(false);
         dispatch(setExpandirLinha([]));
+        refFechamentoFinal.current.salvarFechamentoFinal();
       })
       .catch(e => erros(e));
   };

@@ -119,9 +119,9 @@ export const Lista = styled.div`
       }
     }
 
-
-    .linha-nome-aluno {
+    .linha-numero-chamada {
       display: inline !important;
+      margin-left: 17px;
     }
   }
 
@@ -207,7 +207,7 @@ export const MaisMenos = styled.i`
 
 export const Info = styled.i`
   color: ${Base.Roxo} !important;
-  font-size: 15px;
+  font-size: 10px;
   margin-left: 2px;
   margin-right: 5px;
   padding-top: 5px;
