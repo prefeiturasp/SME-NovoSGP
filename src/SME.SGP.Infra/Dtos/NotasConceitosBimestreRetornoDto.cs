@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Infra
@@ -20,6 +21,7 @@ namespace SME.SGP.Infra
         public int Numero { get; set; }
         public bool PodeLancarNotaFinal { get; set; }
         public long FechamentoTurmaId { get; set; }
+        public SituacaoFechamento Situacao { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
     }
