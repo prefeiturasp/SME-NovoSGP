@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
                     {
                         Disciplina = disciplinaParaAdicionar.Nome,
                         DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular,
-                        NotaConceito = notaParaAdicionar == string.Empty ? null : notaParaAdicionar
+                        NotaConceito = notaParaAdicionar == string.Empty ? null : notaParaAdicionar,
                     });
                 }
 
@@ -162,8 +162,8 @@ namespace SME.SGP.Aplicacao
             var ultimaInclusao = notasFechamentosFinais.OrderBy(a => a.CriadoEm).FirstOrDefault();
             var ultimaAlteracao = notasFechamentosFinais.OrderBy(a => a.AlteradoEm).FirstOrDefault();
 
-            retorno.AuditoriaAlteracao = ultimaAlteracao == null ? string.Empty : MontaTextoAuditoriaAlteracao(ultimaAlteracao);
-            retorno.AuditoriaInclusao = ultimaInclusao == null ? string.Empty : MontaTextoAuditoriaInclusao(ultimaInclusao);
+           retorno.AuditoriaAlteracao = ultimaAlteracao == null ? string.Empty : MontaTextoAuditoriaAlteracao(ultimaAlteracao);
+           retorno.AuditoriaInclusao = ultimaInclusao == null ? string.Empty : MontaTextoAuditoriaInclusao(ultimaInclusao);
 
             retorno.NotaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
             retorno.FrequenciaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(filtros.EhRegencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
@@ -266,7 +266,7 @@ namespace SME.SGP.Aplicacao
 
             var fechamentoDoUltimoBimestre = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, null, ultimoBimestre);
 
-            if (fechamentoDoUltimoBimestre == null)
+              if (fechamentoDoUltimoBimestre == null)
                 throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoBimestre}º  bimestre.");
         }
     }
