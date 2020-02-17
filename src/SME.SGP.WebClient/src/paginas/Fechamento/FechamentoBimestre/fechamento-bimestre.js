@@ -1,7 +1,7 @@
 import { Tabs } from 'antd';
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Colors, Loader } from '~/componentes';
+import { Colors, Loader, Base } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Button from '~/componentes/button';
@@ -29,7 +29,8 @@ const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada, permissoes } = usuario;
-  const permissoesTela = permissoes[RotasDto.FechamentoBismestre];
+  const permissoesTela = permissoes[RotasDto.FECHAMENTO_BIMESTRE];
+  const { podeIncluir, podeAlterar } = permissoesTela;
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   useEffect(() => {
@@ -50,6 +51,7 @@ const FechamentoBismestre = () => {
   const [dadosBimestre4, setDadosBimestre4] = useState(undefined);
   const [ehRegencia, setEhRegencia] = useState(false);
   const [periodoFechamento, setPeriodoFechamento] = useState(periodo.Anual);
+  const [desabilitaAbaFinal, setDesabilitaAbaFinal] = useState(false);
 
   const onChangeDisciplinas = id => {
     const disciplina = listaDisciplinas.find(
@@ -83,8 +85,6 @@ const FechamentoBismestre = () => {
       setModoEdicao(false);
     }
   };
-
-  const onClickSalvar = () => { };
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -121,6 +121,11 @@ const FechamentoBismestre = () => {
         setPeriodoFechamento(dadosFechamento.periodo);
         setBimestreCorrente(`${dadosFechamento.bimestre}`);
         setDadosBimestre(dadosFechamento.bimestre, dadosFechamento);
+        if (dadosFechamento.periodo === periodo.Anual) {
+          setDesabilitaAbaFinal(dadosFechamento.bimestre !== 4);
+        } else {
+          setDesabilitaAbaFinal(dadosFechamento.bimestre !== 2);
+        }
       }
     }
   };
@@ -311,7 +316,7 @@ const FechamentoBismestre = () => {
                       ) : null}
                     </TabPane>) : null
                   }
-                  <TabPane tab="Final" key="final">
+                  <TabPane tab="Final" key="final" disabled={desabilitaAbaFinal}>
                     <FechamentoFinal
                       turmaCodigo={turmaSelecionada.turma}
                       disciplinaCodigo={disciplinaIdSelecionada}
@@ -319,6 +324,8 @@ const FechamentoBismestre = () => {
                       turmaPrograma={turmaPrograma}
                       onChange={onChangeFechamentoFinal}
                       ref={refFechamentoFinal}
+                      desabilitarCampo={!podeIncluir || !podeAlterar || somenteConsulta}
+                      somenteConsulta={somenteConsulta}
                     />
                   </TabPane>
                 </ContainerTabsCard>
