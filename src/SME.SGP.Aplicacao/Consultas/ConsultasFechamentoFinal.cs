@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             var turma = repositorioTurma.ObterPorCodigo(filtros.TurmaCodigo);
 
             if (turma == null)
-                throw new NegocioException("Não foi possível localizar a UE.");
+                throw new NegocioException("Não foi possível localizar a turma.");
 
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario());
             if (tipoCalendario == null)
@@ -194,7 +194,7 @@ namespace SME.SGP.Aplicacao
 
         private string MontaTextoAuditoriaInclusao(FechamentoFinal ultimaInclusao, bool EhNota)
         {
-            return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "incluídas" : "incluídos")} por {ultimaInclusao.CriadoPor}({ultimaInclusao.CriadoRF}) em {ultimaInclusao.CriadoEm.ToString("dd /MM/yyyy")},às {ultimaInclusao.CriadoEm.ToString("H:mm")}.";
+            return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "incluídas" : "incluídos")} por {ultimaInclusao.CriadoPor}({ultimaInclusao.CriadoRF}) em {ultimaInclusao.CriadoEm.ToString("dd/MM/yyyy")},às {ultimaInclusao.CriadoEm.ToString("H:mm")}.";
         }
 
         private async Task<IEnumerable<(int, string, long, string)>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota)
@@ -268,7 +268,7 @@ namespace SME.SGP.Aplicacao
 
             var fechamentoDoUltimoBimestre = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, null, ultimoBimestre);
 
-              if (fechamentoDoUltimoBimestre == null)
+            if (fechamentoDoUltimoBimestre == null)
                 throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoBimestre}º  bimestre.");
         }
     }
