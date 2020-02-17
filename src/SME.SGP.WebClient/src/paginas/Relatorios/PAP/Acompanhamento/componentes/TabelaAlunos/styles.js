@@ -90,6 +90,10 @@ export const Tabela = styled.table`
         display: flex;
         align-items: center;
 
+        &:first-child {
+          min-width: 35px;
+        }
+
         &:last-child {
           width: 49.4%;
           border-right: 1px solid ${Base.CinzaDesabilitado};
