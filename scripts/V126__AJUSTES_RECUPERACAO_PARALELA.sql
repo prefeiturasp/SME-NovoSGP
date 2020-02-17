@@ -1,0 +1,1 @@
+﻿ALTER TABLE recuperacao_paralela ADD COLUMN turma_recuperacao_paralela_id INT8 NOT NULL

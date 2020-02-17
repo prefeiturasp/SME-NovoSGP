@@ -164,6 +164,5 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
         }
-
     }
 }

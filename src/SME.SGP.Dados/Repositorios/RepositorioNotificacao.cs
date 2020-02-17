@@ -1,5 +1,4 @@
 using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -18,6 +17,15 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         #region Obter paginado
+
+        public override void Remover(long id)
+            => Remover(ObterPorId(id));
+
+        public override void Remover(Notificacao entidade)
+        {
+            entidade.Excluida = true;
+            Salvar(entidade);
+        }
 
         public async Task<PaginacaoResultadoDto<Notificacao>> Obter(string dreId, string ueId, int statusId,
             string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, Paginacao paginacao)
@@ -126,6 +134,11 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         #endregion Obter paginado
+
+        public async Task ExcluirPorIdsAsync(long[] ids)
+        {
+            await database.Conexao.ExecuteAsync("DELETE FROM NOTIFICACAO WHERE ID = ANY(@ids)", new { ids });
+        }
 
         public IEnumerable<Notificacao> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite)
         {
