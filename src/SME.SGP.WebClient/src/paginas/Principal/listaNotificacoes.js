@@ -18,7 +18,7 @@ const ListaNotificacoes = () => {
 
   useEffect(() => {
     servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
-  }, [usuario.rf]);
+  }, [anoAtual, usuario.rf]);
 
   const notificacoes = useSelector(state => state.notificacoes);
 
@@ -66,8 +66,8 @@ const ListaNotificacoes = () => {
       title: 'Data/Hora',
       dataIndex: 'data',
       key: 'data',
-      className: 'text-left px-4 py-0 data-hora',
-      width: 100,
+      className: 'text-center px-4 py-0 data-hora',
+      width: 125,
       render: data => {
         const dataFormatada = moment(data).format('DD/MM/YYYY HH:mm:ss');
         return <span>{dataFormatada}</span>;
