@@ -100,6 +100,14 @@ namespace SME.SGP.Aplicacao
                 disciplinas.Add(new DisciplinaResposta() { Nome = disciplinaParaAdicionar.Nome, CodigoComponenteCurricular = disciplinaParaAdicionar.CodigoComponenteCurricular });
             }
 
+            var ehComponenteSemNota = false;
+            // Verifico se é componente sem nota //
+            if (disciplinas.Count == 1)
+            {
+                var disciplinaParaVerificarSemNota = disciplinas.FirstOrDefault();
+                ehComponenteSemNota = !disciplinaParaVerificarSemNota.LancaNota;
+            }
+
             var notasFechamentosFinais = await repositorioFechamentoFinal.ObterPorFiltros(turma.CodigoTurma, disciplinas.Select(a => a.CodigoComponenteCurricular.ToString()).ToArray());
             var notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
 
