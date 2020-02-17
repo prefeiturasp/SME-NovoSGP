@@ -30,6 +30,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConfiguration configuration;
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioConceito repositorioConceito;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
 
@@ -44,6 +46,8 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioTipoAvaliacao repositorioTipoAvaliacao,
                                                 IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
                                                 IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
+                                                IRepositorioParametrosSistema repositorioParametrosSistema,
+                                                IRepositorioConceito repositorioConceito,
                                                 IConsultasDisciplina consultasDisciplina,
                                                 IServicoNotificacao servicoNotificacao,
                                                 IServicoPendenciaFechamento servicoPendenciaFechamento,
@@ -61,6 +65,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new ArgumentNullException(nameof(repositorioTipoAvaliacao));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
+            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -68,9 +73,10 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
-    }
+        }
 
         public async Task<AuditoriaFechamentoTurmaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto)
         {
@@ -92,6 +98,8 @@ namespace SME.SGP.Dominio.Servicos
             VerificaSeProfessorPodePersistirTurma(servicoUsuario.ObterRf(), entidadeDto.TurmaId, periodoFechamentoBimestre.PeriodoEscolar.PeriodoFim);
 
             fechamentoTurma.PeriodoEscolarId = periodoFechamentoBimestre.PeriodoEscolarId;
+            fechamentoTurma.PeriodoEscolar = periodoFechamentoBimestre.PeriodoEscolar;
+            VarificaPercentualReprovacao(entidadeDto, fechamentoTurma.PeriodoEscolar);
 
             // Carrega notas alunos
             var notasConceitosBimestre = await MapearParaEntidade(id, entidadeDto.NotaConceitoAlunos);
@@ -107,13 +115,37 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 unitOfWork.PersistirTransacao();
 
+                var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+                Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurma.DisciplinaId, fechamentoTurma.Turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurma, usuarioLogado));
+
                 return (AuditoriaFechamentoTurmaDto)fechamentoTurma;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private void VarificaPercentualReprovacao(FechamentoTurmaDisciplinaDto fechamentoTurmaDto, PeriodoEscolar periodoEscolar)
+        {
+            var mediaBimestre = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            var percentualReprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
+            var qtdReprovados = 0;
+
+            // Verifica se lança nota ou conceito
+            if (fechamentoTurmaDto.NotaConceitoAlunos.Any(a => a.Nota > 0))
+                qtdReprovados = fechamentoTurmaDto.NotaConceitoAlunos.Where(c => c.Nota < mediaBimestre).Count();
+            else
+            {
+                var conceitos = repositorioConceito.ObterPorData(periodoEscolar.PeriodoFim);
+                qtdReprovados = fechamentoTurmaDto.NotaConceitoAlunos.Where(n => !conceitos.First(c => c.Id == n.ConceitoId).Aprovado).Count();
+            }
+
+            // Mais de 50% reprovados
+            if ((qtdReprovados > (fechamentoTurmaDto.NotaConceitoAlunos.Count() * percentualReprovacao / 100))
+                && (string.IsNullOrEmpty(fechamentoTurmaDto.Justificativa)))
+                throw new NegocioException($"Mais de {percentualReprovacao}% das notas/conceitos foi considerada insuficiente. Necessário incluir uma justificativa");
         }
 
         public async Task GerarPendenciasFechamento(long disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, FechamentoTurmaDisciplina fechamento, Usuario usuarioLogado)
@@ -137,30 +169,6 @@ namespace SME.SGP.Dominio.Servicos
             await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamento);
         }
 
-        public async Task RealizarFechamento(string codigoTurma, long disciplinaId, long periodoEscolarId, Usuario usuarioLogado)
-        {
-            var (turma, periodoEscolar) = ValidarTurmaEPeriodoEscolar(codigoTurma, periodoEscolarId);
-            var tipoCalendario = repositorioTipoCalendario.ObterPorId(periodoEscolar.TipoCalendarioId);
-            if (tipoCalendario == null)
-            {
-                throw new NegocioException("Tipo de calendário não encontrado.");
-            }
-
-            if (!turma.MesmaModalidadePeriodoEscolar(tipoCalendario.Modalidade))
-            {
-                throw new NegocioException("Essa turma não pertence ao tipo de calendário informado.");
-            }
-            var fechamento = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turma.CodigoTurma, disciplinaId, periodoEscolar.Bimestre);
-            if (fechamento == null)
-            {
-                fechamento = new FechamentoTurmaDisciplina(turma.Id, disciplinaId, periodoEscolar.Id);
-            }
-            fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
-            repositorioFechamentoTurmaDisciplina.Salvar(fechamento);
-
-            Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuarioLogado));
-        }
-
         public async Task Reprocessar(long fechamentoId)
         {
             var fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(fechamentoId);
@@ -182,8 +190,8 @@ namespace SME.SGP.Dominio.Servicos
             fechamento.AdicionarPeriodoEscolar(periodoEscolar);
             fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
             repositorioFechamentoTurmaDisciplina.Salvar(fechamento);
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuarioLogado));
         }
 
@@ -213,7 +221,7 @@ namespace SME.SGP.Dominio.Servicos
                 Categoria = NotificacaoCategoria.Aviso,
                 Titulo = $"Pendência no fechamento da turma {turma.Nome}",
                 Tipo = NotificacaoTipo.Fechamento,
-                Mensagem = $"O fechamento do {fechamento.PeriodoEscolar.Bimestre}Nº bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {quantidadePendencias} pendência(s). Clique <a href='{urlFrontEnd}'>aqui</a> para mais detalhes."
+                Mensagem = $"O fechamento do {fechamento.PeriodoEscolar.Bimestre}º bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {quantidadePendencias} pendência(s). Clique <a href='{urlFrontEnd}'>aqui</a> para mais detalhes."
             };
             servicoNotificacao.Salvar(notificacao);
         }
@@ -238,40 +246,6 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (!servicoUsuario.PodePersistirTurma(codigoRf, turmaId, data).Result)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
-        }
-
-        private async Task<string> ValidaMinimoAvaliacoesBimestre(long tipoCalendarioId, string turmaId, long disciplinaId, int bimestre)
-        {
-            var validacoes = new StringBuilder();
-            var tipoAvaliacaoBimestral = await repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral();
-
-            var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId });
-            if (disciplinasEOL.First().Regencia)
-            {
-                // Disciplinas Regencia de Classe
-                disciplinasEOL = await consultasDisciplina.ObterDisciplinasParaPlanejamento(new FiltroDisciplinaPlanejamentoDto()
-                {
-                    CodigoTurma = long.Parse(turmaId),
-                    CodigoDisciplina = int.Parse(disciplinaId.ToString()),
-                    Regencia = true
-                });
-
-                foreach (var disciplina in disciplinasEOL)
-                {
-                    var avaliacoes = await repositorioAtividadeAvaliativaRegencia.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaId, disciplina.CodigoComponenteCurricular.ToString(), bimestre);
-                    if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
-                        validacoes.AppendLine($"A disciplina [{disciplina.Nome}] não tem o número mínimo de avaliações bimestrais: Necessário {tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre}");
-                }
-            }
-            else
-            {
-                var disciplinaEOL = disciplinasEOL.First();
-                var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaId, disciplinaEOL.CodigoComponenteCurricular.ToString(), bimestre);
-                if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
-                    validacoes.AppendLine($"A disciplina [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais: Necessário {tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre}");
-            }
-
-            return validacoes.ToString();
         }
 
         private async Task<IEnumerable<NotaConceitoBimestre>> MapearParaEntidade(long id, IEnumerable<NotaConceitoBimestreDto> notasConceitosAlunosDto)
@@ -324,9 +298,11 @@ namespace SME.SGP.Dominio.Servicos
             if (id > 0)
                 fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(id);
 
+            fechamento.Situacao = SituacaoFechamento.EmProcessamento;
             fechamento.Turma = repositorioTurma.ObterPorId(fechamentoDto.TurmaId);
             fechamento.TurmaId = fechamento.Turma.Id;
             fechamento.DisciplinaId = fechamentoDto.DisciplinaId;
+            fechamento.Justificativa = fechamentoDto.Justificativa;
 
             return fechamento;
         }
