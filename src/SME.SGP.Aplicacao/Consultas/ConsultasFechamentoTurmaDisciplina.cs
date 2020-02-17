@@ -12,17 +12,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasFechamentoTurmaDisciplina : IConsultasFechamentoTurmaDisciplina
     {
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IConsultasAulaPrevista consultasAulaPrevista;
-        private readonly IServicoEOL servicoEOL;
-        private readonly IServicoUsuario servicoUsuario;
-        private readonly IServicoAluno servicoAluno;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioConceito repositorioConceito;
+        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IServicoAluno servicoAluno;
+        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IRepositorioTipoCalendario repositorioTipoCalendario,
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FechamentoTurmaDisciplinaBimestreDto> ObterNotasFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int? bimestre)
         {
-            var turma = repositorioTurma.ObterPorId(turmaId);
+            var turma = repositorioTurma.ObterPorCodigo(turmaId);
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, ModalidadeParaModalidadeTipoCalendario(turma.ModalidadeCodigo));
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
@@ -88,7 +88,6 @@ namespace SME.SGP.Aplicacao
                 TotalAulasPrevistas = 0, // Carregar
                 Alunos = new List<NotaConceitoAlunoBimestreDto>()
             };
-
 
             // Carrega fechamento da Turma x Disciplina x Bimestre
             var fechamentoTurma = await ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestreAtual.Value);
@@ -164,10 +163,16 @@ namespace SME.SGP.Aplicacao
             return fechamentoBimestre;
         }
 
-        private string ObterConceito(long id)
+        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
         {
-            var conceito = repositorioConceito.ObterPorId(id);
-            return conceito != null ? conceito.Valor : "";
+            switch (modalidade)
+            {
+                case Modalidade.EJA:
+                    return ModalidadeTipoCalendario.EJA;
+
+                default:
+                    return ModalidadeTipoCalendario.FundamentalMedio;
+            }
         }
 
         private int ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
@@ -181,16 +186,10 @@ namespace SME.SGP.Aplicacao
             else return periodoEscolar.Bimestre;
         }
 
-        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
+        private string ObterConceito(long id)
         {
-            switch (modalidade)
-            {
-                case Modalidade.EJA:
-                    return ModalidadeTipoCalendario.EJA;
-
-                default:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-            }
+            var conceito = repositorioConceito.ObterPorId(id);
+            return conceito != null ? conceito.Valor : "";
         }
     }
 }
