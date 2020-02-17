@@ -162,6 +162,10 @@ namespace SME.SGP.Dominio.Servicos
             var tipoAvaliacaoBimestral = await repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral();
 
             var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId });
+
+            if (disciplinasEOL == null || !disciplinasEOL.Any())
+                throw new NegocioException("Não foi possível localizar a disciplina no EOL.");
+
             if (disciplinasEOL.First().Regencia)
             {
                 // Disciplinas Regencia de Classe
