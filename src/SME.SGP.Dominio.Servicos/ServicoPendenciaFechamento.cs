@@ -15,6 +15,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
@@ -23,6 +24,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioPendencia repositorioPendencia,
                                           IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
                                           IRepositorioAula repositorioAula,
+                                          IRepositorioParametrosSistema repositorioParametrosSistema,
                                           IServicoEOL servicoEOL,
                                           IServicoUsuario servicoUsuario)
         {
@@ -31,6 +33,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.repositorioPendenciaFechamento = repositorioPendenciaFechamento ?? throw new ArgumentNullException(nameof(repositorioPendenciaFechamento));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.servicoEOL = servicoEOL;
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
@@ -149,10 +152,20 @@ namespace SME.SGP.Dominio.Servicos
             return avaliacoesSemNotaParaNenhumAluno.Count();
         }
 
-        public int ValidarPercentualAlunosAbaixoDaMedia(long id, Turma turma, long disciplinaId, DateTime periodoInicio, DateTime periodoFim)
+        public int ValidarPercentualAlunosAbaixoDaMedia(FechamentoTurmaDisciplina fechamentoTurma)
         {
-            // TODO implementar na task 11717
-            throw new NotImplementedException();
+            if (!string.IsNullOrEmpty(fechamentoTurma.Justificativa))
+            {
+                var percentualReprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
+                var mensagem = new StringBuilder($"O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes<br>");
+
+                GerarPendencia(fechamentoTurma.Id, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem.ToString());
+                return 1;
+            }
+            else
+                repositorioPendencia.AtualizarPendencias(fechamentoTurma.Id, SituacaoPendencia.Resolvida, TipoPendencia.ResultadosFinaisAbaixoDaMedia);
+
+            return 0;
         }
 
         private void GerarPendencia(long fechamentoId, TipoPendencia tipoPendencia, string mensagem)
