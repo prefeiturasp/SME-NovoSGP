@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
                                                         ObjetivoId = s.ObjetivoId,
                                                         RespostaId = s.RespostaId
                                                     }).ToList()
-                    }).OrderBy(o => o.Nome).ToList()
+                    }).ToList()
                 }
             };
 
@@ -184,6 +184,27 @@ namespace SME.SGP.Aplicacao
                     item.Respostas.Add(new ObjetivoRespostaDto { ObjetivoId = 2, RespostaId = 2 });
                 };
             }
+
+            switch (ordenacao)
+            {
+                case RecuperacaoParalelaOrdenacao.AlfabeticoCrescente:
+                default:
+                    recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderBy(w => w.Nome).ToList();
+                    break;
+
+                case RecuperacaoParalelaOrdenacao.AlfabeticoDecrescente:
+                    recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderByDescending(w => w.Nome).ToList();
+                    break;
+
+                case RecuperacaoParalelaOrdenacao.NumericoCrescente:
+                    recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderBy(w => w.NumeroChamada).ToList();
+                    break;
+
+                case RecuperacaoParalelaOrdenacao.NumericoDecrescente:
+                    recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderByDescending(w => w.NumeroChamada).ToList();
+                    break;
+            }
+
             return recuperacaoRetorno;
         }
 
