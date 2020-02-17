@@ -84,6 +84,7 @@ namespace SME.SGP.Aplicacao
             var fechamentoBimestre = new FechamentoTurmaDisciplinaBimestreDto()
             {
                 Bimestre = bimestreAtual.Value,
+                Periodo = tipoCalendario.Periodo,
                 TotalAulasDadas = 0, // Carregar
                 TotalAulasPrevistas = 0, // Carregar
                 Alunos = new List<NotaConceitoAlunoBimestreDto>()

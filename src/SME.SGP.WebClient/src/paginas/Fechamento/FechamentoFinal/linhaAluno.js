@@ -19,6 +19,7 @@ const LinhaAluno = ({
   notaMedia,
   frequenciaMedia,
   indexAluno,
+  desabilitarCampo
 }) => {
   const montaLinhaNotasConceitos = () => {
     if (ehNota) {
@@ -56,7 +57,7 @@ const LinhaAluno = ({
           onChangeNotaConceitoFinal={(nota, valor) =>
             onChangeNotaConceitoFinal(nota, valor)
           }
-          desabilitarCampo={false}
+          desabilitarCampo={desabilitarCampo}
           podeEditar={aluno.podeEditar}
           eventoData={eventoData}
           mediaAprovacaoBimestre={notaMedia}
@@ -86,21 +87,19 @@ const LinhaAluno = ({
   return (
     <>
       <tr>
-        <td className="col-numero-chamada">{aluno.numeroChamada}</td>
-        <td className="col-nome-aluno">
+      <td className="col-numero-chamada">
           {aluno.informacao ? (
             <>
+              <div className="linha-numero-chamada">{aluno.numeroChamada}</div>
               <Tooltip title={aluno.informacao} placement="top">
                 <Info className="fas fa-circle" />
               </Tooltip>
-              <div className="linha-nome-aluno">{aluno.nome}</div>
             </>
           ) : (
-            <div className="linha-nome-aluno" style={{ marginLeft: '22px' }}>
-              {aluno.nome}
-            </div>
+            <div style={{ display: 'inline' }}>{aluno.numeroChamada}</div>
           )}
         </td>
+        <td className="col-nome-aluno"> {aluno.nome}</td>
         <td className="col-nota-conceito">{montaLinhaNotasConceitos()}</td>
         <td>{aluno.totalFaltas}</td>
         <td>{aluno.totalAusenciasCompensadas}</td>
@@ -108,8 +107,8 @@ const LinhaAluno = ({
           {ehRegencia ? (
             <ColunaNotaFinalRegencia indexLinha={indexAluno} />
           ) : (
-            montarCampoNotaConceitoFinal(aluno)
-          )}
+              montarCampoNotaConceitoFinal(aluno)
+            )}
         </td>
         <td>
           <span
@@ -117,7 +116,7 @@ const LinhaAluno = ({
               frequenciaMedia && aluno.frequencia < frequenciaMedia
                 ? 'indicativo-alerta'
                 : ''
-            } `}
+              } `}
           >
             {aluno.frequencia}%
           </span>
@@ -136,10 +135,12 @@ const LinhaAluno = ({
 
 LinhaAluno.propTypes = {
   onChange: PropTypes.func,
+  desabilitarCampo: PropTypes.bool,
 };
 
 LinhaAluno.defaultProps = {
-  onChange: () => {},
+  onChange: () => { },
+  desabilitarCampo: false,
 };
 
 export default LinhaAluno;
