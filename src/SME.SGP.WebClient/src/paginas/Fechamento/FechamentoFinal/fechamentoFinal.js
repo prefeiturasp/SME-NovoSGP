@@ -103,6 +103,10 @@ const FechamentoFinal = forwardRef((props, ref) => {
       obterFechamentoFinal();
       setNotasEmEdicao([]);
     },
+    salvarFechamentoFinal() {
+      obterFechamentoFinal();
+      setNotasEmEdicao([]);
+    },
   }));
 
   useEffect(() => {
