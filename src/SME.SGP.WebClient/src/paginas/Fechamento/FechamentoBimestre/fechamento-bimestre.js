@@ -1,6 +1,6 @@
 import { Tabs } from 'antd';
 import React, { useEffect, useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Colors, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
@@ -21,8 +21,11 @@ import ServicoFechamentoFinal from '~/servicos/Paginas/DiarioClasse/ServicoFecha
 import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFechamentoBimestre';
 import periodo from '~/dtos/periodo';
+import { setExpandirLinha } from '~/redux/modulos/notasConceitos/actions';
 
 const FechamentoBismestre = () => {
+  const dispatch = useDispatch();
+
   const { TabPane } = Tabs;
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada, permissoes } = usuario;
@@ -66,6 +69,7 @@ const FechamentoBismestre = () => {
     }
     if (confirmou) {
       history.push(URL_HOME);
+      dispatch(setExpandirLinha([]));
     }
   };
 
@@ -187,9 +191,10 @@ const FechamentoBismestre = () => {
   };
   const salvarFechamentoFinal = () => {
     ServicoFechamentoFinal.salvar(fechamentoFinal)
-      .then(resposta => {
+      .then(() => {
         sucesso('Fechamento final salvo com sucesso.');
         setModoEdicao(false);
+        dispatch(setExpandirLinha([]));
       })
       .catch(e => erros(e));
   };

@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<FechamentoFinal>> ObterPorFiltros(string turmaCodigo, string disciplinaCodigo = "")
+        public async Task<IEnumerable<FechamentoFinal>> ObterPorFiltros(string turmaCodigo, string[] disciplinasCodigo)
         {
             var query = new StringBuilder(@"select
 	                            fn.*
@@ -27,10 +27,10 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(turmaCodigo))
                 query.AppendLine("and t.turma_id = @turmaCodigo");
 
-            if (!string.IsNullOrEmpty(disciplinaCodigo))
-                query.AppendLine("and fn.disciplina_codigo = @disciplinaCodigo");
+            if (disciplinasCodigo != null && disciplinasCodigo.Length > 0)
+                query.AppendLine("and fn.disciplina_codigo = ANY(@disciplinasCodigo)");
 
-            return await database.Conexao.QueryAsync<FechamentoFinal>(query.ToString(), new { turmaCodigo, disciplinaCodigo });
+            return await database.Conexao.QueryAsync<FechamentoFinal>(query.ToString(), new { turmaCodigo, disciplinasCodigo });
         }
     }
 }
