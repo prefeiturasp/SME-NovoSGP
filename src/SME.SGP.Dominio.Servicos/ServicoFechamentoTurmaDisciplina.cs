@@ -156,7 +156,7 @@ namespace SME.SGP.Dominio.Servicos
             var aulasReposicaoPendentes = servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
             var aulasSemPlanoAula = servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
             var aulasSemFrequencia = servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-            var alunosAbaixoMedia = servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            var alunosAbaixoMedia = servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
 
             var quantidadePendencias = avaliacoesSemnota + aulasReposicaoPendentes + aulasSemPlanoAula + aulasSemFrequencia + alunosAbaixoMedia;
             if (quantidadePendencias > 0)

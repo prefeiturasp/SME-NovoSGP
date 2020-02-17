@@ -27,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
 		                        pendencia_fechamento
 	                        where
 		                        pendencia.id = pendencia_fechamento.pendencia_id
-		                        and pendencia_fechamento.fechamento_id = @fechamentoId)";
+		                        and pendencia_fechamento.fechamento_turma_disciplina_id = @fechamentoId)";
 
             database.Conexao.Execute(query, new { fechamentoId, situacaoPendencia, tipoPendencia });
         }

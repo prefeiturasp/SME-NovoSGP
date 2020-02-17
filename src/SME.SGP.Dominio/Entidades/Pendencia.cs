@@ -21,7 +21,6 @@
         }
 
         public string Descricao { get; set; }
-        public long FechamentoId { get; set; }
         public SituacaoPendencia Situacao { get; set; }
         public TipoPendencia Tipo { get; set; }
         public string Titulo { get; set; }
