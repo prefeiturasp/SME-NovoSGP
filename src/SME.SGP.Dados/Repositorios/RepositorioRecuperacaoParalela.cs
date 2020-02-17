@@ -21,6 +21,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(MontaCamposCabecalho());
             query.AppendLine("from recuperacao_paralela rec ");
             query.AppendLine("inner join recuperacao_paralela_periodo_objetivo_resposta recRel on rec.id = recRel.recuperacao_paralela_id   ");
+            query.AppendLine("inner join resposta re on re.id = recRel.resposta_id   ");
             query.AppendLine("where rec.turma_recuperacao_paralela_id = @turmaId ");
             query.AppendLine("and recRel.periodo_recuperacao_paralela_id = @periodoId ");
             query.AppendLine("and rec.excluido = false ");
@@ -77,7 +78,8 @@ namespace SME.SGP.Dados.Repositorios
 	                            tipo_ciclo.descricao,
 	                            resposta.nome,
                                 resposta.id,
-                                tipo_ciclo.id");
+                                tipo_ciclo.id
+                            order by resposta.ordem");
 
             var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId };
 
@@ -103,7 +105,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("group by");
             query.AppendLine("turma.nome,");
             query.AppendLine("turma.ano,");
-            query.AppendLine("tipo_ciclo.id,");            
+            query.AppendLine("tipo_ciclo.id,");
             query.AppendLine("tipo_ciclo.descricao,");
             query.AppendLine("resposta.nome,");
             query.AppendLine("o.nome,");
@@ -112,7 +114,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("tipo_ciclo.descricao,");
             query.AppendLine("e.id,");
             query.AppendLine("o.id,");
-            query.AppendLine("resposta.id;");
+            query.AppendLine("resposta.id");
+            query.AppendLine("order by");
+            query.AppendLine("o.ordem,");
+            query.AppendLine("resposta.ordem;");
             query.AppendLine("select max(pagina) from objetivo;");
 
             var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId, pagina };
@@ -153,6 +158,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.id,");
             query.AppendLine("o.id,");
             query.AppendLine("resposta.id");
+            query.AppendLine("order by");
+            query.AppendLine("o.ordem,");
+            query.AppendLine("resposta.ordem;");
 
             var parametros = new { dreId, ueId, cicloId, turmaId, ano, pagina, periodoId };
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalResultadoDto>(query.ToString(), parametros);
@@ -220,7 +228,8 @@ namespace SME.SGP.Dados.Repositorios
                         rec.alterado_rf,
 	                    recRel.objetivo_id AS ObjetivoId,
 	                    recRel.resposta_id AS RespostaId,
-	                    recRel.periodo_recuperacao_paralela_id AS PeriodoRecuperacaoParalelaId ";
+	                    recRel.periodo_recuperacao_paralela_id AS PeriodoRecuperacaoParalelaId,
+                        re.ordem as OrdenacaoResposta";
         }
     }
 }
