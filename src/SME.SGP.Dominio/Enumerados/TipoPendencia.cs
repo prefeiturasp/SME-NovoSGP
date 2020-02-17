@@ -16,7 +16,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "Aulas sem frequência registrada")]
         AulasSemFrequenciaNaDataDoFechamento = 4,
 
-        [Display(Name = "")]
+        [Display(Name = "Resultados Finais Insuficientes")]
         ResultadosFinaisAbaixoDaMedia = 5
     }
 }
