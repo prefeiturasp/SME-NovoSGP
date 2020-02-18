@@ -8,7 +8,7 @@ import { Table, Tooltip } from 'antd';
 import { Base, SelectComponent } from '~/componentes';
 
 // Helpers
-import ordenarLista from '~/componentes-sgp/filtro/helper';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
 const Tabela = styled(Table)`
   th.headerTotal {
@@ -133,10 +133,14 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
           if (anos && objetivo.anos && objetivo.anos.length) {
             const respostas = [];
             objetivo.anos.forEach(ano => {
-              ano.respostas.sort(ordenarLista('ordem')).forEach(resposta => {
-                if (!objetoExisteNaLista(resposta.respostaDescricao, respostas))
-                  respostas.push(resposta.respostaDescricao);
-              });
+              ano.respostas
+                .sort(FiltroHelper.ordenarLista('ordem'))
+                .forEach(resposta => {
+                  if (
+                    !objetoExisteNaLista(resposta.respostaDescricao, respostas)
+                  )
+                    respostas.push(resposta.respostaDescricao);
+                });
             });
             eixosSize[eixo.eixoDescricao] += parseInt(respostas.length, 10);
           }
@@ -145,10 +149,14 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
           if (ciclos && objetivo.ciclos && objetivo.ciclos.length) {
             const respostas = [];
             objetivo.ciclos.forEach(ciclo => {
-              ciclo.respostas.sort(ordenarLista('ordem')).forEach(resposta => {
-                if (!objetoExisteNaLista(resposta.respostaDescricao, respostas))
-                  respostas.push(resposta.respostaDescricao);
-              });
+              ciclo.respostas
+                .sort(FiltroHelper.ordenarLista('ordem'))
+                .forEach(resposta => {
+                  if (
+                    !objetoExisteNaLista(resposta.respostaDescricao, respostas)
+                  )
+                    respostas.push(resposta.respostaDescricao);
+                });
             });
             eixosSize[eixo.eixoDescricao] += parseInt(respostas.length, 10);
           }
@@ -173,7 +181,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
             objetivo.ciclos.forEach((ciclo, c) => {
               ciclo.respostas
-                .sort(ordenarLista('ordem'))
+                .sort(FiltroHelper.ordenarLista('ordem'))
                 .forEach((resposta, r) => {
                   if (
                     !item.find(
@@ -199,18 +207,20 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
             });
 
             objetivo.ciclos.forEach(ciclo => {
-              ciclo.respostas.sort(ordenarLista('ordem')).forEach(resposta => {
-                item
-                  .filter(i => i.Resposta === resposta.respostaDescricao)
-                  .map(i => {
-                    i[ciclo.cicloDescricao] =
-                      unidadeSelecionada === UNIDADES.Q
-                        ? resposta[unidadeSelecionada]
-                        : `${resposta[unidadeSelecionada].toFixed(2)}%`;
-                    i.Total += resposta[unidadeSelecionada];
-                    return item;
-                  });
-              });
+              ciclo.respostas
+                .sort(FiltroHelper.ordenarLista('ordem'))
+                .forEach(resposta => {
+                  item
+                    .filter(i => i.Resposta === resposta.respostaDescricao)
+                    .map(i => {
+                      i[ciclo.cicloDescricao] =
+                        unidadeSelecionada === UNIDADES.Q
+                          ? resposta[unidadeSelecionada]
+                          : `${resposta[unidadeSelecionada].toFixed(2)}%`;
+                      i.Total += resposta[unidadeSelecionada];
+                      return item;
+                    });
+                });
             });
 
             if (unidadeSelecionada === UNIDADES.P) {
@@ -244,13 +254,19 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
             objetivo.anos.forEach((ano, a) => {
               ano.respostas
-                .sort(ordenarLista('ordem'))
+                .sort(FiltroHelper.ordenarLista('ordem'))
                 .forEach((resposta, r) => {
                   if (
                     !item.find(
                       dado => dado.Resposta === resposta.respostaDescricao
                     )
                   ) {
+                    // console.log(
+                    //   eixo.eixoDescricao,
+                    //   objetivo.objetivoDescricao,
+                    //   resposta.respostaDescricao,
+                    //   resposta.ordem
+                    // );
                     item.push({
                       Eixo: eixo.eixoDescricao,
                       EixoGrupo: o === 0 && a === 0 && r === 0,
@@ -270,18 +286,20 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
             });
 
             objetivo.anos.forEach(ano => {
-              ano.respostas.sort(ordenarLista('ordem')).forEach(resposta => {
-                item
-                  .filter(i => i.Resposta === resposta.respostaDescricao)
-                  .map(i => {
-                    i[ano.anoDescricao] =
-                      unidadeSelecionada === UNIDADES.Q
-                        ? resposta[unidadeSelecionada]
-                        : `${resposta[unidadeSelecionada].toFixed(2)}%`;
-                    i.Total += resposta[unidadeSelecionada];
-                    return item;
-                  });
-              });
+              ano.respostas
+                .sort(FiltroHelper.ordenarLista('ordem'))
+                .forEach(resposta => {
+                  item
+                    .filter(i => i.Resposta === resposta.respostaDescricao)
+                    .map(i => {
+                      i[ano.anoDescricao] =
+                        unidadeSelecionada === UNIDADES.Q
+                          ? resposta[unidadeSelecionada]
+                          : `${resposta[unidadeSelecionada].toFixed(2)}%`;
+                      i.Total += resposta[unidadeSelecionada];
+                      return item;
+                    });
+                });
             });
 
             if (unidadeSelecionada === UNIDADES.P) {
@@ -304,7 +322,6 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                 montaColunas.push(coluna);
             });
           }
-
           montaDados.push(...item);
         });
       });

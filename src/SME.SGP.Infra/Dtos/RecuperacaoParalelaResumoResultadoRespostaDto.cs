@@ -7,5 +7,7 @@
         public string RespostaDescricao { get; set; }
         public int TotalPorcentagem { get; set; }
         public int TotalQuantidade { get; set; }
+        public int Ordem { get; set; }
+
     }
 }
