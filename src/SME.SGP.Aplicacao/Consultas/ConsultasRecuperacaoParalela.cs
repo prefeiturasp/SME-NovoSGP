@@ -358,12 +358,13 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<RecuperacaoParalelaResumoResultadoRespostaDto> ObterRespostas(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int objetivoId, bool ehAno, int anoCiclo, int total)
         {
             return items.Where(res => res.ObjetivoId == objetivoId && (ehAno ? res.Ano == anoCiclo : res.CicloId == anoCiclo))
-                .GroupBy(gre => (gre.Resposta, gre.RespostaId))
+                .GroupBy(gre => (gre.Resposta, gre.RespostaId, gre.Ordem))
                 .Select(resposta => new RecuperacaoParalelaResumoResultadoRespostaDto
                 {
                     RespostaDescricao = resposta.Key.Resposta,
                     Quantidade = resposta.Sum(q => q.Total),
-                    Porcentagem = ((double)resposta.Sum(q => q.Total) * 100) / total
+                    Porcentagem = ((double)resposta.Sum(q => q.Total) * 100) / total,
+                    Ordem = resposta.Key.Ordem
                 });
         }
 
