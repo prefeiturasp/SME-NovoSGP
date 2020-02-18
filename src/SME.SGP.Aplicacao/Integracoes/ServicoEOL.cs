@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         private readonly HttpClient httpClient;
         private readonly IServicoLog servicoLog;
 
-        public ServicoEOL(HttpClient httpClient,IRepositorioCache cache, IServicoLog servicoLog)
+        public ServicoEOL(HttpClient httpClient, IRepositorioCache cache, IServicoLog servicoLog)
         {
             this.httpClient = httpClient;
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
