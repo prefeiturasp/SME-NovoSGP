@@ -29,6 +29,8 @@ const Conteudo = () => {
             key={shortid.generate()}
             path={rota.path}
             component={rota.component}
+            temPermissionamento={rota.temPermissionamento}
+            chavePermissao={rota.chavePermissao}
             exact={rota.exact}
           />
         ))}
