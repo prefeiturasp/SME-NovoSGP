@@ -40,9 +40,7 @@ const LinhaAluno = ({
       }
       return aluno.notasConceitoFinal[0];
     }
-
-    aluno.notasConceitoFinal = [{ notaConceito: '' }];
-    return aluno.notasBimestre[0];
+    return '';
   };
 
   const onChangeNotaConceitoFinal = (notaBimestre, valorNovo) => {
