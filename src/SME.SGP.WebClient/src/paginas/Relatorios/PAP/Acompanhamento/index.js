@@ -154,6 +154,8 @@ function RelatorioPAPAcompanhamento() {
         erro(`Não foi possível completar a requisição: ${JSON.stringify(err)}`);
       else erro('Ocorreu um erro interno, por favor contate o suporte');
     }
+
+    return true;
   };
 
   const onChangeRespostaHandler = async (aluno, valor) => {
@@ -264,7 +266,7 @@ function RelatorioPAPAcompanhamento() {
   return (
     <>
       <AlertaSelecionarTurma />
-      <Cabecalho pagina="Relatório de acompanhamento PAP" />
+      <Cabecalho pagina="Relatório de encaminhamento e acompanhamento do PAP" />
       <Loader loading={carregando}>
         <Card mx="mx-0">
           <ButtonGroup
