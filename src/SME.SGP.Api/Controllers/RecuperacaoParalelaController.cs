@@ -24,6 +24,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet("listar")]
         [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaListagemDto>), 200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Listar([FromQuery]FiltroRecuperacaoParalelaDto filtro)
         {
@@ -32,6 +33,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet("total-estudantes")]
         [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaTotalEstudanteDto>), 200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ListarTotalEstudantes([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
@@ -40,6 +42,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet("grafico/frequencia")]
         [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaTotalEstudantePorFrequenciaDto>), 200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ListarTotalEstudantesPorFrequencia([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
@@ -48,6 +51,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet("resultado")]
         [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaTotalResultadoDto>), 200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ListarTotalResultado([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
@@ -64,6 +68,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpPost]
         [ProducesResponseType(200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> PostAsync([FromBody]RecuperacaoParalelaDto recuperacaoParalelaPeriodoDto)
