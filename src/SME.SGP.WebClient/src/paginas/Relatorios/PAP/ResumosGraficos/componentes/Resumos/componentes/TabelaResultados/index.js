@@ -195,6 +195,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                       Objetivo: objetivo.objetivoDescricao,
                       ObjetivoGrupo: c === 0 && r === 0,
                       Resposta: resposta.respostaDescricao,
+                      Ordem: resposta.ordem,
                       Total: 0,
                     });
                   }
@@ -261,12 +262,6 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                       dado => dado.Resposta === resposta.respostaDescricao
                     )
                   ) {
-                    // console.log(
-                    //   eixo.eixoDescricao,
-                    //   objetivo.objetivoDescricao,
-                    //   resposta.respostaDescricao,
-                    //   resposta.ordem
-                    // );
                     item.push({
                       Eixo: eixo.eixoDescricao,
                       EixoGrupo: o === 0 && a === 0 && r === 0,
@@ -274,6 +269,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                       Objetivo: objetivo.objetivoDescricao,
                       ObjetivoGrupo: a === 0 && r === 0,
                       Resposta: resposta.respostaDescricao,
+                      Ordem: resposta.ordem,
                       Total: 0,
                     });
                   }
@@ -322,6 +318,8 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                 montaColunas.push(coluna);
             });
           }
+
+          item.sort(FiltroHelper.ordenarLista('Ordem'));
           montaDados.push(...item);
         });
       });
@@ -346,7 +344,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
       setColunas([...colunasFixas, ...montaColunas]);
     }
-  }, [dados, ciclos, anos, unidadeSelecionada]);
+  }, [dados, anos, ciclos, unidadeSelecionada, UNIDADES.P, UNIDADES.Q]);
 
   useEffect(() => {
     montaColunasDados();
