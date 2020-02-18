@@ -49,7 +49,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (retorno.Any(x => x.Key.Equals(codigoAluno)))
                     return;
 
-                retorno.Add(new KeyValuePair<string, int>(codigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente)); 
+                retorno.Add(new KeyValuePair<string, int>(codigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente));
             });
 
             return retorno;
@@ -57,8 +57,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public RecuperacaoParalelaStatus ObterStatusRecuperacaoParalela(int RespostasRecuperacaoParalela, int Objetivos)
         {
-            if (RespostasRecuperacaoParalela == Objetivos) return RecuperacaoParalelaStatus.Concluido;
-            if (RespostasRecuperacaoParalela > 0) return RecuperacaoParalelaStatus.Alerta;
+            if (RespostasRecuperacaoParalela == Objetivos)
+                return RecuperacaoParalelaStatus.Concluido;
+            if (RespostasRecuperacaoParalela > 0)
+                return RecuperacaoParalelaStatus.Alerta;
             return RecuperacaoParalelaStatus.NaoAlterado;
         }
 
