@@ -1,9 +1,8 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using SME.SGP.Infra;
+using System;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -25,6 +24,25 @@ namespace SME.SGP.Dados.Repositorios
             var parametros = new { cicloId, dataAvalicao };
 
             return database.QueryFirstOrDefault<NotaTipoValor>(sql, parametros);
+        }
+
+        public NotaTipoValor ObterPorTurmaId(long turmaId)
+        {
+            var sql = @"select
+	                    nccp.*
+                    from
+	                    turma t
+                    inner join tipo_ciclo_ano tca on
+	                    tca.ano = t.ano
+	                    and tca.modalidade = t.modalidade_codigo
+                    inner join tipo_ciclo tc on
+	                    tca.tipo_ciclo_id = tc.id
+                    inner join notas_conceitos_ciclos_parametos nccp on
+	                    nccp.ciclo = tc.id
+                    where
+	                    t.id = @turmaId";
+
+            return database.QueryFirstOrDefault<NotaTipoValor>(sql, new { turmaId });
         }
     }
 }
