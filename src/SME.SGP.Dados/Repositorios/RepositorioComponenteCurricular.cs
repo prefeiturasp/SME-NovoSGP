@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         public IEnumerable<ComponenteCurricular> ObterComponentesJuremaPorCodigoEol(long codigoEol)
         {
             var query = "select * from componente_curricular where codigo_eol = @codigoEol";
-            return database.Conexao.Query<ComponenteCurricular>(query, new { codigoEol = codigoEol.ToString() });
+            return database.Conexao.Query<ComponenteCurricular>(query, new { codigoEol });
         }
     }
 }
