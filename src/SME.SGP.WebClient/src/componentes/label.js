@@ -17,10 +17,10 @@ const Container = styled.div`
   }
 `;
 
-const Label = ({ text, control, center, className }) => {
+const Label = ({ text, control, center }) => {
   return (
     <Container className={center && 'text-center'}>
-      <label htmlFor={control} id={text} className={className}>
+      <label htmlFor={control} id={text}>
         {text}
       </label>
     </Container>

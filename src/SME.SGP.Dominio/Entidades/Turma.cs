@@ -22,12 +22,5 @@ namespace SME.SGP.Dominio
         {
             Ue = ue;
         }
-
-        public ModalidadeTipoCalendario ObterModalidadeTipoCalendario()
-        {
-            if (ModalidadeCodigo == Modalidade.Fundamental || ModalidadeCodigo == Modalidade.Medio)
-                return ModalidadeTipoCalendario.FundamentalMedio;
-            else return ModalidadeTipoCalendario.EJA;
-        }
     }
 }

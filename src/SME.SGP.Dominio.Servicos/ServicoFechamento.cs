@@ -84,11 +84,11 @@ namespace SME.SGP.Dominio.Servicos
 
             var dreIdFiltro = !string.IsNullOrWhiteSpace(ueId) || usuarioLogado.EhPerfilUE() ? dre?.Id : null;
 
-            var fechamentoSMEDre = repositorioFechamento.ObterPorFiltros(tipoCalendarioId, dreIdFiltro, null, null);
+            var fechamentoSMEDre = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, dreIdFiltro, null);
             var ehRegistroExistente = (dreId == null && fechamentoSMEDre != null);
             if (fechamentoSMEDre == null)
             {
-                fechamentoSMEDre = repositorioFechamento.ObterPorFiltros(tipoCalendarioId, null, null, null);
+                fechamentoSMEDre = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, null, null);
                 ehRegistroExistente = fechamentoSMEDre != null;
                 if (fechamentoSMEDre == null)
                 {
@@ -107,7 +107,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
-            var fechamentoDreUe = repositorioFechamento.ObterPorFiltros(tipoCalendarioId, dre?.Id, ue?.Id, null);
+            var fechamentoDreUe = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, dre?.Id, ue?.Id);
             if (fechamentoDreUe == null)
             {
                 ehRegistroExistente = false;
@@ -337,7 +337,7 @@ namespace SME.SGP.Dominio.Servicos
         private PeriodoFechamento MapearParaDominio(FechamentoDto fechamentoDto)
         {
             var (dre, ue) = ObterDreEUe(fechamentoDto.DreId, fechamentoDto.UeId);
-            var fechamento = repositorioFechamento.ObterPorFiltros(fechamentoDto.TipoCalendarioId.Value, dre?.Id, ue?.Id, null);
+            var fechamento = repositorioFechamento.ObterPorTipoCalendarioDreEUE(fechamentoDto.TipoCalendarioId.Value, dre?.Id, ue?.Id);
             if (fechamento == null)
                 fechamento = new PeriodoFechamento(dre, ue);
 
@@ -416,13 +416,13 @@ namespace SME.SGP.Dominio.Servicos
             PeriodoFechamento fechamentoParaValidacao = null;
             if (ehDre)
             {
-                fechamentoParaValidacao = repositorioFechamento.ObterPorFiltros(fechamento.FechamentosBimestre.FirstOrDefault().PeriodoEscolar.TipoCalendarioId, null, null, null);
+                fechamentoParaValidacao = repositorioFechamento.ObterPorTipoCalendarioDreEUE(fechamento.FechamentosBimestre.FirstOrDefault().PeriodoEscolar.TipoCalendarioId, null, null);
             }
             else
             {
                 if (!ehSme)
                 {
-                    fechamentoParaValidacao = repositorioFechamento.ObterPorFiltros(fechamento.FechamentosBimestre.FirstOrDefault().PeriodoEscolar.TipoCalendarioId, fechamento.DreId, null, null);
+                    fechamentoParaValidacao = repositorioFechamento.ObterPorTipoCalendarioDreEUE(fechamento.FechamentosBimestre.FirstOrDefault().PeriodoEscolar.TipoCalendarioId, fechamento.DreId, null);
                 }
             }
             if (fechamentoParaValidacao != null)
