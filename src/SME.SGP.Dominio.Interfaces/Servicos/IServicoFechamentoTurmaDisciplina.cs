@@ -9,8 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task GerarPendenciasFechamento(long disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, FechamentoTurmaDisciplina fechamento, Usuario usuarioLogado);
 
-        Task RealizarFechamento(string codigoTurma, long disciplinaId, long periodoEscolarId, Usuario usuarioLogado);
-
         Task Reprocessar(long fechamentoId);
     }
 }
