@@ -35,7 +35,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private int ObterBimestre(DateTime data, string turmaId)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = repositorioTurma.ObterPorId(turmaId);
             return consultasPeriodoEscolar.ObterBimestre(data, turma.ModalidadeCodigo);
         }
 
