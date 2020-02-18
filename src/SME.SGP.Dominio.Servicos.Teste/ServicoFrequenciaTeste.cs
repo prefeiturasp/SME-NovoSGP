@@ -48,7 +48,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
         private void Setup()
         {
-            repositorioTurma.Setup(c => c.ObterPorCodigo(It.IsAny<string>()))
+            repositorioTurma.Setup(c => c.ObterPorId(It.IsAny<string>()))
                 .Returns(new Turma()
                 {
                     AnoLetivo = 2019,

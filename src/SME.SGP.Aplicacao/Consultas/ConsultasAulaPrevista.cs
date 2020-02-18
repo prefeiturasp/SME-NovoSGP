@@ -173,7 +173,7 @@ namespace SME.SGP.Aplicacao
 
         private Turma ObterTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = repositorioTurma.ObterPorId(turmaId);
 
             if (turma == null)
                 throw new NegocioException("Turma não encontrada!");
