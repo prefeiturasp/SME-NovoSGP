@@ -33,13 +33,13 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("turmas/{turmaId}/bimestres/{bimestre}/aberto")]
+        [HttpGet("turmas/{turmaCodigo}/bimestres/{bimestre}/aberto")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PFA_C, Policy = "Bearer")]
-        public async Task<IActionResult> PeriodoTurmaAberto(string turmaId, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices] IConsultasFechamento consultasFechamento)
+        public async Task<IActionResult> PeriodoTurmaAberto(string turmaCodigo, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices] IConsultasFechamento consultasFechamento)
         {
-            return Ok(await consultasFechamento.TurmaEmPeriodoDeFechamento(turmaId, dataReferencia, bimestre));
+            return Ok(await consultasFechamento.TurmaEmPeriodoDeFechamento(turmaCodigo, dataReferencia, bimestre));
         }
 
     }
