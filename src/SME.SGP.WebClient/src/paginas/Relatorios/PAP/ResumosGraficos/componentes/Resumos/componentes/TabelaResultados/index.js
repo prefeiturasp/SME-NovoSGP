@@ -329,7 +329,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
       setColunas([...colunasFixas, ...montaColunas]);
     }
-  }, [dados, ciclos, anos, unidadeSelecionada]);
+  }, [dados, anos, ciclos, unidadeSelecionada, UNIDADES.P, UNIDADES.Q]);
 
   useEffect(() => {
     montaColunasDados();
