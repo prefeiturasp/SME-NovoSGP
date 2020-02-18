@@ -11,6 +11,7 @@ namespace SME.SGP.Dto
         public int CdTipoFuncaoAtividade { get; set; }
         public GruposSGP Grupo { get; set; }
         public Guid GrupoID { get; set; }
+        public GruposSGP Grupo { get; set; }
         public int? TipoFuncaoAtividade { get; set; }
     }
 }
