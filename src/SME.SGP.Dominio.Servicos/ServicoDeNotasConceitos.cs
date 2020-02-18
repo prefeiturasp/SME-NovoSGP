@@ -132,7 +132,7 @@ namespace SME.SGP.Dominio
                     }
                     else
                     {
-                        var conceito = valoresConceito.FirstOrDefault(a => a.Id == nota.ConceitoId);
+                        var conceito = valoresConceito.FirstOrDefault(a => a.Id == nota.Conceito);
                         somaConceitos += conceito.Aprovado ? 1 : 0;
                     }
                 }
@@ -283,7 +283,7 @@ namespace SME.SGP.Dominio
                 else
                 {
                     var conceitos = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
-                    var conceito = conceitos.FirstOrDefault(c => c.Id.Equals(nota.ConceitoId));
+                    var conceito = conceitos.FirstOrDefault(c => c.Id.Equals(nota.Conceito));
 
                     if (conceitos == null)
                         throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
@@ -305,7 +305,7 @@ namespace SME.SGP.Dominio
                                 AtividadeAvaliativaID = notaConceito.AtividadeAvaliativaID,
                                 DisciplinaId = atividade.DisciplinaId,
                                 Nota = notaConceito.Nota,
-                                ConceitoId = notaConceito.ConceitoId,
+                                Conceito = notaConceito.Conceito,
                                 TipoNota = notaConceito.TipoNota
                             });
                         }

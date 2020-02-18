@@ -1,7 +1,7 @@
 import { Tabs } from 'antd';
-import React, { useEffect, useState, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Colors, Loader, Base } from '~/componentes';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Colors, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Button from '~/componentes/button';
@@ -16,21 +16,13 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import FechamentoBimestreLista from './fechamento-bimestre-lista/fechamento-bimestre-lista';
 import RotasDto from '~/dtos/rotasDto';
 import { Fechamento } from './fechamento-bimestre.css';
-import FechamentoFinal from '../FechamentoFinal/fechamentoFinal';
-import ServicoFechamentoFinal from '~/servicos/Paginas/DiarioClasse/ServicoFechamentoFinal';
-import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFechamentoBimestre';
-import periodo from '~/dtos/periodo';
-import { setExpandirLinha } from '~/redux/modulos/notasConceitos/actions';
 
 const FechamentoBismestre = () => {
-  const dispatch = useDispatch();
-
   const { TabPane } = Tabs;
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada, permissoes } = usuario;
-  const permissoesTela = permissoes[RotasDto.FECHAMENTO_BIMESTRE];
-  const { podeIncluir, podeAlterar } = permissoesTela;
+  const permissoesTela = permissoes[RotasDto.FechamentoBismestre];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   useEffect(() => {
@@ -50,8 +42,6 @@ const FechamentoBismestre = () => {
   const [dadosBimestre3, setDadosBimestre3] = useState(undefined);
   const [dadosBimestre4, setDadosBimestre4] = useState(undefined);
   const [ehRegencia, setEhRegencia] = useState(false);
-  const [periodoFechamento, setPeriodoFechamento] = useState(periodo.Anual);
-  const [desabilitaAbaFinal, setDesabilitaAbaFinal] = useState(false);
 
   const onChangeDisciplinas = id => {
     const disciplina = listaDisciplinas.find(
@@ -61,30 +51,13 @@ const FechamentoBismestre = () => {
     setDisciplinaIdSelecionada(id);
   };
 
-  const onClickVoltar = async () => {
-    let confirmou = true;
-    if (modoEdicao) {
-      confirmou = await confirmar(
-        'Atenção',
-        'Existem alterações pendetes, deseja realmente sair da tela de fechamento?'
-      );
-    }
-    if (confirmou) {
-      history.push(URL_HOME);
-      dispatch(setExpandirLinha([]));
-    }
+  const onClickVoltar = () => {
+    history.push(URL_HOME);
   };
 
-  const onClickCancelar = async () => {
-    const confirmou = await confirmar(
-      'Atenção',
-      'Existem alterações pendetes, deseja realmente cancelar?'
-    );
-    if (confirmou) {
-      refFechamentoFinal.current.cancelar();
-      setModoEdicao(false);
-    }
-  };
+  const onClickCancelar = () => {};
+
+  const onClickSalvar = () => {};
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -92,9 +65,8 @@ const FechamentoBismestre = () => {
         const lista = await ServicoDisciplina.obterDisciplinasPorTurma(
           turmaSelecionada.turma
         );
-        setListaDisciplinas([...lista.data]);
+        setListaDisciplinas(lista.data);
         if (lista.data.length === 1) {
-          setDisciplinaIdSelecionada(undefined);
           setDisciplinaIdSelecionada(
             String(lista.data[0].codigoComponenteCurricular)
           );
@@ -106,27 +78,23 @@ const FechamentoBismestre = () => {
     obterDisciplinas();
   }, [turmaSelecionada]);
 
+  useEffect(() => {
+    if (disciplinaIdSelecionada) obterDados();
+  }, [disciplinaIdSelecionada]);
+
   const obterDados = async (bimestre = 0) => {
-    if (disciplinaIdSelecionada) {
-      setCarregandoBimestres(true);
-      const fechamento = await ServicoFechamentoBimestre.buscarDados(
-        turmaSelecionada.turma,
-        disciplinaIdSelecionada,
-        bimestre
-      ).finally(() => {
-        setCarregandoBimestres(false);
-      });
-      if (fechamento && fechamento.data) {
-        const dadosFechamento = fechamento.data;
-        setPeriodoFechamento(dadosFechamento.periodo);
-        setBimestreCorrente(`${dadosFechamento.bimestre}`);
-        setDadosBimestre(dadosFechamento.bimestre, dadosFechamento);
-        if (dadosFechamento.periodo === periodo.Anual) {
-          setDesabilitaAbaFinal(dadosFechamento.bimestre !== 4);
-        } else {
-          setDesabilitaAbaFinal(dadosFechamento.bimestre !== 2);
-        }
-      }
+    setCarregandoBimestres(true);
+    const fechamento = await ServicoFechamentoBimestre.buscarDados(
+      turmaSelecionada.turma,
+      disciplinaIdSelecionada,
+      bimestre
+    ).finally(() => {
+      setCarregandoBimestres(false);
+    });
+    if (fechamento && fechamento.data) {
+      const dadosFechamento = fechamento.data;
+      setBimestreCorrente(`${dadosFechamento.bimestre}`);
+      setDadosBimestre(dadosFechamento.bimestre, dadosFechamento);
     }
   };
 
@@ -153,61 +121,13 @@ const FechamentoBismestre = () => {
     }
   };
 
-  useEffect(() => {
-    if (disciplinaIdSelecionada) obterDados();
-  }, [disciplinaIdSelecionada]);
-
   const onChangeTab = async numeroBimestre => {
     setBimestreCorrente(numeroBimestre);
-    if (numeroBimestre !== 'final') {
+    if (numeroBimestre != 'final') {
       obterDados(numeroBimestre);
     }
   };
 
-  //FechamentoFinal
-  const refFechamentoFinal = useRef();
-  const [turmaPrograma, setTurmaPrograma] = useState(false);
-
-  useEffect(() => {
-    const programa = !!(turmaSelecionada.ano === '0');
-    setTurmaPrograma(programa);
-  }, [turmaSelecionada.ano]);
-
-  useEffect(() => {
-    if (listaDisciplinas && listaDisciplinas.length > 0) {
-      const disciplina = listaDisciplinas.find(
-        c => c.disciplinaId == disciplinaIdSelecionada
-      );
-      if (disciplina) setEhRegencia(disciplina.regencia);
-    }
-  }, [disciplinaIdSelecionada, listaDisciplinas]);
-
-  const [fechamentoFinal, setFechamentoFinal] = useState({
-    ehRegencia,
-    turmaCodigo: turmaSelecionada.turma,
-    itens: [],
-  });
-
-  const onChangeFechamentoFinal = alunosAlterados => {
-    const fechamentoFinalDto = fechamentoFinal;
-    fechamentoFinalDto.itens = alunosAlterados;
-    setFechamentoFinal(fechamentoFinalDto);
-    setModoEdicao(true);
-  };
-  const salvarFechamentoFinal = () => {
-    fechamentoFinal.turmaCodigo = turmaSelecionada.turma;
-    fechamentoFinal.ehRegencia = ehRegencia;
-    ServicoFechamentoFinal.salvar(fechamentoFinal)
-      .then(() => {
-        sucesso('Fechamento final salvo com sucesso.');
-        setModoEdicao(false);
-        dispatch(setExpandirLinha([]));
-        refFechamentoFinal.current.salvarFechamentoFinal();
-      })
-      .catch(e => erros(e));
-  };
-
-  //FechamentoFinal
   return (
     <>
       {!turmaSelecionada.turma ? (
@@ -251,7 +171,7 @@ const FechamentoBismestre = () => {
                   border
                   bold
                   className="mr-2"
-                  onClick={salvarFechamentoFinal}
+                  onClick={onClickSalvar}
                   disabled={!modoEdicao || somenteConsulta}
                 />
               </div>
@@ -299,38 +219,26 @@ const FechamentoBismestre = () => {
                       />
                     ) : null}
                   </TabPane>
-                  {periodoFechamento === periodo.Anual ? (
-                    <TabPane tab="3º Bimestre" key="3">
-                      {dadosBimestre3 ? (
-                        <FechamentoBimestreLista
-                          dados={dadosBimestre3}
-                          ehRegencia={ehRegencia}
-                        />
-                      ) : null}
-                    </TabPane>) : null
-                  }
-                  {periodoFechamento === periodo.Anual ? (
-                    <TabPane tab="4º Bimestre" key="4">
-                      {dadosBimestre4 ? (
-                        <FechamentoBimestreLista
-                          dados={dadosBimestre4}
-                          ehRegencia={ehRegencia}
-                        />
-                      ) : null}
-                    </TabPane>) : null
-                  }
-                  <TabPane tab="Final" key="final" disabled={desabilitaAbaFinal}>
-                    <FechamentoFinal
-                      turmaCodigo={turmaSelecionada.turma}
-                      disciplinaCodigo={disciplinaIdSelecionada}
-                      ehRegencia={ehRegencia}
-                      turmaPrograma={turmaPrograma}
-                      onChange={onChangeFechamentoFinal}
-                      ref={refFechamentoFinal}
-                      desabilitarCampo={!podeIncluir || !podeAlterar || somenteConsulta}
-                      somenteConsulta={somenteConsulta}
-                    />
+
+                  <TabPane tab="3º Bimestre" key="3">
+                    {dadosBimestre3 ? (
+                      <FechamentoBimestreLista
+                        dados={dadosBimestre3}
+                        ehRegencia={ehRegencia}
+                      />
+                    ) : null}
                   </TabPane>
+
+                  <TabPane tab="4º Bimestre" key="4">
+                    {dadosBimestre4 ? (
+                      <FechamentoBimestreLista
+                        dados={dadosBimestre4}
+                        ehRegencia={ehRegencia}
+                      />
+                    ) : null}
+                  </TabPane>
+
+                  <TabPane tab="Final" key="final"></TabPane>
                 </ContainerTabsCard>
               </Fechamento>
             </div>
