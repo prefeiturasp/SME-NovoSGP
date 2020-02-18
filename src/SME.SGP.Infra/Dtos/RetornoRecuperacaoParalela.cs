@@ -14,6 +14,7 @@ namespace SME.SGP.Infra
         public string CriadoRF { get; set; }
         public long Id { get; set; }
         public long ObjetivoId { get; set; }
+        public int OrdenacaoResposta { get; set; }
         public long PeriodoRecuperacaoParalelaId { get; set; }
         public long RespostaId { get; set; }
         public long TurmaId { get; set; }
