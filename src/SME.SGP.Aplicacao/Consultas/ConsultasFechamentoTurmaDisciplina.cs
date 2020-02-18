@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
                                 Disciplina = disciplinaEOL.Regencia ?
                                     disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
                                     disciplinaEOL.Nome,
-                                NotaConceito = notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota.ToString() : ObterConceito(notaConceitoBimestre.ConceitoId)
+                                NotaConceito = notaConceitoBimestre.Nota.HasValue ? notaConceitoBimestre.Nota.Value.ToString() : ObterConceito(notaConceitoBimestre.ConceitoId.Value)
                             });
                         }
 

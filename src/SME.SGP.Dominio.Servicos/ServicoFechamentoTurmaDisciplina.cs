@@ -113,10 +113,16 @@ namespace SME.SGP.Dominio.Servicos
                     var notaConceitoBimestre = notasConceitosBimestre.FirstOrDefault(x => x.CodigoAluno == notaConceitoAlunoDto.CodigoAluno && x.DisciplinaId == notaConceitoAlunoDto.DisciplinaId);
                     if (notaConceitoBimestre != null)
                     {
-                        notaConceitoBimestre.Nota = notaConceitoAlunoDto.Nota;
-
-                        if (notaConceitoAlunoDto.ConceitoId > 0)
-                            notaConceitoBimestre.ConceitoId = notaConceitoAlunoDto.ConceitoId;
+                        if (notaConceitoAlunoDto.Nota.HasValue)
+                        {
+                            notaConceitoBimestre.Nota = notaConceitoAlunoDto.Nota.Value;
+                            notaConceitoBimestre.ConceitoId = null;
+                        }
+                        else
+                        {
+                            notaConceitoBimestre.ConceitoId = notaConceitoAlunoDto.ConceitoId.Value;
+                            notaConceitoBimestre.Nota = 0;
+                        }
                     }
                     else
                         notasConceitosBimestre.Add(MapearParaEntidade(notaConceitoAlunoDto));
@@ -139,7 +145,7 @@ namespace SME.SGP.Dominio.Servicos
               {
                   CodigoAluno = notaConceitoAlunoDto.CodigoAluno,
                   DisciplinaId = notaConceitoAlunoDto.DisciplinaId,
-                  Nota = notaConceitoAlunoDto.Nota,
+                  Nota = notaConceitoAlunoDto.Nota.HasValue ? notaConceitoAlunoDto.Nota.Value : 0,
                   ConceitoId = notaConceitoAlunoDto.ConceitoId
               };
 
