@@ -94,6 +94,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
     dadoPorcentagem.Total = dados.totalEstudantes.porcentagemTotal;
     montaDados.push(dadoPorcentagem);
 
+    console.log(montaDados);
     return montaDados;
   }, [cicloOuAno, dados.totalEstudantes]);
 
@@ -109,7 +110,6 @@ function TabGraficos({ dados, periodo, ciclos }) {
         objetivo = {
           ...objetivo,
           objetivoDescricao: obj.objetivoDescricao,
-          descricao: obj.objetivoDescricao,
         };
 
         const item = [];
@@ -123,7 +123,6 @@ function TabGraficos({ dados, periodo, ciclos }) {
               item.push({
                 eixoDescricao: resultado.eixoDescricao,
                 objetivoDescricao: obj.objetivoDescricao,
-                descricao: obj.objetivoDescricao,
                 FrequenciaDescricao:
                   cicloOuAno === 'ciclos'
                     ? removerCaracteresEspeciais(resposta.respostaDescricao)
@@ -134,7 +133,6 @@ function TabGraficos({ dados, periodo, ciclos }) {
               item.push({
                 eixoDescricao: resultado.eixoDescricao,
                 objetivoDescricao: obj.objetivoDescricao,
-                descricao: obj.objetivoDescricao,
                 FrequenciaDescricao:
                   cicloOuAno === 'ciclos'
                     ? removerCaracteresEspeciais(resposta.respostaDescricao)
@@ -208,7 +206,6 @@ function TabGraficos({ dados, periodo, ciclos }) {
         objetivo = {
           ...objetivo,
           objetivoDescricao: obj.objetivoDescricao,
-          descricao: obj.objetivoDescricao,
         };
 
         const item = [];
@@ -222,7 +219,6 @@ function TabGraficos({ dados, periodo, ciclos }) {
               item.push({
                 eixoDescricao: resultado.eixoDescricao,
                 objetivoDescricao: obj.objetivoDescricao,
-                descricao: obj.objetivoDescricao,
                 FrequenciaDescricao:
                   cicloOuAno === 'ciclos'
                     ? removerCaracteresEspeciais(resposta.respostaDescricao)
@@ -233,7 +229,6 @@ function TabGraficos({ dados, periodo, ciclos }) {
               item.push({
                 eixoDescricao: resultado.eixoDescricao,
                 objetivoDescricao: obj.objetivoDescricao,
-                descricao: obj.objetivoDescricao,
                 FrequenciaDescricao:
                   cicloOuAno === 'ciclos'
                     ? removerCaracteresEspeciais(resposta.respostaDescricao)
@@ -295,48 +290,29 @@ function TabGraficos({ dados, periodo, ciclos }) {
     return resultados;
   }, [cicloOuAno, dados.informacoesEscolares]);
 
-  const [objetivos, setObjetivos] = useState([]);
+  const [objetivos, setObjetivos] = useState([
+    {
+      id: shortid.generate(),
+      eixoDescricao: 'Total',
+      objetivoDescricao: 'Total de alunos no PAP',
+      dados: dadosTabelaTotalEstudantes,
+    },
+  ]);
 
   useEffect(() => {
     if (periodo === '1') {
-      if (dadosTabelaTotalEstudantes.length > 0) {
-        setObjetivos(atual => [
-          ...atual,
-          {
-            id: shortid.generate(),
-            eixoDescricao: 'Total',
-            objetivoDescricao: 'Total de alunos no PAP',
-            descricao: 'Total de alunos no PAP',
-            dados: dadosTabelaTotalEstudantes,
-          },
-        ]);
-      }
-
       setObjetivos(atual => [
         ...atual,
         ...dadosTabelaInformacoesEscolares,
         ...dadosTabelaResultados,
       ]);
     } else {
-      if (dadosTabelaTotalEstudantes.length > 0) {
-        setObjetivos(atual => [
-          ...atual,
-          {
-            id: shortid.generate(),
-            eixoDescricao: 'Total',
-            objetivoDescricao: 'Total de alunos no PAP',
-            descricao: 'Total de alunos no PAP',
-            dados: dadosTabelaTotalEstudantes,
-          },
-        ]);
-      }
       setObjetivos(atual => [...atual, ...dadosTabelaResultados]);
     }
   }, [
     dadosTabelaFrequencia,
     dadosTabelaInformacoesEscolares,
     dadosTabelaResultados,
-    dadosTabelaTotalEstudantes,
     periodo,
   ]);
 
@@ -364,61 +340,55 @@ function TabGraficos({ dados, periodo, ciclos }) {
         />
       </Linha>
       <Linha style={{ marginBottom: '35px', textAlign: 'center' }}>
+        <h4>Quantidade</h4>
         {itemAtivo && itemAtivo.dados && (
-          <>
-            <h4>Quantidade</h4>
-            <div style={{ height: 300 }}>
-              <Graficos.Barras
-                dados={itemAtivo.dados.filter(x => x.TipoDado === 'Quantidade')}
-                indice="FrequenciaDescricao"
-                chaves={Object.keys(itemAtivo.dados[0]).filter(
-                  x =>
-                    [
-                      'TipoDado',
-                      'FrequenciaDescricao',
-                      'key',
-                      'Descricao',
-                      'Total',
-                      'Id',
-                      'eixoDescricao',
-                      'objetivoDescricao',
-                      'descricao',
-                    ].indexOf(x) === -1
-                )}
-              />
-            </div>
-          </>
+          <div style={{ height: 300 }}>
+            <Graficos.Barras
+              dados={itemAtivo.dados.filter(x => x.TipoDado === 'Quantidade')}
+              indice="FrequenciaDescricao"
+              chaves={Object.keys(itemAtivo.dados[0]).filter(
+                x =>
+                  [
+                    'TipoDado',
+                    'FrequenciaDescricao',
+                    'key',
+                    'Descricao',
+                    'Total',
+                    'Id',
+                    'eixoDescricao',
+                    'objetivoDescricao',
+                  ].indexOf(x) === -1
+              )}
+            />
+          </div>
         )}
       </Linha>
       <Linha style={{ marginBottom: '35px', textAlign: 'center' }}>
+        <h4>Porcentagem</h4>
         {itemAtivo && itemAtivo.dados && (
-          <>
-            <h4>Porcentagem</h4>
-            <div style={{ height: 300 }}>
-              <Graficos.Barras
-                dados={
-                  itemAtivo &&
-                  itemAtivo.dados.filter(x => x.TipoDado === 'Porcentagem')
-                }
-                indice="FrequenciaDescricao"
-                chaves={Object.keys(itemAtivo && itemAtivo.dados[0]).filter(
-                  x =>
-                    [
-                      'TipoDado',
-                      'FrequenciaDescricao',
-                      'key',
-                      'Descricao',
-                      'Total',
-                      'Id',
-                      'eixoDescricao',
-                      'objetivoDescricao',
-                      'descricao',
-                    ].indexOf(x) === -1
-                )}
-                porcentagem
-              />
-            </div>
-          </>
+          <div style={{ height: 300 }}>
+            <Graficos.Barras
+              dados={
+                itemAtivo &&
+                itemAtivo.dados.filter(x => x.TipoDado === 'Porcentagem')
+              }
+              indice="FrequenciaDescricao"
+              chaves={Object.keys(itemAtivo && itemAtivo.dados[0]).filter(
+                x =>
+                  [
+                    'TipoDado',
+                    'FrequenciaDescricao',
+                    'key',
+                    'Descricao',
+                    'Total',
+                    'Id',
+                    'eixoDescricao',
+                    'objetivoDescricao',
+                  ].indexOf(x) === -1
+              )}
+              porcentagem
+            />
+          </div>
         )}
       </Linha>
     </>

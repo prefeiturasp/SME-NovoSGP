@@ -9,6 +9,5 @@
         public int ObjetivoId { get; set; }
         public string Resposta { get; set; }
         public int RespostaId { get; set; }
-        public int Ordem { get; set; }
     }
 }
