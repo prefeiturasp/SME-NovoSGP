@@ -120,7 +120,11 @@ const ResumosGraficosPAP = () => {
             activeKey={tabAtiva}
             defaultActiveKey="relatorios"
           >
-            <Tabs.TabPane tab="Resumos" key="relatorios">
+            <Tabs.TabPane
+              disabled={carregandoRelatorios}
+              tab="Resumos"
+              key="relatorios"
+            >
               <Loader loading={carregandoRelatorios}>
                 {tabAtiva === 'relatorios' ? (
                   <LazyLoad>
@@ -140,7 +144,11 @@ const ResumosGraficosPAP = () => {
                 )}
               </Loader>
             </Tabs.TabPane>
-            <Tabs.TabPane tab="Gráficos" key="graficos">
+            <Tabs.TabPane
+              disabled={carregandoGraficos}
+              tab="Gráficos"
+              key="graficos"
+            >
               <Loader loading={carregandoGraficos}>
                 {tabAtiva === 'graficos' ? (
                   <LazyLoad>
