@@ -220,6 +220,8 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
               const coluna = {
                 title: `${ciclo.cicloDescricao}`,
                 dataIndex: `${ciclo.cicloDescricao}`,
+                render: text =>
+                  text || `0${unidadeSelecionada === UNIDADES.P ? `%` : ``}`,
               };
 
               if (!objetoExisteNaLista(coluna, montaColunas))
@@ -287,6 +289,8 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
               const coluna = {
                 title: `${ano.anoDescricao}`,
                 dataIndex: `${ano.anoDescricao}`,
+                render: text =>
+                  text || `0${unidadeSelecionada === UNIDADES.P ? `%` : ``}`,
               };
 
               if (!objetoExisteNaLista(coluna, montaColunas))
