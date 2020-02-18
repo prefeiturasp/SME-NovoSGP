@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
 
         private Turma BuscaTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterPorId(turmaId);
+            var turma = repositorioTurma.ObterPorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 
@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
             }
-            var turma = repositorioTurma.ObterPorId(aula.TurmaId);
+            var turma = repositorioTurma.ObterPorCodigo(aula.TurmaId);
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
             FrequenciaDto registroFrequenciaDto = ObterRegistroFrequencia(aulaId, aula, turma);

@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<TurmaRetornoDto>();
 
-            var turma = repositorioTurma.ObterPorId(turmaId.ToString());
+            var turma = repositorioTurma.ObterPorCodigo(turmaId.ToString());
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(usuario.CodigoRf);
 
