@@ -63,8 +63,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosFechamento, ComandosFechamento>();
             services.TryAddScoped<IComandosFechamentoTurmaDisciplina, ComandosFechamentoTurmaDisciplina>();
             services.TryAddScoped<IComandosNotaConceitoBimestre, ComandosNotaConceitoBimestre>();
-            services.TryAddScoped<IComandosFechamentoFinal, ComandosFechamentoFinal>();
-            services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -115,7 +113,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasNotaConceitoBimestre, ConsultasNotaConceitoBimestre>();
             services.TryAddScoped<IConsultasEventoFechamento, ConsultasEventoFechamento>();
             services.TryAddScoped<IConsultaRecuperacaoParalela, ConsultasRecuperacaoParalela>();
-            services.TryAddScoped<IConsultasFechamentoFinal, ConsultasFechamentoFinal>();
+            services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -198,7 +196,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioEixo, RepositorioEixo>();
             services.TryAddScoped<IRepositorioResposta, RepositorioResposta>();
             services.TryAddScoped<IRepositorioObjetivo, RepositorioObjetivo>();
-            services.TryAddScoped<IRepositorioFechamentoFinal, RepositorioFechamentoFinal>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -232,7 +229,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoFechamento, ServicoFechamento>();
             services.TryAddScoped<IServicoFechamentoTurmaDisciplina, ServicoFechamentoTurmaDisciplina>();
             services.TryAddScoped<IServicoRecuperacaoParalela, ServicoRecuperacaoParalela>();
-            services.TryAddScoped<IServicoFechamentoFinal, ServicoFechamentoFinal>();
         }
     }
 }

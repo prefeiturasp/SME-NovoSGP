@@ -206,7 +206,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasParaCopia(string turmaOrigemId)
         {
             var professorRf = servicoUsuario.ObterRf();
-            var turmaOrigem = repositorioTurma.ObterPorCodigo(turmaOrigemId);
+            var turmaOrigem = repositorioTurma.ObterPorId(turmaOrigemId);
 
             var ue = await consultasUe.ObterPorId(turmaOrigem.UeId);
             var turmas = servicoEOL.ObterListaTurmasPorProfessor(professorRf);
