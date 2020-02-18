@@ -59,6 +59,7 @@ const Notas = ({ match }) => {
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
+  const [percentualAprovados, setPercentualAprovados] = useState(0);
 
   useEffect(() => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
@@ -112,8 +113,9 @@ const Notas = ({ match }) => {
       const dados = await api
         .get('v1/avaliacoes/notas/', { params })
         .catch(e => erros(e));
-
-      return dados ? dados.data : [];
+      const resultado = dados ? dados.data : [];
+      setPercentualAprovados(resultado.percentualAlunosInsuficientes ? resultado.percentualAlunosInsuficientes : 0);
+      return resultado;
     },
     [
       usuario.turmaSelecionada.anoLetivo,
@@ -556,6 +558,38 @@ const Notas = ({ match }) => {
     }
   };
 
+  const verificaPorcentagemAprovados = () => {
+    switch (Number(bimestreCorrente)) {
+      case 1:
+
+        break;
+      case 2:
+        break;
+      case 3:
+        break;
+      case 4:
+        break;
+      default:
+        break;
+    }
+  }
+
+  const temQuantidadeMinimaAprovada = dados => {
+    let quantidadeAlunos = 0;
+    let valorNotaTotal = 0.0;
+    dados.alunos.forEach(aluno => {
+      if (aluno.podeEditar) {
+        const totalNotas = 0.0;
+        quantidadeAlunos++;
+        aluno.notasBimestre.forEach(nota => {
+          totalNotas += nota.notaConceito ? nota.notaConceito : 0;
+        });
+        valorNotaTotal += totalNotas;
+      }
+    });
+
+  }
+
   const onChangeTab = async numeroBimestre => {
     dispatch(setExpandirLinha([]));
     setBimestreCorrente(numeroBimestre);
@@ -773,8 +807,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {segundoBimestre.numero ? (
                         <TabPane
                           tab={segundoBimestre.descricao}
@@ -790,8 +824,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {terceiroBimestre.numero ? (
                         <TabPane
                           tab={terceiroBimestre.descricao}
@@ -807,8 +841,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {quartoBimestre.numero ? (
                         <TabPane
                           tab={quartoBimestre.descricao}
@@ -824,8 +858,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                     </ContainerTabsCard>
                   </div>
                 </div>
@@ -851,8 +885,8 @@ const Notas = ({ match }) => {
                 </div>
               </>
             ) : (
-              ''
-            )}
+                ''
+              )}
           </div>
         </Card>
       </Loader>
