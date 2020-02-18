@@ -140,7 +140,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private Turma BuscaTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = repositorioTurma.ObterPorId(turmaId);
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 
@@ -354,7 +354,7 @@ namespace SME.SGP.Dominio.Servicos
             var turmasComErro = new StringBuilder("");
             foreach (var turmaId in compensacaoCopia.TurmasIds)
             {
-                var turma = repositorioTurma.ObterPorCodigo(turmaId);
+                var turma = repositorioTurma.ObterPorId(turmaId);
                 CompensacaoAusenciaDto compensacaoDto = new CompensacaoAusenciaDto()
                 {
                     TurmaId = turmaId,

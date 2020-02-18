@@ -1,5 +1,6 @@
-﻿using SME.SGP.Dominio;
+﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -8,7 +9,6 @@ namespace SME.SGP.Infra
         public int TotalAulasDadas { get; set; }
         public int TotalAulasPrevistas { get; set; }
         public int Bimestre { get; set; }
-        public Periodo Periodo { get; set; }
         public List<NotaConceitoAlunoBimestreDto> Alunos { get; set; }
     }
 }
