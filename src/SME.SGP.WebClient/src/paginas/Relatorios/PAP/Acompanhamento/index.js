@@ -150,9 +150,17 @@ function RelatorioPAPAcompanhamento() {
     } catch (err) {
       setCarregando(false);
 
-      if (err.response)
-        erro(`Não foi possível completar a requisição: ${JSON.stringify(err)}`);
-      else erro('Ocorreu um erro interno, por favor contate o suporte');
+      if (err.response) {
+        const { data } = err.response;
+        if (data) {
+          const { mensagens } = data;
+          erro(`${mensagens[0]}`);
+        } else {
+          erro('Não foi possível completar a requisição');
+        }
+      } else {
+        erro('Ocorreu um erro interno, por favor contate o suporte');
+      }
     }
   };
 
