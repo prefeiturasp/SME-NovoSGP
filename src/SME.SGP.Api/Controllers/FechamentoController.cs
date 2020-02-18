@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/periodos/fechamentos/aberturas")]
+    [Authorize("Bearer")]
     public class FechamentoController : ControllerBase
     {
         [HttpGet]
@@ -29,5 +32,15 @@ namespace SME.SGP.Api.Controllers
             await comandosFechamento.Salvar(fechamentoDto);
             return Ok();
         }
+
+        [HttpGet("turmas/{turmaCodigo}/bimestres/{bimestre}/aberto")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PFA_C, Policy = "Bearer")]
+        public async Task<IActionResult> PeriodoTurmaAberto(string turmaCodigo, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices] IConsultasFechamento consultasFechamento)
+        {
+            return Ok(await consultasFechamento.TurmaEmPeriodoDeFechamento(turmaCodigo, dataReferencia, bimestre));
+        }
+
     }
 }
