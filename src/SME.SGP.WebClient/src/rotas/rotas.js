@@ -45,6 +45,7 @@ import PaginaComErro from '~/paginas/Erro/pagina-com-erro';
 import PeriodoFechamentoReaberturaLista from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaLista';
 import PeriodoFechamentoReaberturaForm from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaForm';
 import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento';
+import PlanoDeTrabalho from '~/paginas/Planejamento/PlanoTrabalho';
 
 const rotas = new Map();
 
@@ -53,6 +54,15 @@ rotas.set(`${RotasDto.PAP}`, {
   menu: ['Relatórios', 'PAP'],
   parent: '/',
   component: ResumosGraficosPAP,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+});
+
+rotas.set(`/teste/componente`, {
+  breadcrumbName: 'Resumos e Gráficos PAP',
+  menu: ['Relatórios', 'PAP'],
+  parent: '/',
+  component: PlanoDeTrabalho,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
 });
