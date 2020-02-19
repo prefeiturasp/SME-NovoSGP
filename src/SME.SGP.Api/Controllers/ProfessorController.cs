@@ -101,7 +101,7 @@ namespace SME.SGP.Api.Controllers
 
             var retorno = await consultasDisciplina.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto);
 
-            if (!retorno.Any())
+            if (retorno == null || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);
