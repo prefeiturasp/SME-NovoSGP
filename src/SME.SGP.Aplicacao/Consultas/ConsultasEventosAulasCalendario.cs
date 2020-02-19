@@ -98,11 +98,14 @@ namespace SME.SGP.Aplicacao
             var disciplinaRegencia = disciplinasEol.FirstOrDefault(c => c.Regencia);
             if (temTurmaInformada && disciplinaRegencia != null)
             {
-                disciplinasRegencia = await consultasDisciplina.ObterComponentesCJ(null,
-                                                                                   filtro.TurmaId,
-                                                                                   string.Empty,
-                                                                                   disciplinaRegencia.CodigoComponenteCurricular,
-                                                                                   usuario.CodigoRf);
+                if (usuario.EhProfessorCj())
+                    disciplinasRegencia = await consultasDisciplina.ObterComponentesCJ(null,
+                                                                                       filtro.TurmaId,
+                                                                                       string.Empty,
+                                                                                       disciplinaRegencia.CodigoComponenteCurricular,
+                                                                                       usuario.CodigoRf);
+                else
+                    disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(filtro.TurmaId), usuario.CodigoRf, usuario.PerfilAtual);
             }
 
             aulas
