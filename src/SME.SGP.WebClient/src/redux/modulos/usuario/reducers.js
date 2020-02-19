@@ -49,6 +49,7 @@ export default function usuario(state = inicial, action) {
         draft.menu = action.payload.menu;
         draft.ehProfessorPoa = action.payload.ehProfessorPoa;
         draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
+        draft.sessaoExpirou = false;
         break;
       case '@usuario/salvarLoginRevalidado':
         draft.token = action.payload.token;
@@ -61,10 +62,9 @@ export default function usuario(state = inicial, action) {
         window.location.reload(true);
         break;
       case '@usuario/deslogarSessaoExpirou':
-        draft = inicial;
         localStorage.clear();
-        window.location.reload(true);
-        draft.sessaoExpirou = true;
+        inicial.sessaoExpirou = true;
+        draft = inicial;
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
