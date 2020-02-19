@@ -186,20 +186,20 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas/planejamento";
-            return await ObterDisciplinas(url);
+            return await ObterDisciplinas(url, "ObterDisciplinasParaPlanejamento");
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurma(string codigoTurma)
         {
             var url = $"funcionarios/turmas/{codigoTurma}/disciplinas";
-            return await ObterDisciplinas(url);
+            return await ObterDisciplinas(url, "ObterDisciplinasPorCodigoTurma");
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas";
 
-            return await ObterDisciplinas(url);
+            return await ObterDisciplinas(url, "ObterDisciplinasPorCodigoTurmaLoginEPerfil");
         }
 
         public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
@@ -220,6 +220,24 @@ namespace SME.SGP.Aplicacao.Integracoes
             return MapearParaDtoDisciplinas(retorno);
         }
 
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAsync(long[] ids)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var parametros = JsonConvert.SerializeObject(ids);
+            var resposta = await httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+
+            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                await RegistrarLogSentryAsync(resposta, "obter as disciplinas", parametros);
+                return null;
+            }
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+            return MapearParaDtoDisciplinas(retorno);
+        }
+
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
         {
             httpClient.DefaultRequestHeaders.Clear();
@@ -229,7 +247,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
-                RegistrarLogSentry(resposta, "obter as disciplinas", parametros);
+                await RegistrarLogSentryAsync(resposta, "obter as disciplinas", parametros);
                 return null;
             }
 
@@ -705,7 +723,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
         }
 
-        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url)
+        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url, string rotina)
         {
             var resposta = await httpClient.GetAsync(url);
 
@@ -714,7 +732,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
             }
-            RegistrarLogSentry(resposta, "ObterDisciplinas", string.Empty);
+            await RegistrarLogSentryAsync(resposta, rotina, string.Empty);
             return null;
         }
 
@@ -729,6 +747,15 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.StatusCode != HttpStatusCode.NotFound)
             {
                 var mensagem = resposta.Content.ReadAsStringAsync().Result;
+                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
+            }
+        }
+
+        private async Task RegistrarLogSentryAsync(HttpResponseMessage resposta, string rotina, string parametros)
+        {
+            if (resposta.StatusCode != HttpStatusCode.NotFound)
+            {
+                var mensagem = await resposta.Content.ReadAsStringAsync();
                 servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
             }
         }
