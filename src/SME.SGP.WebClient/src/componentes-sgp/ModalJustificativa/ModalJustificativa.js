@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import Editor from '~/componentes/editor/editor';
 
@@ -13,6 +13,10 @@ const ModalJustificativa = props => {
   const onCancelar = () => {
     setVisivel(false);
   };
+
+  useEffect(() => {
+    setVisivel(exibirModal);
+  }, [exibirModal]);
 
   const onClose = () => { };
 
