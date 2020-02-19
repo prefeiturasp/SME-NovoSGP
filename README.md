@@ -1,6 +1,7 @@
 # SME Novo SGP
 
-Configuração inicial de ambiente de desenvolvimento
+
+Configuração inicial de ambiente de desenvolvimento 
 
 Esta solução contém o projet de [API](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.Api "API") (backend) e [Front](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.WebClient "Front")
 
