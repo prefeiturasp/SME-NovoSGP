@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -7,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         EventoFechamento ObterPorIdFechamento(long fechamentoId);
         Task<bool> UeEmFechamento(DateTime dataReferencia, string dreCodigo, string ueCodigo, int bimestre, long tipoCalendarioId);
+        Task<IEnumerable<PeriodoEscolarDto>> ObterPeriodosEmAberto(long ueId, DateTime dataReferencia);
     }
 }
