@@ -47,7 +47,7 @@ const Login = props => {
   });
 
   const exibirMensagemSessaoExpirou = useSelector(
-    store => store.mensagens.exibirMensagemSessaoExpirou
+    store => store.usuario.sessaoExpirou
   );
 
   let redirect = null;

@@ -94,6 +94,7 @@ const ResumosGraficosPAP = () => {
   }, [filtroTela]);
 
   const dadosTela = useMemo(() => {
+    console.log(dados);
     return dados;
   }, [dados]);
 

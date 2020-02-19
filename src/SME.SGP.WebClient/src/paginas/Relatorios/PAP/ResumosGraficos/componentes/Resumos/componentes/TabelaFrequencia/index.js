@@ -92,7 +92,7 @@ function TabelaFrequencia({ dados }) {
       fixed: 'right',
       render: text => {
         return {
-          children: text,
+          children: text || '0',
           className: 'itemColunaTotal',
         };
       },

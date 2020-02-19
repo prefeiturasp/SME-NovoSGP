@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Base, SelectComponent } from '~/componentes';
 import { ColunasFixas, Tabela } from './index.css';
+import { ordenarPor } from '~/utils/funcoes/gerais';
 
 const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
   const [dadosTabela, setDadosTabela] = useState([]);
@@ -91,6 +92,8 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
             const coluna = {
               title: `${ciclo.cicloDescricao}`,
               dataIndex: `${ciclo.cicloDescricao}`,
+              render: text =>
+                text || `0${unidadeSelecionada === UNIDADES.P ? `%` : ``}`,
             };
 
             if (!objetoExisteNaLista(coluna, montaColunas))
@@ -151,6 +154,8 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
             const coluna = {
               title: `${ano.anoDescricao}`,
               dataIndex: `${ano.anoDescricao}`,
+              render: text =>
+                text || `0${unidadeSelecionada === UNIDADES.P ? `%` : ``}`,
             };
 
             if (!objetoExistaNaLista(coluna, montaColunas))
@@ -179,7 +184,7 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
         },
       });
 
-      setColunas([...colunasFixas, ...montaColunas]);
+      setColunas([...colunasFixas, ...ordenarPor(montaColunas, 'title')]);
     }
   }, [dados, ciclos, anos, unidadeSelecionada, UNIDADES.P, UNIDADES.Q]);
 

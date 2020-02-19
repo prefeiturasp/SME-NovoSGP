@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from recuperacao_paralela rec ");
             query.AppendLine("inner join recuperacao_paralela_periodo_objetivo_resposta recRel on rec.id = recRel.recuperacao_paralela_id   ");
             query.AppendLine("inner join resposta re on re.id = recRel.resposta_id   ");
-            query.AppendLine("where rec.turma_recuperacao_paralela_id = @turmaId ");
+            query.AppendLine("where rec.turma_id = @turmaId ");
             query.AppendLine("and recRel.periodo_recuperacao_paralela_id = @periodoId ");
             query.AppendLine("and rec.excluido = false ");
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId = turmaId.ToString(), periodoId });
@@ -98,7 +98,7 @@ namespace SME.SGP.Dados.Repositorios
             MontarCamposResumo(query);
             MontarFromResumo(query);
             MontarWhere(query, dreId, ueId, cicloId, ano, periodoId, turmaId, pagina);
-            query.AppendLine("and e.id NOT IN (1)");
+            query.AppendLine("and e.id NOT IN (1,2)");
             query.AppendLine("and e.excluido = false");
             query.AppendLine("and o.excluido = false");
             query.AppendLine("and resposta.excluido = false");
