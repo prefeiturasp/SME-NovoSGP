@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasDisciplina : IConsultasDisciplina
     {
+        private static readonly long[] IDS_COMPONENTES_REGENCIA = { 2, 7, 8, 89, 138 };
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
@@ -63,11 +64,10 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasParaPlanejamento(FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
         {
             IEnumerable<DisciplinaDto> disciplinasDto = null;
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            var login = servicoUsuario.ObterLoginAtual();
-
-            var chaveCache = $"Disciplinas-planejamento-{filtroDisciplinaPlanejamentoDto.CodigoTurma}-{login}";
-            var disciplinasCacheString = repositorioCache.Obter(chaveCache);
+            var chaveCache = $"Disciplinas-planejamento-{filtroDisciplinaPlanejamentoDto.CodigoTurma}-{usuario.Login}-{filtroDisciplinaPlanejamentoDto.CodigoDisciplina}";
+            var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
                 return TratarRetornoDisciplinasPlanejamento(JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(disciplinasCacheString), filtroDisciplinaPlanejamentoDto);
