@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Base, SelectComponent } from '~/componentes';
 import { ColunasFixas, Tabela } from './index.css';
+import { ordenarPor } from '~/utils/funcoes/gerais';
 
 const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
   const [dadosTabela, setDadosTabela] = useState([]);
@@ -179,7 +180,7 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
         },
       });
 
-      setColunas([...colunasFixas, ...montaColunas]);
+      setColunas([...colunasFixas, ...ordenarPor(montaColunas, 'title')]);
     }
   }, [dados, ciclos, anos, unidadeSelecionada, UNIDADES.P, UNIDADES.Q]);
 
