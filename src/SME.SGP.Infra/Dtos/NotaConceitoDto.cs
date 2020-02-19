@@ -10,7 +10,7 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "Deve ser informado o código da avaliação")]
         public long AtividadeAvaliativaId { get; set; }
 
-        public long Conceito { get; set; }
-        public double Nota { get; set; }
+        public long? Conceito { get; set; }
+        public double? Nota { get; set; }
     }
 }
