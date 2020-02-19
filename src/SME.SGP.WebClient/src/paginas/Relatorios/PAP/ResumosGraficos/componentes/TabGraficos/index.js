@@ -26,6 +26,14 @@ function TabGraficos({ dados, periodo, ciclos }) {
     const frequenciaDados = dados.frequencia;
     const dadosFormatados = [];
 
+    const dadofreq = {
+      Id: shortid.generate(),
+      eixoDescricao: 'Frequencia',
+      descricao: 'Frequencia',
+      objetivoDescricao: 'Frequencia dos alunos',
+    };
+    dadofreq.dados = [];
+
     if (frequenciaDados) {
       frequenciaDados.forEach(x => {
         let quantidade = {
@@ -38,26 +46,30 @@ function TabGraficos({ dados, periodo, ciclos }) {
           TipoDado: 'Porcentagem',
         };
 
-        x.linhas[0][cicloOuAno].forEach((y, key) => {
-          quantidade = {
-            ...quantidade,
-            key: String(key),
-            Descricao: y.descricao,
-            [y.chave]: y.quantidade,
-            Total: y.totalQuantidade,
-          };
+        x.linhas.forEach(z => {
+          z[cicloOuAno].forEach((y, key) => {
+            quantidade = {
+              ...quantidade,
+              key: String(key),
+              Descricao: y.descricao,
+              [y.chave]: y.quantidade,
+              Total: y.totalQuantidade,
+            };
 
-          porcentagem = {
-            ...porcentagem,
-            key: String(key),
-            Descricao: y.descricao,
-            [y.chave]: Math.round(y.porcentagem, 2),
-            Total: Math.round(y.totalPorcentagem, 2),
-          };
+            porcentagem = {
+              ...porcentagem,
+              key: String(key),
+              Descricao: y.descricao,
+              [y.chave]: Math.round(y.porcentagem, 2),
+              Total: Math.round(y.totalPorcentagem, 2),
+            };
+          });
+
+          dadofreq.dados.push(quantidade, porcentagem);
         });
-
-        dadosFormatados.push(quantidade, porcentagem);
       });
+
+      dadosFormatados.push(dadofreq);
     }
 
     return dadosFormatados;
@@ -312,7 +324,6 @@ function TabGraficos({ dados, periodo, ciclos }) {
         ]);
       }
 
-      console.log(dadosTabelaFrequencia);
       setObjetivos(atual => [
         ...atual,
         ...dadosTabelaInformacoesEscolares,
@@ -347,7 +358,6 @@ function TabGraficos({ dados, periodo, ciclos }) {
 
   useEffect(() => {
     setItemAtivo(objetivos[0]);
-    console.log(objetivos);
   }, [objetivos]);
 
   return (
