@@ -24,6 +24,7 @@ import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import Row from '~/componentes/row';
 import Alert from '~/componentes/alert';
+import ModalJustificativa from '~/componentes-sgp/ModalJustificativa/ModalJustificativa';
 
 const { TabPane } = Tabs;
 
@@ -32,6 +33,9 @@ const Notas = ({ match }) => {
   const dispatch = useDispatch();
   const modoEdicaoGeral = useSelector(
     store => store.notasConceitos.modoEdicaoGeral
+  );
+  const modoEdicaoGeralNotaFinal = useSelector(
+    store => store.notasConceitos.modoEdicaoGeralNotaFinal
   );
   const { ehProfessorCj } = usuario;
 
@@ -59,7 +63,9 @@ const Notas = ({ match }) => {
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
-  const [percentualAprovados, setPercentualAprovados] = useState(0);
+  const [percentualMinimoAprovados, setPercentualMinimoAprovados] = useState(0);
+  const [exibeModalJustificativa, setExibeModalJustificativa] = useState(false);
+  const [justificativa, setJustificativa] = useState('');
 
   useEffect(() => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
@@ -114,7 +120,7 @@ const Notas = ({ match }) => {
         .get('v1/avaliacoes/notas/', { params })
         .catch(e => erros(e));
       const resultado = dados ? dados.data : [];
-      setPercentualAprovados(resultado.percentualAlunosInsuficientes ? resultado.percentualAlunosInsuficientes : 0);
+      setPercentualMinimoAprovados(resultado.percentualAlunosInsuficientes ? resultado.percentualAlunosInsuficientes : 0);
       return resultado;
     },
     [
@@ -558,22 +564,6 @@ const Notas = ({ match }) => {
     }
   };
 
-  const verificaPorcentagemAprovados = () => {
-    switch (Number(bimestreCorrente)) {
-      case 1:
-
-        break;
-      case 2:
-        break;
-      case 3:
-        break;
-      case 4:
-        break;
-      default:
-        break;
-    }
-  }
-
   const temQuantidadeMinimaAprovada = dados => {
     let quantidadeAlunos = 0;
     let valorNotaTotal = 0.0;
@@ -587,12 +577,34 @@ const Notas = ({ match }) => {
         valorNotaTotal += totalNotas;
       }
     });
+    const porcentagemTotal = valorNotaTotal / quantidadeAlunos;
+    const ehPorcentagemAceitavel = porcentagemTotal > percentualMinimoAprovados;
+    if (ehPorcentagemAceitavel) dados.justificativa = null;
+    return ehPorcentagemAceitavel ? true : dados.justificativa;
+  }
 
+  const verificaPorcentagemAprovados = () => {
+    switch (Number(bimestreCorrente)) {
+      case 1:
+        return temQuantidadeMinimaAprovada(primeiroBimestre);
+      case 2:
+        return temQuantidadeMinimaAprovada(segundoBimestre);
+      case 3:
+        return temQuantidadeMinimaAprovada(terceiroBimestre);
+      case 4:
+        return temQuantidadeMinimaAprovada(quartoBimestre);
+      default:
+        return true;
+    }
   }
 
   const onChangeTab = async numeroBimestre => {
-    dispatch(setExpandirLinha([]));
-    setBimestreCorrente(numeroBimestre);
+    if (modoEdicaoGeralNotaFinal) {
+      verificaPorcentagemAprovados();
+      setExibeModalJustificativa(true);
+    }
+    // dispatch(setExpandirLinha([]));
+    // setBimestreCorrente(numeroBimestre);
     let bimestre = {};
     switch (Number(numeroBimestre)) {
       case 1:
@@ -734,6 +746,10 @@ const Notas = ({ match }) => {
 
   return (
     <Container>
+      <ModalJustificativa
+        exibirModal={exibeModalJustificativa}
+        valor={justificativa}
+      />
       {!usuario.turmaSelecionada.turma ? (
         <Row className="mb-0 pb-0">
           <Grid cols={12} className="mb-0 pb-0">
