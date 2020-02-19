@@ -28,7 +28,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Listar([FromQuery]FiltroRecuperacaoParalelaDto filtro)
         {
-            return Ok(await consultaRecuperacaoParalela.Listar(filtro));
+            var retorno = new RetornoBaseDto();
+            var resultado = await consultaRecuperacaoParalela.Listar(filtro);
+
+            if (resultado == null)
+                retorno.Mensagens.Add("Não foram encontrados dados para a turma e período selecionados.");
+            return Ok(resultado);
         }
 
         [HttpGet("total-estudantes")]
