@@ -241,7 +241,6 @@ const Notas = ({ match }) => {
     bimestreParaMontar.alunos.forEach(aluno => {
       aluno.notasAvaliacoes.forEach(nota => {
         if (nota.modoEdicao) {
-          debugger;
           valorParaSalvar.push({
             alunoId: aluno.id,
             atividadeAvaliativaId: nota.atividadeAvaliativaId,
@@ -514,8 +513,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                        ''
-                      )}
+                      ''
+                    )}
                     {segundoBimestre.numero ? (
                       <TabPane
                         tab={segundoBimestre.descricao}
@@ -529,8 +528,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                        ''
-                      )}
+                      ''
+                    )}
                     {terceiroBimestre.numero ? (
                       <TabPane
                         tab={terceiroBimestre.descricao}
@@ -544,8 +543,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                        ''
-                      )}
+                      ''
+                    )}
                     {quartoBimestre.numero ? (
                       <TabPane
                         tab={quartoBimestre.descricao}
@@ -559,8 +558,8 @@ const Notas = ({ match }) => {
                         />
                       </TabPane>
                     ) : (
-                        ''
-                      )}
+                      ''
+                    )}
                   </ContainerTabsCard>
                 </div>
               </div>
