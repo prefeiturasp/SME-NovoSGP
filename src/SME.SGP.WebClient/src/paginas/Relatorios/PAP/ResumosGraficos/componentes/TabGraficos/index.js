@@ -1,5 +1,6 @@
+/* eslint-disable no-param-reassign */
 import React, { useMemo, useState, useEffect } from 'react';
-import t from 'prop-types';
+import PropTypes from 'prop-types';
 import shortid from 'shortid';
 
 // Componentes
@@ -16,65 +17,61 @@ function TabGraficos({ dados, periodo, ciclos }) {
   const [itemAtivo, setItemAtivo] = useState(null);
   const [cicloOuAno] = useState(ciclos ? 'ciclos' : 'anos');
 
-  const objetoExistaNaLista = (objeto, lista) => {
-    return lista.some(
-      elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
-    );
-  };
-
+  // Frequência
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados.frequencia;
     const dadosFormatados = [];
 
-    const dadofreq = {
+    const dadoFrequencia = {
       Id: shortid.generate(),
       eixoDescricao: 'Frequencia',
       descricao: 'Frequencia',
       objetivoDescricao: 'Frequencia dos alunos',
     };
-    dadofreq.dados = [];
+    dadoFrequencia.dados = [];
 
     if (frequenciaDados) {
-      frequenciaDados.forEach(x => {
+      frequenciaDados.forEach(frequencia => {
         let quantidade = {
-          FrequenciaDescricao: x.frequenciaDescricao,
+          FrequenciaDescricao: frequencia.frequenciaDescricao,
           TipoDado: 'Quantidade',
         };
 
         let porcentagem = {
-          FrequenciaDescricao: x.frequenciaDescricao,
+          FrequenciaDescricao: frequencia.frequenciaDescricao,
           TipoDado: 'Porcentagem',
         };
 
-        x.linhas.forEach(z => {
-          z[cicloOuAno].forEach((y, key) => {
+        frequencia.linhas.forEach(linha => {
+          linha[cicloOuAno].forEach((l, indice) => {
             quantidade = {
               ...quantidade,
-              key: String(key),
-              Descricao: y.descricao,
-              [y.chave]: y.quantidade,
-              Total: y.totalQuantidade,
+              key: String(indice),
+              Descricao: l.descricao,
+              [l.chave]: l.quantidade,
+              Total: l.totalQuantidade,
             };
 
             porcentagem = {
               ...porcentagem,
-              key: String(key),
-              Descricao: y.descricao,
-              [y.chave]: Math.round(y.porcentagem, 2),
-              Total: Math.round(y.totalPorcentagem, 2),
+              key: String(indice),
+              Descricao: l.descricao,
+              [l.chave]: Math.round(l.porcentagem, 2),
+              Total: Math.round(l.totalPorcentagem, 2),
             };
           });
 
-          dadofreq.dados.push(quantidade, porcentagem);
+          dadoFrequencia.dados.push(quantidade, porcentagem);
         });
       });
 
-      dadosFormatados.push(dadofreq);
+      dadosFormatados.push(dadoFrequencia);
     }
 
     return dadosFormatados;
   }, [cicloOuAno, dados.frequencia]);
 
+  // Total Estudantes
   const dadosTabelaTotalEstudantes = useMemo(() => {
     const montaDados = [];
     const dadoQuantidade = {};
@@ -100,7 +97,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
     dados.totalEstudantes[cicloOuAno].forEach(ano => {
       dadoPorcentagem[
         `${cicloOuAno === 'ciclos' ? ano.cicloDescricao : ano.anoDescricao}`
-      ] = ano.porcentagem; //Math.round(ano.porcentagem, 2);
+      ] = ano.porcentagem;
     });
 
     dadoPorcentagem.Total = dados.totalEstudantes.porcentagemTotal;
@@ -109,8 +106,10 @@ function TabGraficos({ dados, periodo, ciclos }) {
     return montaDados;
   }, [cicloOuAno, dados.totalEstudantes]);
 
+  // Resultados
   const dadosTabelaResultados = useMemo(() => {
     const resultados = [];
+    console.log(dados.resultados.items);
     dados.resultados.items.forEach(resultado => {
       let objetivo = {
         eixoDescricao: resultado.eixoDescricao,
@@ -125,8 +124,8 @@ function TabGraficos({ dados, periodo, ciclos }) {
         };
 
         const item = [];
-        obj[cicloOuAno].forEach((atual, a) => {
-          atual.respostas.forEach((resposta, r) => {
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
             if (
               !item.find(
                 dado => dado.FrequenciaDescricao === resposta.respostaDescricao
@@ -208,6 +207,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
     return resultados;
   }, [cicloOuAno, dados.resultados.items]);
 
+  // Informações Escolares
   const dadosTabelaInformacoesEscolares = useMemo(() => {
     const resultados = [];
     dados.informacoesEscolares.forEach(resultado => {
@@ -224,8 +224,8 @@ function TabGraficos({ dados, periodo, ciclos }) {
         };
 
         const item = [];
-        obj[cicloOuAno].forEach((atual, a) => {
-          atual.respostas.forEach((resposta, r) => {
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
             if (
               !item.find(
                 dado => dado.FrequenciaDescricao === resposta.respostaDescricao
@@ -367,7 +367,9 @@ function TabGraficos({ dados, periodo, ciclos }) {
           itens={objetivos}
           itemAtivo={
             itemAtivo
-              ? objetivos.filter(x => x.id === itemAtivo.id)[0]
+              ? objetivos.filter(
+                  frequencia => frequencia.id === itemAtivo.id
+                )[0]
               : objetivos[0]
           }
           onChangeItem={item => setItemAtivo(item)}
@@ -385,10 +387,12 @@ function TabGraficos({ dados, periodo, ciclos }) {
             <h4>Quantidade</h4>
             <div style={{ height: 300 }}>
               <Graficos.Barras
-                dados={itemAtivo.dados.filter(x => x.TipoDado === 'Quantidade')}
+                dados={itemAtivo.dados.filter(
+                  frequencia => frequencia.TipoDado === 'Quantidade'
+                )}
                 indice="FrequenciaDescricao"
                 chaves={Object.keys(itemAtivo.dados[0]).filter(
-                  x =>
+                  frequencia =>
                     [
                       'TipoDado',
                       'FrequenciaDescricao',
@@ -399,7 +403,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
                       'eixoDescricao',
                       'objetivoDescricao',
                       'descricao',
-                    ].indexOf(x) === -1
+                    ].indexOf(frequencia) === -1
                 )}
               />
             </div>
@@ -414,11 +418,13 @@ function TabGraficos({ dados, periodo, ciclos }) {
               <Graficos.Barras
                 dados={
                   itemAtivo &&
-                  itemAtivo.dados.filter(x => x.TipoDado === 'Porcentagem')
+                  itemAtivo.dados.filter(
+                    frequencia => frequencia.TipoDado === 'Porcentagem'
+                  )
                 }
                 indice="FrequenciaDescricao"
                 chaves={Object.keys(itemAtivo && itemAtivo.dados[0]).filter(
-                  x =>
+                  frequencia =>
                     [
                       'TipoDado',
                       'FrequenciaDescricao',
@@ -429,7 +435,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
                       'eixoDescricao',
                       'objetivoDescricao',
                       'descricao',
-                    ].indexOf(x) === -1
+                    ].indexOf(frequencia) === -1
                 )}
                 porcentagem
               />
@@ -442,13 +448,15 @@ function TabGraficos({ dados, periodo, ciclos }) {
 }
 
 TabGraficos.propTypes = {
-  dados: t.oneOfType([t.any]),
-  periodo: t.string,
+  dados: PropTypes.oneOfType([PropTypes.any]),
+  periodo: PropTypes.string,
+  ciclos: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 TabGraficos.defaultProps = {
   dados: [],
   periodo: '',
+  ciclos: true,
 };
 
 export default TabGraficos;
