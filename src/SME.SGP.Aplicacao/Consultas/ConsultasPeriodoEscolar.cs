@@ -4,16 +4,23 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultasPeriodoEscolar : IConsultasPeriodoEscolar
     {
         private readonly IRepositorioPeriodoEscolar repositorio;
+        private readonly IConsultasFechamento consultasFechamento;
+        private readonly IConsultasTipoCalendario consultasTipoCalendario;
 
-        public ConsultasPeriodoEscolar(IRepositorioPeriodoEscolar repositorio)
+        public ConsultasPeriodoEscolar(IRepositorioPeriodoEscolar repositorio,
+                                    IConsultasFechamento consultasFechamento,
+                                    IConsultasTipoCalendario consultasTipoCalendario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
+            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
         }
 
         public PeriodoEscolarListaDto ObterPorTipoCalendario(long tipoCalendarioId)
@@ -83,5 +90,19 @@ namespace SME.SGP.Aplicacao.Consultas
 
         public int ObterBimestre(DateTime data, Modalidade modalidade)
             => ((data.Month + 2) / 3) - (modalidade == Modalidade.EJA && data.Month >= 6 ? 2 : 0);
+
+        public async Task<IEnumerable<PeriodoEscolarDto>> ObterPeriodosEmAberto(long ueId, Modalidade modalidadeCodigo, int anoLetivo)
+        {
+            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, 
+                                                                modalidadeCodigo == Modalidade.EJA ? 
+                                                                    ModalidadeTipoCalendario.EJA : 
+                                                                    ModalidadeTipoCalendario.FundamentalMedio);
+
+            var periodoAtual = ObterPeriodoEscolarPorData(tipoCalendario.Id, DateTime.Now.Date);
+            var periodos = new List<PeriodoEscolarDto>() { periodoAtual };
+            periodos.AddRange(await consultasFechamento.ObterPeriodosEmAberto(ueId));
+
+            return periodos;
+        }
     }
 }
