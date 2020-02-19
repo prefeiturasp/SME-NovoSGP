@@ -312,6 +312,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
         ]);
       }
 
+      console.log(dadosTabelaFrequencia);
       setObjetivos(atual => [
         ...atual,
         ...dadosTabelaInformacoesEscolares,
@@ -330,7 +331,11 @@ function TabGraficos({ dados, periodo, ciclos }) {
           },
         ]);
       }
-      setObjetivos(atual => [...atual, ...dadosTabelaResultados]);
+      setObjetivos(atual => [
+        ...atual,
+        ...dadosTabelaFrequencia,
+        ...dadosTabelaResultados,
+      ]);
     }
   }, [
     dadosTabelaFrequencia,
@@ -342,6 +347,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
 
   useEffect(() => {
     setItemAtivo(objetivos[0]);
+    console.log(objetivos);
   }, [objetivos]);
 
   return (
