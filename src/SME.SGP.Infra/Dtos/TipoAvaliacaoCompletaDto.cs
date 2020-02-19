@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
         public string CriadoRF { get; set; }
         public long Id { get; set; }
         public bool? possuiAvaliacao { get; set; }
+        public int AvaliacoesNecessariasPorBimestre { get; set; }
     }
 }

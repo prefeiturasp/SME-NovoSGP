@@ -12,6 +12,7 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("evento_tipo");
             Map(e => e.LocalOcorrencia).ToColumn("local_ocorrencia");
             Map(e => e.TipoData).ToColumn("tipo_data");
+            Map(e => e.SomenteLeitura).ToColumn("somente_leitura");
         }
     }
 }
