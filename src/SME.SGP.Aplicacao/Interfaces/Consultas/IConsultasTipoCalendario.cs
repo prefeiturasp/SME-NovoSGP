@@ -13,5 +13,7 @@ namespace SME.SGP.Aplicacao
         IEnumerable<TipoCalendarioDto> BuscarPorAnoLetivo(int anoLetivo);
 
         IEnumerable<TipoCalendarioDto> Listar();
+
+        IEnumerable<TipoCalendarioDto> ListarPorAnoLetivo(int anoLetivo);
     }
 }
