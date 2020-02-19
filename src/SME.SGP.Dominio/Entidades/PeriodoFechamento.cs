@@ -22,6 +22,7 @@ namespace SME.SGP.Dominio
         public long? DreId { get; set; }
         public IEnumerable<PeriodoFechamentoBimestre> FechamentosBimestre => fechamentosBimestre;
         public bool Migrado { get; set; }
+        public bool Excluido { get; set; }
         public Ue Ue { get; set; }
         public long? UeId { get; set; }
         private List<PeriodoFechamentoBimestre> fechamentosBimestre { get; set; }
