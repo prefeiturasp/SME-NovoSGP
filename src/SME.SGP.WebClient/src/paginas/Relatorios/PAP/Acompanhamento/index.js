@@ -162,8 +162,6 @@ function RelatorioPAPAcompanhamento() {
         erro('Ocorreu um erro interno, por favor contate o suporte');
       }
     }
-
-    return true;
   };
 
   const onChangeRespostaHandler = async (aluno, valor) => {
