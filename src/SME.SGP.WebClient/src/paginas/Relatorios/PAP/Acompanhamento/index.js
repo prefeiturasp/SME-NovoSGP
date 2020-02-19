@@ -138,7 +138,7 @@ function RelatorioPAPAcompanhamento() {
         });
 
         if (!data) {
-          erro('Não foram encontrados dados para a turma e período selecionados.P');
+          erro('Não foram encontrados dados para a turma e período selecionados.');
           setCarregando(false);
           return false;
         }
