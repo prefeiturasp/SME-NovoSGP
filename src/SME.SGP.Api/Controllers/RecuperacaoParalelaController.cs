@@ -4,7 +4,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -32,7 +31,7 @@ namespace SME.SGP.Api.Controllers
             var retorno = new RetornoBaseDto();
             var resultado = await consultaRecuperacaoParalela.Listar(filtro);
 
-            if (!resultado.Periodo.Alunos.Any())
+            if (resultado == null)
                 retorno.Mensagens.Add("Não foram encontrados dados para a turma e período selecionados.");
             return Ok(resultado);
         }
