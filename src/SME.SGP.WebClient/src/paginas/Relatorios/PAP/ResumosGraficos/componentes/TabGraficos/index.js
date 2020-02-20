@@ -25,15 +25,15 @@ function TabGraficos({ dados, periodo, ciclos }) {
     const frequenciaDados = dados.frequencia;
     const dadosFormatados = [];
 
-    const dadoFrequencia = {
-      Id: shortid.generate(),
-      eixoDescricao: 'Frequencia',
-      descricao: 'Frequencia',
-      objetivoDescricao: 'Frequencia dos alunos',
-    };
-    dadoFrequencia.dados = [];
+    if (frequenciaDados && frequenciaDados.length) {
+      const dadoFrequencia = {
+        Id: shortid.generate(),
+        eixoDescricao: 'Frequencia',
+        descricao: 'Frequencia',
+        objetivoDescricao: 'Frequencia dos alunos',
+      };
+      dadoFrequencia.dados = [];
 
-    if (frequenciaDados) {
       frequenciaDados.forEach(frequencia => {
         let quantidade = {
           FrequenciaDescricao: frequencia.frequenciaDescricao,
