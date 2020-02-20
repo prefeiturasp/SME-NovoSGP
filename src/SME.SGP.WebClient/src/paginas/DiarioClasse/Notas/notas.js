@@ -60,6 +60,8 @@ const Notas = ({ match }) => {
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
 
+  const [podeLancaNota, setPodeLancaNota] = useState(true);
+
   useEffect(() => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
     const desabilitar =
@@ -218,10 +220,13 @@ const Notas = ({ match }) => {
     setListaDisciplinas(disciplinas.data);
     if (disciplinas.data && disciplinas.data.length === 1) {
       const disciplina = disciplinas.data[0];
+      setPodeLancaNota(disciplina.lancaNota);
       setEhRegencia(disciplina.regencia);
       setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
-      obterDadosBimestres(disciplina.codigoComponenteCurricular);
+      if (disciplina.lancaNota) {
+        obterDadosBimestres(disciplina.codigoComponenteCurricular);
+      }
     }
     if (
       match &&
@@ -530,6 +535,17 @@ const Notas = ({ match }) => {
   };
 
   const onChangeDisciplinas = async disciplinaId => {
+    let lancaNota = true;
+    if (disciplinaId) {
+      const componenteSelecionado = listaDisciplinas.find(
+        item => item.codigoComponenteCurricular == disciplinaId
+      );
+      if (componenteSelecionado) {
+        lancaNota = componenteSelecionado.lancaNota;
+      }
+    }
+    setPodeLancaNota(lancaNota);
+
     validaSeEhRegencia(disciplinaId);
 
     dispatch(setModoEdicaoGeral(false));
@@ -551,7 +567,9 @@ const Notas = ({ match }) => {
       }
     } else {
       resetarTela();
-      obterDadosBimestres(disciplinaId, 0);
+      if (lancaNota) {
+        obterDadosBimestres(disciplinaId, 0);
+      }
       setDisciplinaSelecionada(disciplinaId);
     }
   };
@@ -716,6 +734,24 @@ const Notas = ({ match }) => {
           </Grid>
         </Row>
       ) : null}
+      {!podeLancaNota ? (
+        <Row className="mb-0 pb-0">
+          <Grid cols={12} className="mb-0 pb-0">
+            <Container>
+              <Alert
+                alerta={{
+                  tipo: 'warning',
+                  id: 'pode-lanca-nota',
+                  mensagem:
+                    'Este componente curricular não permite o lançamento de nota',
+                  estiloTitulo: { fontSize: '18px' },
+                }}
+                className="mb-2"
+              />
+            </Container>
+          </Grid>
+        </Row>
+      ) : null}
       <Cabecalho pagina={tituloNotasConceitos} />
       <Loader loading={carregandoListaBimestres}>
         <Card>
@@ -749,7 +785,7 @@ const Notas = ({ match }) => {
               </div>
             </div>
 
-            {disciplinaSelecionada ? (
+            {disciplinaSelecionada && podeLancaNota ? (
               <>
                 <div className="row">
                   <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
