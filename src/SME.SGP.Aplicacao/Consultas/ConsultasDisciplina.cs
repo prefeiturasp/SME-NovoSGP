@@ -131,17 +131,17 @@ namespace SME.SGP.Aplicacao
                 if (atribuicoes == null || !atribuicoes.Any())
                     return disciplinasDto;
 
-                var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+                var disciplinasEol = await servicoEOL.ObterDisciplinasPorIdsAsync(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
                 var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
                 if (componenteRegencia != null)
                 {
-                    var componentesRegencia = servicoEOL.ObterDisciplinasPorIds(IDS_COMPONENTES_REGENCIA);
+                    var componentesRegencia = await servicoEOL.ObterDisciplinasPorIdsAsync(IDS_COMPONENTES_REGENCIA);
                     if (componentesRegencia != null)
                         disciplinas = TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
                 }
                 else
-                    disciplinasDto = disciplinasEol;
+                    disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
             }
             else
             {
