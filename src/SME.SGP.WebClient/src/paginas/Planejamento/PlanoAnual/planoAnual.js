@@ -241,25 +241,27 @@ const PlanoAnual = () => {
 
   //carrega lista de disciplinas
   useEffect(() => {
-    setEmEdicao(false);
-    setCarregandoDados(true);
-    servicoDisciplinas
-      .obterDisciplinasPorTurma(turmaSelecionada.turma)
-      .then(resposta => {
-        setCarregandoDados(false);
-        setListaDisciplinas(resposta.data);
-        if (resposta.data.length === 1) {
-          const disciplina = resposta.data[0];
-          setDisciplinaSelecionada(disciplina);
-          setCodigoDisciplinaSelecionada(
-            String(disciplina.codigoComponenteCurricular)
-          );
-        }
-      })
-      .catch(e => {
-        setCarregandoDados(false);
-        erros(e);
-      });
+    if (turmaSelecionada.turma) {
+      setEmEdicao(false);
+      setCarregandoDados(true);
+      servicoDisciplinas
+        .obterDisciplinasPorTurma(turmaSelecionada.turma)
+        .then(resposta => {
+          setCarregandoDados(false);
+          setListaDisciplinas(resposta.data);
+          if (resposta.data.length === 1) {
+            const disciplina = resposta.data[0];
+            setDisciplinaSelecionada(disciplina);
+            setCodigoDisciplinaSelecionada(
+              String(disciplina.codigoComponenteCurricular)
+            );
+          }
+        })
+        .catch(e => {
+          setCarregandoDados(false);
+          erros(e);
+        });
+    }
   }, [turmaSelecionada.ano, turmaSelecionada.turma]);
 
   //carrega a lista de planos
