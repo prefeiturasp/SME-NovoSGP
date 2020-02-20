@@ -1,7 +1,7 @@
 import { Tabs } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Loader, Grid } from '~/componentes';
+import { Loader, Grid, ModalConteudoHtml } from '~/componentes';
 import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Card from '~/componentes/card';
@@ -25,6 +25,7 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import Row from '~/componentes/row';
 import Alert from '~/componentes/alert';
 import ModalJustificativa from '~/componentes-sgp/ModalJustificativa/ModalJustificativa';
+import Editor from '~/componentes/editor/editor';
 
 const { TabPane } = Tabs;
 
@@ -66,6 +67,7 @@ const Notas = ({ match }) => {
   const [percentualMinimoAprovados, setPercentualMinimoAprovados] = useState(0);
   const [exibeModalJustificativa, setExibeModalJustificativa] = useState(false);
   const [justificativa, setJustificativa] = useState('');
+  const [proximaTab, setProximaTab] = useState(bimestreCorrente);
 
   useEffect(() => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
@@ -567,20 +569,23 @@ const Notas = ({ match }) => {
   const temQuantidadeMinimaAprovada = dados => {
     let quantidadeAlunos = 0;
     let valorNotaTotal = 0.0;
-    dados.alunos.forEach(aluno => {
-      if (aluno.podeEditar) {
-        const totalNotas = 0.0;
-        quantidadeAlunos++;
-        aluno.notasBimestre.forEach(nota => {
-          totalNotas += nota.notaConceito ? nota.notaConceito : 0;
-        });
-        valorNotaTotal += totalNotas;
-      }
-    });
-    const porcentagemTotal = valorNotaTotal / quantidadeAlunos;
-    const ehPorcentagemAceitavel = porcentagemTotal > percentualMinimoAprovados;
-    if (ehPorcentagemAceitavel) dados.justificativa = null;
-    return ehPorcentagemAceitavel ? true : dados.justificativa;
+    if (dados.alunos.length > 0) {
+      dados.alunos.forEach(aluno => {
+        if (aluno.podeEditar) {
+          let totalNotas = 0.0;
+          quantidadeAlunos++;
+          aluno.notasBimestre.forEach(nota => {
+            totalNotas += nota.notaConceito ? nota.notaConceito : 0;
+          });
+          valorNotaTotal += totalNotas;
+        }
+      });
+      const porcentagemTotal = valorNotaTotal / quantidadeAlunos;
+      const ehPorcentagemAceitavel = porcentagemTotal > percentualMinimoAprovados;
+      if (ehPorcentagemAceitavel) dados.justificativa = null;
+      return ehPorcentagemAceitavel ? true : dados.justificativa;
+    }
+    return true;
   }
 
   const verificaPorcentagemAprovados = () => {
@@ -598,13 +603,23 @@ const Notas = ({ match }) => {
     }
   }
 
+  const onCancelarModal = () => {
+    setExibeModalJustificativa(false);
+  };
+
   const onChangeTab = async numeroBimestre => {
-    if (modoEdicaoGeralNotaFinal) {
-      verificaPorcentagemAprovados();
+    const temPorcentagemAceitavel = verificaPorcentagemAprovados();
+    setProximaTab(numeroBimestre);
+    if (modoEdicaoGeralNotaFinal && !temPorcentagemAceitavel) {
       setExibeModalJustificativa(true);
+    } else {
+      await confirmarTrocaTab(numeroBimestre);
     }
-    // dispatch(setExpandirLinha([]));
-    // setBimestreCorrente(numeroBimestre);
+  };
+
+  const confirmarTrocaTab = async numeroBimestre => {
+    dispatch(setExpandirLinha([]));
+    setBimestreCorrente(numeroBimestre);
     let bimestre = {};
     switch (Number(numeroBimestre)) {
       case 1:
@@ -700,7 +715,7 @@ const Notas = ({ match }) => {
       }
       setCarregandoListaBimestres(false);
     }
-  };
+  }
 
   const onClickCancelar = async cancelar => {
     if (cancelar) {
@@ -744,12 +759,35 @@ const Notas = ({ match }) => {
     }
   };
 
+  const onChangeJustificativa = () => { };
+
+  const onConfirmarJustificativa = () => {
+    setExibeModalJustificativa(false);
+    confirmarTrocaTab(proximaTab);
+  };
+
   return (
     <Container>
-      <ModalJustificativa
-        exibirModal={exibeModalJustificativa}
-        valor={justificativa}
-      />
+      <ModalConteudoHtml
+        key="inserirJutificativa"
+        visivel={exibeModalJustificativa}
+        onConfirmacaoPrincipal={onConfirmarJustificativa}
+        onConfirmacaoSecundaria={() => { }}
+        onClose={() => { }}
+        labelBotaoPrincipal="Confirmar"
+        labelBotaoSecundario="Cancelar"
+        titulo="Inserir justificativa"
+        closable={false}
+        fecharAoClicarFora={false}
+        fecharAoClicarEsc={false}
+      >
+        <fieldset className="mt-3">
+          <Editor
+            onChange={onChangeJustificativa}
+            inicial={justificativa}
+          />
+        </fieldset>
+      </ModalConteudoHtml>
       {!usuario.turmaSelecionada.turma ? (
         <Row className="mb-0 pb-0">
           <Grid cols={12} className="mb-0 pb-0">

@@ -3,20 +3,13 @@ import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import Editor from '~/componentes/editor/editor';
 
 const ModalJustificativa = props => {
-  const { exibirModal, valor } = props;
+  const { exibirModal, valor, onCancelar } = props;
 
   const [justificativa, setJustificativa] = useState(valor);
-  const [visivel, setVisivel] = useState(exibirModal);
+  const [visivel, setVisivel] = useState(false);
 
   const onConfirmar = () => { };
 
-  const onCancelar = () => {
-    setVisivel(false);
-  };
-
-  useEffect(() => {
-    setVisivel(exibirModal);
-  }, [exibirModal]);
 
   const onClose = () => { };
 
@@ -28,7 +21,7 @@ const ModalJustificativa = props => {
     <>
       <ModalConteudoHtml
         key="inserirJutificativa"
-        visivel={visivel}
+        visivel={exibirModal}
         onConfirmacaoPrincipal={onConfirmar}
         onConfirmacaoSecundaria={onCancelar}
         onClose={onClose}
