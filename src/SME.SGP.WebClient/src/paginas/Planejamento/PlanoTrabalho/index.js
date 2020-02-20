@@ -24,6 +24,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 1,
       nome: 'Italo Gustavo Pereira de Maio',
       ativo: true,
+      situacao: 'Transferido em 11/11/2011',
     },
     {
       id: 2,
@@ -31,6 +32,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 2,
       nome: 'Thiago de Oliveira Ramos',
       ativo: true,
+      situacao: 'Novo aluno',
     },
     {
       id: 3,
@@ -38,6 +40,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 3,
       nome: 'Alana Ferreira de Oliveira',
       ativo: true,
+      situacao: null,
     },
     {
       id: 4,
@@ -45,6 +48,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 4,
       nome: 'Alany Santos da Silva Sauro',
       ativo: true,
+      situacao: null,
     },
     {
       id: 5,
@@ -52,6 +56,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 5,
       nome: 'Alany Santos da Silva Sauro',
       ativo: false,
+      situacao: null,
     },
     {
       id: 6,
@@ -59,6 +64,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 6,
       nome: 'Alany Santos da Silva Sauro',
       ativo: true,
+      situacao: 'Transferido em 11/11/2011',
     },
     {
       id: 7,
@@ -66,6 +72,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 7,
       nome: 'Alany Santos da Silva Sauro',
       ativo: true,
+      situacao: null,
     },
     {
       id: 8,
@@ -73,6 +80,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 8,
       nome: 'Alany Santos da Silva Sauro',
       ativo: true,
+      situacao: null,
     },
     {
       id: 9,
@@ -80,6 +88,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 9,
       nome: 'Alany Santos da Silva Sauro',
       ativo: true,
+      situacao: null,
     },
     {
       id: 10,
@@ -87,6 +96,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 10,
       nome: 'Alany Santos da Silva Sauro',
       ativo: false,
+      situacao: null,
     },
     {
       id: 11,
@@ -94,6 +104,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 11,
       nome: 'Alany Santos da Silva Sauro',
       ativo: true,
+      situacao: null,
     },
     {
       id: 12,
@@ -101,6 +112,7 @@ function PlanoDeTrabalho() {
       numeroChamada: 12,
       nome: 'Alany Santos da Silva Sauro',
       ativo: true,
+      situacao: null,
     },
   ];
 
@@ -109,6 +121,10 @@ function PlanoDeTrabalho() {
   const onClickBotaoPrincipal = () => null;
 
   const onClickEditar = item => null;
+
+  const onChangeAlunoSelecionado = aluno => {
+    console.log(aluno);
+  };
 
   return (
     <>
@@ -137,7 +153,10 @@ function PlanoDeTrabalho() {
               !!filtro.DreId === false && !!filtro.UeId === false
             }
           />
-          <TabelaRetratil alunos={alunos} />
+          <TabelaRetratil
+            onChangeAlunoSelecionado={onChangeAlunoSelecionado}
+            alunos={alunos}
+          />
         </Card>
       </Loader>
     </>
