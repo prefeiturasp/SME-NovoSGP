@@ -242,20 +242,20 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas/planejamento";
-            return await ObterDisciplinas(url);
+            return await ObterDisciplinas(url, "ObterDisciplinasParaPlanejamento");
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurma(string codigoTurma)
         {
             var url = $"funcionarios/turmas/{codigoTurma}/disciplinas";
-            return await ObterDisciplinas(url);
+            return await ObterDisciplinas(url, "ObterDisciplinasPorCodigoTurma");
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas";
 
-            return await ObterDisciplinas(url);
+            return await ObterDisciplinas(url, "ObterDisciplinasPorCodigoTurmaLoginEPerfil");
         }
 
         public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
@@ -797,7 +797,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
         }
 
-        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url)
+        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url, string rotina)
         {
             var resposta = await httpClient.GetAsync(url);
 
@@ -806,7 +806,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
             }
-            RegistrarLogSentry(resposta, "ObterDisciplinas", string.Empty);
+            await RegistrarLogSentryAsync(resposta, rotina, string.Empty);
             return null;
         }
 
