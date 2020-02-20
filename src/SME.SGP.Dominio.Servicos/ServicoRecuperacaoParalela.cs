@@ -37,21 +37,22 @@ namespace SME.SGP.Dominio.Servicos
                     double frequencia = 100 - (aluno.TotalAusencias / (double)aluno.TotalAulas * 100);
                     if (frequencia >= frequente)
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente));
-                    else if (frequencia >= naoComparece && frequencia < frequente)
+                    else if (frequencia >= naoComparece)
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.PoucoFrequente));
                     else
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.NaoComparete));
                 }
             }
 
-            if (retorno.Any())
+            if (!retorno.Any())
+                return retorno;
+
+            foreach (var codigoAluno in CodigoAlunos)
             {
-                foreach (var codigoAluno in CodigoAlunos)
-                {
-                    if (retorno.Any(x => x.Key.Equals(codigoAluno)))
-                        retorno.Add(new KeyValuePair<string, int>(codigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente));
-                }
+                if (retorno.Any(x => x.Key.Equals(codigoAluno)))
+                    retorno.Add(new KeyValuePair<string, int>(codigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente));
             }
+
             return retorno;
         }
 
