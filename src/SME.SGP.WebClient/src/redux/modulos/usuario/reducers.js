@@ -22,6 +22,7 @@ const inicial = {
   ehProfessorPoa: false,
   menu: [],
   permissoes: [],
+  sessaoExpirou: false,
 };
 
 export default function usuario(state = inicial, action) {
@@ -58,6 +59,12 @@ export default function usuario(state = inicial, action) {
         draft = inicial;
         localStorage.clear();
         window.location.reload(true);
+        break;
+      case '@usuario/deslogarSessaoExpirou':
+        draft = inicial;
+        localStorage.clear();
+        window.location.reload(true);
+        draft.sessaoExpirou = true;
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
