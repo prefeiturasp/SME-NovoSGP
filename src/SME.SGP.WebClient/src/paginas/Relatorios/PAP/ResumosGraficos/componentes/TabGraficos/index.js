@@ -380,7 +380,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
         />
       </Linha>
       <Linha style={{ marginBottom: '35px', textAlign: 'center' }}>
-        {itemAtivo && itemAtivo.dados && (
+        {itemAtivo && itemAtivo.dados && itemAtivo.dados[0] && (
           <>
             <h4>Quantidade</h4>
             <div style={{ height: 300 }}>
@@ -407,7 +407,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
         )}
       </Linha>
       <Linha style={{ marginBottom: '35px', textAlign: 'center' }}>
-        {itemAtivo && itemAtivo.dados && (
+        {itemAtivo && itemAtivo.dados && itemAtivo.dados[0] && (
           <>
             <h4>Porcentagem</h4>
             <div style={{ height: 300 }}>
