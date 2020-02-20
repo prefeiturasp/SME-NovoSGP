@@ -33,6 +33,34 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new System.ArgumentNullException(nameof(repositorioAtribuicaoCJ));
         }
 
+        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesCJ(Modalidade? modalidade, string codigoTurma, string ueId, long codigoDisciplina, string rf)
+        {
+            IEnumerable<DisciplinaResposta> componentes = null;
+            var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidade,
+                                                                                           codigoTurma,
+                                                                                           ueId,
+                                                                                           codigoDisciplina,
+                                                                                           rf,
+                                                                                           string.Empty,
+                                                                                           true);
+
+            if (atribuicoes == null || !atribuicoes.Any())
+                return null;
+
+            var disciplinasEol = await servicoEOL.ObterDisciplinasPorIdsAsync(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+
+            var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
+            if (componenteRegencia != null)
+            {
+                var componentesRegencia = await servicoEOL.ObterDisciplinasPorIdsAsync(IDS_COMPONENTES_REGENCIA);
+                if (componentesRegencia != null)
+                    componentes = TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
+            }
+            else
+                componentes = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
+            return componentes;
+        }
+
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasParaPlanejamento(FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
         {
             IEnumerable<DisciplinaDto> disciplinasDto = null;
