@@ -108,6 +108,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasParaPlanejamento(FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
         {
             IEnumerable<DisciplinaDto> disciplinasDto = null;
+            
 
             var login = servicoUsuario.ObterLoginAtual();
             var usuario = await servicoUsuario.ObterUsuarioLogado();
