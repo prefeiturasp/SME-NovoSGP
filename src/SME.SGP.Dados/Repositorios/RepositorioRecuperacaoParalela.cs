@@ -96,6 +96,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
             MontarCamposResumo(query);
+            //query.AppendLine(", resposta.ordem");
             MontarFromResumo(query);
             MontarWhere(query, dreId, ueId, cicloId, ano, periodoId, turmaId, pagina);
             query.AppendLine("and e.id NOT IN (1)");
@@ -178,7 +179,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.descricao as eixo,");
             query.AppendLine("e.id as eixoId,");
             query.AppendLine("o.id as objetivoId,");
-            query.AppendLine("resposta.id as respostaId");
+            query.AppendLine("resposta.id as respostaId,");
+            query.AppendLine("resposta.ordem as ordem");
         }
 
         private static void MontarFromResumo(StringBuilder query)
