@@ -1,5 +1,5 @@
 import React from 'react';
-import t from 'prop-types';
+import PropTypes from 'prop-types';
 
 // Nivo
 import { ResponsiveBar } from '@nivo/bar';
@@ -81,12 +81,12 @@ function Barras({
 }
 
 Barras.propTypes = {
-  dados: t.oneOfType([t.any]),
-  indice: t.string,
-  chaves: t.oneOfType([t.array]),
-  legendaBaixo: t.string,
-  legendaEsquerda: t.string,
-  porcentagem: t.bool,
+  dados: PropTypes.oneOfType([PropTypes.any]),
+  indice: PropTypes.string,
+  chaves: PropTypes.oneOfType([PropTypes.array]),
+  legendaBaixo: PropTypes.string,
+  legendaEsquerda: PropTypes.string,
+  porcentagem: PropTypes.bool,
 };
 
 Barras.defaultProps = {
