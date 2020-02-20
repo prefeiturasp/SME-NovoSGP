@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IComandosDiasLetivos comandosDiasLetivos;
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
@@ -36,7 +37,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
-            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina)
+            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
+            IConsultasDisciplina consultasDisciplina)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.comandosDiasLetivos = comandosDiasLetivos ?? throw new ArgumentNullException(nameof(comandosDiasLetivos));
@@ -48,6 +50,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentException(nameof(repositorioPeriodoEscolar));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaRegencia));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaDisciplina));
+            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
         }
 
         public async Task<DiaEventoAula> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
@@ -78,11 +81,6 @@ namespace SME.SGP.Aplicacao
 
             var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas, filtro.TurmaHistorico);
 
-            IEnumerable<DisciplinaResposta> disciplinasRegencia = Enumerable.Empty<DisciplinaResposta>();
-
-            if (temTurmaInformada)
-                disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil);
-
             var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct().ToList();
 
             var idsDisciplinasCompartilhadas = aulas.Where(a => !String.IsNullOrEmpty(a.DisciplinaCompartilhadaId) && !a.DisciplinaCompartilhadaId.Equals("null"))
@@ -94,6 +92,18 @@ namespace SME.SGP.Aplicacao
             IEnumerable<DisciplinaDto> disciplinasEol = new List<DisciplinaDto>();
             if (idsDisciplinasAulas != null && idsDisciplinasAulas.Any())
                 disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
+
+            IEnumerable<DisciplinaResposta> disciplinasRegencia = Enumerable.Empty<DisciplinaResposta>();
+
+            var disciplinaRegencia = disciplinasEol.FirstOrDefault(c => c.Regencia);
+            if (temTurmaInformada && disciplinaRegencia != null)
+            {
+                disciplinasRegencia = await consultasDisciplina.ObterComponentesCJ(null,
+                                                                                   filtro.TurmaId,
+                                                                                   string.Empty,
+                                                                                   disciplinaRegencia.CodigoComponenteCurricular,
+                                                                                   usuario.CodigoRf);
+            }
 
             aulas
             .ToList()
