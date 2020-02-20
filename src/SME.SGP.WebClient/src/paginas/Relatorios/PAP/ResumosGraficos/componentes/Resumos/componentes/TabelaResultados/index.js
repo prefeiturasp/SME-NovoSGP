@@ -9,6 +9,7 @@ import { Base, SelectComponent } from '~/componentes';
 
 // Helpers
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import { ordenarPor } from '~/utils/funcoes/gerais';
 
 const Tabela = styled(Table)`
   th.headerTotal {
@@ -342,7 +343,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         },
       });
 
-      setColunas([...colunasFixas, ...montaColunas]);
+      setColunas([...colunasFixas, ...ordenarPor(montaColunas, 'title')]);
     }
   }, [dados, anos, ciclos, unidadeSelecionada, UNIDADES.P, UNIDADES.Q]);
 
