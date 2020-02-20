@@ -304,8 +304,8 @@ const Notas = ({ match }) => {
             alunoId: aluno.id,
             atividadeAvaliativaId: nota.atividadeAvaliativaId,
             conceito:
-              notaTipo === notasConceitos.Conceitos ? nota.notaConceito : 0,
-            nota: notaTipo === notasConceitos.Notas ? nota.notaConceito : 0,
+              notaTipo === notasConceitos.Conceitos ? nota.notaConceito : null,
+            nota: notaTipo === notasConceitos.Notas ? nota.notaConceito : null,
           });
         }
       });

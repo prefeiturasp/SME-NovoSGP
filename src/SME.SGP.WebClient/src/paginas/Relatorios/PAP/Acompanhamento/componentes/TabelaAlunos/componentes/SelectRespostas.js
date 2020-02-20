@@ -10,6 +10,7 @@ function SelectRespostas({
   aluno,
   onChangeResposta,
   containerVinculoId,
+  bloquearLimpar,
 }) {
   const [valorPadrao, setValorPadrao] = useState(null);
 
@@ -31,7 +32,11 @@ function SelectRespostas({
           String(x.id) === String(respostasAlunoFiltradaPorObjetivo.respostaId)
       );
 
-      return String(respostasDisponiveisFiltradaPorSelecionada.id);
+      return String(
+        respostasDisponiveisFiltradaPorSelecionada
+          ? respostasDisponiveisFiltradaPorSelecionada.id
+          : ''
+      );
     });
   }, [aluno.respostas, objetivoAtivo.id, respostas]);
 
@@ -45,6 +50,7 @@ function SelectRespostas({
       valueText="nome"
       placeholder="Selecione a opção"
       containerVinculoId={containerVinculoId}
+      allowClear={!bloquearLimpar}
     />
   );
 }
