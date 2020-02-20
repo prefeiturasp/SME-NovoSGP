@@ -276,6 +276,24 @@ namespace SME.SGP.Aplicacao.Integracoes
             return MapearParaDtoDisciplinas(retorno);
         }
 
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAsync(long[] ids)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var parametros = JsonConvert.SerializeObject(ids);
+            var resposta = await httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+
+            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                await RegistrarLogSentryAsync(resposta, "obter as disciplinas", parametros);
+                return null;
+            }
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+            return MapearParaDtoDisciplinas(retorno);
+        }
+
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
         {
             httpClient.DefaultRequestHeaders.Clear();
@@ -285,7 +303,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
-                RegistrarLogSentry(resposta, "obter as disciplinas", parametros);
+                await RegistrarLogSentryAsync(resposta, "obter as disciplinas", parametros);
                 return null;
             }
 
@@ -803,6 +821,15 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.StatusCode != HttpStatusCode.NotFound)
             {
                 var mensagem = resposta.Content.ReadAsStringAsync().Result;
+                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
+            }
+        }
+
+        private async Task RegistrarLogSentryAsync(HttpResponseMessage resposta, string rotina, string parametros)
+        {
+            if (resposta.StatusCode != HttpStatusCode.NotFound)
+            {
+                var mensagem = await resposta.Content.ReadAsStringAsync();
                 servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
             }
         }
