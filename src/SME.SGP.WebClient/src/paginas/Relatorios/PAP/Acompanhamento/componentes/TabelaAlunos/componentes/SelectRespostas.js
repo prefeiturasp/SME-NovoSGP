@@ -10,6 +10,7 @@ function SelectRespostas({
   aluno,
   onChangeResposta,
   containerVinculoId,
+  bloquearLimpar,
 }) {
   const [valorPadrao, setValorPadrao] = useState(null);
 
@@ -49,6 +50,7 @@ function SelectRespostas({
       valueText="nome"
       placeholder="Selecione a opção"
       containerVinculoId={containerVinculoId}
+      allowClear={!bloquearLimpar}
     />
   );
 }

@@ -44,6 +44,10 @@ function TabelaAlunos({ alunos, respostas, objetivoAtivo, onChangeResposta }) {
                       respostas={respostas}
                       onChangeResposta={onChangeResposta}
                       containerVinculoId={`resposta-${key}`}
+                      bloquearLimpar={
+                        objetivoAtivo &&
+                        (objetivoAtivo.id == 1 || objetivoAtivo.id == 2)
+                      }
                     />
                   </div>
                 </td>
