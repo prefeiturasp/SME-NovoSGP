@@ -300,12 +300,13 @@ const Notas = ({ match }) => {
     bimestreParaMontar.alunos.forEach(aluno => {
       aluno.notasAvaliacoes.forEach(nota => {
         if (nota.modoEdicao) {
+          debugger;
           valorParaSalvar.push({
             alunoId: aluno.id,
             atividadeAvaliativaId: nota.atividadeAvaliativaId,
             conceito:
-              notaTipo === notasConceitos.Conceitos ? nota.notaConceito : 0,
-            nota: notaTipo === notasConceitos.Notas ? nota.notaConceito : 0,
+              notaTipo === notasConceitos.Conceitos ? nota.notaConceito : null,
+            nota: notaTipo === notasConceitos.Notas ? nota.notaConceito : null,
           });
         }
       });
