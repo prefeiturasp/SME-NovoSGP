@@ -7,6 +7,9 @@ import PropTypes from 'prop-types';
 import { Table, Tooltip } from 'antd';
 import { Base, SelectComponent } from '~/componentes';
 
+// Helpers
+import ordenarLista from '~/componentes-sgp/filtro/helper';
+
 const Tabela = styled(Table)`
   th.headerTotal {
     background-color: ${Base.Roxo};
@@ -130,7 +133,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
           if (anos && objetivo.anos && objetivo.anos.length) {
             const respostas = [];
             objetivo.anos.forEach(ano => {
-              ano.respostas.forEach(resposta => {
+              ano.respostas.sort(ordenarLista('ordem')).forEach(resposta => {
                 if (!objetoExisteNaLista(resposta.respostaDescricao, respostas))
                   respostas.push(resposta.respostaDescricao);
               });
@@ -142,14 +145,12 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
           if (ciclos && objetivo.ciclos && objetivo.ciclos.length) {
             const respostas = [];
             objetivo.ciclos.forEach(ciclo => {
-              ciclo.respostas.forEach(resposta => {
-                // console.log(resposta);
+              ciclo.respostas.sort(ordenarLista('ordem')).forEach(resposta => {
                 if (!objetoExisteNaLista(resposta.respostaDescricao, respostas))
                   respostas.push(resposta.respostaDescricao);
               });
             });
             eixosSize[eixo.eixoDescricao] += parseInt(respostas.length, 10);
-            // debugger;
           }
         });
       });
@@ -171,23 +172,25 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
             });
 
             objetivo.ciclos.forEach((ciclo, c) => {
-              ciclo.respostas.forEach((resposta, r) => {
-                if (
-                  !item.find(
-                    dado => dado.Resposta === resposta.respostaDescricao
-                  )
-                ) {
-                  item.push({
-                    Eixo: eixo.eixoDescricao,
-                    EixoGrupo: o === 0 && c === 0 && r === 0,
-                    EixoSize: eixosSize[eixo.eixoDescricao],
-                    Objetivo: objetivo.objetivoDescricao,
-                    ObjetivoGrupo: c === 0 && r === 0,
-                    Resposta: resposta.respostaDescricao,
-                    Total: 0,
-                  });
-                }
-              });
+              ciclo.respostas
+                .sort(ordenarLista('ordem'))
+                .forEach((resposta, r) => {
+                  if (
+                    !item.find(
+                      dado => dado.Resposta === resposta.respostaDescricao
+                    )
+                  ) {
+                    item.push({
+                      Eixo: eixo.eixoDescricao,
+                      EixoGrupo: o === 0 && c === 0 && r === 0,
+                      EixoSize: eixosSize[eixo.eixoDescricao],
+                      Objetivo: objetivo.objetivoDescricao,
+                      ObjetivoGrupo: c === 0 && r === 0,
+                      Resposta: resposta.respostaDescricao,
+                      Total: 0,
+                    });
+                  }
+                });
             });
 
             item.map(i => {
@@ -196,7 +199,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
             });
 
             objetivo.ciclos.forEach(ciclo => {
-              ciclo.respostas.forEach(resposta => {
+              ciclo.respostas.sort(ordenarLista('ordem')).forEach(resposta => {
                 item
                   .filter(i => i.Resposta === resposta.respostaDescricao)
                   .map(i => {
@@ -240,23 +243,25 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
             });
 
             objetivo.anos.forEach((ano, a) => {
-              ano.respostas.forEach((resposta, r) => {
-                if (
-                  !item.find(
-                    dado => dado.Resposta === resposta.respostaDescricao
-                  )
-                ) {
-                  item.push({
-                    Eixo: eixo.eixoDescricao,
-                    EixoGrupo: o === 0 && a === 0 && r === 0,
-                    EixoSize: eixosSize[eixo.eixoDescricao],
-                    Objetivo: objetivo.objetivoDescricao,
-                    ObjetivoGrupo: a === 0 && r === 0,
-                    Resposta: resposta.respostaDescricao,
-                    Total: 0,
-                  });
-                }
-              });
+              ano.respostas
+                .sort(ordenarLista('ordem'))
+                .forEach((resposta, r) => {
+                  if (
+                    !item.find(
+                      dado => dado.Resposta === resposta.respostaDescricao
+                    )
+                  ) {
+                    item.push({
+                      Eixo: eixo.eixoDescricao,
+                      EixoGrupo: o === 0 && a === 0 && r === 0,
+                      EixoSize: eixosSize[eixo.eixoDescricao],
+                      Objetivo: objetivo.objetivoDescricao,
+                      ObjetivoGrupo: a === 0 && r === 0,
+                      Resposta: resposta.respostaDescricao,
+                      Total: 0,
+                    });
+                  }
+                });
             });
 
             item.map(i => {
@@ -265,7 +270,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
             });
 
             objetivo.anos.forEach(ano => {
-              ano.respostas.forEach(resposta => {
+              ano.respostas.sort(ordenarLista('ordem')).forEach(resposta => {
                 item
                   .filter(i => i.Resposta === resposta.respostaDescricao)
                   .map(i => {
