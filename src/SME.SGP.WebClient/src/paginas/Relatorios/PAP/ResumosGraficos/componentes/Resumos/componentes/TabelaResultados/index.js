@@ -143,11 +143,13 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
             const respostas = [];
             objetivo.ciclos.forEach(ciclo => {
               ciclo.respostas.forEach(resposta => {
+                // console.log(resposta);
                 if (!objetoExisteNaLista(resposta.respostaDescricao, respostas))
                   respostas.push(resposta.respostaDescricao);
               });
             });
             eixosSize[eixo.eixoDescricao] += parseInt(respostas.length, 10);
+            // debugger;
           }
         });
       });
