@@ -124,6 +124,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.status,");
             query.AppendLine("e.wf_aprovacao_id as WorkflowAprovacaoId,");
             query.AppendLine("e.tipo_perfil_cadastro as TipoPerfilCadastro,");
+            query.AppendLine("e.letivo,");
             query.AppendLine("et.id as TipoEventoId,");
             query.AppendLine("et.id,");
             query.AppendLine("et.codigo,");
