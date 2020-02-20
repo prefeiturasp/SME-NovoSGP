@@ -300,7 +300,6 @@ const Notas = ({ match }) => {
     bimestreParaMontar.alunos.forEach(aluno => {
       aluno.notasAvaliacoes.forEach(nota => {
         if (nota.modoEdicao) {
-          debugger;
           valorParaSalvar.push({
             alunoId: aluno.id,
             atividadeAvaliativaId: nota.atividadeAvaliativaId,
