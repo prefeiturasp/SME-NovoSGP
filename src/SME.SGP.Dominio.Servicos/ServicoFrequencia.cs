@@ -145,7 +145,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private Turma ObterTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterPorId(turmaId);
+            var turma = repositorioTurma.ObterPorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
             return turma;
