@@ -12,10 +12,13 @@ import { Linha } from '~/componentes/EstilosGlobais';
 
 // Funcões
 import { removerCaracteresEspeciais } from '~/utils/funcoes/gerais';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
 function TabGraficos({ dados, periodo, ciclos }) {
   const [itemAtivo, setItemAtivo] = useState(null);
   const [cicloOuAno] = useState(ciclos ? 'ciclos' : 'anos');
+
+  const [chaves, setChaves] = useState([]);
 
   // Frequência
   const dadosTabelaFrequencia = useMemo(() => {
@@ -109,7 +112,6 @@ function TabGraficos({ dados, periodo, ciclos }) {
   // Resultados
   const dadosTabelaResultados = useMemo(() => {
     const resultados = [];
-    console.log(dados.resultados.items);
     dados.resultados.items.forEach(resultado => {
       let objetivo = {
         eixoDescricao: resultado.eixoDescricao,
@@ -140,6 +142,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
                     ? removerCaracteresEspeciais(resposta.respostaDescricao)
                     : resposta.respostaDescricao,
                 TipoDado: 'Quantidade',
+                Ordem: resposta.ordem,
               });
 
               item.push({
@@ -151,6 +154,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
                     ? removerCaracteresEspeciais(resposta.respostaDescricao)
                     : resposta.respostaDescricao,
                 TipoDado: 'Porcentagem',
+                Ordem: resposta.ordem,
               });
             }
           });
@@ -197,7 +201,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
         objetivo = {
           ...objetivo,
           id: shortid.generate(),
-          dados: item,
+          dados: item.sort(FiltroHelper.ordenarLista('Ordem')),
         };
 
         resultados.push(objetivo);
@@ -356,9 +360,45 @@ function TabGraficos({ dados, periodo, ciclos }) {
     periodo,
   ]);
 
+  const montarChaves = item => {
+    const lista = [];
+
+    item.dados.forEach(dado => {
+      const itens = Object.keys(dado).filter(
+        frequencia =>
+          [
+            'TipoDado',
+            'FrequenciaDescricao',
+            'key',
+            'Descricao',
+            'Total',
+            'Id',
+            'eixoDescricao',
+            'objetivoDescricao',
+            'descricao',
+            'Ordem',
+          ].indexOf(frequencia) === -1
+      );
+
+      itens.forEach(i => {
+        if (lista.indexOf(i) === -1) lista.push(i);
+      });
+    });
+
+    setChaves(lista);
+  };
+
   useEffect(() => {
-    setItemAtivo(objetivos[0]);
+    if (objetivos && objetivos.length) {
+      montarChaves(objetivos[0]);
+      setItemAtivo(objetivos[0]);
+    }
   }, [objetivos]);
+
+  const aoTrocarItem = item => {
+    montarChaves(item);
+    setItemAtivo(item);
+  };
 
   return (
     <>
@@ -372,7 +412,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
                 )[0]
               : objetivos[0]
           }
-          onChangeItem={item => setItemAtivo(item)}
+          onChangeItem={item => aoTrocarItem(item)}
         />
       </Linha>
       <Linha style={{ marginBottom: '35px' }}>
@@ -391,20 +431,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
                   frequencia => frequencia.TipoDado === 'Quantidade'
                 )}
                 indice="FrequenciaDescricao"
-                chaves={Object.keys(itemAtivo.dados[0]).filter(
-                  frequencia =>
-                    [
-                      'TipoDado',
-                      'FrequenciaDescricao',
-                      'key',
-                      'Descricao',
-                      'Total',
-                      'Id',
-                      'eixoDescricao',
-                      'objetivoDescricao',
-                      'descricao',
-                    ].indexOf(frequencia) === -1
-                )}
+                chaves={chaves}
               />
             </div>
           </>
@@ -423,20 +450,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
                   )
                 }
                 indice="FrequenciaDescricao"
-                chaves={Object.keys(itemAtivo && itemAtivo.dados[0]).filter(
-                  frequencia =>
-                    [
-                      'TipoDado',
-                      'FrequenciaDescricao',
-                      'key',
-                      'Descricao',
-                      'Total',
-                      'Id',
-                      'eixoDescricao',
-                      'objetivoDescricao',
-                      'descricao',
-                    ].indexOf(frequencia) === -1
-                )}
+                chaves={chaves}
                 porcentagem
               />
             </div>
