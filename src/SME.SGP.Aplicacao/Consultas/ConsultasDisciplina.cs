@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasDisciplina : IConsultasDisciplina
     {
+        private static readonly long[] IDS_COMPONENTES_REGENCIA = { 2, 7, 8, 89, 138 };
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
@@ -44,11 +45,39 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
                 return TratarRetornoDisciplinasPlanejamento(JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(disciplinasCacheString), filtroDisciplinaPlanejamentoDto);
 
-            var disciplinas = await servicoEOL.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto.CodigoTurma, login, servicoUsuario.ObterPerfilAtual());
+            IEnumerable<DisciplinaResposta> disciplinas = new List<DisciplinaResposta>();
+            if (usuario.EhProfessorCj())
+            {
+                var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null,
+                                                                                filtroDisciplinaPlanejamentoDto.CodigoTurma.ToString(),
+                                                                                string.Empty,
+                                                                                filtroDisciplinaPlanejamentoDto.CodigoDisciplina,
+                                                                                usuario.Login,
+                                                                                string.Empty,
+                                                                                true);
+
+                if (atribuicoes == null || !atribuicoes.Any())
+                    return disciplinasDto;
+
+                var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+
+                var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
+                if (componenteRegencia != null)
+                {
+                    var componentesRegencia = servicoEOL.ObterDisciplinasPorIds(IDS_COMPONENTES_REGENCIA);
+                    if (componentesRegencia != null)
+                        disciplinas = TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
+                }
+                else
+                    disciplinasDto = disciplinasEol;
+            }
+            else
+            {
+                disciplinas = await servicoEOL.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto.CodigoTurma, usuario.Login, servicoUsuario.ObterPerfilAtual());
+            }
 
             if (disciplinas == null || !disciplinas.Any())
                 return disciplinasDto;
-
             disciplinasDto = await MapearParaDto(disciplinas, filtroDisciplinaPlanejamentoDto.TurmaPrograma);
 
             await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
