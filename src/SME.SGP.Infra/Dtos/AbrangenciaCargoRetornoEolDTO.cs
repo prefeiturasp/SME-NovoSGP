@@ -1,4 +1,4 @@
-﻿using SME.SGP.Infra.Enumerados;
+using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;
 
