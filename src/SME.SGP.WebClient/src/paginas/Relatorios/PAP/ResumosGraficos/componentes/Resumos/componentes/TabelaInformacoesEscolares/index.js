@@ -1,19 +1,21 @@
+/* eslint-disable no-param-reassign */
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import shortid from 'shortid';
 import { Base, SelectComponent } from '~/componentes';
 import { ColunasFixas, Tabela } from './index.css';
 import { ordenarPor } from '~/utils/funcoes/gerais';
+
+function objetoExistaNaLista(objeto, lista) {
+  return lista.some(
+    elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
+  );
+}
 
 const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
   const [dadosTabela, setDadosTabela] = useState([]);
   const [unidadeSelecionada, setUnidadeSelecionada] = useState('quantidade');
   const [colunas, setColunas] = useState([]);
-
-  const objetoExistaNaLista = (objeto, lista) => {
-    return lista.some(
-      elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
-    );
-  };
 
   const UNIDADES = {
     Q: 'quantidade',
@@ -50,6 +52,7 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
                 !item.find(dado => dado.Resposta === resposta.respostaDescricao)
               ) {
                 item.push({
+                  Id: shortid.generate(),
                   Eixo: eixo.eixoDescricao,
                   Objetivo: objetivo.objetivoDescricao,
                   ObjetivoGrupo: c === 0 && r === 0,
@@ -92,9 +95,11 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
             const coluna = {
               title: `${ciclo.cicloDescricao}`,
               dataIndex: `${ciclo.cicloDescricao}`,
+              render: text =>
+                text || `0${unidadeSelecionada === UNIDADES.P ? `%` : ``}`,
             };
 
-            if (!objetoExisteNaLista(coluna, montaColunas))
+            if (!objetoExistaNaLista(coluna, montaColunas))
               montaColunas.push(coluna);
           });
         } else if (anos && objetivo.anos.length) {
@@ -110,6 +115,7 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
                 !item.find(dado => dado.Resposta === resposta.respostaDescricao)
               ) {
                 item.push({
+                  Id: shortid.generate(),
                   Eixo: eixo.eixoDescricao,
                   Objetivo: objetivo.objetivoDescricao,
                   ObjetivoGrupo: a === 0 && r === 0,
@@ -152,6 +158,8 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
             const coluna = {
               title: `${ano.anoDescricao}`,
               dataIndex: `${ano.anoDescricao}`,
+              render: text =>
+                text || `0${unidadeSelecionada === UNIDADES.P ? `%` : ``}`,
             };
 
             if (!objetoExistaNaLista(coluna, montaColunas))
@@ -188,12 +196,6 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
     montaColunasDados();
   }, [montaColunasDados]);
 
-  function objetoExisteNaLista(objeto, lista) {
-    return lista.some(
-      elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
-    );
-  }
-
   const onTrocaUnidade = unidade => {
     setUnidadeSelecionada(unidade);
   };
@@ -228,7 +230,9 @@ const TabelaInformacoesEscolares = ({ dados, ciclos, anos }) => {
         size="middle"
         className="my-2"
         bordered
-        style={{ borderLeft: `7px solid ${Base.Azul}` }}
+        style={
+          dadosTabela.length ? { borderLeft: `7px solid ${Base.Azul}` } : {}
+        }
         locale={{ emptyText: 'Sem dados' }}
       />
     </>
