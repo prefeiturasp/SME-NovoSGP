@@ -138,7 +138,7 @@ function RelatorioPAPAcompanhamento() {
         });
 
         if (!data) {
-          erro('Não foi encontrado dados de acompanhamento PAP');
+          erro('Não foram encontrados dados para a turma e período selecionados.');
           setCarregando(false);
           return false;
         }
@@ -150,10 +150,19 @@ function RelatorioPAPAcompanhamento() {
     } catch (err) {
       setCarregando(false);
 
-      if (err.response)
-        erro(`Não foi possível completar a requisição: ${JSON.stringify(err)}`);
-      else erro('Ocorreu um erro interno, por favor contate o suporte');
+      if (err.response) {
+        const { data } = err.response;
+        if (data) {
+          const { mensagens } = data;
+          erro(`${mensagens[0]}`);
+        } else {
+          erro('Não foi possível completar a requisição');
+        }
+      } else {
+        erro('Ocorreu um erro interno, por favor contate o suporte');
+      }
     }
+    return true;
   };
 
   const onChangeRespostaHandler = async (aluno, valor) => {
@@ -172,20 +181,20 @@ function RelatorioPAPAcompanhamento() {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-              ...alunoCorrente.respostas.filter(
-                y => y.objetivoId !== estado.ObjetivoAtivo.id
-              ),
-              novaResposta,
-            ]
+            ...alunoCorrente.respostas.filter(
+              y => y.objetivoId !== estado.ObjetivoAtivo.id
+            ),
+            novaResposta,
+          ]
           : [novaResposta];
     } else {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-              ...alunoCorrente.respostas.filter(
-                y => y.objetivoId !== estado.ObjetivoAtivo.id
-              ),
-            ]
+            ...alunoCorrente.respostas.filter(
+              y => y.objetivoId !== estado.ObjetivoAtivo.id
+            ),
+          ]
           : [];
     }
 
@@ -194,9 +203,9 @@ function RelatorioPAPAcompanhamento() {
         estado.Alunos.map(item =>
           item.codAluno === aluno.codAluno
             ? {
-                ...aluno,
-                respostas: respostasAluno,
-              }
+              ...aluno,
+              respostas: respostasAluno,
+            }
             : item
         )
       )
@@ -264,7 +273,7 @@ function RelatorioPAPAcompanhamento() {
   return (
     <>
       <AlertaSelecionarTurma />
-      <Cabecalho pagina="Relatório de acompanhamento PAP" />
+      <Cabecalho pagina="Relatório de encaminhamento e acompanhamento do PAP" />
       <Loader loading={carregando}>
         <Card mx="mx-0">
           <ButtonGroup
