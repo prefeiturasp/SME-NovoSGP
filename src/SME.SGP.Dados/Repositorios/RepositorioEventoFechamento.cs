@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstAsync<int>(query, new
             {
-                dataReferencia,
+                dataReferencia = dataReferencia.Date,
                 dreCodigo,
                 ueCodigo,
                 bimestre,
