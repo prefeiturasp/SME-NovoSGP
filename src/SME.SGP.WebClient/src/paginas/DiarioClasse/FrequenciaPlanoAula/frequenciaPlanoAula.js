@@ -51,7 +51,7 @@ const FrequenciaPlanoAula = () => {
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
 
-  const [carregandoFrequencia, setCarregandoFrequencia] = useState(true);
+  const [carregandoFrequencia, setCarregandoFrequencia] = useState(false);
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
 
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
@@ -100,6 +100,7 @@ const FrequenciaPlanoAula = () => {
   const [dataSugerida, setDataSugerida] = useState('');
 
   const [planoAulaExpandido, setPlanoAulaExpandido] = useState(false);
+  const [carregandoMaterias, setCarregandoMaterias] = useState(false);
 
   const dadosAulaFrequencia = useSelector(
     store => store.calendarioProfessor.dadosAulaFrequencia
@@ -250,9 +251,13 @@ const FrequenciaPlanoAula = () => {
 
   const obterListaFrequencia = async id => {
     setAulaId(id);
+    setCarregandoFrequencia(true);
     const frequenciaAlunos = await api
       .get(`v1/calendarios/frequencias`, { params: { aulaId: id } })
-      .catch(e => erros(e));
+      .catch(e => {
+        setCarregandoFrequencia(false);
+        erros(e);
+      });
 
     if (frequenciaAlunos && frequenciaAlunos.data) {
       setFrequenciaId(frequenciaAlunos.data.id);
@@ -272,21 +277,17 @@ const FrequenciaPlanoAula = () => {
     setCarregandoFrequencia(false);
   };
 
-  const [carregandoMaterias, setCarregandoMaterias] = useState(true);
-
   const obterPlanoAula = useCallback(
     async aula => {
+      debugger;
       const idAula = aula.idAula || aula[0].idAula;
       const plano = await api
         .get(`v1/planos/aulas/${idAula}`)
-        .then(resp => {
-          setPlanoAulaExpandido(true);
-          return resp;
-        })
         .catch(e => {
           setPlanoAulaExpandido(false);
           erros(e);
-        });
+        })
+        .finally(() => setCarregandoMaterias(false));
 
       const dadosPlano = plano && plano.data;
       if (dadosPlano) {
@@ -317,9 +318,15 @@ const FrequenciaPlanoAula = () => {
         let disciplinas = {};
         if (disciplinaSelecionada.regencia) {
           setTemObjetivos(true);
-          disciplinas = await api.get(
-            `v1/professores/turmas/${turmaId}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigoComponenteCurricular}&regencia=true`
-          );
+          setCarregandoMaterias(true);
+          disciplinas = await api
+            .get(
+              `v1/professores/turmas/${turmaId}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigoComponenteCurricular}&regencia=true`
+            )
+            .catch(e => {
+              setCarregandoMaterias(false);
+              erros(e);
+            });
           if (disciplinas.data && disciplinas.data.length > 0) {
             const disciplinasRegencia = [];
             disciplinas.data.forEach(disciplina => {
@@ -634,8 +641,6 @@ const FrequenciaPlanoAula = () => {
 
   useEffect(() => {
     if (exibeEscolhaAula) {
-      setCarregandoFrequencia(true);
-      setCarregandoMaterias(true);
       const aulaDataSelecionada = obterAulaSelecionada(dataSelecionada);
       const aulaSelecionada = aulaDataSelecionada.find(
         item => item.aulaCJ === ehAulaCj
@@ -649,7 +654,6 @@ const FrequenciaPlanoAula = () => {
           obterAvaliacao(aulaSelecionada.idAula, dataSelecionada);
         }
       }
-      setCarregandoFrequencia(false);
       setCarregandoMaterias(false);
     }
   }, [ehAulaCj]);
@@ -670,7 +674,9 @@ const FrequenciaPlanoAula = () => {
           setExibeEscolhaAula(true);
         } else {
           const aulaSelecionada = aulaDataSelecionada.find(
-            item => item.aulaCJ === usuario.ehProfessorCj
+            item =>
+              aulaDataSelecionada.idAula == item.idAula &&
+              (usuario.ehProfessorCj ? item.aulaCJ : true)
           );
 
           if (aulaSelecionada) {
@@ -740,7 +746,7 @@ const FrequenciaPlanoAula = () => {
   useEffect(() => {
     if (dataSugerida) {
       validaSeTemIdAula(window.moment(dataSugerida));
-      setDataSugerida('');
+      // setDataSugerida('');
     }
   }, [dataSugerida, validaSeTemIdAula]);
 
