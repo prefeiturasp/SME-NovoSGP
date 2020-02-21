@@ -523,5 +523,11 @@ namespace SME.SGP.Dominio.Servicos
             var eventos = await repositorioEvento.ObterEventosPorTipoETipoCalendario((long)TipoEvento.OrganizacaoEscolar, evento.TipoCalendarioId);
             evento.VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(eventos, usuario);
         }
+
+        public async Task Excluir(Evento evento)
+        {
+            evento.Excluir();
+            repositorioEvento.Salvar(evento);
+        }
     }
 }
