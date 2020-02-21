@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import shortid from 'shortid';
 
 // Ant
 import { Table, Tooltip } from 'antd';
@@ -190,6 +191,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                     )
                   ) {
                     item.push({
+                      Id: shortid.generate(),
                       Eixo: eixo.eixoDescricao,
                       EixoGrupo: o === 0 && c === 0 && r === 0,
                       EixoSize: eixosSize[eixo.eixoDescricao],
@@ -264,6 +266,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                     )
                   ) {
                     item.push({
+                      Id: shortid.generate(),
                       Eixo: eixo.eixoDescricao,
                       EixoGrupo: o === 0 && a === 0 && r === 0,
                       EixoSize: eixosSize[eixo.eixoDescricao],
@@ -381,7 +384,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         pagination={false}
         columns={colunas}
         dataSource={dadosTabela}
-        rowKey="Resposta"
+        rowKey="Id"
         size="middle"
         className="my-2"
         bordered
