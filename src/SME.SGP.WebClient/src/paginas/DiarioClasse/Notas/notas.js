@@ -184,9 +184,7 @@ const Notas = ({ match }) => {
                 break;
             }
 
-            if (bimestreAtualizado.alunos.length > 0) {
-              setBimestreCorrente(bimestreAtualizado.numero);
-            }
+            setBimestreCorrente(dados.bimestreAtual);
           });
 
           setAuditoriaInfo({
@@ -606,6 +604,7 @@ const Notas = ({ match }) => {
             bimestrePesquisado.periodoFim
           );
         }
+        setNotaTipo(dados.notaTipo);
 
         const bimestreAtualizado = {
           fechamentoTurmaId: bimestrePesquisado.fechamentoTurmaId,
