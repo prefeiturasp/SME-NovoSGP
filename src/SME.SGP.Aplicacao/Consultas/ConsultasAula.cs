@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -11,6 +12,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasAula : IConsultasAula
     {
+        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioAula repositorio;
@@ -23,11 +25,13 @@ namespace SME.SGP.Aplicacao
                              IConsultasFrequencia consultasFrequencia,
                              IRepositorioPlanoAula repositorioPlanoAula,
                              IServicoUsuario servicoUsuario,
-                             IServicoEOL servicoEol)
+                             IServicoEOL servicoEol,
+                             IConsultasDisciplina consultasDisciplina)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
+            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
@@ -41,8 +45,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Aula de id {id} não encontrada");
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            string disciplinaId = await ObterDisciplinaIdAulaEOL(usuarioLogado, aula);
-
+            string disciplinaId = await ObterDisciplinaIdAulaEOL(usuarioLogado, aula, usuarioLogado.EhProfessorCj());
             return MapearParaDto(aula, disciplinaId);
         }
 
@@ -184,9 +187,13 @@ namespace SME.SGP.Aplicacao
             return dto;
         }
 
-        private async Task<string> ObterDisciplinaIdAulaEOL(Usuario usuarioLogado, Aula aula)
+        private async Task<string> ObterDisciplinaIdAulaEOL(Usuario usuarioLogado, Aula aula, bool ehCJ)
         {
-            var disciplinasUsuario = await servicoEol.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
+            IEnumerable<DisciplinaResposta> disciplinasUsuario;
+            if (ehCJ)
+                disciplinasUsuario = await consultasDisciplina.ObterComponentesCJ(null, aula.TurmaId, string.Empty, long.Parse(aula.DisciplinaId), usuarioLogado.CodigoRf);
+            else
+                disciplinasUsuario = await servicoEol.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
             var disciplina = disciplinasUsuario?.FirstOrDefault(x => x.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
             var disciplinaId = disciplina == null ? null : disciplina.CodigoComponenteCurricular.ToString();
             return disciplinaId;
