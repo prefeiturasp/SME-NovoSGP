@@ -186,7 +186,7 @@ namespace SME.SGP.Aplicacao
         private async Task<string> ObterDisciplinaIdAulaEOL(Usuario usuarioLogado, Aula aula)
         {
             var disciplinasUsuario = await servicoEol.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
-            var disciplina = disciplinasUsuario.FirstOrDefault(x => x.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
+            var disciplina = disciplinasUsuario?.FirstOrDefault(x => x.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
             var disciplinaId = disciplina == null ? null : disciplina.CodigoComponenteCurricular.ToString();
             return disciplinaId;
         }
