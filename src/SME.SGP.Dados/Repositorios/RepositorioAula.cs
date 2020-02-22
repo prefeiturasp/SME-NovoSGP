@@ -110,11 +110,14 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query);
-            query.AppendLine(",ab.turma_nome,");
-            query.AppendLine("ab.ue_nome");
+            query.AppendLine(",t.nome as turma_nome,");
+            query.AppendLine("u.nome as ue_nome");
             query.AppendLine("FROM public.aula a");
-            query.AppendLine($"INNER JOIN {(turmaHistorico ? "v_abrangencia_historica" : "v_abrangencia")} ab");
-            query.AppendLine("on a.turma_id = ab.turma_id");
+            //query.AppendLine($"INNER JOIN {(turmaHistorico ? "v_abrangencia_historica" : "v_abrangencia")} ab");
+            query.AppendLine($"INNER JOIN turma t");
+            query.AppendLine("on a.turma_id = t.turma_id");
+            query.AppendLine($"INNER JOIN ue u");
+            query.AppendLine("on a.ue_id = u.ue_id");
             MontaWhere(query, tipoCalendarioId, turmaId, ueId, null, data);
             MontaGroupBy(query);
 
@@ -317,7 +320,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void MontaCabecalho(StringBuilder query)
         {
-            query.AppendLine("SELECT id,");
+            query.AppendLine("SELECT a.id,");
             query.AppendLine("a.aula_pai_id,");
             query.AppendLine("a.ue_id,");
             query.AppendLine("a.disciplina_id,");
@@ -343,13 +346,13 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void MontaGroupBy(StringBuilder query)
         {
-            query.AppendLine("group by ab.turma_id,");
-            query.AppendLine("id,");
+            query.AppendLine("group by t.turma_id,");
+            query.AppendLine("a.id,");
             query.AppendLine("a.ue_id,");
             query.AppendLine("a.disciplina_id,");
             query.AppendLine("a.turma_id,");
-            query.AppendLine("ab.turma_nome,");
-            query.AppendLine("ab.ue_nome,");
+            query.AppendLine("t.nome,");
+            query.AppendLine("u.nome,");
             query.AppendLine("a.tipo_calendario_id,");
             query.AppendLine("a.professor_rf,");
             query.AppendLine("a.quantidade,");

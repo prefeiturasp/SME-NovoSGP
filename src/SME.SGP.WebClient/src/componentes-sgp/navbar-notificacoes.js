@@ -105,13 +105,13 @@ const NavbarNotificacoes = props => {
       }
     }, 60000);
     return () => clearInterval(interval);
-  }, [usuario.rf, loaderGeral]);
+  }, [usuario.rf, loaderGeral, anoAtual]);
 
   useEffect(() => {
     if (usuario.rf.length > 0)
       if (notificacoes.notificacoes.length === 0)
         servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
-  }, [notificacoes.notificacoes.length, usuario.rf]);
+  }, [anoAtual, notificacoes.notificacoes.length, usuario.rf]);
 
   useLayoutEffect(() => {
     const handleClickFora = event => {

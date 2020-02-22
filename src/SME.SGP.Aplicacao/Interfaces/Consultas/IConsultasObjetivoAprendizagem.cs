@@ -16,8 +16,8 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<ComponenteCurricularSimplificadoDto>> ObterDisciplinasDoBimestrePlanoAnual(int ano, int bimestre, long turmaId, long componenteCurricularId);
 
-        Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId);
-
         Task<long> ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId);
+
+        Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false);
     }
 }
