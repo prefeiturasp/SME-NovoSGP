@@ -13,6 +13,7 @@ import {
 } from '../../constantes/url';
 import ListaNotificacoes from './listaNotificacoes';
 import modalidade from '~/dtos/modalidade';
+import { Container, Label, Dashboard } from './principal.css';
 
 const Principal = () => {
   const FREQUENCIA_TYPE = 'frequencia';
@@ -68,25 +69,6 @@ const Principal = () => {
     return !turmaSelecionada;
   };
 
-  const Container = styled.div`
-    margin-left: 8px !important;
-    margin-right: 8px !important;
-    margin-top: 20px !important;
-  `;
-
-  const Label = styled.h5`
-    font-size: 16px !important;
-  `;
-
-  const Dashboard = styled.div`
-    .alinhar-itens-topo {
-      align-items: initial !important;
-    }
-    .card {
-      height: 100% !important;
-    }
-  `;
-
   return (
     <div className="col-md-12">
       {modalidades &&
@@ -128,17 +110,17 @@ const Principal = () => {
         </Row>
       ) : null}
       <Card className="rounded mb-4">
-        <Grid cols={12}>
+        <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
           <Label>
             <span className="fas fa-thumbtack mr-2 mb-0" />
             Notificações
           </Label>
-          <Row className="pt-3 pb-4">
-            <Grid cols={12}>
+          <div className="row pt-3 pb-4">
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
               <ListaNotificacoes />
-            </Grid>
-          </Row>
-        </Grid>
+            </div>
+          </div>
+        </div>
       </Card>
       <Dashboard>
         <Row>
