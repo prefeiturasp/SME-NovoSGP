@@ -35,13 +35,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AulaConsultaDto> BuscarPorId(long id)
         {
-            var usuarioLogado = servicoUsuario.ObterUsuarioLogado().Result;
-
             var aula = repositorio.ObterPorId(id);
 
             if (aula == null)
                 throw new NegocioException($"Aula de id {id} não encontrada");
 
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             string disciplinaId = await ObterDisciplinaIdAulaEOL(usuarioLogado, aula);
 
             return MapearParaDto(aula, disciplinaId);
@@ -90,12 +89,14 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var usuarioRF = usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : string.Empty;
-            return repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(anoLetivo, turma, disciplina, usuarioLogado.Id, usuarioRF)?.Select(a => new DataAulasProfessorDto
-            {
-                Data = a.DataAula,
-                IdAula = a.Id,
-                AulaCJ = a.AulaCJ
-            });
+
+            return repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(anoLetivo, turma, disciplina, usuarioLogado.Id, usuarioRF, usuarioLogado.EhProfessorCj(), usuarioLogado.TemPerfilSupervisorOuDiretor())?
+                .Select(a => new DataAulasProfessorDto
+                {
+                    Data = a.DataAula,
+                    IdAula = a.Id,
+                    AulaCJ = a.AulaCJ
+                });
         }
 
         public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)
@@ -186,7 +187,7 @@ namespace SME.SGP.Aplicacao
         private async Task<string> ObterDisciplinaIdAulaEOL(Usuario usuarioLogado, Aula aula)
         {
             var disciplinasUsuario = await servicoEol.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
-            var disciplina = disciplinasUsuario.FirstOrDefault(x => x.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
+            var disciplina = disciplinasUsuario?.FirstOrDefault(x => x.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
             var disciplinaId = disciplina == null ? null : disciplina.CodigoComponenteCurricular.ToString();
             return disciplinaId;
         }
