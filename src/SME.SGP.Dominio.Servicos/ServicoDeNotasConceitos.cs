@@ -115,7 +115,7 @@ namespace SME.SGP.Dominio
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                var valoresConceito = repositorioConceito.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                var valoresConceito = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
                 var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
@@ -132,7 +132,7 @@ namespace SME.SGP.Dominio
                     }
                     else
                     {
-                        var conceito = valoresConceito.FirstOrDefault(a => a.Id == nota.Conceito);
+                        var conceito = valoresConceito.FirstOrDefault(a => a.Id == nota.ConceitoId);
                         somaConceitos += conceito.Aprovado ? 1 : 0;
                     }
                 }
@@ -282,8 +282,8 @@ namespace SME.SGP.Dominio
                 }
                 else
                 {
-                    var conceitos = repositorioConceito.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
-                    var conceito = conceitos.FirstOrDefault(c => c.Id.Equals(nota.Conceito));
+                    var conceitos = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
+                    var conceito = conceitos.FirstOrDefault(c => c.Id.Equals(nota.ConceitoId));
 
                     if (conceitos == null)
                         throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
@@ -305,7 +305,7 @@ namespace SME.SGP.Dominio
                                 AtividadeAvaliativaID = notaConceito.AtividadeAvaliativaID,
                                 DisciplinaId = atividade.DisciplinaId,
                                 Nota = notaConceito.Nota,
-                                Conceito = notaConceito.Conceito,
+                                ConceitoId = notaConceito.ConceitoId,
                                 TipoNota = notaConceito.TipoNota
                             });
                         }

@@ -64,6 +64,26 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new AulaPrevistaBimestreMap());
                config.AddMap(new RegistroPoaMap());
                config.AddMap(new AtividadeAvaliativaDisciplinaMap());
+               config.AddMap(new FechamentoReaberturaMap());
+               config.AddMap(new FechamentoReaberturaBimestreMap());
+               config.AddMap(new FechamentoReaberturaNotificacaoMap());
+               config.AddMap(new CompensacaoAusenciaMap());
+               config.AddMap(new CompensacaoAusenciaAlunoMap());
+               config.AddMap(new CompensacaoAusenciaDisciplinaRegenciaMap());
+               config.AddMap(new ProcessoExecutandoMap());
+               config.AddMap(new PeriodoFechamentoMap());
+               config.AddMap(new PeriodoFechamentoBimestreMap());
+               config.AddMap(new NotificacaoCompensacaoAusenciaMap());
+               config.AddMap(new EventoFechamentoMap());
+               config.AddMap(new FechamentoTurmaDisciplinaMap());
+               config.AddMap(new NotaConceitoBimestreMap());
+               config.AddMap(new RecuperacaoParalelaMap());
+               config.AddMap(new RecuperacaoParalelaPeriodoMap());
+               config.AddMap(new RecuperacaoParalelaPeriodoObjetivoRespostaMap());
+               config.AddMap(new EixoMap());
+               config.AddMap(new ObjetivoaMap());
+               config.AddMap(new RespostaMap());
+               config.AddMap(new FechamentoFinalMap());
                config.ForDommel();
            });
         }

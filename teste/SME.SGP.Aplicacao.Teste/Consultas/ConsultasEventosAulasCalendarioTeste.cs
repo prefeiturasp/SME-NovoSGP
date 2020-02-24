@@ -18,11 +18,12 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IComandosDiasLetivos> comandosDiasLetivosMock;
 
         private readonly Mock<IConsultasAbrangencia> consultasAbrangencia;
+        private readonly Mock<IConsultasDisciplina> consultasDisciplina;
         private readonly ConsultasEventosAulasCalendario consultasEventosAulasCalendario;
         private readonly Mock<IHttpContextAccessor> httpContext;
         private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
-        private readonly Mock<IRepositorioAtividadeAvaliativaRegencia> repositorioAtividadeAvaliativaRegencia;
         private readonly Mock<IRepositorioAtividadeAvaliativaDisciplina> repositorioAtividadeAvaliativaDisciplina;
+        private readonly Mock<IRepositorioAtividadeAvaliativaRegencia> repositorioAtividadeAvaliativaRegencia;
         private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCj;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioEvento> repositorioEvento;
@@ -48,8 +49,22 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioAtividadeAvaliativaRegencia = new Mock<IRepositorioAtividadeAvaliativaRegencia>();
             repositorioAtividadeAvaliativaDisciplina = new Mock<IRepositorioAtividadeAvaliativaDisciplina>();
             repositorioAtribuicaoCj = new Mock<IRepositorioAtribuicaoCJ>();
-            consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object, comandosDiasLetivosMock.Object, repositorioAula.Object, servicoUsuario.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioAtividadeAvaliativa.Object, repositorioPeriodoEscolar.Object, repositorioAtividadeAvaliativaRegencia.Object, repositorioAtividadeAvaliativaDisciplina.Object);
-            comandosDiasLetivos = new ComandosDiasLetivos(repositorioPeriodoEscolar.Object, repositorioEvento.Object, repositorioTipoCalendatio.Object, repositorioParametrosSistema.Object);
+            consultasDisciplina = new Mock<IConsultasDisciplina>();
+            consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object,
+                                                                                  comandosDiasLetivosMock.Object,
+                                                                                  repositorioAula.Object,
+                                                                                  servicoUsuario.Object,
+                                                                                  servicoEOL.Object,
+                                                                                  consultasAbrangencia.Object,
+                                                                                  repositorioAtividadeAvaliativa.Object,
+                                                                                  repositorioPeriodoEscolar.Object,
+                                                                                  repositorioAtividadeAvaliativaRegencia.Object,
+                                                                                  repositorioAtividadeAvaliativaDisciplina.Object,
+                                                                                  consultasDisciplina.Object);
+            comandosDiasLetivos = new ComandosDiasLetivos(repositorioPeriodoEscolar.Object,
+                                                          repositorioEvento.Object,
+                                                          repositorioTipoCalendatio.Object,
+                                                          repositorioParametrosSistema.Object);
         }
 
         [Fact(DisplayName = "Deve_Buscar_Evento_E_Aulas_Do_Ano_Todo_Por_Tipo_Calendario_Dre_Ue")]
