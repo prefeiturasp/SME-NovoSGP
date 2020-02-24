@@ -1,31 +1,30 @@
 import { Tabs } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Loader, Grid, ModalConteudoHtml } from '~/componentes';
+import { Grid, Loader, ModalConteudoHtml, Colors } from '~/componentes';
+import Button from '~/componentes/button';
 import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
 import Cabecalho from '~/componentes-sgp/cabecalho';
+import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
+import Editor from '~/componentes/editor/editor';
+import Row from '~/componentes/row';
 import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { URL_HOME } from '~/constantes/url';
 import notasConceitos from '~/dtos/notasConceitos';
-import {
-  setModoEdicaoGeral,
-  setModoEdicaoGeralNotaFinal,
-  setExpandirLinha,
-} from '~/redux/modulos/notasConceitos/actions';
-import { erros, sucesso, confirmar } from '~/servicos/alertas';
+import RotasDto from '~/dtos/rotasDto';
+import { setExpandirLinha, setModoEdicaoGeral, setModoEdicaoGeralNotaFinal } from '~/redux/modulos/notasConceitos/actions';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
-
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import ServicoNotas from '~/servicos/ServicoNotas';
 import BotoesAcoessNotasConceitos from './botoesAcoes';
 import { Container, ContainerAuditoria } from './notas.css';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import Row from '~/componentes/row';
-import Alert from '~/componentes/alert';
-import ModalJustificativa from '~/componentes-sgp/ModalJustificativa/ModalJustificativa';
-import Editor from '~/componentes/editor/editor';
+import * as Yup from 'yup';
+import { Formik, Form } from 'formik';
+
 
 const { TabPane } = Tabs;
 
@@ -66,8 +65,15 @@ const Notas = ({ match }) => {
   const [ehRegencia, setEhRegencia] = useState(false);
   const [percentualMinimoAprovados, setPercentualMinimoAprovados] = useState(0);
   const [exibeModalJustificativa, setExibeModalJustificativa] = useState(false);
-  const [justificativa, setJustificativa] = useState('');
+  const [valoresIniciais] = useState({ descricao: undefined });
   const [proximaTab, setProximaTab] = useState(bimestreCorrente);
+  const [refForm, setRefForm] = useState({});
+
+  const [validacoes] = useState(
+    Yup.object({
+      descricao: Yup.string().required('Justificativa obrigatória'),
+    })
+  );
 
   useEffect(() => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
@@ -122,7 +128,9 @@ const Notas = ({ match }) => {
         .get('v1/avaliacoes/notas/', { params })
         .catch(e => erros(e));
       const resultado = dados ? dados.data : [];
-      setPercentualMinimoAprovados(resultado.percentualAlunosInsuficientes ? resultado.percentualAlunosInsuficientes : 0);
+      if (resultado.percentualAlunosInsuficientes && resultado.percentualAlunosInsuficientes > 0) {
+        setPercentualMinimoAprovados(resultado.percentualAlunosInsuficientes);
+      }
       return resultado;
     },
     [
@@ -566,53 +574,33 @@ const Notas = ({ match }) => {
     }
   };
 
-  const temQuantidadeMinimaAprovada = dados => {
-    let quantidadeAlunos = 0;
-    let valorNotaTotal = 0.0;
-    if (dados.alunos.length > 0) {
-      dados.alunos.forEach(aluno => {
-        if (aluno.podeEditar) {
-          let totalNotas = 0.0;
-          quantidadeAlunos++;
-          aluno.notasBimestre.forEach(nota => {
-            totalNotas += nota.notaConceito ? nota.notaConceito : 0;
-          });
-          valorNotaTotal += totalNotas;
-        }
-      });
-      const porcentagemTotal = valorNotaTotal / quantidadeAlunos;
-      const ehPorcentagemAceitavel = porcentagemTotal > percentualMinimoAprovados;
-      if (ehPorcentagemAceitavel) dados.justificativa = null;
-      return ehPorcentagemAceitavel ? true : dados.justificativa;
+  const getDadosBimestreAtual = () => {
+    switch (Number(bimestreCorrente)) {
+      case 1:
+        return primeiroBimestre;
+      case 2:
+        return segundoBimestre;
+      case 3:
+        return terceiroBimestre;
+      case 4:
+        return quartoBimestre;
+      default:
+        break;
     }
-    return true;
   }
 
   const verificaPorcentagemAprovados = () => {
-    switch (Number(bimestreCorrente)) {
-      case 1:
-        return temQuantidadeMinimaAprovada(primeiroBimestre);
-      case 2:
-        return temQuantidadeMinimaAprovada(segundoBimestre);
-      case 3:
-        return temQuantidadeMinimaAprovada(terceiroBimestre);
-      case 4:
-        return temQuantidadeMinimaAprovada(quartoBimestre);
-      default:
-        return true;
-    }
+    return ServicoNotas.temQuantidadeMinimaAprovada(getDadosBimestreAtual(), percentualMinimoAprovados);
   }
-
-  const onCancelarModal = () => {
-    setExibeModalJustificativa(false);
-  };
 
   const onChangeTab = async numeroBimestre => {
     const temPorcentagemAceitavel = verificaPorcentagemAprovados();
+    const bimestre = getDadosBimestreAtual();
     setProximaTab(numeroBimestre);
-    if (modoEdicaoGeralNotaFinal && !temPorcentagemAceitavel) {
+    if (modoEdicaoGeralNotaFinal && !temPorcentagemAceitavel && !bimestre.justificativa && bimestre.modoEdicao) {
       setExibeModalJustificativa(true);
     } else {
+      bimestre.justificativa = temPorcentagemAceitavel ? null : bimestre.justificativa;
       await confirmarTrocaTab(numeroBimestre);
     }
   };
@@ -680,6 +668,7 @@ const Notas = ({ match }) => {
           listaTiposConceitos,
           observacoes: bimestrePesquisado.observacoes,
           podeLancarNotaFinal: bimestrePesquisado.podeLancarNotaFinal,
+          justificativa: bimestrePesquisado.justificativa,
         };
 
         switch (Number(numeroBimestre)) {
@@ -759,11 +748,26 @@ const Notas = ({ match }) => {
     }
   };
 
-  const onChangeJustificativa = () => { };
+  const onChangeJustificativa = valor => {
+    getDadosBimestreAtual().justificativa = valor;
+  };
+
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(valoresIniciais);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
+        form.handleSubmit(e => e);
+      }
+    });
+  };
 
   const onConfirmarJustificativa = () => {
     setExibeModalJustificativa(false);
     confirmarTrocaTab(proximaTab);
+    refForm.resetForm();
   };
 
   return (
@@ -771,39 +775,79 @@ const Notas = ({ match }) => {
       <ModalConteudoHtml
         key="inserirJutificativa"
         visivel={exibeModalJustificativa}
-        onConfirmacaoPrincipal={onConfirmarJustificativa}
-        onConfirmacaoSecundaria={() => { }}
         onClose={() => { }}
-        labelBotaoPrincipal="Confirmar"
-        labelBotaoSecundario="Cancelar"
         titulo="Inserir justificativa"
+        esconderBotaoPrincipal
+        esconderBotaoSecundario
         closable={false}
         fecharAoClicarFora={false}
         fecharAoClicarEsc={false}
+        width="650px"
       >
-        <fieldset className="mt-3">
-          <Editor
-            onChange={onChangeJustificativa}
-            inicial={justificativa}
-          />
-        </fieldset>
+        <Formik
+          enableReinitialize
+          initialValues={valoresIniciais}
+          validationSchema={validacoes}
+          onSubmit={onConfirmarJustificativa}
+          ref={refF => setRefForm(refF)}
+          validateOnChange
+          validateOnBlur
+        >
+          {form => (
+            <Form>
+              <div className="col-md-12">
+                <Alert
+                  alerta={{
+                    tipo: 'warning',
+                    id: 'justificativa-porcentagem',
+                    mensagem: 'A maioria dos estudantes está com notas/conceitos abaixo do mínimo considerado para aprovação, por isso é necessário que você insira uma justificativa.',
+                    estiloTitulo: { fontSize: '18px' },
+                  }}
+                  className="mb-2"
+                />
+              </div>
+              <div className="col-md-12">
+                <fieldset className="mt-3">
+                  <Editor
+                    form={form}
+                    onChange={onChangeJustificativa}
+                    name="descricao"
+                  />
+                </fieldset>
+              </div>
+              <div className="d-flex justify-content-end">
+                <Button
+                  key="btn-sim-confirmacao-justificativa"
+                  label="Confirmar"
+                  color={Colors.Roxo}
+                  bold
+                  border
+                  className="mr-3 mt-2 padding-btn-confirmacao"
+                  onClick={() => validaAntesDoSubmit(form)}
+                />
+              </div>
+            </Form>
+          )}
+        </Formik>
       </ModalConteudoHtml>
-      {!usuario.turmaSelecionada.turma ? (
-        <Row className="mb-0 pb-0">
-          <Grid cols={12} className="mb-0 pb-0">
-            <Container>
-              <Alert
-                alerta={{
-                  tipo: 'warning',
-                  id: 'AlertaPrincipal',
-                  mensagem: 'Você precisa escolher uma turma.',
-                  estiloTitulo: { fontSize: '18px' },
-                }}
-              />
-            </Container>
-          </Grid>
-        </Row>
-      ) : null}
+      {
+        !usuario.turmaSelecionada.turma ? (
+          <Row className="mb-0 pb-0">
+            <Grid cols={12} className="mb-0 pb-0">
+              <Container>
+                <Alert
+                  alerta={{
+                    tipo: 'warning',
+                    id: 'AlertaPrincipal',
+                    mensagem: 'Você precisa escolher uma turma.',
+                    estiloTitulo: { fontSize: '18px' },
+                  }}
+                />
+              </Container>
+            </Grid>
+          </Row>
+        ) : null
+      }
       <Cabecalho pagina={tituloNotasConceitos} />
       <Loader loading={carregandoListaBimestres}>
         <Card>
@@ -855,7 +899,7 @@ const Notas = ({ match }) => {
                             dados={primeiroBimestre}
                             notaTipo={notaTipo}
                             onChangeOrdenacao={onChangeOrdenacao}
-                            desabilitarCampos={desabilitarCampos}
+                            desabilitarCampos={false}
                             ehProfessorCj={ehProfessorCj}
                             ehRegencia={ehRegencia}
                           />
@@ -944,7 +988,7 @@ const Notas = ({ match }) => {
           </div>
         </Card>
       </Loader>
-    </Container>
+    </Container >
   );
 };
 
