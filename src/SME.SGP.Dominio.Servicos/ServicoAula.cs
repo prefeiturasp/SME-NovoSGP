@@ -381,15 +381,12 @@ namespace SME.SGP.Dominio.Servicos
             if (turma is null)
                 throw new NegocioException($"Não foi possível localizar a turma de Id {aula.TurmaId} na abrangência ");
 
-            var disciplinasEol = servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, perfilAtual).Result;
+            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(aula.DisciplinaId) } );
 
             if (disciplinasEol is null || !disciplinasEol.Any())
                 throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
 
-            var disciplina = disciplinasEol.FirstOrDefault(a => a.CodigoComponenteCurricular == int.Parse(aula.DisciplinaId));
-
-            if (disciplina == null)
-                throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
+            var disciplina = disciplinasEol.FirstOrDefault();
 
             var operacaoStr = operacao == Operacao.Inclusao ? "Criação" : operacao == Operacao.Alteracao ? "Alteração" : "Exclusão";
             var tituloMensagem = $"{operacaoStr} de Aulas de {disciplina.Nome} na turma {turma.Nome}";
