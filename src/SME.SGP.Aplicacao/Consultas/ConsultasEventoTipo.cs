@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                 if (usuario.EhPerfilUE())
                 {
                     retornoQueryPaginada.Items = retornoQueryPaginada.Items
-                                                  .Where(r => r.Id != (long)TipoEvento.LiberacaoExcepcional ||
+                                                  .Where(r => r.Id != (long)TipoEvento.LiberacaoExcepcional &&
                                                               r.Id != (long)TipoEvento.ReposicaoNoRecesso);
                 }
             }
