@@ -142,7 +142,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (ReposicaoDeAulaPrecisaDeAprovacao(quantidadeDeAulasSomadas, turma))
                 {
-                    var nomeDisciplina = RetornaNomeDaDisciplina(aula, usuario);
+                    var nomeDisciplina = RetornaNomeDaDisciplina(aula);
 
                     repositorioAula.Salvar(aula);
                     PersistirWorkflowReposicaoAula(aula, turma.Ue.Dre.Nome, turma.Ue.Nome, nomeDisciplina,
@@ -497,17 +497,14 @@ namespace SME.SGP.Dominio.Servicos
             repositorioAula.Salvar(aula);
         }
 
-        private string RetornaNomeDaDisciplina(Aula aula, Usuario usuario)
+        private string RetornaNomeDaDisciplina(Aula aula)
         {
-            var disciplinasEol = servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual).Result;
+            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(aula.DisciplinaId) });
 
             if (disciplinasEol is null && !disciplinasEol.Any())
                 throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
 
-            var disciplina = disciplinasEol.FirstOrDefault(a => a.CodigoComponenteCurricular == int.Parse(aula.DisciplinaId));
-
-            if (disciplina == null)
-                throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
+            var disciplina = disciplinasEol.FirstOrDefault();
 
             return disciplina.Nome;
         }
