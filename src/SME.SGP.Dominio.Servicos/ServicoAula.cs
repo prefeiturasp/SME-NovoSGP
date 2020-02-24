@@ -386,7 +386,7 @@ namespace SME.SGP.Dominio.Servicos
             if (disciplinasEol is null || !disciplinasEol.Any())
                 throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
 
-            var disciplina = disciplinasEol.FirstOrDefault(a => a.CodigoComponenteCurricular == int.Parse(aula.DisciplinaId));
+            var disciplina = disciplinasEol.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aula.DisciplinaId));
 
             if (disciplina == null)
                 throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
