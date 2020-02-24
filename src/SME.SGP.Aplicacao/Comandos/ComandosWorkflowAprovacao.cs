@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -36,6 +37,11 @@ namespace SME.SGP.Aplicacao
             servicoWorkflowAprovacao.Aprovar(workflow, aprovar, observacao, notificacaoId);
 
             unitOfWork.PersistirTransacao();
+        }
+
+        public async Task ExcluirAsync(long idWorkflowAprovacao)
+        {
+            await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(idWorkflowAprovacao);
         }
 
         public long Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)

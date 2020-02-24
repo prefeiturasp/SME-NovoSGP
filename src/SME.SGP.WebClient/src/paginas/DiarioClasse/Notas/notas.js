@@ -9,7 +9,11 @@ import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { URL_HOME } from '~/constantes/url';
 import notasConceitos from '~/dtos/notasConceitos';
-import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
+import {
+  setModoEdicaoGeral,
+  setModoEdicaoGeralNotaFinal,
+  setExpandirLinha,
+} from '~/redux/modulos/notasConceitos/actions';
 import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
@@ -29,6 +33,7 @@ const Notas = ({ match }) => {
   const modoEdicaoGeral = useSelector(
     store => store.notasConceitos.modoEdicaoGeral
   );
+  const { ehProfessorCj } = usuario;
 
   const permissoesTela = usuario.permissoes[RotasDto.FREQUENCIA_PLANO_AULA];
 
@@ -43,6 +48,8 @@ const Notas = ({ match }) => {
   const [auditoriaInfo, setAuditoriaInfo] = useState({
     auditoriaAlterado: '',
     auditoriaInserido: '',
+    auditoriaBimestreInserido: '',
+    auditoriaBimestreAlterado: '',
   });
   const [bimestreCorrente, setBimestreCorrente] = useState(0);
   const [primeiroBimestre, setPrimeiroBimestre] = useState([]);
@@ -51,6 +58,7 @@ const Notas = ({ match }) => {
   const [quartoBimestre, setQuartoBimestre] = useState([]);
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+  const [ehRegencia, setEhRegencia] = useState(false);
 
   useEffect(() => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
@@ -68,9 +76,28 @@ const Notas = ({ match }) => {
     setAuditoriaInfo({
       auditoriaAlterado: '',
       auditoriaInserido: '',
+      auditoriaBimestreInserido: '',
+      auditoriaBimestreAlterado: '',
     });
     dispatch(setModoEdicaoGeral(false));
+    dispatch(setModoEdicaoGeralNotaFinal(false));
+    dispatch(setExpandirLinha([]));
   }, [dispatch]);
+
+  const obterListaConceitos = async periodoFim => {
+    const lista = await api
+      .get(`v1/avaliacoes/notas/conceitos?data=${periodoFim}`)
+      .catch(e => erros(e));
+
+    if (lista && lista.data && lista.data.length) {
+      const novaLista = lista.data.map(item => {
+        item.id = String(item.id);
+        return item;
+      });
+      return novaLista;
+    }
+    return [];
+  };
 
   const obterBimestres = useCallback(
     async (disciplinaId, numeroBimestre) => {
@@ -94,6 +121,7 @@ const Notas = ({ match }) => {
       usuario.turmaSelecionada.turma,
     ]
   );
+
   // Só é chamado quando: Seta, remove ou troca a disciplina e quando cancelar a edição;
   const obterDadosBimestres = useCallback(
     async (disciplinaId, numeroBimestre) => {
@@ -101,22 +129,41 @@ const Notas = ({ match }) => {
         setCarregandoListaBimestres(true);
         const dados = await obterBimestres(disciplinaId, numeroBimestre);
         if (dados && dados.bimestres && dados.bimestres.length) {
-          dados.bimestres.forEach(item => {
+          dados.bimestres.forEach(async item => {
             item.alunos.forEach(aluno => {
-              return aluno.notasAvaliacoes.forEach(nota => {
+              aluno.notasAvaliacoes.forEach(nota => {
                 const notaOriginal = nota.notaConceito;
                 /* eslint-disable */
                 nota.notaOriginal = notaOriginal;
                 /* eslint-enable */
-                return nota;
+              });
+              aluno.notasBimestre.forEach(nota => {
+                const notaOriginal = nota.notaConceito;
+                /* eslint-disable */
+                nota.notaOriginal = notaOriginal;
+                /* eslint-enable */
               });
             });
 
+            setNotaTipo(dados.notaTipo);
+
+            let listaTiposConceitos = [];
+            if (Number(notasConceitos.Conceitos) === Number(dados.notaTipo)) {
+              listaTiposConceitos = await obterListaConceitos(item.periodoFim);
+            }
+
             const bimestreAtualizado = {
+              fechamentoTurmaId: item.fechamentoTurmaId,
               descricao: item.descricao,
               numero: item.numero,
               alunos: [...item.alunos],
               avaliacoes: [...item.avaliacoes],
+              periodoInicio: item.periodoInicio,
+              periodoFim: item.periodoFim,
+              mediaAprovacaoBimestre: dados.mediaAprovacaoBimestre,
+              listaTiposConceitos,
+              observacoes: item.observacoes,
+              podeLancarNotaFinal: item.podeLancarNotaFinal,
             };
 
             switch (Number(item.numero)) {
@@ -137,15 +184,21 @@ const Notas = ({ match }) => {
                 break;
             }
 
-            if (bimestreAtualizado.alunos.length > 0) {
-              setBimestreCorrente(bimestreAtualizado.numero);
-            }
+            setBimestreCorrente(dados.bimestreAtual);
           });
 
-          setNotaTipo(dados.notaTipo);
           setAuditoriaInfo({
             auditoriaAlterado: dados.auditoriaAlterado,
             auditoriaInserido: dados.auditoriaInserido,
+            auditoriaBimestreAlterado: dados.auditoriaBimestreAlterado,
+            auditoriaBimestreInserido: dados.auditoriaBimestreInserido,
+          });
+        } else {
+          setAuditoriaInfo({
+            auditoriaAlterado: '',
+            auditoriaInserido: '',
+            auditoriaBimestreAlterado: '',
+            auditoriaBimestreInserido: '',
           });
         }
         setCarregandoListaBimestres(false);
@@ -163,6 +216,7 @@ const Notas = ({ match }) => {
     setListaDisciplinas(disciplinas.data);
     if (disciplinas.data && disciplinas.data.length === 1) {
       const disciplina = disciplinas.data[0];
+      setEhRegencia(disciplina.regencia);
       setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
       obterDadosBimestres(disciplina.codigoComponenteCurricular);
@@ -198,6 +252,9 @@ const Notas = ({ match }) => {
   useEffect(() => {
     if (usuario.turmaSelecionada.turma) {
       obterDisciplinas();
+      dispatch(setModoEdicaoGeral(false));
+      dispatch(setModoEdicaoGeralNotaFinal(false));
+      dispatch(setExpandirLinha([]));
     } else {
       setListaDisciplinas([]);
       setDesabilitarDisciplina(false);
@@ -254,54 +311,188 @@ const Notas = ({ match }) => {
     return valorParaSalvar;
   };
 
-  const onSalvarNotas = click => {
-    return new Promise((resolve, reject) => {
-      const valoresBimestresSalvar = [];
+  const salvarNotasAvaliacoes = (resolve, reject, click) => {
+    const valoresBimestresSalvar = [];
 
-      if (primeiroBimestre.modoEdicao) {
-        valoresBimestresSalvar.push(
-          ...montarBimestreParaSalvar(primeiroBimestre)
-        );
-      }
-      if (segundoBimestre.modoEdicao) {
-        valoresBimestresSalvar.push(
-          ...montarBimestreParaSalvar(segundoBimestre)
-        );
-      }
-      if (terceiroBimestre.modoEdicao) {
-        valoresBimestresSalvar.push(
-          ...montarBimestreParaSalvar(terceiroBimestre)
-        );
-      }
-      if (quartoBimestre.modoEdicao) {
-        valoresBimestresSalvar.push(
-          ...montarBimestreParaSalvar(quartoBimestre)
-        );
-      }
+    if (primeiroBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(
+        ...montarBimestreParaSalvar(primeiroBimestre)
+      );
+    }
+    if (segundoBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(...montarBimestreParaSalvar(segundoBimestre));
+    }
+    if (terceiroBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(
+        ...montarBimestreParaSalvar(terceiroBimestre)
+      );
+    }
+    if (quartoBimestre.modoEdicao) {
+      valoresBimestresSalvar.push(...montarBimestreParaSalvar(quartoBimestre));
+    }
 
-      return api
-        .post(`v1/avaliacoes/notas`, {
-          turmaId: usuario.turmaSelecionada.turma,
-          disciplinaId: disciplinaSelecionada,
-          notasConceitos: valoresBimestresSalvar,
-        })
-        .then(salvouNotas => {
-          if (salvouNotas && salvouNotas.status === 200) {
-            sucesso('Suas informações foram salvas com sucesso.');
-            dispatch(setModoEdicaoGeral(false));
-            if (click) {
-              aposSalvarNotas();
-            }
-            resolve(true);
-            return true;
+    return api
+      .post(`v1/avaliacoes/notas`, {
+        turmaId: usuario.turmaSelecionada.turma,
+        disciplinaId: disciplinaSelecionada,
+        notasConceitos: valoresBimestresSalvar,
+      })
+      .then(salvouNotas => {
+        if (salvouNotas && salvouNotas.status === 200) {
+          sucesso('Suas informações foram salvas com sucesso.');
+          dispatch(setModoEdicaoGeral(false));
+          dispatch(setModoEdicaoGeralNotaFinal(false));
+          dispatch(setExpandirLinha([]));
+          if (click) {
+            aposSalvarNotas();
           }
-          resolve(false);
-          return false;
-        })
-        .catch(e => {
-          erros(e);
-          reject(e);
-        });
+          resolve(true);
+          return true;
+        }
+        resolve(false);
+        return false;
+      })
+      .catch(e => {
+        erros(e);
+        reject(e);
+      });
+  };
+
+  const pergutarParaSalvarNotaFinal = bimestresSemAvaliacaoBimestral => {
+    if (
+      bimestresSemAvaliacaoBimestral &&
+      bimestresSemAvaliacaoBimestral.length
+    ) {
+      return confirmar(
+        'Atenção',
+        bimestresSemAvaliacaoBimestral,
+        'Deseja continuar mesmo assim com o fechamento do(s) bimestre(s)?'
+      );
+    }
+
+    return new Promise(resolve => resolve(true));
+  };
+
+  const montarBimestreParaSalvarNotaFinal = bimestreParaMontar => {
+    const notaConceitoAlunos = [];
+    bimestreParaMontar.alunos.forEach(aluno => {
+      aluno.notasBimestre.forEach(notaFinal => {
+        if (notaFinal.modoEdicao) {
+          notaConceitoAlunos.push({
+            codigoAluno: aluno.id,
+            disciplinaId:
+              notasConceitos.Notas == notaTipo
+                ? disciplinaSelecionada
+                : notaFinal.disciplinaId,
+            nota:
+              notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : 0,
+            conceitoId:
+              notaTipo === notasConceitos.Conceitos
+                ? notaFinal.notaConceito
+                : 0,
+          });
+        }
+      });
+    });
+    // TODO REVISAR NA EDICAO E NA ADD E INSERT DE CONCEITOS!!!!
+    return {
+      id: bimestreParaMontar.fechamentoTurmaId,
+      turmaId: usuario.turmaSelecionada.turma,
+      bimestre: bimestreParaMontar.numero,
+      disciplinaId: disciplinaSelecionada,
+      notaConceitoAlunos,
+    };
+  };
+
+  const montaQtdAvaliacaoBimestralPendent = (
+    bimestre,
+    bimestresSemAvaliacaoBimestral
+  ) => {
+    if (bimestre.observacoes && bimestre.observacoes.length) {
+      bimestre.observacoes.forEach(item => {
+        bimestresSemAvaliacaoBimestral.push(item);
+      });
+    }
+  };
+
+  const salvarNotasFinais = (resolve, reject, click) => {
+    const valoresBimestresSalvar = [];
+    const bimestresSemAvaliacaoBimestral = [];
+
+    if (primeiroBimestre.modoEdicao) {
+      montaQtdAvaliacaoBimestralPendent(
+        primeiroBimestre,
+        bimestresSemAvaliacaoBimestral
+      );
+      valoresBimestresSalvar.push(
+        montarBimestreParaSalvarNotaFinal(primeiroBimestre)
+      );
+    }
+    if (segundoBimestre.modoEdicao) {
+      montaQtdAvaliacaoBimestralPendent(
+        segundoBimestre,
+        bimestresSemAvaliacaoBimestral
+      );
+      valoresBimestresSalvar.push(
+        montarBimestreParaSalvarNotaFinal(segundoBimestre)
+      );
+    }
+    if (terceiroBimestre.modoEdicao) {
+      montaQtdAvaliacaoBimestralPendent(
+        terceiroBimestre,
+        bimestresSemAvaliacaoBimestral
+      );
+      valoresBimestresSalvar.push(
+        montarBimestreParaSalvarNotaFinal(terceiroBimestre)
+      );
+    }
+    if (quartoBimestre.modoEdicao) {
+      montaQtdAvaliacaoBimestralPendent(
+        quartoBimestre,
+        bimestresSemAvaliacaoBimestral
+      );
+      valoresBimestresSalvar.push(
+        montarBimestreParaSalvarNotaFinal(quartoBimestre)
+      );
+    }
+
+    return pergutarParaSalvarNotaFinal(bimestresSemAvaliacaoBimestral)
+      .then(salvarAvaliacaoFinal => {
+        if (salvarAvaliacaoFinal) {
+          return api
+            .post(`/v1/fechamentos/turmas`, valoresBimestresSalvar)
+            .then(salvouNotas => {
+              if (salvouNotas && salvouNotas.status === 200) {
+                sucesso('Suas informações foram salvas com sucesso.');
+                dispatch(setModoEdicaoGeral(false));
+                dispatch(setModoEdicaoGeralNotaFinal(false));
+                dispatch(setExpandirLinha([]));
+                if (click) {
+                  aposSalvarNotas();
+                }
+                return resolve(true);
+              }
+              return resolve(false);
+            })
+            .catch(e => {
+              erros(e);
+              reject(e);
+            });
+        }
+        return resolve(false);
+      })
+      .catch(e => {
+        erros(e);
+        reject(e);
+      });
+  };
+
+  const onSalvarNotas = (click, salvarNotaFinal) => {
+    return new Promise((resolve, reject) => {
+      if (salvarNotaFinal) {
+        return salvarNotasFinais(resolve, reject, click);
+      }
+      return salvarNotasAvaliacoes(resolve, reject, click);
     });
   };
 
@@ -319,11 +510,30 @@ const Notas = ({ match }) => {
     }
   };
 
-  const onClickSalvar = () => {
-    onSalvarNotas(true);
+  const onClickSalvar = salvarNotaFinal => {
+    onSalvarNotas(true, salvarNotaFinal);
+  };
+
+  const validaSeEhRegencia = disciplinaId => {
+    if (disciplinaId) {
+      const disciplina = listaDisciplinas.find(
+        item => item.codigoComponenteCurricular == disciplinaId
+      );
+      if (disciplina) {
+        setEhRegencia(!!disciplina.regencia);
+      } else {
+        setEhRegencia(false);
+      }
+    }
   };
 
   const onChangeDisciplinas = async disciplinaId => {
+    validaSeEhRegencia(disciplinaId);
+
+    dispatch(setModoEdicaoGeral(false));
+    dispatch(setModoEdicaoGeralNotaFinal(false));
+    dispatch(setExpandirLinha([]));
+
     if (modoEdicaoGeral) {
       const confirmaSalvar = await pergutarParaSalvar();
       if (confirmaSalvar) {
@@ -345,6 +555,7 @@ const Notas = ({ match }) => {
   };
 
   const onChangeTab = async numeroBimestre => {
+    dispatch(setExpandirLinha([]));
     setBimestreCorrente(numeroBimestre);
     let bimestre = {};
     switch (Number(numeroBimestre)) {
@@ -373,20 +584,40 @@ const Notas = ({ match }) => {
         );
 
         bimestrePesquisado.alunos.forEach(aluno => {
-          return aluno.notasAvaliacoes.forEach(nota => {
+          aluno.notasAvaliacoes.forEach(nota => {
             const notaOriginal = nota.notaConceito;
             /* eslint-disable */
             nota.notaOriginal = notaOriginal;
             /* eslint-enable */
-            return nota;
+          });
+          aluno.notasBimestre.forEach(nota => {
+            const notaOriginal = nota.notaConceito;
+            /* eslint-disable */
+            nota.notaOriginal = notaOriginal;
+            /* eslint-enable */
           });
         });
 
+        let listaTiposConceitos = [];
+        if (Number(notasConceitos.Conceitos) === Number(dados.notaTipo)) {
+          listaTiposConceitos = await obterListaConceitos(
+            bimestrePesquisado.periodoFim
+          );
+        }
+        setNotaTipo(dados.notaTipo);
+
         const bimestreAtualizado = {
+          fechamentoTurmaId: bimestrePesquisado.fechamentoTurmaId,
           descricao: bimestrePesquisado.descricao,
           numero: bimestrePesquisado.numero,
           alunos: [...bimestrePesquisado.alunos],
           avaliacoes: [...bimestrePesquisado.avaliacoes],
+          periodoInicio: bimestrePesquisado.periodoInicio,
+          periodoFim: bimestrePesquisado.periodoFim,
+          mediaAprovacaoBimestre: dados.mediaAprovacaoBimestre,
+          listaTiposConceitos,
+          observacoes: bimestrePesquisado.observacoes,
+          podeLancarNotaFinal: bimestrePesquisado.podeLancarNotaFinal,
         };
 
         switch (Number(numeroBimestre)) {
@@ -405,6 +636,20 @@ const Notas = ({ match }) => {
           default:
             break;
         }
+
+        setAuditoriaInfo({
+          auditoriaAlterado: dados.auditoriaAlterado,
+          auditoriaInserido: dados.auditoriaInserido,
+          auditoriaBimestreAlterado: dados.auditoriaBimestreAlterado,
+          auditoriaBimestreInserido: dados.auditoriaBimestreInserido,
+        });
+      } else {
+        setAuditoriaInfo({
+          auditoriaAlterado: '',
+          auditoriaInserido: '',
+          auditoriaBimestreAlterado: '',
+          auditoriaBimestreInserido: '',
+        });
       }
       setCarregandoListaBimestres(false);
     }
@@ -414,15 +659,25 @@ const Notas = ({ match }) => {
     if (cancelar) {
       obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
       dispatch(setModoEdicaoGeral(false));
+      dispatch(setModoEdicaoGeralNotaFinal(false));
+      dispatch(setExpandirLinha([]));
     }
   };
 
   const onChangeOrdenacao = bimestreOrdenado => {
+    dispatch(setExpandirLinha([]));
     const bimestreAtualizado = {
+      fechamentoTurmaId: bimestreOrdenado.fechamentoTurmaId,
       descricao: bimestreOrdenado.descricao,
       numero: bimestreOrdenado.numero,
       alunos: [...bimestreOrdenado.alunos],
       avaliacoes: [...bimestreOrdenado.avaliacoes],
+      periodoInicio: bimestreOrdenado.periodoInicio,
+      periodoFim: bimestreOrdenado.periodoFim,
+      mediaAprovacaoBimestre: bimestreOrdenado.mediaAprovacaoBimestre,
+      listaTiposConceitos: bimestreOrdenado.listaTiposConceitos,
+      observacoes: bimestreOrdenado.observacoes,
+      podeLancarNotaFinal: bimestreOrdenado.podeLancarNotaFinal,
     };
     switch (Number(bimestreOrdenado.numero)) {
       case 1:
@@ -488,92 +743,115 @@ const Notas = ({ match }) => {
                   disabled={
                     desabilitarDisciplina || !usuario.turmaSelecionada.turma
                   }
+                  allowClear={false}
                 />
               </div>
             </div>
 
-            <>
-              <div className="row">
-                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                  <ContainerTabsCard
-                    type="card"
-                    onChange={onChangeTab}
-                    activeKey={String(bimestreCorrente)}
-                  >
-                    {primeiroBimestre.numero ? (
-                      <TabPane
-                        tab={primeiroBimestre.descricao}
-                        key={primeiroBimestre.numero}
-                      >
-                        <Avaliacao
-                          dados={primeiroBimestre}
-                          notaTipo={notaTipo}
-                          onChangeOrdenacao={onChangeOrdenacao}
-                          desabilitarCampos={desabilitarCampos}
-                        />
-                      </TabPane>
-                    ) : (
-                      ''
-                    )}
-                    {segundoBimestre.numero ? (
-                      <TabPane
-                        tab={segundoBimestre.descricao}
-                        key={segundoBimestre.numero}
-                      >
-                        <Avaliacao
-                          dados={segundoBimestre}
-                          notaTipo={notaTipo}
-                          onChangeOrdenacao={onChangeOrdenacao}
-                          desabilitarCampos={desabilitarCampos}
-                        />
-                      </TabPane>
-                    ) : (
-                      ''
-                    )}
-                    {terceiroBimestre.numero ? (
-                      <TabPane
-                        tab={terceiroBimestre.descricao}
-                        key={terceiroBimestre.numero}
-                      >
-                        <Avaliacao
-                          dados={terceiroBimestre}
-                          notaTipo={notaTipo}
-                          onChangeOrdenacao={onChangeOrdenacao}
-                          desabilitarCampos={desabilitarCampos}
-                        />
-                      </TabPane>
-                    ) : (
-                      ''
-                    )}
-                    {quartoBimestre.numero ? (
-                      <TabPane
-                        tab={quartoBimestre.descricao}
-                        key={quartoBimestre.numero}
-                      >
-                        <Avaliacao
-                          dados={quartoBimestre}
-                          notaTipo={notaTipo}
-                          onChangeOrdenacao={onChangeOrdenacao}
-                          desabilitarCampos={desabilitarCampos}
-                        />
-                      </TabPane>
-                    ) : (
-                      ''
-                    )}
-                  </ContainerTabsCard>
+            {disciplinaSelecionada ? (
+              <>
+                <div className="row">
+                  <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                    <ContainerTabsCard
+                      type="card"
+                      onChange={onChangeTab}
+                      activeKey={String(bimestreCorrente)}
+                    >
+                      {primeiroBimestre.numero ? (
+                        <TabPane
+                          tab={primeiroBimestre.descricao}
+                          key={primeiroBimestre.numero}
+                        >
+                          <Avaliacao
+                            dados={primeiroBimestre}
+                            notaTipo={notaTipo}
+                            onChangeOrdenacao={onChangeOrdenacao}
+                            desabilitarCampos={desabilitarCampos}
+                            ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
+                          />
+                        </TabPane>
+                      ) : (
+                        ''
+                      )}
+                      {segundoBimestre.numero ? (
+                        <TabPane
+                          tab={segundoBimestre.descricao}
+                          key={segundoBimestre.numero}
+                        >
+                          <Avaliacao
+                            dados={segundoBimestre}
+                            notaTipo={notaTipo}
+                            onChangeOrdenacao={onChangeOrdenacao}
+                            desabilitarCampos={desabilitarCampos}
+                            ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
+                          />
+                        </TabPane>
+                      ) : (
+                        ''
+                      )}
+                      {terceiroBimestre.numero ? (
+                        <TabPane
+                          tab={terceiroBimestre.descricao}
+                          key={terceiroBimestre.numero}
+                        >
+                          <Avaliacao
+                            dados={terceiroBimestre}
+                            notaTipo={notaTipo}
+                            onChangeOrdenacao={onChangeOrdenacao}
+                            desabilitarCampos={desabilitarCampos}
+                            ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
+                          />
+                        </TabPane>
+                      ) : (
+                        ''
+                      )}
+                      {quartoBimestre.numero ? (
+                        <TabPane
+                          tab={quartoBimestre.descricao}
+                          key={quartoBimestre.numero}
+                        >
+                          <Avaliacao
+                            dados={quartoBimestre}
+                            notaTipo={notaTipo}
+                            onChangeOrdenacao={onChangeOrdenacao}
+                            desabilitarCampos={desabilitarCampos}
+                            ehProfessorCj={ehProfessorCj}
+                            ehRegencia={ehRegencia}
+                          />
+                        </TabPane>
+                      ) : (
+                        ''
+                      )}
+                    </ContainerTabsCard>
+                  </div>
                 </div>
-              </div>
-              <div className="row mt-2 mb-2 mt-2">
-                <div className="col-md-12">
-                  <ContainerAuditoria style={{ float: 'left' }}>
-                    <span>
-                      <p>{auditoriaInfo.auditoriaInserido || ''}</p>
-                      <p>{auditoriaInfo.auditoriaAlterado || ''}</p>
-                    </span>
-                  </ContainerAuditoria>
+                <div className="row mt-2 mb-2 mt-2">
+                  <div className="col-md-12">
+                    <ContainerAuditoria style={{ float: 'left' }}>
+                      <span>
+                        <p>{auditoriaInfo.auditoriaInserido || ''}</p>
+                        <p>{auditoriaInfo.auditoriaAlterado || ''}</p>
+                      </span>
+                    </ContainerAuditoria>
+                  </div>
                 </div>
-              </div>
-            </>
+                <div className="row mt-2 mb-2 mt-2">
+                  <div className="col-md-12">
+                    <ContainerAuditoria style={{ float: 'left' }}>
+                      <span>
+                        <p>{auditoriaInfo.auditoriaBimestreInserido || ''}</p>
+                        <p>{auditoriaInfo.auditoriaBimestreAlterado || ''}</p>
+                      </span>
+                    </ContainerAuditoria>
+                  </div>
+                </div>
+              </>
+            ) : (
+              ''
+            )}
           </div>
         </Card>
       </Loader>
