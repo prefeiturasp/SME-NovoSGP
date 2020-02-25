@@ -26,6 +26,7 @@ function AtribuicaoCJLista() {
   const [itens, setItens] = useState([]);
   const [filtro, setFiltro] = useState({});
   const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [carregandoLista, setCarregandoLista] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
 
   const colunas = [
@@ -91,12 +92,15 @@ function AtribuicaoCJLista() {
   useEffect(() => {
     async function buscaItens() {
       try {
+        setCarregandoLista(true);
         const { data, status } = await AtribuicaoCJServico.buscarLista(filtro);
         if (status === 200 && data) {
           setItens(data.map(item => ({ ...item, key: shortid.generate() })));
         }
+        setCarregandoLista(false);
       } catch (error) {
         erros(error);
+        setCarregandoLista(false);
       }
     }
     if (validarFiltro()) {
@@ -108,7 +112,7 @@ function AtribuicaoCJLista() {
   return (
     <>
       <Cabecalho pagina="Atribuição de CJ" />
-      <Loader loading={false}>
+      <Loader loading={carregandoLista}>
         <Card mx="mx-0">
           <ButtonGroup
             somenteConsulta={somenteConsulta}

@@ -333,6 +333,8 @@ const EventosLista = () => {
             } com sucesso.`;
           sucesso(mensagemSucesso);
           validarFiltrar();
+          setEventosSelecionados([]);
+          filtrar();
         }
       }
     }
