@@ -129,12 +129,26 @@ function RegistroPOALista() {
 
   const onChangeFiltro = useCallback(
     valoresFiltro => {
-      setFiltro({
-        ...valoresFiltro,
-        CodigoRf: valoresFiltro.professorRf,
-        anoLetivo,
-        bimestre: valoresFiltro.bimestre || 0,
-      });
+      const paramsConsulta = {};
+      if (valoresFiltro.bimestre) {
+        paramsConsulta.bimestre = valoresFiltro.bimestre;
+      }
+      if (valoresFiltro.professorRf) {
+        paramsConsulta.codigoRf = valoresFiltro.professorRf;
+      }
+      if (valoresFiltro.dreId) {
+        paramsConsulta.dreId = valoresFiltro.dreId;
+      }
+      if (valoresFiltro.titulo) {
+        paramsConsulta.titulo = valoresFiltro.titulo;
+      }
+      if (valoresFiltro.ueId) {
+        paramsConsulta.ueId = valoresFiltro.ueId;
+      }
+      if (anoLetivo) {
+        paramsConsulta.anoLetivo = anoLetivo;
+      }
+      setFiltro(paramsConsulta);
     },
     [anoLetivo]
   );
