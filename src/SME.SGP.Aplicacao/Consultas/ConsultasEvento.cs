@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
             if (!EhEventoSME(evento) && 
                 (evento.TipoEventoId == (long)TipoEvento.LiberacaoExcepcional || 
                  evento.TipoEventoId == (long)TipoEvento.ReposicaoNoRecesso))
-                podeAlterar = !usuario.TemPerfilGestaoUes();
+                podeAlterar = usuario.TemPerfilGestaoUes();
            
             return MapearParaDto(evento, podeAlterar);
         }
