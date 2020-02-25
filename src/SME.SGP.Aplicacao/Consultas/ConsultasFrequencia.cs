@@ -198,7 +198,7 @@ namespace SME.SGP.Aplicacao
 
         private Turma BuscaTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterPorId(turmaId);
+            var turma = repositorioTurma.ObterPorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 

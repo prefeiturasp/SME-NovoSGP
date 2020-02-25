@@ -172,7 +172,7 @@ namespace SME.SGP.Dominio.Servicos
                 disciplinasEOL = await consultasDisciplina.ObterDisciplinasParaPlanejamento(new FiltroDisciplinaPlanejamentoDto()
                 {
                     CodigoTurma = long.Parse(turmaId),
-                    CodigoDisciplina = int.Parse(disciplinaId.ToString()),
+                    CodigoDisciplina = disciplinaId,
                     Regencia = true
                 });
 
