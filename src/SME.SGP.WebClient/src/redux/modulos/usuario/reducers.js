@@ -22,6 +22,7 @@ const inicial = {
   ehProfessorPoa: false,
   menu: [],
   permissoes: [],
+  sessaoExpirou: false,
 };
 
 export default function usuario(state = inicial, action) {
@@ -48,6 +49,7 @@ export default function usuario(state = inicial, action) {
         draft.menu = action.payload.menu;
         draft.ehProfessorPoa = action.payload.ehProfessorPoa;
         draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
+        draft.sessaoExpirou = false;
         break;
       case '@usuario/salvarLoginRevalidado':
         draft.token = action.payload.token;
@@ -58,6 +60,11 @@ export default function usuario(state = inicial, action) {
         draft = inicial;
         localStorage.clear();
         window.location.reload(true);
+        break;
+      case '@usuario/deslogarSessaoExpirou':
+        localStorage.clear();
+        inicial.sessaoExpirou = true;
+        draft = inicial;
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
@@ -88,9 +95,6 @@ export default function usuario(state = inicial, action) {
         break;
       case '@usuario/setPermissoes':
         draft.permissoes = action.payload;
-        break;
-      case '@usuario/setExibirMensagemSessaoExpirou':
-        draft.exibirMensagemSessaoExpirou = action.payload;
         break;
       default:
         break;

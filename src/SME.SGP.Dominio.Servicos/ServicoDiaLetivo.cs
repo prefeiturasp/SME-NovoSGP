@@ -19,10 +19,13 @@ namespace SME.SGP.Dominio.Servicos
         public bool ValidarSeEhDiaLetivo(DateTime data, long tipoCalendarioId, string dreId, string ueId)
         {
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, data.Local());
+
             if (periodoEscolar == null)
                 return false;
+
             if (!repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(tipoCalendarioId, data.Local(), dreId, ueId))
                 return false;
+
             return data.DayOfWeek != DayOfWeek.Saturday && data.DayOfWeek != DayOfWeek.Sunday;
         }
 
