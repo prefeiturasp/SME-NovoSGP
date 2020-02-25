@@ -214,7 +214,7 @@ const CadastroAula = ({ match }) => {
       if (disciplina && disciplina[0])
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
     } else {
-      if (refForm && refForm.values) refForm.values.quantidadeTexto = null;
+      if (refForm && refForm.setFieldValue) refForm.setFieldValue('quantidadeTexto', '');
     }
   }, [idDisciplina, listaDisciplinas]);
 
@@ -421,12 +421,12 @@ const CadastroAula = ({ match }) => {
       disciplinaId: Yup.string().required('Componente curricular obrigatório'),
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
-      quantidadeTexto: idDisciplina ? (controlaQuantidadeAula
+      quantidadeTexto: idDisciplina || idDisciplina !== '' ? (controlaQuantidadeAula
         ? validacaoQuantidade.lessThan(
           quantidadeMaximaAulas + 1,
           `Valor não pode ser maior que ${quantidadeMaximaAulas}`
         )
-        : validacaoQuantidade) : null,
+        : validacaoQuantidade) : Yup.string().required(false),
     };
 
     if (disciplinaCompartilhada) {
@@ -453,10 +453,6 @@ const CadastroAula = ({ match }) => {
           setEhEja(false);
         }
       }
-    }
-    if (refForm && refForm.fields) {
-      refForm.setFieldValue('quantidadeRadio', inicial.quantidadeRadio);
-      refForm.setFieldValue('quantidadeTexto', inicial.quantidadeTexto);
     }
 
     setValidacoes(Yup.object(val));
