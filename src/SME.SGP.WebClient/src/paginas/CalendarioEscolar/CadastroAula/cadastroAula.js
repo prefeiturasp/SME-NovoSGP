@@ -213,6 +213,8 @@ const CadastroAula = ({ match }) => {
       );
       if (disciplina && disciplina[0])
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
+    } else {
+      if (refForm && refForm.setFieldValue) refForm.setFieldValue('quantidadeTexto', '');
     }
   }, [idDisciplina, listaDisciplinas]);
 
@@ -407,10 +409,10 @@ const CadastroAula = ({ match }) => {
       .typeError('O valor informado deve ser um número')
       .when('quantidadeRadio', (quantidadeRadio, schema) => {
         return quantidadeRadio <= 0
-          ? schema.required('A quantidade de aulas é obrigatóriia')
+          ? schema.required('A quantidade de aulas é obrigatória')
           : schema.required(false);
       })
-      .required('A quantidade de aulas é obrigatóriia')
+      .required('A quantidade de aulas é obrigatória')
       .positive('Valor inválido')
       .integer();
 
@@ -419,12 +421,12 @@ const CadastroAula = ({ match }) => {
       disciplinaId: Yup.string().required('Componente curricular obrigatório'),
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
-      quantidadeTexto: controlaQuantidadeAula
+      quantidadeTexto: idDisciplina || idDisciplina !== '' ? (controlaQuantidadeAula
         ? validacaoQuantidade.lessThan(
           quantidadeMaximaAulas + 1,
           `Valor não pode ser maior que ${quantidadeMaximaAulas}`
         )
-        : validacaoQuantidade,
+        : validacaoQuantidade) : Yup.string().required(false),
     };
 
     if (disciplinaCompartilhada) {
@@ -463,6 +465,7 @@ const CadastroAula = ({ match }) => {
     idAula,
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
+    idDisciplina
   ]);
 
   useEffect(() => {
@@ -861,8 +864,7 @@ const CadastroAula = ({ match }) => {
                     style={{ width: '70px' }}
                     id="quantidadeTexto"
                     desabilitado={
-                      somenteLeitura ||
-                      !form.values.disciplinaId ||
+                      somenteLeitura || !idDisciplina ||
                       (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
                       (ehRegencia && !ehReposicao)
                     }
