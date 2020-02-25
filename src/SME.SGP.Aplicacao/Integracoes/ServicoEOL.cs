@@ -806,6 +806,10 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
             }
+
+            if (resposta.StatusCode == HttpStatusCode.BadRequest)
+                throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
+
             await RegistrarLogSentryAsync(resposta, rotina, string.Empty);
             return null;
         }
