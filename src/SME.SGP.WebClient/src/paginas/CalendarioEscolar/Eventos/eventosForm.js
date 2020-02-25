@@ -563,7 +563,7 @@ const EventosForm = ({ match }) => {
   const onClickExcluir = async () => {
     if (!novoRegistro) {
       const confirmado = await confirmar(
-        'Excluir de evento',
+        'Excluir evento',
         '',
         'Deseja realmente excluir este evento?',
         'Excluir',
