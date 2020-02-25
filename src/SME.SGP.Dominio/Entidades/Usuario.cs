@@ -194,7 +194,12 @@ namespace SME.SGP.Dominio
 
         public bool PodeVisualizarEventosOcorrenciaDre()
         {
+            if (!Perfis.Any())
+                throw new NegocioException("Não foram econtrados perfis para este usuário.");
+
             var perfilAtual = Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual);
+            if (perfilAtual == null)
+                throw new NegocioException("Não foi encontrado perfil para este usuário.");
             if (perfilAtual.Tipo == TipoPerfil.UE)
                 return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_AD || PerfilAtual == Dominio.Perfis.PERFIL_CP || PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO);
             else return true;
