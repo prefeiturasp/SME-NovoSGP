@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
 
-        public ConsultaTipoAvaliacao(IRepositorioTipoAvaliacao repositorioTipoAvaliacao,  IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa
+        public ConsultaTipoAvaliacao(IRepositorioTipoAvaliacao repositorioTipoAvaliacao, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa
             , IContextoAplicacao contextAplicacao) : base(contextAplicacao)
         {
             this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new System.ArgumentNullException(nameof(repositorioTipoAvaliacao));
@@ -29,11 +29,14 @@ namespace SME.SGP.Aplicacao
         {
             var tipoAvaliacao = repositorioTipoAvaliacao.ObterPorId(id);
             var possuAvaliacaoVinculada = VerificarSeExisteAtividadeVinculada(id).Result;
-        
+
             return MapearParaDto(tipoAvaliacao, possuAvaliacaoVinculada);
         }
 
-        private TipoAvaliacaoCompletaDto MapearParaDto(TipoAvaliacao tipoAvaliacao, bool ? possuiAvaliacaoVinculada)
+        public async Task<TipoAvaliacaoCompletaDto> ObterTipoAvaliacaoBimestral()
+            => MapearParaDto(await repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral(), false);
+
+        private TipoAvaliacaoCompletaDto MapearParaDto(TipoAvaliacao tipoAvaliacao, bool? possuiAvaliacaoVinculada)
         {
             return tipoAvaliacao == null ? null : new TipoAvaliacaoCompletaDto
             {
@@ -48,6 +51,7 @@ namespace SME.SGP.Aplicacao
                 CriadoPor = tipoAvaliacao.CriadoPor,
                 CriadoRF = tipoAvaliacao.CriadoRF,
                 possuiAvaliacao = possuiAvaliacaoVinculada,
+                AvaliacoesNecessariasPorBimestre = tipoAvaliacao.AvaliacoesNecessariasPorBimestre,
             };
         }
 
@@ -71,8 +75,5 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> VerificarSeExisteAtividadeVinculada(long tipoAvaliacaoId) => await repositorioAtividadeAvaliativa.VerificarSeJaExistePorTipoAvaliacao(tipoAvaliacaoId);
-
-
-
     }
 }

@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId);
 
-        Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId);
+        Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId, bool utilizarRangeDatas = true);
 
         bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId, long eventoId);
 

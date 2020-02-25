@@ -1,11 +1,16 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import CampoNumero from '~/componentes/campoNumero';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
 const CampoNota = props => {
   const { nota, onChangeNotaConceito, desabilitarCampo } = props;
+
+  const modoEdicaoGeralNotaFinal = useSelector(
+    store => store.notasConceitos.modoEdicaoGeralNotaFinal
+  );
 
   const [notaValorAtual, setNotaValorAtual] = useState();
   const [notaAlterada, setNotaAlterada] = useState(false);
@@ -55,8 +60,10 @@ const CampoNota = props => {
       max={10}
       step={0.5}
       placeholder="Nota"
-      classNameCampo={`${nota.ausente ? 'aluno-ausente-notas' : 'aluno-notas'}`}
-      desabilitado={desabilitarCampo || !nota.podeEditar}
+      classNameCampo={`${nota.ausente ? 'aluno-ausente-notas' : ''}`}
+      disabled={
+        desabilitarCampo || modoEdicaoGeralNotaFinal || !nota.podeEditar
+      }
       className={`${notaAlterada ? 'border-registro-alterado' : ''}`}
     />
   );

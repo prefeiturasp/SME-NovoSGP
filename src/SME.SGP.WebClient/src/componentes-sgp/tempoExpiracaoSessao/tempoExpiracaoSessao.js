@@ -1,18 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 import shortid from 'shortid';
+import styled from 'styled-components';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
+import { URL_LOGIN } from '~/constantes/url';
+import { store } from '~/redux';
+import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
+import { LimparSessao } from '~/redux/modulos/sessao/actions';
 import {
-  Deslogar,
+  DeslogarSessaoExpirou,
   salvarLoginRevalidado,
-  setExibirMensagemSessaoExpirou,
 } from '~/redux/modulos/usuario/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
+import history from '~/servicos/history';
 
 import ContadorExpiracao from './contadorExpiracao';
+import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/mensagens/actions';
 
 const Container = styled.div`
   margin-right: 10px;
@@ -66,11 +71,7 @@ const CaixaTempoExpiracao = styled.div`
 `;
 
 const TempoExpiracaoSessao = () => {
-  const dataHoraExpiracao = useSelector(
-    store => store.usuario.dataHoraExpiracao
-  );
-
-  const dispatch = useDispatch();
+  const dataHoraExpiracao = useSelector(e => e.usuario.dataHoraExpiracao);
 
   const [mostraTempoExpiracao, setMostraTempoExpiracao] = useState(false);
   const [tempoParaExpirar, setTempoParaExpirar] = useState({
@@ -93,10 +94,12 @@ const TempoExpiracaoSessao = () => {
     }
   }, [dataHoraExpiracao]);
 
-  const deslogarDoUsuario = useCallback(() => {
-    dispatch(setExibirMensagemSessaoExpirou(true));
-    dispatch(Deslogar());
-  }, [dispatch]);
+  const deslogarDoUsuario = () => {
+    store.dispatch(limparDadosFiltro());
+    store.dispatch(DeslogarSessaoExpirou());
+    store.dispatch(LimparSessao());
+    history.push(URL_LOGIN);
+  };
 
   useEffect(() => {
     if (dataHoraExpiracao) {
@@ -113,11 +116,11 @@ const TempoExpiracaoSessao = () => {
         return () => clearTimeout(timeOutExpiracao);
       }
       if (tempoParaExpirar.jaExpirou) {
-        return deslogarDoUsuario();
+        deslogarDoUsuario();
       }
     }
-    return setMostraTempoExpiracao(false);
-  }, [deslogarDoUsuario, tempoParaExpirar]);
+    setMostraTempoExpiracao(false);
+  }, [tempoParaExpirar]);
 
   const revalidarAutenticacao = async () => {
     setBotaoDesabilitado(true);
@@ -131,7 +134,7 @@ const TempoExpiracaoSessao = () => {
     setMostraTempoExpiracao(false);
 
     if (autenticado && autenticado.data && autenticado.data.token) {
-      dispatch(
+      store.dispatch(
         salvarLoginRevalidado({
           token: autenticado.data.token,
           dataHoraExpiracao: autenticado.data.dataHoraExpiracao,

@@ -19,7 +19,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
@@ -30,7 +29,6 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-            IRepositorioTipoCalendario repositorioTipoCalendario,
             IRepositorioTurma repositorioTurma,
             IRepositorioAula repositorioAula,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
@@ -48,7 +46,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new System.ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
-            this.repositorioTipoCalendario = repositorioTipoCalendario;
         }
 
         public async Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro)
@@ -64,35 +61,8 @@ namespace SME.SGP.Aplicacao
                         ));
         }
 
-        public async Task<AvaliacoesBimestresDto> ObterAvaliacoesEBimestres(string turmaCodigo, string disciplinaId, int anoLetivo, int? bimestre, ModalidadeTipoCalendario modalidadeTipoCalendario)
-        {
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeTipoCalendario);
-
-            if (tipoCalendario == null)
-                throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
-
-            var periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
-
-            if (periodosEscolares == null || !periodosEscolares.Any())
-                throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
-
-            if (!bimestre.HasValue || bimestre.Value == 0)
-                bimestre = ObterBimestreAtual(periodosEscolares);
-
-            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestre);
-
-            if (periodoEscolar == null)
-                throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
-
-            var avaliacoes = await repositorioAtividadeAvaliativa.ListarPorTurmaDisciplinaPeriodo(turmaCodigo, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-
-            return new AvaliacoesBimestresDto
-            {
-                Avaliacoes = avaliacoes,
-                PeriodoAtual = periodoEscolar,
-                QuantidadeBimestres = periodosEscolares.Count()
-            };
-        }
+        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAvaliacoesNoBimestre(string turmaCodigo, string disciplinaId, DateTime periodoInicio, DateTime periodoFim)
+            => await repositorioAtividadeAvaliativa.ListarPorTurmaDisciplinaPeriodo(turmaCodigo, disciplinaId, periodoInicio, periodoFim);
 
         public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
         {
@@ -110,7 +80,7 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<TurmaRetornoDto>();
 
-            var turma = repositorioTurma.ObterPorId(turmaId.ToString());
+            var turma = repositorioTurma.ObterPorCodigo(turmaId.ToString());
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(usuario.CodigoRf);
 
@@ -264,17 +234,6 @@ namespace SME.SGP.Aplicacao
                 TotalPaginas = atividadeAvaliativaPaginado.TotalPaginas,
                 TotalRegistros = atividadeAvaliativaPaginado.TotalRegistros
             };
-        }
-
-        private int? ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
-        {
-            var dataPesquisa = DateTime.Now;
-
-            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
-
-            if (periodoEscolar == null)
-                return 1;
-            else return periodoEscolar.Bimestre;
         }
 
         private DisciplinaDto ObterDisciplina(long idDisciplina)
