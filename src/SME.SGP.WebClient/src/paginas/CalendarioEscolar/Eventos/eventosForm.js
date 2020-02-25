@@ -290,11 +290,6 @@ const EventosForm = ({ match }) => {
   const validarConsultaModoEdicaoENovo = async () => {
     if (match && match.params && match.params.id) {
       setNovoRegistro(false);
-        setBreadcrumbManual(
-          match.url,
-          'Cadastro de Eventos no Calendário Escolar',
-          '/calendario-escolar/eventos'
-        );
       setIdEvento(match.params.id);
       consultaPorId(match.params.id);
     } else {
@@ -318,6 +313,11 @@ const EventosForm = ({ match }) => {
       }
       inicial.tipoCalendarioId = match.params.tipoCalendarioId;
     }
+    setBreadcrumbManual(
+      match.url,
+      'Cadastro de Eventos no Calendário Escolar',
+      '/calendario-escolar/eventos'
+    );
   };
 
   const montarTipoCalendarioPorId = async id => {
@@ -385,14 +385,6 @@ const EventosForm = ({ match }) => {
       onChangeTipoEvento(evento.data.tipoEventoId);
 
       setExibirAuditoria(true);
-
-      if (Object.entries(eventoCalendarioEdicao).length > 0) {
-        setBreadcrumbManual(
-          match.url,
-          'Cadastro de Eventos no Calendário Escolar',
-          '/calendario-escolar'
-        );
-      }
     }
   };
 
@@ -435,6 +427,14 @@ const EventosForm = ({ match }) => {
     return '/calendario-escolar/eventos';
   };
 
+  const setBreadcrumbLista = () => {
+    setBreadcrumbManual(
+      `/calendario-escolar/eventos/${match.params.tipoCalendarioId}`,
+      '',
+      '/calendario-escolar/eventos'
+    );
+  }
+
   const onClickVoltar = async () => {
     if (modoEdicao && valoresIniciais.podeAlterar) {
       const confirmado = await confirmar(
@@ -443,6 +443,7 @@ const EventosForm = ({ match }) => {
         'Deseja voltar para tela de listagem agora?'
       );
       if (Object.entries(eventoCalendarioEdicao).length > 0) {
+        setBreadcrumbLista();
         history.push('/calendario-escolar');
       } else if (confirmado) {
         history.push(urlTelaListagemEventos());
@@ -450,6 +451,7 @@ const EventosForm = ({ match }) => {
     } else if (Object.entries(eventoCalendarioEdicao).length > 0) {
       history.push('/calendario-escolar');
     } else {
+      setBreadcrumbLista();
       history.push(urlTelaListagemEventos());
     }
   };
@@ -904,7 +906,7 @@ const EventosForm = ({ match }) => {
                     eventoTipoFeriadoSelecionado
                       ? 'col-md-3 col-lg-3 col-xl-3'
                       : 'col-md-6 col-lg-6 col-xl-6'
-                  } pb-2`}
+                    } pb-2`}
                 >
                   <SelectComponent
                     form={form}
@@ -936,8 +938,8 @@ const EventosForm = ({ match }) => {
                     />
                   </div>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
                   <CampoData
                     form={form}
@@ -955,18 +957,18 @@ const EventosForm = ({ match }) => {
                 {tipoDataUnico ? (
                   ''
                 ) : (
-                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
-                    <CampoData
-                      form={form}
-                      label="Data fim do evento"
-                      placeholder="Data fim do evento"
-                      formatoData="DD/MM/YYYY"
-                      name="dataFim"
-                      onChange={onChangeCampos}
-                      desabilitado={desabilitarCampos || !usuarioPodeAlterar}
-                    />
-                  </div>
-                )}
+                    <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
+                      <CampoData
+                        form={form}
+                        label="Data fim do evento"
+                        placeholder="Data fim do evento"
+                        formatoData="DD/MM/YYYY"
+                        name="dataFim"
+                        onChange={onChangeCampos}
+                        desabilitado={desabilitarCampos || !usuarioPodeAlterar}
+                      />
+                    </div>
+                  )}
                 <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
                   <Button
                     id={shortid.generate()}
@@ -1028,16 +1030,16 @@ const EventosForm = ({ match }) => {
                     disabled={desabilitarCampos || !usuarioPodeAlterar}
                   />
                   {listaCalendarioParaCopiar &&
-                  listaCalendarioParaCopiar.length ? (
-                    <ListaCopiarEventos>
-                      <div className="mb-1">
-                        Evento será copiado para os calendários:
+                    listaCalendarioParaCopiar.length ? (
+                      <ListaCopiarEventos>
+                        <div className="mb-1">
+                          Evento será copiado para os calendários:
                       </div>
-                      {montarExibicaoEventosCopiar()}
-                    </ListaCopiarEventos>
-                  ) : (
-                    ''
-                  )}
+                        {montarExibicaoEventosCopiar()}
+                      </ListaCopiarEventos>
+                    ) : (
+                      ''
+                    )}
                 </div>
               </div>
             </Form>
@@ -1053,8 +1055,8 @@ const EventosForm = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
         <ModalConteudoHtml
           key="copiarEvento"
           visivel={exibirModalCopiarEvento}
@@ -1100,11 +1102,11 @@ const EventosForm = ({ match }) => {
                   {item.mensagem}
                 </strong>
               ) : (
-                <strong className="text-danger">
-                  <i className="fas fa-times mr-3" />
-                  {item.mensagem}
-                </strong>
-              )}
+                  <strong className="text-danger">
+                    <i className="fas fa-times mr-3" />
+                    {item.mensagem}
+                  </strong>
+                )}
             </p>
           ))}
         </ModalConteudoHtml>

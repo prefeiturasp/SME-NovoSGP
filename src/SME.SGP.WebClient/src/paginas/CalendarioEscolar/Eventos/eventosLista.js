@@ -24,6 +24,7 @@ import ServicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import { Loader } from '~/componentes';
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 
 const EventosLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -336,7 +337,7 @@ const EventosLista = ({ match }) => {
         'Excluir evento',
         listaNomeExcluir,
         `Deseja realmente excluir ${
-          eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
+        eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
         }?`,
         'Excluir',
         'Cancelar'
@@ -351,7 +352,7 @@ const EventosLista = ({ match }) => {
             eventosSelecionados.length > 1
               ? 'Eventos excluídos'
               : 'Evento excluído'
-          } com sucesso.`;
+            } com sucesso.`;
           sucesso(mensagemSucesso);
           validarFiltrar();
         }
@@ -404,6 +405,11 @@ const EventosLista = ({ match }) => {
     if (tipoCalendarioId) {
       setSelecionouCalendario(true);
       filtrar('tipoCalendarioId', tipoCalendarioId);
+      setBreadcrumbManual(
+        `${match.url}/${tipoCalendarioId}`,
+        '',
+        '/calendario-escolar/eventos'
+      );
     } else {
       setFiltroValido(false);
       setSelecionouCalendario(false);
@@ -591,8 +597,8 @@ const EventosLista = ({ match }) => {
               filtroEhValido={filtroValido.valido}
             />
           ) : (
-            ''
-          )}
+              ''
+            )}
         </div>
       </Card>
     </>
