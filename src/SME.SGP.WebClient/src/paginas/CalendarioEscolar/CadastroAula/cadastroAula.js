@@ -213,6 +213,8 @@ const CadastroAula = ({ match }) => {
       );
       if (disciplina && disciplina[0])
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
+    } else {
+      if (refForm && refForm.setFieldValue) refForm.setFieldValue('quantidadeTexto', '');
     }
   }, [idDisciplina, listaDisciplinas]);
 
@@ -407,10 +409,10 @@ const CadastroAula = ({ match }) => {
       .typeError('O valor informado deve ser um número')
       .when('quantidadeRadio', (quantidadeRadio, schema) => {
         return quantidadeRadio <= 0
-          ? schema.required('A quantidade de aulas é obrigatóriia')
+          ? schema.required('A quantidade de aulas é obrigatória')
           : schema.required(false);
       })
-      .required('A quantidade de aulas é obrigatóriia')
+      .required('A quantidade de aulas é obrigatória')
       .positive('Valor inválido')
       .integer();
 
@@ -419,12 +421,12 @@ const CadastroAula = ({ match }) => {
       disciplinaId: Yup.string().required('Componente curricular obrigatório'),
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
-      quantidadeTexto: controlaQuantidadeAula
+      quantidadeTexto: idDisciplina || idDisciplina !== '' ? (controlaQuantidadeAula
         ? validacaoQuantidade.lessThan(
-            quantidadeMaximaAulas + 1,
-            `Valor não pode ser maior que ${quantidadeMaximaAulas}`
-          )
-        : validacaoQuantidade,
+          quantidadeMaximaAulas + 1,
+          `Valor não pode ser maior que ${quantidadeMaximaAulas}`
+        )
+        : validacaoQuantidade) : Yup.string().required(false),
     };
 
     if (disciplinaCompartilhada) {
@@ -452,10 +454,6 @@ const CadastroAula = ({ match }) => {
         }
       }
     }
-    if (refForm && refForm.fields) {
-      refForm.setFieldValue('quantidadeRadio', inicial.quantidadeRadio);
-      refForm.setFieldValue('quantidadeTexto', inicial.quantidadeTexto);
-    }
 
     setValidacoes(Yup.object(val));
   }, [
@@ -467,6 +465,7 @@ const CadastroAula = ({ match }) => {
     idAula,
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
+    idDisciplina
   ]);
 
   useEffect(() => {
@@ -536,8 +535,8 @@ const CadastroAula = ({ match }) => {
   const onClickCadastrar = async valoresForm => {
     const observacao = existeFrequenciaPlanoAula
       ? `Esta aula${
-          ehAulaUnica ? '' : ', ou sua recorrencia'
-        }, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência`
+      ehAulaUnica ? '' : ', ou sua recorrencia'
+      }, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência`
       : '';
     if (
       quantidadeRecorrencia > 1 &&
@@ -645,7 +644,7 @@ const CadastroAula = ({ match }) => {
   const getDataFormatada = () => {
     const titulo = `${dataAula ? dataAula.format('dddd') : ''}, ${
       dataAula ? dataAula.format('DD/MM/YYYY') : ''
-    } `;
+      } `;
     return titulo;
   };
 
@@ -674,7 +673,7 @@ const CadastroAula = ({ match }) => {
             excluir(refFormRecorrencia.state.values.tipoRecorrenciaExclusao)
           }
           onConfirmacaoSecundaria={() => setVisualizarFormExcRecorrencia(false)}
-          onClose={() => {}}
+          onClose={() => { }}
           labelBotaoPrincipal="Confirmar"
           labelBotaoSecundario="Cancelar"
           titulo={`Excluir aula - ${getDataFormatada()}`}
@@ -685,7 +684,7 @@ const CadastroAula = ({ match }) => {
             initialValues={valoresIniciaisExclusao}
             validationSchema={validacoes}
             ref={refFormik => setRefFormRecorrencia(refFormik)}
-            onSubmit={() => {}}
+            onSubmit={() => { }}
             validateOnChange
             validateOnBlur
           >
@@ -698,11 +697,11 @@ const CadastroAula = ({ match }) => {
                   >
                     <p>{`Essa aula se repete por ${quantidadeRecorrencia}${
                       quantidadeRecorrencia > 1 ? ' vezes' : ' vez'
-                    } em seu planejamento.${
+                      } em seu planejamento.${
                       existeFrequenciaPlanoAula
                         ? ' Obs: Esta aula ou sua recorrência possui frequência ou plano de aula registrado, ao excluí-la estará excluindo esse registro também'
                         : ''
-                    }`}</p>
+                      }`}</p>
                     <p>Qual opção de exclusão você deseja realizar?</p>
                   </div>
                   <div className="col-sm-12 col-md-12 d-block">
@@ -712,7 +711,7 @@ const CadastroAula = ({ match }) => {
                       label="Realizar exclusão"
                       opcoes={opcoesExcluirRecorrencia}
                       name="tipoRecorrenciaExclusao"
-                      onChange={() => {}}
+                      onChange={() => { }}
                     />
                   </div>
                 </div>
@@ -865,8 +864,7 @@ const CadastroAula = ({ match }) => {
                     style={{ width: '70px' }}
                     id="quantidadeTexto"
                     desabilitado={
-                      somenteLeitura ||
-                      !form.values.disciplinaId ||
+                      somenteLeitura || !idDisciplina ||
                       (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
                       (ehRegencia && !ehReposicao)
                     }
@@ -905,8 +903,8 @@ const CadastroAula = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
       </Card>
     </>
   );
