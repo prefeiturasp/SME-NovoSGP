@@ -10,28 +10,26 @@ import TempoExpiracaoSessao from './tempoExpiracaoSessao/tempoExpiracaoSessao';
 
 const Conteudo = () => {
   return (
-    <section className="secao-conteudo">
-      <div>
-        <TempoExpiracaoSessao />
-        <BreadcrumbSgp />
-        <div className="row h-100">
-          <main role="main" className="col-md-12 col-lg-12 col-sm-12 col-xl-12">
-            <ModalConfirmacao />
-            <Mensagens />
-          </main>
-        </div>
-        <Switch>
-          {rotasArray.map(rota => (
-            <RotaAutenticadaEstruturada
-              key={shortid.generate()}
-              path={rota.path}
-              component={rota.component}
-              exact={rota.exact}
-            />
-          ))}
-        </Switch>
+    <div className="secao-conteudo">
+      <TempoExpiracaoSessao />
+      <BreadcrumbSgp />
+      <div className="row h-100">
+        <main role="main" className="col-md-12 col-lg-12 col-sm-12 col-xl-12">
+          <ModalConfirmacao />
+          <Mensagens />
+        </main>
       </div>
-    </section>
+      <Switch>
+        {rotasArray.map(rota => (
+          <RotaAutenticadaEstruturada
+            key={shortid.generate()}
+            path={rota.path}
+            component={rota.component}
+            exact={rota.exact}
+          />
+        ))}
+      </Switch>
+    </div>
   );
 };
 
