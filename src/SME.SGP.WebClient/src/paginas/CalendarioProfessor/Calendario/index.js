@@ -259,6 +259,8 @@ const CalendarioProfessor = () => {
       eventoAulaCalendarioEdicao.dre
     ) {
       setDreSelecionada(eventoAulaCalendarioEdicao.dre);
+    } else {
+      setDreSelecionada(turmaSelecionadaStore.dre);
     }
   }, [dres, eventoAulaCalendarioEdicao]);
 
@@ -307,6 +309,8 @@ const CalendarioProfessor = () => {
       eventoAulaCalendarioEdicao.unidadeEscolar
     ) {
       setUnidadeEscolarSelecionada(eventoAulaCalendarioEdicao.unidadeEscolar);
+    } else {
+      setUnidadeEscolarSelecionada(turmaSelecionadaStore.unidadeEscolar);
     }
   }, [eventoAulaCalendarioEdicao, unidadesEscolares]);
 
