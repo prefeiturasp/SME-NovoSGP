@@ -256,6 +256,7 @@ export default createGlobalStyle`
   :root{
     --posicao-item-menu-top: 0;
     --posicao-item-menu-left: 110px;
+    --espacamento-conteudo: 250px;
   }
 
   div > div > .ant-menu-submenu-popup{
@@ -334,5 +335,15 @@ export default createGlobalStyle`
 
   .erro{
     color: ${Base.Vermelho}
+  }
+
+  .secao-conteudo{
+    padding-left: var(--espacamento-conteudo);
+    position: relative;
+    z-index: -1;
+
+    @media screen and (max-width: 993px) {
+      padding-left: 115px !important;
+    }
   }
 `;
