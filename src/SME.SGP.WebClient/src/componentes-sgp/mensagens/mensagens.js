@@ -5,8 +5,9 @@ import shortid from 'shortid';
 import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
 
-const Mensagens = props => {
-  const { somenteConsulta } = props;
+const Mensagens = () => {
+
+  const menuRetraido = useSelector(store => store.navegacao.retraido);
   const alertas = useSelector(state => state.alertas);
   return (
     <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
@@ -17,7 +18,7 @@ const Mensagens = props => {
           </Grid>
         </Row>
       ))}
-      <Row key={shortid.generate()} hidden={!somenteConsulta}>
+      <Row key={shortid.generate()} hidden={!menuRetraido.somenteConsulta}>
         <Grid cols={12}>
           <Alert
             alerta={{
