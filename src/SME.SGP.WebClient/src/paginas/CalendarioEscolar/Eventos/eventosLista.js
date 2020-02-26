@@ -24,8 +24,9 @@ import ServicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import { Loader } from '~/componentes';
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 
-const EventosLista = () => {
+const EventosLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.EVENTOS];
 
@@ -179,6 +180,27 @@ const EventosLista = () => {
   const { turmaSelecionada } = usuario;
 
   useEffect(() => {
+    if (
+      refForm &&
+      listaCalendarioEscolar &&
+      listaCalendarioEscolar.length &&
+      match &&
+      match.params &&
+      match.params.tipoCalendarioId
+    ) {
+      const { tipoCalendarioId } = match.params;
+      const temTipoParaSetar = listaCalendarioEscolar.find(
+        item => item.id == tipoCalendarioId
+      );
+      if (temTipoParaSetar) {
+        refForm.setFieldValue('tipoCalendarioId', tipoCalendarioId);
+        setSelecionouCalendario(true);
+        filtrar('tipoCalendarioId', tipoCalendarioId);
+      }
+    }
+  }, [match, listaCalendarioEscolar, refForm]);
+
+  useEffect(() => {
     const obterListaEventos = async () => {
       const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
 
@@ -315,7 +337,7 @@ const EventosLista = () => {
         'Excluir evento',
         listaNomeExcluir,
         `Deseja realmente excluir ${
-        eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
+          eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
         }?`,
         'Excluir',
         'Cancelar'
@@ -330,7 +352,7 @@ const EventosLista = () => {
             eventosSelecionados.length > 1
               ? 'Eventos excluídos'
               : 'Evento excluído'
-            } com sucesso.`;
+          } com sucesso.`;
           sucesso(mensagemSucesso);
           validarFiltrar();
           setEventosSelecionados([]);
@@ -342,7 +364,7 @@ const EventosLista = () => {
 
   const onClickNovo = () => {
     const calendarioId = refForm.getFormikContext().values.tipoCalendarioId;
-    history.push(`eventos/novo/${calendarioId}`);
+    history.push(`/calendario-escolar/eventos/novo/${calendarioId}`);
   };
 
   const onChangeNomeEvento = e => {
@@ -385,6 +407,11 @@ const EventosLista = () => {
     if (tipoCalendarioId) {
       setSelecionouCalendario(true);
       filtrar('tipoCalendarioId', tipoCalendarioId);
+      setBreadcrumbManual(
+        `${match.url}/${tipoCalendarioId}`,
+        '',
+        '/calendario-escolar/eventos'
+      );
     } else {
       setFiltroValido(false);
       setSelecionouCalendario(false);
@@ -398,7 +425,9 @@ const EventosLista = () => {
   };
 
   const onClickEditar = evento => {
-    history.push(`eventos/editar/${evento.id}`);
+    history.push(
+      `/calendario-escolar/eventos/editar/${evento.id}/${filtro.tipoCalendarioId}`
+    );
   };
 
   const onSelecionarItems = items => {
@@ -441,9 +470,9 @@ const EventosLista = () => {
             onClick={onClickExcluir}
             disabled={
               !permissoesTela.podeExcluir ||
+              !selecionouCalendario ||
               (eventosSelecionados && eventosSelecionados.length < 1)
             }
-            hidden={!selecionouCalendario}
           />
           <Button
             id={shortid.generate()}
@@ -453,8 +482,11 @@ const EventosLista = () => {
             bold
             className="mr-2"
             onClick={onClickNovo}
-            hidden={!selecionouCalendario}
-            disabled={somenteConsulta || !permissoesTela.podeIncluir}
+            disabled={
+              somenteConsulta ||
+              !permissoesTela.podeIncluir ||
+              !selecionouCalendario
+            }
           />
         </div>
 
@@ -570,8 +602,8 @@ const EventosLista = () => {
               filtroEhValido={filtroValido.valido}
             />
           ) : (
-              ''
-            )}
+            ''
+          )}
         </div>
       </Card>
     </>
