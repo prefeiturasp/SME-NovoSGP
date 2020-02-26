@@ -338,12 +338,10 @@ export default createGlobalStyle`
   }
 
   .secao-conteudo{
-    padding-left: var(--espacamento-conteudo);
-    position: relative;
-    z-index: -1;
+    margin-left: var(--espacamento-conteudo);
 
     @media screen and (max-width: 993px) {
-      padding-left: 115px !important;
+      margin-left: 115px !important;
     }
   }
 `;
