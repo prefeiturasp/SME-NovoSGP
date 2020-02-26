@@ -337,7 +337,7 @@ const EventosLista = ({ match }) => {
         'Excluir evento',
         listaNomeExcluir,
         `Deseja realmente excluir ${
-        eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
+          eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
         }?`,
         'Excluir',
         'Cancelar'
@@ -352,7 +352,7 @@ const EventosLista = ({ match }) => {
             eventosSelecionados.length > 1
               ? 'Eventos excluídos'
               : 'Evento excluído'
-            } com sucesso.`;
+          } com sucesso.`;
           sucesso(mensagemSucesso);
           validarFiltrar();
           setEventosSelecionados([]);
@@ -470,9 +470,9 @@ const EventosLista = ({ match }) => {
             onClick={onClickExcluir}
             disabled={
               !permissoesTela.podeExcluir ||
+              !selecionouCalendario ||
               (eventosSelecionados && eventosSelecionados.length < 1)
             }
-            hidden={!selecionouCalendario}
           />
           <Button
             id={shortid.generate()}
@@ -482,8 +482,11 @@ const EventosLista = ({ match }) => {
             bold
             className="mr-2"
             onClick={onClickNovo}
-            hidden={!selecionouCalendario}
-            disabled={somenteConsulta || !permissoesTela.podeIncluir}
+            disabled={
+              somenteConsulta ||
+              !permissoesTela.podeIncluir ||
+              !selecionouCalendario
+            }
           />
         </div>
 
@@ -599,8 +602,8 @@ const EventosLista = ({ match }) => {
               filtroEhValido={filtroValido.valido}
             />
           ) : (
-              ''
-            )}
+            ''
+          )}
         </div>
       </Card>
     </>
