@@ -229,16 +229,6 @@ namespace SME.SGP.Dominio
             return usuarioLogado.PossuiPerfilSme();
         }
 
-        private bool NaoExisteLogin(string login)
-        {
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
-
-            if (usuario != null)
-            {
-                return false;
-            }
-            return true;
-        }
         private async Task AlterarEmail(Usuario usuario, string novoEmail)
         {
             var outrosUsuariosComMesmoEmail = await servicoEOL.ExisteUsuarioComMesmoEmail(usuario.Login, novoEmail);
