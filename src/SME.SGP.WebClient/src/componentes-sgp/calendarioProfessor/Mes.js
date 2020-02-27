@@ -49,9 +49,10 @@ const Mes = props => {
       mes.style = { color: Base.Preto };
     }
 
-    if (mes.eventos > 0 && !mes.estaAberto)
-      mes.chevronColor = Base.AzulCalendario;
-    else if (mes.estaAberto) mes.chevronColor = Base.Branco;
+    // if (mes.eventos > 0 && !mes.estaAberto)
+    mes.chevronColor = Base.AzulCalendario;
+    // else
+    if (mes.estaAberto) mes.chevronColor = Base.Branco;
 
     setMesSelecionado(mes);
   }, [meses, numeroMes]);
@@ -102,7 +103,7 @@ const Mes = props => {
         >
           <Div className="w-100 pl-2 fonte-16">{mesSelecionado.nome}</Div>
           <Div className="flex-shrink-1 d-flex align-items-center pr-3">
-            <Div className="pr-2 fonte-14">{mesSelecionado.eventos}</Div>
+            {/* <Div className="pr-2 fonte-14">{mesSelecionado.eventos}</Div> */}
             <Div className="fonte-14">
               <Icone className="far fa-calendar-alt" />
             </Div>
