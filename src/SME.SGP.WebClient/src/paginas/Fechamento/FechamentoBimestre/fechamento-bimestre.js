@@ -1,6 +1,7 @@
 import { Tabs } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import shortid from 'shortid';
 import { Colors, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
@@ -17,6 +18,7 @@ import FechamentoBimestreLista from './fechamento-bimestre-lista/fechamento-bime
 import RotasDto from '~/dtos/rotasDto';
 import { Fechamento } from './fechamento-bimestre.css';
 import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFechamentoBimestre';
+import { erro } from '~/servicos/alertas';
 
 const FechamentoBismestre = () => {
   const { TabPane } = Tabs;
@@ -35,8 +37,8 @@ const FechamentoBismestre = () => {
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(
     listaDisciplinas && listaDisciplinas.length === 1
   );
-  const [modoEdicao, setModoEdicao] = useState(false);
-  const [bimestreCorrente, setBimestreCorrente] = useState('1Bimestre');
+  const [modoEdicao] = useState(false);
+  const [bimestreCorrente, setBimestreCorrente] = useState('1');
   const [dadosBimestre1, setDadosBimestre1] = useState(undefined);
   const [dadosBimestre2, setDadosBimestre2] = useState(undefined);
   const [dadosBimestre3, setDadosBimestre3] = useState(undefined);
@@ -78,26 +80,6 @@ const FechamentoBismestre = () => {
     obterDisciplinas();
   }, [turmaSelecionada]);
 
-  useEffect(() => {
-    if (disciplinaIdSelecionada) obterDados();
-  }, [disciplinaIdSelecionada]);
-
-  const obterDados = async (bimestre = 0) => {
-    setCarregandoBimestres(true);
-    const fechamento = await ServicoFechamentoBimestre.buscarDados(
-      turmaSelecionada.turma,
-      disciplinaIdSelecionada,
-      bimestre
-    ).finally(() => {
-      setCarregandoBimestres(false);
-    });
-    if (fechamento && fechamento.data) {
-      const dadosFechamento = fechamento.data;
-      setBimestreCorrente(`${dadosFechamento.bimestre}`);
-      setDadosBimestre(dadosFechamento.bimestre, dadosFechamento);
-    }
-  };
-
   const setDadosBimestre = (bimestre, dados) => {
     switch (bimestre) {
       case 1:
@@ -121,9 +103,43 @@ const FechamentoBismestre = () => {
     }
   };
 
+  const obterDados = useCallback(
+    async (bimestre = 0) => {
+      setCarregandoBimestres(true);
+
+      try {
+        const fechamento = await ServicoFechamentoBimestre.buscarDados(
+          turmaSelecionada.turma,
+          disciplinaIdSelecionada,
+          bimestre
+        );
+
+        if (fechamento && fechamento.data) {
+          const dadosFechamento = fechamento.data;
+          setBimestreCorrente(`${dadosFechamento.bimestre}`);
+          setDadosBimestre(dadosFechamento.bimestre, dadosFechamento);
+        }
+      } catch (error) {
+        if (error.response) {
+          const { data } = error.response;
+          if (data && data.mensagens.length) {
+            erro(data.mensagens[0]);
+          }
+        }
+      }
+
+      setCarregandoBimestres(false);
+    },
+    [disciplinaIdSelecionada, turmaSelecionada.turma]
+  );
+
+  useEffect(() => {
+    if (disciplinaIdSelecionada) obterDados();
+  }, [disciplinaIdSelecionada, obterDados]);
+
   const onChangeTab = async numeroBimestre => {
     setBimestreCorrente(numeroBimestre);
-    if (numeroBimestre != 'final') {
+    if (numeroBimestre !== 'final') {
       obterDados(numeroBimestre);
     }
   };
@@ -142,7 +158,7 @@ const FechamentoBismestre = () => {
             className="mb-2"
           />
         </Grid>
-      ) : null}{' '}
+      ) : null}
       <Cabecalho pagina="Fechamento" />
       <Loader loading={carregandoBimestres}>
         <Card>
@@ -150,6 +166,7 @@ const FechamentoBismestre = () => {
             <div className="row">
               <div className="col-md-12 d-flex justify-content-end pb-4">
                 <Button
+                  id={shortid.generate()}
                   label="Voltar"
                   icon="arrow-left"
                   color={Colors.Azul}
@@ -158,6 +175,7 @@ const FechamentoBismestre = () => {
                   onClick={onClickVoltar}
                 />
                 <Button
+                  id={shortid.generate()}
                   label="Cancelar"
                   color={Colors.Roxo}
                   border
@@ -166,6 +184,7 @@ const FechamentoBismestre = () => {
                   disabled={!modoEdicao || somenteConsulta}
                 />
                 <Button
+                  id={shortid.generate()}
                   label="Salvar"
                   color={Colors.Roxo}
                   border
@@ -238,7 +257,7 @@ const FechamentoBismestre = () => {
                     ) : null}
                   </TabPane>
 
-                  <TabPane tab="Final" key="final"></TabPane>
+                  <TabPane tab="Final" key="final" />
                 </ContainerTabsCard>
               </Fechamento>
             </div>
