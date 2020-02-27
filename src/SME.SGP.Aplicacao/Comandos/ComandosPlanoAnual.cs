@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IConsultasProfessor consultasProfessor;
+        private readonly IConsultasPlanoAnual consultasPlanoAnual;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
@@ -25,6 +26,7 @@ namespace SME.SGP.Aplicacao
                                   IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                   IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                   IConsultasProfessor consultasProfessor,
+                                  IConsultasPlanoAnual consultasPlanoAnual,
                                   IUnitOfWork unitOfWork,
                                   IServicoUsuario servicoUsuario,
                                   IServicoEOL servicoEOL)
@@ -34,6 +36,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
+            this.consultasPlanoAnual = consultasPlanoAnual ?? throw new ArgumentNullException(nameof(consultasProfessor));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -76,7 +79,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
         }
 
-        public void Salvar(PlanoAnualDto planoAnualDto)
+        public Task<IEnumerable<PlanoAnualCompletoDto>> Salvar(PlanoAnualDto planoAnualDto)
         {
             unitOfWork.IniciarTransacao();
 
@@ -98,6 +101,7 @@ namespace SME.SGP.Aplicacao
             }
 
             unitOfWork.PersistirTransacao();
+            return consultasPlanoAnual.ObterPorUETurmaAnoEComponenteCurricular(planoAnualDto.EscolaId, planoAnualDto.TurmaId.ToString(), planoAnualDto.AnoLetivo.Value, planoAnualDto.ComponenteCurricularEolId);
         }
 
         private static void ValidarObjetivoPertenceAoComponenteCurricular(IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem,
