@@ -40,12 +40,51 @@ const CalendarioEscolar = () => {
   const turmaSelecionadaStore = useSelector(
     state => state.usuario.turmaSelecionada
   );
+
+  const [controleTurmaSelecionada, setControleTurmaSelecionada] = useState();
+
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
 
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoUes, setCarregandoUes] = useState(false);
+
+  const obterTiposCalendario = async modalidades => {
+    setCarregandoTipos(true);
+    const lista = await ServicoCalendarios.obterTiposCalendario(
+      turmaSelecionadaStore.anoLetivo
+    );
+    if (lista && lista.data) {
+      const tiposCalendarioLista = [];
+      if (lista.data) {
+        const anos = [];
+        anosLetivosAbrangencia.forEach(ano => {
+          if (!anos.includes(ano.valor)) anos.push(ano.valor);
+        });
+        const tipos = lista.data
+          .filter(tipo => {
+            return anos.indexOf(tipo.anoLetivo) > -1;
+          })
+          .filter(tipo => {
+            if (Object.entries(turmaSelecionadaStore).length)
+              return modalidades.indexOf(tipo.modalidade) > -1;
+            return true;
+          });
+        tipos.forEach(tipo => {
+          tiposCalendarioLista.push({
+            desc: tipo.nome,
+            valor: tipo.id,
+            modalidade: tipo.modalidade,
+          });
+        });
+      }
+      setCarregandoTipos(false);
+      return tiposCalendarioLista;
+    }
+    setCarregandoTipos(false);
+    return lista;
+  };
 
   const modalidadesPorAbrangencia = useMemo(() => {
     const modalidades = [];
@@ -87,6 +126,23 @@ const CalendarioEscolar = () => {
       if (!tipos || tipos.length === 0) {
         erro(
           'Nenhum tipo de calendário encontrado para o ano letivo e modalidade selecionada'
+        );
+      } else {
+        const tipos = await obterTiposCalendario(
+          modalidadesPorAbrangencia
+        );
+
+        if (!tipos || tipos.length === 0) {
+          erro(
+            'Nenhum tipo de calendário encontrado para o ano letivo e modalidade selecionada'
+          );
+          return;
+        }
+
+        setTiposCalendario(
+          tipos.filter(tipo => {
+            return tipo.modalidade === modalidadeSelecionada;
+          })
         );
       }
     }
@@ -142,6 +198,19 @@ const CalendarioEscolar = () => {
       }
     }
   }, [eventoCalendarioEdicao, tiposCalendario]);
+
+  useEffect(() => {
+    if (
+      turmaSelecionadaStore &&
+      controleTurmaSelecionada === turmaSelecionadaStore.turma
+    )
+      return;
+
+    setControleTurmaSelecionada(turmaSelecionadaStore.turma);
+    setTipoCalendarioSelecionado('');
+
+    if (turmaSelecionadaStore.turma) listarTiposCalendarioPorTurmaSelecionada();
+  }, [turmaSelecionadaStore]);
 
   const [dreSelecionada, setDreSelecionada] = useState(undefined);
   const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
