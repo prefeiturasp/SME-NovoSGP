@@ -421,7 +421,7 @@ const CadastroAula = ({ match }) => {
       disciplinaId: Yup.string().required('Componente curricular obrigatório'),
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
-      quantidadeTexto: idDisciplina || idDisciplina !== '' ? (controlaQuantidadeAula
+      quantidadeTexto: idDisciplina && idDisciplina !== '' ? (controlaQuantidadeAula
         ? validacaoQuantidade.lessThan(
           quantidadeMaximaAulas + 1,
           `Valor não pode ser maior que ${quantidadeMaximaAulas}`
