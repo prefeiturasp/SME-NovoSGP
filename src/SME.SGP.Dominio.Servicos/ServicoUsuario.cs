@@ -167,10 +167,12 @@ namespace SME.SGP.Dominio
 
             if (string.IsNullOrEmpty(login))
                 login = codigoRf;
-
-            usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
-
-            repositorioUsuario.Salvar(usuario);
+            
+            if(NaoExisteLogin(login))
+            {
+                usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
+                repositorioUsuario.Salvar(usuario);
+            }
 
             return usuario;
         }
@@ -230,6 +232,16 @@ namespace SME.SGP.Dominio
             return usuarioLogado.PossuiPerfilSme();
         }
 
+        private bool NaoExisteLogin(string login)
+        {
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
+
+            if (usuario != null)
+            {
+                return false;
+            }
+            return true;
+        }
         private async Task AlterarEmail(Usuario usuario, string novoEmail)
         {
             var outrosUsuariosComMesmoEmail = await servicoEOL.ExisteUsuarioComMesmoEmail(usuario.Login, novoEmail);
