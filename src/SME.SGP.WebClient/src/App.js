@@ -21,7 +21,17 @@ import { Deslogar } from '~/redux/modulos/usuario/actions';
 function App() {
 
   window.addEventListener("beforeunload", function (event) {
-    const persistJson = this.localStorage.getItem('persist:sme-sgp');
+    verificaSairResetSenha();
+  });
+
+  window.addEventListener('popstate', function (event) {
+    if (performance.navigation.type == 1) {
+      verificaSairResetSenha();
+    }
+  });
+
+  const verificaSairResetSenha = () => {
+    const persistJson = localStorage.getItem('persist:sme-sgp');
     if (persistJson) {
       const dados = JSON.parse(persistJson);
       if (dados && dados.usuario) {
@@ -31,7 +41,7 @@ function App() {
         }
       }
     }
-  });
+  }
 
   history.listen(location => {
     localStorage.setItem('rota-atual', location.pathname);
