@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         public async Task DeveRetornarQuatroAulasGradeParaSRMEAEE()
         {
             var semana = (DateTime.Now.DayOfYear / 7) + 1;
-            var aulasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor("123", 1030, semana.ToString(), DateTime.Now);
+            var aulasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor("123", 1030, semana, DateTime.Now);
 
             Assert.True(aulasGrade.QuantidadeAulasGrade == 4);
         }
