@@ -165,21 +165,6 @@ const CalendarioProfessor = () => {
     undefined
   );
 
-  // const consultarDiasLetivos = () => {
-  //   api
-  //     .post('v1/calendarios/dias-letivos', {
-  //       tipoCalendarioId: tipoCalendarioSelecionado,
-  //       dreId: dreSelecionada,
-  //       ueId: unidadeEscolarSelecionada,
-  //     })
-  //     .then(resposta => {
-  //       if (resposta.data) setDiasLetivos(resposta.data);
-  //     })
-  //     .catch(() => {
-  //       setDiasLetivos();
-  //     });
-  // };
-
   const aoSelecionarTipoCalendario = tipo => {
     store.dispatch(zeraCalendario());
     setTipoCalendarioSelecionado(tipo);
@@ -229,7 +214,6 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     if (tipoCalendarioSelecionado) {
-      // consultarDiasLetivos();
       obterDres();
     } else {
       setDiasLetivos();
@@ -316,7 +300,6 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     if (dreSelecionada) {
-      // consultarDiasLetivos();
       obterUnidadesEscolares();
     } else {
       setUnidadeEscolarSelecionada();
@@ -337,11 +320,7 @@ const CalendarioProfessor = () => {
   const [turmaDesabilitada, setTurmaDesabilitada] = useState(false);
 
   useEffect(() => {
-    if (unidadeEscolarSelecionada) {
-      // consultarDiasLetivos();
-    } else {
-      setOpcaoTurma();
-    }
+    if (!unidadeEscolarSelecionada) setOpcaoTurma();
   }, [unidadeEscolarSelecionada]);
 
   useEffect(() => {
