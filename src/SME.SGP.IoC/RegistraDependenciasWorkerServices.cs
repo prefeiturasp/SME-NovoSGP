@@ -63,6 +63,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosFechamento, ComandosFechamento>();
             services.TryAddScopedWorkerService<IComandosFechamentoTurmaDisciplina, ComandosFechamentoTurmaDisciplina>();
             services.TryAddScopedWorkerService<IComandosNotaConceitoBimestre, ComandosNotaConceitoBimestre>();
+            services.TryAddScopedWorkerService<IComandosNotificacaoAula, ComandosNotificacaoAula>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
