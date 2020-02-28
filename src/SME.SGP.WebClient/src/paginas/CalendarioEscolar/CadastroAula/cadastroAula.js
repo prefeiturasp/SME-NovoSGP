@@ -259,9 +259,11 @@ const CadastroAula = ({ match }) => {
         item =>
           item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
-      if (disciplina) setDisciplinaCompartilhada(disciplina.compartilhada);
-    }
-  }, [idDisciplina, listaDisciplinas]);
+      if (disciplina && disciplina[0])
+        setDisciplinaCompartilhada(disciplina[0].compartilhada);
+    } else if (refForm && refForm.setFieldValue)
+      refForm.setFieldValue('quantidadeTexto', '');
+  }, [idDisciplina, listaDisciplinas, refForm]);
 
   const buscarDisciplinasCompartilhadas = async () => {
     const disciplinas = await api.get(
@@ -467,8 +469,8 @@ const CadastroAula = ({ match }) => {
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
       quantidadeTexto:
-        idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2
-          ? controlaQuantidadeAula && !ehReposicao
+        idDisciplina || idDisciplina !== ''
+          ? controlaQuantidadeAula
             ? validacaoQuantidade.lessThan(
                 quantidadeMaximaAulas + 1,
                 `Valor não pode ser maior que ${quantidadeMaximaAulas}`
@@ -512,6 +514,7 @@ const CadastroAula = ({ match }) => {
     idDisciplina,
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
+    idDisciplina,
   ]);
 
   useEffect(() => {
@@ -632,18 +635,6 @@ const CadastroAula = ({ match }) => {
       await salvar(valoresForm);
     }
     setCarregandoSalvar(false);
-  };
-
-  const validaAntesDoSubmit = form => {
-    const arrayCampos = Object.keys(aula);
-    arrayCampos.forEach(campo => {
-      form.setFieldTouched(campo, true, true);
-    });
-    form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length === 0) {
-        form.handleSubmit(e => e);
-      }
-    });
   };
 
   const onClickVoltar = async form => {
