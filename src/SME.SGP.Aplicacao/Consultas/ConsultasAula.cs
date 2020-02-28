@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
             return aulas.Sum(a => a.Quantidade);
         }
 
-        public async Task<int> ObterQuantidadeAulasTurmaSemanaProfessor(string turma, string disciplina, string semana, string codigoRf)
+        public async Task<int> ObterQuantidadeAulasTurmaSemanaProfessor(string turma, string disciplina, int semana, string codigoRf)
         {
             IEnumerable<AulasPorTurmaDisciplinaDto> aulas;
 
