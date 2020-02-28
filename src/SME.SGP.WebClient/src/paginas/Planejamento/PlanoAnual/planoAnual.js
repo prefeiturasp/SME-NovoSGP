@@ -182,11 +182,12 @@ const PlanoAnual = () => {
     };
 
     const err = validarBimestres(plano.bimestres);
-    if (!err || err.length == 0) {
+    if (!err || err.length === 0) {
       setCarregandoDados(true);
       servicoPlanoAnual
         .salvar(plano)
-        .then(() => {
+        .then(resp => {
+          setPlanoAnual(resp.data.result);
           setCarregandoDados(false);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
