@@ -165,20 +165,20 @@ const CalendarioProfessor = () => {
     undefined
   );
 
-  const consultarDiasLetivos = () => {
-    api
-      .post('v1/calendarios/dias-letivos', {
-        tipoCalendarioId: tipoCalendarioSelecionado,
-        dreId: dreSelecionada,
-        ueId: unidadeEscolarSelecionada,
-      })
-      .then(resposta => {
-        if (resposta.data) setDiasLetivos(resposta.data);
-      })
-      .catch(() => {
-        setDiasLetivos();
-      });
-  };
+  // const consultarDiasLetivos = () => {
+  //   api
+  //     .post('v1/calendarios/dias-letivos', {
+  //       tipoCalendarioId: tipoCalendarioSelecionado,
+  //       dreId: dreSelecionada,
+  //       ueId: unidadeEscolarSelecionada,
+  //     })
+  //     .then(resposta => {
+  //       if (resposta.data) setDiasLetivos(resposta.data);
+  //     })
+  //     .catch(() => {
+  //       setDiasLetivos();
+  //     });
+  // };
 
   const aoSelecionarTipoCalendario = tipo => {
     store.dispatch(zeraCalendario());
@@ -229,7 +229,7 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     if (tipoCalendarioSelecionado) {
-      consultarDiasLetivos();
+      // consultarDiasLetivos();
       obterDres();
     } else {
       setDiasLetivos();
@@ -259,6 +259,8 @@ const CalendarioProfessor = () => {
       eventoAulaCalendarioEdicao.dre
     ) {
       setDreSelecionada(eventoAulaCalendarioEdicao.dre);
+    } else {
+      setDreSelecionada(turmaSelecionadaStore.dre);
     }
   }, [dres, eventoAulaCalendarioEdicao]);
 
@@ -307,6 +309,8 @@ const CalendarioProfessor = () => {
       eventoAulaCalendarioEdicao.unidadeEscolar
     ) {
       setUnidadeEscolarSelecionada(eventoAulaCalendarioEdicao.unidadeEscolar);
+    } else {
+      setUnidadeEscolarSelecionada(turmaSelecionadaStore.unidadeEscolar);
     }
   }, [eventoAulaCalendarioEdicao, unidadesEscolares]);
 
@@ -316,7 +320,7 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     if (dreSelecionada) {
-      consultarDiasLetivos();
+      // consultarDiasLetivos();
       obterUnidadesEscolares();
     } else {
       setUnidadeEscolarSelecionada();
@@ -338,7 +342,7 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     if (unidadeEscolarSelecionada) {
-      consultarDiasLetivos();
+      // consultarDiasLetivos();
     } else {
       setOpcaoTurma();
     }

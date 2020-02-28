@@ -64,6 +64,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosFechamentoTurmaDisciplina, ComandosFechamentoTurmaDisciplina>();
             services.TryAddScoped<IComandosNotaConceitoBimestre, ComandosNotaConceitoBimestre>();
             services.TryAddScoped<IComandosNotificacaoAula, ComandosNotificacaoAula>();
+            services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -114,12 +115,11 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasNotaConceitoBimestre, ConsultasNotaConceitoBimestre>();
             services.TryAddScoped<IConsultasEventoFechamento, ConsultasEventoFechamento>();
             services.TryAddScoped<IConsultaRecuperacaoParalela, ConsultasRecuperacaoParalela>();
-            services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
         {
-            services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
+            services.TryAddTransient<IContextoAplicacao, ContextoHttp>();
             services.TryAddScoped<ISgpContext, SgpContext>();
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         }

@@ -5,7 +5,9 @@ export const parseScreenObject = recurrence => ({
   diasDaSemana:
     recurrence.diasSemana.length > 0
       ? recurrence.diasSemana.map(item => item.valor)
-      : [recurrence.diaSemana],
+      : recurrence.diaSemana
+      ? [recurrence.diaSemana]
+      : [],
   padrao: recurrence.tipoRecorrencia.value,
   padraoRecorrenciaMensal: recurrence.padraoRecorrencia,
   repeteACada: recurrence.quantidadeRecorrencia,
