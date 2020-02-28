@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -30,13 +29,13 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<CicloDto>(query.ToString(), new { ano }).SingleOrDefault();
         }
 
-        public CicloDto ObterCicloPorAnoModalidade(int ano, Modalidade modalidade)
+        public CicloDto ObterCicloPorAnoModalidade(string ano, Modalidade modalidade)
         {
             var sql = @"select tc.id, tc.descricao from tipo_ciclo tc
                         inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id
                         where tca.ano = @ano and tca.modalidade = @modalidade";
 
-            var parametros = new { ano = ano.ToString(), modalidade };
+            var parametros = new { ano, modalidade };
 
             return database.QueryFirstOrDefault<CicloDto>(sql, parametros);
         }
