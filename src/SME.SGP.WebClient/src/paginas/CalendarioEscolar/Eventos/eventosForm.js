@@ -795,26 +795,7 @@ const EventosForm = ({ match }) => {
 
   return (
     <Loader loading={carregandoSalvar} tip="">
-      <div className="row">
-        <div
-          className={`${
-            aguardandoAprovacao
-              ? 'col-sm-12 col-md-7 col-lg-7 col-xl-9'
-              : 'col-md-12'
-          }`}
-        >
-          <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
-        </div>
-        {aguardandoAprovacao ? (
-          <div className="col-sm-12 col-md-5 col-lg-5 col-xl-3 pb-2 d-flex justify-content-end">
-            <StatusAguardandoAprovacao>
-              Aguardando Aprovação
-            </StatusAguardandoAprovacao>
-          </div>
-        ) : (
-          ''
-        )}
-      </div>
+      <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
       <ModalRecorrencia
         onCloseRecorrencia={onCloseRecorrencia}
         onSaveRecorrencia={onSaveRecorrencia}
