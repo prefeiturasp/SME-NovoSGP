@@ -600,8 +600,6 @@ const CadastroAula = ({ match }) => {
     }
   };
 
-  const [carregandoSalvar, setCarregandoSalvar] = useState(false);
-
   const onClickCadastrar = async valoresForm => {
     setCarregandoSalvar(true);
     const observacao = existeFrequenciaPlanoAula
