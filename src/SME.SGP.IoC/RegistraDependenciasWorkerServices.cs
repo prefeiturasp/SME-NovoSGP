@@ -186,6 +186,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioFechamentoTurmaDisciplina, RepositorioFechamentoTurmaDisciplina>();
             services.TryAddScopedWorkerService<IRepositorioNotaConceitoBimestre, RepositorioNotaConceitoBimestre>();
             services.TryAddScopedWorkerService<IRepositorioFechamentoReabertura, RepositorioFechamentoReabertura>();
+            services.TryAddScopedWorkerService<IRepositorioNotificacaoAula, RepositorioNotificacaoAula>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
