@@ -187,12 +187,6 @@ namespace SME.SGP.Dados.Repositorios
             return lookup.Values;
         }
 
-        public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId, long eventoId)
-        {
-            var query = "select 1 from evento where data_inicio = @dataInicio and tipo_calendario_id = @tipoCalendarioId and id <> :eventoId;";
-            return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId, eventoId });
-        }
-
         public bool ExisteEventoPorEventoTipoId(long eventoTipoId)
         {
             var query = "select 1 from evento where tipo_evento_id = @eventoTipoId;";
@@ -306,7 +300,7 @@ namespace SME.SGP.Dados.Repositorios
             splitOn: "EventoId,TipoEventoId,TipoCalendarioId").FirstOrDefault();
         }
 
-        public async Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)
+        public async Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId, bool escopoRetroativo = false)
         {
             var query = new StringBuilder();
 
@@ -321,11 +315,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and e.excluido = false");
             query.AppendLine("and e.status = 1");
 
-            if (!string.IsNullOrEmpty(UeId))
-                query.AppendLine("and e.ue_id = @ueId");
-
-            if (!string.IsNullOrEmpty(DreId))
-                query.AppendLine("and e.dre_id = @dreId");
+            if (escopoRetroativo)
+                ObtenhaEscopoRetroativo(UeId, DreId, query);
+            else
+                ObtenhaEscopoNormal(UeId, DreId, query);
 
             query.AppendLine("and ((e.data_inicio <= TO_DATE(@dataInicio, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataInicio, 'yyyy/mm/dd'))");
             query.AppendLine("or (e.data_inicio <= TO_DATE(@dataFim, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataFim, 'yyyy/mm/dd'))");
@@ -333,7 +326,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(")");
             query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new
+            var parametros = new
             {
                 dataInicio = dataInicio.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
                 dataFim = dataFim.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
@@ -341,7 +334,9 @@ namespace SME.SGP.Dados.Repositorios
                 tipoCalendarioId,
                 UeId,
                 DreId
-            })) > 0;
+            };
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), parametros)) > 0;
         }
 
         private static void MontaFiltroTipoCalendario(StringBuilder query)
@@ -389,6 +384,34 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("evento e");
             query.AppendLine("inner join evento_tipo et on");
             query.AppendLine("e.tipo_evento_id = et.id");
+        }
+
+        private static void ObtenhaEscopoNormal(string UeId, string DreId, StringBuilder query)
+        {
+            if (!string.IsNullOrEmpty(DreId) && !string.IsNullOrEmpty(UeId))
+                query.AppendLine("and (e.dre_id is null and e.ue_id is null)");
+
+            if (!string.IsNullOrEmpty(DreId) && string.IsNullOrWhiteSpace(UeId))
+                query.AppendLine("and (e.dre_id = @dreId and e.ue_id is null)");
+
+            if (string.IsNullOrEmpty(DreId) && !string.IsNullOrEmpty(UeId))
+                query.AppendLine("and e.ue_id = @ueId");
+
+            if (!string.IsNullOrEmpty(UeId))
+                query.AppendLine("and (e.dre_id = @dreId and e.ue_id = @ueId)");
+        }
+
+        private static void ObtenhaEscopoRetroativo(string UeId, string DreId, StringBuilder query)
+        {
+            query.AppendLine("and ((e.dre_id is null and e.ue_id is null)");
+
+            if (!string.IsNullOrEmpty(DreId))
+                query.AppendLine("or (e.dre_id = @dreId and e.ue_id is null)");
+
+            if (!string.IsNullOrEmpty(UeId))
+                query.AppendLine("or (e.dre_id = @dreId and e.ue_id = @ueId)");
+
+            query.AppendLine(")");
         }
 
         private static void ObterContadorEventosNaoLetivosSME(string cabecalho, string whereTipoCalendario, StringBuilder query)

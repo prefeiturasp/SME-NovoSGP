@@ -102,15 +102,6 @@ namespace SME.SGP.Dominio.Servicos
 
             usuario.PodeCriarEvento(evento);
 
-            if (!evento.PermiteConcomitancia())
-            {
-                var existeOutroEventoNaMesmaData = repositorioEvento.ExisteEventoNaMesmaDataECalendario(evento.DataInicio, evento.TipoCalendarioId, evento.Id);
-                if (existeOutroEventoNaMesmaData)
-                {
-                    throw new NegocioException("Não é permitido cadastrar um evento nesta data pois esse tipo de evento não permite concomitância.");
-                }
-            }
-
             var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
 
             if (evento.DeveSerEmDiaLetivo())
@@ -435,6 +426,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (evento.TipoEvento.Codigo == (int)TipoEvento.FechamentoBimestre)
                 return false;
+
             if (evento.TipoEvento.Codigo == (int)TipoEvento.LiberacaoExcepcional)
             {
                 evento.PodeCriarEventoLiberacaoExcepcional(usuario, dataConfirmada, periodos);
@@ -445,7 +437,6 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     throw new NegocioException("Não é possível criar eventos do tipo selecionado.");
                 }
-                var temEventoLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, evento.DreId);
 
                 if (evento.TipoEvento.Codigo == (long)TipoEvento.Recesso || evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoNoRecesso)
                 {
@@ -453,6 +444,8 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else
                 {
+                    var temEventoLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, evento.DreId);
+
                     if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.ReposicaoNoRecesso, evento.TipoCalendarioId, string.Empty, string.Empty))
                     {
                         if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.UE)
@@ -475,7 +468,7 @@ namespace SME.SGP.Dominio.Servicos
 
                         if (estaNoPeriodoEscolar)
                         {
-                            var temEventoSuspensaoAtividades = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, string.Empty, string.Empty);
+                            var temEventoSuspensaoAtividades = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, evento.UeId, evento.DreId, escopoRetroativo: true);
                             var temEventoFeriado = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Feriado, evento.TipoCalendarioId, string.Empty, string.Empty);
                             if ((temEventoFeriado || temEventoSuspensaoAtividades || evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday || evento.DataFim.DayOfWeek == DayOfWeek.Saturday || evento.DataFim.DayOfWeek == DayOfWeek.Sunday) && evento.Letivo == EventoLetivo.Sim)
                             {
