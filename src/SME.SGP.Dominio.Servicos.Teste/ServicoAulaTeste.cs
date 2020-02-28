@@ -18,6 +18,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         #region Mocks
 
         private readonly Mock<IComandosPlanoAula> comandosPlanoAula;
+        private readonly Mock<IComandosNotificacaoAula> comandosNotificacaoAula;
         private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
         private readonly Mock<IConfiguration> configuration;
         private readonly Mock<IConsultasFrequencia> consultasFrequencia;
@@ -38,6 +39,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IServicoNotificacao> servicoNotificacao;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IServicoWorkflowAprovacao> servicoWorkflowAprovacao;
+        private readonly Mock<IUnitOfWork> unitOfWork;
 
         #endregion Mocks
 
@@ -56,6 +58,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
             servicoNotificacao = new Mock<IServicoNotificacao>();
             comandosWorkflowAprovacao = new Mock<IComandosWorkflowAprovacao>();
+            comandosNotificacaoAula = new Mock<IComandosNotificacaoAula>();
             servicoNotificacao = new Mock<IServicoNotificacao>();
             comandosPlanoAula = new Mock<IComandosPlanoAula>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
@@ -71,6 +74,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             consultasFrequencia = new Mock<IConsultasFrequencia>();
             consultasPlanoAula = new Mock<IConsultasPlanoAula>();
             servicoWorkflowAprovacao = new Mock<IServicoWorkflowAprovacao>();
+            unitOfWork = new Mock<IUnitOfWork>();
 
             servicoAula = new ServicoAula(repositorioAula.Object,
                                           servicoEol.Object,
@@ -84,13 +88,15 @@ namespace SME.SGP.Dominio.Servicos.Teste
                                           servicoNotificacao.Object,
                                           comandosWorkflowAprovacao.Object,
                                           comandosPlanoAula.Object,
+                                          comandosNotificacaoAula.Object,
                                           servicoFrequencia.Object,
                                           configuration.Object,
                                           repositorioAtividadeAvaliativa.Object,
                                           repositorioAtribuicaoCJ.Object,
                                           repositorioTurma.Object,
                                           servicoWorkflowAprovacao.Object,
-                                          servicoUsuario.Object);
+                                          servicoUsuario.Object,
+                                          unitOfWork.Object);
 
             Setup();
         }
