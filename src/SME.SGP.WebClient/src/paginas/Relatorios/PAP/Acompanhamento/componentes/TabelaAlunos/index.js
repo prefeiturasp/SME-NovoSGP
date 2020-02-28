@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import t from 'prop-types';
 import shortid from 'shortid';
+import styled from 'styled-components';
 
 // Componentes
 import IconeStatus from './componentes/IconeStatus';
@@ -8,7 +9,6 @@ import SelectRespostas from './componentes/SelectRespostas';
 
 // Estilos
 import { Tabela, ContainerTabela } from './styles';
-import styled from 'styled-components';
 
 const NumeroChamada = styled.td`
   min-width: 20px;
@@ -46,7 +46,7 @@ function TabelaAlunos({ alunos, respostas, objetivoAtivo, onChangeResposta }) {
                       containerVinculoId={`resposta-${key}`}
                       bloquearLimpar={
                         objetivoAtivo &&
-                        (objetivoAtivo.id == 1 || objetivoAtivo.id == 2)
+                        (objetivoAtivo.id === 1 || objetivoAtivo.id === 2)
                       }
                     />
                   </div>
@@ -66,10 +66,16 @@ function TabelaAlunos({ alunos, respostas, objetivoAtivo, onChangeResposta }) {
 
 TabelaAlunos.propTypes = {
   alunos: t.oneOfType([t.array]),
+  respostas: t.oneOfType([t.array]),
+  objetivoAtivo: t.oneOfType([t.array, t.object]),
+  onChangeResposta: t.oneOfType([t.func]),
 };
 
 TabelaAlunos.defaultProps = {
   alunos: [],
+  respostas: [],
+  objetivoAtivo: [],
+  onChangeResposta: () => {},
 };
 
 export default TabelaAlunos;
