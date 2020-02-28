@@ -27,6 +27,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
         private readonly IServicoDiaLetivo servicoDiaLetivo;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
@@ -52,6 +53,7 @@ namespace SME.SGP.Dominio.Servicos
                            IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
                            IRepositorioTurma repositorioTurma,
+                           IRepositorioNotificacaoAula repositorioNotificacaoAula,
                            IServicoWorkflowAprovacao servicoWorkflowAprovacao,
                            IServicoUsuario servicoUsuario)
         {
@@ -72,6 +74,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
@@ -287,6 +290,7 @@ namespace SME.SGP.Dominio.Servicos
             if (aula.WorkflowAprovacaoId.HasValue)
                 await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(aula.WorkflowAprovacaoId.Value);
 
+            await repositorioNotificacaoAula.Excluir(aula.Id);
             await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
             await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
             aula.Excluido = true;
@@ -418,7 +422,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
-            servicoNotificacao.Salvar(new Notificacao()
+            var notificacao = new Notificacao()
             {
                 Ano = aula.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
@@ -429,7 +433,13 @@ namespace SME.SGP.Dominio.Servicos
                 Titulo = tituloMensagem,
                 TurmaId = aula.TurmaId,
                 UeId = turma.Ue.CodigoUe,
-            });
+            };
+
+            // Salva Notificação
+            servicoNotificacao.Salvar(notificacao);
+
+            // Gera vinculo Notificacao x Aula
+            repositorioNotificacaoAula.Inserir(notificacao.Id, aula.Id).Wait();
         }
 
         private IEnumerable<DateTime> ObterDiaEntreDatas(DateTime inicio, DateTime fim)
