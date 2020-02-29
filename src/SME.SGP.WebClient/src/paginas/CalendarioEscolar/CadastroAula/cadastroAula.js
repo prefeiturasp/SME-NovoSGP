@@ -481,7 +481,7 @@ const CadastroAula = ({ match }) => {
   const resetarTela = form => {
     form.resetForm();
     setControlaQuantidadeAula(true);
-    setQuantidadeMaximaAulas(0);
+    setQuantidadeMaximaAulas(1);
     setModoEdicao(false);
     setEhAulaUnica(false);
   };
@@ -787,7 +787,8 @@ const CadastroAula = ({ match }) => {
                     disabled={
                       somenteLeitura ||
                       (novoRegistro && !permissaoTela.podeIncluir) ||
-                      (!novoRegistro && !permissaoTela.podeAlterar)
+                      (!novoRegistro && !permissaoTela.podeAlterar) ||
+                      quantidadeMaximaAulas <= 0
                     }
                     onClick={() => validaAntesDoSubmit(form)}
                   />
