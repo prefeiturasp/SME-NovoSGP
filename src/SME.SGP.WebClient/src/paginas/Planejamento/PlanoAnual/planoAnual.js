@@ -57,7 +57,7 @@ const PlanoAnual = () => {
   const [
     codigoDisciplinaSelecionada,
     setCodigoDisciplinaSelecionada,
-  ] = useState('');
+  ] = useState(undefined);
 
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState('');
 
