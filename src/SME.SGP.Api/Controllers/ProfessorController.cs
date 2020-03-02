@@ -38,7 +38,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = consultasProfessor.Listar(codigoRf);
 
-            if (!retorno.Any())
+            if (retorno == null || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);
@@ -51,7 +51,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultasProfessor.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(codigoRF, codigoEscola, anoLetivo);
 
-            if (!retorno.Any())
+            if (retorno == null || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);
@@ -64,7 +64,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma, turmaPrograma);
 
-            if (!retorno.Any())
+            if (retorno == null || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);
@@ -77,7 +77,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultasDisciplina.ObterDisciplinasAgrupadasPorProfessorETurma(codigoTurma, turmaPrograma);
 
-            if (!retorno.Any())
+            if (retorno == null || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);
