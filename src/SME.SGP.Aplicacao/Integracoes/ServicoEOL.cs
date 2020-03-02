@@ -272,11 +272,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return MapearParaDtoDisciplinas(retorno);
             }
 
-            if (resposta.StatusCode == HttpStatusCode.BadRequest)
-                throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
-
-            RegistrarLogSentry(resposta, "obter as disciplinas", parametros);
-            return Enumerable.Empty<DisciplinaDto>();
+            throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
         }
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAsync(long[] ids)
