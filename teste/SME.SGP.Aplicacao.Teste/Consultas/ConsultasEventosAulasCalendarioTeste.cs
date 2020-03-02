@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             repositorioPeriodoEscolar.Setup(r => r.ObterPorTipoCalendario(It.IsAny<long>())).Returns(periodos);
             repositorioAula.Setup(r => r.ObterAulas(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(aulas));
-            repositorioEvento.Setup(r => r.ObterEventosPorTipoDeCalendarioDreUe(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(eventos);
+            repositorioEvento.Setup(r => r.ObterEventosPorTipoDeCalendarioDreUe(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(eventos);
 
             var dias = comandosDiasLetivos.BuscarDiasLetivos(1);
             var diasEventosNaoLetivos = comandosDiasLetivos.ObterDias(eventos, diasNaoLetivos, Dominio.EventoLetivo.Nao);
@@ -156,7 +156,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             IEnumerable<Evento> eventos = new List<Evento> { evento, evento2 };
 
             repositorioAula.Setup(r => r.ObterAulas(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null, null, null)).Returns(Task.FromResult(aulas));
-            repositorioEvento.Setup(r => r.ObterEventosPorTipoDeCalendarioDreUeMes(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>())).Returns(Task.FromResult(eventos));
+            repositorioEvento.Setup(r => r.ObterEventosPorTipoDeCalendarioDreUeMes(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(Task.FromResult(eventos));
             repositorioPeriodoEscolar.Setup(r => r.ObterPorTipoCalendario(It.IsAny<long>())).Returns(periodos);
 
             var dias = comandosDiasLetivos.BuscarDiasLetivos(1);
