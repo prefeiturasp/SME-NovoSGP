@@ -477,22 +477,16 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<MeusDadosDto> ObterMeusDados(string login)
         {
-
-         
-
             var url = $"AutenticacaoSgp/{login}/dados";
             var resposta = await httpClient.GetAsync(url);
 
             if (!resposta.IsSuccessStatusCode)
             {
-                throw new NegocioException("Não foi possível obter os dados do usuário");
+               await RegistrarLogSentryAsync(resposta, "ObterMeusDados", "login = " + login);
+               throw new NegocioException("Não foi possível obter os dados do usuário");
             }
             var json = await resposta.Content.ReadAsStringAsync();
-
-            await RegistrarLogSentryAsync(resposta, "ObterMeusDados", "login = " + login);
             return JsonConvert.DeserializeObject<MeusDadosDto>(json);
-
-
         }
 
         public async Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login)
