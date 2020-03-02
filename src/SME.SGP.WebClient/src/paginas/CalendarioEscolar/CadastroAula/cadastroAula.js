@@ -93,6 +93,7 @@ const CadastroAula = ({ match }) => {
 
   const [idDisciplina, setIdDisciplina] = useState();
   const [disciplinaCompartilhada, setDisciplinaCompartilhada] = useState(false);
+  const [tipoAula, setTipoAula] = useState(1);
   const [
     listaDisciplinasCompartilhadas,
     setListaDisciplinasCompartilhadas,
@@ -108,14 +109,14 @@ const CadastroAula = ({ match }) => {
       label: '1',
       value: 1,
       disabled:
-        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula) ||
+        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula && !ehReposicao) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
     {
       label: '2',
       value: 2,
       disabled:
-        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula) ||
+        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula && !ehReposicao) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
   ];
@@ -159,6 +160,10 @@ const CadastroAula = ({ match }) => {
       store.dispatch(removerAlerta(idNotificacaoSomenteLeitura));
     };
   }, []);
+
+  useEffect(() => {
+    onChangeDisciplinas(idDisciplina);
+  }, [tipoAula]);
 
   const onChangeDisciplinas = async id => {
     onChangeCampos();
@@ -659,7 +664,7 @@ const CadastroAula = ({ match }) => {
   return (
     <Loader loading={carregandoSalvar} tip="">
       <div className="col-md-12">
-        {quantidadeMaximaAulas <= 0 ? (
+        {quantidadeMaximaAulas <= 0 && !ehReposicao ? (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -791,7 +796,7 @@ const CadastroAula = ({ match }) => {
                       somenteLeitura ||
                       (novoRegistro && !permissaoTela.podeIncluir) ||
                       (!novoRegistro && !permissaoTela.podeAlterar) ||
-                      quantidadeMaximaAulas <= 0
+                      (quantidadeMaximaAulas <= 0 && !ehReposicao)
                     }
                     onClick={() => validaAntesDoSubmit(form)}
                   />
@@ -810,6 +815,7 @@ const CadastroAula = ({ match }) => {
                       setEhReposicao(e.target.value === 2);
                       onChangeCampos();
                       setControlaQuantidadeAula(ehReposicao);
+                      setTipoAula(e.target.value);
                     }}
                   />
                 </div>
@@ -876,7 +882,9 @@ const CadastroAula = ({ match }) => {
                     desabilitado={
                       somenteLeitura ||
                       !idDisciplina ||
-                      (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
+                      (quantidadeMaximaAulas < 3 &&
+                        controlaQuantidadeAula &&
+                        !ehReposicao) ||
                       (ehRegencia && !ehReposicao)
                     }
                     onChange={() => {
