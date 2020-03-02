@@ -276,6 +276,7 @@ namespace SME.SGP.Aplicacao
                 CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
                 Nome = disciplina.Nome,
                 Regencia = disciplina.Regencia,
+                TerritorioSaber = disciplina.TerritorioSaber,
                 Compartilhada = disciplina.Compartilhada,
                 RegistraFrequencia = disciplina.RegistroFrequencia,
                 LancaNota = disciplina.LancaNota,
