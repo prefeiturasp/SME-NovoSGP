@@ -547,7 +547,7 @@ const CalendarioProfessor = () => {
                       valueText="desc"
                       valueSelect={dreSelecionada}
                       placeholder="Diretoria Regional de Educação (DRE)"
-                      disabled={!tipoCalendarioSelecionado || dreDesabilitada}
+                      disabled
                     />
                   </Loader>
                 </Grid>
@@ -561,7 +561,7 @@ const CalendarioProfessor = () => {
                       valueText="desc"
                       valueSelect={unidadeEscolarSelecionada}
                       placeholder="Unidade Escolar (UE)"
-                      disabled={!dreSelecionada || unidadeEscolarDesabilitada}
+                      disabled
                     />
                   </Loader>
                 </Grid>
