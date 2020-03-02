@@ -482,6 +482,13 @@ const PlanoAnual = () => {
                           onChange={onChangeBimestre}
                           key={plano.bimestre}
                           erros={listaErros[plano.bimestre - 1]}
+                          onCloseErrosBimestre={() => {
+                            setListaErros(
+                              listaErros.map((item, index) =>
+                                plano.bimestre - 1 === index ? [] : item
+                              )
+                            );
+                          }}
                           selecionarObjetivo={selecionarObjetivo}
                           onChangeDescricaoObjetivo={onChangeDescricaoObjetivo}
                         />
