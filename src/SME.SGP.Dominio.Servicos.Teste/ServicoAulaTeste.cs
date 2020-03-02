@@ -226,7 +226,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoEol.Setup(a => a.ObterDisciplinasPorCodigoTurmaLoginEPerfil(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(disciplinaRespotas));
 
             //repositorioPeriodoEscolar.Setup(a => a.ObterPorTipoCalendarioData(aula.TipoCalendarioId, aula.DataAula)).Returns(new PeriodoEscolar());
-            consultasGrade.Setup(a => a.ObterGradeAulasTurmaProfessor(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<string>()))
+            consultasGrade.Setup(a => a.ObterGradeAulasTurmaProfessor(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(Task.FromResult(new GradeComponenteTurmaAulasDto() { QuantidadeAulasGrade = 1, QuantidadeAulasRestante = 1 }));
 
             servicoDiaLetivo.Setup(a => a.ValidarSeEhDiaLetivo(It.IsAny<DateTime>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
