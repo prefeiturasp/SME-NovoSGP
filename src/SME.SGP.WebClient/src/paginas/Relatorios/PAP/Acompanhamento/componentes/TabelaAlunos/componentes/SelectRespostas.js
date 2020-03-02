@@ -17,7 +17,7 @@ function SelectRespostas({
   useEffect(() => {
     setValorPadrao(() => {
       const respostasAlunoFiltradaPorObjetivo = aluno.respostas.find(
-        y => y.objetivoId === objetivoAtivo.id
+        y => y && y.objetivoId === objetivoAtivo.id
       );
 
       if (!respostasAlunoFiltradaPorObjetivo) {
