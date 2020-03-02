@@ -429,7 +429,7 @@ const CadastroAula = ({ match }) => {
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
       quantidadeTexto:
         idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2
-          ? controlaQuantidadeAula
+          ? controlaQuantidadeAula && !ehReposicao
             ? validacaoQuantidade.lessThan(
                 quantidadeMaximaAulas + 1,
                 `Valor não pode ser maior que ${quantidadeMaximaAulas}`
