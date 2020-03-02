@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
-        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turmaCodigo, long disciplina, string semana, DateTime dataAula, string codigoRf = null)
+        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turmaCodigo, long disciplina, int semana, DateTime dataAula, string codigoRf = null)
         {
             var ue = repositorioUe.ObterUEPorTurma(turmaCodigo);
             if (ue == null)
@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<int> ObtenhaHorasCadastradas(long disciplina, string semana, DateTime dataAula, string codigoRf, Turma turma, bool ehRegencia)
+        private async Task<int> ObtenhaHorasCadastradas(long disciplina, int semana, DateTime dataAula, string codigoRf, Turma turma, bool ehRegencia)
         {
             if (ehRegencia)
                 return await consultasAula.ObterQuantidadeAulasTurmaDiaProfessor(turma.CodigoTurma, disciplina.ToString(), dataAula, codigoRf);
