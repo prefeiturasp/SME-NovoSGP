@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IComandosPlanoAula comandosPlanoAula;
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
+        private readonly IComandosNotificacaoAula comandosNotificacaoAula;
         private readonly IConfiguration configuration;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasGrade consultasGrade;
@@ -34,6 +35,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoWorkflowAprovacao servicoWorkflowAprovacao;
+        private readonly IUnitOfWork unitOfWork;
 
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
@@ -47,13 +49,15 @@ namespace SME.SGP.Dominio.Servicos
                            IServicoNotificacao servicoNotificacao,
                            IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                            IComandosPlanoAula comandosPlanoAula,
+                           IComandosNotificacaoAula comandosNotificacaoAula,
                            IServicoFrequencia servicoFrequencia,
                            IConfiguration configuration,
                            IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
                            IRepositorioTurma repositorioTurma,
                            IServicoWorkflowAprovacao servicoWorkflowAprovacao,
-                           IServicoUsuario servicoUsuario)
+                           IServicoUsuario servicoUsuario,
+                           IUnitOfWork unitOfWork)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -74,6 +78,8 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.comandosNotificacaoAula = comandosNotificacaoAula ?? throw new ArgumentNullException(nameof(comandosNotificacaoAula));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         private enum Operacao
@@ -157,7 +163,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 // Busca quantidade de aulas semanais da grade de aula
                 var semana = (aula.DataAula.DayOfYear / 7) + 1;
-                var gradeAulas = consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, Convert.ToInt64(aula.DisciplinaId), semana.ToString(), aula.DataAula, usuario.CodigoRf).Result;
+                var gradeAulas = consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, Convert.ToInt64(aula.DisciplinaId), semana, aula.DataAula, usuario.CodigoRf).Result;
 
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
@@ -284,13 +290,26 @@ namespace SME.SGP.Dominio.Servicos
 
             VerificaSeProfessorPodePersistirTurmaDisciplina(CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula);
 
-            if (aula.WorkflowAprovacaoId.HasValue)
-                await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(aula.WorkflowAprovacaoId.Value);
+            unitOfWork.IniciarTransacao();
+            try
+            {
+                if (aula.WorkflowAprovacaoId.HasValue)
+                    await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(aula.WorkflowAprovacaoId.Value);
 
-            await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
-            await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
-            aula.Excluido = true;
-            await repositorioAula.SalvarAsync(aula);
+                await comandosNotificacaoAula.Excluir(aula.Id);
+                await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
+                await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
+
+                aula.Excluido = true;
+                await repositorioAula.SalvarAsync(aula);
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }        
         }
 
         private async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
@@ -387,7 +406,6 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
 
             var disciplina = disciplinasEol.FirstOrDefault();
-
             var operacaoStr = operacao == Operacao.Inclusao ? "Criação" : operacao == Operacao.Alteracao ? "Alteração" : "Exclusão";
             var tituloMensagem = $"{operacaoStr} de Aulas de {disciplina.Nome} na turma {turma.Nome}";
             StringBuilder mensagemUsuario = new StringBuilder();
@@ -418,7 +436,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
-            servicoNotificacao.Salvar(new Notificacao()
+            var notificacao = new Notificacao()
             {
                 Ano = aula.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
@@ -429,7 +447,24 @@ namespace SME.SGP.Dominio.Servicos
                 Titulo = tituloMensagem,
                 TurmaId = aula.TurmaId,
                 UeId = turma.Ue.CodigoUe,
-            });
+            };
+
+            unitOfWork.IniciarTransacao();
+            try
+            {
+                // Salva Notificação
+                servicoNotificacao.Salvar(notificacao);
+
+                // Gera vinculo Notificacao x Aula
+                comandosNotificacaoAula.Inserir(notificacao.Id, aula.Id).Wait();
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }        
         }
 
         private IEnumerable<DateTime> ObterDiaEntreDatas(DateTime inicio, DateTime fim)
@@ -505,9 +540,6 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
 
             var disciplina = disciplinasEol.FirstOrDefault();
-
-            if (disciplina == null)
-                throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
 
             return disciplina.Nome;
         }
