@@ -30,7 +30,7 @@ import { store } from '~/redux';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
 
 const FrequenciaPlanoAula = () => {
-  const usuario = useSelector(store => store.usuario);
+  const usuario = useSelector(state => state.usuario);
   const dispatch = useDispatch();
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -102,7 +102,7 @@ const FrequenciaPlanoAula = () => {
   const [planoAulaExpandido, setPlanoAulaExpandido] = useState(false);
 
   const dadosAulaFrequencia = useSelector(
-    store => store.calendarioProfessor.dadosAulaFrequencia
+    state => state.calendarioProfessor.dadosAulaFrequencia
   );
 
   const obterDatasDeAulasDisponiveis = useCallback(
@@ -276,11 +276,11 @@ const FrequenciaPlanoAula = () => {
 
   const obterPlanoAula = useCallback(
     async aula => {
+      console.log('obterPlanoAula');
       const idAula = aula.idAula || aula[0].idAula;
       const plano = await api
         .get(`v1/planos/aulas/${idAula}`)
         .then(resp => {
-          setPlanoAulaExpandido(true);
           return resp;
         })
         .catch(e => {
@@ -604,6 +604,7 @@ const FrequenciaPlanoAula = () => {
   const [dataVigente, setDataVigente] = useState(false);
 
   const obterAvaliacao = (idAula, data) => {
+    console.log('obterAvaliacao');
     const avaliacao = api.get(`v1/planos/aulas/${idAula}`);
     avaliacao.then(resposta => {
       if (resposta && resposta.data) {
@@ -697,26 +698,26 @@ const FrequenciaPlanoAula = () => {
     }
   }, [dadosAulaFrequencia, listaDisciplinas, diasParaHabilitar]);
 
-  const obterDataAulaSugerida = useCallback(datasDeAulas => {
-    const habilitar = datasDeAulas.map(item =>
-      window.moment(item.data).format('YYYY-MM-DD')
-    );
-    const dataAtual = window.moment(new Date()).format('YYYY-MM-DD');
-    const datasIgualMenorHoje = habilitar.filter(
-      d => d <= window.moment(dataAtual).format('YYYY-MM-DD')
-    );
+  // const obterDataAulaSugerida = useCallback(datasDeAulas => {
+  // const habilitar = datasDeAulas.map(item =>
+  //   window.moment(item.data).format('YYYY-MM-DD')
+  // );
+  // const dataAtual = window.moment(new Date()).format('YYYY-MM-DD');
+  // const datasIgualMenorHoje = habilitar.filter(
+  //   d => d <= window.moment(dataAtual).format('YYYY-MM-DD')
+  // );
 
-    const ordenar = (a, b) => {
-      return window.moment(b).valueOf() - window.moment(a).valueOf();
-    };
-    const retorno = datasIgualMenorHoje.sort(ordenar);
+  // const ordenar = (a, b) => {
+  //   return window.moment(b).valueOf() - window.moment(a).valueOf();
+  // };
+  // const retorno = datasIgualMenorHoje.sort(ordenar);
 
-    if (retorno && retorno.length && retorno[0]) {
-      setDataSugerida(retorno[0]);
-    } else {
-      setDataSugerida('');
-    }
-  }, []);
+  // if (retorno && retorno.length && retorno[0]) {
+  // setDataSugerida(retorno[0]);
+  // } else {
+  // setDataSugerida('');
+  // }
+  // }, []);
 
   const onChangeData = async data => {
     if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
@@ -744,11 +745,11 @@ const FrequenciaPlanoAula = () => {
     }
   }, [dataSugerida, validaSeTemIdAula]);
 
-  useEffect(() => {
-    if (listaDatasAulas && listaDatasAulas.length) {
-      obterDataAulaSugerida(listaDatasAulas);
-    }
-  }, [listaDatasAulas, obterDataAulaSugerida]);
+  // useEffect(() => {
+  //   if (listaDatasAulas && listaDatasAulas.length) {
+  //     obterDataAulaSugerida(listaDatasAulas);
+  //   }
+  // }, [listaDatasAulas, obterDataAulaSugerida]);
 
   const onChangeFrequencia = () => {
     setModoEdicaoFrequencia(true);
@@ -774,16 +775,16 @@ const FrequenciaPlanoAula = () => {
       {usuario && turmaSelecionada.turma ? (
         ''
       ) : (
-          <Alert
-            alerta={{
-              tipo: 'warning',
-              id: 'frequencia-selecione-turma',
-              mensagem: 'Você precisa escolher uma turma.',
-              estiloTitulo: { fontSize: '18px' },
-            }}
-            className="mb-2"
-          />
-        )}
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'frequencia-selecione-turma',
+            mensagem: 'Você precisa escolher uma turma.',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-2"
+        />
+      )}
       {temAvaliacao ? (
         <div className="row">
           <Grid cols={12} className="px-4">
@@ -935,12 +936,12 @@ const FrequenciaPlanoAula = () => {
                             alteradoEm={auditoria.alteradoEm}
                           />
                         ) : (
-                            ''
-                          )}
+                          ''
+                        )}
                       </>
                     ) : (
-                        ''
-                      )}
+                      ''
+                    )}
                   </Loader>
                 </CardCollapse>
               </div>
@@ -963,13 +964,17 @@ const FrequenciaPlanoAula = () => {
                   temObjetivos={temObjetivos}
                   temAvaliacao={temAvaliacao}
                   auditoria={auditoriaPlano}
-                  ehRegencia={disciplinaSelecionada ? disciplinaSelecionada.regencia : false}
+                  ehRegencia={
+                    disciplinaSelecionada
+                      ? disciplinaSelecionada.regencia
+                      : false
+                  }
                 />
               </div>
             </div>
           ) : (
-              ''
-            )}
+            ''
+          )}
         </div>
         <ModalMultiLinhas
           key="errosBimestre"
