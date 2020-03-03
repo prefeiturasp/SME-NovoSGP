@@ -454,23 +454,26 @@ const Filtro = () => {
     }
   }, [anosLetivos]);
 
-  const obterModalidades = async deveSalvarModalidade => {
-    setCarregandoModalidades(true);
+  const obterModalidades = useCallback(
+    async deveSalvarModalidade => {
+      setCarregandoModalidades(true);
 
-    const modalidadesLista = await FiltroHelper.obterModalidades({
-      consideraHistorico,
-      anoLetivoSelecionado,
-    });
+      const modalidadesLista = await FiltroHelper.obterModalidades({
+        consideraHistorico,
+        anoLetivoSelecionado,
+      });
 
-    if (deveSalvarModalidade) {
-      setModalidades(modalidadesLista);
-      dispatch(salvarModalidades(modalidadesLista));
-      setCampoModalidadeDesabilitado(modalidadesLista.length === 1);
-    }
+      if (deveSalvarModalidade) {
+        setModalidades(modalidadesLista);
+        dispatch(salvarModalidades(modalidadesLista));
+        setCampoModalidadeDesabilitado(modalidadesLista.length === 1);
+      }
 
-    setCarregandoModalidades(false);
-    return modalidadesLista;
-  };
+      setCarregandoModalidades(false);
+      return modalidadesLista;
+    },
+    [anoLetivoSelecionado, consideraHistorico, dispatch]
+  );
 
   useEffect(() => {
     let estado = true;
@@ -485,7 +488,7 @@ const Filtro = () => {
       estado = false;
       return estado;
     };
-  }, [anoLetivoSelecionado, consideraHistorico, dispatch]);
+  }, [anoLetivoSelecionado, consideraHistorico, dispatch, obterModalidades]);
 
   useEffect(() => {
     if (modalidades && modalidades.length === 1) {
@@ -575,37 +578,46 @@ const Filtro = () => {
     if (dres && dres.length === 1) setDreSelecionada(dres[0].valor);
   }, [dres]);
 
-  const obterUnidadesEscolares = async (deveSalvarUes, periodo) => {
-    if (!modalidadeSelecionada) {
-      return [];
-    }
+  const obterUnidadesEscolares = useCallback(
+    async (deveSalvarUes, periodo) => {
+      if (!modalidadeSelecionada) {
+        return [];
+      }
 
-    setCarregandoUes(true);
+      setCarregandoUes(true);
 
-    const ues = await FiltroHelper.obterUnidadesEscolares({
-      consideraHistorico,
-      modalidadeSelecionada,
-      dreSelecionada,
-      periodoSelecionado: periodo,
+      const ues = await FiltroHelper.obterUnidadesEscolares({
+        consideraHistorico,
+        modalidadeSelecionada,
+        dreSelecionada,
+        periodoSelecionado: periodo,
+        anoLetivoSelecionado,
+      });
+
+      if (!ues) {
+        setDreSelecionada();
+        setCampoDreDesabilitado(true);
+        erro('Esta DRE não possui unidades escolares da modalidade escolhida');
+        return [];
+      }
+
+      if (deveSalvarUes) {
+        dispatch(salvarUnidadesEscolares(ues));
+        setUnidadesEscolares(ues);
+        setCampoUnidadeEscolarDesabilitado(ues.length === 1);
+      }
+
+      setCarregandoUes(false);
+      return ues;
+    },
+    [
       anoLetivoSelecionado,
-    });
-
-    if (!ues) {
-      setDreSelecionada();
-      setCampoDreDesabilitado(true);
-      erro('Esta DRE não possui unidades escolares da modalidade escolhida');
-      return [];
-    }
-
-    if (deveSalvarUes) {
-      dispatch(salvarUnidadesEscolares(ues));
-      setUnidadesEscolares(ues);
-      setCampoUnidadeEscolarDesabilitado(ues.length === 1);
-    }
-
-    setCarregandoUes(false);
-    return ues;
-  };
+      consideraHistorico,
+      dispatch,
+      dreSelecionada,
+      modalidadeSelecionada,
+    ]
+  );
 
   useEffect(() => {
     let estado = true;
@@ -637,6 +649,7 @@ const Filtro = () => {
     dreSelecionada,
     modalidadeSelecionada,
     periodoSelecionado,
+    obterUnidadesEscolares,
   ]);
 
   useEffect(() => {
@@ -644,43 +657,53 @@ const Filtro = () => {
       setUnidadeEscolarSelecionada(unidadesEscolares[0].valor);
   }, [unidadesEscolares]);
 
-  const obterTurmas = async deveSalvarTurmas => {
-    const periodo =
-      modalidadeSelecionada &&
-      modalidadeSelecionada.toString() === modalidade.EJA.toString()
-        ? periodoSelecionado
-        : null;
+  const obterTurmas = useCallback(
+    async deveSalvarTurmas => {
+      const periodo =
+        modalidadeSelecionada &&
+        modalidadeSelecionada.toString() === modalidade.EJA.toString()
+          ? periodoSelecionado
+          : null;
 
-    if (!modalidadeSelecionada) {
-      return [];
-    }
+      if (!modalidadeSelecionada) {
+        return [];
+      }
 
-    setCarregandoTurmas(true);
+      setCarregandoTurmas(true);
 
-    const listaTurmas = await FiltroHelper.obterTurmas({
-      consideraHistorico,
-      modalidadeSelecionada,
-      unidadeEscolarSelecionada,
-      periodoSelecionado: periodo,
+      const listaTurmas = await FiltroHelper.obterTurmas({
+        consideraHistorico,
+        modalidadeSelecionada,
+        unidadeEscolarSelecionada,
+        periodoSelecionado: periodo,
+        anoLetivoSelecionado,
+      });
+
+      if (!listaTurmas || listaTurmas.length === 0) {
+        setUnidadeEscolarSelecionada();
+        setCampoUnidadeEscolarDesabilitado(true);
+        erro('Esta unidade escolar não possui turmas da modalidade escolhida');
+        return [];
+      }
+
+      if (deveSalvarTurmas) {
+        dispatch(salvarTurmas(listaTurmas));
+        setTurmas(listaTurmas);
+        setCampoTurmaDesabilitado(listaTurmas.length === 1);
+      }
+
+      setCarregandoTurmas(false);
+      return listaTurmas;
+    },
+    [
       anoLetivoSelecionado,
-    });
-
-    if (!listaTurmas || listaTurmas.length === 0) {
-      setUnidadeEscolarSelecionada();
-      setCampoUnidadeEscolarDesabilitado(true);
-      erro('Esta unidade escolar não possui turmas da modalidade escolhida');
-      return [];
-    }
-
-    if (deveSalvarTurmas) {
-      dispatch(salvarTurmas(listaTurmas));
-      setTurmas(listaTurmas);
-      setCampoTurmaDesabilitado(listaTurmas.length === 1);
-    }
-
-    setCarregandoTurmas(false);
-    return listaTurmas;
-  };
+      consideraHistorico,
+      dispatch,
+      modalidadeSelecionada,
+      periodoSelecionado,
+      unidadeEscolarSelecionada,
+    ]
+  );
 
   useEffect(() => {
     let estado = true;
@@ -703,6 +726,7 @@ const Filtro = () => {
     modalidadeSelecionada,
     periodoSelecionado,
     unidadeEscolarSelecionada,
+    obterTurmas,
   ]);
 
   useEffect(() => {
