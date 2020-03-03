@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Badge } from './bimestre.css';
+import modalidade from '~/dtos/modalidade';
 
 const Disciplina = ({
   disciplina,
@@ -8,6 +10,11 @@ const Disciplina = ({
   onClick,
 }) => {
   const [selecionada, setSelecionada] = useState(false);
+  /** Verirfica a turma selecionada para não habilitar quando for turma de ensino médio
+   *  OBS: Essa validação será retirada quando forem adicionados os objetivos de aprendizagem
+   *  para Ensino Médio
+   */
+  const turmaSelecionada = useSelector(c => c.usuario.turmaSelecionada);
 
   const onClickDisciplina = () => {
     if (!layoutEspecial) {
@@ -34,6 +41,7 @@ const Disciplina = ({
       className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2 ${selecionada &&
         ' selecionada'}`}
       onClick={onClickDisciplina}
+      disabled={turmaSelecionada.modalidade === modalidade.ENSINO_MEDIO}
     >
       {disciplina.nome}
     </Badge>
