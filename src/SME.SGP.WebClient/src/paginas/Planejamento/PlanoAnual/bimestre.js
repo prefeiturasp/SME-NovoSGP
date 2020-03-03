@@ -32,6 +32,13 @@ const Bimestre = ({
   const [layoutEspecial, setLayoutEspecial] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
 
+  const getSelecionados = () => {
+    const listaObjetivosSelecionados = objetivosAprendizagem.filter(
+      c => c.selecionado
+    );
+    return listaObjetivosSelecionados;
+  }
+
   const onChangeDisciplinasSelecionadas = disciplinasSelecionadas => {
     if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
       setCarregandoDados(true);
@@ -51,6 +58,12 @@ const Bimestre = ({
                 c.selecionado = false;
               }
             });
+            objetivosSelecionados.forEach(objetivoSelecionado => {
+              const objetivo = resposta.data.find(o => o.id === objetivoSelecionado.id);
+              if (!objetivo) {
+                resposta.data.push(objetivoSelecionado);
+              }
+            });
           }
           setObjetivosAprendizagem(resposta.data);
           setObjetivosCarregados(true);
@@ -60,7 +73,9 @@ const Bimestre = ({
           mostrarErros(e);
           setCarregandoDados(false);
         });
-    } else setObjetivosAprendizagem([]);
+    } else {
+      setObjetivosAprendizagem(getSelecionados());
+    }
   };
 
   const selecionaObjetivo = objetivo => {
