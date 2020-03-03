@@ -11,5 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task RemoverAsync(string nomeChave);
 
         Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720);
+
+        Task SalvarAsync(string nomeChave, object valor, int minutosParaExpirar = 720);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -70,6 +71,11 @@ namespace SME.SGP.Dados.Repositorios
                 //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
                 servicoLog.Registrar(ex);
             }
+        }
+
+        public async Task SalvarAsync(string nomeChave, object valor, int minutosParaExpirar = 720)
+        {
+            await SalvarAsync(nomeChave, JsonConvert.SerializeObject(valor), minutosParaExpirar);
         }
     }
 }

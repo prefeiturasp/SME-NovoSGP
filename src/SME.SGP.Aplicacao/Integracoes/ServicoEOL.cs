@@ -260,16 +260,39 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
         {
-            httpClient.DefaultRequestHeaders.Clear();
-
-            var parametros = JsonConvert.SerializeObject(ids);
-            var resposta = httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json")).Result;
-
-            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
+            var disciplinas = new List<DisciplinaDto>();
+            foreach (var id in ids)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
-                var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
-                return MapearParaDtoDisciplinas(retorno);
+                var disciplina = new DisciplinaDto();
+                var chaveCache = $"DisciplinasPorId-{id}";
+                var disciplinaString = cache.Obter(chaveCache);
+                if (!string.IsNullOrWhiteSpace(disciplinaString))
+                {
+                    disciplina = JsonConvert.DeserializeObject<DisciplinaDto>(disciplinaString);
+                }
+                else
+                {
+                    httpClient.DefaultRequestHeaders.Clear();
+                    var parametros = JsonConvert.SerializeObject(id);
+                    var resposta = httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json")).Result;
+                    if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
+                    {
+                        var json = resposta.Content.ReadAsStringAsync().Result;
+                        var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+                        disciplina = MapearParaDtoDisciplinas(retorno).FirstOrDefault();
+                        cache.SalvarAsync(chaveCache, disciplina, 1440);
+                    }
+                    else
+                    {
+                        RegistrarLogSentry(resposta, "ObterDisciplinasPorIds", parametros);
+                    }
+                }
+                if (disciplina != null)
+                    disciplinas.Add(disciplina);
+            }
+            if (disciplinas.Any())
+            {
+                return disciplinas;
             }
 
             throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
@@ -760,9 +783,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             return false;
         }
 
-        private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)
+        private static DisciplinaDto MapearRetornoDisciplinaParaDto(RetornoDisciplinaDto x)
         {
-            return disciplinas.Select(x => new DisciplinaDto
+            return new DisciplinaDto
             {
                 CodigoComponenteCurricular = x.CdComponenteCurricular,
                 Nome = x.Descricao,
@@ -770,7 +793,12 @@ namespace SME.SGP.Aplicacao.Integracoes
                 Compartilhada = x.EhCompartilhada,
                 RegistraFrequencia = x.RegistraFrequencia,
                 TerritorioSaber = x.Territorio
-            });
+            };
+        }
+
+        private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)
+        {
+            return disciplinas.Select(x => MapearRetornoDisciplinaParaDto(x));
         }
 
         private string ObterChaveCacheAlunosTurma(string turmaId)
