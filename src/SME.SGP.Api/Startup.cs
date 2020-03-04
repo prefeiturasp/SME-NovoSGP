@@ -15,6 +15,7 @@ using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace SME.SGP.Api
@@ -56,7 +57,7 @@ namespace SME.SGP.Api
                 .AllowCredentials());
 
             app.UseMetricServer();
-            //app.UseMiddleware<ResponseMetricMiddleware>();
+
             app.UseHttpMetrics();
 
             app.UseAuthentication();
@@ -138,8 +139,6 @@ namespace SME.SGP.Api
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
-
-            //services.AddSingleton<MetricReporter>();
         }
     }
 }
