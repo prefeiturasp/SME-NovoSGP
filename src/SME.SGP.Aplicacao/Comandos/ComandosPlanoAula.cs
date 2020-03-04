@@ -156,7 +156,7 @@ namespace SME.SGP.Aplicacao
             var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
                         aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), bimestre, long.Parse(aula.DisciplinaId));
 
-            if (planoAnualId <= 0)
+            if (planoAnualId <= 0 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
                 throw new NegocioException("Não foi possível concluir o cadastro, pois não existe plano anual cadastrado");
 
             if (controlarTransacao)
