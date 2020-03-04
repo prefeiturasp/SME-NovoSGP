@@ -79,29 +79,32 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
         }
 
-        public Task<IEnumerable<PlanoAnualCompletoDto>> Salvar(PlanoAnualDto planoAnualDto)
+        public async Task<IEnumerable<PlanoAnualCompletoDto>> Salvar(PlanoAnualDto planoAnualDto)
         {
-            unitOfWork.IniciarTransacao();
 
             var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
             if (string.IsNullOrWhiteSpace(usuarioAtual.CodigoRf))
             {
                 throw new NegocioException("Não foi possível obter o RF do usuário.");
             }
+
+            unitOfWork.IniciarTransacao();
             foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
             {
                 PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
                 if (planoAnual != null)
                 {
-                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), planoAnualDto.ComponenteCurricularEolId.ToString(),  DateTime.Now).Result)
+                    var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), planoAnualDto.ComponenteCurricularEolId.ToString(), DateTime.Now);
+                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistir)
                         throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
                 }
                 planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao);
                 Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
             }
-
             unitOfWork.PersistirTransacao();
-            return consultasPlanoAnual.ObterPorUETurmaAnoEComponenteCurricular(planoAnualDto.EscolaId, planoAnualDto.TurmaId.ToString(), planoAnualDto.AnoLetivo.Value, planoAnualDto.ComponenteCurricularEolId);
+
+            var resposta = await consultasPlanoAnual.ObterPorUETurmaAnoEComponenteCurricular(planoAnualDto.EscolaId, planoAnualDto.TurmaId.ToString(), planoAnualDto.AnoLetivo.Value, planoAnualDto.ComponenteCurricularEolId);
+            return resposta; 
         }
 
         private static void ValidarObjetivoPertenceAoComponenteCurricular(IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem,
