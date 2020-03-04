@@ -44,6 +44,7 @@ const EventosLista = ({ match }) => {
   const [eventosSelecionados, setEventosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
   const [selecionouCalendario, setSelecionouCalendario] = useState(false);
+  const [tipocalendarioSelecionado, setTipocalendarioSelecionado] = useState();
 
   const [carregandoTipos, setCarregandoTipos] = useState(false);
 
@@ -254,6 +255,13 @@ const EventosLista = ({ match }) => {
     if (listaUe.length === 1 && !usuario.possuiPerfilSmeOuDre) {
       refForm.setFieldValue('ueId', listaUe[0].codigo.toString());
       setUeDesabilitada(true);
+    } else if (listaUe.length > 0) {
+      refForm.setFieldValue('ueId', listaUe[0].codigo.toString());
+      setUeDesabilitada(false);
+      setCampoUeDesabilitado(false);
+    } else {
+      setUeDesabilitada(true);
+      setCampoUeDesabilitado(true);
     }
   }, [listaUe, refForm, usuario.possuiPerfilSmeOuDre]);
 
@@ -285,14 +293,17 @@ const EventosLista = ({ match }) => {
         !ues.conteudo ||
         ues.conteudo.length === 0 ||
         Object.entries(ues.conteudo).length === 0
-      )
+      ) {
         setCampoUeDesabilitado(true);
+      }
 
       if (ues.conteudo) {
         ues.conteudo.forEach(
           ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
         );
+
         ues.conteudo.sort(FiltroHelper.ordenarLista('nome'));
+
         if (ues.conteudo.length > 1) {
           ues.conteudo.unshift({ codigo: 0, nome: 'Todas' });
         }
