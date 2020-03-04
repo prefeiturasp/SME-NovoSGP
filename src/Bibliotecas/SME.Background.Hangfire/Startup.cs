@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace SME.Background.Hangfire
 {
@@ -42,6 +41,8 @@ namespace SME.Background.Hangfire
                 {
                     SchemaName = "hangfire"
                 }));
+
+            services.AddApplicationInsightsTelemetry("7929134d-3744-41b9-9d6d-6fe8a4919440");
         }
     }
 }
