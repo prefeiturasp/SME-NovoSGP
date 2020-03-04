@@ -77,7 +77,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
         public async Task<IActionResult> Post(PlanoAnualDto planoAnualDto, [FromServices]IComandosPlanoAnual comandosPlanoAnual)
         {            
-            return Ok(comandosPlanoAnual.Salvar(planoAnualDto));
+            return Ok(await comandosPlanoAnual.Salvar(planoAnualDto));
         }
 
         [HttpPost("validar-existente")]
