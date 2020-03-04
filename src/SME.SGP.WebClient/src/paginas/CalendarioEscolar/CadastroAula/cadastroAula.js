@@ -164,45 +164,43 @@ const CadastroAula = ({ match }) => {
     onChangeCampos();
 
     setIdDisciplina(id);
-    if (id) {
-      const disciplina = listaDisciplinas.find(c => c.id === id);
+    const disciplina = listaDisciplinas.find(c => c.id === id);
 
-      const { regencia } = disciplina || false;
-      setEhRegencia(regencia);
-      const resultado = await api
-        .get(`v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`, {
-          params: {
-            data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
-          },
-        })
-        .then(res => res)
-        .catch(err => {
-          const mensagemErro =
-            err &&
-            err.response &&
-            err.response.data &&
-            err.response.data.mensagens;
+    const { regencia } = disciplina || false;
+    setEhRegencia(regencia);
+    const resultado = await api
+      .get(`v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`, {
+        params: {
+          data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
+        },
+      })
+      .then(res => res)
+      .catch(err => {
+        const mensagemErro =
+          err &&
+          err.response &&
+          err.response.data &&
+          err.response.data.mensagens;
 
-          if (mensagemErro) {
-            erro(mensagemErro.join(','));
-            return null;
-          }
-
-          erro('Ocorreu um erro, por favor contate o suporte');
-
+        if (mensagemErro) {
+          erro(mensagemErro.join(','));
           return null;
-        });
-
-      if (resultado) {
-        if (resultado.status === 200) {
-          setControlaQuantidadeAula(true);
-          setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
-          if (resultado.data.quantidadeAulasRestante > 0) {
-            setControlaQuantidadeAula(true);
-          }
-        } else if (resultado.status === 204) {
-          setControlaQuantidadeAula(false);
         }
+
+        erro('Ocorreu um erro, por favor contate o suporte');
+
+        return null;
+      });
+
+    if (resultado) {
+      if (resultado.status === 200) {
+        setControlaQuantidadeAula(true);
+        setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
+        if (resultado.data.quantidadeAulasRestante > 0) {
+          setControlaQuantidadeAula(true);
+        }
+      } else if (resultado.status === 204) {
+        setControlaQuantidadeAula(false);
       }
     }
   };
@@ -216,8 +214,7 @@ const CadastroAula = ({ match }) => {
       if (disciplina && disciplina[0])
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
     } else {
-      if (refForm && refForm.setFieldValue)
-        refForm.setFieldValue('quantidadeTexto', '');
+      if (refForm && refForm.setFieldValue) refForm.setFieldValue('quantidadeTexto', '');
     }
   }, [idDisciplina, listaDisciplinas]);
 
@@ -424,14 +421,12 @@ const CadastroAula = ({ match }) => {
       disciplinaId: Yup.string().required('Componente curricular obrigatório'),
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
-      quantidadeTexto:
-        idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2
-          ? (controlaQuantidadeAula
-            ? validacaoQuantidade.lessThan(
-              quantidadeMaximaAulas + 1,
-              `Valor não pode ser maior que ${quantidadeMaximaAulas}`
-            )
-            : validacaoQuantidade) : Yup.string().required(false),
+      quantidadeTexto: idDisciplina && idDisciplina !== '' ? (controlaQuantidadeAula
+        ? validacaoQuantidade.lessThan(
+          quantidadeMaximaAulas + 1,
+          `Valor não pode ser maior que ${quantidadeMaximaAulas}`
+        )
+        : validacaoQuantidade) : Yup.string().required(false),
     };
 
     if (disciplinaCompartilhada) {
@@ -470,7 +465,7 @@ const CadastroAula = ({ match }) => {
     idAula,
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
-    idDisciplina,
+    idDisciplina
   ]);
 
   useEffect(() => {
@@ -869,8 +864,7 @@ const CadastroAula = ({ match }) => {
                     style={{ width: '70px' }}
                     id="quantidadeTexto"
                     desabilitado={
-                      somenteLeitura ||
-                      !idDisciplina ||
+                      somenteLeitura || !idDisciplina ||
                       (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
                       (ehRegencia && !ehReposicao)
                     }
