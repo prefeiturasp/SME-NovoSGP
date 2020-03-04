@@ -524,6 +524,14 @@ const CadastroAula = ({ match }) => {
 
     dados.dataAula = dados.dataAula.format();
 
+    if (dados && dados.disciplinaId) {
+      const componenteCurricular = listaDisciplinas.find(
+        item => String(item.codigoComponenteCurricular) === dados.disciplinaId
+      );
+      if (componenteCurricular)
+        dados.disciplinaNome = componenteCurricular.nome;
+    }
+
     const cadastrado = await ServicoAula.salvar(idAula, dados).catch(e =>
       erros(e)
     );
