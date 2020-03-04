@@ -25,7 +25,7 @@ import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import RotasDTO from '~/dtos/rotasDto';
-import { ModalConteudoHtml } from '~/componentes';
+import { ModalConteudoHtml, Loader } from '~/componentes';
 import Alert from '~/componentes/alert';
 import modalidade from '~/dtos/modalidade';
 import ServicoAula from '~/servicos/Paginas/ServicoAula';
@@ -93,6 +93,7 @@ const CadastroAula = ({ match }) => {
 
   const [idDisciplina, setIdDisciplina] = useState();
   const [disciplinaCompartilhada, setDisciplinaCompartilhada] = useState(false);
+  const [tipoAula, setTipoAula] = useState(1);
   const [
     listaDisciplinasCompartilhadas,
     setListaDisciplinasCompartilhadas,
@@ -108,14 +109,14 @@ const CadastroAula = ({ match }) => {
       label: '1',
       value: 1,
       disabled:
-        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula) ||
+        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula && !ehReposicao) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
     {
       label: '2',
       value: 2,
       disabled:
-        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula) ||
+        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula && !ehReposicao) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
   ];
@@ -159,6 +160,10 @@ const CadastroAula = ({ match }) => {
       store.dispatch(removerAlerta(idNotificacaoSomenteLeitura));
     };
   }, []);
+
+  useEffect(() => {
+    onChangeDisciplinas(idDisciplina);
+  }, [tipoAula]);
 
   const onChangeDisciplinas = async id => {
     onChangeCampos();
@@ -215,11 +220,9 @@ const CadastroAula = ({ match }) => {
       );
       if (disciplina && disciplina[0])
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
-    } else {
-      if (refForm && refForm.setFieldValue)
-        refForm.setFieldValue('quantidadeTexto', '');
-    }
-  }, [idDisciplina, listaDisciplinas]);
+    } else if (refForm && refForm.setFieldValue)
+      refForm.setFieldValue('quantidadeTexto', '');
+  }, [idDisciplina, listaDisciplinas, refForm]);
 
   const buscarDisciplinasCompartilhadas = async () => {
     const disciplinas = await api.get(
@@ -425,8 +428,8 @@ const CadastroAula = ({ match }) => {
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
       quantidadeTexto:
-        idDisciplina || idDisciplina !== ''
-          ? controlaQuantidadeAula
+        idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2
+          ? controlaQuantidadeAula && !ehReposicao
             ? validacaoQuantidade.lessThan(
                 quantidadeMaximaAulas + 1,
                 `Valor não pode ser maior que ${quantidadeMaximaAulas}`
@@ -481,7 +484,7 @@ const CadastroAula = ({ match }) => {
   const resetarTela = form => {
     form.resetForm();
     setControlaQuantidadeAula(true);
-    setQuantidadeMaximaAulas(0);
+    setQuantidadeMaximaAulas(1);
     setModoEdicao(false);
     setEhAulaUnica(false);
   };
@@ -538,7 +541,10 @@ const CadastroAula = ({ match }) => {
     }
   };
 
+  const [carregandoSalvar, setCarregandoSalvar] = useState(false);
+
   const onClickCadastrar = async valoresForm => {
+    setCarregandoSalvar(true);
     const observacao = existeFrequenciaPlanoAula
       ? `Esta aula${
           ehAulaUnica ? '' : ', ou sua recorrencia'
@@ -574,6 +580,7 @@ const CadastroAula = ({ match }) => {
 
       await salvar(valoresForm);
     }
+    setCarregandoSalvar(false);
   };
 
   const onClickVoltar = async () => {
@@ -655,9 +662,9 @@ const CadastroAula = ({ match }) => {
   };
 
   return (
-    <>
+    <Loader loading={carregandoSalvar} tip="">
       <div className="col-md-12">
-        {quantidadeMaximaAulas <= 0 ? (
+        {quantidadeMaximaAulas <= 0 && !ehReposicao ? (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -777,6 +784,7 @@ const CadastroAula = ({ match }) => {
                     onClick={onClickExcluir}
                     disabled={somenteLeitura}
                   />
+
                   <Button
                     id={shortid.generate()}
                     label={novoRegistro ? 'Cadastrar' : 'Alterar'}
@@ -787,7 +795,8 @@ const CadastroAula = ({ match }) => {
                     disabled={
                       somenteLeitura ||
                       (novoRegistro && !permissaoTela.podeIncluir) ||
-                      (!novoRegistro && !permissaoTela.podeAlterar)
+                      (!novoRegistro && !permissaoTela.podeAlterar) ||
+                      (quantidadeMaximaAulas <= 0 && !ehReposicao)
                     }
                     onClick={() => validaAntesDoSubmit(form)}
                   />
@@ -806,6 +815,7 @@ const CadastroAula = ({ match }) => {
                       setEhReposicao(e.target.value === 2);
                       onChangeCampos();
                       setControlaQuantidadeAula(ehReposicao);
+                      setTipoAula(e.target.value);
                     }}
                   />
                 </div>
@@ -872,7 +882,9 @@ const CadastroAula = ({ match }) => {
                     desabilitado={
                       somenteLeitura ||
                       !idDisciplina ||
-                      (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
+                      (quantidadeMaximaAulas < 3 &&
+                        controlaQuantidadeAula &&
+                        !ehReposicao) ||
                       (ehRegencia && !ehReposicao)
                     }
                     onChange={() => {
@@ -913,7 +925,7 @@ const CadastroAula = ({ match }) => {
           ''
         )}
       </Card>
-    </>
+    </Loader>
   );
 };
 

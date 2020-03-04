@@ -69,9 +69,11 @@ namespace SME.SGP.Aplicacao
 
             string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
-            var disciplinasUsuario = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(filtro.TurmaId, usuario.CodigoRf, usuario.PerfilAtual);
+            var disciplinasUsuario = usuario.EhProfessorCj() ?
+                await consultasDisciplina.ObterDisciplinasPerfilCJ(filtro.TurmaId, usuario.CodigoRf) :
+                await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(filtro.TurmaId, usuario.CodigoRf, usuario.PerfilAtual);
 
-            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme);
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme, usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
             var aulas = await ObterAulasDia(filtro, data, perfil, rf, disciplinasUsuario);
             var atividades = await repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId);
 
@@ -186,7 +188,7 @@ namespace SME.SGP.Aplicacao
 
             var diasPeriodoEscolares = comandosDiasLetivos.BuscarDiasLetivos(filtro.TipoCalendarioId);
             var diasAulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf);
-            var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.EhEventoSme);
+            var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.EhEventoSme, true, usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
 
             var diasEventosNaoLetivos = comandosDiasLetivos.ObterDias(eventos, diasNaoLetivos, EventoLetivo.Nao);
             var diasEventosLetivos = comandosDiasLetivos.ObterDias(eventos, diasLetivos, EventoLetivo.Sim);
@@ -221,7 +223,7 @@ namespace SME.SGP.Aplicacao
             var ano = periodoEscolar.FirstOrDefault().PeriodoInicio.Year;
 
             var aulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf, filtro.Mes);
-            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeMes(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Mes, filtro.EhEventoSme);
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeMes(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Mes, filtro.EhEventoSme, usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
             var atividadesAvaliativas = await repositorioAtividadeAvaliativa.ObterAtividadesPorMes(filtro.DreId, filtro.UeId, filtro.Mes, ano, rf, filtro.TurmaId);
             var diasAulas = ObterDiasAulas(aulas);
             var diasEventos = ObterDiasEventos(eventos, filtro.Mes);
