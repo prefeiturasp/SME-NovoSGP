@@ -424,13 +424,15 @@ const CadastroAula = ({ match }) => {
       disciplinaId: Yup.string().required('Componente curricular obrigatório'),
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
-      quantidadeTexto: idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2 ?
-        (controlaQuantidadeAula
-          ? validacaoQuantidade.lessThan(
-            quantidadeMaximaAulas + 1,
-            `Valor não pode ser maior que ${quantidadeMaximaAulas}`
-          )
-          : validacaoQuantidade) : Yup.string().required(false),
+      quantidadeTexto:
+        idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2
+          ? controlaQuantidadeAula && !ehReposicao
+            ? validacaoQuantidade.lessThan(
+              quantidadeMaximaAulas + 1,
+              `Valor não pode ser maior que ${quantidadeMaximaAulas}`
+            )
+            : validacaoQuantidade
+          : Yup.string().required(false),
     };
 
     if (disciplinaCompartilhada) {
