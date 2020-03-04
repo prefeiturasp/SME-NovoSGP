@@ -24,6 +24,7 @@ import {
   ModalConteudoHtml,
   RadioGroupButton,
   SelectComponent,
+  Loader,
 } from '~/componentes';
 
 // Components locais
@@ -433,7 +434,7 @@ const EventosForm = ({ match }) => {
       '',
       '/calendario-escolar/eventos'
     );
-  }
+  };
 
   const onClickVoltar = async () => {
     if (modoEdicao && valoresIniciais.podeAlterar) {
@@ -492,7 +493,11 @@ const EventosForm = ({ match }) => {
     return confirmar('Confirmar data', '', response.mensagens[0], 'Sim', 'Não');
   };
 
+  const [carregandoSalvar, setCarregandoSalvar] = useState(false);
+
   const onClickCadastrar = async valoresForm => {
+    setCarregandoSalvar(true);
+
     if (tipoDataUnico) valoresForm.dataFim = valoresForm.dataInicio;
 
     const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map(id => {
@@ -561,6 +566,8 @@ const EventosForm = ({ match }) => {
       }
       erros(e);
     }
+
+    setCarregandoSalvar(false);
   };
 
   const onChangeCampos = () => {
@@ -773,7 +780,7 @@ const EventosForm = ({ match }) => {
   };
 
   return (
-    <>
+    <Loader loading={carregandoSalvar} tip="">
       <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
       <ModalRecorrencia
         onCloseRecorrencia={onCloseRecorrencia}
@@ -1113,7 +1120,7 @@ const EventosForm = ({ match }) => {
           ))}
         </ModalConteudoHtml>
       </Card>
-    </>
+    </Loader>
   );
 };
 
