@@ -481,7 +481,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
             {
-                throw new NegocioException("Não foi possível obter os dados do usuário");
+               await RegistrarLogSentryAsync(resposta, "ObterMeusDados", "login = " + login);
+               throw new NegocioException("Não foi possível obter os dados do usuário");
             }
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<MeusDadosDto>(json);
