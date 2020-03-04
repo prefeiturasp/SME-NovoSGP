@@ -170,33 +170,43 @@ const CadastroAula = ({ match }) => {
 
     setIdDisciplina(id);
     if (id) {
-      const disciplina = listaDisciplinas.find(c => c.id === id);
+      const disciplina = listaDisciplinas.find(
+        d => String(d.codigoComponenteCurricular) === id
+      );
 
-      const { regencia } = disciplina || false;
+      const regencia = !!disciplina.regencia;
       setEhRegencia(regencia);
-      const resultado = await api
-        .get(`v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`, {
-          params: {
-            data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
-          },
-        })
-        .then(res => res)
-        .catch(err => {
-          const mensagemErro =
-            err &&
-            err.response &&
-            err.response.data &&
-            err.response.data.mensagens;
 
-          if (mensagemErro) {
-            erro(mensagemErro.join(','));
+      let resultado;
+
+      if (!disciplina.territorioSaber) {
+        resultado = await api
+          .get(
+            `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}?ehRegencia=${regencia}`,
+            {
+              params: {
+                data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
+              },
+            }
+          )
+          .then(res => res)
+          .catch(err => {
+            const mensagemErro =
+              err &&
+              err.response &&
+              err.response.data &&
+              err.response.data.mensagens;
+
+            if (mensagemErro) {
+              erro(mensagemErro.join(','));
+              return null;
+            }
+
+            erro('Ocorreu um erro, por favor contate o suporte');
+
             return null;
-          }
-
-          erro('Ocorreu um erro, por favor contate o suporte');
-
-          return null;
-        });
+          });
+      }
 
       if (resultado) {
         if (resultado.status === 200) {
