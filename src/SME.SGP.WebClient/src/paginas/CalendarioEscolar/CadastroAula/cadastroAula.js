@@ -161,10 +161,6 @@ const CadastroAula = ({ match }) => {
     };
   }, []);
 
-  useEffect(() => {
-    onChangeDisciplinas(idDisciplina);
-  }, [tipoAula]);
-
   const onChangeDisciplinas = async id => {
     onChangeCampos();
 
@@ -211,6 +207,10 @@ const CadastroAula = ({ match }) => {
       }
     }
   };
+
+  useEffect(() => {
+    onChangeDisciplinas(idDisciplina);
+  }, [tipoAula]);
 
   useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
