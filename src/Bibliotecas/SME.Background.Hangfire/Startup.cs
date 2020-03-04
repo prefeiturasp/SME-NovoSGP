@@ -41,8 +41,6 @@ namespace SME.Background.Hangfire
                 {
                     SchemaName = "hangfire"
                 }));
-
-            services.AddApplicationInsightsTelemetry("7929134d-3744-41b9-9d6d-6fe8a4919440");
         }
     }
 }
