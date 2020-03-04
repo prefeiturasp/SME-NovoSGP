@@ -576,7 +576,7 @@ const CadastroAula = ({ match }) => {
     }
   };
 
-  const onClickVoltar = async () => {
+  const onClickVoltar = async form => {
     if (modoEdicao && !somenteLeitura) {
       const confirmado = await confirmar(
         'Atenção',
@@ -587,7 +587,7 @@ const CadastroAula = ({ match }) => {
       );
 
       if (confirmado) {
-        onClickCadastrar(refForm.state.values);
+        validaAntesDoSubmit(form);
       } else {
         history.push('/calendario-escolar/calendario-professor');
       }
@@ -756,7 +756,7 @@ const CadastroAula = ({ match }) => {
                     color={Colors.Azul}
                     border
                     className="mr-2"
-                    onClick={onClickVoltar}
+                    onClick={() => onClickVoltar(form)}
                   />
                   <Button
                     id={shortid.generate()}
