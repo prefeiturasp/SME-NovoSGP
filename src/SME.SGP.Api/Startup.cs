@@ -57,11 +57,15 @@ namespace SME.SGP.Api
                 .AllowAnyHeader()
                 .AllowCredentials());
 
+            app.UseMetricServer();
+            //app.UseMiddleware<ResponseMetricMiddleware>();
+            app.UseHttpMetrics();
+
             app.UseAuthentication();
             app.UseMiddleware<TokenServiceMiddleware>();
 
             app.UseMvc();
-            app.UseMetricServer();
+
             app.UseStaticFiles();
 
             app.UseHealthChecks("/healthz", new HealthCheckOptions()
@@ -136,6 +140,7 @@ namespace SME.SGP.Api
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
+            services.AddApplicationInsightsTelemetry(Configuration);
         }
     }
 }
