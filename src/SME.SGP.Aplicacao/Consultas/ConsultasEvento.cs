@@ -14,11 +14,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioEventoTipo repositorioEventoTipo;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
-                               IContextoAplicacao contextoAplicacao, IServicoUsuario servicoUsuario) : base(contextoAplicacao)
+                               IContextoAplicacao contextoAplicacao,
+                               IRepositorioEventoTipo repositorioEventoTipo,
+                               IServicoUsuario servicoUsuario) : base(contextoAplicacao)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
@@ -56,6 +60,7 @@ namespace SME.SGP.Aplicacao
         public async Task<EventoCompletoDto> ObterPorId(long id)
         {
             var evento = repositorioEvento.ObterPorId(id);
+            evento.TipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
@@ -139,7 +144,8 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = evento.CriadoRF,
                 TipoEvento = MapearTipoEvento(evento.TipoEvento),
                 Migrado = evento.Migrado,
-                PodeAlterar = podeAlterar != null ? podeAlterar.Value && !evento.TipoEvento.SomenteLeitura : !evento.TipoEvento.SomenteLeitura
+                PodeAlterar = podeAlterar != null ? podeAlterar.Value && !evento.TipoEvento.SomenteLeitura : !evento.TipoEvento.SomenteLeitura,
+                Status = evento.Status
             };
         }
 
