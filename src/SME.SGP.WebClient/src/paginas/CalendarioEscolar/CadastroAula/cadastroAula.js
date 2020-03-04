@@ -889,7 +889,7 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={somenteLeitura || ehReposicao}
+                    desabilitado={somenteLeitura || ehReposicao || ehAulaUnica}
                     onChange={e => {
                       onChangeCampos();
                       setEhRecorrencia(e.target.value !== 1);
