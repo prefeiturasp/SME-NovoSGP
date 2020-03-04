@@ -182,11 +182,12 @@ const PlanoAnual = () => {
     };
 
     const err = validarBimestres(plano.bimestres);
-    if (!err || err.length == 0) {
+    if (!err || err.length === 0) {
       setCarregandoDados(true);
       servicoPlanoAnual
         .salvar(plano)
-        .then(() => {
+        .then(resp => {
+          setPlanoAnual(resp.data.result);
           setCarregandoDados(false);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
@@ -384,10 +385,8 @@ const PlanoAnual = () => {
           ) : null}
         </div>
         <Grid cols={12} className="p-0">
-          <Planejamento> PLANEJAMENTO </Planejamento>
           <Titulo>
             {ehEja ? 'Plano Semestral' : 'Plano Anual'}
-            <TituloAno>{` / ${turmaSelecionada.anoLetivo}`}</TituloAno>
             {registroMigrado && (
               <RegistroMigrado className="float-right">
                 Registro Migrado
@@ -460,9 +459,7 @@ const PlanoAnual = () => {
                   planoAnual.length > 0 &&
                   planoAnual.map(plano => (
                     <Panel
-                      header={`${plano.bimestre}º ${
-                        ehEja ? 'Semestre' : 'Bimestre'
-                      }`}
+                      header={`${plano.bimestre}º Bimestre`}
                       key={plano.bimestre}
                     >
                       <div ref={refsPainel[plano.bimestre - 1]}>
