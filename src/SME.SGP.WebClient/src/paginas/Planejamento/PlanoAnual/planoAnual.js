@@ -269,6 +269,7 @@ const PlanoAnual = () => {
   useEffect(() => {
     if (codigoDisciplinaSelecionada) {
       setCarregandoDados(true);
+      setPlanoAnual([]);
       servicoPlanoAnual
         .obter(
           turmaSelecionada.anoLetivo,
