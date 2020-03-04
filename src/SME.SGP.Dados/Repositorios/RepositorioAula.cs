@@ -179,7 +179,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaSemanaProfessor(string turma, string disciplina, string semana, string codigoRf)
+        public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaSemanaProfessor(string turma, string disciplina, int semana, string codigoRf)
         {
             StringBuilder query = new StringBuilder();
 
@@ -192,7 +192,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("and turma_id = @turma ");
             query.AppendLine("and disciplina_id = @disciplina ");
-            query.AppendLine("and to_char(data_aula, 'IW') = @semana ");
+            query.AppendLine("and extract('week' from data_aula) = @semana ");
 
             return await database.Conexao.QueryAsync<AulasPorTurmaDisciplinaDto>(query.ToString(), new
             {
@@ -220,14 +220,14 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaExperienciasPedagogicasSemana(string turma, string semana)
+        public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaExperienciasPedagogicasSemana(string turma, int semana)
         {
             var query = @"select professor_rf, quantidade, data_aula
                  from aula
                 where not excluido
                   and turma_id = @turma
                   and disciplina_id in ('1214','1215','1216','1217','1218','1219','1220','1221','1222','1223')
-                  and to_char(data_aula, 'IW') = @semana";
+                  and extract('week' from data_aula) = @semana";
 
             return await database.Conexao.QueryAsync<AulasPorTurmaDisciplinaDto>(query, new
             {

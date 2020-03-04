@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         public bool Compartilhada { get; set; }
 
         [JsonProperty("codDisciplinaPai")]
-        public int? CodigoComponenteCurricularPai { get; set; }
+        public long? CodigoComponenteCurricularPai { get; set; }
 
         [JsonProperty("disciplina")]
         public string Nome { get; set; }
