@@ -39,6 +39,8 @@ namespace SME.SGP.Worker.Service
                     options.Configuration = hostContext.Configuration.GetConnectionString("SGP-Redis");
                     options.InstanceName = hostContext.Configuration.GetValue<string>("Nome-Instancia-Redis");
                 });
+
+                services.AddApplicationInsightsTelemetryWorkerService("7929134d-3744-41b9-9d6d-6fe8a4919440");
             });
 
             builder.UseEnvironment(asService ? EnvironmentName.Production : EnvironmentName.Development);
