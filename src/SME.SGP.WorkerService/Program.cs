@@ -40,7 +40,7 @@ namespace SME.SGP.Worker.Service
                     options.InstanceName = hostContext.Configuration.GetValue<string>("Nome-Instancia-Redis");
                 });
 
-                services.AddApplicationInsightsTelemetryWorkerService("7929134d-3744-41b9-9d6d-6fe8a4919440");
+                services.AddApplicationInsightsTelemetryWorkerService(hostContext.Configuration.GetValue<string>("ApplicationInsights__InstrumentationKey"));
             });
 
             builder.UseEnvironment(asService ? EnvironmentName.Production : EnvironmentName.Development);
