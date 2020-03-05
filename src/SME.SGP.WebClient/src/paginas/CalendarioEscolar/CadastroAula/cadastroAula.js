@@ -164,43 +164,45 @@ const CadastroAula = ({ match }) => {
     onChangeCampos();
 
     setIdDisciplina(id);
-    const disciplina = listaDisciplinas.find(c => c.id === id);
+    if (id) {
+      const disciplina = listaDisciplinas.find(c => c.id === id);
 
-    const { regencia } = disciplina || false;
-    setEhRegencia(regencia);
-    const resultado = await api
-      .get(`v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`, {
-        params: {
-          data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
-        },
-      })
-      .then(res => res)
-      .catch(err => {
-        const mensagemErro =
-          err &&
-          err.response &&
-          err.response.data &&
-          err.response.data.mensagens;
+      const { regencia } = disciplina || false;
+      setEhRegencia(regencia);
+      const resultado = await api
+        .get(`v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`, {
+          params: {
+            data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
+          },
+        })
+        .then(res => res)
+        .catch(err => {
+          const mensagemErro =
+            err &&
+            err.response &&
+            err.response.data &&
+            err.response.data.mensagens;
 
-        if (mensagemErro) {
-          erro(mensagemErro.join(','));
+          if (mensagemErro) {
+            erro(mensagemErro.join(','));
+            return null;
+          }
+
+          erro('Ocorreu um erro, por favor contate o suporte');
+
           return null;
-        }
+        });
 
-        erro('Ocorreu um erro, por favor contate o suporte');
-
-        return null;
-      });
-
-    if (resultado) {
-      if (resultado.status === 200) {
-        setControlaQuantidadeAula(true);
-        setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
-        if (resultado.data.quantidadeAulasRestante > 0) {
+      if (resultado) {
+        if (resultado.status === 200) {
           setControlaQuantidadeAula(true);
+          setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
+          if (resultado.data.quantidadeAulasRestante > 0) {
+            setControlaQuantidadeAula(true);
+          }
+        } else if (resultado.status === 204) {
+          setControlaQuantidadeAula(false);
         }
-      } else if (resultado.status === 204) {
-        setControlaQuantidadeAula(false);
       }
     }
   };
@@ -421,8 +423,8 @@ const CadastroAula = ({ match }) => {
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
       quantidadeTexto:
-        idDisciplina || idDisciplina !== ''
-          ? controlaQuantidadeAula
+        idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2
+          ? controlaQuantidadeAula && !ehReposicao
             ? validacaoQuantidade.lessThan(
                 quantidadeMaximaAulas + 1,
                 `Valor não pode ser maior que ${quantidadeMaximaAulas}`
@@ -517,6 +519,14 @@ const CadastroAula = ({ match }) => {
 
     dados.dataAula = dados.dataAula.format();
 
+    if (dados && dados.disciplinaId) {
+      const componenteCurricular = listaDisciplinas.find(
+        item => String(item.codigoComponenteCurricular) === dados.disciplinaId
+      );
+      if (componenteCurricular)
+        dados.disciplinaNome = componenteCurricular.nome;
+    }
+
     const cadastrado = await ServicoAula.salvar(idAula, dados).catch(e =>
       erros(e)
     );
@@ -576,7 +586,7 @@ const CadastroAula = ({ match }) => {
     setCarregandoSalvar(false);
   };
 
-  const onClickVoltar = async () => {
+  const onClickVoltar = async form => {
     if (modoEdicao && !somenteLeitura) {
       const confirmado = await confirmar(
         'Atenção',
@@ -587,7 +597,7 @@ const CadastroAula = ({ match }) => {
       );
 
       if (confirmado) {
-        onClickCadastrar(refForm.state.values);
+        validaAntesDoSubmit(form);
       } else {
         history.push('/calendario-escolar/calendario-professor');
       }
@@ -597,9 +607,13 @@ const CadastroAula = ({ match }) => {
   };
 
   const excluir = async tipoRecorrencia => {
+    const disciplina = listaDisciplinas.find(
+      item => String(item.codigoComponenteCurricular) === String(idDisciplina)
+    );
+
     const exclusao = await api
       .delete(
-        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}`
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplina.nome}`
       )
       .catch(e => erros(e));
     if (exclusao) {
@@ -756,7 +770,7 @@ const CadastroAula = ({ match }) => {
                     color={Colors.Azul}
                     border
                     className="mr-2"
-                    onClick={onClickVoltar}
+                    onClick={() => onClickVoltar(form)}
                   />
                   <Button
                     id={shortid.generate()}
