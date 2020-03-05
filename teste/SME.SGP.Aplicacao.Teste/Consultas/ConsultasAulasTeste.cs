@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact]
         public async Task DeveObterQuantidadeAulas()
         {
-            var qtd = await consultas.ObterQuantidadeAulasTurmaSemanaProfessor("123", "7", "3", null);
+            var qtd = await consultas.ObterQuantidadeAulasTurmaSemanaProfessor("123", "7", 3, null);
 
             Assert.True(qtd == 4);
         }
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 new AulasPorTurmaDisciplinaDto() { ProfessorId = 1, Quantidade = 3, DataAula = new System.DateTime(2019,11,15) },
             };
 
-            repositorioAula.Setup(c => c.ObterAulasTurmaDisciplinaSemanaProfessor(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null))
+            repositorioAula.Setup(c => c.ObterAulasTurmaDisciplinaSemanaProfessor(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), null))
                 .Returns(Task.FromResult(aulas));
         }
     }
