@@ -1,25 +1,58 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import Button from '~/componentes/button';
-import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
-import Grid from '~/componentes/grid';
-import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
-import SelectComponent from '~/componentes/select';
+import styled from 'styled-components';
 import RotasDto from '~/dtos/rotasDto';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
-import api from '~/servicos/api';
+import Card from '~/componentes/card';
+import Grid from '~/componentes/grid';
+import Button from '~/componentes/button';
+import { Base, Colors } from '~/componentes/colors';
+import SelectComponent from '~/componentes/select';
 import history from '~/servicos/history';
+import { confirmar, sucesso, erros } from '~/servicos/alertas';
+import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
+import api from '~/servicos/api';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
-import { Busca, CampoTexto, Div, Titulo } from './tipoEventos.css';
-
 const TipoEventosLista = () => {
+  const Div = styled.div`
+    .select-local {
+    }
+  `;
+
+  const Titulo = styled(Div)`
+    color: ${Base.CinzaMako};
+    font-size: 24px;
+  `;
+
+  const Icone = styled.i`
+    color: ${Base.CinzaMako};
+    cursor: pointer;
+  `;
+
+  const Busca = styled(Icone)`
+    left: 10px;
+    max-height: 25px;
+    max-width: 15px;
+    padding: 1rem;
+    right: 0;
+    top: -2px;
+  `;
+
+  const CampoTexto = styled.input`
+    color: ${Base.CinzaBotao};
+    font-size: 14px;
+    padding-left: 40px;
+    &[type='radio'] {
+      background: ${Base.Branco};
+      border: 1px solid ${Base.CinzaDesabilitado};
+    }
+  `;
+
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.TIPO_EVENTOS];
 
+  const [desabilitarBotaoExcluir, setDesabilitarBotaoExcluir] = useState(true);
   const [tipoEventoSelecionados, setTipoEventoSelecionados] = useState([]);
-  const [filtro, setFiltro] = useState({});
 
   const clicouBotaoVoltar = () => {
     history.push('/');
@@ -47,14 +80,8 @@ const TipoEventosLista = () => {
           })
           .then(resposta => {
             if (resposta) sucesso('Tipos de evento deletados com sucesso!');
-            setTipoEventoSelecionados([]);
-            setFiltro({ ...filtro });
           })
-          .catch(e => {
-            erros(e);
-            setTipoEventoSelecionados([]);
-            setFiltro({ ...filtro });
-          });
+          .catch(e => erros(e));
       }
     }
   };
@@ -62,6 +89,16 @@ const TipoEventosLista = () => {
   useEffect(() => {
     verificaSomenteConsulta(permissoesTela);
   }, []);
+
+  useEffect(() => {
+    if (
+      tipoEventoSelecionados &&
+      tipoEventoSelecionados.length > 0 &&
+      permissoesTela.podeExcluir
+    )
+      setDesabilitarBotaoExcluir(false);
+    else setDesabilitarBotaoExcluir(true);
+  }, [tipoEventoSelecionados]);
 
   const clicouBotaoNovo = () => {
     if (permissoesTela.podeIncluir)
@@ -112,6 +149,7 @@ const TipoEventosLista = () => {
 
   const campoNomeTipoEventoRef = useRef();
 
+  const [filtro, setFiltro] = useState({});
   const [
     localOcorrenciaSelecionado,
     setLocalOcorrenciaSelecionado,
@@ -135,6 +173,10 @@ const TipoEventosLista = () => {
     setNomeTipoEvento(campoNomeTipoEventoRef.current.value);
     setFiltro({ ...filtro, descricao: campoNomeTipoEventoRef.current.value });
   };
+
+  useEffect(() => {
+    setTipoEventoSelecionados([]);
+  }, [filtro]);
 
   useEffect(() => {
     campoNomeTipoEventoRef.current.focus();
@@ -162,14 +204,12 @@ const TipoEventosLista = () => {
             />
             <Button
               label="Excluir"
-              color={Colors.Vermelho}
-              border
-              className="mr-3"
+              color={Colors.Roxo}
               onClick={clicouBotaoExcluir}
-              disabled={
-                !permissoesTela.podeExcluir ||
-                (tipoEventoSelecionados && tipoEventoSelecionados.length < 1)
-              }
+              disabled={desabilitarBotaoExcluir}
+              border
+              bold
+              className="mr-3"
             />
             <Button
               label="Novo"

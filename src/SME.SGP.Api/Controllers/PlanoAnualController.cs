@@ -72,12 +72,13 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(IEnumerable<PlanoAnualCompletoDto>), 200)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
-        public async Task<IActionResult> Post(PlanoAnualDto planoAnualDto, [FromServices]IComandosPlanoAnual comandosPlanoAnual)
-        {            
-            return Ok(await comandosPlanoAnual.Salvar(planoAnualDto));
+        public IActionResult Post(PlanoAnualDto planoAnualDto, [FromServices]IComandosPlanoAnual comandosPlanoAnual)
+        {
+            comandosPlanoAnual.Salvar(planoAnualDto);
+            return Ok();
         }
 
         [HttpPost("validar-existente")]
