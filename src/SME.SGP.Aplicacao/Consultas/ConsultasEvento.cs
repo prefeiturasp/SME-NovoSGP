@@ -15,7 +15,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioEventoTipo repositorioEventoTipo;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
                                IContextoAplicacao contextoAplicacao,
@@ -25,7 +24,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
         }
 
         public async Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto)
