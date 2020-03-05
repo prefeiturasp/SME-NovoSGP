@@ -6,6 +6,7 @@ import Seta from '../../../recursos/Seta.svg';
 import Editor from '~/componentes/editor/editor';
 import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import { erros as mostrarErros } from '~/servicos/alertas';
+import ModalErros from './componentes/ModalErros';
 
 const Bimestre = ({
   bimestre,
@@ -17,6 +18,7 @@ const Bimestre = ({
   disciplinaSemObjetivo,
   selecionarObjetivo,
   onChangeDescricaoObjetivo,
+  onCloseErrosBimestre,
 }) => {
   const [objetivosAprendizagem, setObjetivosAprendizagem] = useState([]);
   const [objetivosCarregados, setObjetivosCarregados] = useState(false);
@@ -146,9 +148,12 @@ const Bimestre = ({
     <Loader loading={carregandoDados}>
       <div className="row">
         <Grid cols={6} className="m-b-10">
-          {erros &&
-            erros.length > 0 &&
-            erros.map(e => <Erro key={e}>{e}</Erro>)}
+          <ModalErros
+            visivel={erros.length > 0}
+            erros={erros}
+            bimestre={bimestre}
+            onCloseErrosBimestre={onCloseErrosBimestre}
+          />
           {!layoutEspecial && (
             <h6 className="d-inline-block font-weight-bold my-0 fonte-14 mb-2">
               Objetivos de Aprendizagem e Desenvolvimento
