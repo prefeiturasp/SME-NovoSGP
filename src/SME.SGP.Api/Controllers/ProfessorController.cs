@@ -38,9 +38,6 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = consultasProfessor.Listar(codigoRf);
 
-            if (!retorno.Any())
-                return NoContent();
-
             return Ok(retorno);
         }
 
@@ -50,9 +47,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Get(string codigoRF, string codigoEscola, int anoLetivo, [FromServices]IConsultasProfessor consultasProfessor)
         {
             var retorno = await consultasProfessor.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(codigoRF, codigoEscola, anoLetivo);
-
-            if (!retorno.Any())
-                return NoContent();
 
             return Ok(retorno);
         }
@@ -64,9 +58,6 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma, turmaPrograma);
 
-            if (!retorno.Any())
-                return NoContent();
-
             return Ok(retorno);
         }
 
@@ -76,9 +67,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> GetDisciplinasAgrupadas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
             var retorno = await consultasDisciplina.ObterDisciplinasAgrupadasPorProfessorETurma(codigoTurma, turmaPrograma);
-
-            if (!retorno.Any())
-                return NoContent();
 
             return Ok(retorno);
         }
@@ -100,9 +88,6 @@ namespace SME.SGP.Api.Controllers
             filtroDisciplinaPlanejamentoDto.CodigoTurma = codigoTurma;
 
             var retorno = await consultasDisciplina.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto);
-
-            if (retorno == null || !retorno.Any())
-                return NoContent();
 
             return Ok(retorno);
         }
@@ -134,9 +119,6 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultasProfessor.ObterResumoAutoComplete(anoLetivo, dreId, nomeProfessor, incluirEmei);
 
-            if (retorno == null)
-                return NoContent();
-
             return Ok(retorno);
         }
 
@@ -146,9 +128,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
         {
             var retorno = await consultasProfessor.ObterResumoAutoComplete(anoLetivo, dreId, nomeProfessor);
-
-            if (retorno == null)
-                return NoContent();
 
             return Ok(retorno);
         }
