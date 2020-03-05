@@ -531,6 +531,14 @@ const CadastroAula = ({ match }) => {
 
     dados.dataAula = dados.dataAula.format();
 
+    if (dados && dados.disciplinaId) {
+      const componenteCurricular = listaDisciplinas.find(
+        item => String(item.codigoComponenteCurricular) === dados.disciplinaId
+      );
+      if (componenteCurricular)
+        dados.disciplinaNome = componenteCurricular.nome;
+    }
+
     const cadastrado = await ServicoAula.salvar(idAula, dados).catch(e =>
       erros(e)
     );
@@ -607,9 +615,13 @@ const CadastroAula = ({ match }) => {
   };
 
   const excluir = async tipoRecorrencia => {
+    const disciplina = listaDisciplinas.find(
+      item => String(item.codigoComponenteCurricular) === String(idDisciplina)
+    );
+
     const exclusao = await api
       .delete(
-        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}`
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplina.nome}`
       )
       .catch(e => erros(e));
     if (exclusao) {
