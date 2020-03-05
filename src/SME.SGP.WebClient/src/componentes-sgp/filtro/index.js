@@ -53,6 +53,7 @@ const Filtro = () => {
   const [carregandoTurmas, setCarregandoTurmas] = useState(false);
 
   const usuarioStore = useSelector(state => state.usuario);
+  const perfilStore = useSelector(state => state.perfil);
   const turmaUsuarioSelecionada = usuarioStore.turmaSelecionada;
   const [campoAnoLetivoDesabilitado, setCampoAnoLetivoDesabilitado] = useState(
     true
@@ -128,7 +129,9 @@ const Filtro = () => {
 
   const obterDres = useCallback(
     async (estado, periodo) => {
-      if (!modalidadeSelecionada) return;
+      if (!modalidadeSelecionada) {
+        return [];
+      }
 
       setCarregandoDres(true);
 
@@ -146,6 +149,7 @@ const Filtro = () => {
       }
 
       setCarregandoDres(false);
+      return listaDres;
     },
     [anoLetivoSelecionado, consideraHistorico, dispatch, modalidadeSelecionada]
   );
@@ -189,7 +193,13 @@ const Filtro = () => {
         unidadeEscolar: unidadeEscolarSelecionada,
         turma: turmaSelecionada,
         ano: turmaSelecionadaCompleta.ano,
-        desc: `${modalidadeDesc.desc} - ${turmaDesc.desc} - ${unidadeEscolarDesc.desc}`,
+        desc: `${
+          modalidadeDesc && modalidadeDesc.desc ? modalidadeDesc.desc : ''
+        } - ${turmaDesc && turmaDesc.desc ? turmaDesc.desc : ''} - ${
+          unidadeEscolarDesc && unidadeEscolarDesc.desc
+            ? unidadeEscolarDesc.desc
+            : ''
+        }`,
         periodo: periodoSelecionado || 0,
         consideraHistorico,
       };
@@ -214,6 +224,118 @@ const Filtro = () => {
   ]);
 
   const [podeRemoverTurma, setPodeRemoverTurma] = useState(true);
+
+  useEffect(() => {
+
+    const limparFiltro = () => {
+      dispatch(limparDadosFiltro());
+      dispatch(removerTurma());
+      setTextoAutocomplete('');
+    };
+
+    const recarregarFiltro = async () => {
+      if (usuarioStore && usuarioStore.ehProfessorCj) {
+        if (
+          usuarioStore.turmaSelecionada &&
+          usuarioStore.turmaSelecionada.turma &&
+          usuarioStore.turmasUsuario &&
+          usuarioStore.turmasUsuario.length
+        ) {
+          const turmaBkp = { ...usuarioStore.turmaSelecionada };
+          const listaModalidades = await obterModalidades(false);
+
+          let continuar = true;
+
+          if (listaModalidades && listaModalidades.length) {
+            const modalidadeNaLista = listaModalidades.find(
+              item => item.valor == turmaBkp.modalidade
+            );
+            if (!modalidadeNaLista) {
+              limparFiltro();
+              continuar = false;
+            }
+          }
+          if (!continuar) {
+            return;
+          }
+
+          const listaDres = await obterDres(false, turmaBkp.periodo);
+          if (listaDres && listaDres.length) {
+            const dreNaLista = listaDres.find(
+              item => item.valor == turmaBkp.dre
+            );
+            if (!dreNaLista) {
+              limparFiltro();
+              continuar = false;
+            }
+          }
+          if (!continuar) {
+            return;
+          }
+
+          const periodo =
+            turmaBkp.modalidade.toString() === modalidade.EJA.toString()
+              ? turmaBkp.periodo
+              : null;
+
+          const listaUes = await obterUnidadesEscolares(false, periodo);
+          if (listaUes && listaUes.length) {
+            const ueNaLista = listaUes.find(
+              item => item.valor == turmaBkp.unidadeEscolar
+            );
+            if (!ueNaLista) {
+              limparFiltro();
+              continuar = false;
+            }
+          }
+          if (!continuar) {
+            return;
+          }
+
+          const listaTurmas = await obterTurmas(false);
+          if (listaTurmas && listaTurmas.length) {
+            const turmaNaLista = listaTurmas.find(
+              item => item.valor == turmaBkp.turma
+            );
+            if (!turmaNaLista) {
+              limparFiltro();
+              continuar = false;
+            }
+          }
+          if (!continuar) {
+            return;
+          }
+
+          // MODALIDADES
+          setModalidades(listaModalidades);
+          dispatch(salvarModalidades(listaModalidades));
+          setCampoModalidadeDesabilitado(listaModalidades.length === 1);
+
+          // DRES
+          dispatch(salvarDres(listaDres));
+          setDres(listaDres);
+          setCampoDreDesabilitado(listaDres.length === 1);
+
+          // UES
+          dispatch(salvarUnidadesEscolares(listaUes));
+          setUnidadesEscolares(listaUes);
+          setCampoUnidadeEscolarDesabilitado(listaUes.length === 1);
+
+          // TURMAS
+          dispatch(salvarTurmas(listaTurmas));
+          setTurmas(listaTurmas);
+          setCampoTurmaDesabilitado(listaTurmas.length === 1);
+        } else {
+          limparFiltro();
+        }
+      } else if (
+        !(usuarioStore.turmaSelecionada && usuarioStore.turmaSelecionada.turma)
+      ) {
+        limparFiltro();
+      }
+    };
+    recarregarFiltro();
+  }, [perfilStore]);
 
   useEffect(() => {
     if (
@@ -332,6 +454,27 @@ const Filtro = () => {
     }
   }, [anosLetivos]);
 
+  const obterModalidades = useCallback(
+    async deveSalvarModalidade => {
+      setCarregandoModalidades(true);
+
+      const modalidadesLista = await FiltroHelper.obterModalidades({
+        consideraHistorico,
+        anoLetivoSelecionado,
+      });
+
+      if (deveSalvarModalidade) {
+        setModalidades(modalidadesLista);
+        dispatch(salvarModalidades(modalidadesLista));
+        setCampoModalidadeDesabilitado(modalidadesLista.length === 1);
+      }
+
+      setCarregandoModalidades(false);
+      return modalidadesLista;
+    },
+    [anoLetivoSelecionado, consideraHistorico, dispatch]
+  );
+
   useEffect(() => {
     let estado = true;
 
@@ -339,29 +482,13 @@ const Filtro = () => {
       setModalidadeSelecionada();
       setCampoModalidadeDesabilitado(true);
     } else {
-      const obterModalidades = async deveSalvarModalidade => {
-        setCarregandoModalidades(true);
-
-        const modalidadesLista = await FiltroHelper.obterModalidades({
-          consideraHistorico,
-          anoLetivoSelecionado,
-        });
-
-        if (deveSalvarModalidade) {
-          setModalidades(modalidadesLista);
-          dispatch(salvarModalidades(modalidadesLista));
-          setCampoModalidadeDesabilitado(modalidadesLista.length === 1);
-        }
-
-        setCarregandoModalidades(false);
-      };
       obterModalidades(estado && anoLetivoSelecionado);
     }
     return () => {
       estado = false;
       return estado;
     };
-  }, [anoLetivoSelecionado, consideraHistorico, dispatch]);
+  }, [anoLetivoSelecionado, consideraHistorico, dispatch, obterModalidades]);
 
   useEffect(() => {
     if (modalidades && modalidades.length === 1) {
@@ -451,10 +578,11 @@ const Filtro = () => {
     if (dres && dres.length === 1) setDreSelecionada(dres[0].valor);
   }, [dres]);
 
-  useEffect(() => {
-    let estado = true;
-    const obterUnidadesEscolares = async (deveSalvarUes, periodo) => {
-      if (!modalidadeSelecionada) return;
+  const obterUnidadesEscolares = useCallback(
+    async (deveSalvarUes, periodo) => {
+      if (!modalidadeSelecionada) {
+        return [];
+      }
 
       setCarregandoUes(true);
 
@@ -470,7 +598,7 @@ const Filtro = () => {
         setDreSelecionada();
         setCampoDreDesabilitado(true);
         erro('Esta DRE não possui unidades escolares da modalidade escolhida');
-        return;
+        return [];
       }
 
       if (deveSalvarUes) {
@@ -480,7 +608,19 @@ const Filtro = () => {
       }
 
       setCarregandoUes(false);
-    };
+      return ues;
+    },
+    [
+      anoLetivoSelecionado,
+      consideraHistorico,
+      dispatch,
+      dreSelecionada,
+      modalidadeSelecionada,
+    ]
+  );
+
+  useEffect(() => {
+    let estado = true;
 
     if (!dreSelecionada) {
       setUnidadeEscolarSelecionada();
@@ -509,6 +649,7 @@ const Filtro = () => {
     dreSelecionada,
     modalidadeSelecionada,
     periodoSelecionado,
+    obterUnidadesEscolares,
   ]);
 
   useEffect(() => {
@@ -516,15 +657,17 @@ const Filtro = () => {
       setUnidadeEscolarSelecionada(unidadesEscolares[0].valor);
   }, [unidadesEscolares]);
 
-  useEffect(() => {
-    const obterTurmas = async deveSalvarTurmas => {
+  const obterTurmas = useCallback(
+    async deveSalvarTurmas => {
       const periodo =
         modalidadeSelecionada &&
         modalidadeSelecionada.toString() === modalidade.EJA.toString()
           ? periodoSelecionado
           : null;
 
-      if (!modalidadeSelecionada) return;
+      if (!modalidadeSelecionada) {
+        return [];
+      }
 
       setCarregandoTurmas(true);
 
@@ -540,7 +683,7 @@ const Filtro = () => {
         setUnidadeEscolarSelecionada();
         setCampoUnidadeEscolarDesabilitado(true);
         erro('Esta unidade escolar não possui turmas da modalidade escolhida');
-        return;
+        return [];
       }
 
       if (deveSalvarTurmas) {
@@ -550,8 +693,19 @@ const Filtro = () => {
       }
 
       setCarregandoTurmas(false);
-    };
+      return listaTurmas;
+    },
+    [
+      anoLetivoSelecionado,
+      consideraHistorico,
+      dispatch,
+      modalidadeSelecionada,
+      periodoSelecionado,
+      unidadeEscolarSelecionada,
+    ]
+  );
 
+  useEffect(() => {
     let estado = true;
 
     if (!unidadeEscolarSelecionada) {
@@ -572,6 +726,7 @@ const Filtro = () => {
     modalidadeSelecionada,
     periodoSelecionado,
     unidadeEscolarSelecionada,
+    obterTurmas,
   ]);
 
   useEffect(() => {

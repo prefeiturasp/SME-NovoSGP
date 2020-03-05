@@ -25,7 +25,7 @@ import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import RotasDTO from '~/dtos/rotasDto';
-import { ModalConteudoHtml } from '~/componentes';
+import { ModalConteudoHtml, Loader } from '~/componentes';
 import Alert from '~/componentes/alert';
 import modalidade from '~/dtos/modalidade';
 import ServicoAula from '~/servicos/Paginas/ServicoAula';
@@ -93,6 +93,7 @@ const CadastroAula = ({ match }) => {
 
   const [idDisciplina, setIdDisciplina] = useState();
   const [disciplinaCompartilhada, setDisciplinaCompartilhada] = useState(false);
+  const [tipoAula, setTipoAula] = useState(1);
   const [
     listaDisciplinasCompartilhadas,
     setListaDisciplinasCompartilhadas,
@@ -108,14 +109,14 @@ const CadastroAula = ({ match }) => {
       label: '1',
       value: 1,
       disabled:
-        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula) ||
+        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula && !ehReposicao) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
     {
       label: '2',
       value: 2,
       disabled:
-        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula) ||
+        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula && !ehReposicao) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
   ];
@@ -208,6 +209,10 @@ const CadastroAula = ({ match }) => {
   };
 
   useEffect(() => {
+    onChangeDisciplinas(idDisciplina);
+  }, [tipoAula]);
+
+  useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
       const disciplina = listaDisciplinas.filter(
         item =>
@@ -215,11 +220,9 @@ const CadastroAula = ({ match }) => {
       );
       if (disciplina && disciplina[0])
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
-    } else {
-      if (refForm && refForm.setFieldValue)
-        refForm.setFieldValue('quantidadeTexto', '');
-    }
-  }, [idDisciplina, listaDisciplinas]);
+    } else if (refForm && refForm.setFieldValue)
+      refForm.setFieldValue('quantidadeTexto', '');
+  }, [idDisciplina, listaDisciplinas, refForm]);
 
   const buscarDisciplinasCompartilhadas = async () => {
     const disciplinas = await api.get(
@@ -428,9 +431,9 @@ const CadastroAula = ({ match }) => {
         idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2
           ? controlaQuantidadeAula && !ehReposicao
             ? validacaoQuantidade.lessThan(
-              quantidadeMaximaAulas + 1,
-              `Valor não pode ser maior que ${quantidadeMaximaAulas}`
-            )
+                quantidadeMaximaAulas + 1,
+                `Valor não pode ser maior que ${quantidadeMaximaAulas}`
+              )
             : validacaoQuantidade
           : Yup.string().required(false),
     };
@@ -481,7 +484,7 @@ const CadastroAula = ({ match }) => {
   const resetarTela = form => {
     form.resetForm();
     setControlaQuantidadeAula(true);
-    setQuantidadeMaximaAulas(0);
+    setQuantidadeMaximaAulas(1);
     setModoEdicao(false);
     setEhAulaUnica(false);
   };
@@ -521,6 +524,14 @@ const CadastroAula = ({ match }) => {
 
     dados.dataAula = dados.dataAula.format();
 
+    if (dados && dados.disciplinaId) {
+      const componenteCurricular = listaDisciplinas.find(
+        item => String(item.codigoComponenteCurricular) === dados.disciplinaId
+      );
+      if (componenteCurricular)
+        dados.disciplinaNome = componenteCurricular.nome;
+    }
+
     const cadastrado = await ServicoAula.salvar(idAula, dados).catch(e =>
       erros(e)
     );
@@ -538,11 +549,14 @@ const CadastroAula = ({ match }) => {
     }
   };
 
+  const [carregandoSalvar, setCarregandoSalvar] = useState(false);
+
   const onClickCadastrar = async valoresForm => {
+    setCarregandoSalvar(true);
     const observacao = existeFrequenciaPlanoAula
       ? `Esta aula${
-      ehAulaUnica ? '' : ', ou sua recorrencia'
-      }, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência`
+          ehAulaUnica ? '' : ', ou sua recorrencia'
+        }, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência`
       : '';
     if (
       quantidadeRecorrencia > 1 &&
@@ -574,6 +588,7 @@ const CadastroAula = ({ match }) => {
 
       await salvar(valoresForm);
     }
+    setCarregandoSalvar(false);
   };
 
   const onClickVoltar = async () => {
@@ -597,9 +612,13 @@ const CadastroAula = ({ match }) => {
   };
 
   const excluir = async tipoRecorrencia => {
+    const disciplina = listaDisciplinas.find(
+      item => String(item.codigoComponenteCurricular) === String(idDisciplina)
+    );
+
     const exclusao = await api
       .delete(
-        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}`
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplina.nome}`
       )
       .catch(e => erros(e));
     if (exclusao) {
@@ -650,14 +669,14 @@ const CadastroAula = ({ match }) => {
   const getDataFormatada = () => {
     const titulo = `${dataAula ? dataAula.format('dddd') : ''}, ${
       dataAula ? dataAula.format('DD/MM/YYYY') : ''
-      } `;
+    } `;
     return titulo;
   };
 
   return (
-    <>
+    <Loader loading={carregandoSalvar} tip="">
       <div className="col-md-12">
-        {quantidadeMaximaAulas <= 0 ? (
+        {quantidadeMaximaAulas <= 0 && !ehReposicao ? (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -679,7 +698,7 @@ const CadastroAula = ({ match }) => {
             excluir(refFormRecorrencia.state.values.tipoRecorrenciaExclusao)
           }
           onConfirmacaoSecundaria={() => setVisualizarFormExcRecorrencia(false)}
-          onClose={() => { }}
+          onClose={() => {}}
           labelBotaoPrincipal="Confirmar"
           labelBotaoSecundario="Cancelar"
           titulo={`Excluir aula - ${getDataFormatada()}`}
@@ -690,7 +709,7 @@ const CadastroAula = ({ match }) => {
             initialValues={valoresIniciaisExclusao}
             validationSchema={validacoes}
             ref={refFormik => setRefFormRecorrencia(refFormik)}
-            onSubmit={() => { }}
+            onSubmit={() => {}}
             validateOnChange
             validateOnBlur
           >
@@ -703,11 +722,11 @@ const CadastroAula = ({ match }) => {
                   >
                     <p>{`Essa aula se repete por ${quantidadeRecorrencia}${
                       quantidadeRecorrencia > 1 ? ' vezes' : ' vez'
-                      } em seu planejamento.${
+                    } em seu planejamento.${
                       existeFrequenciaPlanoAula
                         ? ' Obs: Esta aula ou sua recorrência possui frequência ou plano de aula registrado, ao excluí-la estará excluindo esse registro também'
                         : ''
-                      }`}</p>
+                    }`}</p>
                     <p>Qual opção de exclusão você deseja realizar?</p>
                   </div>
                   <div className="col-sm-12 col-md-12 d-block">
@@ -717,7 +736,7 @@ const CadastroAula = ({ match }) => {
                       label="Realizar exclusão"
                       opcoes={opcoesExcluirRecorrencia}
                       name="tipoRecorrenciaExclusao"
-                      onChange={() => { }}
+                      onChange={() => {}}
                     />
                   </div>
                 </div>
@@ -777,6 +796,7 @@ const CadastroAula = ({ match }) => {
                     onClick={onClickExcluir}
                     disabled={somenteLeitura}
                   />
+
                   <Button
                     id={shortid.generate()}
                     label={novoRegistro ? 'Cadastrar' : 'Alterar'}
@@ -787,7 +807,8 @@ const CadastroAula = ({ match }) => {
                     disabled={
                       somenteLeitura ||
                       (novoRegistro && !permissaoTela.podeIncluir) ||
-                      (!novoRegistro && !permissaoTela.podeAlterar)
+                      (!novoRegistro && !permissaoTela.podeAlterar) ||
+                      (quantidadeMaximaAulas <= 0 && !ehReposicao)
                     }
                     onClick={() => validaAntesDoSubmit(form)}
                   />
@@ -806,6 +827,7 @@ const CadastroAula = ({ match }) => {
                       setEhReposicao(e.target.value === 2);
                       onChangeCampos();
                       setControlaQuantidadeAula(ehReposicao);
+                      setTipoAula(e.target.value);
                     }}
                   />
                 </div>
@@ -872,7 +894,9 @@ const CadastroAula = ({ match }) => {
                     desabilitado={
                       somenteLeitura ||
                       !idDisciplina ||
-                      (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
+                      (quantidadeMaximaAulas < 3 &&
+                        controlaQuantidadeAula &&
+                        !ehReposicao) ||
                       (ehRegencia && !ehReposicao)
                     }
                     onChange={() => {
@@ -910,10 +934,10 @@ const CadastroAula = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-            ''
-          )}
+          ''
+        )}
       </Card>
-    </>
+    </Loader>
   );
 };
 

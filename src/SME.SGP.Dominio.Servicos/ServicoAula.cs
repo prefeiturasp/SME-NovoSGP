@@ -400,19 +400,12 @@ namespace SME.SGP.Dominio.Servicos
             if (turma is null)
                 throw new NegocioException($"Não foi possível localizar a turma de Id {aula.TurmaId} na abrangência ");
 
-            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(aula.DisciplinaId) });
-
-            if (disciplinasEol is null || !disciplinasEol.Any())
-                throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
-
-            var disciplina = disciplinasEol.FirstOrDefault();
-
             var operacaoStr = operacao == Operacao.Inclusao ? "Criação" : operacao == Operacao.Alteracao ? "Alteração" : "Exclusão";
-            var tituloMensagem = $"{operacaoStr} de Aulas de {disciplina.Nome} na turma {turma.Nome}";
+            var tituloMensagem = $"{operacaoStr} de Aulas de {aula.DisciplinaNome} na turma {turma.Nome}";
             StringBuilder mensagemUsuario = new StringBuilder();
 
             operacaoStr = operacao == Operacao.Inclusao ? "criadas" : operacao == Operacao.Alteracao ? "alteradas" : "excluídas";
-            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {disciplina.Nome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
+            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {aula.DisciplinaNome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
 
             if (aulasComFrenciaOuPlano != null && aulasComFrenciaOuPlano.Any())
             {
@@ -541,9 +534,6 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
 
             var disciplina = disciplinasEol.FirstOrDefault();
-
-            if (disciplina == null)
-                throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
 
             return disciplina.Nome;
         }
