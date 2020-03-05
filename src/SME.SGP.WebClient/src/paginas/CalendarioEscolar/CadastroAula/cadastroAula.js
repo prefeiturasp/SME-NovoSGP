@@ -165,33 +165,43 @@ const CadastroAula = ({ match }) => {
 
     setIdDisciplina(id);
     if (id) {
-      const disciplina = listaDisciplinas.find(c => c.id === id);
+      const disciplina = listaDisciplinas.find(
+        d => String(d.codigoComponenteCurricular) === id
+      );
 
-      const { regencia } = disciplina || false;
+      const regencia = !!disciplina.regencia;
       setEhRegencia(regencia);
-      const resultado = await api
-        .get(`v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`, {
-          params: {
-            data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
-          },
-        })
-        .then(res => res)
-        .catch(err => {
-          const mensagemErro =
-            err &&
-            err.response &&
-            err.response.data &&
-            err.response.data.mensagens;
 
-          if (mensagemErro) {
-            erro(mensagemErro.join(','));
+      let resultado;
+
+      if (!disciplina.territorioSaber) {
+        resultado = await api
+          .get(
+            `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}?ehRegencia=${regencia}`,
+            {
+              params: {
+                data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
+              },
+            }
+          )
+          .then(res => res)
+          .catch(err => {
+            const mensagemErro =
+              err &&
+              err.response &&
+              err.response.data &&
+              err.response.data.mensagens;
+
+            if (mensagemErro) {
+              erro(mensagemErro.join(','));
+              return null;
+            }
+
+            erro('Ocorreu um erro, por favor contate o suporte');
+
             return null;
-          }
-
-          erro('Ocorreu um erro, por favor contate o suporte');
-
-          return null;
-        });
+          });
+      }
 
       if (resultado) {
         if (resultado.status === 200) {
@@ -541,8 +551,8 @@ const CadastroAula = ({ match }) => {
   const onClickCadastrar = async valoresForm => {
     const observacao = existeFrequenciaPlanoAula
       ? `Esta aula${
-      ehAulaUnica ? '' : ', ou sua recorrencia'
-      }, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência`
+          ehAulaUnica ? '' : ', ou sua recorrencia'
+        }, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência`
       : '';
     if (
       quantidadeRecorrencia > 1 &&
@@ -650,7 +660,7 @@ const CadastroAula = ({ match }) => {
   const getDataFormatada = () => {
     const titulo = `${dataAula ? dataAula.format('dddd') : ''}, ${
       dataAula ? dataAula.format('DD/MM/YYYY') : ''
-      } `;
+    } `;
     return titulo;
   };
 
@@ -679,7 +689,7 @@ const CadastroAula = ({ match }) => {
             excluir(refFormRecorrencia.state.values.tipoRecorrenciaExclusao)
           }
           onConfirmacaoSecundaria={() => setVisualizarFormExcRecorrencia(false)}
-          onClose={() => { }}
+          onClose={() => {}}
           labelBotaoPrincipal="Confirmar"
           labelBotaoSecundario="Cancelar"
           titulo={`Excluir aula - ${getDataFormatada()}`}
@@ -690,7 +700,7 @@ const CadastroAula = ({ match }) => {
             initialValues={valoresIniciaisExclusao}
             validationSchema={validacoes}
             ref={refFormik => setRefFormRecorrencia(refFormik)}
-            onSubmit={() => { }}
+            onSubmit={() => {}}
             validateOnChange
             validateOnBlur
           >
@@ -703,11 +713,11 @@ const CadastroAula = ({ match }) => {
                   >
                     <p>{`Essa aula se repete por ${quantidadeRecorrencia}${
                       quantidadeRecorrencia > 1 ? ' vezes' : ' vez'
-                      } em seu planejamento.${
+                    } em seu planejamento.${
                       existeFrequenciaPlanoAula
                         ? ' Obs: Esta aula ou sua recorrência possui frequência ou plano de aula registrado, ao excluí-la estará excluindo esse registro também'
                         : ''
-                      }`}</p>
+                    }`}</p>
                     <p>Qual opção de exclusão você deseja realizar?</p>
                   </div>
                   <div className="col-sm-12 col-md-12 d-block">
@@ -717,7 +727,7 @@ const CadastroAula = ({ match }) => {
                       label="Realizar exclusão"
                       opcoes={opcoesExcluirRecorrencia}
                       name="tipoRecorrenciaExclusao"
-                      onChange={() => { }}
+                      onChange={() => {}}
                     />
                   </div>
                 </div>
@@ -910,8 +920,8 @@ const CadastroAula = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-            ''
-          )}
+          ''
+        )}
       </Card>
     </>
   );
