@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             httpContextAcessorObj.HttpContext = context;
             servicoUsuario = new Mock<IServicoUsuario>();
 
-            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), servicoUsuario.Object, repositorioEventoTipo.Object);
+            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), repositorioEventoTipo.Object, servicoUsuario.Object);
         }
 
         [Fact]
