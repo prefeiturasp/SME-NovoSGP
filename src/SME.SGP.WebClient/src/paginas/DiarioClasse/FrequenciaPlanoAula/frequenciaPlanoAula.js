@@ -573,7 +573,16 @@ const FrequenciaPlanoAula = () => {
       !exibirCardFrequencia &&
       permiteRegistroFrequencia
     ) {
-      setModoEdicaoFrequencia(true);
+      let temAulas = false;
+      if (frequencia && frequencia.length) {
+        const aulas = frequencia.filter(
+          item => item.aulas && item.aulas.length
+        );
+        temAulas = !!(aulas && aulas.length);
+      }
+      if (temAulas) {
+        setModoEdicaoFrequencia(true);
+      }
     }
     setExibirCardFrequencia(!exibirCardFrequencia);
   };
@@ -774,16 +783,16 @@ const FrequenciaPlanoAula = () => {
       {usuario && turmaSelecionada.turma ? (
         ''
       ) : (
-          <Alert
-            alerta={{
-              tipo: 'warning',
-              id: 'frequencia-selecione-turma',
-              mensagem: 'Você precisa escolher uma turma.',
-              estiloTitulo: { fontSize: '18px' },
-            }}
-            className="mb-2"
-          />
-        )}
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'frequencia-selecione-turma',
+            mensagem: 'Você precisa escolher uma turma.',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-2"
+        />
+      )}
       {temAvaliacao ? (
         <div className="row">
           <Grid cols={12} className="px-4">
@@ -935,12 +944,12 @@ const FrequenciaPlanoAula = () => {
                             alteradoEm={auditoria.alteradoEm}
                           />
                         ) : (
-                            ''
-                          )}
+                          ''
+                        )}
                       </>
                     ) : (
-                        ''
-                      )}
+                      ''
+                    )}
                   </Loader>
                 </CardCollapse>
               </div>
@@ -968,8 +977,8 @@ const FrequenciaPlanoAula = () => {
               </div>
             </div>
           ) : (
-              ''
-            )}
+            ''
+          )}
         </div>
         <ModalMultiLinhas
           key="errosBimestre"
