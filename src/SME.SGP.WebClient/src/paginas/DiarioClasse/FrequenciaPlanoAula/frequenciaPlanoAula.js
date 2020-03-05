@@ -163,6 +163,22 @@ const FrequenciaPlanoAula = () => {
   };
 
   useEffect(() => {
+    console.log(
+      // dispatch,
+      obterDatasDeAulasDisponiveis
+      // permissoesTela,
+      // turmaId,
+      // turmaSelecionada.turma,
+      // disciplinaSelecionada,
+      // disciplinaIdSelecionada,
+      // dataSelecionada,
+      // frequencia,
+      // aulaId,
+      // listaDisciplinas,
+      // listaDatasAulas,
+      // diasParaHabilitar
+    );
+
     const obterDisciplinas = async () => {
       setCarregandoDisciplinas(true);
       const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
@@ -211,7 +227,7 @@ const FrequenciaPlanoAula = () => {
     setSomenteConsulta(somenteConsultarFrequencia);
   }, [
     dispatch,
-    obterDatasDeAulasDisponiveis,
+    // obterDatasDeAulasDisponiveis,
     permissoesTela,
     turmaId,
     turmaSelecionada.turma,
