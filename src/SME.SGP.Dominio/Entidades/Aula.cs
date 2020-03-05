@@ -48,6 +48,7 @@ namespace SME.SGP.Dominio
         public long? AulaPaiId { get; set; }
         public DateTime DataAula { get; set; }
         public string DisciplinaId { get; set; }
+        public string DisciplinaNome { get; set; }
         public string DisciplinaCompartilhadaId { get; set; }
 
         public bool EhAEE => ComponentesDeAEEColaborativo.Any(c => c == DisciplinaId);
@@ -108,6 +109,7 @@ namespace SME.SGP.Dominio
                 UeId = UeId,
                 AulaPai = AulaPai,
                 DisciplinaId = DisciplinaId,
+                DisciplinaNome = DisciplinaNome,
                 AulaPaiId = AulaPaiId,
                 DataAula = DataAula,
                 Migrado = Migrado,
