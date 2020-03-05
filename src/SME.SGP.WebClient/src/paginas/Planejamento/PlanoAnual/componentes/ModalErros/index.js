@@ -1,13 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import t from 'prop-types';
 
 // Componentes
 import { ModalMultiLinhas } from '~/componentes';
 
-function ModalErros({ visivel, erros, onCloseErrosBimestre, bimestre }) {
-  useEffect(() => {
-    console.log(bimestre && `| ${String(bimestre.bimestre)}º Bimestre`);
-  }, [bimestre]);
+function ModalErros({ visivel, erros, onCloseErrosBimestre }) {
   return (
     <ModalMultiLinhas
       key="errosBimestre"
@@ -15,22 +12,19 @@ function ModalErros({ visivel, erros, onCloseErrosBimestre, bimestre }) {
       onClose={() => onCloseErrosBimestre()}
       type="error"
       conteudo={erros}
-      titulo={`Erros plano anual ${bimestre &&
-        `| ${String(bimestre.bimestre)}º Bimestre`}`}
+      titulo="Erros plano anual"
     />
   );
 }
 
 ModalErros.propTypes = {
   visivel: t.bool,
-  bimestre: t.oneOfType([t.object, t.any]),
   erros: t.oneOfType([t.any]),
   onCloseErrosBimestre: t.func,
 };
 
 ModalErros.defaultProps = {
   visivel: false,
-  bimestre: '',
   erros: [],
   onCloseErrosBimestre: () => {},
 };

@@ -26,6 +26,7 @@ import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import Bimestre from './bimestre';
 import history from '~/servicos/history';
+import ModalErros from './componentes/ModalErros';
 
 const { Panel } = Collapse;
 
@@ -60,6 +61,7 @@ const PlanoAnual = () => {
   ] = useState(undefined);
 
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState('');
+  const [errosModal, setErrosModal] = useState([]);
 
   const onChangeDisciplinas = codigoDisciplina => {
     const disciplina = listaDisciplinas.find(
@@ -75,6 +77,7 @@ const PlanoAnual = () => {
     );
     return planoAnual[indiceBimestreAlterado];
   };
+
   const onChangeBimestre = bimestre => {
     const plano = obterPlano(bimestre.bimestre);
     plano.descricao = bimestre.descricao;
@@ -217,7 +220,7 @@ const PlanoAnual = () => {
     }
   };
 
-  //define o bimestre expandido
+  // define o bimestre expandido
   useEffect(() => {
     if (planoAnual && planoAnual.length > 0 && !emEdicao) {
       const expandido = planoAnual.find(c => c.obrigatorio);
@@ -225,7 +228,7 @@ const PlanoAnual = () => {
     }
   }, [planoAnual]);
 
-  //expande o bimestre atual
+  // expande o bimestre atual
   useEffect(() => {
     if (bimestreExpandido) {
       const refBimestre = refsPainel[bimestreExpandido - 1];
@@ -240,7 +243,7 @@ const PlanoAnual = () => {
     }
   }, [bimestreExpandido, refsPainel]);
 
-  //carrega lista de disciplinas
+  // carrega lista de disciplinas
   useEffect(() => {
     if (turmaSelecionada.turma) {
       setEmEdicao(false);
@@ -265,7 +268,7 @@ const PlanoAnual = () => {
     }
   }, [turmaSelecionada.ano, turmaSelecionada.turma]);
 
-  //carrega a lista de planos
+  // carrega a lista de planos
   useEffect(() => {
     if (codigoDisciplinaSelecionada) {
       setCarregandoDados(true);
@@ -340,6 +343,16 @@ const PlanoAnual = () => {
     }
   }, [turmaSelecionada]);
 
+  useEffect(() => {
+    const errosEscopo = [];
+    listaErros.forEach((item, index) => {
+      if (item.length > 0) {
+        item.forEach(err => errosEscopo.push(`${index + 1}º Bimestre: ${err}`));
+      }
+    });
+    setErrosModal(errosEscopo);
+  }, [listaErros]);
+
   const fecharCopiarConteudo = () => {
     setExibirCopiarConteudo(false);
   };
@@ -347,6 +360,7 @@ const PlanoAnual = () => {
   const onChangePossuiTurmasDisponiveisParaCopia = possuiTurmas => {
     setPossuiTurmasDisponiveisParaCopia(possuiTurmas);
   };
+
   return (
     <>
       <CopiarConteudo
@@ -368,6 +382,11 @@ const PlanoAnual = () => {
         }
       />
       <Loader loading={carregandoDados}>
+        <ModalErros
+          visivel={errosModal.length > 0}
+          erros={errosModal}
+          onCloseErrosBimestre={() => setErrosModal([])}
+        />
         <div className="col-md-12">
           {!possuiTurmaSelecionada ? (
             <Row className="mb-0 pb-0">
