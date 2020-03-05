@@ -203,21 +203,21 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<Evento>(query, new { eventoId, eventoPaiId, dataEvento });
         }
 
-        public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId, bool EhEventoSme = false, bool filtroDreUe = true, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = true)
+        public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId, bool EhEventoSme = false, bool filtroDreUe = true)
         {
-            var query = ObterEventos(dreId, ueId, null, null, EhEventoSme, !EhEventoSme, filtroDreUe, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
+            var query = ObterEventos(dreId, ueId, null, null, EhEventoSme, !EhEventoSme, filtroDreUe);
             return database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId });
         }
 
-        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeDia(long tipoCalendarioId, string dreId, string ueId, DateTime data, bool EhEventoSme, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = true)
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeDia(long tipoCalendarioId, string dreId, string ueId, DateTime data, bool EhEventoSme)
         {
-            var query = ObterEventos(dreId, ueId, null, data, EhEventoSme, !EhEventoSme, true, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
+            var query = ObterEventos(dreId, ueId, null, data, EhEventoSme, !EhEventoSme);
             return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId, data });
         }
 
-        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeMes(long tipoCalendarioId, string dreId, string ueId, int mes, bool EhEventoSme, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = true)
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeMes(long tipoCalendarioId, string dreId, string ueId, int mes, bool EhEventoSme)
         {
-            var query = ObterEventos(dreId, ueId, mes, null, EhEventoSme, !EhEventoSme, true, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
+            var query = ObterEventos(dreId, ueId, mes, null, EhEventoSme, !EhEventoSme);
             return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId, mes });
         }
 
@@ -366,7 +366,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo,");
             query.AppendLine("et.tipo_data,");
             query.AppendLine("et.descricao,");
-            query.AppendLine("et.excluido");
+            query.AppendLine("et.excluido,");
+            query.AppendLine("et.somente_leitura");
         }
 
         private static void MontaQueryFrom(StringBuilder query)
@@ -1285,15 +1286,12 @@ namespace SME.SGP.Dados.Repositorios
 
         #endregion Quantidade De Eventos Por Dia filtrado por mes
 
-        private string ObterEventos(string dreId, string ueId, int? mes = null, DateTime? data = null, bool EhEventoSme = false, bool naoTrazerSme = false, bool filtroDreUe = true, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false)
+        private string ObterEventos(string dreId, string ueId, int? mes = null, DateTime? data = null, bool EhEventoSme = false, bool naoTrazerSme = false, bool filtroDreUe = true)
         {
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
             MontaQueryFrom(query);
             MontaFiltroTipoCalendario(query);
-
-            if(!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
-                query.AppendFormat(" and et.codigo not in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
 
             StringBuilder queryDreUe = new StringBuilder();
 
@@ -1333,9 +1331,6 @@ namespace SME.SGP.Dados.Repositorios
                 MontaQueryFrom(query);
                 MontaFiltroTipoCalendario(query);
                 query.AppendLine("and e.dre_id is null and e.ue_id is null");
-
-                if (!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
-                    query.AppendFormat(" and et.codigo not in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
 
                 if (mes.HasValue)
                 {

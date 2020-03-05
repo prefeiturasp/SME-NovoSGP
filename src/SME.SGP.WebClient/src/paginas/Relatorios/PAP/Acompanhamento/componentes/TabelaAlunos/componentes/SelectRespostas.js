@@ -17,7 +17,7 @@ function SelectRespostas({
   useEffect(() => {
     setValorPadrao(() => {
       const respostasAlunoFiltradaPorObjetivo = aluno.respostas.find(
-        y => y && y.objetivoId === objetivoAtivo.id
+        y => y.objetivoId === objetivoAtivo.id
       );
 
       if (!respostasAlunoFiltradaPorObjetivo) {
@@ -61,7 +61,6 @@ SelectRespostas.propTypes = {
   aluno: t.oneOfType([t.object]),
   onChangeResposta: t.func,
   containerVinculoId: t.string,
-  bloquearLimpar: t.oneOfType([t.bool]),
 };
 
 SelectRespostas.defaultProps = {
@@ -70,7 +69,6 @@ SelectRespostas.defaultProps = {
   aluno: {},
   onChangeResposta: () => null,
   containerVinculoId: '',
-  bloquearLimpar: true,
 };
 
 export default SelectRespostas;

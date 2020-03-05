@@ -4,7 +4,6 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -26,12 +25,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult Filtrar(FiltroCicloDto filtroCicloDto)
         {
-            var retorno = consultasCiclo.Listar(filtroCicloDto);
-
-            if (retorno == null || !retorno.Any())
-                return NoContent();
-
-            return Ok(retorno);
+            return Ok(consultasCiclo.Listar(filtroCicloDto));
         }
     }
 }

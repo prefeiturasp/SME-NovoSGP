@@ -55,7 +55,6 @@ export default function PlanoCiclo() {
   const [planoCicloId, setPlanoCicloId] = useState(0);
   const [modalidadeEja, setModalidadeEja] = useState(false);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
-  const [campoCicloDesabilitado, setCampoCicloDesabilitado] = useState(false);
 
   const usuario = useSelector(store => store.usuario);
   const turmaSelecionada = useSelector(store => store.usuario.turmaSelecionada);
@@ -95,7 +94,6 @@ export default function PlanoCiclo() {
     if (usuario && turmaSelecionada.turma) {
       let anoSelecionado = '';
       let codModalidade = null;
-
       if (turmaSelecionada.turma) {
         anoSelecionado = String(turmaSelecionada.ano);
         codModalidade = turmaSelecionada.modalidade;
@@ -115,7 +113,6 @@ export default function PlanoCiclo() {
         anos = usuario.turmasUsuario.map(item => item.ano);
         anos = anos.filter((elem, pos) => anos.indexOf(elem) == pos);
       }
-
       if (anosTurmasUsuario.length < 1 && anos.length > 0) {
         setAnosTurmasUsuario(anos);
         params.anos = anos;
@@ -124,16 +121,6 @@ export default function PlanoCiclo() {
       }
 
       const ciclos = await api.post('v1/ciclos/filtro', params);
-
-      setSomenteConsulta(ciclos.status === 204);
-
-      if (ciclos.status === 204) {
-        setCarregandoCiclos(false);
-        setCarregando(false);
-        setListaCiclos([]);
-        setPlanoCicloId('');
-        return;
-      }
 
       let sugestaoCiclo = ciclos.data.find(item => item.selecionado);
       if (sugestaoCiclo && sugestaoCiclo.id) {
@@ -193,8 +180,6 @@ export default function PlanoCiclo() {
 
   async function obterCicloExistente(ano, escolaId, cicloId) {
     resetListas();
-    setCampoCicloDesabilitado(false);
-
     const ciclo = await api.get(
       `v1/planos/ciclo/${ano}/${cicloId}/${escolaId}`
     );
@@ -518,9 +503,7 @@ export default function PlanoCiclo() {
                       placeHolder="Selecione um tipo de ciclo"
                       lista={listaCiclos}
                       disabled={
-                        campoCicloDesabilitado ||
-                        somenteConsulta ||
-                        !podeAlterar()
+                        somenteConsulta || !podeAlterar()
                           ? true
                           : listaCiclos.length === 1
                       }
