@@ -14,7 +14,6 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioEventoTipo repositorioEventoTipo;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
                                IContextoAplicacao contextoAplicacao,
