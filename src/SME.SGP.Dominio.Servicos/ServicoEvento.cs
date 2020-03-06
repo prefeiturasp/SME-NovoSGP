@@ -118,10 +118,13 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioEvento.Salvar(evento);
 
+            // Envia para workflow apenas na Inclusão ou alteração apos aprovado
             var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && (devePassarPorWorkflowLiberacaoExcepcional || evento.DataInicio.Date < DateTime.Today && evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional);
-
-            if (enviarParaWorkflow)
-                await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
+            if (!ehAlteracao || (evento.Status == EntidadeStatus.Aprovado))
+            {
+                if (enviarParaWorkflow)
+                    await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
+            }
 
             if (!unitOfWorkJaEmUso)
                 unitOfWork.PersistirTransacao();
@@ -385,7 +388,7 @@ namespace SME.SGP.Dominio.Servicos
             if (escola == null)
                 throw new NegocioException($"Não foi possível localizar a escola da criação do evento.");
 
-            var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/:{evento.Id}/";
+            var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/{evento.Id}/";
 
             long idWorkflow = 0;
 
@@ -474,7 +477,7 @@ namespace SME.SGP.Dominio.Servicos
                         {
                             var temEventoSuspensaoAtividades = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, evento.UeId, evento.DreId, escopoRetroativo: true);
                             var temEventoFeriado = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Feriado, evento.TipoCalendarioId, string.Empty, string.Empty);
-                            if ((temEventoFeriado || temEventoSuspensaoAtividades || evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday || evento.DataFim.DayOfWeek == DayOfWeek.Saturday || evento.DataFim.DayOfWeek == DayOfWeek.Sunday) && evento.Letivo == EventoLetivo.Sim)
+                            if ((temEventoFeriado || temEventoSuspensaoAtividades || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday || evento.DataFim.DayOfWeek == DayOfWeek.Sunday) && evento.Letivo == EventoLetivo.Sim)
                             {
                                 if (temEventoLiberacaoExcepcional)
                                     return true;
@@ -484,8 +487,8 @@ namespace SME.SGP.Dominio.Servicos
                                         throw new NegocioException("Não é possível cadastrar o evento pois há feriado na data selecionada.");
                                     else if (temEventoSuspensaoAtividades)
                                         throw new NegocioException("Não é possível cadastrar o evento pois há evento de suspensão de atividades na data informada.");
-                                    else if (evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday)
-                                        throw new NegocioException("Não é possível cadastrar o evento letivo no final de semana.");
+                                    else if (evento.DataInicio.DayOfWeek == DayOfWeek.Sunday)
+                                        throw new NegocioException("Não é possível cadastrar o evento letivo no domingo.");
                                 }
                             }
                         }
