@@ -263,7 +263,7 @@ const PlanoAula = props => {
               checked={habilitaEscolhaObjetivos}
               size="default"
               className="mr-2"
-              disabled={desabilitarCampos}
+              disabled={desabilitarCampos || (ehProfessorCj && !planoAula.possuiPlanoAnual)}
             />
           </HabilitaObjetivos>
           <CardCollapse
