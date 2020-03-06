@@ -535,9 +535,6 @@ namespace SME.SGP.Dominio.Servicos
 
             var disciplina = disciplinasEol.FirstOrDefault();
 
-            if (disciplina == null)
-                throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
-
             return disciplina.Nome;
         }
 
