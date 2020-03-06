@@ -95,7 +95,6 @@ namespace SME.SGP.Aplicacao
                 return 4;
 
             return await ObterHorasGradeComponente(grade.Id, disciplina, int.Parse(turma.Ano));
-
         }
     }
 }
