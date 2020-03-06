@@ -15,9 +15,9 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAula : IServicoAula
     {
+        private readonly IComandosNotificacaoAula comandosNotificacaoAula;
         private readonly IComandosPlanoAula comandosPlanoAula;
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
-        private readonly IComandosNotificacaoAula comandosNotificacaoAula;
         private readonly IConfiguration configuration;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasGrade consultasGrade;
@@ -109,14 +109,15 @@ namespace SME.SGP.Dominio.Servicos
                 AlterarRecorrencia(aula, usuario, fimRecorrencia);
         }
 
-        public string Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0)
+        public string Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false)
         {
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
 
             if (tipoCalendario == null)
                 throw new NegocioException("O tipo de calendário não foi encontrado.");
 
-            VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula);
+            if (!ehRecorrencia)
+                VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula);
 
             if (aula.Id > 0)
                 aula.PodeSerAlterada(usuario);
@@ -309,7 +310,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 unitOfWork.Rollback();
                 throw;
-            }        
+            }
         }
 
         private async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
@@ -358,7 +359,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 try
                 {
-                    Salvar(aulaParaAdicionar, usuario, aulaParaAdicionar.RecorrenciaAula);
+                    Salvar(aulaParaAdicionar, usuario, aulaParaAdicionar.RecorrenciaAula, ehRecorrencia);
                 }
                 catch (NegocioException nex)
                 {
@@ -385,6 +386,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             List<DateTime> diasParaIncluirRecorrencia = new List<DateTime>();
             ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia, diasParaIncluirRecorrencia);
+
+            //Chamar o endpoint de verificação
 
             GerarAulaDeRecorrenciaParaDias(aula, diasParaIncluirRecorrencia, usuario);
         }
@@ -458,7 +461,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 unitOfWork.Rollback();
                 throw;
-            }        
+            }
         }
 
         private IEnumerable<DateTime> ObterDiaEntreDatas(DateTime inicio, DateTime fim)
