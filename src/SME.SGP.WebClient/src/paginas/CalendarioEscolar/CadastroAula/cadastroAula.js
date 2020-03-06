@@ -164,21 +164,11 @@ const CadastroAula = ({ match }) => {
   const onChangeDisciplinas = async id => {
     onChangeCampos();
     setIdDisciplina(id);
-
-    if (id && listaDisciplinas && listaDisciplinas.length) {
-      const disciplina = listaDisciplinas.find(
-        d => String(d.codigoComponenteCurricular) === String(id)
-      );
-
-      const regencia = !!disciplina.regencia;
-      setEhRegencia(regencia);
-
       let resultado;
 
       if (!disciplina.territorioSaber) {
         resultado = await api
           .get(
-            `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}?ehRegencia=${regencia}`,
             {
               params: {
                 data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
@@ -228,18 +218,8 @@ const CadastroAula = ({ match }) => {
         item =>
           item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
-      if (disciplina && disciplina) {
-        setDisciplinaCompartilhada(disciplina.compartilhada);
-      }
-
-      if (listaDisciplinas && listaDisciplinas.length === 1) {
-        if (Object.keys(refForm).length > 0) {
-          onChangeDisciplinas(
-            listaDisciplinas[0].codigoComponenteCurricular,
-            refForm
-          );
-        }
-      }
+      if (disciplina && disciplina[0])
+        setDisciplinaCompartilhada(disciplina[0].compartilhada);
     } else if (refForm && refForm.setFieldValue)
       refForm.setFieldValue('quantidadeTexto', '');
   }, [idDisciplina, listaDisciplinas, refForm]);
