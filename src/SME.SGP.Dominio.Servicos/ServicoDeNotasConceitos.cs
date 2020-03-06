@@ -26,6 +26,7 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -38,8 +39,8 @@ namespace SME.SGP.Dominio
             IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-            IRepositorioAula repositorioAula, IRepositorioTurma repositorioTurma, IServicoUsuario servicoUsuario,
-            IConfiguration configuration)
+            IRepositorioAula repositorioAula, IRepositorioTurma repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
+            IServicoUsuario servicoUsuario, IConfiguration configuration)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -53,6 +54,7 @@ namespace SME.SGP.Dominio
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -103,14 +105,12 @@ namespace SME.SGP.Dominio
 
         public async Task validarMediaAlunos(IEnumerable<long> idsAtividadesAvaliativas, IEnumerable<string> alunosId, Usuario usuario, string disciplinaId)
         {
-            var somaNotas = 0.0;
-            var somaConceitos = 0;
             var dataAtual = DateTime.Now;
             var notasConceitos = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(idsAtividadesAvaliativas, alunosId, disciplinaId);
-            int quantidadeAlunos = alunosId.Count();
             var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
 
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
+            var percentualAlunosInsuficientes = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
@@ -120,61 +120,37 @@ namespace SME.SGP.Dominio
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
                 var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
+                var quantidadeAlunos = notasPorAvaliacao.Count();
+                var quantidadeAlunosSuficientes = 0;
 
                 var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
                 var periodoAtividade = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
 
                 foreach (var nota in notasPorAvaliacao)
                 {
-                    if (ehTipoNota)
-                    {
-                        somaNotas += nota.Nota >= notaParametro.Media ? 1 : 0;
-                    }
-                    else
-                    {
-                        var conceito = valoresConceito.FirstOrDefault(a => a.Id == nota.Conceito);
-                        somaConceitos += conceito.Aprovado ? 1 : 0;
-                    }
+                    quantidadeAlunosSuficientes += ehTipoNota ?
+                        nota.Nota >= notaParametro.Media ? 1 : 0 :
+                        valoresConceito.FirstOrDefault(a => a.Id == nota.Conceito).Aprovado ? 1 : 0;
                 }
                 string mensagemNotasConceitos = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {periodoAtividade.Bimestre} de {turma.AnoLetivo} foram alterados " +
               $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} estão abaixo da média.</p>" +
               $"<a href='{hostAplicacao}diario-classe/notas/{disciplinaId}/{periodoAtividade.Bimestre}'>Clique aqui para visualizar os detalhes.</a>";
 
-                if (ehTipoNota)
+                // Avalia se a quantidade de alunos com nota/conceito suficientes esta abaixo do percentual parametrizado para notificação
+                if (quantidadeAlunosSuficientes < (quantidadeAlunos * percentualAlunosInsuficientes / 100))
                 {
-                    if (somaNotas < (quantidadeAlunos / 2))
+                    servicoNotificacao.Salvar(new Notificacao()
                     {
-                        servicoNotificacao.Salvar(new Notificacao()
-                        {
-                            Ano = atividadeAvaliativa.CriadoEm.Year,
-                            Categoria = NotificacaoCategoria.Alerta,
-                            DreId = atividadeAvaliativa.DreId,
-                            Mensagem = mensagemNotasConceitos,
-                            UsuarioId = usuario.Id,
-                            Tipo = NotificacaoTipo.Notas,
-                            Titulo = $"Resultados de Atividade Avaliativa - Turma {turma.Nome}",
-                            TurmaId = atividadeAvaliativa.TurmaId,
-                            UeId = atividadeAvaliativa.UeId,
-                        });
-                    }
-                }
-                else
-                {
-                    if (somaConceitos < (quantidadeAlunos / 2))
-                    {
-                        servicoNotificacao.Salvar(new Notificacao()
-                        {
-                            Ano = atividadeAvaliativa.CriadoEm.Year,
-                            Categoria = NotificacaoCategoria.Alerta,
-                            DreId = atividadeAvaliativa.DreId,
-                            Mensagem = mensagemNotasConceitos,
-                            UsuarioId = usuario.Id,
-                            Tipo = NotificacaoTipo.Notas,
-                            Titulo = $"Resultados de Atividade Avaliativa - Turma {turma.Nome}",
-                            TurmaId = atividadeAvaliativa.TurmaId,
-                            UeId = atividadeAvaliativa.UeId,
-                        });
-                    }
+                        Ano = atividadeAvaliativa.CriadoEm.Year,
+                        Categoria = NotificacaoCategoria.Alerta,
+                        DreId = atividadeAvaliativa.DreId,
+                        Mensagem = mensagemNotasConceitos,
+                        UsuarioId = usuario.Id,
+                        Tipo = NotificacaoTipo.Notas,
+                        Titulo = $"Resultados de Atividade Avaliativa - Turma {turma.Nome}",
+                        TurmaId = atividadeAvaliativa.TurmaId,
+                        UeId = atividadeAvaliativa.UeId,
+                    });
                 }
             }
         }
