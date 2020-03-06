@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
             if (!retornoAutenticacaoEol.Item4 && retornoAutenticacaoEol.Item5)
                 retornoAutenticacaoEol.Item3 = ValidarPerfilCJ(retornoAutenticacaoEol.Item2, retornoAutenticacaoEol.Item1.UsuarioId, retornoAutenticacaoEol.Item3, login).Result;
 
-            var dadosUsuario = await servicoEOL.ObterMeusDados(login);
+            var dadosUsuario = await repositorioCache.Obter($"MeusDados-{login}", () => servicoEOL.ObterMeusDados(login), 720);
 
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email);
 
@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
 
             var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
 
-            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(perfilSelecionado);
+            var permissionamentos = await repositorioCache.Obter($"Permissionamento-{perfilSelecionado.ToString()}", () => servicoEOL.ObterPermissoesPorPerfil(perfilSelecionado), 720);
 
             if (permissionamentos == null || !permissionamentos.Any())
             {
