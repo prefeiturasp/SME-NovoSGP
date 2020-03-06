@@ -90,7 +90,7 @@ namespace SME.SGP.Dominio
 
             SalvarNoBanco(entidadesSalvar);
             var alunosId = alunos.Select(a => a.CodigoAluno).ToList();
-            await validarMediaAlunos(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId);
+            await validarMediaAlunos(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turmaId);
         }
 
         public async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, bool consideraHistorico = false)
@@ -103,7 +103,7 @@ namespace SME.SGP.Dominio
             return notaTipo;
         }
 
-        public async Task validarMediaAlunos(IEnumerable<long> idsAtividadesAvaliativas, IEnumerable<string> alunosId, Usuario usuario, string disciplinaId)
+        public async Task validarMediaAlunos(IEnumerable<long> idsAtividadesAvaliativas, IEnumerable<string> alunosId, Usuario usuario, string disciplinaId, string turmaCodigo)
         {
             var dataAtual = DateTime.Now;
             var notasConceitos = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(idsAtividadesAvaliativas, alunosId, disciplinaId);
@@ -112,6 +112,10 @@ namespace SME.SGP.Dominio
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
             var percentualAlunosInsuficientes = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
 
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(turmaCodigo);
+            var listaCPsUe = servicoEOL.ObterFuncionariosPorCargoUe(turmaCodigo, (long)Cargo.CP);
+            var listaUsuariosCPs = CarregaUsuariosPorRFs(listaCPsUe);
+
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
@@ -119,7 +123,6 @@ namespace SME.SGP.Dominio
                 var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
-                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
                 var quantidadeAlunos = notasPorAvaliacao.Count();
                 var quantidadeAlunosSuficientes = 0;
 
@@ -139,19 +142,31 @@ namespace SME.SGP.Dominio
                 // Avalia se a quantidade de alunos com nota/conceito suficientes esta abaixo do percentual parametrizado para notificação
                 if (quantidadeAlunosSuficientes < (quantidadeAlunos * percentualAlunosInsuficientes / 100))
                 {
-                    servicoNotificacao.Salvar(new Notificacao()
+                    // Notifica todos os CPs da UE
+                    foreach(var usuarioCP in listaUsuariosCPs)
                     {
-                        Ano = atividadeAvaliativa.CriadoEm.Year,
-                        Categoria = NotificacaoCategoria.Alerta,
-                        DreId = atividadeAvaliativa.DreId,
-                        Mensagem = mensagemNotasConceitos,
-                        UsuarioId = usuario.Id,
-                        Tipo = NotificacaoTipo.Notas,
-                        Titulo = $"Resultados de Atividade Avaliativa - Turma {turma.Nome}",
-                        TurmaId = atividadeAvaliativa.TurmaId,
-                        UeId = atividadeAvaliativa.UeId,
-                    });
+                        servicoNotificacao.Salvar(new Notificacao()
+                        {
+                            Ano = atividadeAvaliativa.CriadoEm.Year,
+                            Categoria = NotificacaoCategoria.Alerta,
+                            DreId = atividadeAvaliativa.DreId,
+                            Mensagem = mensagemNotasConceitos,
+                            UsuarioId = usuarioCP.Id,
+                            Tipo = NotificacaoTipo.Notas,
+                            Titulo = $"Resultados de Atividade Avaliativa - Turma {turma.Nome}",
+                            TurmaId = atividadeAvaliativa.TurmaId,
+                            UeId = atividadeAvaliativa.UeId,
+                        });
+                    }
                 }
+            }
+        }
+
+        private IEnumerable<Usuario> CarregaUsuariosPorRFs(IEnumerable<UsuarioEolRetornoDto> listaCPsUe)
+        {
+            foreach(var cpUe in listaCPsUe)
+            {
+                yield return servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cpUe.CodigoRf);
             }
         }
 
