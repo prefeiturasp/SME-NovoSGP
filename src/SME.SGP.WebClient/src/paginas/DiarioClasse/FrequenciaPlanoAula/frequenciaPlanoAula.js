@@ -564,7 +564,16 @@ const FrequenciaPlanoAula = () => {
       !exibirCardFrequencia &&
       permiteRegistroFrequencia
     ) {
-      setModoEdicaoFrequencia(true);
+      let temAulas = false;
+      if (frequencia && frequencia.length) {
+        const aulas = frequencia.filter(
+          item => item.aulas && item.aulas.length
+        );
+        temAulas = !!(aulas && aulas.length);
+      }
+      if (temAulas) {
+        setModoEdicaoFrequencia(true);
+      }
     }
     setExibirCardFrequencia(!exibirCardFrequencia);
   };
