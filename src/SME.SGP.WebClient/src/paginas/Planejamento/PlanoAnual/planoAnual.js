@@ -487,9 +487,7 @@ const PlanoAnual = () => {
                   planoAnual.length > 0 &&
                   planoAnual.map(plano => (
                     <Panel
-                      header={`${plano.bimestre}º ${
-                        ehEja ? 'Semestre' : 'Bimestre'
-                        }`}
+                      header={`${plano.bimestre}º Bimestre`}
                       key={plano.bimestre}
                     >
                       <div ref={refsPainel[plano.bimestre - 1]}>
