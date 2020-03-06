@@ -143,24 +143,6 @@ const Bimestre = ({
     }
   }, [objetivosCarregados]);
 
-  // useEffect(() => {
-  //   setObjetivosSelecionados(bimestre.objetivosAprendizagem);
-  //   const componentesCurricularesId = bimestre.objetivosAprendizagem.map(
-  //     c => c.id
-  //   );
-  //   const listaObjetivosAprendizagemSelecionados = objetivosAprendizagem.map(
-  //     c => {
-  //       if (componentesCurricularesId.includes(c.id)) {
-  //         c.selecionado = true;
-  //       } else {
-  //         c.selecionado = false;
-  //       }
-  //       return c;
-  //     }
-  //   );
-  //   setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
-  // }, [bimestre.objetivosAprendizagem]);
-
   useEffect(() => {
     setDescricaoObjetivo(bimestre.descricao);
   }, [bimestre.descricao]);
