@@ -51,7 +51,7 @@ const FrequenciaPlanoAula = () => {
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
 
-  const [carregandoFrequencia, setCarregandoFrequencia] = useState(true);
+  const [carregandoFrequencia, setCarregandoFrequencia] = useState(false);
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
 
   const [listaDisciplinas, setListaDisciplinas] = useState();
@@ -236,7 +236,9 @@ const FrequenciaPlanoAula = () => {
   ]);
 
   const obterListaFrequencia = async id => {
+    setCarregandoFrequencia(true);
     setAulaId(id);
+
     const frequenciaAlunos = await api
       .get(`v1/calendarios/frequencias`, { params: { aulaId: id } })
       .catch(e => erros(e));
@@ -257,7 +259,7 @@ const FrequenciaPlanoAula = () => {
     setCarregandoFrequencia(false);
   };
 
-  const [carregandoMaterias, setCarregandoMaterias] = useState(true);
+  const [carregandoMaterias, setCarregandoMaterias] = useState(false);
 
   const obterPlanoAula = useCallback(
     async dadosAula => {
@@ -298,6 +300,8 @@ const FrequenciaPlanoAula = () => {
       }
 
       if (disciplinaSelecionada.regencia || ehProfessor || ehProfessorCj) {
+        setCarregandoMaterias(true);
+
         let disciplinas = {};
         if (disciplinaSelecionada.regencia) {
           setTemObjetivos(true);
@@ -436,14 +440,17 @@ const FrequenciaPlanoAula = () => {
 
   const obterAulaSelecionada = useCallback(
     async data => {
-      const aulaDataSelecionada = listaDatasAulas.filter(item => {
-        return (
-          window.moment(item.data).format('DD/MM/YYYY') ===
-          window.moment(data).format('DD/MM/YYYY')
-        );
-      });
+      if (listaDatasAulas) {
+        const aulaDataSelecionada = listaDatasAulas.filter(item => {
+          return (
+            window.moment(item.data).format('DD/MM/YYYY') ===
+            window.moment(data).format('DD/MM/YYYY')
+          );
+        });
 
-      return aulaDataSelecionada;
+        return aulaDataSelecionada;
+      }
+      return null;
     },
     [listaDatasAulas]
   );
@@ -647,8 +654,8 @@ const FrequenciaPlanoAula = () => {
       setDataSelecionada(data);
       resetarTelaFrequencia(true, true);
       resetarPlanoAula();
-      const aulaDataSelecionada = obterAulaSelecionada(data);
-      if (aulaDataSelecionada.length) {
+      const aulaDataSelecionada = await obterAulaSelecionada(data);
+      if (aulaDataSelecionada && aulaDataSelecionada.length) {
         if (
           usuario &&
           !usuario.ehProfessor &&
@@ -694,6 +701,9 @@ const FrequenciaPlanoAula = () => {
 
   const onChangeData = async data => {
     setCarregandoGeral(true);
+    setExibirCardFrequencia(false);
+    setPlanoAulaExpandido(false);
+
     if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
       const confirmarParaSalvar = await pergutarParaSalvar();
       if (confirmarParaSalvar) {
