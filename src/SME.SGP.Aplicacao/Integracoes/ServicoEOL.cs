@@ -482,6 +482,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
             {
+                await RegistrarLogSentryAsync(resposta, "ObterMeusDados", "login = " + login);
                 throw new NegocioException("Não foi possível obter os dados do usuário");
             }
             var json = await resposta.Content.ReadAsStringAsync();
@@ -705,6 +706,23 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var json = resposta.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<bool>(json);
+        }
+
+        public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, string[] datas)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var datasParaEnvio = JsonConvert.SerializeObject(datas);
+
+            var resposta = await httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/atribuicao/verificar", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json"));
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<PodePersistirNaDataRetornoEolDto>>(json);
+            }
+
+            throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
         }
 
         public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
