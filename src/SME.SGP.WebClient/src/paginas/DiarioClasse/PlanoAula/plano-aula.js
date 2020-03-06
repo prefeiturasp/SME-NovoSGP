@@ -75,10 +75,6 @@ const PlanoAula = props => {
   const [objetivosAprendizagem, setObjetivosAprendizagem] = useState(
     planoAula.objetivosAprendizagemAula
   );
-  const textEditorObjetivosRef = useRef(null);
-  const textEditorDesenvAulaRef = useRef(null);
-  const textEditorRecContinuaRef = useRef(null);
-  const textEditorLicaoCasaRef = useRef(null);
   const [habilitaEscolhaObjetivos, setEscolhaHabilitaObjetivos] = useState(
     false
   );
@@ -139,8 +135,12 @@ const PlanoAula = props => {
   const selecionarMateria = async id => {
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
-    materia.selecionada = !materia.selecionada;
+    //materia.selecionada = !materia.selecionada;
+    materias.forEach(m => {
+      m.selecionada = m.id === id ? !m.selecionada : false;
+    });
     if (materia.selecionada) {
+      removerObjetivosNaoSelecionados();
       const objetivos = await api.get(
         `v1/objetivos-aprendizagem/objetivos/turmas/${turmaId}/componentes/${disciplinaIdSelecionada}/disciplinas/${id}?dataAula=${dataAula}&regencia=${ehRegencia}`
       );
@@ -155,18 +155,23 @@ const PlanoAula = props => {
           }
         });
       }
-    } else if (objetivosAprendizagem && objetivosAprendizagem.length > 0) {
-      materia.objetivos.forEach(objetivo => {
-        const idx = objetivosAprendizagem.findIndex(
-          obj => obj.codigo === objetivo.codigo
-        );
-        if (!objetivosAprendizagem[idx].selected) {
-          objetivosAprendizagem.splice(idx, 1);
-        }
-      });
+    } else {
+      removerObjetivosNaoSelecionados();
     }
     setMaterias([...materias]);
   };
+
+  const removerObjetivosNaoSelecionados = () => {
+    let objetivosRemover = [];
+    objetivosAprendizagem.forEach(objetivo => {
+      if (!objetivo.selected) {
+        objetivosRemover.push(objetivo);
+      }
+    });
+    objetivosRemover.forEach(obj => {
+      objetivosAprendizagem.splice(objetivosAprendizagem.indexOf(obj), 1);
+    });
+  }
 
   const onBlurMeusObjetivos = value => {
     if (value !== planoAula.descricao) {
@@ -258,12 +263,12 @@ const PlanoAula = props => {
               checked={habilitaEscolhaObjetivos}
               size="default"
               className="mr-2"
-              disabled={desabilitarCampos}
+              disabled={desabilitarCampos || (ehProfessorCj && !planoAula.possuiPlanoAnual)}
             />
           </HabilitaObjetivos>
           <CardCollapse
             key="objetivos-aprendizagem"
-            onClick={() => {}}
+            onClick={() => { }}
             titulo="Objetivos de Aprendizagem e Desenvolvimento e meus objetivos (Currículo da Cidade)"
             indice="objetivos-aprendizagem"
             show
@@ -277,21 +282,21 @@ const PlanoAula = props => {
                   </h6>
                   {temObjetivos
                     ? materias.map(materia => {
-                        return (
-                          <Badge
-                            role="button"
-                            disabled={desabilitarCampos}
-                            onClick={() => selecionarMateria(materia.id)}
-                            id={materia.id}
-                            alt={materia.descricao}
-                            key={materia.id}
-                            className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
+                      return (
+                        <Badge
+                          role="button"
+                          disabled={desabilitarCampos}
+                          onClick={() => selecionarMateria(materia.id)}
+                          id={materia.id}
+                          alt={materia.descricao}
+                          key={materia.id}
+                          className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
                       ${materia.selecionada ? ' badge-selecionado' : ''}`}
-                          >
-                            {materia.descricao}
-                          </Badge>
-                        );
-                      })
+                        >
+                          {materia.descricao}
+                        </Badge>
+                      );
+                    })
                     : null}
                   <ObjetivosList className="mt-4 overflow-auto">
                     {objetivosAprendizagem.map(objetivo => {
@@ -303,7 +308,7 @@ const PlanoAula = props => {
                           <ListItemButton
                             className={`${
                               objetivo.selected ? 'objetivo-selecionado ' : ''
-                            } list-group-item d-flex align-items-center font-weight-bold fonte-14`}
+                              } list-group-item d-flex align-items-center font-weight-bold fonte-14`}
                             role="button"
                             id={objetivo.id}
                             aria-pressed={!!objetivo.selected}
@@ -355,26 +360,26 @@ const PlanoAula = props => {
                           );
                         })}
                       {objetivosAprendizagem.filter(x => x.selected).length >
-                      1 ? (
-                        <Button
-                          key="removerTodos"
-                          label="Remover Todos"
-                          color={Colors.CinzaBotao}
-                          bold
-                          alt="Remover todos os objetivos selecionados"
-                          id="removerTodos"
-                          height="38px"
-                          width="92px"
-                          fontSize="12px"
-                          padding="0px 5px"
-                          lineHeight="1.2"
-                          steady
-                          disabled={desabilitarCampos}
-                          border
-                          className="text-dark mt-3 mr-2 stretched-link"
-                          onClick={() => removerTodosObjetivos()}
-                        />
-                      ) : null}
+                        1 ? (
+                          <Button
+                            key="removerTodos"
+                            label="Remover Todos"
+                            color={Colors.CinzaBotao}
+                            bold
+                            alt="Remover todos os objetivos selecionados"
+                            id="removerTodos"
+                            height="38px"
+                            width="92px"
+                            fontSize="12px"
+                            padding="0px 5px"
+                            lineHeight="1.2"
+                            steady
+                            disabled={desabilitarCampos}
+                            border
+                            className="text-dark mt-3 mr-2 stretched-link"
+                            onClick={() => removerTodosObjetivos()}
+                          />
+                        ) : null}
                     </div>
                   </Grid>
                 ) : null}
@@ -403,7 +408,7 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="desenv-aula"
-            onClick={() => {}}
+            onClick={() => { }}
             titulo="Desenvolvimento da aula"
             indice="desenv-aula"
             show
@@ -419,7 +424,7 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="rec-continua"
-            onClick={() => {}}
+            onClick={() => { }}
             titulo="Recuperação contínua"
             indice="rec-continua"
             show={false}
@@ -435,7 +440,7 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="licao-casa"
-            onClick={() => {}}
+            onClick={() => { }}
             titulo="Lição de casa"
             indice="licao-casa"
             show={false}
@@ -457,8 +462,8 @@ const PlanoAula = props => {
               alteradoEm={auditoria.alteradoEm}
             />
           ) : (
-            ''
-          )}
+              ''
+            )}
         </Loader>
       </CardCollapse>
       <ModalCopiarConteudo
