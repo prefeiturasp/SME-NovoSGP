@@ -135,7 +135,6 @@ const PlanoAula = props => {
   const selecionarMateria = async id => {
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
-    //materia.selecionada = !materia.selecionada;
     materias.forEach(m => {
       m.selecionada = m.id === id ? !m.selecionada : false;
     });
