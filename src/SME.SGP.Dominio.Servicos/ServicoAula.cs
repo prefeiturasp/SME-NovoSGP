@@ -359,7 +359,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 try
                 {
-                    Salvar(aulaParaAdicionar, usuario, aulaParaAdicionar.RecorrenciaAula, ehRecorrencia);
+                    // Salvar(aulaParaAdicionar, usuario, aulaParaAdicionar.RecorrenciaAula, ehRecorrencia);
                 }
                 catch (NegocioException nex)
                 {
