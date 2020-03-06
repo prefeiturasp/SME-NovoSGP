@@ -42,12 +42,13 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import LocalOcorrencia from '~/constantes/localOcorrencia';
 
 // Styles
-import { ListaCopiarEventos } from './eventos.css';
+import { ListaCopiarEventos, StatusAguardandoAprovacao } from './eventos.css';
 
 // Utils
 import { parseScreenObject } from '~/utils/parsers/eventRecurrence';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+import entidadeStatusDto from '~/dtos/entidadeStatusDto';
 
 const EventosForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -125,6 +126,8 @@ const EventosForm = ({ match }) => {
   const [dataAlterada, setDataAlterada] = useState(false);
   const [recorrencia, setRecorrencia] = useState(null);
 
+  const [aguardandoAprovacao, setAguardandoAprovacao] = useState(false);
+
   const obterUesPorDre = dre => {
     return api.get(`/v1/abrangencias/false/dres/${dre}/ues`);
   };
@@ -174,6 +177,11 @@ const EventosForm = ({ match }) => {
     const desabilitar = novoRegistro
       ? somenteConsulta || !permissoesTela.podeIncluir
       : somenteConsulta || !permissoesTela.podeAlterar;
+
+    if (aguardandoAprovacao) {
+      setDesabilitarCampos(aguardandoAprovacao);
+      return;
+    }
     setDesabilitarCampos(desabilitar);
   }, [
     somenteConsulta,
@@ -181,6 +189,7 @@ const EventosForm = ({ match }) => {
     permissoesTela.podeIncluir,
     permissoesTela.podeAlterar,
     usuarioPodeAlterar,
+    aguardandoAprovacao,
   ]);
 
   const montaValidacoes = useCallback(() => {
@@ -340,6 +349,11 @@ const EventosForm = ({ match }) => {
     const evento = await servicoEvento.obterPorId(id).catch(e => erros(e));
 
     if (evento && evento.data) {
+      if (evento.data.status == entidadeStatusDto.AguardandoAprovacao) {
+        setAguardandoAprovacao(true);
+      } else {
+        setAguardandoAprovacao(false);
+      }
       if (evento.data.dreId && evento.data.dreId > 0) {
         carregarUes(evento.data.dreId);
       }
@@ -781,7 +795,26 @@ const EventosForm = ({ match }) => {
 
   return (
     <Loader loading={carregandoSalvar} tip="">
-      <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
+      <div className="row">
+        <div
+          className={`${
+            aguardandoAprovacao
+              ? 'col-sm-12 col-md-7 col-lg-7 col-xl-9'
+              : 'col-md-12'
+          }`}
+        >
+          <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
+        </div>
+        {aguardandoAprovacao ? (
+          <div className="col-sm-12 col-md-5 col-lg-5 col-xl-3 pb-2 d-flex justify-content-end">
+            <StatusAguardandoAprovacao>
+              Aguardando Aprovação
+            </StatusAguardandoAprovacao>
+          </div>
+        ) : (
+          ''
+        )}
+      </div>
       <ModalRecorrencia
         onCloseRecorrencia={onCloseRecorrencia}
         onSaveRecorrencia={onSaveRecorrencia}
@@ -915,7 +948,7 @@ const EventosForm = ({ match }) => {
                     eventoTipoFeriadoSelecionado
                       ? 'col-md-3 col-lg-3 col-xl-3'
                       : 'col-md-6 col-lg-6 col-xl-6'
-                    } pb-2`}
+                  } pb-2`}
                 >
                   <SelectComponent
                     form={form}
@@ -947,8 +980,8 @@ const EventosForm = ({ match }) => {
                     />
                   </div>
                 ) : (
-                    ''
-                  )}
+                  ''
+                )}
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
                   <CampoData
                     form={form}
@@ -966,18 +999,18 @@ const EventosForm = ({ match }) => {
                 {tipoDataUnico ? (
                   ''
                 ) : (
-                    <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
-                      <CampoData
-                        form={form}
-                        label="Data fim do evento"
-                        placeholder="Data fim do evento"
-                        formatoData="DD/MM/YYYY"
-                        name="dataFim"
-                        onChange={onChangeCampos}
-                        desabilitado={desabilitarCampos || !usuarioPodeAlterar}
-                      />
-                    </div>
-                  )}
+                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
+                    <CampoData
+                      form={form}
+                      label="Data fim do evento"
+                      placeholder="Data fim do evento"
+                      formatoData="DD/MM/YYYY"
+                      name="dataFim"
+                      onChange={onChangeCampos}
+                      desabilitado={desabilitarCampos || !usuarioPodeAlterar}
+                    />
+                  </div>
+                )}
                 <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
                   <Button
                     id={shortid.generate()}
@@ -1039,16 +1072,16 @@ const EventosForm = ({ match }) => {
                     disabled={desabilitarCampos || !usuarioPodeAlterar}
                   />
                   {listaCalendarioParaCopiar &&
-                    listaCalendarioParaCopiar.length ? (
-                      <ListaCopiarEventos>
-                        <div className="mb-1">
-                          Evento será copiado para os calendários:
+                  listaCalendarioParaCopiar.length ? (
+                    <ListaCopiarEventos>
+                      <div className="mb-1">
+                        Evento será copiado para os calendários:
                       </div>
-                        {montarExibicaoEventosCopiar()}
-                      </ListaCopiarEventos>
-                    ) : (
-                      ''
-                    )}
+                      {montarExibicaoEventosCopiar()}
+                    </ListaCopiarEventos>
+                  ) : (
+                    ''
+                  )}
                 </div>
               </div>
             </Form>
@@ -1064,8 +1097,8 @@ const EventosForm = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-            ''
-          )}
+          ''
+        )}
         <ModalConteudoHtml
           key="copiarEvento"
           visivel={exibirModalCopiarEvento}
@@ -1111,11 +1144,11 @@ const EventosForm = ({ match }) => {
                   {item.mensagem}
                 </strong>
               ) : (
-                  <strong className="text-danger">
-                    <i className="fas fa-times mr-3" />
-                    {item.mensagem}
-                  </strong>
-                )}
+                <strong className="text-danger">
+                  <i className="fas fa-times mr-3" />
+                  {item.mensagem}
+                </strong>
+              )}
             </p>
           ))}
         </ModalConteudoHtml>
