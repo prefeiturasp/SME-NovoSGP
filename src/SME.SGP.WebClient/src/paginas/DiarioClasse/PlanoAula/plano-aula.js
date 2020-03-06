@@ -75,10 +75,6 @@ const PlanoAula = props => {
   const [objetivosAprendizagem, setObjetivosAprendizagem] = useState(
     planoAula.objetivosAprendizagemAula
   );
-  const textEditorObjetivosRef = useRef(null);
-  const textEditorDesenvAulaRef = useRef(null);
-  const textEditorRecContinuaRef = useRef(null);
-  const textEditorLicaoCasaRef = useRef(null);
   const [habilitaEscolhaObjetivos, setEscolhaHabilitaObjetivos] = useState(
     false
   );
@@ -139,8 +135,12 @@ const PlanoAula = props => {
   const selecionarMateria = async id => {
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
-    materia.selecionada = !materia.selecionada;
+    //materia.selecionada = !materia.selecionada;
+    materias.forEach(m => {
+      m.selecionada = m.id === id ? !m.selecionada : false;
+    });
     if (materia.selecionada) {
+      removerObjetivosNaoSelecionados();
       const objetivos = await api.get(
         `v1/objetivos-aprendizagem/objetivos/turmas/${turmaId}/componentes/${disciplinaIdSelecionada}/disciplinas/${id}?dataAula=${dataAula}&regencia=${ehRegencia}`
       );
@@ -155,18 +155,23 @@ const PlanoAula = props => {
           }
         });
       }
-    } else if (objetivosAprendizagem && objetivosAprendizagem.length > 0) {
-      materia.objetivos.forEach(objetivo => {
-        const idx = objetivosAprendizagem.findIndex(
-          obj => obj.codigo === objetivo.codigo
-        );
-        if (!objetivosAprendizagem[idx].selected) {
-          objetivosAprendizagem.splice(idx, 1);
-        }
-      });
+    } else {
+      removerObjetivosNaoSelecionados();
     }
     setMaterias([...materias]);
   };
+
+  const removerObjetivosNaoSelecionados = () => {
+    let objetivosRemover = [];
+    objetivosAprendizagem.forEach(objetivo => {
+      if (!objetivo.selected) {
+        objetivosRemover.push(objetivo);
+      }
+    });
+    objetivosRemover.forEach(obj => {
+      objetivosAprendizagem.splice(objetivosAprendizagem.indexOf(obj), 1);
+    });
+  }
 
   const onBlurMeusObjetivos = value => {
     if (value !== planoAula.descricao) {
