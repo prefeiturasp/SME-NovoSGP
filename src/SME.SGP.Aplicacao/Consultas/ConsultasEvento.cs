@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ConsultasEvento : ConsultasBase, IConsultasEvento
     {
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
