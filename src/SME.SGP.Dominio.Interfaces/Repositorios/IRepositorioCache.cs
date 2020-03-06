@@ -1,10 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioCache
     {
         string Obter(string nomeChave);
+
+        T Obter<T>(string nomeChave);
+
+        T Obter<T>(string nomeChave, Func<T> buscarDados, int minutosParaExpirar);
 
         Task<string> ObterAsync(string nomeChave);
 
