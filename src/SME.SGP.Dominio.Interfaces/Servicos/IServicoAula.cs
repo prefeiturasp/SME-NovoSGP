@@ -6,8 +6,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<string> Excluir(Aula aula, RecorrenciaAula recorrencia, Usuario usuario);
 
-        void GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia);
+        Task GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia);
 
-        string Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false);
+        Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false);
     }
 }
