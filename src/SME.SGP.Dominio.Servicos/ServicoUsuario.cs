@@ -25,7 +25,7 @@ namespace SME.SGP.Dominio
         private readonly IUnitOfWork unitOfWork;
 
         public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
-                              IServicoEOL servicoEOL,
+                                      IServicoEOL servicoEOL,
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
                               IUnitOfWork unitOfWork,
                               IContextoAplicacao contextoAplicacao,
@@ -203,8 +203,14 @@ namespace SME.SGP.Dominio
                 usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, string.Empty);
 
             if (!usuario.EhProfessorCj())
-                return await servicoEOL.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, data);
+            {
+                var validacaoData = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, turmaId, new string[] { data.ToString("s") }, long.Parse(disciplinaId));
 
+                if (validacaoData == null && !validacaoData.Any())
+                    throw new NegocioException("Não foi possível obter a validação do professor no EOL.");
+
+                return validacaoData.FirstOrDefault().PodePersistir;
+            }
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
