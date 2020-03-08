@@ -196,14 +196,15 @@ namespace SME.SGP.Dominio
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
 
-        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data)
+        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
         {
-            var usuarioLogado = await ObterUsuarioLogado();
+            if (usuario == null)
+                usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, string.Empty);
 
-            if (!usuarioLogado.EhProfessorCj())
-                return await servicoEOL.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, data);
+            if (!usuario.EhProfessorCj())
+                return await servicoEOL.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, data);
 
-            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRf);
+            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
