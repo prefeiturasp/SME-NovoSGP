@@ -206,7 +206,7 @@ namespace SME.SGP.Dominio
             {
                 var validacaoData = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, turmaId, new string[] { data.ToString("s") }, long.Parse(disciplinaId));
 
-                if (validacaoData == null && !validacaoData.Any())
+                if (validacaoData == null || !validacaoData.Any())
                     throw new NegocioException("Não foi possível obter a validação do professor no EOL.");
 
                 return validacaoData.FirstOrDefault().PodePersistir;
