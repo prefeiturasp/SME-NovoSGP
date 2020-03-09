@@ -341,7 +341,7 @@ const PlanoAnual = () => {
     setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     setEmEdicao(false);
     if (turmaSelecionada && turmaSelecionada.turma) {
-      setEhEja(turmaSelecionada.modalidade === modalidade.EJA.toString());
+      setEhEja(turmaSelecionada.modalidade.toString() === modalidade.EJA.toString());
     }
   }, [turmaSelecionada]);
 
@@ -495,8 +495,8 @@ const PlanoAnual = () => {
                           ano={turmaSelecionada.ano}
                           ehEja={ehEja}
                           ehMedio={
-                            turmaSelecionada.modalidade ===
-                            modalidade.ENSINO_MEDIO
+                            turmaSelecionada.modalidade.toString() ===
+                            modalidade.ENSINO_MEDIO.toString()
                           }
                           disciplinaSemObjetivo={
                             !disciplinaSelecionada.possuiObjetivos
