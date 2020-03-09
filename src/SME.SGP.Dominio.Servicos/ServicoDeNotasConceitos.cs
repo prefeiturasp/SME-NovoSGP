@@ -97,6 +97,9 @@ namespace SME.SGP.Dominio
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
         {
             turma = repositorioTurma.ObterTurmaComUeEDrePorId(turmaId);
+            if (turma == null)
+                throw new NegocioException($"Turma com código [{turmaId}] não localizada");
+
             var idsAtividadesAvaliativas = notasConceitos.Select(x => x.AtividadeAvaliativaID);
 
             var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
@@ -113,6 +116,9 @@ namespace SME.SGP.Dominio
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR)
+                await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, DateTime.Today);
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
@@ -277,9 +283,6 @@ namespace SME.SGP.Dominio
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
             var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
             var dataAtual = DateTime.Now;
-
-            if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR)
-                await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, atividadeAvaliativa.TurmaId, disciplinaId, dataAtual);
 
             // Verifica Bimestre Atual
             var dataPesquisa = DateTime.Now;
