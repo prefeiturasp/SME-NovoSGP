@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -169,9 +170,14 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
 
                 // Busca quantidade de aulas semanais da grade de aula
+<<<<<<< HEAD
                 //Buscar tudo de uma vez?
                 var semana = (aula.DataAula.DayOfYear / 7) + 1;
                 var gradeAulas = await consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, Convert.ToInt64(aula.DisciplinaId), semana, aula.DataAula, usuario.CodigoRf);
+=======
+                var semana = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(aula.DataAula, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                var gradeAulas = consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, Convert.ToInt64(aula.DisciplinaId), semana, aula.DataAula, usuario.CodigoRf).Result;
+>>>>>>> d4040be9... correções grade de aula
 
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
