@@ -34,69 +34,70 @@ namespace SME.SGP.Dados.Repositorios
             {
                 //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
                 servicoLog.Registrar(ex);
-                var fimOperacao = DateTime.Now;
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, $"Obtendo - Erro {ex.Message}", inicioOperacao, inicioOperacao - fimOperacao, false);
+                timer.Stop();
+                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, $"Obtendo - Erro {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 return null;
             }
         }
 
         public async Task<string> ObterAsync(string nomeChave)
         {
-            var inicioOperacao = DateTime.Now;
-
+            var inicioOperacao = DateTime.UtcNow;
+            var timer = System.Diagnostics.Stopwatch.StartNew();
             try
             {
                 var cacheParaRetorno = await distributedCache.GetStringAsync(nomeChave);
-                var fimOperacao = DateTime.Now;
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Obtendo async", inicioOperacao, inicioOperacao - fimOperacao, true);
+                timer.Stop();
+                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Obtendo async", inicioOperacao, timer.Elapsed, true);
                 return cacheParaRetorno;
             }
             catch (Exception ex)
             {
                 //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
                 servicoLog.Registrar(ex);
-                var fimOperacao = DateTime.Now;
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, $"Obtendo async - Erro {ex.Message}", inicioOperacao, inicioOperacao - fimOperacao, false);
+                timer.Stop();
+                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, $"Obtendo async - Erro {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 return null;
             }
         }
 
         public async Task RemoverAsync(string nomeChave)
         {
-            var inicioOperacao = DateTime.Now;
+            var inicioOperacao = DateTime.UtcNow;
+            var timer = System.Diagnostics.Stopwatch.StartNew();
 
             try
             {
                 await distributedCache.RemoveAsync(nomeChave);
-                var fimOperacao = DateTime.Now;
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, inicioOperacao - fimOperacao, true);
+                timer.Stop();
+                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
             }
             catch (Exception ex)
             {
                 //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
-                var fimOperacao = DateTime.Now;
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, inicioOperacao - fimOperacao, false);
+                timer.Stop();
+                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, false);
                 servicoLog.Registrar(ex);
             }
         }
 
         public async Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720)
         {
-            var inicioOperacao = DateTime.Now;
-
+            var inicioOperacao = DateTime.UtcNow;
+            var timer = System.Diagnostics.Stopwatch.StartNew();
             try
             {
                 await distributedCache.SetStringAsync(nomeChave, valor, new DistributedCacheEntryOptions()
                                                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
 
-                var fimOperacao = DateTime.Now;
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar async", inicioOperacao, inicioOperacao - fimOperacao, true);
+                timer.Stop();
+                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar async", inicioOperacao, timer.Elapsed, true);
             }
             catch (Exception ex)
             {
                 //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
-                var fimOperacao = DateTime.Now;
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar async", inicioOperacao, inicioOperacao - fimOperacao, false);
+                timer.Stop();
+                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar async", inicioOperacao, timer.Elapsed, false);
                 servicoLog.Registrar(ex);
             }
         }
