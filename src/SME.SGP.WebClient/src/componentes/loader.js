@@ -21,7 +21,13 @@ const icone = <Icon type="loading" style={{ fontWeight: 'bold' }} spin />;
 function Loader({ children, loading, tip, className }) {
   return (
     <LoaderWrapper className={className}>
-      <Spin tip={tip} size="large" indicator={icone} spinning={loading}>
+      <Spin
+        className="text-center"
+        tip={tip}
+        size="large"
+        indicator={icone}
+        spinning={loading}
+      >
         {children}
       </Spin>
     </LoaderWrapper>
