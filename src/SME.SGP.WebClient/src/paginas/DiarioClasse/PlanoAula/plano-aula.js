@@ -97,9 +97,7 @@ const PlanoAula = props => {
   useEffect(() => {
     setEscolhaHabilitaObjetivos(planoAula.objetivosAprendizagemAula.length > 0);
     setObjetivosAprendizagem([...planoAula.objetivosAprendizagemAula]);
-    setTimeout(() => {
-      setCarregandoObjetivosSelecionados(false);
-    }, 2000);
+    setCarregandoObjetivosSelecionados(false);
   }, [planoAula.objetivosAprendizagemAula]);
 
   useEffect(() => {
@@ -155,14 +153,16 @@ const PlanoAula = props => {
       );
       if (objetivos && objetivos.data && objetivos.data.length > 0) {
         materia.objetivos = objetivos.data;
+        let novosObjetivos = [];
         materia.objetivos.forEach(objetivo => {
           const idx = objetivosAprendizagem.findIndex(
             obj => obj.id === objetivo.id
           );
           if (idx < 0) {
-            objetivosAprendizagem.push(objetivo);
+            novosObjetivos.push(objetivo);
           }
         });
+        setObjetivosAprendizagem(novosObjetivos.concat(objetivosAprendizagem));
       }
     } else {
       removerObjetivosNaoSelecionados();
