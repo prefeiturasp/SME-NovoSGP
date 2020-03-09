@@ -65,7 +65,7 @@ const PlanoAnual = () => {
 
   const onChangeDisciplinas = codigoDisciplina => {
     const disciplina = listaDisciplinas.find(
-      c => c.codigoComponenteCurricular === codigoDisciplina
+      c => c.codigoComponenteCurricular.toString() === codigoDisciplina
     );
     setDisciplinaSelecionada(disciplina);
     setCodigoDisciplinaSelecionada(codigoDisciplina);
@@ -495,7 +495,7 @@ const PlanoAnual = () => {
                           ano={turmaSelecionada.ano}
                           ehEja={ehEja}
                           ehMedio={
-                            turmaSelecionada.codModalidade ===
+                            turmaSelecionada.modalidade ===
                             modalidade.ENSINO_MEDIO
                           }
                           disciplinaSemObjetivo={
