@@ -5,7 +5,6 @@ import { Colors, Auditoria, Loader } from '~/componentes';
 import Button from '~/componentes/button';
 import CardCollapse from '~/componentes/cardCollapse';
 import Grid from '~/componentes/grid';
-import TextEditor from '~/componentes/textEditor';
 import Editor from '~/componentes/editor/editor';
 import {
   Badge,
@@ -78,6 +77,11 @@ const PlanoAula = props => {
   const [habilitaEscolhaObjetivos, setEscolhaHabilitaObjetivos] = useState(
     false
   );
+  const [carregandoObjetivos, setCarregandoObjetivos] = useState(false);
+  const [
+    carregandoObjetivosSelecionados,
+    setCarregandoObjetivosSelecionados
+  ] = useState(false);
 
   useEffect(() => {
     const verificaHabilitarDesabilitarCampos = () => {
@@ -93,6 +97,7 @@ const PlanoAula = props => {
   useEffect(() => {
     setEscolhaHabilitaObjetivos(planoAula.objetivosAprendizagemAula.length > 0);
     setObjetivosAprendizagem([...planoAula.objetivosAprendizagemAula]);
+    setCarregandoObjetivosSelecionados(false);
   }, [planoAula.objetivosAprendizagemAula]);
 
   useEffect(() => {
@@ -105,6 +110,7 @@ const PlanoAula = props => {
   };
 
   const selecionarObjetivo = id => {
+    setCarregandoObjetivosSelecionados(true);
     setModoEdicaoPlano(true);
     const index = objetivosAprendizagem.findIndex(
       a => a.id.toString() === id.toString()
@@ -133,6 +139,7 @@ const PlanoAula = props => {
   };
 
   const selecionarMateria = async id => {
+    setCarregandoObjetivos(true);
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
     //materia.selecionada = !materia.selecionada;
@@ -146,19 +153,22 @@ const PlanoAula = props => {
       );
       if (objetivos && objetivos.data && objetivos.data.length > 0) {
         materia.objetivos = objetivos.data;
+        let novosObjetivos = [];
         materia.objetivos.forEach(objetivo => {
           const idx = objetivosAprendizagem.findIndex(
             obj => obj.id === objetivo.id
           );
           if (idx < 0) {
-            objetivosAprendizagem.push(objetivo);
+            novosObjetivos.push(objetivo);
           }
         });
+        setObjetivosAprendizagem(novosObjetivos.concat(objetivosAprendizagem));
       }
     } else {
       removerObjetivosNaoSelecionados();
     }
     setMaterias([...materias]);
+    setCarregandoObjetivos(false);
   };
 
   const removerObjetivosNaoSelecionados = () => {
@@ -298,90 +308,95 @@ const PlanoAula = props => {
                       );
                     })
                     : null}
-                  <ObjetivosList className="mt-4 overflow-auto">
-                    {objetivosAprendizagem.map(objetivo => {
-                      return (
-                        <ul
-                          key={`${objetivo.id}-objetivo`}
-                          className="list-group list-group-horizontal mt-3"
-                        >
-                          <ListItemButton
-                            className={`${
-                              objetivo.selected ? 'objetivo-selecionado ' : ''
-                              } list-group-item d-flex align-items-center font-weight-bold fonte-14`}
-                            role="button"
-                            id={objetivo.id}
-                            aria-pressed={!!objetivo.selected}
-                            onClick={() => selecionarObjetivo(objetivo.id)}
-                            onKeyUp={() => selecionarObjetivo(objetivo.id)}
-                            alt={`Codigo do Objetivo : ${objetivo.codigo} `}
-                            disabled={desabilitarCampos}
+
+                  <Loader loading={carregandoObjetivos}>
+                    <ObjetivosList className="mt-4 overflow-auto">
+                      {objetivosAprendizagem.map(objetivo => {
+                        return (
+                          <ul
+                            key={`${objetivo.id}-objetivo`}
+                            className="list-group list-group-horizontal mt-3"
                           >
-                            {objetivo.codigo}
-                          </ListItemButton>
-                          <ListItem
-                            disabled={desabilitarCampos}
-                            alt={objetivo.descricao}
-                            className="list-group-item flex-fill p-2 fonte-12"
-                          >
-                            {objetivo.descricao}
-                          </ListItem>
-                        </ul>
-                      );
-                    })}
-                  </ObjetivosList>
+                            <ListItemButton
+                              className={`${
+                                objetivo.selected ? 'objetivo-selecionado ' : ''
+                                } list-group-item d-flex align-items-center font-weight-bold fonte-14`}
+                              role="button"
+                              id={objetivo.id}
+                              aria-pressed={!!objetivo.selected}
+                              onClick={() => selecionarObjetivo(objetivo.id)}
+                              onKeyUp={() => selecionarObjetivo(objetivo.id)}
+                              alt={`Codigo do Objetivo : ${objetivo.codigo} `}
+                              disabled={desabilitarCampos}
+                            >
+                              {objetivo.codigo}
+                            </ListItemButton>
+                            <ListItem
+                              disabled={desabilitarCampos}
+                              alt={objetivo.descricao}
+                              className="list-group-item flex-fill p-2 fonte-12"
+                            >
+                              {objetivo.descricao}
+                            </ListItem>
+                          </ul>
+                        );
+                      })}
+                    </ObjetivosList>
+                  </Loader>
                 </Grid>
               ) : null}
               <Grid cols={layoutComObjetivos() ? 6 : 12}>
                 {layoutComObjetivos() ? (
-                  <Grid cols={12}>
-                    <h6 className="d-inline-block font-weight-bold my-0 fonte-13">
-                      Objetivos de Aprendizagem e Desenvolvimento trabalhados na
-                      aula
+                  <Loader loading={carregandoObjetivosSelecionados}>
+                    <Grid cols={12}>
+                      <h6 className="d-inline-block font-weight-bold my-0 fonte-13">
+                        Objetivos de Aprendizagem e Desenvolvimento trabalhados na
+                        aula
                     </h6>
-                    <div className="row col-md-12 d-flex">
-                      {objetivosAprendizagem
-                        .filter(objetivo => objetivo.selected)
-                        .map(selecionado => {
-                          return (
+                      <div className="row col-md-12 d-flex">
+                        {objetivosAprendizagem
+                          .filter(objetivo => objetivo.selected)
+                          .map(selecionado => {
+                            return (
+                              <Button
+                                key={`Objetivo${selecionado.id}`}
+                                label={selecionado.codigo}
+                                color={Colors.AzulAnakiwa}
+                                bold
+                                id={`Objetivo${selecionado.id}`}
+                                indice={selecionado.id}
+                                steady
+                                remove
+                                disabled={desabilitarCampos}
+                                className="text-dark mt-3 mr-2 stretched-link"
+                                onClick={() => removerObjetivo(selecionado.id)}
+                              />
+                            );
+                          })}
+                        {objetivosAprendizagem.filter(x => x.selected).length >
+                          1 ? (
                             <Button
-                              key={`Objetivo${selecionado.id}`}
-                              label={selecionado.codigo}
-                              color={Colors.AzulAnakiwa}
+                              key="removerTodos"
+                              label="Remover Todos"
+                              color={Colors.CinzaBotao}
                               bold
-                              id={`Objetivo${selecionado.id}`}
-                              indice={selecionado.id}
+                              alt="Remover todos os objetivos selecionados"
+                              id="removerTodos"
+                              height="38px"
+                              width="92px"
+                              fontSize="12px"
+                              padding="0px 5px"
+                              lineHeight="1.2"
                               steady
-                              remove
                               disabled={desabilitarCampos}
+                              border
                               className="text-dark mt-3 mr-2 stretched-link"
-                              onClick={() => removerObjetivo(selecionado.id)}
+                              onClick={() => removerTodosObjetivos()}
                             />
-                          );
-                        })}
-                      {objetivosAprendizagem.filter(x => x.selected).length >
-                        1 ? (
-                          <Button
-                            key="removerTodos"
-                            label="Remover Todos"
-                            color={Colors.CinzaBotao}
-                            bold
-                            alt="Remover todos os objetivos selecionados"
-                            id="removerTodos"
-                            height="38px"
-                            width="92px"
-                            fontSize="12px"
-                            padding="0px 5px"
-                            lineHeight="1.2"
-                            steady
-                            disabled={desabilitarCampos}
-                            border
-                            className="text-dark mt-3 mr-2 stretched-link"
-                            onClick={() => removerTodosObjetivos()}
-                          />
-                        ) : null}
-                    </div>
-                  </Grid>
+                          ) : null}
+                      </div>
+                    </Grid>
+                  </Loader>
                 ) : null}
                 <Grid cols={12} className="mt-4 d-inline-block">
                   <h6 className="font-weight-bold my-0 fonte-13">
