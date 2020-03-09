@@ -65,7 +65,7 @@ const PlanoAnual = () => {
 
   const onChangeDisciplinas = codigoDisciplina => {
     const disciplina = listaDisciplinas.find(
-      c => c.codigoComponenteCurricular === codigoDisciplina
+      c => c.codigoComponenteCurricular.toString() === codigoDisciplina
     );
     setDisciplinaSelecionada(disciplina);
     setCodigoDisciplinaSelecionada(codigoDisciplina);
@@ -347,7 +347,7 @@ const PlanoAnual = () => {
     setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     setEmEdicao(false);
     if (turmaSelecionada && turmaSelecionada.turma) {
-      setEhEja(turmaSelecionada.modalidade === modalidade.EJA);
+      setEhEja(turmaSelecionada.modalidade === modalidade.EJA.toString());
     }
   }, [turmaSelecionada]);
 
@@ -498,7 +498,7 @@ const PlanoAnual = () => {
                           ano={turmaSelecionada.ano}
                           ehEja={ehEja}
                           ehMedio={
-                            turmaSelecionada.codModalidade ===
+                            turmaSelecionada.modalidade ===
                             modalidade.ENSINO_MEDIO
                           }
                           disciplinaSemObjetivo={
