@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
         {
             List<ObjetivoAprendizagemDto> objetivos;
 
-            var objetivosCacheString = repositorioCache.Obter("ObjetivosAprendizagem");
+            var objetivosCacheString = await repositorioCache.ObterAsync("ObjetivosAprendizagem");
 
             if (string.IsNullOrEmpty(objetivosCacheString))
             {
