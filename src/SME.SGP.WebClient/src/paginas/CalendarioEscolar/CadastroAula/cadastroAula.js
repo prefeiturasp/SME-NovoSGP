@@ -93,6 +93,7 @@ const CadastroAula = ({ match }) => {
 
   const [idDisciplina, setIdDisciplina] = useState();
   const [disciplinaCompartilhada, setDisciplinaCompartilhada] = useState(false);
+  const [tipoAula, setTipoAula] = useState(1);
   const [
     listaDisciplinasCompartilhadas,
     setListaDisciplinasCompartilhadas,
@@ -108,14 +109,14 @@ const CadastroAula = ({ match }) => {
       label: '1',
       value: 1,
       disabled:
-        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula) ||
+        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula && !ehReposicao) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
     {
       label: '2',
       value: 2,
       disabled:
-        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula) ||
+        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula && !ehReposicao) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
   ];
@@ -162,11 +163,11 @@ const CadastroAula = ({ match }) => {
 
   const onChangeDisciplinas = async id => {
     onChangeCampos();
-
     setIdDisciplina(id);
-    if (id) {
+
+    if (id && listaDisciplinas && listaDisciplinas.length) {
       const disciplina = listaDisciplinas.find(
-        d => String(d.codigoComponenteCurricular) === id
+        d => String(d.codigoComponenteCurricular) === String(id)
       );
 
       const regencia = !!disciplina && !!disciplina.regencia;
@@ -218,13 +219,27 @@ const CadastroAula = ({ match }) => {
   };
 
   useEffect(() => {
+    onChangeDisciplinas(idDisciplina);
+  }, [tipoAula]);
+
+  useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
-      const disciplina = listaDisciplinas.filter(
+      const disciplina = listaDisciplinas.find(
         item =>
           item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
-      if (disciplina && disciplina[0])
-        setDisciplinaCompartilhada(disciplina[0].compartilhada);
+      if (disciplina && disciplina) {
+        setDisciplinaCompartilhada(disciplina.compartilhada);
+      }
+
+      if (listaDisciplinas && listaDisciplinas.length === 1) {
+        if (Object.keys(refForm).length > 0) {
+          onChangeDisciplinas(
+            listaDisciplinas[0].codigoComponenteCurricular,
+            refForm
+          );
+        }
+      }
     } else if (refForm && refForm.setFieldValue)
       refForm.setFieldValue('quantidadeTexto', '');
   }, [idDisciplina, listaDisciplinas, refForm]);
@@ -383,31 +398,33 @@ const CadastroAula = ({ match }) => {
   };
 
   useEffect(() => {
-    const obterDisciplinas = async () => {
-      const disciplinas = await api.get(
-        `v1/professores/turmas/${turmaId}/disciplinas`
-      );
-      setListaDisciplinas(disciplinas.data);
+    if (Object.keys(refForm).length > 0) {
+      const obterDisciplinas = async () => {
+        const disciplinas = await api.get(
+          `v1/professores/turmas/${turmaId}/disciplinas`
+        );
+        setListaDisciplinas(disciplinas.data);
 
-      if (disciplinas.data && disciplinas.data.length === 1) {
-        inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
-        if (Object.keys(refForm).length > 0) {
-          onChangeDisciplinas(
-            disciplinas.data[0].codigoComponenteCurricular,
-            refForm
-          );
+        if (disciplinas.data && disciplinas.data.length === 1) {
+          inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
+          if (Object.keys(refForm).length > 0) {
+            onChangeDisciplinas(
+              disciplinas.data[0].codigoComponenteCurricular,
+              refForm
+            );
+          }
+          const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
+          setEhRegencia(regencia);
         }
-        const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
-        setEhRegencia(regencia);
-      }
 
-      if (novoRegistro) {
-        setInicial(inicial);
+        if (novoRegistro) {
+          setInicial(inicial);
+        }
+      };
+      if (turmaId) {
+        obterDisciplinas();
+        validarConsultaModoEdicaoENovo();
       }
-    };
-    if (turmaId) {
-      obterDisciplinas();
-      validarConsultaModoEdicaoENovo();
     }
   }, [refForm]);
 
@@ -489,7 +506,7 @@ const CadastroAula = ({ match }) => {
   const resetarTela = form => {
     form.resetForm();
     setControlaQuantidadeAula(true);
-    setQuantidadeMaximaAulas(0);
+    setQuantidadeMaximaAulas(1);
     setModoEdicao(false);
     setEhAulaUnica(false);
   };
@@ -596,6 +613,18 @@ const CadastroAula = ({ match }) => {
     setCarregandoSalvar(false);
   };
 
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(aula);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
+        form.handleSubmit(e => e);
+      }
+    });
+  };
+
   const onClickVoltar = async form => {
     if (modoEdicao && !somenteLeitura) {
       const confirmado = await confirmar(
@@ -659,18 +688,6 @@ const CadastroAula = ({ match }) => {
     }
   };
 
-  const validaAntesDoSubmit = form => {
-    const arrayCampos = Object.keys(aula);
-    arrayCampos.forEach(campo => {
-      form.setFieldTouched(campo, true, true);
-    });
-    form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length === 0) {
-        form.handleSubmit(e => e);
-      }
-    });
-  };
-
   const getDataFormatada = () => {
     const titulo = `${dataAula ? dataAula.format('dddd') : ''}, ${
       dataAula ? dataAula.format('DD/MM/YYYY') : ''
@@ -681,7 +698,7 @@ const CadastroAula = ({ match }) => {
   return (
     <Loader loading={carregandoSalvar} tip="">
       <div className="col-md-12">
-        {quantidadeMaximaAulas <= 0 ? (
+        {quantidadeMaximaAulas <= 0 && !ehReposicao ? (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -812,7 +829,8 @@ const CadastroAula = ({ match }) => {
                     disabled={
                       somenteLeitura ||
                       (novoRegistro && !permissaoTela.podeIncluir) ||
-                      (!novoRegistro && !permissaoTela.podeAlterar)
+                      (!novoRegistro && !permissaoTela.podeAlterar) ||
+                      (quantidadeMaximaAulas <= 0 && !ehReposicao)
                     }
                     onClick={() => validaAntesDoSubmit(form)}
                   />
@@ -831,6 +849,7 @@ const CadastroAula = ({ match }) => {
                       setEhReposicao(e.target.value === 2);
                       onChangeCampos();
                       setControlaQuantidadeAula(ehReposicao);
+                      setTipoAula(e.target.value);
                     }}
                   />
                 </div>
@@ -897,7 +916,9 @@ const CadastroAula = ({ match }) => {
                     desabilitado={
                       somenteLeitura ||
                       !idDisciplina ||
-                      (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
+                      (quantidadeMaximaAulas < 3 &&
+                        controlaQuantidadeAula &&
+                        !ehReposicao) ||
                       (ehRegencia && !ehReposicao)
                     }
                     onChange={() => {
@@ -914,7 +935,7 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={somenteLeitura || ehReposicao}
+                    desabilitado={somenteLeitura || ehReposicao || ehAulaUnica}
                     onChange={e => {
                       onChangeCampos();
                       setEhRecorrencia(e.target.value !== 1);
