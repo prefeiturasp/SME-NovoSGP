@@ -63,6 +63,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosFechamento, ComandosFechamento>();
             services.TryAddScoped<IComandosFechamentoTurmaDisciplina, ComandosFechamentoTurmaDisciplina>();
             services.TryAddScoped<IComandosNotaConceitoBimestre, ComandosNotaConceitoBimestre>();
+            services.TryAddScoped<IComandosNotificacaoAula, ComandosNotificacaoAula>();
             services.TryAddScoped<IComandosFechamentoFinal, ComandosFechamentoFinal>();
             services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
         }
@@ -198,6 +199,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioEixo, RepositorioEixo>();
             services.TryAddScoped<IRepositorioResposta, RepositorioResposta>();
             services.TryAddScoped<IRepositorioObjetivo, RepositorioObjetivo>();
+            services.TryAddScoped<IRepositorioNotificacaoAula, RepositorioNotificacaoAula>();
             services.TryAddScoped<IRepositorioFechamentoFinal, RepositorioFechamentoFinal>();
         }
 
