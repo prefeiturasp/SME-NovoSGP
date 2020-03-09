@@ -341,7 +341,7 @@ const PlanoAnual = () => {
     setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     setEmEdicao(false);
     if (turmaSelecionada && turmaSelecionada.turma) {
-      setEhEja(turmaSelecionada.modalidade === modalidade.EJA);
+      setEhEja(turmaSelecionada.modalidade === modalidade.EJA.toString());
     }
   }, [turmaSelecionada]);
 
