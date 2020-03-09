@@ -48,35 +48,16 @@ namespace SME.SGP.Dados.Repositorios
             return default(T);
         }
 
-        //public async Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados)
-        //{
-        //    try
-        //    {
-        //        var stringCache = await distributedCache.GetStringAsync(nomeChave);
-        //        if (!string.IsNullOrWhiteSpace(stringCache))
-        //            return JsonConvert.DeserializeObject<T>(stringCache);
-        //        else
-        //        {
-        //            return await buscarDados();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
-        //        servicoLog.Registrar(ex);
-        //    }
-        //    return default(T);
-        //}
-
-        public T Obter<T>(string nomeChave, Func<T> buscarDados, int minutosParaExpirar = 720)
+        public async Task<T> Obter<T>(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720)
         {
             try
             {
                 var stringCache = distributedCache.GetString(nomeChave);
                 if (!string.IsNullOrWhiteSpace(stringCache))
                     return JsonConvert.DeserializeObject<T>(stringCache);
-                var dados = buscarDados();
-                distributedCache.SetStringAsync(nomeChave, JsonConvert.SerializeObject(dados), new DistributedCacheEntryOptions()
+
+                var dados = await buscarDados();
+                await distributedCache.SetStringAsync(nomeChave, JsonConvert.SerializeObject(dados), new DistributedCacheEntryOptions()
                                                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
                 return dados;
             }
@@ -84,7 +65,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
                 servicoLog.Registrar(ex);
-                return buscarDados();
+                return await buscarDados();
             }
         }
 
@@ -107,6 +88,20 @@ namespace SME.SGP.Dados.Repositorios
             try
             {
                 await distributedCache.RemoveAsync(nomeChave);
+            }
+            catch (Exception ex)
+            {
+                //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
+                servicoLog.Registrar(ex);
+            }
+        }
+
+        public void Salvar(string nomeChave, string valor, int minutosParaExpirar = 720)
+        {
+            try
+            {
+                distributedCache.SetString(nomeChave, valor, new DistributedCacheEntryOptions()
+                                                .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
             }
             catch (Exception ex)
             {
