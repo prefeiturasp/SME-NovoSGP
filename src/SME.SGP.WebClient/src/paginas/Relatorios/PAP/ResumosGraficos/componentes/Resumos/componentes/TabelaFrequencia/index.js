@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import t from 'prop-types';
+import PropTypes from 'prop-types';
 
 // Ant
 import { Table } from 'antd';
@@ -82,7 +82,7 @@ function TabelaFrequencia({ dados }) {
         if (item !== 'Total') return { title: item, dataIndex: item };
         return null;
       })
-      .filter(x => x !== null);
+      .filter(item => item !== null);
 
     colunasParaIncluir.push({
       title: 'Total',
@@ -92,7 +92,7 @@ function TabelaFrequencia({ dados }) {
       fixed: 'right',
       render: text => {
         return {
-          children: text,
+          children: text || '0',
           className: 'itemColunaTotal',
         };
       },
@@ -120,7 +120,7 @@ function TabelaFrequencia({ dados }) {
 }
 
 TabelaFrequencia.propTypes = {
-  dados: t.oneOfType([t.any]),
+  dados: PropTypes.oneOfType([PropTypes.any]),
 };
 
 TabelaFrequencia.defaultProps = {

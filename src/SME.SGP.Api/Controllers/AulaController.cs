@@ -35,14 +35,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(aula);
         }
 
-        [HttpDelete("{id}/recorrencias/{recorrencia}")]
+        [HttpDelete("{id}/recorrencias/{recorrencia}/disciplinaNome/{disciplinaNome}")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir(long id, RecorrenciaAula recorrencia, [FromServices]IComandosAula comandos)
+        public async Task<IActionResult> Excluir(long id, string disciplinaNome, RecorrenciaAula recorrencia, [FromServices]IComandosAula comandos)
         {
             var retorno = new RetornoBaseDto();
-            retorno.Mensagens.Add(await comandos.Excluir(id, recorrencia));
+            retorno.Mensagens.Add(await comandos.Excluir(id, disciplinaNome, recorrencia));
             return Ok(retorno);
         }
 

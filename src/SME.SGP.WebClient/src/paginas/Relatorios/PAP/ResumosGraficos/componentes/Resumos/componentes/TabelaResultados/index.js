@@ -229,6 +229,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                     )
                   ) {
                     item.push({
+                      Id: shortid.generate(),
                       Eixo: eixo.eixoDescricao,
                       EixoGrupo: o === 0 && c === 0 && r === 0,
                       EixoSize: eixosSize[eixo.eixoDescricao],
@@ -303,6 +304,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
                     )
                   ) {
                     item.push({
+                      Id: shortid.generate(),
                       Eixo: eixo.eixoDescricao,
                       EixoGrupo: o === 0 && a === 0 && r === 0,
                       EixoSize: eixosSize[eixo.eixoDescricao],

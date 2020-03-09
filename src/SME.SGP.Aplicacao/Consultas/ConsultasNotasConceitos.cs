@@ -360,7 +360,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> VerificaPeriodoFechamentoEmAberto(string turmaCodigo, int bimestre)
-            => await consultasFechamento.TurmaEmPeriodoDeFechamento(turmaCodigo, DateTime.Now, bimestre);
+            => await consultasFechamento.TurmaEmPeriodoDeFechamento(turmaCodigo, DateTime.Now.Date, bimestre);
 
         public async Task<TipoNota> ObterNotaTipo(long turmaId, int anoLetivo, bool consideraHistorico)
         {
