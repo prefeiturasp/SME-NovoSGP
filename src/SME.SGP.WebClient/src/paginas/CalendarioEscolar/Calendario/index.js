@@ -505,6 +505,7 @@ const CalendarioEscolar = () => {
                     checked={eventoSme}
                     size="small"
                     className="mr-2"
+                    disabled={!tipoCalendarioSelecionado}
                   />
                   <Label className="my-auto">SME</Label>
                 </Tooltip>
