@@ -60,7 +60,7 @@ const PlanoAnual = () => {
     setCodigoDisciplinaSelecionada,
   ] = useState('');
 
-  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState('');
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [errosModal, setErrosModal] = useState([]);
 
   const onChangeDisciplinas = codigoDisciplina => {
