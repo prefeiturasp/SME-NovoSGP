@@ -13,6 +13,44 @@ import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import { ordenarPor } from '~/utils/funcoes/gerais';
 
 const Tabela = styled(Table)`
+  .ant-table {
+    display: block;
+  }
+
+  @media screen and (max-width: 576px) {
+    .ant-table-thead {
+      display: none;
+    }
+    .ant-table-thead > tr th:first-of-type,
+    .ant-table-tbody > tr th:first-of-type,
+    .ant-table-thead > tr td:first-of-type,
+    .ant-table-tbody > tr td:first-of-type {
+      padding-top: 1rem;
+    }
+    .ant-table-thead > tr th:last-of-type,
+    .ant-table-tbody > tr th:last-of-type,
+    .ant-table-thead > tr td:last-of-type,
+    .ant-table-tbody > tr td:last-of-type {
+      padding-bottom: 1rem;
+    }
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > th,
+    .ant-table-thead > tr > td,
+    .ant-table-tbody > tr > td {
+      display: block;
+      width: auto;
+      border: none;
+      padding: 0 1rem;
+      font-size: 1.1rem;
+    }
+    .ant-table-thead > tr > th:last-child,
+    .ant-table-tbody > tr > th:last-child,
+    .ant-table-thead > tr > td:last-child,
+    .ant-table-tbody > tr > td:last-child {
+      border-bottom: 1px solid ${Base.CinzaMenu};
+    }
+  }
+
   th.headerTotal {
     background-color: ${Base.Roxo};
     color: ${Base.Branco};
@@ -64,7 +102,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         dataIndex: 'Eixo',
         colSpan: 1,
         fixed: 'left',
-        width: 200,
+        width: 150,
         render: (text, row) => {
           let valor = text;
           if (valor.length > 50) valor = `${text.substr(0, 50)}...`;
@@ -87,7 +125,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         dataIndex: 'Objetivo',
         colSpan: 1,
         fixed: 'left',
-        width: 150,
+        width: 100,
         render: (text, row) => {
           let valor = text;
           if (valor.length > 50) valor = `${text.substr(0, 50)}...`;
@@ -107,7 +145,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         dataIndex: 'Resposta',
         colSpan: 1,
         fixed: 'left',
-        width: 150,
+        width: 100,
         render: text => {
           return {
             children: text,
