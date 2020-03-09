@@ -140,7 +140,7 @@ namespace SME.SGP.Api
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
-            services.AddApplicationInsightsTelemetry(Configuration.GetValue<string>("ApplicationInsights__InstrumentationKey"));
+            services.AddApplicationInsightsTelemetry(Configuration);
         }
     }
 }
