@@ -308,7 +308,7 @@ const PlanoAnual = () => {
           codigoDisciplinaSelecionada,
           turmaSelecionada.turma,
           turmaPrograma,
-          disciplinaSelecionada.regencia
+          disciplinaSelecionada && disciplinaSelecionada.regencia
         )
         .then(resposta => {
           setCarregandoDados(false);
@@ -328,11 +328,7 @@ const PlanoAnual = () => {
           erros(e);
         });
     }
-  }, [
-    codigoDisciplinaSelecionada,
-    disciplinaSelecionada.regencia,
-    turmaSelecionada,
-  ]);
+  }, [codigoDisciplinaSelecionada, disciplinaSelecionada, turmaSelecionada]);
 
   useEffect(() => {
     setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
@@ -372,6 +368,7 @@ const PlanoAnual = () => {
           anoLetivo: turmaSelecionada.anoLetivo,
           bimestres: planoAnual,
           componenteCurricularEolId:
+            disciplinaSelecionada &&
             disciplinaSelecionada.codigoComponenteCurricular,
           turmaId: turmaSelecionada.turma,
           escolaId: turmaSelecionada.unidadeEscolar,
