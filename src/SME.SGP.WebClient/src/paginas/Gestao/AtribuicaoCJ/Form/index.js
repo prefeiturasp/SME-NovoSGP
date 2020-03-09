@@ -40,6 +40,7 @@ import Tabela from './componentes/Tabela';
 
 // Styles
 import { Row } from './styles';
+import { Linha } from '~/componentes/EstilosGlobais';
 
 // Funçoes
 import {
@@ -241,7 +242,7 @@ function AtribuicaoCJForm({ match, location }) {
             validateOnChange
           >
             {form => (
-              <Form>
+              <Form className="col-md-12 mb-4">
                 <ButtonGroup
                   form={form}
                   permissoesTela={permissoesTela[RotasDto.ATRIBUICAO_CJ_LISTA]}
@@ -252,7 +253,7 @@ function AtribuicaoCJForm({ match, location }) {
                   desabilitarBotaoPrincipal={desabilitarBotaoPrincipal()}
                   modoEdicao={modoEdicao}
                 />
-                <Row className="row">
+                <Linha className="row mb-1">
                   <Grid cols={6}>
                     <DreDropDown
                       url="v1/dres/atribuicoes"
@@ -270,8 +271,8 @@ function AtribuicaoCJForm({ match, location }) {
                       onChange={() => null}
                     />
                   </Grid>
-                </Row>
-                <Row className="row">
+                </Linha>
+                <Linha className="row">
                   <Grid cols={7}>
                     <Row className="row">
                       <Localizador
@@ -297,7 +298,7 @@ function AtribuicaoCJForm({ match, location }) {
                       onChange={value => value}
                     />
                   </Grid>
-                </Row>
+                </Linha>
               </Form>
             )}
           </Formik>
