@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,9 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAula : IServicoAula
     {
+        private readonly IComandosNotificacaoAula comandosNotificacaoAula;
         private readonly IComandosPlanoAula comandosPlanoAula;
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
-        private readonly IComandosNotificacaoAula comandosNotificacaoAula;
         private readonly IConfiguration configuration;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasGrade consultasGrade;
@@ -162,7 +163,8 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
 
                 // Busca quantidade de aulas semanais da grade de aula
-                var semana = (aula.DataAula.DayOfYear / 7) + 1;
+                int semana = UtilData.ObterSemanaDoAno(aula.DataAula);
+
                 var gradeAulas = consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, Convert.ToInt64(aula.DisciplinaId), semana, aula.DataAula, usuario.CodigoRf).Result;
 
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
@@ -309,7 +311,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 unitOfWork.Rollback();
                 throw;
-            }        
+            }
         }
 
         private async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
@@ -458,7 +460,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 unitOfWork.Rollback();
                 throw;
-            }        
+            }
         }
 
         private IEnumerable<DateTime> ObterDiaEntreDatas(DateTime inicio, DateTime fim)

@@ -169,12 +169,12 @@ const CadastroAula = ({ match }) => {
         d => String(d.codigoComponenteCurricular) === id
       );
 
-      const regencia = !!disciplina.regencia;
+      const regencia = !!disciplina && !!disciplina.regencia;
       setEhRegencia(regencia);
 
       let resultado;
 
-      if (!disciplina.territorioSaber) {
+      if (disciplina && !disciplina.territorioSaber) {
         resultado = await api
           .get(
             `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}?ehRegencia=${regencia}`,
