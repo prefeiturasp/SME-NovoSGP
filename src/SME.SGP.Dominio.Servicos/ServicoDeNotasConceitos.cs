@@ -41,7 +41,7 @@ namespace SME.SGP.Dominio
             { 
                 if (_usuariosCPs == null)
                 {
-                    var listaCPsUe = servicoEOL.ObterFuncionariosPorCargoUe(turma.CodigoTurma, (long)Cargo.CP);
+                    var listaCPsUe = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.CP);
                     _usuariosCPs = CarregaUsuariosPorRFs(listaCPsUe);
                 }
 
@@ -56,7 +56,7 @@ namespace SME.SGP.Dominio
             { 
                 if (_usuarioDiretor == null)
                 {
-                    var diretor = servicoEOL.ObterFuncionariosPorCargoUe(turma.CodigoTurma, (long)Cargo.CP);
+                    var diretor = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Diretor);
                     _usuarioDiretor = CarregaUsuariosPorRFs(diretor).First();
                 }
 
