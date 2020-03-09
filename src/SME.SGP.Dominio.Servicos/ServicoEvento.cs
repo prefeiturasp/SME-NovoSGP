@@ -107,8 +107,6 @@ namespace SME.SGP.Dominio.Servicos
             if (evento.DeveSerEmDiaLetivo())
                 evento.EstaNoPeriodoLetivo(periodos);
 
-            usuario.PodeCriarEventoComDataPassada(evento);
-
             bool devePassarPorWorkflowLiberacaoExcepcional = await ValidaDatasETiposDeEventos(evento, dataConfirmada, usuario, periodos);
 
             AtribuirNullSeVazio(evento);
@@ -118,10 +116,13 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioEvento.Salvar(evento);
 
-            var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && (devePassarPorWorkflowLiberacaoExcepcional || evento.DataInicio.Date < DateTime.Today && evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional);
-
-            if (enviarParaWorkflow)
-                await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
+            // Envia para workflow apenas na Inclusão ou alteração apos aprovado
+            var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && (devePassarPorWorkflowLiberacaoExcepcional && evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional);
+            if (!ehAlteracao || (evento.Status == EntidadeStatus.Aprovado))
+            {
+                if (enviarParaWorkflow)
+                    await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
+            }
 
             if (!unitOfWorkJaEmUso)
                 unitOfWork.PersistirTransacao();
@@ -385,14 +386,12 @@ namespace SME.SGP.Dominio.Servicos
             if (escola == null)
                 throw new NegocioException($"Não foi possível localizar a escola da criação do evento.");
 
-            var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/:{evento.Id}/";
+            var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/{evento.Id}/";
 
             long idWorkflow = 0;
 
             if (workflowDeLiberacaoExcepcional)
                 idWorkflow = CriarWorkflowParaEventoExcepcionais(evento, escola, linkParaEvento);
-            else if (evento.DataInicio.Date < DateTime.Today)
-                idWorkflow = CriarWorkflowParaDataPassada(evento, escola, linkParaEvento);
 
             evento.EnviarParaWorkflowDeAprovacao(idWorkflow);
 

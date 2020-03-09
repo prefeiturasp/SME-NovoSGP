@@ -24,8 +24,28 @@ const Campo = styled.div`
   }
 `;
 
+const toolbar = [
+  'heading',
+  'bold',
+  'italic',
+  'bulletedList',
+  'numberedList',
+  'blockQuote',
+  'redo',
+  'undo',
+];
+
 export default function Editor(props) {
-  const { onChange, inicial, form, name, label, temErro, mensagemErro, desabilitar } = props;
+  const {
+    onChange,
+    inicial,
+    form,
+    name,
+    label,
+    temErro,
+    mensagemErro,
+    desabilitar,
+  } = props;
 
   const possuiErro = () => {
     return (form && form.errors[name] && form.touched[name]) || temErro;
@@ -51,6 +71,8 @@ export default function Editor(props) {
             editor={ClassicEditor}
             disabled={desabilitar || false}
             config={{
+              toolbar,
+              table: { isEnabled: true },
               language: 'pt-br',
               removePlugins: [
                 'Image',
@@ -81,6 +103,8 @@ export default function Editor(props) {
       <CKEditor
         editor={ClassicEditor}
         config={{
+          toolbar,
+          table: { isEnabled: true },
           readOnly: desabilitar || false,
           language: 'pt-br',
           removePlugins: [
