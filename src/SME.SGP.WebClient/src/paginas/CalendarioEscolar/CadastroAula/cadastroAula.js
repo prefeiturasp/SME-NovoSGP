@@ -161,16 +161,27 @@ const CadastroAula = ({ match }) => {
     };
   }, []);
 
-  const onChangeDisciplinas = async id => {
+  const onChangeDisciplinas = async (id, listaDisc) => {
     onChangeCampos();
     setIdDisciplina(id);
 
-    if (id && listaDisciplinas && listaDisciplinas.length) {
-      const disciplina = listaDisciplinas.find(
+    setIdDisciplina(id);
+
+    const lista =
+      (listaDisciplinas && listaDisciplinas.length > 0 && listaDisciplinas) ||
+      listaDisc ||
+      [];
+
+    if (!lista || lista.length === 0) return;
+
+    if (id) {
+      const disciplina = lista.find(
         d => String(d.codigoComponenteCurricular) === String(id)
       );
 
-      const regencia = !!disciplina && !!disciplina.regencia;
+      if (!disciplina) return;
+
+      const regencia = !!disciplina.regencia;
       setEhRegencia(regencia);
 
       let resultado;
@@ -405,13 +416,13 @@ const CadastroAula = ({ match }) => {
         );
         setListaDisciplinas(disciplinas.data);
 
-        if (disciplinas.data && disciplinas.data.length === 1) {
-          inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
-          if (Object.keys(refForm).length > 0) {
-            onChangeDisciplinas(
-              disciplinas.data[0].codigoComponenteCurricular,
-              refForm
-            );
+      if (disciplinas.data && disciplinas.data.length === 1) {
+        inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
+        if (Object.keys(refForm).length > 0) {
+          onChangeDisciplinas(
+            disciplinas.data[0].codigoComponenteCurricular,
+            disciplinas.data
+          );
           }
           const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
           setEhRegencia(regencia);
