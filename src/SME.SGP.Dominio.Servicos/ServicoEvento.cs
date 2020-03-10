@@ -107,8 +107,6 @@ namespace SME.SGP.Dominio.Servicos
             if (evento.DeveSerEmDiaLetivo())
                 evento.EstaNoPeriodoLetivo(periodos);
 
-            usuario.PodeCriarEventoComDataPassada(evento);
-
             bool devePassarPorWorkflowLiberacaoExcepcional = await ValidaDatasETiposDeEventos(evento, dataConfirmada, usuario, periodos);
 
             AtribuirNullSeVazio(evento);
@@ -118,6 +116,7 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioEvento.Salvar(evento);
 
+<<<<<<< HEAD
             // Envia para workflow apenas na Inclusão ou alteração apos aprovado
             var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && (devePassarPorWorkflowLiberacaoExcepcional || evento.DataInicio.Date < DateTime.Today && evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional);
             if (!ehAlteracao || (evento.Status == EntidadeStatus.Aprovado))
@@ -125,6 +124,12 @@ namespace SME.SGP.Dominio.Servicos
                 if (enviarParaWorkflow)
                     await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
             }
+=======
+            var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && (devePassarPorWorkflowLiberacaoExcepcional && evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional);
+
+            if (enviarParaWorkflow)
+                await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
+>>>>>>> master
 
             if (!unitOfWorkJaEmUso)
                 unitOfWork.PersistirTransacao();
@@ -394,8 +399,6 @@ namespace SME.SGP.Dominio.Servicos
 
             if (workflowDeLiberacaoExcepcional)
                 idWorkflow = CriarWorkflowParaEventoExcepcionais(evento, escola, linkParaEvento);
-            else if (evento.DataInicio.Date < DateTime.Today)
-                idWorkflow = CriarWorkflowParaDataPassada(evento, escola, linkParaEvento);
 
             evento.EnviarParaWorkflowDeAprovacao(idWorkflow);
 

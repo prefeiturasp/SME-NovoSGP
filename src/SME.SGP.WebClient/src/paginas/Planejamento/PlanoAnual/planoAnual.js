@@ -60,12 +60,12 @@ const PlanoAnual = () => {
     setCodigoDisciplinaSelecionada,
   ] = useState(undefined);
 
-  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState('');
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [errosModal, setErrosModal] = useState([]);
 
   const onChangeDisciplinas = codigoDisciplina => {
     const disciplina = listaDisciplinas.find(
-      c => c.codigoComponenteCurricular === codigoDisciplina
+      c => c.codigoComponenteCurricular.toString() === codigoDisciplina
     );
     setDisciplinaSelecionada(disciplina);
     setCodigoDisciplinaSelecionada(codigoDisciplina);
@@ -317,7 +317,7 @@ const PlanoAnual = () => {
           codigoDisciplinaSelecionada,
           turmaSelecionada.turma,
           turmaPrograma,
-          disciplinaSelecionada.regencia
+          disciplinaSelecionada && disciplinaSelecionada.regencia
         )
         .then(resposta => {
           setCarregandoDados(false);
@@ -337,17 +337,15 @@ const PlanoAnual = () => {
           erros(e);
         });
     }
-  }, [
-    codigoDisciplinaSelecionada,
-    disciplinaSelecionada.regencia,
-    turmaSelecionada,
-  ]);
+  }, [codigoDisciplinaSelecionada, disciplinaSelecionada, turmaSelecionada]);
 
   useEffect(() => {
     setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     setEmEdicao(false);
     if (turmaSelecionada && turmaSelecionada.turma) {
-      setEhEja(turmaSelecionada.modalidade === modalidade.EJA);
+      setEhEja(
+        turmaSelecionada.modalidade.toString() === modalidade.EJA.toString()
+      );
     }
   }, [turmaSelecionada]);
 
@@ -381,6 +379,7 @@ const PlanoAnual = () => {
           anoLetivo: turmaSelecionada.anoLetivo,
           bimestres: planoAnual,
           componenteCurricularEolId:
+            disciplinaSelecionada &&
             disciplinaSelecionada.codigoComponenteCurricular,
           turmaId: turmaSelecionada.turma,
           escolaId: turmaSelecionada.unidadeEscolar,
@@ -498,8 +497,8 @@ const PlanoAnual = () => {
                           ano={turmaSelecionada.ano}
                           ehEja={ehEja}
                           ehMedio={
-                            turmaSelecionada.codModalidade ===
-                            modalidade.ENSINO_MEDIO
+                            turmaSelecionada.modalidade.toString() ===
+                            modalidade.ENSINO_MEDIO.toString()
                           }
                           disciplinaSemObjetivo={
                             !disciplinaSelecionada.possuiObjetivos
