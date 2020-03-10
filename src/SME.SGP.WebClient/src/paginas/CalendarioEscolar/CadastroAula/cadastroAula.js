@@ -416,13 +416,13 @@ const CadastroAula = ({ match }) => {
         );
         setListaDisciplinas(disciplinas.data);
 
-      if (disciplinas.data && disciplinas.data.length === 1) {
-        inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
-        if (Object.keys(refForm).length > 0) {
-          onChangeDisciplinas(
-            disciplinas.data[0].codigoComponenteCurricular,
-            disciplinas.data
-          );
+        if (disciplinas.data && disciplinas.data.length === 1) {
+          inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
+          if (Object.keys(refForm).length > 0) {
+            onChangeDisciplinas(
+              disciplinas.data[0].codigoComponenteCurricular,
+              disciplinas.data
+            );
           }
           const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
           setEhRegencia(regencia);
