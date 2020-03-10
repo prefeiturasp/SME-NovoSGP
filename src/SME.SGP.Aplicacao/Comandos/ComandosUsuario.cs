@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
             if (!retornoAutenticacaoEol.Item4 && retornoAutenticacaoEol.Item5)
                 retornoAutenticacaoEol.Item3 = ValidarPerfilCJ(retornoAutenticacaoEol.Item2, retornoAutenticacaoEol.Item1.UsuarioId, retornoAutenticacaoEol.Item3, login).Result;
 
-            var dadosUsuario = await servicoEOL.ObterMeusDados(login);
+            var dadosUsuario = await repositorioCache.Obter($"MeusDados-{login}", () => servicoEOL.ObterMeusDados(login), 720);
 
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email);
 
@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
 
             var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
 
-            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(perfilSelecionado);
+            var permissionamentos = await repositorioCache.Obter($"Permissionamento-{perfilSelecionado.ToString()}", () => servicoEOL.ObterPermissoesPorPerfil(perfilSelecionado), 720);
 
             if (permissionamentos == null || !permissionamentos.Any())
             {
@@ -148,7 +148,7 @@ namespace SME.SGP.Aplicacao
                 .ToList();
 
             // Revoga token atual para geração de um novo
-            servicoTokenJwt.RevogarToken(login);
+            await servicoTokenJwt.RevogarToken(login);
 
             // Gera novo token e guarda em cache
             retornoAutenticacaoEol.Item1.Token =
@@ -192,7 +192,7 @@ namespace SME.SGP.Aplicacao
 
                 usuario.DefinirPerfilAtual(perfil);
 
-                servicoTokenJwt.RevogarToken(loginAtual);
+                await servicoTokenJwt.RevogarToken(loginAtual);
                 var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes);
 
                 return new TrocaPerfilDto
@@ -246,7 +246,7 @@ namespace SME.SGP.Aplicacao
                 .Select(a => (Permissao)a)
                 .ToList();
 
-            servicoTokenJwt.RevogarToken(login);
+            await servicoTokenJwt.RevogarToken(login);
 
             return new RevalidacaoTokenDto()
             {

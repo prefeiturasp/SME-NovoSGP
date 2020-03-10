@@ -658,7 +658,9 @@ const CadastroAula = ({ match }) => {
 
   const excluir = async tipoRecorrencia => {
     const disciplina = listaDisciplinas.find(
-      item => String(item.codigoComponenteCurricular) === String(idDisciplina)
+      item =>
+        String(item.codigoComponenteCurricular) ===
+        String(refForm.state.values.disciplinaId)
     );
 
     const exclusao = await api
