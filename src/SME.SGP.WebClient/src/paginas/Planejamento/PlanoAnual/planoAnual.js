@@ -28,6 +28,8 @@ import Bimestre from './bimestre';
 import history from '~/servicos/history';
 import ModalErros from './componentes/ModalErros';
 
+import { AlertaSelecionarTurma } from '~/componentes-sgp';
+
 const { Panel } = Collapse;
 
 const PlanoAnual = () => {
@@ -392,23 +394,7 @@ const PlanoAnual = () => {
           erros={errosModal}
           onCloseErrosBimestre={() => setErrosModal([])}
         />
-        <div className="col-md-12">
-          {!possuiTurmaSelecionada ? (
-            <Row className="mb-0 pb-0">
-              <Grid cols={12} className="mb-0 pb-0">
-                <Alert
-                  alerta={{
-                    tipo: 'warning',
-                    id: 'plano-anual-selecione-turma',
-                    mensagem: 'Você precisa escolher uma turma.',
-                    estiloTitulo: { fontSize: '18px' },
-                  }}
-                  className="mb-0"
-                />
-              </Grid>
-            </Row>
-          ) : null}
-        </div>
+        <AlertaSelecionarTurma />
         <Grid cols={12} className="p-0">
           <Titulo>
             {ehEja ? 'Plano Semestral' : 'Plano Anual'}
