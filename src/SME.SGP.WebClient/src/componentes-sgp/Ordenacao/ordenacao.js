@@ -141,6 +141,7 @@ Ordenacao.defaultProps = {
   ordenarColunaTexto: 'nome',
   retornoOrdenado: () => {},
   desabilitado: false,
+  onChangeOrdenacao: () => {},
 };
 
 Ordenacao.propTypes = {
@@ -150,5 +151,6 @@ Ordenacao.propTypes = {
   ordenarColunaTexto: PropTypes.string,
   retornoOrdenado: PropTypes.func,
   desabilitado: PropTypes.bool,
+  onChangeOrdenacao: PropTypes.func,
 };
 export default Ordenacao;

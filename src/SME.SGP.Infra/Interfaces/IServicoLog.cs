@@ -7,5 +7,7 @@ namespace SME.SGP.Infra
         void Registrar(Exception ex);
 
         void Registrar(string mensagem);
+
+        void RegistrarDependenciaAppInsights(string tipoDependencia, string alvo, string mensagem, DateTimeOffset inicio, TimeSpan duracao, bool sucesso);
     }
 }
