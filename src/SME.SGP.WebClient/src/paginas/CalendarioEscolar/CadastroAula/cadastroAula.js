@@ -160,13 +160,23 @@ const CadastroAula = ({ match }) => {
     };
   }, []);
 
-  const onChangeDisciplinas = async id => {
+  const onChangeDisciplinas = async (id, listaDisc) => {
 
     setIdDisciplina(id);
+
+    const lista =
+      (listaDisciplinas && listaDisciplinas.length > 0 && listaDisciplinas) ||
+      listaDisc ||
+      [];
+
+    if (!lista || lista.length === 0) return;
+
     if (id) {
-      const disciplina = listaDisciplinas.find(
-        d => String(d.codigoComponenteCurricular) === id
+      const disciplina = lista.find(
+        d => String(d.codigoComponenteCurricular) === String(id)
       );
+
+      if (!disciplina) return;
 
       const regencia = !!disciplina.regencia;
       setEhRegencia(regencia);
@@ -395,7 +405,7 @@ const CadastroAula = ({ match }) => {
         if (Object.keys(refForm).length > 0) {
           onChangeDisciplinas(
             disciplinas.data[0].codigoComponenteCurricular,
-            refForm
+            disciplinas.data
           );
         }
         const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
