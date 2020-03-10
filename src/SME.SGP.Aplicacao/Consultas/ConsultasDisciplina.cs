@@ -250,7 +250,7 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login)
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login)
         {
             var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
 
@@ -276,6 +276,7 @@ namespace SME.SGP.Aplicacao
                 CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
                 Nome = disciplina.Nome,
                 Regencia = disciplina.Regencia,
+                TerritorioSaber = disciplina.TerritorioSaber,
                 Compartilhada = disciplina.Compartilhada,
                 RegistraFrequencia = disciplina.RegistroFrequencia,
                 LancaNota = disciplina.LancaNota,
