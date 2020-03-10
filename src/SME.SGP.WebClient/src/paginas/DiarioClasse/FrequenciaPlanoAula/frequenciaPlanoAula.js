@@ -57,7 +57,7 @@ const FrequenciaPlanoAula = () => {
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState();
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState();
   const [listaDatasAulas, setListaDatasAulas] = useState();
-  const [dataSelecionada, setDataSelecionada] = useState('');
+  const [dataSelecionada, setDataSelecionada] = useState();
 
   const [frequencia, setFrequencia] = useState();
   const [aulaId, setAulaId] = useState(0);
@@ -134,7 +134,7 @@ const FrequenciaPlanoAula = () => {
       setDisciplinaIdSelecionada(undefined);
     }
     if (!naoData) {
-      setDataSelecionada('');
+      setDataSelecionada();
     }
     setFrequencia();
     setExibirCardFrequencia(false);
@@ -232,8 +232,6 @@ const FrequenciaPlanoAula = () => {
     somenteConsulta,
   ]);
 
-  const [carregandoGeral, setCarregandoGeral] = useState(false);
-
   const obterListaFrequencia = async id => {
     setAulaId(id);
 
@@ -254,8 +252,6 @@ const FrequenciaPlanoAula = () => {
       setFrequencia(frequenciaAlunos.data.listaFrequencia);
       setPermiteRegistroFrequencia(!frequenciaAlunos.data.desabilitado);
     }
-
-    setCarregandoGeral(false);
   };
 
   const [carregandoMaterias, setCarregandoMaterias] = useState(false);
@@ -374,8 +370,9 @@ const FrequenciaPlanoAula = () => {
   const aposSalvarFrequencia = () => {
     setExibirCardFrequencia(false);
     setModoEdicaoFrequencia(false);
-    obterListaFrequencia(aulaId);
   };
+
+  const [carregandoGeral, setCarregandoGeral] = useState(false);
 
   const onSalvarFrequencia = click => {
     setCarregandoSalvar(true);
@@ -393,6 +390,9 @@ const FrequenciaPlanoAula = () => {
               aposSalvarFrequencia();
             }
             setCarregandoSalvar(false);
+            setTimeout(() => {
+              setCarregandoGeral(false);
+            }, 1000);
             resolve(true);
             return true;
           }
@@ -401,6 +401,9 @@ const FrequenciaPlanoAula = () => {
         })
         .catch(e => {
           setCarregandoSalvar(false);
+          setTimeout(() => {
+            setCarregandoGeral(false);
+          }, 1000);
           erros(e);
           reject(e);
         });
@@ -478,7 +481,7 @@ const FrequenciaPlanoAula = () => {
           if (salvouPlano && salvouPlano.status === 200) {
             sucesso('Plano de aula salvo com sucesso.');
             setModoEdicaoPlanoAula(false);
-            obterPlanoAula(obterAulaSelecionada(dataSelecionada));
+            setPlanoAulaExpandido(false);
           }
         })
         .catch(e => {
@@ -543,12 +546,17 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onClickSalvar = click => {
+    setCarregandoGeral(true);
     if (modoEdicaoFrequencia && permiteRegistroFrequencia) {
       onSalvarFrequencia(click);
     }
     if (modoEdicaoPlanoAula) {
       onSalvarPlanoAula();
     }
+    setTimeout(() => {
+      setDataSelecionada();
+      setCarregandoGeral(false);
+    }, 1000);
   };
 
   const onCloseErros = () => {
@@ -693,6 +701,9 @@ const FrequenciaPlanoAula = () => {
           }
         }
       }
+      setTimeout(() => {
+        setCarregandoGeral(false);
+      }, 1000);
     },
     [obterAulaSelecionada, usuario]
   );
@@ -720,25 +731,25 @@ const FrequenciaPlanoAula = () => {
     validaSeTemIdAula,
   ]);
 
-  const onChangeData = data => {
-    setCarregandoGeral(true);
+  const onChangeData = async data => {
     setDataSelecionada(data);
+    setCarregandoGeral(true);
 
     if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
-      const confirmarParaSalvar = pergutarParaSalvar();
+      const confirmarParaSalvar = await pergutarParaSalvar();
       if (confirmarParaSalvar) {
         if (modoEdicaoFrequencia) {
-          onSalvarFrequencia();
+          await onSalvarFrequencia();
         }
         if (modoEdicaoPlanoAula) {
-          onSalvarPlanoAula();
+          await onSalvarPlanoAula();
         }
-        validaSeTemIdAula(data);
+        await validaSeTemIdAula(data);
       } else {
-        validaSeTemIdAula(data);
+        await validaSeTemIdAula(data);
       }
     } else {
-      validaSeTemIdAula(data);
+      await validaSeTemIdAula(data);
     }
   };
 

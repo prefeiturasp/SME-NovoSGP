@@ -22,7 +22,7 @@ function Loader({ children, loading, tip, className }) {
   return (
     <LoaderWrapper className={className}>
       <Spin
-        className="text-center"
+        className="text-center h-100 w-100"
         tip={tip}
         size="large"
         indicator={icone}
