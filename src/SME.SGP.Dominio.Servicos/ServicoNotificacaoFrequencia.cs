@@ -412,12 +412,13 @@ namespace SME.SGP.Dominio.Servicos
             if (disciplinas != null && disciplinas.Any() && disciplinas.FirstOrDefault().RegistraFrequencia)
             {
                 var disciplina = disciplinas.FirstOrDefault();
+                var nomeUeCompleto = $"{turmaSemRegistro.TipoEscola.GetAttribute<DisplayAttribute>().ShortName} {turmaSemRegistro.NomeUe}";
 
-                var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {disciplina.Nome} ({turmaSemRegistro.NomeUe})";
+                var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {disciplina.Nome} ({nomeUeCompleto})";
                 StringBuilder mensagemUsuario = new StringBuilder();
                 mensagemUsuario.Append($"A turma a seguir esta a <b>{turmaSemRegistro.Aulas.Count()} aulas</b> sem registro de frequência da turma");
                 mensagemUsuario.Append("<br />");
-                mensagemUsuario.Append($"<br />Unidade de Educação: <b>{turmaSemRegistro.TipoEscola.GetAttribute<DisplayAttribute>().ShortName + " " +  turmaSemRegistro.NomeUe}</b>");
+                mensagemUsuario.Append($"<br />Unidade de Educação: <b>{nomeUeCompleto}</b>");
                 mensagemUsuario.Append($"<br />Turma: <b>{turmaSemRegistro.NomeTurma}</b>");
                 mensagemUsuario.Append($"<br />Componente Curricular: <b>{disciplina.Nome}</b>");
                 mensagemUsuario.Append($"<br />Aulas:");
