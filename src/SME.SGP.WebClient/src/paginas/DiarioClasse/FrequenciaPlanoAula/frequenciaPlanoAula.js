@@ -51,16 +51,13 @@ const FrequenciaPlanoAula = () => {
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
 
-  const [carregandoFrequencia, setCarregandoFrequencia] = useState(false);
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
 
   const [listaDisciplinas, setListaDisciplinas] = useState();
-  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
-  const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(
-    undefined
-  );
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState();
+  const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState();
   const [listaDatasAulas, setListaDatasAulas] = useState();
-  const [dataSelecionada, setDataSelecionada] = useState('');
+  const [dataSelecionada, setDataSelecionada] = useState();
 
   const [frequencia, setFrequencia] = useState();
   const [aulaId, setAulaId] = useState(0);
@@ -77,7 +74,7 @@ const FrequenciaPlanoAula = () => {
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
-  const [aula, setAula] = useState(undefined);
+  const [aula, setAula] = useState();
   const [auditoriaPlano, setAuditoriaPlano] = useState([]);
   const [planoAula, setPlanoAula] = useState({
     aulaId: 0,
@@ -137,7 +134,7 @@ const FrequenciaPlanoAula = () => {
       setDisciplinaIdSelecionada(undefined);
     }
     if (!naoData) {
-      setDataSelecionada('');
+      setDataSelecionada();
     }
     setFrequencia();
     setExibirCardFrequencia(false);
@@ -236,7 +233,6 @@ const FrequenciaPlanoAula = () => {
   ]);
 
   const obterListaFrequencia = async id => {
-    setCarregandoFrequencia(true);
     setAulaId(id);
 
     const frequenciaAlunos = await api
@@ -256,13 +252,14 @@ const FrequenciaPlanoAula = () => {
       setFrequencia(frequenciaAlunos.data.listaFrequencia);
       setPermiteRegistroFrequencia(!frequenciaAlunos.data.desabilitado);
     }
-    setCarregandoFrequencia(false);
   };
 
   const [carregandoMaterias, setCarregandoMaterias] = useState(false);
 
   const obterPlanoAula = useCallback(
     async dadosAula => {
+      setCarregandoMaterias(true);
+
       const idAula = dadosAula.idAula || dadosAula[0].idAula;
       const plano = await api
         .get(`v1/planos/aulas/${idAula}`)
@@ -275,6 +272,7 @@ const FrequenciaPlanoAula = () => {
         });
 
       const dadosPlano = plano && plano.data;
+
       if (dadosPlano) {
         planoAula.qtdAulas = dadosPlano.qtdAulas;
         if (dadosPlano.id > 0) {
@@ -300,8 +298,6 @@ const FrequenciaPlanoAula = () => {
       }
 
       if (disciplinaSelecionada.regencia || ehProfessor || ehProfessorCj) {
-        setCarregandoMaterias(true);
-
         let disciplinas = {};
         if (disciplinaSelecionada.regencia) {
           setTemObjetivos(true);
@@ -346,10 +342,8 @@ const FrequenciaPlanoAula = () => {
             }
           }
         }
-        setCarregandoMaterias(false);
-      } else {
-        setCarregandoMaterias(false);
       }
+      setCarregandoMaterias(false);
     },
     [
       disciplinaSelecionada,
@@ -376,8 +370,9 @@ const FrequenciaPlanoAula = () => {
   const aposSalvarFrequencia = () => {
     setExibirCardFrequencia(false);
     setModoEdicaoFrequencia(false);
-    obterListaFrequencia(aulaId);
   };
+
+  const [carregandoGeral, setCarregandoGeral] = useState(false);
 
   const onSalvarFrequencia = click => {
     setCarregandoSalvar(true);
@@ -395,6 +390,9 @@ const FrequenciaPlanoAula = () => {
               aposSalvarFrequencia();
             }
             setCarregandoSalvar(false);
+            setTimeout(() => {
+              setCarregandoGeral(false);
+            }, 1000);
             resolve(true);
             return true;
           }
@@ -403,6 +401,9 @@ const FrequenciaPlanoAula = () => {
         })
         .catch(e => {
           setCarregandoSalvar(false);
+          setTimeout(() => {
+            setCarregandoGeral(false);
+          }, 1000);
           erros(e);
           reject(e);
         });
@@ -480,7 +481,7 @@ const FrequenciaPlanoAula = () => {
           if (salvouPlano && salvouPlano.status === 200) {
             sucesso('Plano de aula salvo com sucesso.');
             setModoEdicaoPlanoAula(false);
-            obterPlanoAula(obterAulaSelecionada(dataSelecionada));
+            setPlanoAulaExpandido(false);
           }
         })
         .catch(e => {
@@ -545,12 +546,17 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onClickSalvar = click => {
+    setCarregandoGeral(true);
     if (modoEdicaoFrequencia && permiteRegistroFrequencia) {
       onSalvarFrequencia(click);
     }
     if (modoEdicaoPlanoAula) {
       onSalvarPlanoAula();
     }
+    setTimeout(() => {
+      setDataSelecionada();
+      setCarregandoGeral(false);
+    }, 1000);
   };
 
   const onCloseErros = () => {
@@ -577,6 +583,23 @@ const FrequenciaPlanoAula = () => {
     }
     setExibirCardFrequencia(!exibirCardFrequencia);
   };
+
+  const onClickPlanoAula = () => {
+    setPlanoAulaExpandido(!planoAulaExpandido);
+  };
+
+  useEffect(() => {
+    if (!planoAula.aulaId && planoAulaExpandido && aula) {
+      resetarPlanoAula();
+      obterPlanoAula(aula);
+    }
+  }, [
+    aula,
+    obterPlanoAula,
+    planoAula.aulaId,
+    planoAulaExpandido,
+    resetarPlanoAula,
+  ]);
 
   const onChangeDisciplinas = async disciplinaId => {
     if (!disciplinaId) store.dispatch(salvarDadosAulaFrequencia());
@@ -617,6 +640,10 @@ const FrequenciaPlanoAula = () => {
   }, [dataSelecionada, planoAula]);
 
   useEffect(() => {
+    obterAvaliacao();
+  }, [obterAvaliacao]);
+
+  useEffect(() => {
     return () => {
       store.dispatch(salvarDadosAulaFrequencia());
     };
@@ -631,7 +658,6 @@ const FrequenciaPlanoAula = () => {
 
   useEffect(() => {
     if (exibeEscolhaAula) {
-      setCarregandoFrequencia(true);
       setCarregandoMaterias(true);
       const aulaDataSelecionada = obterAulaSelecionada(dataSelecionada);
       const aulaSelecionada = aulaDataSelecionada.find(
@@ -642,27 +668,16 @@ const FrequenciaPlanoAula = () => {
         setAula(aulaSelecionada);
         if (aulaSelecionada && aulaSelecionada.idAula) {
           obterListaFrequencia(aulaSelecionada.idAula);
-          obterPlanoAula(aulaSelecionada);
-          obterAvaliacao(aulaSelecionada.idAula, dataSelecionada);
         }
       }
-      setCarregandoFrequencia(false);
       setCarregandoMaterias(false);
     }
-  }, [
-    dataSelecionada,
-    ehAulaCj,
-    exibeEscolhaAula,
-    obterAulaSelecionada,
-    obterAvaliacao,
-    obterPlanoAula,
-  ]);
+  }, [dataSelecionada, ehAulaCj, exibeEscolhaAula, obterAulaSelecionada]);
 
   const validaSeTemIdAula = useCallback(
     async data => {
-      setDataSelecionada(data);
       resetarTelaFrequencia(true, true);
-      resetarPlanoAula();
+
       const aulaDataSelecionada = await obterAulaSelecionada(data);
       if (aulaDataSelecionada && aulaDataSelecionada.length) {
         if (
@@ -682,22 +697,32 @@ const FrequenciaPlanoAula = () => {
             setAula(aulaSelecionada);
             if (aulaSelecionada && aulaSelecionada.idAula) {
               obterListaFrequencia(aulaSelecionada.idAula);
-              obterPlanoAula(aulaSelecionada);
             }
           }
         }
       }
+      setTimeout(() => {
+        setCarregandoGeral(false);
+      }, 1000);
     },
-    [resetarPlanoAula, obterAulaSelecionada, usuario, obterPlanoAula]
+    [obterAulaSelecionada, usuario]
   );
 
   useEffect(() => {
-    if (Object.entries(dadosAulaFrequencia).length) {
-      if (listaDisciplinas.length && dadosAulaFrequencia.disciplinaId) {
+    if (
+      Object.entries(dadosAulaFrequencia).length &&
+      dadosAulaFrequencia.disciplinaId &&
+      dadosAulaFrequencia.dia
+    ) {
+      if (
+        listaDisciplinas &&
+        listaDisciplinas.length &&
+        dadosAulaFrequencia.disciplinaId
+      ) {
         setDisciplinaIdSelecionada(String(dadosAulaFrequencia.disciplinaId));
       }
-      if (diasParaHabilitar && dadosAulaFrequencia.dia)
-        validaSeTemIdAula(window.moment(dadosAulaFrequencia.dia));
+      if (!diasParaHabilitar && dadosAulaFrequencia.dia)
+        setDataSelecionada(window.moment(dadosAulaFrequencia.dia));
     }
   }, [
     dadosAulaFrequencia,
@@ -706,12 +731,9 @@ const FrequenciaPlanoAula = () => {
     validaSeTemIdAula,
   ]);
 
-  const [carregandoGeral, setCarregandoGeral] = useState(false);
-
   const onChangeData = async data => {
+    setDataSelecionada(data);
     setCarregandoGeral(true);
-    setExibirCardFrequencia(false);
-    setPlanoAulaExpandido(false);
 
     if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
       const confirmarParaSalvar = await pergutarParaSalvar();
@@ -722,14 +744,13 @@ const FrequenciaPlanoAula = () => {
         if (modoEdicaoPlanoAula) {
           await onSalvarPlanoAula();
         }
-        validaSeTemIdAula(data);
+        await validaSeTemIdAula(data);
       } else {
-        validaSeTemIdAula(data);
+        await validaSeTemIdAula(data);
       }
     } else {
-      validaSeTemIdAula(data);
+      await validaSeTemIdAula(data);
     }
-    setCarregandoGeral(false);
   };
 
   const onChangeFrequencia = () => {
@@ -758,8 +779,7 @@ const FrequenciaPlanoAula = () => {
           alerta={{
             tipo: 'warning',
             id: 'frequencia-selecione-turma',
-            mensagem: 'Você precisa escolher uma turma.',
-            estiloTitulo: { fontSize: '18px' },
+            mensagem: 'Você precisa escolher uma turma',
           }}
           className="mb-2"
         />
@@ -777,7 +797,7 @@ const FrequenciaPlanoAula = () => {
               </LinkAcao>
               {dataVigente && (
                 <>
-                  ou
+                  {' ou '}
                   <LinkAcao onClick={acessarNotasConceitos}>
                     Acessar Notas e Conceitos
                   </LinkAcao>
@@ -876,23 +896,20 @@ const FrequenciaPlanoAula = () => {
               )}
             </div>
           </div>
-          {dataSelecionada && (
-            <Loader loading={carregandoGeral} className="h-100">
-              <div className="row">
-                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                  <CardCollapse
-                    key="frequencia-collapse"
-                    onClick={onClickFrequencia}
-                    titulo="Frequência"
-                    indice="frequencia-collapse"
-                    show={exibirCardFrequencia}
-                    alt="card-collapse-frequencia"
-                  >
-                    <Loader
-                      loading={carregandoFrequencia}
-                      className="w-100 text-center"
+          <div className="row">
+            <Loader loading={carregandoGeral} className="w-100 my-2">
+              {disciplinaSelecionada && dataSelecionada ? (
+                <>
+                  <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                    <CardCollapse
+                      key="frequencia-collapse"
+                      onClick={onClickFrequencia}
+                      titulo="Frequência"
+                      indice="frequencia-collapse"
+                      show={exibirCardFrequencia}
+                      alt="card-collapse-frequencia"
                     >
-                      {frequencia && frequencia.length > 0 ? (
+                      {frequencia && frequencia.length ? (
                         <>
                           <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                             <Ordenacao
@@ -921,38 +938,39 @@ const FrequenciaPlanoAula = () => {
                           )}
                         </>
                       ) : null}
-                    </Loader>
-                  </CardCollapse>
-                </div>
-                <div className="col-sm-12 col-md-12 col-lg-12">
-                  <PlanoAula
-                    disciplinaIdSelecionada={disciplinaIdSelecionada}
-                    dataSelecionada={dataSelecionada}
-                    planoAula={planoAula}
-                    ehProfessorCj={ehProfessorCj}
-                    carregandoMaterias={carregandoMaterias}
-                    listaMaterias={materias}
-                    dataAula={aula && aula.data ? aula.data : null}
-                    ehEja={ehEja}
-                    ehMedio={ehMedio}
-                    setModoEdicao={e => setModoEdicaoPlanoAula(e)}
-                    setTemObjetivos={e => setTemObjetivos(e)}
-                    permissoesTela={permissoesTela}
-                    somenteConsulta={somenteConsulta}
-                    expandido={planoAulaExpandido}
-                    temObjetivos={temObjetivos}
-                    temAvaliacao={temAvaliacao}
-                    auditoria={auditoriaPlano}
-                    ehRegencia={
-                      disciplinaSelecionada
-                        ? disciplinaSelecionada.regencia
-                        : false
-                    }
-                  />
-                </div>
-              </div>
+                    </CardCollapse>
+                  </div>
+                  <div className="col-sm-12 col-md-12 col-lg-12">
+                    <PlanoAula
+                      onClick={onClickPlanoAula}
+                      disciplinaIdSelecionada={disciplinaIdSelecionada}
+                      dataSelecionada={dataSelecionada}
+                      planoAula={planoAula}
+                      ehProfessorCj={ehProfessorCj}
+                      carregandoMaterias={carregandoMaterias}
+                      listaMaterias={materias}
+                      dataAula={aula && aula.data ? aula.data : null}
+                      ehEja={ehEja}
+                      ehMedio={ehMedio}
+                      setModoEdicao={e => setModoEdicaoPlanoAula(e)}
+                      setTemObjetivos={e => setTemObjetivos(e)}
+                      permissoesTela={permissoesTela}
+                      somenteConsulta={somenteConsulta}
+                      expandido={planoAulaExpandido}
+                      temObjetivos={temObjetivos}
+                      temAvaliacao={temAvaliacao}
+                      auditoria={auditoriaPlano}
+                      ehRegencia={
+                        disciplinaSelecionada
+                          ? disciplinaSelecionada.regencia
+                          : false
+                      }
+                    />
+                  </div>
+                </>
+              ) : null}
             </Loader>
-          )}
+          </div>
         </div>
         <ModalMultiLinhas
           key="errosBimestre"

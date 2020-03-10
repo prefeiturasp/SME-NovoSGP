@@ -7,6 +7,7 @@ using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace SME.SGP.Api.Controllers
 {
