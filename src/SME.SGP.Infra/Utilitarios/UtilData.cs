@@ -9,9 +9,7 @@ namespace SME.SGP.Infra.Utilitarios
         {
             DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
 
-            Calendar cal = dfi.Calendar;
-
-            return cal.GetWeekOfYear(data, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+            return dfi.Calendar.GetWeekOfYear(data, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
         }
     }
 }
