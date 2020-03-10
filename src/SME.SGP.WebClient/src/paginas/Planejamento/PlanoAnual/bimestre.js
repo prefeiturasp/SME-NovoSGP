@@ -32,6 +32,19 @@ const Bimestre = ({
   const [layoutEspecial, setLayoutEspecial] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
 
+  const getSelecionados = () => {
+    if (objetivosAprendizagem && objetivosAprendizagem.length) {
+      const listaObjetivosSelecionados = objetivosAprendizagem.filter(
+        c => c.selecionado
+      );
+      return listaObjetivosSelecionados;
+    }
+    bimestre.objetivosAprendizagem.forEach(item => {
+      item.selecionado = true;
+    });
+    return bimestre.objetivosAprendizagem;
+  }
+
   const onChangeDisciplinasSelecionadas = disciplinasSelecionadas => {
     if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
       setCarregandoDados(true);
@@ -51,6 +64,12 @@ const Bimestre = ({
                 c.selecionado = false;
               }
             });
+            objetivosSelecionados.forEach(objetivoSelecionado => {
+              const objetivo = resposta.data.find(o => o.id === objetivoSelecionado.id);
+              if (!objetivo) {
+                resposta.data.push(objetivoSelecionado);
+              }
+            });
           }
           setObjetivosAprendizagem(resposta.data);
           setObjetivosCarregados(true);
@@ -60,7 +79,11 @@ const Bimestre = ({
           mostrarErros(e);
           setCarregandoDados(false);
         });
-    } else setObjetivosAprendizagem([]);
+    } else {
+      const objs = getSelecionados();
+      setObjetivosAprendizagem(objs);
+      setObjetivosSelecionados(objs);
+    }
   };
 
   const selecionaObjetivo = objetivo => {
@@ -119,24 +142,6 @@ const Bimestre = ({
       setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
     }
   }, [objetivosCarregados]);
-
-  useEffect(() => {
-    setObjetivosSelecionados(bimestre.objetivosAprendizagem);
-    const componentesCurricularesId = bimestre.objetivosAprendizagem.map(
-      c => c.id
-    );
-    const listaObjetivosAprendizagemSelecionados = objetivosAprendizagem.map(
-      c => {
-        if (componentesCurricularesId.includes(c.id)) {
-          c.selecionado = true;
-        } else {
-          c.selecionado = false;
-        }
-        return c;
-      }
-    );
-    setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
-  }, [bimestre.objetivosAprendizagem]);
 
   useEffect(() => {
     setDescricaoObjetivo(bimestre.descricao);
