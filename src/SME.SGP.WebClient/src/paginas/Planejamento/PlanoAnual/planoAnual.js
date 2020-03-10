@@ -26,6 +26,7 @@ import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import Bimestre from './bimestre';
 import history from '~/servicos/history';
+import ModalErros from './componentes/ModalErros';
 
 const { Panel } = Collapse;
 
@@ -57,9 +58,10 @@ const PlanoAnual = () => {
   const [
     codigoDisciplinaSelecionada,
     setCodigoDisciplinaSelecionada,
-  ] = useState('');
+  ] = useState(undefined);
 
-  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState('');
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
+  const [errosModal, setErrosModal] = useState([]);
 
   const onChangeDisciplinas = codigoDisciplina => {
     const disciplina = listaDisciplinas.find(
@@ -75,6 +77,7 @@ const PlanoAnual = () => {
     );
     return planoAnual[indiceBimestreAlterado];
   };
+
   const onChangeBimestre = bimestre => {
     const plano = obterPlano(bimestre.bimestre);
     plano.descricao = bimestre.descricao;
@@ -276,6 +279,7 @@ const PlanoAnual = () => {
   useEffect(() => {
     if (codigoDisciplinaSelecionada) {
       setCarregandoDados(true);
+      setPlanoAnual([]);
       servicoPlanoAnual
         .obter(
           turmaSelecionada.anoLetivo,
@@ -312,7 +316,7 @@ const PlanoAnual = () => {
           codigoDisciplinaSelecionada,
           turmaSelecionada.turma,
           turmaPrograma,
-          disciplinaSelecionada.regencia
+          disciplinaSelecionada && disciplinaSelecionada.regencia
         )
         .then(resposta => {
           setCarregandoDados(false);
@@ -332,11 +336,7 @@ const PlanoAnual = () => {
           erros(e);
         });
     }
-  }, [
-    codigoDisciplinaSelecionada,
-    disciplinaSelecionada.regencia,
-    turmaSelecionada,
-  ]);
+  }, [codigoDisciplinaSelecionada, disciplinaSelecionada, turmaSelecionada]);
 
   useEffect(() => {
     setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
@@ -346,6 +346,16 @@ const PlanoAnual = () => {
     }
   }, [turmaSelecionada]);
 
+  useEffect(() => {
+    const errosEscopo = [];
+    listaErros.forEach((item, index) => {
+      if (item.length > 0) {
+        item.forEach(err => errosEscopo.push(`${index + 1}º Bimestre: ${err}`));
+      }
+    });
+    setErrosModal(errosEscopo);
+  }, [listaErros]);
+
   const fecharCopiarConteudo = () => {
     setExibirCopiarConteudo(false);
   };
@@ -353,6 +363,7 @@ const PlanoAnual = () => {
   const onChangePossuiTurmasDisponiveisParaCopia = possuiTurmas => {
     setPossuiTurmasDisponiveisParaCopia(possuiTurmas);
   };
+
   return (
     <>
       <CopiarConteudo
@@ -365,6 +376,7 @@ const PlanoAnual = () => {
           anoLetivo: turmaSelecionada.anoLetivo,
           bimestres: planoAnual,
           componenteCurricularEolId:
+            disciplinaSelecionada &&
             disciplinaSelecionada.codigoComponenteCurricular,
           turmaId: turmaSelecionada.turma,
           escolaId: turmaSelecionada.unidadeEscolar,
@@ -374,6 +386,11 @@ const PlanoAnual = () => {
         }
       />
       <Loader loading={carregandoDados}>
+        <ModalErros
+          visivel={errosModal.length > 0}
+          erros={errosModal}
+          onCloseErrosBimestre={() => setErrosModal([])}
+        />
         <div className="col-md-12">
           {!possuiTurmaSelecionada ? (
             <Row className="mb-0 pb-0">
