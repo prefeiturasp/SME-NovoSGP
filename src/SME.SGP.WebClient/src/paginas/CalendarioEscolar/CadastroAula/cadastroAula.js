@@ -161,6 +161,7 @@ const CadastroAula = ({ match }) => {
   }, []);
 
   const onChangeDisciplinas = async (id, listaDisc) => {
+    onChangeCampos();
 
     setIdDisciplina(id);
 
