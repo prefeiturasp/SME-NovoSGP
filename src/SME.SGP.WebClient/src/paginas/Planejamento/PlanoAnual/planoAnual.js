@@ -27,6 +27,8 @@ import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import Bimestre from './bimestre';
 import history from '~/servicos/history';
 
+import { AlertaSelecionarTurma } from '~/componentes-sgp';
+
 const { Panel } = Collapse;
 
 const PlanoAnual = () => {
@@ -57,7 +59,7 @@ const PlanoAnual = () => {
   const [
     codigoDisciplinaSelecionada,
     setCodigoDisciplinaSelecionada,
-  ] = useState('');
+  ] = useState(undefined);
 
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState('');
 
@@ -367,23 +369,7 @@ const PlanoAnual = () => {
         }
       />
       <Loader loading={carregandoDados}>
-        <div className="col-md-12">
-          {!possuiTurmaSelecionada ? (
-            <Row className="mb-0 pb-0">
-              <Grid cols={12} className="mb-0 pb-0">
-                <Alert
-                  alerta={{
-                    tipo: 'warning',
-                    id: 'plano-anual-selecione-turma',
-                    mensagem: 'Você precisa escolher uma turma.',
-                    estiloTitulo: { fontSize: '18px' },
-                  }}
-                  className="mb-0"
-                />
-              </Grid>
-            </Row>
-          ) : null}
-        </div>
+        <AlertaSelecionarTurma />
         <Grid cols={12} className="p-0">
           <Titulo>
             {ehEja ? 'Plano Semestral' : 'Plano Anual'}
