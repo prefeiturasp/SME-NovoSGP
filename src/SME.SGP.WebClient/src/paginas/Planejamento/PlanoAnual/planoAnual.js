@@ -190,7 +190,7 @@ const PlanoAnual = () => {
       servicoPlanoAnual
         .salvar(plano)
         .then(resp => {
-          setPlanoAnual(resp.data.result);
+          setPlanoAnual(resp.data);
           setCarregandoDados(false);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
