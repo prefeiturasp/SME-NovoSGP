@@ -18,23 +18,7 @@ services:
       - "sme-db"
       - "sme-redis"
     env_file:
-      - sme-api.env
-  sme-workerservice:
-    container_name: sme-workerservice
-    image: sme-workerservice
-    build:
-      context: .
-      dockerfile: ./src/SME.SGP.WorkerService/Dockerfile
-    ports:
-      - "5000:5000"
-    networks:
-      - sme-network
-    depends_on:
-      - "sme-db"
-      - "sme-redis"
-      - "sme-api"
-    env_file:
-      - sme-api.env
+      - sme-api.env 
   sme-workerservice:
     container_name: sme-workerservice
     image: sme-workerservice

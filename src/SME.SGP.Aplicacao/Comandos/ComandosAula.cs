@@ -28,13 +28,14 @@ namespace SME.SGP.Aplicacao
             var aulaOrigemQuantidade = aulaOrigem.Quantidade;
             var aula = MapearDtoParaEntidade(dto, usuario.CodigoRf, usuario.EhProfessorCj(), aulaOrigem);
 
-            return servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula, aulaOrigemQuantidade);
+            return await servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula, aulaOrigemQuantidade);
         }
 
-        public async Task<string> Excluir(long id, RecorrenciaAula recorrencia)
+        public async Task<string> Excluir(long id, string disciplinaNome, RecorrenciaAula recorrencia)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var aula = repositorioAula.ObterPorId(id);
+            aula.DisciplinaNome = disciplinaNome;
 
             return await servicoAula.Excluir(aula, recorrencia, usuario);
         }
@@ -44,7 +45,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var aula = MapearDtoParaEntidade(dto, usuario.CodigoRf, usuario.EhProfessorCj());
 
-            return servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
+            return await servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
         }
 
         private Aula MapearDtoParaEntidade(AulaDto dto, string usuarioRf, bool usuarioEhCJ, Aula aula = null)
@@ -59,6 +60,7 @@ namespace SME.SGP.Aplicacao
             entidadeAula.UeId = dto.UeId;
             entidadeAula.DisciplinaId = dto.DisciplinaId;
             entidadeAula.DisciplinaCompartilhadaId = dto.DisciplinaCompartilhadaId;
+            entidadeAula.DisciplinaNome = dto.DisciplinaNome;
             entidadeAula.TurmaId = dto.TurmaId;
             entidadeAula.TipoCalendarioId = dto.TipoCalendarioId;
             entidadeAula.DataAula = dto.DataAula.Date;
