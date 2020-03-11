@@ -98,9 +98,7 @@ const PlanoAula = props => {
   useEffect(() => {
     setEscolhaHabilitaObjetivos(planoAula.objetivosAprendizagemAula.length > 0);
     setObjetivosAprendizagem([...planoAula.objetivosAprendizagemAula]);
-    setTimeout(() => {
-      setCarregandoObjetivosSelecionados(false);
-    }, 1000);
+    setCarregandoObjetivosSelecionados(false);
   }, [planoAula.objetivosAprendizagemAula]);
 
   useEffect(() => {
@@ -124,7 +122,6 @@ const PlanoAula = props => {
   };
 
   const removerObjetivo = id => {
-    setCarregandoObjetivosSelecionados(true);
     setModoEdicaoPlano(true);
     const index = objetivosAprendizagem.findIndex(
       a => a.id.toString() === id.toString()
@@ -134,7 +131,6 @@ const PlanoAula = props => {
   };
 
   const removerTodosObjetivos = () => {
-    setCarregandoObjetivosSelecionados(true);
     setModoEdicaoPlano(true);
     const objetivos = objetivosAprendizagem.map(objetivo => {
       objetivo.selected = false;
