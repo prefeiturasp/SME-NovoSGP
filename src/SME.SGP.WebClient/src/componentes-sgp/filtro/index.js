@@ -642,124 +642,118 @@ const Filtro = () => {
     if (turmas && turmas.length === 1) setTurmaSelecionada(turmas[0].valor);
   }, [turmas]);
 
-  useEffect(() => {
-    const limparFiltro = () => {
-      dispatch(limparDadosFiltro());
-      dispatch(removerTurma());
-      setTextoAutocomplete('');
-    };
+  const limparFiltro = useCallback(() => {
+    dispatch(limparDadosFiltro());
+    dispatch(removerTurma());
+    setTextoAutocomplete('');
+  }, [dispatch]);
 
-    const recarregarFiltro = async () => {
-      if (usuarioStore && usuarioStore.ehProfessorCj) {
-        if (
-          usuarioStore.turmaSelecionada &&
-          usuarioStore.turmaSelecionada.turma &&
-          usuarioStore.turmasUsuario &&
-          usuarioStore.turmasUsuario.length
-        ) {
-          const turmaBkp = { ...usuarioStore.turmaSelecionada };
-          const listaModalidades = await obterModalidades(false);
-
-          let continuar = true;
-
-          if (listaModalidades && listaModalidades.length) {
-            const modalidadeNaLista = listaModalidades.find(
-              item => String(item.valor) === String(turmaBkp.modalidade)
-            );
-            if (!modalidadeNaLista) {
-              limparFiltro();
-              continuar = false;
-            }
-          }
-          if (!continuar) {
-            return;
-          }
-
-          const listaDres = await obterDres(false, turmaBkp.periodo);
-          if (listaDres && listaDres.length) {
-            const dreNaLista = listaDres.find(
-              item => String(item.valor) === String(turmaBkp.dre)
-            );
-            if (!dreNaLista) {
-              limparFiltro();
-              continuar = false;
-            }
-          }
-          if (!continuar) {
-            return;
-          }
-
-          const periodo =
-            turmaBkp.modalidade.toString() === modalidade.EJA.toString()
-              ? turmaBkp.periodo
-              : null;
-
-          const listaUes = await obterUnidadesEscolares(false, periodo);
-          if (listaUes && listaUes.length) {
-            const ueNaLista = listaUes.find(
-              item => String(item.valor) === String(turmaBkp.unidadeEscolar)
-            );
-            if (!ueNaLista) {
-              limparFiltro();
-              continuar = false;
-            }
-          }
-          if (!continuar) {
-            return;
-          }
-
-          const listaTurmas = await obterTurmas(false);
-          if (listaTurmas && listaTurmas.length) {
-            const turmaNaLista = listaTurmas.find(
-              item => String(item.valor) === String(turmaBkp.turma)
-            );
-            if (!turmaNaLista) {
-              limparFiltro();
-              continuar = false;
-            }
-          }
-          if (!continuar) {
-            return;
-          }
-
-          // MODALIDADES
-          setModalidades(listaModalidades);
-          dispatch(salvarModalidades(listaModalidades));
-          setCampoModalidadeDesabilitado(listaModalidades.length === 1);
-
-          // DRES
-          dispatch(salvarDres(listaDres));
-          setDres(listaDres);
-          setCampoDreDesabilitado(listaDres.length === 1);
-
-          // UES
-          dispatch(salvarUnidadesEscolares(listaUes));
-          setUnidadesEscolares(listaUes);
-          setCampoUnidadeEscolarDesabilitado(listaUes.length === 1);
-
-          // TURMAS
-          dispatch(salvarTurmas(listaTurmas));
-          setTurmas(listaTurmas);
-          setCampoTurmaDesabilitado(listaTurmas.length === 1);
-        } else {
-          limparFiltro();
-        }
-      } else if (
-        !(usuarioStore.turmaSelecionada && usuarioStore.turmaSelecionada.turma)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const recarregarFiltro = useCallback(async () => {
+    if (usuarioStore && usuarioStore.ehProfessorCj) {
+      if (
+        usuarioStore.turmaSelecionada &&
+        usuarioStore.turmaSelecionada.turma &&
+        usuarioStore.turmasUsuario &&
+        usuarioStore.turmasUsuario.length
       ) {
+        const turmaBkp = { ...usuarioStore.turmaSelecionada };
+        const listaModalidades = await obterModalidades(false);
+
+        let continuar = true;
+
+        if (listaModalidades && listaModalidades.length) {
+          const modalidadeNaLista = listaModalidades.find(
+            item => String(item.valor) === String(turmaBkp.modalidade)
+          );
+          if (!modalidadeNaLista) {
+            limparFiltro();
+            continuar = false;
+          }
+        }
+        if (!continuar) {
+          return;
+        }
+
+        const listaDres = await obterDres(false, turmaBkp.periodo);
+        if (listaDres && listaDres.length) {
+          const dreNaLista = listaDres.find(
+            item => String(item.valor) === String(turmaBkp.dre)
+          );
+          if (!dreNaLista) {
+            limparFiltro();
+            continuar = false;
+          }
+        }
+        if (!continuar) {
+          return;
+        }
+
+        const periodo =
+          turmaBkp.modalidade.toString() === modalidade.EJA.toString()
+            ? turmaBkp.periodo
+            : null;
+
+        const listaUes = await obterUnidadesEscolares(false, periodo);
+        if (listaUes && listaUes.length) {
+          const ueNaLista = listaUes.find(
+            item => String(item.valor) === String(turmaBkp.unidadeEscolar)
+          );
+          if (!ueNaLista) {
+            limparFiltro();
+            continuar = false;
+          }
+        }
+        if (!continuar) {
+          return;
+        }
+
+        const listaTurmas = await obterTurmas(false);
+        if (listaTurmas && listaTurmas.length) {
+          const turmaNaLista = listaTurmas.find(
+            item => String(item.valor) === String(turmaBkp.turma)
+          );
+          if (!turmaNaLista) {
+            limparFiltro();
+            continuar = false;
+          }
+        }
+        if (!continuar) {
+          return;
+        }
+
+        // MODALIDADES
+        setModalidades(listaModalidades);
+        dispatch(salvarModalidades(listaModalidades));
+        setCampoModalidadeDesabilitado(listaModalidades.length === 1);
+
+        // DRES
+        dispatch(salvarDres(listaDres));
+        setDres(listaDres);
+        setCampoDreDesabilitado(listaDres.length === 1);
+
+        // UES
+        dispatch(salvarUnidadesEscolares(listaUes));
+        setUnidadesEscolares(listaUes);
+        setCampoUnidadeEscolarDesabilitado(listaUes.length === 1);
+
+        // TURMAS
+        dispatch(salvarTurmas(listaTurmas));
+        setTurmas(listaTurmas);
+        setCampoTurmaDesabilitado(listaTurmas.length === 1);
+      } else {
         limparFiltro();
       }
-    };
+    } else if (
+      !(usuarioStore.turmaSelecionada && usuarioStore.turmaSelecionada.turma)
+    ) {
+      limparFiltro();
+    }
+  }, [perfilStore]);
+
+  useEffect(() => {
     recarregarFiltro();
-  }, [
-    dispatch,
-    obterDres,
-    obterModalidades,
-    obterTurmas,
-    obterUnidadesEscolares,
-    perfilStore,
-    usuarioStore,
-  ]);
+  }, [perfilStore, recarregarFiltro]);
 
   const mostrarEsconderBusca = () => {
     setAlternarFocoBusca(!alternarFocoBusca);
