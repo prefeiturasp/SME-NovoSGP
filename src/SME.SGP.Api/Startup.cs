@@ -15,6 +15,7 @@ using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace SME.SGP.Api
@@ -40,6 +41,7 @@ namespace SME.SGP.Api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseRequestLocalization();
 
             app.UseHttpsRedirection();
             app.UseSwagger();
@@ -128,6 +130,13 @@ namespace SME.SGP.Api
                         name: "Postgres")
                     .AddCheck<ApiJuremaCheck>("API Jurema")
                     .AddCheck<ApiEolCheck>("API EOL");
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
+                options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
+            });
+            services.AddApplicationInsightsTelemetry(Configuration);
         }
     }
 }

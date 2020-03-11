@@ -20,6 +20,7 @@ import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 import { Loader } from '~/componentes';
+import { erro } from '~/servicos/alertas';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -39,6 +40,9 @@ const CalendarioEscolar = () => {
   const turmaSelecionadaStore = useSelector(
     state => state.usuario.turmaSelecionada
   );
+
+  const [controleTurmaSelecionada, setControleTurmaSelecionada] = useState();
+
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
 
@@ -48,7 +52,9 @@ const CalendarioEscolar = () => {
 
   const obterTiposCalendario = async modalidades => {
     setCarregandoTipos(true);
-    const lista = await ServicoCalendarios.obterTiposCalendario();
+    const lista = await ServicoCalendarios.obterTiposCalendario(
+      turmaSelecionadaStore.anoLetivo
+    );
     if (lista && lista.data) {
       const tiposCalendarioLista = [];
       if (lista.data) {
@@ -110,17 +116,24 @@ const CalendarioEscolar = () => {
             return tipo.modalidade === modalidadeSelecionada;
           })
         );
-      } else if (tiposCalendario && tiposCalendario.length) {
+      } else {
+        const tipos = await obterTiposCalendario(
+          listarModalidadesPorAbrangencia()
+        );
+
+        if (!tipos || tipos.length === 0) {
+          erro(
+            'Nenhum tipo de calendário encontrado para o ano letivo e modalidade selecionada'
+          );
+          return;
+        }
+
         setTiposCalendario(
-          tiposCalendario.filter(tipo => {
+          tipos.filter(tipo => {
             return tipo.modalidade === modalidadeSelecionada;
           })
         );
       }
-    } else {
-      setTiposCalendario(
-        await obterTiposCalendario(listarModalidadesPorAbrangencia())
-      );
     }
   };
 
@@ -172,7 +185,16 @@ const CalendarioEscolar = () => {
   }, [tiposCalendario]);
 
   useEffect(() => {
-    listarTiposCalendarioPorTurmaSelecionada();
+    if (
+      turmaSelecionadaStore &&
+      controleTurmaSelecionada === turmaSelecionadaStore.turma
+    )
+      return;
+
+    setControleTurmaSelecionada(turmaSelecionadaStore.turma);
+    setTipoCalendarioSelecionado('');
+
+    if (turmaSelecionadaStore.turma) listarTiposCalendarioPorTurmaSelecionada();
   }, [turmaSelecionadaStore]);
 
   const [dreSelecionada, setDreSelecionada] = useState(undefined);

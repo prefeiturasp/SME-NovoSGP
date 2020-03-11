@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -8,18 +9,20 @@ namespace SME.SGP.Aplicacao
     {
         string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos);
 
-        void RevogarToken(string login);
+        DateTime ObterDataHoraCriacao();
+
+        DateTime ObterDataHoraExpiracao();
+
+        string ObterLogin();
+
+        Guid ObterPerfil();
+
+        Task RevogarToken(string login);
+
+        bool TemPerfilNoToken(string guid);
 
         bool TokenAtivo();
 
         bool TokenPresente();
-
-        bool TemPerfilNoToken(string guid);
-        string ObterLogin();
-
-        DateTime ObterDataHoraExpiracao();
-        DateTime ObterDataHoraCriacao();
-
-        Guid ObterPerfil();
     }
 }
