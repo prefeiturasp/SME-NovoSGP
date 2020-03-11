@@ -264,6 +264,7 @@ const FrequenciaPlanoAula = () => {
       const plano = await api
         .get(`v1/planos/aulas/${idAula}`)
         .then(resp => {
+          setPlanoAulaExpandido(!planoAulaExpandido);
           return resp;
         })
         .catch(e => {
@@ -585,13 +586,12 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onClickPlanoAula = () => {
-    setPlanoAulaExpandido(!planoAulaExpandido);
+    obterPlanoAula(aula);
   };
 
   useEffect(() => {
     if (!planoAula.aulaId && planoAulaExpandido && aula) {
       resetarPlanoAula();
-      obterPlanoAula(aula);
     }
   }, [
     aula,
@@ -956,7 +956,8 @@ const FrequenciaPlanoAula = () => {
                       setTemObjetivos={e => setTemObjetivos(e)}
                       permissoesTela={permissoesTela}
                       somenteConsulta={somenteConsulta}
-                      expandido={planoAulaExpandido}
+                      mostrarCardPrincipal={planoAulaExpandido}
+                      setMostrarCardPrincipal={setPlanoAulaExpandido}
                       temObjetivos={temObjetivos}
                       temAvaliacao={temAvaliacao}
                       auditoria={auditoriaPlano}

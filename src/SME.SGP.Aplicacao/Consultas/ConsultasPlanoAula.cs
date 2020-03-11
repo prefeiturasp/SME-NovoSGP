@@ -41,6 +41,10 @@ namespace SME.SGP.Aplicacao.Consultas
         public async Task<PlanoAulaRetornoDto> ObterPlanoAulaPorAula(long aulaId)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
+            if (!await VerificarPlanoAnualExistente(aulaId))
+            {
+                throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
+            }
             PlanoAulaRetornoDto planoAulaDto = new PlanoAulaRetornoDto();
             // Busca plano de aula por data e disciplina da aula
             var plano = await repositorio.ObterPlanoAulaPorAula(aulaId);
