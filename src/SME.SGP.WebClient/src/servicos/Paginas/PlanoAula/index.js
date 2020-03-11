@@ -7,6 +7,9 @@ const PlanoAulaServico = {
   migrarPlano(dados) {
     return api.post(`/v1/planos/aulas/migrar`, dados);
   },
+  verificarSeExistePlanoAnual(aulaId) {
+    return api.get(`verificar-plano-anual-existente/${aulaId}`);
+  },
 };
 
 export default PlanoAulaServico;
