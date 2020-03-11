@@ -101,8 +101,6 @@ namespace SME.SGP.Api
                             });
             });
 
-            services.AddScoped<TokenServiceMiddleware>();
-
             services.AddDistributedRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("SGP-Redis");
