@@ -19,7 +19,14 @@ const CardCollapse = React.forwardRef((props, ref) => {
 
   return (
     <Card ref={ref} className="card shadow-sm mb-3">
-      <CardHeader indice={indice} border icon show={show} onclick={onClick} configuracao={configCabecalho}>
+      <CardHeader
+        indice={indice}
+        border
+        icon
+        show={show}
+        onClick={onClick}
+        configuracao={configCabecalho}
+      >
         {titulo}
       </CardHeader>
       <div className={`collapse fade ${show && 'show'}`} id={`${indice}`}>
@@ -34,7 +41,8 @@ CardCollapse.propTypes = {
   indice: PropTypes.string,
   children: PropTypes.node,
   show: PropTypes.bool,
-  configCabecalho: PropTypes.object
+  onClick: PropTypes.oneOfType([PropTypes.func]),
+  configCabecalho: PropTypes.oneOfType([PropTypes.object]),
 };
 
 CardCollapse.defaultProps = {
@@ -42,6 +50,11 @@ CardCollapse.defaultProps = {
   indice: shortid.generate(),
   children: () => {},
   show: false,
+  onClick: () => {},
+  configCabecalho: {
+    altura: 'auto',
+    corBorda: Base.AzulBordaCard,
+  },
 };
 
 export default CardCollapse;

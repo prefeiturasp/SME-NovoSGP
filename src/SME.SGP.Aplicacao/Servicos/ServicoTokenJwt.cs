@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
@@ -10,14 +9,15 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Servicos
 {
     public class ServicoTokenJwt : IServicoTokenJwt
     {
+        private readonly IRepositorioCache cache;
         private readonly IConfiguration configuration;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IRepositorioCache cache;
         private string tokenGerado;
 
         public ServicoTokenJwt(IConfiguration configuration,
@@ -65,9 +65,51 @@ namespace SME.SGP.Aplicacao.Servicos
             return tokenGerado;
         }
 
+        public DateTime ObterDataHoraCriacao()
+            => ObterDataHoraCriacao(ObterTokenAtual());
+
+        public DateTime ObterDataHoraExpiracao()
+        {
+            var tokenStr = ObterTokenAtual();
+            if (!string.IsNullOrEmpty(tokenStr))
+            {
+                var token = (new JwtSecurityTokenHandler()).ReadToken(tokenStr) as JwtSecurityToken;
+                return token.ValidTo;
+            }
+            return DateTime.MinValue;
+        }
+
+        public string ObterLogin()
+            => ObterLoginDoToken(ObterTokenAtual());
+
+        public Guid ObterPerfil()
+            => ObterPerfilDoToken(ObterTokenAtual());
+
+        public async Task RevogarToken(string login)
+        {
+            var chaveLogin = ObterChaveLogin(login);
+            var token = cache.Obter(chaveLogin);
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                await cache.RemoverAsync(chaveLogin);
+            }
+        }
+
         public bool TemPerfilNoToken(string guid)
         {
             throw new NotImplementedException();
+        }
+
+        public bool TokenAtivo()
+            => TokenAtivo(ObterTokenAtual());
+
+        public bool TokenPresente()
+        {
+            var authorizationHeader = httpContextAccessor.HttpContext.Request.Headers["authorization"];
+
+            return authorizationHeader == StringValues.Empty
+                ? false
+                : true;
         }
 
         private string ObterTokenAtual()
@@ -83,42 +125,50 @@ namespace SME.SGP.Aplicacao.Servicos
                 : authorizationHeader.Single().Split(' ').Last();
         }
 
-        public void RevogarToken(string login)
-            => cache.RemoverAsync(ObterChaveLogin(login)).Wait();
+        #region Private Methods
 
-        public bool TokenAtivo()
-            => TokenAtivo(ObterTokenAtual());
+        private string ObterChave(string nome)
+            => $"token:{nome}";
 
-        public bool TokenPresente()
+        private string ObterChaveLogin(string usuarioLogin)
+            => ObterChave(usuarioLogin);
+
+        private string ObterChaveToken(string token)
+            => ObterChave(ObterLoginDoToken(token));
+
+        private IEnumerable<Claim> ObterClaims(string token)
         {
-            var authorizationHeader = httpContextAccessor.HttpContext.Request.Headers["authorization"];
+            var handler = new JwtSecurityTokenHandler();
+            var tokenS = handler.ReadToken(token) as JwtSecurityToken;
 
-            return authorizationHeader == StringValues.Empty
-                ? false
-                : true;
+            return tokenS.Claims;
         }
 
-        public string ObterLogin()
-            => ObterLoginDoToken(ObterTokenAtual());
-
-        public Guid ObterPerfil()
-            => ObterPerfilDoToken(ObterTokenAtual());
-
-        public DateTime ObterDataHoraExpiracao()
+        private DateTime ObterDataHoraCriacao(string tokenStr)
         {
-            var tokenStr = ObterTokenAtual();
             if (!string.IsNullOrEmpty(tokenStr))
             {
                 var token = (new JwtSecurityTokenHandler()).ReadToken(tokenStr) as JwtSecurityToken;
-                return token.ValidTo;
+                return token.ValidFrom;
             }
+
             return DateTime.MinValue;
         }
 
-        public DateTime ObterDataHoraCriacao()
-            => ObterDataHoraCriacao(ObterTokenAtual());
+        private string ObterLoginDoToken(string token)
+            => ObterClaims(token)
+                .FirstOrDefault(claim => claim.Type == "login")?.Value ?? string.Empty;
 
-        #region Private Methods
+        private Guid ObterPerfilDoToken(string token)
+            => Guid.Parse(ObterClaims(token)
+                .FirstOrDefault(claim => claim.Type == "perfil")?.Value
+                ?? string.Empty);
+
+        private void SalvarToken(string usuarioLogin)
+        {
+            cache.Salvar(ObterChaveLogin(usuarioLogin), tokenGerado);
+        }
+
         private bool TokenAtivo(string token)
         {
             var tokenCache = cache.Obter(ObterChaveToken(token));
@@ -143,45 +193,6 @@ namespace SME.SGP.Aplicacao.Servicos
             return false;
         }
 
-        private void SalvarToken(string usuarioLogin)
-            => cache.SalvarAsync(ObterChaveLogin(usuarioLogin), tokenGerado).Wait();
-
-        private string ObterChave(string nome)
-            => $"token:{nome}";
-
-        private string ObterChaveLogin(string usuarioLogin)
-            => ObterChave(usuarioLogin);
-
-        private string ObterChaveToken(string token)
-            => ObterChave(ObterLoginDoToken(token));
-
-        private IEnumerable<Claim> ObterClaims(string token)
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var tokenS = handler.ReadToken(token) as JwtSecurityToken;
-
-            return tokenS.Claims;
-        }
-
-        private string ObterLoginDoToken(string token)
-            => ObterClaims(token)
-                .FirstOrDefault(claim => claim.Type == "login")?.Value ?? string.Empty;
-
-        private Guid ObterPerfilDoToken(string token)
-            => Guid.Parse(ObterClaims(token)
-                .FirstOrDefault(claim => claim.Type == "perfil")?.Value 
-                ?? string.Empty);
-
-        private DateTime ObterDataHoraCriacao(string tokenStr)
-        {
-            if (!string.IsNullOrEmpty(tokenStr))
-            {
-                var token = (new JwtSecurityTokenHandler()).ReadToken(tokenStr) as JwtSecurityToken;
-                return token.ValidFrom;
-            }
-
-            return DateTime.MinValue;
-        }
-        #endregion
+        #endregion Private Methods
     }
 }

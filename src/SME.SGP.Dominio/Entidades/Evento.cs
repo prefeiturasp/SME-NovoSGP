@@ -222,16 +222,14 @@ namespace SME.SGP.Dominio
         public void ValidaPeriodoEvento()
         {
             TipoEventoObrigatorio();
+
             if (TipoEvento.TipoData == EventoTipoData.InicioFim && DataFim == DateTime.MinValue)
             {
                 throw new NegocioException("Neste tipo de evento a data final do evento deve ser informada.");
             }
-            else
+            else if (TipoEvento.TipoData == EventoTipoData.Unico)
             {
-                if (TipoEvento.TipoData == EventoTipoData.Unico)
-                {
-                    DataFim = DataInicio;
-                }
+                DataFim = DataInicio;
             }
         }
 
