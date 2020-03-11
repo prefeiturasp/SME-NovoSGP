@@ -10,11 +10,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAula : IServicoAula
     {
+        private readonly IComandosNotificacaoAula comandosNotificacaoAula;
         private readonly IComandosPlanoAula comandosPlanoAula;
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
         private readonly IConfiguration configuration;
@@ -34,6 +36,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoWorkflowAprovacao servicoWorkflowAprovacao;
+        private readonly IUnitOfWork unitOfWork;
 
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
@@ -47,13 +50,15 @@ namespace SME.SGP.Dominio.Servicos
                            IServicoNotificacao servicoNotificacao,
                            IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                            IComandosPlanoAula comandosPlanoAula,
+                           IComandosNotificacaoAula comandosNotificacaoAula,
                            IServicoFrequencia servicoFrequencia,
                            IConfiguration configuration,
                            IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
                            IRepositorioTurma repositorioTurma,
                            IServicoWorkflowAprovacao servicoWorkflowAprovacao,
-                           IServicoUsuario servicoUsuario)
+                           IServicoUsuario servicoUsuario,
+                           IUnitOfWork unitOfWork)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -74,6 +79,8 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.comandosNotificacaoAula = comandosNotificacaoAula ?? throw new ArgumentNullException(nameof(comandosNotificacaoAula));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         private enum Operacao
@@ -93,32 +100,44 @@ namespace SME.SGP.Dominio.Servicos
             return "Aula e suas dependencias excluídas com sucesso!";
         }
 
-        public void GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
+        public async Task GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
         {
             var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
 
             if (inclusao)
-                GerarRecorrencia(aula, usuario, fimRecorrencia);
+                await GerarRecorrencia(aula, usuario, fimRecorrencia);
             else
-                AlterarRecorrencia(aula, usuario, fimRecorrencia);
+                await AlterarRecorrencia(aula, usuario, fimRecorrencia);
         }
 
-        public string Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0)
+        public async Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false)
         {
-            var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
+            if (!ehRecorrencia)
+            {
+                var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
 
-            if (tipoCalendario == null)
-                throw new NegocioException("O tipo de calendário não foi encontrado.");
+                if (tipoCalendario == null)
+                    throw new NegocioException("O tipo de calendário não foi encontrado.");
 
-            VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula);
+                aula.AtualizaTipoCalendario(tipoCalendario);
+
+                await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
+
+                var disciplinasProfessor = usuario.EhProfessorCj() ? ObterDisciplinasProfessorCJ(aula, usuario) : await ObterDisciplinasProfessor(aula, usuario);
+
+                if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.ToString() == aula.DisciplinaId))
+                    throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
+
+                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
+
+                if (turma == null)
+                    throw new NegocioException("Turma não localizada.");
+
+                aula.AtualizaTurma(turma);
+            }
 
             if (aula.Id > 0)
                 aula.PodeSerAlterada(usuario);
-
-            var disciplinasProfessor = usuario.EhProfessorCj() ? ObterDisciplinasProfessorCJ(aula, usuario) : ObterDisciplinasProfessor(aula, usuario);
-
-            if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.ToString() == aula.DisciplinaId))
-                throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
 
             var temLiberacaoExcepcionalNessaData = servicoDiaLetivo.ValidaSeEhLiberacaoExcepcional(aula.DataAula, aula.TipoCalendarioId, aula.UeId);
 
@@ -130,23 +149,18 @@ namespace SME.SGP.Dominio.Servicos
 
             var ehInclusao = aula.Id == 0;
 
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
-
-            if (turma == null)
-                throw new NegocioException("Turma não localizada.");
-
             if (aula.RecorrenciaAula == RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
             {
                 var aulas = repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf).Result;
                 var quantidadeDeAulasSomadas = aulas.ToList().FindAll(x => x.DataAula.Date == aula.DataAula.Date).Sum(x => x.Quantidade) + aula.Quantidade;
 
-                if (ReposicaoDeAulaPrecisaDeAprovacao(quantidadeDeAulasSomadas, turma))
+                if (ReposicaoDeAulaPrecisaDeAprovacao(quantidadeDeAulasSomadas, aula.Turma))
                 {
-                    var nomeDisciplina = RetornaNomeDaDisciplina(aula);
+                    var nomeDisciplina = aula.DisciplinaNome;
 
                     repositorioAula.Salvar(aula);
-                    PersistirWorkflowReposicaoAula(aula, turma.Ue.Dre.Nome, turma.Ue.Nome, nomeDisciplina,
-                                                 turma.Nome, turma.Ue.Dre.CodigoDre);
+                    PersistirWorkflowReposicaoAula(aula, aula.Turma.Ue.Dre.Nome, aula.Turma.Ue.Nome, nomeDisciplina,
+                                                 aula.Turma.Nome, aula.Turma.Ue.Dre.CodigoDre);
                     return "Aula cadastrada com sucesso e enviada para aprovação.";
                 }
             }
@@ -156,23 +170,19 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
 
                 // Busca quantidade de aulas semanais da grade de aula
+                //Buscar tudo de uma vez?
                 var semana = (aula.DataAula.DayOfYear / 7) + 1;
-                var gradeAulas = consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, Convert.ToInt64(aula.DisciplinaId), semana.ToString(), aula.DataAula, usuario.CodigoRf).Result;
+                var gradeAulas = await consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, Convert.ToInt64(aula.DisciplinaId), semana, aula.DataAula, usuario.CodigoRf);
 
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
-                var disciplinas = servicoEOL.ObterDisciplinasPorIds(new[] { Convert.ToInt64(aula.DisciplinaId) });
-
-                if (disciplinas == null || !disciplinas.Any())
-                    throw new NegocioException("Disciplina não encontrada.");
-
-                var disciplina = disciplinas.First();
+                ObterDisciplinaDaAula(aula);
 
                 if (!ehInclusao)
                 {
-                    if (disciplina.Regencia)
+                    if (aula.ComponenteCurricularEol.Regencia)
                     {
-                        if (turma.ModalidadeCodigo == Modalidade.EJA)
+                        if (aula.Turma.ModalidadeCodigo == Modalidade.EJA)
                         {
                             if (aula.Quantidade != 5)
                                 throw new NegocioException("Para regência de EJA só é permitido a criação de 5 aulas por dia.");
@@ -183,7 +193,7 @@ namespace SME.SGP.Dominio.Servicos
                     else
                     {
                         // Na alteração tem que considerar que uma aula possa estar mudando de dia na mesma semana, então não soma as aulas do proprio registro
-                        var aulasSemana = repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf, mes: null, semanaAno: semana, disciplinaId: aula.DisciplinaId).Result;
+                        var aulasSemana = await repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf, mes: null, semanaAno: semana, disciplinaId: aula.DisciplinaId);
                         var quantidadeAulasSemana = aulasSemana.Where(a => a.Id != aula.Id).Sum(a => a.Quantidade);
 
                         quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasGrade - quantidadeAulasSemana;
@@ -193,12 +203,12 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else
                 {
-                    if (disciplina.Regencia)
+                    if (aula.ComponenteCurricularEol.Regencia)
                     {
-                        var aulaNoDia = repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, "", data: aula.DataAula, aula.DisciplinaId).Result;
+                        var aulaNoDia = await repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, "", data: aula.DataAula, aula.DisciplinaId);
                         if (aulaNoDia != null && aulaNoDia.Any())
                         {
-                            if (turma.ModalidadeCodigo == Modalidade.EJA)
+                            if (aula.Turma.ModalidadeCodigo == Modalidade.EJA)
                                 throw new NegocioException("Para regência de EJA só é permitido a criação de 5 aulas por dia.");
                             else throw new NegocioException("Para regência de classe só é permitido a criação de 1 (uma) aula por dia.");
                         }
@@ -213,7 +223,7 @@ namespace SME.SGP.Dominio.Servicos
             // Na alteração de quantidade de aulas deve 0r a frequencia se registrada
             if (!ehInclusao && quantidadeOriginal != 0 && quantidadeOriginal != aula.Quantidade)
                 if (consultasFrequencia.FrequenciaAulaRegistrada(aula.Id).Result)
-                    servicoFrequencia.AtualizarQuantidadeFrequencia(aula.Id, quantidadeOriginal, aula.Quantidade);
+                    await servicoFrequencia.AtualizarQuantidadeFrequencia(aula.Id, quantidadeOriginal, aula.Quantidade);
 
             // Verifica recorrencia da gravação
             if (recorrencia != RecorrenciaAula.AulaUnica)
@@ -237,17 +247,17 @@ namespace SME.SGP.Dominio.Servicos
                                      (turma.ModalidadeCodigo == Modalidade.Medio) && quantidadeAulasExistentesNoDia > 2);
         }
 
-        private void AlterarRecorrencia(Aula aula, Usuario usuario, DateTime fimRecorrencia)
+        private async Task AlterarRecorrencia(Aula aula, Usuario usuario, DateTime fimRecorrencia)
         {
             var dataRecorrencia = aula.DataAula.AddDays(7);
-            var aulasRecorrencia = repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia).Result;
+            var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
             List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = new List<(DateTime data, bool existeFrequencia, bool existePlanoAula)>();
 
             foreach (var aulaRecorrente in aulasRecorrencia)
             {
-                var existeFrequencia = consultasFrequencia.FrequenciaAulaRegistrada(aulaRecorrente.Id).Result;
-                var existePlanoAula = consultasPlanoAula.PlanoAulaRegistrado(aulaRecorrente.Id).Result;
+                var existeFrequencia = await consultasFrequencia.FrequenciaAulaRegistrada(aulaRecorrente.Id);
+                var existePlanoAula = await consultasPlanoAula.PlanoAulaRegistrado(aulaRecorrente.Id);
 
                 if (existeFrequencia || existePlanoAula)
                     aulasComFrenciaOuPlano.Add((aulaRecorrente.DataAula, existeFrequencia, existePlanoAula));
@@ -259,7 +269,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 try
                 {
-                    Salvar(aulaRecorrente, usuario, aulaRecorrente.RecorrenciaAula, quantidadeOriginal);
+                    await Salvar(aulaRecorrente, usuario, aulaRecorrente.RecorrenciaAula, quantidadeOriginal);
                 }
                 catch (NegocioException nex)
                 {
@@ -274,23 +284,36 @@ namespace SME.SGP.Dominio.Servicos
                 dataRecorrencia = dataRecorrencia.AddDays(7);
             }
 
-            NotificarUsuario(usuario, aula, Operacao.Alteracao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
+            await NotificarUsuario(usuario, aula, Operacao.Alteracao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
         }
 
-        private async Task ExcluirAula(Aula aula, string CodigoRf)
+        private async Task ExcluirAula(Aula aula, string codigoRf)
         {
-            if (await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(aula.DataAula.Date, aula.UeId, aula.TurmaId, CodigoRf, aula.DisciplinaId))
+            if (await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(aula.DataAula.Date, aula.UeId, aula.TurmaId, codigoRf, aula.DisciplinaId))
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
 
-            VerificaSeProfessorPodePersistirTurmaDisciplina(CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula);
+            await VerificaSeProfessorPodePersistirTurmaDisciplina(codigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, null);
 
-            if (aula.WorkflowAprovacaoId.HasValue)
-                await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(aula.WorkflowAprovacaoId.Value);
+            unitOfWork.IniciarTransacao();
+            try
+            {
+                if (aula.WorkflowAprovacaoId.HasValue)
+                    await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(aula.WorkflowAprovacaoId.Value);
 
-            await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
-            await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
-            aula.Excluido = true;
-            await repositorioAula.SalvarAsync(aula);
+                await comandosNotificacaoAula.Excluir(aula.Id);
+                await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
+                await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
+
+                aula.Excluido = true;
+                await repositorioAula.SalvarAsync(aula);
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         private async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
@@ -323,77 +346,76 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
-            NotificarUsuario(usuario, aula, Operacao.Exclusao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
+            await NotificarUsuario(usuario, aula, Operacao.Exclusao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
         }
 
-        private void GerarAulaDeRecorrenciaParaDias(Aula aula, List<DateTime> diasParaIncluirRecorrencia, Usuario usuario)
+        private async Task GerarAulaDeRecorrenciaParaDias(Aula aula, Usuario usuario, IEnumerable<PodePersistirNaDataRetornoEolDto> datasParaPersistencia)
         {
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
 
-            foreach (var dia in diasParaIncluirRecorrencia)
+            foreach (var dia in datasParaPersistencia)
             {
-                var aulaParaAdicionar = (Aula)aula.Clone();
-                aulaParaAdicionar.DataAula = dia;
-                aulaParaAdicionar.AdicionarAulaPai(aula);
-                aulaParaAdicionar.RecorrenciaAula = RecorrenciaAula.AulaUnica;
+                if (dia.PodePersistir)
+                {
+                    var aulaParaAdicionar = (Aula)aula.Clone();
+                    aulaParaAdicionar.DataAula = dia.Data;
+                    aulaParaAdicionar.AdicionarAulaPai(aula);
+                    aulaParaAdicionar.RecorrenciaAula = RecorrenciaAula.AulaUnica;
 
-                try
-                {
-                    Salvar(aulaParaAdicionar, usuario, aulaParaAdicionar.RecorrenciaAula);
+                    try
+                    {
+                        await Salvar(aulaParaAdicionar, usuario, aulaParaAdicionar.RecorrenciaAula, 0, true);
+                    }
+                    catch (NegocioException nex)
+                    {
+                        aulasQueDeramErro.Add((dia.Data, nex.Message));
+                    }
+                    catch (Exception ex)
+                    {
+                        servicoLog.Registrar(ex);
+                        aulasQueDeramErro.Add((dia.Data, "Erro Interno."));
+                    }
                 }
-                catch (NegocioException nex)
+                else
                 {
-                    aulasQueDeramErro.Add((dia, nex.Message));
-                }
-                catch (Exception ex)
-                {
-                    servicoLog.Registrar(ex);
-                    aulasQueDeramErro.Add((dia, "Erro Interno."));
+                    aulasQueDeramErro.Add((dia.Data, "Este professor não pode persistir nesta turma neste dia."));
                 }
             }
 
-            NotificarUsuario(usuario, aula, Operacao.Inclusao, diasParaIncluirRecorrencia.Count - aulasQueDeramErro.Count, aulasQueDeramErro);
+            await NotificarUsuario(usuario, aula, Operacao.Inclusao, datasParaPersistencia.ToList().Count - aulasQueDeramErro.ToList().Count, aulasQueDeramErro);
         }
 
-        private void GerarRecorrencia(Aula aula, Usuario usuario, DateTime fimRecorrencia)
+        private async Task GerarRecorrencia(Aula aula, Usuario usuario, DateTime fimRecorrencia)
         {
             var inicioRecorrencia = aula.DataAula.AddDays(7);
 
-            GerarRecorrenciaParaPeriodos(aula, inicioRecorrencia, fimRecorrencia, usuario);
+            await GerarRecorrenciaParaPeriodos(aula, inicioRecorrencia, fimRecorrencia, usuario);
         }
 
-        private void GerarRecorrenciaParaPeriodos(Aula aula, DateTime inicioRecorrencia, DateTime fimRecorrencia, Usuario usuario)
+        private async Task GerarRecorrenciaParaPeriodos(Aula aula, DateTime inicioRecorrencia, DateTime fimRecorrencia, Usuario usuario)
         {
             List<DateTime> diasParaIncluirRecorrencia = new List<DateTime>();
             ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia, diasParaIncluirRecorrencia);
 
-            GerarAulaDeRecorrenciaParaDias(aula, diasParaIncluirRecorrencia, usuario);
+            var datasPersistencia = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
+            if (datasPersistencia == null || !datasPersistencia.Any())
+                throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+
+            await GerarAulaDeRecorrenciaParaDias(aula, usuario, datasPersistencia);
         }
 
-        private void NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro, List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = null)
+        private async Task NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro, List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = null)
         {
             var perfilAtual = usuario.PerfilAtual;
             if (perfilAtual == Guid.Empty)
                 throw new NegocioException($"Não foi encontrado o perfil do usuário informado.");
 
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
-
-            if (turma is null)
-                throw new NegocioException($"Não foi possível localizar a turma de Id {aula.TurmaId} na abrangência ");
-
-            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(aula.DisciplinaId) });
-
-            if (disciplinasEol is null || !disciplinasEol.Any())
-                throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
-
-            var disciplina = disciplinasEol.FirstOrDefault();
-
             var operacaoStr = operacao == Operacao.Inclusao ? "Criação" : operacao == Operacao.Alteracao ? "Alteração" : "Exclusão";
-            var tituloMensagem = $"{operacaoStr} de Aulas de {disciplina.Nome} na turma {turma.Nome}";
+            var tituloMensagem = $"{operacaoStr} de Aulas de {aula.DisciplinaNome} na turma {aula.Turma.Nome}";
             StringBuilder mensagemUsuario = new StringBuilder();
 
             operacaoStr = operacao == Operacao.Inclusao ? "criadas" : operacao == Operacao.Alteracao ? "alteradas" : "excluídas";
-            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {disciplina.Nome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
+            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {aula.DisciplinaNome} para a turma {aula.Turma.Nome} da {aula.Turma.Ue?.Nome} ({aula.Turma.Ue?.Dre?.Nome}).");
 
             if (aulasComFrenciaOuPlano != null && aulasComFrenciaOuPlano.Any())
             {
@@ -418,18 +440,35 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
-            servicoNotificacao.Salvar(new Notificacao()
+            var notificacao = new Notificacao()
             {
                 Ano = aula.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
-                DreId = turma.Ue.Dre.CodigoDre,
+                DreId = aula.Turma.Ue.Dre.CodigoDre,
                 Mensagem = mensagemUsuario.ToString(),
                 UsuarioId = usuario.Id,
                 Tipo = NotificacaoTipo.Calendario,
                 Titulo = tituloMensagem,
                 TurmaId = aula.TurmaId,
-                UeId = turma.Ue.CodigoUe,
-            });
+                UeId = aula.Turma.Ue.CodigoUe,
+            };
+
+            unitOfWork.IniciarTransacao();
+            try
+            {
+                // Salva Notificação
+                servicoNotificacao.Salvar(notificacao);
+
+                // Gera vinculo Notificacao x Aula
+                await comandosNotificacaoAula.Inserir(notificacao.Id, aula.Id);
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         private IEnumerable<DateTime> ObterDiaEntreDatas(DateTime inicio, DateTime fim)
@@ -447,9 +486,25 @@ namespace SME.SGP.Dominio.Servicos
                 diasParaIncluirRecorrencia.Add(inicioRecorrencia);
         }
 
-        private IEnumerable<long> ObterDisciplinasProfessor(Aula aula, Usuario usuario)
+        private void ObterDisciplinaDaAula(Aula aula)
         {
-            IEnumerable<DisciplinaResposta> lstDisciplinasProf = servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual).Result;
+            if (aula.ComponenteCurricularEol == null || aula.ComponenteCurricularEol.Codigo == 0)
+            {
+                var disciplinas = servicoEOL.ObterDisciplinasPorIds(new[] { Convert.ToInt64(aula.DisciplinaId) });
+
+                if (disciplinas == null || !disciplinas.Any())
+                    throw new NegocioException("Disciplina não encontrada.");
+
+                var disciplina = disciplinas.First();
+                var componenteCurricularEol = TransformaComponenteCurricularDtoEmEntidade(disciplina);
+
+                aula.AtualizaComponenteCurricularEol(componenteCurricularEol);
+            }
+        }
+
+        private async Task<IEnumerable<long>> ObterDisciplinasProfessor(Aula aula, Usuario usuario)
+        {
+            IEnumerable<DisciplinaResposta> lstDisciplinasProf = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual);
 
             return lstDisciplinasProf != null && lstDisciplinasProf.Any() ? lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular)) : null;
         }
@@ -512,9 +567,25 @@ namespace SME.SGP.Dominio.Servicos
             return disciplina.Nome;
         }
 
-        private void VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula)
+        private ComponenteCurricularEol TransformaComponenteCurricularDtoEmEntidade(DisciplinaDto disciplina)
         {
-            if (!servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula).Result)
+            return new ComponenteCurricularEol()
+            {
+                CdComponenteCurricularPai = disciplina.CdComponenteCurricularPai,
+                Codigo = disciplina.CodigoComponenteCurricular,
+                Compartilhada = disciplina.Compartilhada,
+                LancaNota = disciplina.LancaNota,
+                Nome = disciplina.Nome,
+                PossuiObjetivos = disciplina.PossuiObjetivos,
+                Regencia = disciplina.Regencia,
+                RegistraFrequencia = disciplina.RegistraFrequencia,
+                TerritorioSaber = disciplina.TerritorioSaber
+            };
+        }
+
+        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario)
+        {
+            if (!await servicoUsuario.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, dataAula, usuario))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
     }
