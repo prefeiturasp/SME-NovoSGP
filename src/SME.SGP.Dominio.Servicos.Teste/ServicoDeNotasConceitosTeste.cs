@@ -25,6 +25,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioTurma> repositorioTurma;
+        private readonly Mock<IRepositorioParametrosSistema> repositorioParametrosSistema;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IConfiguration> configuration;
 
@@ -43,6 +44,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             repositorioAula = new Mock<IRepositorioAula>();
             repositorioTurma = new Mock<IRepositorioTurma>();
+            repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
             configuration = new Mock<IConfiguration>();
 
             servicoDeNotasConceitos = new ServicoDeNotasConceitos(
@@ -60,6 +62,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
                 repositorioPeriodoEscolar.Object,
                 repositorioAula.Object,
                 repositorioTurma.Object,
+                repositorioParametrosSistema.Object,
                 servicoUsuario.Object,
                 configuration.Object);
         }
@@ -67,23 +70,23 @@ namespace SME.SGP.Dominio.Servicos.Teste
         [Fact]
         public void Deve_Lancar_Excecao_Se_Instanciar_Sem_Dependencias()
         {
-            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(null, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object,repositorioAula.Object, repositorioTurma.Object, servicoUsuario.Object, configuration.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(null, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object,repositorioAula.Object, repositorioTurma.Object, repositorioParametrosSistema.Object, servicoUsuario.Object, configuration.Object));
 
-            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, null, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, servicoUsuario.Object, configuration.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, null, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, repositorioParametrosSistema.Object, servicoUsuario.Object, configuration.Object));
 
-            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, null, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, servicoUsuario.Object, configuration.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, null, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, repositorioParametrosSistema.Object, servicoUsuario.Object, configuration.Object));
 
-            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, null, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, servicoUsuario.Object, configuration.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, null, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, repositorioParametrosSistema.Object, servicoUsuario.Object, configuration.Object));
 
-            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, null, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, servicoUsuario.Object, configuration.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, null, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, repositorioParametrosSistema.Object, servicoUsuario.Object, configuration.Object));
 
-            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, null, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, servicoUsuario.Object, configuration.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, null, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, repositorioParametrosSistema.Object, servicoUsuario.Object, configuration.Object));
 
-            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, null, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, servicoUsuario.Object, configuration.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, null, repositorioNotasConceitos.Object, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, repositorioParametrosSistema.Object, servicoUsuario.Object, configuration.Object));
 
-            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, null, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, servicoUsuario.Object, configuration.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, null, unitOfWork.Object, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, repositorioParametrosSistema.Object, servicoUsuario.Object, configuration.Object));
 
-            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, null, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, servicoUsuario.Object, configuration.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoDeNotasConceitos(repositorioAtividadeAvaliativa.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioNotaTipoValor.Object, repositorioCiclo.Object, repositorioConceito.Object, repositorioNotaParametro.Object, repositorioNotasConceitos.Object, null, repositorioAtividadeAvaliativaDisciplina.Object, servicoNotificacao.Object, repositorioPeriodoEscolar.Object, repositorioAula.Object, repositorioTurma.Object, repositorioParametrosSistema.Object, servicoUsuario.Object, configuration.Object));
         }
     }
 }
