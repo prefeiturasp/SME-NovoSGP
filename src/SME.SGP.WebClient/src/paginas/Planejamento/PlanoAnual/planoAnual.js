@@ -28,6 +28,8 @@ import Bimestre from './bimestre';
 import history from '~/servicos/history';
 import ModalErros from './componentes/ModalErros';
 
+import { AlertaSelecionarTurma } from '~/componentes-sgp';
+
 const { Panel } = Collapse;
 
 const PlanoAnual = () => {
@@ -189,7 +191,8 @@ const PlanoAnual = () => {
       setCarregandoDados(true);
       servicoPlanoAnual
         .salvar(plano)
-        .then(() => {
+        .then(resp => {
+          setPlanoAnual(resp.data);
           setCarregandoDados(false);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
@@ -391,28 +394,10 @@ const PlanoAnual = () => {
           erros={errosModal}
           onCloseErrosBimestre={() => setErrosModal([])}
         />
-        <div className="col-md-12">
-          {!possuiTurmaSelecionada ? (
-            <Row className="mb-0 pb-0">
-              <Grid cols={12} className="mb-0 pb-0">
-                <Alert
-                  alerta={{
-                    tipo: 'warning',
-                    id: 'plano-anual-selecione-turma',
-                    mensagem: 'Você precisa escolher uma turma.',
-                    estiloTitulo: { fontSize: '18px' },
-                  }}
-                  className="mb-0"
-                />
-              </Grid>
-            </Row>
-          ) : null}
-        </div>
+        <AlertaSelecionarTurma />
         <Grid cols={12} className="p-0">
-          <Planejamento> PLANEJAMENTO </Planejamento>
           <Titulo>
             {ehEja ? 'Plano Semestral' : 'Plano Anual'}
-            <TituloAno>{` / ${turmaSelecionada.anoLetivo}`}</TituloAno>
             {registroMigrado && (
               <RegistroMigrado className="float-right">
                 Registro Migrado
@@ -505,6 +490,13 @@ const PlanoAnual = () => {
                           onChange={onChangeBimestre}
                           key={plano.bimestre}
                           erros={listaErros[plano.bimestre - 1]}
+                          onCloseErrosBimestre={() => {
+                            setListaErros(
+                              listaErros.map((item, index) =>
+                                plano.bimestre - 1 === index ? [] : item
+                              )
+                            );
+                          }}
                           selecionarObjetivo={selecionarObjetivo}
                           onChangeDescricaoObjetivo={onChangeDescricaoObjetivo}
                         />

@@ -17,6 +17,7 @@ namespace SME.SGP.Infra
         public int BimestreAtual { get; set; }
         public int MinimoAvaliacoesBimestrais { get; set; }
         public double MediaAprovacaoBimestre { get; set; }
+        public double PercentualAlunosInsuficientes { get; set; }
         public List<NotasConceitosBimestreRetornoDto> Bimestres { get; set; }
         public TipoNota NotaTipo { get; set; }
     }
