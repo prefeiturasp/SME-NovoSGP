@@ -12,5 +12,6 @@ namespace SME.SGP.Aplicacao
 
         IEnumerable<PlanoAulaExistenteRetornoDto> ValidarPlanoAulaExistente(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto);
         Task<bool> PlanoAulaRegistrado(long aulaId);
+        Task<bool> VerificarPlanoAnualExistente(long aulaId);
     }
 }

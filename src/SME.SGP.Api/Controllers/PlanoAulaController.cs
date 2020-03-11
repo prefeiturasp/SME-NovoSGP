@@ -55,5 +55,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(consultasPlanoAula.ValidarPlanoAulaExistente(filtroPlanoAulaExistenteDto));
         }
+
+        [HttpGet("verificar-plano-anual-existente/{aulaId}")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public async Task<IActionResult> VerificarPlanoAnualExistente(long aulaId, [FromServices]IConsultasPlanoAula consultasPlanoAula)
+        {
+            return Ok(await consultasPlanoAula.VerificarPlanoAnualExistente(aulaId));
+        }
     }
 }

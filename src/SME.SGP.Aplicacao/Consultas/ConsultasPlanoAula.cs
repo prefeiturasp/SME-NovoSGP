@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao.Consultas
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioPlanoAula repositorio;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
+        private readonly IRepositorioAula repositorioAula;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasPlanoAula(IRepositorioPlanoAula repositorioPlanoAula,
@@ -24,6 +25,7 @@ namespace SME.SGP.Aplicacao.Consultas
                                 IConsultasAula consultasAula,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                 IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
+                                IRepositorioAula repositorioAula,
                                 IServicoUsuario servicoUsuario)
         {
             this.repositorio = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
@@ -32,6 +34,7 @@ namespace SME.SGP.Aplicacao.Consultas
             this.consultasAula = consultasAula ?? throw new ArgumentNullException(nameof(consultasAula));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
+            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
@@ -108,6 +111,18 @@ namespace SME.SGP.Aplicacao.Consultas
             }
 
             return retorno;
+        }
+
+        public async Task<bool> VerificarPlanoAnualExistente(long aulaId)
+        {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var aula = repositorioAula.ObterPorId(aulaId);
+            var periodoEscolar = consultasPeriodoEscolar.ObterPeriodoEscolarPorData(aula.TipoCalendarioId, aula.DataAula);
+            var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
+                        aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), periodoEscolar.Bimestre, long.Parse(aula.DisciplinaId));
+            if (planoAnualId <= 0 && !usuario.EhProfessorCj())
+                return false;
+            return true;
         }
 
         private PlanoAulaRetornoDto MapearParaDto(PlanoAula plano) =>
