@@ -606,6 +606,18 @@ const CadastroAula = ({ match }) => {
     setCarregandoSalvar(false);
   };
 
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(aula);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
+        form.handleSubmit(e => e);
+      }
+    });
+  };
+
   const onClickVoltar = async form => {
     if (modoEdicao && !somenteLeitura) {
       const confirmado = await confirmar(
@@ -669,18 +681,6 @@ const CadastroAula = ({ match }) => {
     }
   };
 
-  const validaAntesDoSubmit = form => {
-    const arrayCampos = Object.keys(aula);
-    arrayCampos.forEach(campo => {
-      form.setFieldTouched(campo, true, true);
-    });
-    form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length === 0) {
-        form.handleSubmit(e => e);
-      }
-    });
-  };
-
   const getDataFormatada = () => {
     const titulo = `${dataAula ? dataAula.format('dddd') : ''}, ${
       dataAula ? dataAula.format('DD/MM/YYYY') : ''
@@ -691,14 +691,13 @@ const CadastroAula = ({ match }) => {
   return (
     <Loader loading={carregandoSalvar} tip="">
       <div className="col-md-12">
-        {quantidadeMaximaAulas <= 0 ? (
+        {controlaQuantidadeAula && quantidadeMaximaAulas <= 0 ? (
           <Alert
             alerta={{
               tipo: 'warning',
               id: 'cadastro-aula-quantidade-maxima',
               mensagem:
                 'Não é possível criar aula normal porque o limite da grade curricular foi atingido',
-              estiloTitulo: { fontSize: '18px' },
             }}
             className="mb-2"
           />
@@ -822,7 +821,8 @@ const CadastroAula = ({ match }) => {
                     disabled={
                       somenteLeitura ||
                       (novoRegistro && !permissaoTela.podeIncluir) ||
-                      (!novoRegistro && !permissaoTela.podeAlterar)
+                      (!novoRegistro && !permissaoTela.podeAlterar) ||
+                      (controlaQuantidadeAula && quantidadeMaximaAulas <= 0)
                     }
                     onClick={() => validaAntesDoSubmit(form)}
                   />
@@ -840,7 +840,15 @@ const CadastroAula = ({ match }) => {
                     onChange={e => {
                       setEhReposicao(e.target.value === 2);
                       onChangeCampos();
-                      setControlaQuantidadeAula(ehReposicao);
+                      setControlaQuantidadeAula(false);
+                      if (
+                        listaDisciplinas &&
+                        listaDisciplinas.length &&
+                        idDisciplina &&
+                        e.target.value === 1
+                      ) {
+                        onChangeDisciplinas(idDisciplina, listaDisciplinas);
+                      }
                     }}
                   />
                 </div>

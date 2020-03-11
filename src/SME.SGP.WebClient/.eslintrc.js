@@ -34,6 +34,7 @@ module.exports = {
     'no-console': ['error', { allow: ['tron'] }],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
+    'eslint no-param-reassign': 'off',
   },
   settings: {
     'import/resolver': {
