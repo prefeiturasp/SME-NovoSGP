@@ -398,23 +398,25 @@ namespace SME.SGP.Dominio.Servicos
             List<DateTime> diasParaIncluirRecorrencia = new List<DateTime>();
             ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia, diasParaIncluirRecorrencia);
 
-            IEnumerable<PodePersistirNaDataRetornoEolDto> datasPersistencia = new List<PodePersistirNaDataRetornoEolDto>();
+            List<PodePersistirNaDataRetornoEolDto> datasPersistencia = new List<PodePersistirNaDataRetornoEolDto>();
 
             if (!usuario.EhProfessorCj())
             {
-                datasPersistencia = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
-                if (datasPersistencia == null || !datasPersistencia.Any())
+               var datasAtribuicao = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
+                if (datasAtribuicao == null || !datasAtribuicao.Any())
                     throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+                else
+                    datasPersistencia = datasAtribuicao.ToList();
             }
             else
             {
-                datasPersistencia.ToList().AddRange(
-                    diasParaIncluirRecorrencia.Select(d => 
+                datasPersistencia.AddRange(
+                    diasParaIncluirRecorrencia.Select(d =>
                     new PodePersistirNaDataRetornoEolDto()
-                {
-                    Data = d,
-                    PodePersistir = true
-                }));
+                    {
+                        Data = d,
+                        PodePersistir = true
+                    }));
             }
 
             await GerarAulaDeRecorrenciaParaDias(aula, usuario, datasPersistencia);
