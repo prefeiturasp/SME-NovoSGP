@@ -265,6 +265,10 @@ namespace SME.SGP.Aplicacao
         public async Task<string> SolicitarRecuperacaoSenha(string login)
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
+            if (usuario.Perfis == null || !usuario.Perfis.Any())
+            {
+                await servicoEOL.RelecionarUsuarioPerfis(login);
+            }
             if (usuario == null)
             {
                 throw new NegocioException("Usuário não encontrado.");
