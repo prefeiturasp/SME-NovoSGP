@@ -711,14 +711,15 @@ const CadastroAula = ({ match }) => {
   return (
     <Loader loading={carregandoSalvar} tip="">
       <div className="col-md-12">
-        {quantidadeMaximaAulas <= 0 && !ehReposicao ? (
+        {controlaQuantidadeAula &&
+        quantidadeMaximaAulas <= 0 &&
+        !ehReposicao ? (
           <Alert
             alerta={{
               tipo: 'warning',
               id: 'cadastro-aula-quantidade-maxima',
               mensagem:
                 'Não é possível criar aula normal porque o limite da grade curricular foi atingido',
-              estiloTitulo: { fontSize: '18px' },
             }}
             className="mb-2"
           />
@@ -843,7 +844,9 @@ const CadastroAula = ({ match }) => {
                       somenteLeitura ||
                       (novoRegistro && !permissaoTela.podeIncluir) ||
                       (!novoRegistro && !permissaoTela.podeAlterar) ||
-                      (quantidadeMaximaAulas <= 0 && !ehReposicao)
+                      (controlaQuantidadeAula &&
+                        quantidadeMaximaAulas <= 0 &&
+                        !ehReposicao)
                     }
                     onClick={() => validaAntesDoSubmit(form)}
                   />
@@ -861,8 +864,16 @@ const CadastroAula = ({ match }) => {
                     onChange={e => {
                       setEhReposicao(e.target.value === 2);
                       onChangeCampos();
-                      setControlaQuantidadeAula(ehReposicao);
+                      setControlaQuantidadeAula(e.target.value === 1);
                       setTipoAula(e.target.value);
+                      if (
+                        listaDisciplinas &&
+                        listaDisciplinas.length &&
+                        idDisciplina &&
+                        e.target.value === 1
+                      ) {
+                        onChangeDisciplinas(idDisciplina, listaDisciplinas);
+                      }
                     }}
                   />
                 </div>
