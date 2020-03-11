@@ -148,7 +148,7 @@ namespace SME.SGP.Aplicacao
                 .ToList();
 
             // Revoga token atual para geração de um novo
-            await servicoTokenJwt.RevogarToken(login);
+            servicoTokenJwt.RevogarToken(login);
 
             // Gera novo token e guarda em cache
             retornoAutenticacaoEol.Item1.Token =
@@ -192,7 +192,7 @@ namespace SME.SGP.Aplicacao
 
                 usuario.DefinirPerfilAtual(perfil);
 
-                await servicoTokenJwt.RevogarToken(loginAtual);
+                servicoTokenJwt.RevogarToken(loginAtual);
                 var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes);
 
                 return new TrocaPerfilDto
@@ -246,7 +246,7 @@ namespace SME.SGP.Aplicacao
                 .Select(a => (Permissao)a)
                 .ToList();
 
-            await servicoTokenJwt.RevogarToken(login);
+            servicoTokenJwt.RevogarToken(login);
 
             return new RevalidacaoTokenDto()
             {
@@ -265,17 +265,14 @@ namespace SME.SGP.Aplicacao
         public async Task<string> SolicitarRecuperacaoSenha(string login)
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
-
-            if (usuario == null)
-            {
-                throw new NegocioException("Usuário não encontrado.");
-            }
-
             if (usuario.Perfis == null || !usuario.Perfis.Any())
             {
                 await servicoEOL.RelecionarUsuarioPerfis(login);
             }
-
+            if (usuario == null)
+            {
+                throw new NegocioException("Usuário não encontrado.");
+            }
             usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));
             var usuarioCore = await servicoEOL.ObterMeusDados(login);
             usuario.DefinirEmail(usuarioCore.Email);
