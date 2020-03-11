@@ -74,11 +74,6 @@ namespace SME.SGP.Aplicacao.Consultas
                                         .Where(c => objetivosAula.Any(a => a.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId == c.Id))
                                         .ToList();
                 }
-                else
-                {
-                    if (!usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
-                        throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
-                }
             }
             var periodoEscolar = consultasPeriodoEscolar.ObterPorTipoCalendario(aulaDto.TipoCalendarioId);
             var periodo = periodoEscolar.Periodos.FirstOrDefault(p => p.PeriodoInicio <= aulaDto.DataAula && p.PeriodoFim >= aulaDto.DataAula);
@@ -117,7 +112,7 @@ namespace SME.SGP.Aplicacao.Consultas
             return retorno;
         }
 
-        public async Task<bool> VerificarPlanoAnualExistente(long aulaId)
+        private async Task<bool> VerificarPlanoAnualExistente(long aulaId)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var aula = repositorioAula.ObterPorId(aulaId);
