@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IRepositorioHistoricoEmailUsuario repositorioHistoricoEmailUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
         private readonly IServicoEmail servicoEmail;
@@ -37,7 +38,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioCache repositorioCache,
             IServicoAbrangencia servicoAbrangencia,
             IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica,
-            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
+            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
+            IRepositorioHistoricoEmailUsuario repositorioHistoricoEmailUsuario)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.servicoAutenticacao = servicoAutenticacao ?? throw new ArgumentNullException(nameof(servicoAutenticacao));
@@ -48,6 +50,7 @@ namespace SME.SGP.Aplicacao
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.repositorioHistoricoEmailUsuario = repositorioHistoricoEmailUsuario ?? throw new ArgumentNullException(nameof(repositorioHistoricoEmailUsuario));
             this.servicoEmail = servicoEmail ?? throw new ArgumentNullException(nameof(servicoEmail));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
@@ -63,6 +66,7 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             await servicoUsuario.AlterarEmailUsuarioPorLogin(login, novoEmail);
+            AdicionarHistoricoEmailUsuario(login, null, novoEmail, AcaoHistoricoEmailUsuario.AlterarEmail);
         }
 
         public async Task AlterarSenha(AlterarSenhaDto alterarSenhaDto)
@@ -218,9 +222,22 @@ namespace SME.SGP.Aplicacao
             {
                 await servicoEOL.ReiniciarSenha(codigoRf);
                 retorno.DeveAtualizarEmail = false;
+                AdicionarHistoricoEmailUsuario(null, codigoRf, usuario.Email, AcaoHistoricoEmailUsuario.ReiniciarSenha);
             }
 
             return retorno;
+        }
+
+        private void AdicionarHistoricoEmailUsuario(string login, string codigoRf, string email, AcaoHistoricoEmailUsuario acao)
+        {
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf, login);
+
+            repositorioHistoricoEmailUsuario.Salvar(new HistoricoEmailUsuario()
+            {
+                UsuarioId = usuario.Id,
+                Email = email,
+                Acao = acao
+            });
         }
 
         public async Task<RevalidacaoTokenDto> RevalidarLogin()
@@ -265,10 +282,17 @@ namespace SME.SGP.Aplicacao
         public async Task<string> SolicitarRecuperacaoSenha(string login)
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
+
             if (usuario == null)
             {
                 throw new NegocioException("Usuário não encontrado.");
             }
+
+            if (usuario.Perfis == null || !usuario.Perfis.Any())
+            {
+                await servicoEOL.RelecionarUsuarioPerfis(login);
+            }
+
             usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));
             var usuarioCore = await servicoEOL.ObterMeusDados(login);
             usuario.DefinirEmail(usuarioCore.Email);
