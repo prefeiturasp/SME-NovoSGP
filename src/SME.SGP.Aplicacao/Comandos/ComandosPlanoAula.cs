@@ -56,8 +56,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var aula = repositorioAula.ObterPorId(aulaId);
 
-            if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR || usuario.PerfilAtual == Perfis.PERFIL_CJ)
-                await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula);
+            await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula);
 
             await repositorio.ExcluirPlanoDaAula(aulaId);
         }
@@ -116,8 +115,7 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR || usuario.PerfilAtual == Perfis.PERFIL_CJ)
-                await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula);
+            await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula);
 
             PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
             planoAula = MapearParaDominio(planoAulaDto, planoAula);
@@ -280,7 +278,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula)
         {
-            if (!await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
     }
