@@ -2,6 +2,22 @@ import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
 class FiltroHelper {
+  obterAnosLetivos = async ({ consideraHistorico }) => {
+    const anosLetivosLista = [];
+
+    return ServicoFiltro.listarAnosLetivos({ consideraHistorico })
+      .then(resposta => {
+        if (resposta.data) {
+          resposta.data.forEach(ano => {
+            anosLetivosLista.push({ desc: ano, valor: ano });
+          });
+        }
+
+        return anosLetivosLista;
+      })
+      .catch(() => anosLetivosLista);
+  };
+
   obterModalidades = async ({ consideraHistorico, anoLetivoSelecionado }) => {
     const modalidadesLista = [];
 

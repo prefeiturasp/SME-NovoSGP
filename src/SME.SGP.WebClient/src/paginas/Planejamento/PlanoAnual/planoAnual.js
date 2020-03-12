@@ -192,7 +192,7 @@ const PlanoAnual = () => {
       servicoPlanoAnual
         .salvar(plano)
         .then(resp => {
-          setPlanoAnual(resp.data.result);
+          setPlanoAnual(resp.data);
           setCarregandoDados(false);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
@@ -490,6 +490,13 @@ const PlanoAnual = () => {
                           onChange={onChangeBimestre}
                           key={plano.bimestre}
                           erros={listaErros[plano.bimestre - 1]}
+                          onCloseErrosBimestre={() => {
+                            setListaErros(
+                              listaErros.map((item, index) =>
+                                plano.bimestre - 1 === index ? [] : item
+                              )
+                            );
+                          }}
                           selecionarObjetivo={selecionarObjetivo}
                           onChangeDescricaoObjetivo={onChangeDescricaoObjetivo}
                         />
