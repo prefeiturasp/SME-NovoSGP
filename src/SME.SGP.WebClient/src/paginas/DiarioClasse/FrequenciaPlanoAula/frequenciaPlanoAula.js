@@ -152,8 +152,8 @@ const FrequenciaPlanoAula = () => {
     if (disciplinaId) {
       await obterDatasDeAulasDisponiveis(disciplinaId);
     } else {
-      setListaDatasAulas([]);
-      setDiasParaHabilitar([]);
+      setListaDatasAulas();
+      setDiasParaHabilitar();
     }
   };
 
@@ -171,7 +171,7 @@ const FrequenciaPlanoAula = () => {
       setDisciplinaIdSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
       await obterDatasDeAulasDisponiveis(disciplina.codigoComponenteCurricular);
-      dispatch(SelecionarDisciplina(disciplinas.data[0]));
+      dispatch(SelecionarDisciplina(disciplina));
     }
     setCarregandoDisciplinas(false);
   }, [dispatch, obterDatasDeAulasDisponiveis, turmaId]);
@@ -750,18 +750,16 @@ const FrequenciaPlanoAula = () => {
       dadosAulaFrequencia.dia &&
       listaDisciplinas &&
       listaDisciplinas.length &&
-      diasParaHabilitar &&
-      diasParaHabilitar.length &&
       !dataSelecionada
     ) {
-      setDisciplinaIdSelecionada(String(dadosAulaFrequencia.disciplinaId));
+      onChangeDisciplinas(String(dadosAulaFrequencia.disciplinaId));
       onChangeData(window.moment(dadosAulaFrequencia.dia));
     }
   }, [
     dadosAulaFrequencia,
-    dataSelecionada,
-    diasParaHabilitar,
     listaDisciplinas,
+    dataSelecionada,
+    onChangeDisciplinas,
     onChangeData,
   ]);
 
@@ -888,6 +886,7 @@ const FrequenciaPlanoAula = () => {
                 desabilitado={
                   !listaDisciplinas ||
                   !disciplinaIdSelecionada ||
+                  !diasParaHabilitar ||
                   carregandoDiasParaHabilitar
                 }
                 carregando={carregandoDiasParaHabilitar}
