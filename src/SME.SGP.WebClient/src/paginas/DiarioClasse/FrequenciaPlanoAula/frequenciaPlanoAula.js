@@ -376,37 +376,38 @@ const FrequenciaPlanoAula = () => {
 
   const onSalvarFrequencia = click => {
     setCarregandoSalvar(true);
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const valorParaSalvar = {
         aulaId,
         listaFrequencia: frequencia,
       };
-      return api
-        .post(`v1/calendarios/frequencias`, valorParaSalvar)
-        .then(salvouFrequencia => {
-          if (salvouFrequencia && salvouFrequencia.status === 200) {
-            sucesso('Frequência realizada com sucesso.');
-            if (click) {
-              aposSalvarFrequencia();
-            }
-            setCarregandoSalvar(false);
-            setTimeout(() => {
-              setCarregandoGeral(false);
-            }, 1000);
-            resolve(true);
-            return true;
+      try {
+        const salvouFrequencia = await api.post(
+          `v1/calendarios/frequencias`,
+          valorParaSalvar
+        );
+        if (salvouFrequencia && salvouFrequencia.status === 200) {
+          sucesso('Frequência realizada com sucesso.');
+          if (click) {
+            aposSalvarFrequencia();
           }
-          resolve(false);
-          return false;
-        })
-        .catch(e => {
           setCarregandoSalvar(false);
           setTimeout(() => {
             setCarregandoGeral(false);
           }, 1000);
-          erros(e);
-          reject(e);
-        });
+          resolve(true);
+          return true;
+        }
+        resolve(false);
+        return false;
+      } catch (e) {
+        setCarregandoSalvar(false);
+        setTimeout(() => {
+          setCarregandoGeral(false);
+        }, 1000);
+        erros(e);
+        reject(e);
+      }
     });
   };
 
@@ -553,6 +554,7 @@ const FrequenciaPlanoAula = () => {
     if (modoEdicaoPlanoAula) {
       onSalvarPlanoAula();
     }
+    store.dispatch(salvarDadosAulaFrequencia());
     setTimeout(() => {
       setDataSelecionada();
       setCarregandoGeral(false);
@@ -679,6 +681,7 @@ const FrequenciaPlanoAula = () => {
       resetarTelaFrequencia(true, true);
 
       const aulaDataSelecionada = await obterAulaSelecionada(data);
+
       if (aulaDataSelecionada && aulaDataSelecionada.length) {
         if (
           usuario &&
@@ -708,50 +711,59 @@ const FrequenciaPlanoAula = () => {
     [obterAulaSelecionada, usuario]
   );
 
-  useEffect(() => {
-    if (
-      Object.entries(dadosAulaFrequencia).length &&
-      dadosAulaFrequencia.disciplinaId &&
-      dadosAulaFrequencia.dia
-    ) {
-      if (
-        listaDisciplinas &&
-        listaDisciplinas.length &&
-        dadosAulaFrequencia.disciplinaId
-      ) {
-        setDisciplinaIdSelecionada(String(dadosAulaFrequencia.disciplinaId));
-      }
-      if (!diasParaHabilitar && dadosAulaFrequencia.dia)
-        setDataSelecionada(window.moment(dadosAulaFrequencia.dia));
-    }
-  }, [
-    dadosAulaFrequencia,
-    listaDisciplinas,
-    diasParaHabilitar,
-    validaSeTemIdAula,
-  ]);
+  const onChangeData = useCallback(
+    async data => {
+      setDataSelecionada(data);
+      setCarregandoGeral(true);
 
-  const onChangeData = async data => {
-    setDataSelecionada(data);
-    setCarregandoGeral(true);
-
-    if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
-      const confirmarParaSalvar = await pergutarParaSalvar();
-      if (confirmarParaSalvar) {
-        if (modoEdicaoFrequencia) {
-          await onSalvarFrequencia();
+      if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
+        const confirmarParaSalvar = await pergutarParaSalvar();
+        if (confirmarParaSalvar) {
+          if (modoEdicaoFrequencia) {
+            await onSalvarFrequencia();
+          }
+          if (modoEdicaoPlanoAula) {
+            await onSalvarPlanoAula();
+          }
+          await validaSeTemIdAula(data);
+        } else {
+          await validaSeTemIdAula(data);
         }
-        if (modoEdicaoPlanoAula) {
-          await onSalvarPlanoAula();
-        }
-        await validaSeTemIdAula(data);
       } else {
         await validaSeTemIdAula(data);
       }
-    } else {
-      await validaSeTemIdAula(data);
+    },
+    [
+      modoEdicaoFrequencia,
+      modoEdicaoPlanoAula,
+      onSalvarFrequencia,
+      onSalvarPlanoAula,
+      validaSeTemIdAula,
+    ]
+  );
+
+  useEffect(() => {
+    if (
+      dadosAulaFrequencia &&
+      Object.entries(dadosAulaFrequencia).length &&
+      dadosAulaFrequencia.disciplinaId &&
+      dadosAulaFrequencia.dia &&
+      listaDisciplinas &&
+      listaDisciplinas.length &&
+      diasParaHabilitar &&
+      diasParaHabilitar.length &&
+      !dataSelecionada
+    ) {
+      setDisciplinaIdSelecionada(String(dadosAulaFrequencia.disciplinaId));
+      onChangeData(window.moment(dadosAulaFrequencia.dia));
     }
-  };
+  }, [
+    dadosAulaFrequencia,
+    dataSelecionada,
+    diasParaHabilitar,
+    listaDisciplinas,
+    onChangeData,
+  ]);
 
   const onChangeFrequencia = () => {
     setModoEdicaoFrequencia(true);
