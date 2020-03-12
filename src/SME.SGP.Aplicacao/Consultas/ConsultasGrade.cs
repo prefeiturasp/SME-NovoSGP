@@ -16,15 +16,15 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioGrade repositorioGrade;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasGrade(IRepositorioGrade repositorioGrade, IConsultasAbrangencia consultasAbrangencia,
-                              IConsultasAula consultasAula, IServicoEOL servicoEOL, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma)
+                              IConsultasAula consultasAula, IServicoUsuario servicoUsuario, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma)
         {
             this.repositorioGrade = repositorioGrade ?? throw new System.ArgumentNullException(nameof(repositorioGrade));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new System.ArgumentNullException(nameof(consultasAbrangencia));
             this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
@@ -48,6 +48,12 @@ namespace SME.SGP.Aplicacao
             var horasGrade = await TratarHorasGrade(disciplina, turma, grade, ehRegencia);
             if (horasGrade == 0)
                 return null;
+
+            if (string.IsNullOrEmpty(codigoRf))
+            {
+                var usuario = await servicoUsuario.ObterUsuarioLogado();
+                codigoRf = usuario.CodigoRf;
+            }
 
             var horascadastradas = await ObtenhaHorasCadastradas(disciplina, semana, dataAula, codigoRf, turma, ehRegencia);
 
