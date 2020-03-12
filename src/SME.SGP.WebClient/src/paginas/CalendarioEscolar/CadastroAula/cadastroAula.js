@@ -633,9 +633,11 @@ const CadastroAula = ({ match }) => {
         String(refForm.state.values.disciplinaId)
     );
 
+    const disciplinaBase64 = btoa(disciplina.nome);
+
     const exclusao = await api
       .delete(
-        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplina.nome}`
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplinaBase64}`
       )
       .catch(e => erros(e));
     if (exclusao) {
