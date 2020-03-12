@@ -28,6 +28,8 @@ import Bimestre from './bimestre';
 import history from '~/servicos/history';
 import ModalErros from './componentes/ModalErros';
 
+import { AlertaSelecionarTurma } from '~/componentes-sgp';
+
 const { Panel } = Collapse;
 
 const PlanoAnual = () => {
@@ -65,7 +67,7 @@ const PlanoAnual = () => {
 
   const onChangeDisciplinas = codigoDisciplina => {
     const disciplina = listaDisciplinas.find(
-      c => c.codigoComponenteCurricular == codigoDisciplina
+      c => c.codigoComponenteCurricular.toString() === codigoDisciplina
     );
     setDisciplinaSelecionada(disciplina);
     setCodigoDisciplinaSelecionada(codigoDisciplina);
@@ -73,7 +75,7 @@ const PlanoAnual = () => {
 
   const obterPlano = bimestre => {
     const indiceBimestreAlterado = planoAnual.findIndex(
-      c => c.bimestre == bimestre
+      c => c.bimestre === bimestre
     );
     return planoAnual[indiceBimestreAlterado];
   };
@@ -89,7 +91,7 @@ const PlanoAnual = () => {
   const selecionarObjetivo = (bimestre, objetivo) => {
     const plano = obterPlano(bimestre);
     const indiceObjetivo = plano.objetivosAprendizagem.findIndex(
-      c => c.id == objetivo.id
+      c => c.id === objetivo.id
     );
     if (indiceObjetivo > -1) {
       plano.objetivosAprendizagem.splice(indiceObjetivo, 1);
@@ -103,7 +105,7 @@ const PlanoAnual = () => {
 
   const onChangeDescricaoObjetivo = (bimestre, descricao) => {
     const plano = obterPlano(bimestre);
-    if (plano.descricao != descricao) {
+    if (plano.descricao !== descricao) {
       setEmEdicao(true);
       plano.descricao = descricao;
       plano.alterado = true;
@@ -185,11 +187,12 @@ const PlanoAnual = () => {
     };
 
     const err = validarBimestres(plano.bimestres);
-    if (!err || err.length == 0) {
+    if (!err || err.length === 0) {
       setCarregandoDados(true);
       servicoPlanoAnual
         .salvar(plano)
-        .then(() => {
+        .then(resp => {
+          setPlanoAnual(resp.data.result);
           setCarregandoDados(false);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
@@ -210,7 +213,7 @@ const PlanoAnual = () => {
       if (erro > -1) {
         const refBimestre = refsPainel[erro];
         if (refBimestre && refBimestre.current) {
-          if (erro + 1 != bimestreExpandido) {
+          if (erro + 1 !== bimestreExpandido) {
             setBimestreExpandido([erro + 1]);
           }
           window.scrollTo(0, refsPainel[erro].current.offsetTop);
@@ -219,7 +222,9 @@ const PlanoAnual = () => {
     }
   };
 
-  // define o bimestre expandido
+  /**
+   * define o bimestre expandido
+   */
   useEffect(() => {
     if (planoAnual && planoAnual.length > 0 && !emEdicao) {
       const expandido = planoAnual.find(c => c.obrigatorio);
@@ -227,7 +232,9 @@ const PlanoAnual = () => {
     }
   }, [planoAnual]);
 
-  // expande o bimestre atual
+  /**
+   * expande o bimestre atual
+   */
   useEffect(() => {
     if (bimestreExpandido) {
       const refBimestre = refsPainel[bimestreExpandido - 1];
@@ -242,7 +249,9 @@ const PlanoAnual = () => {
     }
   }, [bimestreExpandido, refsPainel]);
 
-  // carrega lista de disciplinas
+  /**
+   *carrega lista de disciplinas
+   */
   useEffect(() => {
     if (turmaSelecionada.turma) {
       setEmEdicao(false);
@@ -267,7 +276,9 @@ const PlanoAnual = () => {
     }
   }, [turmaSelecionada.ano, turmaSelecionada.turma]);
 
-  // carrega a lista de planos
+  /**
+   *carrega a lista de planos
+   */
   useEffect(() => {
     if (codigoDisciplinaSelecionada) {
       setCarregandoDados(true);
@@ -334,7 +345,7 @@ const PlanoAnual = () => {
     setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     setEmEdicao(false);
     if (turmaSelecionada && turmaSelecionada.turma) {
-      setEhEja(turmaSelecionada.modalidade == modalidade.EJA);
+      setEhEja(turmaSelecionada.modalidade.toString() === modalidade.EJA.toString());
     }
   }, [turmaSelecionada]);
 
@@ -383,28 +394,10 @@ const PlanoAnual = () => {
           erros={errosModal}
           onCloseErrosBimestre={() => setErrosModal([])}
         />
-        <div className="col-md-12">
-          {!possuiTurmaSelecionada ? (
-            <Row className="mb-0 pb-0">
-              <Grid cols={12} className="mb-0 pb-0">
-                <Alert
-                  alerta={{
-                    tipo: 'warning',
-                    id: 'plano-anual-selecione-turma',
-                    mensagem: 'Você precisa escolher uma turma.',
-                    estiloTitulo: { fontSize: '18px' },
-                  }}
-                  className="mb-0"
-                />
-              </Grid>
-            </Row>
-          ) : null}
-        </div>
+        <AlertaSelecionarTurma />
         <Grid cols={12} className="p-0">
-          <Planejamento> PLANEJAMENTO </Planejamento>
           <Titulo>
             {ehEja ? 'Plano Semestral' : 'Plano Anual'}
-            <TituloAno>{` / ${turmaSelecionada.anoLetivo}`}</TituloAno>
             {registroMigrado && (
               <RegistroMigrado className="float-right">
                 Registro Migrado
@@ -477,9 +470,7 @@ const PlanoAnual = () => {
                   planoAnual.length > 0 &&
                   planoAnual.map(plano => (
                     <Panel
-                      header={`${plano.bimestre}º ${
-                        ehEja ? 'Semestre' : 'Bimestre'
-                      }`}
+                      header={`${plano.bimestre}º Bimestre`}
                       key={plano.bimestre}
                     >
                       <div ref={refsPainel[plano.bimestre - 1]}>
@@ -490,8 +481,8 @@ const PlanoAnual = () => {
                           ano={turmaSelecionada.ano}
                           ehEja={ehEja}
                           ehMedio={
-                            turmaSelecionada.codModalidade ===
-                            modalidade.ENSINO_MEDIO
+                            turmaSelecionada.modalidade.toString() ===
+                            modalidade.ENSINO_MEDIO.toString()
                           }
                           disciplinaSemObjetivo={
                             !disciplinaSelecionada.possuiObjetivos

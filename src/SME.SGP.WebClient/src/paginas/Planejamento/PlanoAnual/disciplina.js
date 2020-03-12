@@ -19,7 +19,7 @@ const Disciplina = ({
   const onClickDisciplina = () => {
     if (!layoutEspecial) {
       setSelecionada(!selecionada);
-      onClick(disciplina.codigoComponenteCurricular, !selecionada);
+      onClick(disciplina.codigoComponenteCurricular, !disciplina.selecionada);
     }
   };
 
@@ -38,7 +38,7 @@ const Disciplina = ({
       data-index={disciplina.codigoComponenteCurricular}
       alt={disciplina.nome}
       key={disciplina.codigoComponenteCurricular}
-      className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2 ${selecionada &&
+      className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2 ${disciplina.selecionada &&
         ' selecionada'}`}
       onClick={onClickDisciplina}
       disabled={turmaSelecionada.modalidade === modalidade.ENSINO_MEDIO}

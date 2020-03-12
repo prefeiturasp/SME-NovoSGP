@@ -5,11 +5,13 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -91,7 +93,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> Excluir(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
         {
-            await ExcluirAula(aula, usuario.CodigoRf);
+            await ExcluirAula(aula, usuario);
 
             if (recorrencia != RecorrenciaAula.AulaUnica)
                 await ExcluirRecorrencia(aula, recorrencia, usuario);
@@ -169,8 +171,8 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
 
                 // Busca quantidade de aulas semanais da grade de aula
-                //Buscar tudo de uma vez?
-                var semana = (aula.DataAula.DayOfYear / 7) + 1;
+                int semana = UtilData.ObterSemanaDoAno(aula.DataAula);
+
                 var gradeAulas = await consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, Convert.ToInt64(aula.DisciplinaId), semana, aula.DataAula, usuario.CodigoRf);
 
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
@@ -286,12 +288,12 @@ namespace SME.SGP.Dominio.Servicos
             await NotificarUsuario(usuario, aula, Operacao.Alteracao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
         }
 
-        private async Task ExcluirAula(Aula aula, string codigoRf)
+        private async Task ExcluirAula(Aula aula, Usuario usuario)
         {
-            if (await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(aula.DataAula.Date, aula.UeId, aula.TurmaId, codigoRf, aula.DisciplinaId))
+            if (await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(aula.DataAula.Date, aula.UeId, aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId))
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
 
-            await VerificaSeProfessorPodePersistirTurmaDisciplina(codigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, null);
+            await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
 
             unitOfWork.IniciarTransacao();
             try
@@ -332,7 +334,7 @@ namespace SME.SGP.Dominio.Servicos
                     if (existeFrequencia || existePlanoAula)
                         aulasComFrenciaOuPlano.Add((aulaRecorrente.DataAula, existeFrequencia, existePlanoAula));
 
-                    await ExcluirAula(aulaRecorrente, usuario.CodigoRf);
+                    await ExcluirAula(aulaRecorrente, usuario);
                 }
                 catch (NegocioException nex)
                 {
@@ -396,9 +398,26 @@ namespace SME.SGP.Dominio.Servicos
             List<DateTime> diasParaIncluirRecorrencia = new List<DateTime>();
             ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia, diasParaIncluirRecorrencia);
 
-            var datasPersistencia = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
-            if (datasPersistencia == null || !datasPersistencia.Any())
-                throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+            List<PodePersistirNaDataRetornoEolDto> datasPersistencia = new List<PodePersistirNaDataRetornoEolDto>();
+
+            if (!usuario.EhProfessorCj())
+            {
+               var datasAtribuicao = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
+                if (datasAtribuicao == null || !datasAtribuicao.Any())
+                    throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+                else
+                    datasPersistencia = datasAtribuicao.ToList();
+            }
+            else
+            {
+                datasPersistencia.AddRange(
+                    diasParaIncluirRecorrencia.Select(d =>
+                    new PodePersistirNaDataRetornoEolDto()
+                    {
+                        Data = d,
+                        PodePersistir = true
+                    }));
+            }
 
             await GerarAulaDeRecorrenciaParaDias(aula, usuario, datasPersistencia);
         }
