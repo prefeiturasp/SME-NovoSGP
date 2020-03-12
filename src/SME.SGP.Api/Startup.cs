@@ -9,7 +9,6 @@ using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
-using SME.SGP.Api.Middlewares;
 using SME.SGP.Background;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
@@ -61,7 +60,6 @@ namespace SME.SGP.Api
             app.UseHttpMetrics();
 
             app.UseAuthentication();
-            app.UseMiddleware<TokenServiceMiddleware>();
 
             app.UseMvc();
 
@@ -103,8 +101,6 @@ namespace SME.SGP.Api
                     { "Bearer", Enumerable.Empty<string>() },
                             });
             });
-
-            services.AddScoped<TokenServiceMiddleware>();
 
             services.AddDistributedRedisCache(options =>
             {
