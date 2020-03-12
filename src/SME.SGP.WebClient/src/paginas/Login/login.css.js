@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import LinkRouter from '~/componentes/linkRouter';
 import Row from '~/componentes/row';
-import FundoLogin from '~/recursos/FundoLogin.svg';
+import FundoLogin from '~/recursos/FundoLogin.jpg';
 import Card from '~/componentes/cardBootstrap';
 import { Base } from '~/componentes/colors';
 import CardBody from '~/componentes/cardBody';
