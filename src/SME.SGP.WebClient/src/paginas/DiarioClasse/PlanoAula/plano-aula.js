@@ -1,11 +1,11 @@
 import { Switch } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import shortid from 'shortid';
 import { Colors, Auditoria, Loader } from '~/componentes';
 import Button from '~/componentes/button';
 import CardCollapse from '~/componentes/cardCollapse';
 import Grid from '~/componentes/grid';
-import TextEditor from '~/componentes/textEditor';
 import Editor from '~/componentes/editor/editor';
 import {
   Badge,
@@ -26,7 +26,6 @@ import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
 import { selecionaDia } from '~/redux/modulos/calendarioProfessor/actions';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
-import shortid from 'shortid';
 
 const PlanoAula = props => {
   const {
@@ -47,13 +46,14 @@ const PlanoAula = props => {
     auditoria,
     temAvaliacao,
     ehRegencia,
+    onClick,
   } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(expandido);
+  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(false);
   const [mostrarModalCopiarConteudo, setMostrarModalCopiarConteudo] = useState(
     false
   );
@@ -75,13 +75,14 @@ const PlanoAula = props => {
   const [objetivosAprendizagem, setObjetivosAprendizagem] = useState(
     planoAula.objetivosAprendizagemAula
   );
-  const textEditorObjetivosRef = useRef(null);
-  const textEditorDesenvAulaRef = useRef(null);
-  const textEditorRecContinuaRef = useRef(null);
-  const textEditorLicaoCasaRef = useRef(null);
   const [habilitaEscolhaObjetivos, setEscolhaHabilitaObjetivos] = useState(
     false
   );
+  const [carregandoObjetivos, setCarregandoObjetivos] = useState(false);
+  const [
+    carregandoObjetivosSelecionados,
+    setCarregandoObjetivosSelecionados,
+  ] = useState(false);
 
   useEffect(() => {
     const verificaHabilitarDesabilitarCampos = () => {
@@ -97,6 +98,7 @@ const PlanoAula = props => {
   useEffect(() => {
     setEscolhaHabilitaObjetivos(planoAula.objetivosAprendizagemAula.length > 0);
     setObjetivosAprendizagem([...planoAula.objetivosAprendizagemAula]);
+    setCarregandoObjetivosSelecionados(false);
   }, [planoAula.objetivosAprendizagemAula]);
 
   useEffect(() => {
@@ -109,6 +111,7 @@ const PlanoAula = props => {
   };
 
   const selecionarObjetivo = id => {
+    setCarregandoObjetivosSelecionados(true);
     setModoEdicaoPlano(true);
     const index = objetivosAprendizagem.findIndex(
       a => a.id.toString() === id.toString()
@@ -137,35 +140,48 @@ const PlanoAula = props => {
   };
 
   const selecionarMateria = async id => {
+    setCarregandoObjetivos(true);
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
-    materia.selecionada = !materia.selecionada;
+    //materia.selecionada = !materia.selecionada;
+    materias.forEach(m => {
+      m.selecionada = m.id === id ? !m.selecionada : false;
+    });
     if (materia.selecionada) {
+      removerObjetivosNaoSelecionados();
       const objetivos = await api.get(
         `v1/objetivos-aprendizagem/objetivos/turmas/${turmaId}/componentes/${disciplinaIdSelecionada}/disciplinas/${id}?dataAula=${dataAula}&regencia=${ehRegencia}`
       );
       if (objetivos && objetivos.data && objetivos.data.length > 0) {
         materia.objetivos = objetivos.data;
+        let novosObjetivos = [];
         materia.objetivos.forEach(objetivo => {
           const idx = objetivosAprendizagem.findIndex(
             obj => obj.id === objetivo.id
           );
           if (idx < 0) {
-            objetivosAprendizagem.push(objetivo);
+            novosObjetivos.push(objetivo);
           }
         });
+        setObjetivosAprendizagem(novosObjetivos.concat(objetivosAprendizagem));
       }
-    } else if (objetivosAprendizagem && objetivosAprendizagem.length > 0) {
-      materia.objetivos.forEach(objetivo => {
-        const idx = objetivosAprendizagem.findIndex(
-          obj => obj.codigo === objetivo.codigo
-        );
-        if (!objetivosAprendizagem[idx].selected) {
-          objetivosAprendizagem.splice(idx, 1);
-        }
-      });
+    } else {
+      removerObjetivosNaoSelecionados();
     }
     setMaterias([...materias]);
+    setCarregandoObjetivos(false);
+  };
+
+  const removerObjetivosNaoSelecionados = () => {
+    let objetivosRemover = [];
+    objetivosAprendizagem.forEach(objetivo => {
+      if (!objetivo.selected) {
+        objetivosRemover.push(objetivo);
+      }
+    });
+    objetivosRemover.forEach(obj => {
+      objetivosAprendizagem.splice(objetivosAprendizagem.indexOf(obj), 1);
+    });
   };
 
   const onBlurMeusObjetivos = value => {
@@ -214,6 +230,7 @@ const PlanoAula = props => {
       <CardCollapse
         key="plano-aula"
         onClick={() => {
+          onClick();
           setMostrarCardPrincipal(!mostrarCardPrincipal);
         }}
         titulo="Plano de aula"
@@ -258,12 +275,15 @@ const PlanoAula = props => {
               checked={habilitaEscolhaObjetivos}
               size="default"
               className="mr-2"
-              disabled={desabilitarCampos || (ehProfessorCj && !planoAula.possuiPlanoAnual)}
+              disabled={
+                desabilitarCampos ||
+                (ehProfessorCj && !planoAula.possuiPlanoAnual)
+              }
             />
           </HabilitaObjetivos>
           <CardCollapse
             key="objetivos-aprendizagem"
-            onClick={() => { }}
+            onClick={() => {}}
             titulo="Objetivos de Aprendizagem e Desenvolvimento e meus objetivos (Currículo da Cidade)"
             indice="objetivos-aprendizagem"
             show
@@ -277,84 +297,88 @@ const PlanoAula = props => {
                   </h6>
                   {temObjetivos
                     ? materias.map(materia => {
-                      return (
-                        <Badge
-                          role="button"
-                          disabled={desabilitarCampos}
-                          onClick={() => selecionarMateria(materia.id)}
-                          id={materia.id}
-                          alt={materia.descricao}
-                          key={materia.id}
-                          className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
-                      ${materia.selecionada ? ' badge-selecionado' : ''}`}
-                        >
-                          {materia.descricao}
-                        </Badge>
-                      );
-                    })
-                    : null}
-                  <ObjetivosList className="mt-4 overflow-auto">
-                    {objetivosAprendizagem.map(objetivo => {
-                      return (
-                        <ul
-                          key={`${objetivo.id}-objetivo`}
-                          className="list-group list-group-horizontal mt-3"
-                        >
-                          <ListItemButton
-                            className={`${
-                              objetivo.selected ? 'objetivo-selecionado ' : ''
-                              } list-group-item d-flex align-items-center font-weight-bold fonte-14`}
+                        return (
+                          <Badge
                             role="button"
-                            id={objetivo.id}
-                            aria-pressed={!!objetivo.selected}
-                            onClick={() => selecionarObjetivo(objetivo.id)}
-                            onKeyUp={() => selecionarObjetivo(objetivo.id)}
-                            alt={`Codigo do Objetivo : ${objetivo.codigo} `}
                             disabled={desabilitarCampos}
+                            onClick={() => selecionarMateria(materia.id)}
+                            id={materia.id}
+                            alt={materia.descricao}
+                            key={materia.id}
+                            className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
+                      ${materia.selecionada ? ' badge-selecionado' : ''}`}
                           >
-                            {objetivo.codigo}
-                          </ListItemButton>
-                          <ListItem
-                            disabled={desabilitarCampos}
-                            alt={objetivo.descricao}
-                            className="list-group-item flex-fill p-2 fonte-12"
+                            {materia.descricao}
+                          </Badge>
+                        );
+                      })
+                    : null}
+
+                  <Loader loading={carregandoObjetivos}>
+                    <ObjetivosList className="mt-4 overflow-auto">
+                      {objetivosAprendizagem.map(objetivo => {
+                        return (
+                          <ul
+                            key={`${objetivo.id}-objetivo`}
+                            className="list-group list-group-horizontal mt-3"
                           >
-                            {objetivo.descricao}
-                          </ListItem>
-                        </ul>
-                      );
-                    })}
-                  </ObjetivosList>
+                            <ListItemButton
+                              className={`${
+                                objetivo.selected ? 'objetivo-selecionado ' : ''
+                              } list-group-item d-flex align-items-center font-weight-bold fonte-14`}
+                              role="button"
+                              id={objetivo.id}
+                              aria-pressed={!!objetivo.selected}
+                              onClick={() => selecionarObjetivo(objetivo.id)}
+                              onKeyUp={() => selecionarObjetivo(objetivo.id)}
+                              alt={`Codigo do Objetivo : ${objetivo.codigo} `}
+                              disabled={desabilitarCampos}
+                            >
+                              {objetivo.codigo}
+                            </ListItemButton>
+                            <ListItem
+                              disabled={desabilitarCampos}
+                              alt={objetivo.descricao}
+                              className="list-group-item flex-fill p-2 fonte-12"
+                            >
+                              {objetivo.descricao}
+                            </ListItem>
+                          </ul>
+                        );
+                      })}
+                    </ObjetivosList>
+                  </Loader>
                 </Grid>
               ) : null}
               <Grid cols={layoutComObjetivos() ? 6 : 12}>
                 {layoutComObjetivos() ? (
-                  <Grid cols={12}>
-                    <h6 className="d-inline-block font-weight-bold my-0 fonte-13">
-                      Objetivos de Aprendizagem e Desenvolvimento trabalhados na
-                      aula
-                    </h6>
-                    <div className="row col-md-12 d-flex">
-                      {objetivosAprendizagem
-                        .filter(objetivo => objetivo.selected)
-                        .map(selecionado => {
-                          return (
-                            <Button
-                              key={`Objetivo${selecionado.id}`}
-                              label={selecionado.codigo}
-                              color={Colors.AzulAnakiwa}
-                              bold
-                              id={`Objetivo${selecionado.id}`}
-                              indice={selecionado.id}
-                              steady
-                              remove
-                              disabled={desabilitarCampos}
-                              className="text-dark mt-3 mr-2 stretched-link"
-                              onClick={() => removerObjetivo(selecionado.id)}
-                            />
-                          );
-                        })}
-                      {objetivosAprendizagem.filter(x => x.selected).length >
+                  <Loader loading={carregandoObjetivosSelecionados}>
+                    <Grid cols={12}>
+                      <h6 className="d-inline-block font-weight-bold my-0 fonte-13">
+                        Objetivos de Aprendizagem e Desenvolvimento trabalhados
+                        na aula
+                      </h6>
+                      <div className="row col-md-12 d-flex">
+                        {objetivosAprendizagem
+                          .filter(objetivo => objetivo.selected)
+                          .map(selecionado => {
+                            return (
+                              <Button
+                                key={`Objetivo${selecionado.id}`}
+                                label={selecionado.codigo}
+                                color={Colors.AzulAnakiwa}
+                                bold
+                                id={`Objetivo${selecionado.id}`}
+                                indice={selecionado.id}
+                                steady
+                                remove
+                                disabled={desabilitarCampos}
+                                className="text-dark mt-3 mr-2 stretched-link"
+                                onClick={() => removerObjetivo(selecionado.id)}
+                              />
+                            );
+                          })}
+                        {objetivosAprendizagem.filter(x => x.selected).length >
                         1 ? (
                           <Button
                             key="removerTodos"
@@ -375,8 +399,9 @@ const PlanoAula = props => {
                             onClick={() => removerTodosObjetivos()}
                           />
                         ) : null}
-                    </div>
-                  </Grid>
+                      </div>
+                    </Grid>
+                  </Loader>
                 ) : null}
                 <Grid cols={12} className="mt-4 d-inline-block">
                   <h6 className="font-weight-bold my-0 fonte-13">
@@ -403,7 +428,7 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="desenv-aula"
-            onClick={() => { }}
+            onClick={() => {}}
             titulo="Desenvolvimento da aula"
             indice="desenv-aula"
             show
@@ -419,7 +444,7 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="rec-continua"
-            onClick={() => { }}
+            onClick={() => {}}
             titulo="Recuperação contínua"
             indice="rec-continua"
             show={false}
@@ -435,7 +460,7 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="licao-casa"
-            onClick={() => { }}
+            onClick={() => {}}
             titulo="Lição de casa"
             indice="licao-casa"
             show={false}
@@ -457,8 +482,8 @@ const PlanoAula = props => {
               alteradoEm={auditoria.alteradoEm}
             />
           ) : (
-              ''
-            )}
+            ''
+          )}
         </Loader>
       </CardCollapse>
       <ModalCopiarConteudo
