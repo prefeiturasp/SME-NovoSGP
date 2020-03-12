@@ -20,7 +20,11 @@ namespace SME.SGP.Dominio
 
         public void AdicionarUe(Ue ue)
         {
-            Ue = ue;
+            if (ue != null)
+            {
+                Ue = ue;
+                UeId = ue.Id;
+            }
         }
     }
 }
