@@ -296,7 +296,8 @@ namespace SME.SGP.Aplicacao
                 Nome = atividadeAvaliativaDto.Nome,
                 TipoAvaliacaoId = (int)atividadeAvaliativaDto.TipoAvaliacaoId,
                 TurmaId = atividadeAvaliativaDto.TurmaId,
-                UeID = atividadeAvaliativaDto.UeId
+                UeID = atividadeAvaliativaDto.UeId,
+                DisciplinasId = atividadeAvaliativaDto.DisciplinasId
             };
         }
 
