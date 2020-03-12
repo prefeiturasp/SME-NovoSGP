@@ -747,18 +747,28 @@ const FrequenciaPlanoAula = () => {
       dadosAulaFrequencia &&
       Object.entries(dadosAulaFrequencia).length &&
       dadosAulaFrequencia.disciplinaId &&
-      dadosAulaFrequencia.dia &&
       listaDisciplinas &&
       listaDisciplinas.length &&
-      !dataSelecionada
+      !disciplinaIdSelecionada
     ) {
       onChangeDisciplinas(String(dadosAulaFrequencia.disciplinaId));
+    }
+    if (
+      dadosAulaFrequencia &&
+      Object.entries(dadosAulaFrequencia).length &&
+      dadosAulaFrequencia.dia &&
+      diasParaHabilitar &&
+      diasParaHabilitar.length &&
+      !dataSelecionada
+    ) {
       onChangeData(window.moment(dadosAulaFrequencia.dia));
     }
   }, [
     dadosAulaFrequencia,
     listaDisciplinas,
     dataSelecionada,
+    diasParaHabilitar,
+    disciplinaIdSelecionada,
     onChangeDisciplinas,
     onChangeData,
   ]);
