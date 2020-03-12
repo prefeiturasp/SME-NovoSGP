@@ -35,6 +35,7 @@ namespace SME.SGP.Dados.Repositorios
                 //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
                 servicoLog.Registrar(ex);
                 timer.Stop();
+
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, $"Obtendo - Erro {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 return null;
             }
