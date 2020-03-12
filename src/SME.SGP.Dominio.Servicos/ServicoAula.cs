@@ -398,9 +398,26 @@ namespace SME.SGP.Dominio.Servicos
             List<DateTime> diasParaIncluirRecorrencia = new List<DateTime>();
             ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia, diasParaIncluirRecorrencia);
 
-            var datasPersistencia = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
-            if (datasPersistencia == null || !datasPersistencia.Any())
-                throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+            List<PodePersistirNaDataRetornoEolDto> datasPersistencia = new List<PodePersistirNaDataRetornoEolDto>();
+
+            if (!usuario.EhProfessorCj())
+            {
+               var datasAtribuicao = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
+                if (datasAtribuicao == null || !datasAtribuicao.Any())
+                    throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+                else
+                    datasPersistencia = datasAtribuicao.ToList();
+            }
+            else
+            {
+                datasPersistencia.AddRange(
+                    diasParaIncluirRecorrencia.Select(d =>
+                    new PodePersistirNaDataRetornoEolDto()
+                    {
+                        Data = d,
+                        PodePersistir = true
+                    }));
+            }
 
             await GerarAulaDeRecorrenciaParaDias(aula, usuario, datasPersistencia);
         }
@@ -561,9 +578,6 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
 
             var disciplina = disciplinasEol.FirstOrDefault();
-
-            if (disciplina == null)
-                throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
 
             return disciplina.Nome;
         }
