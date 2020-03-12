@@ -642,11 +642,22 @@ const Filtro = () => {
     if (turmas && turmas.length === 1) setTurmaSelecionada(turmas[0].valor);
   }, [turmas]);
 
+  const limparCamposSelecionados = useCallback(() => {
+    setAnoLetivoSelecionado('');
+    setModalidadeSelecionada('');
+    setDreSelecionada('');
+    setPeriodoSelecionado('');
+    setUnidadeEscolarSelecionada('');
+    setTurmaSelecionada('');
+  }, []);
+
   const limparFiltro = useCallback(() => {
     dispatch(limparDadosFiltro());
     dispatch(removerTurma());
+    limparCamposSelecionados();
     setTextoAutocomplete('');
-  }, [dispatch]);
+    obterAnosLetivos(true);
+  }, [dispatch, limparCamposSelecionados, obterAnosLetivos]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const recarregarFiltro = useCallback(async () => {
