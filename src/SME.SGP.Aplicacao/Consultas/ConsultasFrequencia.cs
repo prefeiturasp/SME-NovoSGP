@@ -134,6 +134,8 @@ namespace SME.SGP.Aplicacao
             if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
                 throw new NegocioException("Disciplina da aula não encontrada");
 
+            var dataSelecionadaFutura = aula.DataAula.Date > DateTime.Now.Date;
+
             foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada()))
             {
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia
@@ -147,7 +149,7 @@ namespace SME.SGP.Aplicacao
                     NumeroAlunoChamada = aluno.NumeroAlunoChamada,
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,
-                    Desabilitado = aluno.EstaInativo() && (aula.DataAula.Date >= aluno.DataSituacao.Date)
+                    Desabilitado = (aluno.EstaInativo() && (aula.DataAula.Date >= aluno.DataSituacao.Date)) || dataSelecionadaFutura,
                 };
 
                 // Marcador visual da situação
@@ -176,7 +178,7 @@ namespace SME.SGP.Aplicacao
                 registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
             }
 
-            registroFrequenciaDto.Desabilitado = registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado);
+            registroFrequenciaDto.Desabilitado = registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado) || dataSelecionadaFutura;
 
             return registroFrequenciaDto;
         }
