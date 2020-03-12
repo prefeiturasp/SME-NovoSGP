@@ -1231,9 +1231,6 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 queryDreUe.AppendLine("and e.ue_id = @UeId");
 
-            if (!String.IsNullOrEmpty(queryDreUe.ToString()))
-                queryDreUe.AppendLine(")");
-
             if (podeVisualizarEventosLocalOcorrenciaDre)
             {
                 queryDreUe.AppendLine($"{(string.IsNullOrEmpty(queryDreUe.ToString()) ? "and" : "or")} ((e.dre_id is null and e.ue_id is null) or (e.dre_id is not null and e.ue_id is null))");
@@ -1246,7 +1243,10 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!String.IsNullOrEmpty(queryDreUe.ToString()))
             {
-                queryDreUe.Insert(queryDreUe.ToString().IndexOf("and") + 4, "((").Insert(queryDreUe.ToString().Length - 1, ")");
+                // Insere ( ) na queryDreUe
+                queryDreUe.Insert(queryDreUe.ToString().IndexOf("and") + 4, "(");
+                queryDreUe.AppendLine(")");
+
                 query.AppendLine(queryDreUe.ToString());
             }
 
