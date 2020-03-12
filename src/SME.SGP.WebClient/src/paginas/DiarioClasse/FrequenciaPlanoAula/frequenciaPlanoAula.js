@@ -161,30 +161,30 @@ const FrequenciaPlanoAula = () => {
     }
   };
 
-  useEffect(() => {
-    const obterDisciplinas = async () => {
-      setCarregandoDisciplinas(true);
-      const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
-        turmaId
-      );
-      if (disciplinas.data && disciplinas.data.length) {
-        setListaDisciplinas(disciplinas.data);
-      }
-      if (disciplinas.data && disciplinas.data.length === 1) {
-        const disciplina = disciplinas.data[0];
-        setDisciplinaSelecionada(disciplina);
-        setDisciplinaIdSelecionada(
-          String(disciplina.codigoComponenteCurricular)
+  const obterDisciplinas = useCallback(async () => {
+    setCarregandoDisciplinas(true);
+    const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
+      turmaId
+    );
+    if (disciplinas.data && disciplinas.data.length) {
+      setListaDisciplinas(disciplinas.data);
+    }
+    if (disciplinas.data && disciplinas.data.length === 1) {
+      const disciplina = disciplinas.data[0];
+      setDisciplinaSelecionada(disciplina);
+      setDisciplinaIdSelecionada(String(disciplina.codigoComponenteCurricular));
+      setDesabilitarDisciplina(true);
+      if (!diasParaHabilitar) {
+        await obterDatasDeAulasDisponiveis(
+          disciplina.codigoComponenteCurricular
         );
-        setDesabilitarDisciplina(true);
-        obterDatasDeAulasDisponiveis(disciplina.codigoComponenteCurricular);
-        dispatch(SelecionarDisciplina(disciplinas.data[0]));
       }
-      setCarregandoDisciplinas(false);
-    };
+      dispatch(SelecionarDisciplina(disciplina));
+    }
+    setCarregandoDisciplinas(false);
+  }, [turmaId, diasParaHabilitar, dispatch, obterDatasDeAulasDisponiveis]);
 
-    // Método usado para controlar quando troca uma turna no filtro principal
-    // Só pode consultar apois todoas as flags foram resetadas
+  useEffect(() => {
     const podeConsultar = () => {
       return (
         disciplinaSelecionada === undefined &&
@@ -211,6 +211,7 @@ const FrequenciaPlanoAula = () => {
   }, [
     dispatch,
     obterDatasDeAulasDisponiveis,
+    obterDisciplinas,
     permissoesTela,
     turmaId,
     turmaSelecionada.turma,
@@ -973,7 +974,11 @@ const FrequenciaPlanoAula = () => {
                   temObjetivos={temObjetivos}
                   temAvaliacao={temAvaliacao}
                   auditoria={auditoriaPlano}
-                  ehRegencia={disciplinaSelecionada ? disciplinaSelecionada.regencia : false}
+                  ehRegencia={
+                    disciplinaSelecionada
+                      ? disciplinaSelecionada.regencia
+                      : false
+                  }
                 />
               </div>
             </div>
