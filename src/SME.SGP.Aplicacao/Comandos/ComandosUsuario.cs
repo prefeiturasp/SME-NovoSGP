@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             await servicoUsuario.AlterarEmailUsuarioPorLogin(login, novoEmail);
-            AdicionarHistoricoEmailUsuario(novoEmail, AcaoHistoricoEmailUsuario.AlterarEmail);
+            AdicionarHistoricoEmailUsuario(login, null, novoEmail, AcaoHistoricoEmailUsuario.AlterarEmail);
         }
 
         public async Task AlterarSenha(AlterarSenhaDto alterarSenhaDto)
@@ -222,16 +222,15 @@ namespace SME.SGP.Aplicacao
             {
                 await servicoEOL.ReiniciarSenha(codigoRf);
                 retorno.DeveAtualizarEmail = false;
-                AdicionarHistoricoEmailUsuario(usuario.Email, AcaoHistoricoEmailUsuario.ReiniciarSenha);
+                AdicionarHistoricoEmailUsuario(null, codigoRf, usuario.Email, AcaoHistoricoEmailUsuario.ReiniciarSenha);
             }
 
             return retorno;
         }
 
-        private void AdicionarHistoricoEmailUsuario(string email, AcaoHistoricoEmailUsuario acao)
+        private void AdicionarHistoricoEmailUsuario(string login, string codigoRf, string email, AcaoHistoricoEmailUsuario acao)
         {
-            var login = servicoUsuario.ObterLoginAtual();
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(null, login);
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf, login);
 
             repositorioHistoricoEmailUsuario.Salvar(new HistoricoEmailUsuario()
             {
