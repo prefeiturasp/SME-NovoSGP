@@ -93,7 +93,7 @@ const ListaFrequencia = props => {
 
   return (
     <>
-      {dataSource && dataSource.length > 0 && (
+      {dataSource && dataSource.length > 0 ? (
         <Lista className="mt-4 table-responsive">
           <div className="scroll-tabela-frequencia-thead">
             <table className="table mb-0 ">
@@ -101,7 +101,7 @@ const ListaFrequencia = props => {
                 <tr>
                   <th className="width-60" />
                   <th className="text-left">Lista de estudantes</th>
-                  {dataSource[0].aulas.length > 1 && (
+                  {dataSource[0].aulas.length > 1 ? (
                     <>
                       <th
                         className="width-50 cursor-pointer"
@@ -176,7 +176,7 @@ const ListaFrequencia = props => {
                               </>
                             )}
                           </td>
-                          {dataSource[0].aulas.length > 1 && (
+                          {dataSource[0].aulas.length > 1 ? (
                             <>
                               <td className="width-50">
                                 <button
@@ -216,13 +216,12 @@ const ListaFrequencia = props => {
                               </td>
                             </>
                           ) : null}
-
                           {aluno.aulas.map((aula, a) => {
                             return (
                               <td
                                 key={shortid.generate()}
                                 className={
-                                  dataSource[0].aulas.length - 1 === i
+                                  dataSource[0].aulas.length - 1 === a
                                     ? 'width-70'
                                     : 'border-right-none width-70'
                                 }
@@ -281,8 +280,6 @@ const ListaFrequencia = props => {
 ListaFrequencia.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.array]),
   onChangeFrequencia: PropTypes.oneOfType([PropTypes.func]),
-  permissoesTela: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  frequenciaId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   permissoesTela: PropTypes.oneOfType([PropTypes.any]),
   frequenciaId: PropTypes.oneOfType([PropTypes.any]),
 };
