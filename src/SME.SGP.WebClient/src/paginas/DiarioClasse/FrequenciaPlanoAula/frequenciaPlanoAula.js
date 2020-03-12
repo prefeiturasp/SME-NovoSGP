@@ -170,11 +170,16 @@ const FrequenciaPlanoAula = () => {
       setDisciplinaSelecionada(disciplina);
       setDisciplinaIdSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
-      await obterDatasDeAulasDisponiveis(disciplina.codigoComponenteCurricular);
+      if (!diasParaHabilitar) {
+        await obterDatasDeAulasDisponiveis(
+          disciplina.codigoComponenteCurricular
+        );
+      }
+
       dispatch(SelecionarDisciplina(disciplina));
     }
     setCarregandoDisciplinas(false);
-  }, [dispatch, obterDatasDeAulasDisponiveis, turmaId]);
+  }, [turmaId, diasParaHabilitar, dispatch, obterDatasDeAulasDisponiveis]);
 
   useEffect(() => {
     async function buscarDisciplinas() {
