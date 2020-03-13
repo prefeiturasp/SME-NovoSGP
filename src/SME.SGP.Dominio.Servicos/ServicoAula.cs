@@ -94,10 +94,11 @@ namespace SME.SGP.Dominio.Servicos
         {
             await ExcluirAula(aula, usuario);
 
-            if (recorrencia != RecorrenciaAula.AulaUnica)
-                await ExcluirRecorrencia(aula, recorrencia, usuario);
+            if (recorrencia == RecorrenciaAula.AulaUnica)
+                return "Aula e suas dependencias excluídas com sucesso!";
 
-            return "Aula e suas dependencias excluídas com sucesso!";
+            Cliente.Executar<IServicoAula>(s => s.ExcluirRecorrencia(aula, recorrencia, usuario));
+            return "Aula excluida com sucesso. Serão excluidas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
         }
 
         public async Task GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
@@ -316,7 +317,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
+        public async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
         {
             var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
             var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
@@ -401,7 +402,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (!usuario.EhProfessorCj())
             {
-               var datasAtribuicao = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
+                var datasAtribuicao = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
                 if (datasAtribuicao == null || !datasAtribuicao.Any())
                     throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
                 else
