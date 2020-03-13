@@ -223,7 +223,6 @@ namespace SME.SGP.Aplicacao
             {
                 await servicoEOL.ReiniciarSenha(codigoRf);
                 retorno.DeveAtualizarEmail = false;
-                await AdicionarHistoricoEmailUsuario(usuario.Email, AcaoHistoricoEmailUsuario.ReiniciarSenha);
             }
 
             return retorno;
