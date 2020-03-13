@@ -101,7 +101,7 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             ValidaSeUsuarioPodeCriarAula(aula, usuario);
-            await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId, aula.DataAula);
+            await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId, aula.DataAula, usuario);
 
             var alunos = await ObterAlunos(aula);
 
@@ -183,11 +183,12 @@ namespace SME.SGP.Dominio.Servicos
             return registroFrequencia;
         }
 
-        private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, string codigoRf, string disciplinaId, DateTime dataAula)
+        private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, string codigoRf, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            if (usuario == null)
+                usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            if (!usuario.EhProfessorCj() && !servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula.Local()).Result)
+            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula.Local()))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
 

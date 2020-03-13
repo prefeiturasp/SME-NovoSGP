@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
 
             atividadeAvaliativa.PodeSerAlterada(usuario);
 
-            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, dto.DisciplinasId[0], atividadeAvaliativa.DataAvaliacao);
+            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, dto.DisciplinasId[0], atividadeAvaliativa.DataAvaliacao, usuario);
 
             unitOfWork.IniciarTransacao();
 
@@ -131,7 +131,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var atividadeDisciplina in atividadeDisciplinas)
             {
-                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeDisciplina.DisciplinaId, atividadeAvaliativa.DataAvaliacao);
+                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeDisciplina.DisciplinaId, atividadeAvaliativa.DataAvaliacao, usuario);
             }
 
             unitOfWork.IniciarTransacao();
@@ -432,9 +432,10 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula)
+        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            if (usuario == null)
+                usuario = await servicoUsuario.ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
