@@ -112,15 +112,13 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false)
         {
-            if (aula != null && aula.Id == 0)
-            {
-                var aulaExistente =  await repositorioAula.ObterAulaDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
-                if (aulaExistente != null)
-                    throw new NegocioException("Já existe uma aula criada para essa disciplina");
-            }
 
             if (!ehRecorrencia)
             {
+                var aulaExistente = await repositorioAula.ObterAulaDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
+                if (aulaExistente != null && !aulaExistente.Id.Equals(aula.Id))
+                    throw new NegocioException("Já existe uma aula criada para essa disciplina");
+
                 var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
 
                 if (tipoCalendario == null)
