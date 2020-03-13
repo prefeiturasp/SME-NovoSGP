@@ -37,30 +37,30 @@ namespace SME.SGP.Dominio
         private IEnumerable<Usuario> _usuariosCPs;
         public IEnumerable<Usuario> usuariosCPs
         {
-            get 
-            { 
+            get
+            {
                 if (_usuariosCPs == null)
                 {
                     var listaCPsUe = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.CP);
                     _usuariosCPs = CarregaUsuariosPorRFs(listaCPsUe);
                 }
 
-                return _usuariosCPs; 
+                return _usuariosCPs;
             }
         }
 
         private Usuario _usuarioDiretor;
         public Usuario usuarioDiretor
         {
-            get 
-            { 
+            get
+            {
                 if (_usuarioDiretor == null)
                 {
                     var diretor = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Diretor);
                     _usuarioDiretor = CarregaUsuariosPorRFs(diretor).First();
                 }
 
-                return _usuarioDiretor; 
+                return _usuarioDiretor;
             }
         }
 
@@ -117,8 +117,7 @@ namespace SME.SGP.Dominio
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR)
-                await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, DateTime.Today);
+            await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, DateTime.Today, usuario);
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
@@ -178,7 +177,7 @@ namespace SME.SGP.Dominio
                 if (quantidadeAlunosSuficientes < (quantidadeAlunos * percentualAlunosInsuficientes / 100))
                 {
                     // Notifica todos os CPs da UE
-                    foreach(var usuarioCP in usuariosCPs)
+                    foreach (var usuarioCP in usuariosCPs)
                     {
                         servicoNotificacao.Salvar(new Notificacao()
                         {
@@ -199,7 +198,7 @@ namespace SME.SGP.Dominio
 
         private IEnumerable<Usuario> CarregaUsuariosPorRFs(IEnumerable<UsuarioEolRetornoDto> listaCPsUe)
         {
-            foreach(var cpUe in listaCPsUe)
+            foreach (var cpUe in listaCPsUe)
             {
                 yield return servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cpUe.CodigoRf);
             }
@@ -354,7 +353,7 @@ namespace SME.SGP.Dominio
                     $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para os seguintes alunos:</p><br/>{alunosNotasExtemporaneas.ToString()}" +
                     $"<a href='{hostAplicacao}diario-classe/notas/{nota.DisciplinaId}/{bimestreInformado}'>Clique aqui para visualizar os detalhes.</a>";
 
-                foreach(var usuarioCP in usuariosCPs)
+                foreach (var usuarioCP in usuariosCPs)
                 {
                     NotificarUsuarioAlteracaoExtemporanea(atividadeAvaliativa, mensagem, usuarioCP.Id, turma.Nome);
                 }
@@ -383,9 +382,12 @@ namespace SME.SGP.Dominio
             });
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula)
+        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            if (!await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
+            if (usuario == null)
+                usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
     }

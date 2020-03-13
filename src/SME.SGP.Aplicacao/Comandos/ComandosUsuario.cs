@@ -60,13 +60,14 @@ namespace SME.SGP.Aplicacao
         public async Task AlterarEmail(AlterarEmailDto alterarEmailDto, string codigoRf)
         {
             await servicoUsuario.AlterarEmailUsuarioPorRfOuInclui(codigoRf, alterarEmailDto.NovoEmail);
+            AdicionarHistoricoEmailUsuario(null, codigoRf, alterarEmailDto.NovoEmail, AcaoHistoricoEmailUsuario.ReiniciarSenha);
         }
 
         public async Task AlterarEmailUsuarioLogado(string novoEmail)
         {
             var login = servicoUsuario.ObterLoginAtual();
             await servicoUsuario.AlterarEmailUsuarioPorLogin(login, novoEmail);
-            AdicionarHistoricoEmailUsuario(novoEmail, AcaoHistoricoEmailUsuario.AlterarEmail);
+            AdicionarHistoricoEmailUsuario(login, null, novoEmail, AcaoHistoricoEmailUsuario.AlterarEmail);
         }
 
         public async Task AlterarSenha(AlterarSenhaDto alterarSenhaDto)
@@ -130,7 +131,7 @@ namespace SME.SGP.Aplicacao
             if (!retornoAutenticacaoEol.Item4 && retornoAutenticacaoEol.Item5)
                 retornoAutenticacaoEol.Item3 = ValidarPerfilCJ(retornoAutenticacaoEol.Item2, retornoAutenticacaoEol.Item1.UsuarioId, retornoAutenticacaoEol.Item3, login).Result;
 
-            var dadosUsuario = await repositorioCache.Obter($"MeusDados-{login}", () => servicoEOL.ObterMeusDados(login), 720);
+            var dadosUsuario = await servicoEOL.ObterMeusDados(login);
 
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email);
 
@@ -222,16 +223,14 @@ namespace SME.SGP.Aplicacao
             {
                 await servicoEOL.ReiniciarSenha(codigoRf);
                 retorno.DeveAtualizarEmail = false;
-                AdicionarHistoricoEmailUsuario(usuario.Email, AcaoHistoricoEmailUsuario.ReiniciarSenha);
             }
 
             return retorno;
         }
 
-        private void AdicionarHistoricoEmailUsuario(string email, AcaoHistoricoEmailUsuario acao)
+        private void AdicionarHistoricoEmailUsuario(string login, string codigoRf, string email, AcaoHistoricoEmailUsuario acao)
         {
-            var login = servicoUsuario.ObterLoginAtual();
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(null, login);
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf, login);
 
             repositorioHistoricoEmailUsuario.Salvar(new HistoricoEmailUsuario()
             {
