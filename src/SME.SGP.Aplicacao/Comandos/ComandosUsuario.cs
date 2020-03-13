@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
             if (!retornoAutenticacaoEol.Item4 && retornoAutenticacaoEol.Item5)
                 retornoAutenticacaoEol.Item3 = ValidarPerfilCJ(retornoAutenticacaoEol.Item2, retornoAutenticacaoEol.Item1.UsuarioId, retornoAutenticacaoEol.Item3, login).Result;
 
-            var dadosUsuario = await repositorioCache.Obter($"MeusDados-{login}", () => servicoEOL.ObterMeusDados(login), 720);
+            var dadosUsuario = await servicoEOL.ObterMeusDados(login);
 
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email);
 
@@ -265,10 +265,17 @@ namespace SME.SGP.Aplicacao
         public async Task<string> SolicitarRecuperacaoSenha(string login)
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
+
             if (usuario == null)
             {
                 throw new NegocioException("Usuário não encontrado.");
             }
+
+            if (usuario.Perfis == null || !usuario.Perfis.Any())
+            {
+                await servicoEOL.RelecionarUsuarioPerfis(login);
+            }
+
             usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));
             var usuarioCore = await servicoEOL.ObterMeusDados(login);
             usuario.DefinirEmail(usuarioCore.Email);
