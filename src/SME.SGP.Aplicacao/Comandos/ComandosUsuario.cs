@@ -59,7 +59,6 @@ namespace SME.SGP.Aplicacao
         //  TODO: aplicar validações permissão de acesso
         public async Task AlterarEmail(AlterarEmailDto alterarEmailDto, string codigoRf)
         {
-            var login = servicoUsuario.ObterLoginAtual();
             await servicoUsuario.AlterarEmailUsuarioPorRfOuInclui(codigoRf, alterarEmailDto.NovoEmail);
             AdicionarHistoricoEmailUsuario(null, codigoRf, alterarEmailDto.NovoEmail, AcaoHistoricoEmailUsuario.ReiniciarSenha);
         }
