@@ -601,7 +601,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            if (await servicoUsuario.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, dataAula, usuario))
+            if (!await servicoUsuario.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, dataAula, usuario))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
     }
