@@ -117,7 +117,7 @@ namespace SME.SGP.Dominio
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, DateTime.Today);
+            await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, DateTime.Today, usuario);
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
@@ -382,9 +382,10 @@ namespace SME.SGP.Dominio
             });
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula)
+        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            if (usuario == null)
+                usuario = await servicoUsuario.ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
