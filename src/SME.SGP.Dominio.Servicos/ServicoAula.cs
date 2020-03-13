@@ -121,7 +121,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 aula.AtualizaTipoCalendario(tipoCalendario);
 
-                await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
+                await VerificaSeProfessorPodePersistirTurmaDisciplina(aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
 
                 var disciplinasProfessor = usuario.EhProfessorCj() ? ObterDisciplinasProfessorCJ(aula, usuario) : await ObterDisciplinasProfessor(aula, usuario);
 
@@ -292,7 +292,7 @@ namespace SME.SGP.Dominio.Servicos
             if (await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(aula.DataAula.Date, aula.UeId, aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId))
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
 
-            await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
+            await VerificaSeProfessorPodePersistirTurmaDisciplina(aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
 
             unitOfWork.IniciarTransacao();
             try
@@ -597,7 +597,7 @@ namespace SME.SGP.Dominio.Servicos
             };
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario)
+        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario)
         {
             if (!await servicoUsuario.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, dataAula, usuario))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
