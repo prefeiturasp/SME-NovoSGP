@@ -162,9 +162,6 @@ const CadastroAula = ({ match }) => {
   }, []);
 
   const onChangeDisciplinas = async (id, listaDisc) => {
-    onChangeCampos();
-    setIdDisciplina(id);
-
     setIdDisciplina(id);
 
     const lista =
@@ -887,7 +884,10 @@ const CadastroAula = ({ match }) => {
                     lista={listaDisciplinas}
                     valueOption="codigoComponenteCurricular"
                     valueText="nome"
-                    onChange={e => onChangeDisciplinas(e, form)}
+                    onChange={e => {
+                      onChangeDisciplinas(e, form);
+                      onChangeCampos();
+                    }}
                     label="Componente curricular"
                     placeholder="Selecione um componente curricular"
                     disabled={
