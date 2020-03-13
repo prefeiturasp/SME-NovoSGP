@@ -115,10 +115,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (aula != null && aula.Id == 0)
             {
-                var aulaExistente = usuario.EhProfessorCj() ?
-                     await repositorioAula.ObterAulaDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf) :
-                     await repositorioAula.ObterAulaDataTurmaDisciplina(aula.DataAula, aula.TurmaId, aula.DisciplinaId);
-
+                var aulaExistente =  await repositorioAula.ObterAulaDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
                 if (aulaExistente != null)
                     throw new NegocioException("Já existe uma aula criada para essa disciplina");
             }
