@@ -60,6 +60,7 @@ namespace SME.SGP.Aplicacao
         public async Task AlterarEmail(AlterarEmailDto alterarEmailDto, string codigoRf)
         {
             await servicoUsuario.AlterarEmailUsuarioPorRfOuInclui(codigoRf, alterarEmailDto.NovoEmail);
+            AdicionarHistoricoEmailUsuario(null, codigoRf, alterarEmailDto.NovoEmail, AcaoHistoricoEmailUsuario.ReiniciarSenha);
         }
 
         public async Task AlterarEmailUsuarioLogado(string novoEmail)
