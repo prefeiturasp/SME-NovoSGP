@@ -107,6 +107,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task ReiniciarSenha(string login);
 
+        Task<UsuarioEolAutenticacaoRetornoDto> RelecionarUsuarioPerfis(string login);
+
         Task RemoverCJSeNecessario(Guid usuarioId);
 
         Task<bool> ValidarProfessor(string professorRf);
