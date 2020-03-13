@@ -20,6 +20,7 @@ import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 import { Loader } from '~/componentes';
+import { erro } from '~/servicos/alertas';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
