@@ -199,7 +199,7 @@ namespace SME.SGP.Dominio
         public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
         {
             if (usuario == null)
-                usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, string.Empty);
+                usuario = await ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj())
             {
