@@ -402,6 +402,12 @@ namespace SME.SGP.Dominio.Servicos
             List<DateTime> diasParaIncluirRecorrencia = new List<DateTime>();
             ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia, diasParaIncluirRecorrencia);
 
+            var datasAulasExistentes = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
+            if(datasAulasExistentes.Count() > 0)
+            {
+                GerarNotificacaoRecorrencia(diasParaIncluirRecorrencia, datasAulasExistentes, aula, usuario.Id, true);
+            }
+
             List<PodePersistirNaDataRetornoEolDto> datasPersistencia = new List<PodePersistirNaDataRetornoEolDto>();
 
             if (!usuario.EhProfessorCj())
@@ -424,6 +430,45 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             await GerarAulaDeRecorrenciaParaDias(aula, usuario, datasPersistencia);
+        }
+
+        private async void GerarNotificacaoRecorrencia(List<DateTime> diasParaIncluirAlterarRecorrencia, IEnumerable<DateTime> datasAulasExistentes, Aula aula, long usuarioId, bool ehInclusao)
+        {
+            var datas = "";
+            datasAulasExistentes.ToList().ForEach(dia =>
+            {
+                if (diasParaIncluirAlterarRecorrencia.First(d => d != dia) != null)
+                {
+                    var dataFormatada = $"{dia.Day.ToString() }/{ dia.Month.ToString()}/{ dia.Year.ToString()}";
+                    datas = datas.Length > 0 ? $", {dataFormatada}" : dataFormatada;
+                    diasParaIncluirAlterarRecorrencia.Remove(dia);
+                }
+            });
+            var tipoOperacao = ehInclusao ? "incluir":"alterar";
+            var mensagemUsuario = $"Não foi possível {tipoOperacao} as recorrências para a disciplina de {aula.DisciplinaNome} na(s) data(s) {datas}, " +
+                $"pois já existem aulas cadastradas nessa(s) data(s)";
+            var notificacao = new Notificacao()
+            {
+                Ano = aula.CriadoEm.Year,
+                Categoria = NotificacaoCategoria.Aviso,
+                DreId = aula.Turma.Ue.Dre.CodigoDre,
+                Mensagem = mensagemUsuario,
+                UsuarioId = usuarioId,
+                Tipo = NotificacaoTipo.Calendario,
+                Titulo = "Recorrências não inseridas",
+                TurmaId = aula.TurmaId,
+                UeId = aula.Turma.Ue.CodigoUe,
+            };
+
+            try
+            {
+                servicoNotificacao.Salvar(notificacao);
+                await comandosNotificacaoAula.Inserir(notificacao.Id, aula.Id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private async Task NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro, List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = null)
