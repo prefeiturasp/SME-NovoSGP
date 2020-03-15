@@ -288,6 +288,8 @@ namespace SME.SGP.Dominio.Servicos
 
                 dataRecorrencia = dataRecorrencia.AddDays(7);
             }
+            //var datasAulasExistentes = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
+            //await GerarNotificacaoRecorrencia()
 
             await NotificarUsuario(usuario, aula, Operacao.Alteracao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
         }
