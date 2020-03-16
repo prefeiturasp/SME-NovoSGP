@@ -207,7 +207,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     if (aula.ComponenteCurricularEol.Regencia)
                     {
-                        var aulaNoDia = await repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, "", data: aula.DataAula, aula.DisciplinaId);
+                        var aulaNoDia = await repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, aula.ProfessorRf, data: aula.DataAula, aula.DisciplinaId);
                         if (aulaNoDia != null && aulaNoDia.Any())
                         {
                             if (aula.Turma.ModalidadeCodigo == Modalidade.EJA)
@@ -604,10 +604,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            if (usuario == null)
-                usuario = await servicoUsuario.ObterUsuarioLogado();
-
-            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula, usuario))
+            if (!await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula, usuario))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
     }
