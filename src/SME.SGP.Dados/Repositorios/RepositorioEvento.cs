@@ -390,6 +390,37 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.tipo_evento_id = et.id");
         }
 
+        private static void ObtenhaEscopoNormal(string UeId, string DreId, StringBuilder query)
+        {
+            if (string.IsNullOrEmpty(DreId))
+            {
+                if (string.IsNullOrEmpty(UeId))
+                    query.AppendLine("and (e.dre_id is null and e.ue_id is null)");
+                else
+                    query.AppendLine("and e.ue_id = @ueId");
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(UeId))
+                    query.AppendLine("and (e.dre_id = @dreId and e.ue_id is null)");
+                else
+                    query.AppendLine("and (e.dre_id = @dreId and e.ue_id = @ueId)");
+            }
+        }
+
+        private static void ObtenhaEscopoRetroativo(string UeId, string DreId, StringBuilder query)
+        {
+            query.AppendLine("and ((e.dre_id is null and e.ue_id is null)");
+
+            if (!string.IsNullOrEmpty(DreId))
+                query.AppendLine("or (e.dre_id = @dreId and e.ue_id is null)");
+
+            if (!string.IsNullOrEmpty(UeId))
+                query.AppendLine("or (e.dre_id = @dreId and e.ue_id = @ueId)");
+
+            query.AppendLine(")");
+        }
+
         private static void ObterContadorEventosNaoLetivosSME(string cabecalho, string whereTipoCalendario, StringBuilder query)
         {
             query.AppendLine(cabecalho);
