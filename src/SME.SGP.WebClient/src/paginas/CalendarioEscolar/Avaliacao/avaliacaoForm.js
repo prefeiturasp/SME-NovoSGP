@@ -98,7 +98,9 @@ const AvaliacaoForm = ({ match }) => {
     setListaDisciplinasSelecionadas,
   ] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
-  const [desabilitarCopiarAvaliacao, setDesabilitarCopiarAvaliacao] = useState(false);
+  const [desabilitarCopiarAvaliacao, setDesabilitarCopiarAvaliacao] = useState(
+    false
+  );
 
   const usuario = useSelector(store => store.usuario);
 
@@ -161,11 +163,21 @@ const AvaliacaoForm = ({ match }) => {
         });
 
         if (salvar && salvar.status === 200) {
-          sucesso(
-            `Avaliação ${
-              idAvaliacao ? 'atualizada' : 'cadastrada'
-            } com sucesso.`
-          );
+          if (salvar.data && salvar.data.length) {
+            salvar.data.forEach(item => {
+              if (item.mensagem.includes('Erro')) {
+                erro(item.mensagem);
+              } else {
+                sucesso(item.mensagem);
+              }
+            });
+          } else {
+            sucesso(
+              `Avaliação ${
+                idAvaliacao ? 'atualizada' : 'cadastrada'
+              } com sucesso.`
+            );
+          }
           history.push(RotasDTO.CALENDARIO_PROFESSOR);
         } else {
           erro(salvar);
