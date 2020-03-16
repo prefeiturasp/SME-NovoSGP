@@ -56,6 +56,7 @@ namespace SME.SGP.Dominio
         public bool EhAulaCompartilhada => ComponentesDeAulaCompartilhada.Any(c => c == DisciplinaId);
         public bool EhRecuperacaoParalela => ComponentesDeRecuperacaoParalela.Any(c => c == DisciplinaId);
         public bool EhTecnologiaAprendizagem => ComponentesDeTecnologiaAprendizagem.Any(c => c == DisciplinaId);
+        public bool EhDataSelecionadaFutura => DataAula.Date > DateTime.Now.Date;
 
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
