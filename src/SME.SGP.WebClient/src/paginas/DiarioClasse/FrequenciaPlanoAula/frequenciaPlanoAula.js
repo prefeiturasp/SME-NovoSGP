@@ -542,7 +542,8 @@ const FrequenciaPlanoAula = () => {
       if (confirmou) {
         obterListaFrequencia(aulaId);
         setModoEdicaoFrequencia(false);
-        obterPlanoAula(obterAulaSelecionada(dataSelecionada));
+        const aulaSelecionada = await obterAulaSelecionada(dataSelecionada);
+        obterPlanoAula(aulaSelecionada);
         setModoEdicaoPlanoAula(false);
         resetarPlanoAula();
       }
