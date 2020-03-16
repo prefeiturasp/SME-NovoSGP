@@ -628,12 +628,16 @@ const CadastroAula = ({ match }) => {
 
   const excluir = async tipoRecorrencia => {
     const disciplina = listaDisciplinas.find(
-      item => String(item.codigoComponenteCurricular) === String(idDisciplina)
+      item =>
+        String(item.codigoComponenteCurricular) ===
+        String(refForm.state.values.disciplinaId)
     );
+
+    const disciplinaBase64 = btoa(disciplina.nome);
 
     const exclusao = await api
       .delete(
-        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplina.nome}`
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplinaBase64}`
       )
       .catch(e => erros(e));
     if (exclusao) {
