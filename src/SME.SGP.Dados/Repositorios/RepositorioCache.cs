@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -35,6 +36,27 @@ namespace SME.SGP.Dados.Repositorios
                 //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
                 servicoLog.Registrar(ex);
                 timer.Stop();
+
+                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, $"Obtendo - Erro {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                return null;
+            }
+        }
+
+        public T Obter<T>(string nomeChave)
+        {
+            try
+            {
+                var stringCache = distributedCache.GetString(nomeChave);
+                if (!string.IsNullOrWhiteSpace(stringCache))
+                    return JsonConvert.DeserializeObject<T>(stringCache);
+            }
+            catch (Exception ex)
+            {
+                //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
+                servicoLog.Registrar(ex);
+            }
+            return default(T);
+        }
 
         public async Task<T> Obter<T>(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720)
         {
