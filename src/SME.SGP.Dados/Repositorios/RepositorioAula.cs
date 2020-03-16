@@ -52,26 +52,6 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-
-        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf)
-        {
-            var query = @"select DATE(data_aula)
-                 from aula
-                where not excluido
-                  and DATE(data_aula) = ANY(@datas)
-                  and turma_id = @turmaId
-                  and disciplina_id = @disciplinaId
-                  and professor_rf = @professorRf";
-
-            return (await database.Conexao.QueryAsync<DateTime>(query.ToString(), new
-            {
-                datas,
-                turmaId,
-                disciplinaId,
-                professorRf
-            }));
-        }
-
         public async Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, long atividadeAvaliativaId)
         {
             var query = @"select *
