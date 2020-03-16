@@ -93,6 +93,7 @@ const CadastroAula = ({ match }) => {
 
   const [idDisciplina, setIdDisciplina] = useState();
   const [disciplinaCompartilhada, setDisciplinaCompartilhada] = useState(false);
+  const [tipoAula, setTipoAula] = useState(1);
   const [
     listaDisciplinasCompartilhadas,
     setListaDisciplinasCompartilhadas,
@@ -108,14 +109,14 @@ const CadastroAula = ({ match }) => {
       label: '1',
       value: 1,
       disabled:
-        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula) ||
+        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula && !ehReposicao) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
     {
       label: '2',
       value: 2,
       disabled:
-        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula) ||
+        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula && !ehReposicao) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
   ];
@@ -161,8 +162,6 @@ const CadastroAula = ({ match }) => {
   }, []);
 
   const onChangeDisciplinas = async (id, listaDisc) => {
-    onChangeCampos();
-
     setIdDisciplina(id);
 
     const lista =
@@ -228,13 +227,27 @@ const CadastroAula = ({ match }) => {
   };
 
   useEffect(() => {
+    onChangeDisciplinas(idDisciplina);
+  }, [tipoAula]);
+
+  useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
-      const disciplina = listaDisciplinas.filter(
+      const disciplina = listaDisciplinas.find(
         item =>
           item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
-      if (disciplina && disciplina[0])
-        setDisciplinaCompartilhada(disciplina[0].compartilhada);
+      if (disciplina && disciplina) {
+        setDisciplinaCompartilhada(disciplina.compartilhada);
+      }
+
+      if (listaDisciplinas && listaDisciplinas.length === 1) {
+        if (Object.keys(refForm).length > 0) {
+          onChangeDisciplinas(
+            listaDisciplinas[0].codigoComponenteCurricular,
+            refForm
+          );
+        }
+      }
     } else if (refForm && refForm.setFieldValue)
       refForm.setFieldValue('quantidadeTexto', '');
   }, [idDisciplina, listaDisciplinas, refForm]);
@@ -393,31 +406,33 @@ const CadastroAula = ({ match }) => {
   };
 
   useEffect(() => {
-    const obterDisciplinas = async () => {
-      const disciplinas = await api.get(
-        `v1/professores/turmas/${turmaId}/disciplinas`
-      );
-      setListaDisciplinas(disciplinas.data);
+    if (Object.keys(refForm).length > 0) {
+      const obterDisciplinas = async () => {
+        const disciplinas = await api.get(
+          `v1/professores/turmas/${turmaId}/disciplinas`
+        );
+        setListaDisciplinas(disciplinas.data);
 
-      if (disciplinas.data && disciplinas.data.length === 1) {
-        inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
-        if (Object.keys(refForm).length > 0) {
-          onChangeDisciplinas(
-            disciplinas.data[0].codigoComponenteCurricular,
-            disciplinas.data
-          );
+        if (disciplinas.data && disciplinas.data.length === 1) {
+          inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
+          if (Object.keys(refForm).length > 0) {
+            onChangeDisciplinas(
+              disciplinas.data[0].codigoComponenteCurricular,
+              disciplinas.data
+            );
+          }
+          const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
+          setEhRegencia(regencia);
         }
-        const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
-        setEhRegencia(regencia);
-      }
 
-      if (novoRegistro) {
-        setInicial(inicial);
+        if (novoRegistro) {
+          setInicial(inicial);
+        }
+      };
+      if (turmaId) {
+        obterDisciplinas();
+        validarConsultaModoEdicaoENovo();
       }
-    };
-    if (turmaId) {
-      obterDisciplinas();
-      validarConsultaModoEdicaoENovo();
     }
   }, [refForm]);
 
@@ -499,7 +514,7 @@ const CadastroAula = ({ match }) => {
   const resetarTela = form => {
     form.resetForm();
     setControlaQuantidadeAula(true);
-    setQuantidadeMaximaAulas(0);
+    setQuantidadeMaximaAulas(1);
     setModoEdicao(false);
     setEhAulaUnica(false);
   };
@@ -606,6 +621,18 @@ const CadastroAula = ({ match }) => {
     setCarregandoSalvar(false);
   };
 
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(aula);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
+        form.handleSubmit(e => e);
+      }
+    });
+  };
+
   const onClickVoltar = async form => {
     if (modoEdicao && !somenteLeitura) {
       const confirmado = await confirmar(
@@ -673,18 +700,6 @@ const CadastroAula = ({ match }) => {
     }
   };
 
-  const validaAntesDoSubmit = form => {
-    const arrayCampos = Object.keys(aula);
-    arrayCampos.forEach(campo => {
-      form.setFieldTouched(campo, true, true);
-    });
-    form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length === 0) {
-        form.handleSubmit(e => e);
-      }
-    });
-  };
-
   const getDataFormatada = () => {
     const titulo = `${dataAula ? dataAula.format('dddd') : ''}, ${
       dataAula ? dataAula.format('DD/MM/YYYY') : ''
@@ -695,14 +710,15 @@ const CadastroAula = ({ match }) => {
   return (
     <Loader loading={carregandoSalvar} tip="">
       <div className="col-md-12">
-        {quantidadeMaximaAulas <= 0 ? (
+        {controlaQuantidadeAula &&
+        quantidadeMaximaAulas <= 0 &&
+        !ehReposicao ? (
           <Alert
             alerta={{
               tipo: 'warning',
               id: 'cadastro-aula-quantidade-maxima',
               mensagem:
                 'Não é possível criar aula normal porque o limite da grade curricular foi atingido',
-              estiloTitulo: { fontSize: '18px' },
             }}
             className="mb-2"
           />
@@ -826,7 +842,10 @@ const CadastroAula = ({ match }) => {
                     disabled={
                       somenteLeitura ||
                       (novoRegistro && !permissaoTela.podeIncluir) ||
-                      (!novoRegistro && !permissaoTela.podeAlterar)
+                      (!novoRegistro && !permissaoTela.podeAlterar) ||
+                      (controlaQuantidadeAula &&
+                        quantidadeMaximaAulas <= 0 &&
+                        !ehReposicao)
                     }
                     onClick={() => validaAntesDoSubmit(form)}
                   />
@@ -844,7 +863,16 @@ const CadastroAula = ({ match }) => {
                     onChange={e => {
                       setEhReposicao(e.target.value === 2);
                       onChangeCampos();
-                      setControlaQuantidadeAula(ehReposicao);
+                      setControlaQuantidadeAula(e.target.value === 1);
+                      setTipoAula(e.target.value);
+                      if (
+                        listaDisciplinas &&
+                        listaDisciplinas.length &&
+                        idDisciplina &&
+                        e.target.value === 1
+                      ) {
+                        onChangeDisciplinas(idDisciplina, listaDisciplinas);
+                      }
                     }}
                   />
                 </div>
@@ -856,7 +884,10 @@ const CadastroAula = ({ match }) => {
                     lista={listaDisciplinas}
                     valueOption="codigoComponenteCurricular"
                     valueText="nome"
-                    onChange={e => onChangeDisciplinas(e, form)}
+                    onChange={e => {
+                      onChangeDisciplinas(e, form);
+                      onChangeCampos();
+                    }}
                     label="Componente curricular"
                     placeholder="Selecione um componente curricular"
                     disabled={
@@ -911,7 +942,9 @@ const CadastroAula = ({ match }) => {
                     desabilitado={
                       somenteLeitura ||
                       !idDisciplina ||
-                      (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
+                      (quantidadeMaximaAulas < 3 &&
+                        controlaQuantidadeAula &&
+                        !ehReposicao) ||
                       (ehRegencia && !ehReposicao)
                     }
                     onChange={() => {
