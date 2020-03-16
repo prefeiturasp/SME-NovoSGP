@@ -286,6 +286,7 @@ const AvaliacaoForm = ({ match }) => {
         disciplinasId: listaDisciplinas[0].codigoComponenteCurricular.toString(),
       });
       setDisciplinaDesabilitada(true);
+      setDisciplinaSelecionada(listaDisciplinas[0].codigoComponenteCurricular);
     }
   }, [listaDisciplinas]);
 
