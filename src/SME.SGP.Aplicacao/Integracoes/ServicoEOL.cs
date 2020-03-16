@@ -271,14 +271,6 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
                 return MapearParaDtoDisciplinas(retorno);
             }
-
-            if (resposta.StatusCode == HttpStatusCode.BadRequest)
-                throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
-
-            RegistrarLogSentry(resposta, "obter as disciplinas", parametros);
-            return Enumerable.Empty<DisciplinaDto>();
-        }
-
             throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
         }
 
