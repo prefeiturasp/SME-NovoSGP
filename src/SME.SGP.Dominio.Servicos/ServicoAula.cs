@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Globalization;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -114,6 +113,9 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false)
         {
+            var aulaExistente = await repositorioAula.ObterAulaDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
+            if (aulaExistente != null && !aulaExistente.Id.Equals(aula.Id))
+                throw new NegocioException("Já existe uma aula criada para essa disciplina");
             if (!ehRecorrencia)
             {
                 var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
