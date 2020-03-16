@@ -175,6 +175,7 @@ const FrequenciaPlanoAula = () => {
           disciplina.codigoComponenteCurricular
         );
       }
+
       dispatch(SelecionarDisciplina(disciplina));
     }
     setCarregandoDisciplinas(false);
@@ -380,37 +381,38 @@ const FrequenciaPlanoAula = () => {
 
   const onSalvarFrequencia = click => {
     setCarregandoSalvar(true);
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const valorParaSalvar = {
         aulaId,
         listaFrequencia: frequencia,
       };
-      return api
-        .post(`v1/calendarios/frequencias`, valorParaSalvar)
-        .then(salvouFrequencia => {
-          if (salvouFrequencia && salvouFrequencia.status === 200) {
-            sucesso('Frequência realizada com sucesso.');
-            if (click) {
-              aposSalvarFrequencia();
-            }
-            setCarregandoSalvar(false);
-            setTimeout(() => {
-              setCarregandoGeral(false);
-            }, 1000);
-            resolve(true);
-            return true;
+      try {
+        const salvouFrequencia = await api.post(
+          `v1/calendarios/frequencias`,
+          valorParaSalvar
+        );
+        if (salvouFrequencia && salvouFrequencia.status === 200) {
+          sucesso('Frequência realizada com sucesso.');
+          if (click) {
+            aposSalvarFrequencia();
           }
-          resolve(false);
-          return false;
-        })
-        .catch(e => {
           setCarregandoSalvar(false);
           setTimeout(() => {
             setCarregandoGeral(false);
           }, 1000);
-          erros(e);
-          reject(e);
-        });
+          resolve(true);
+          return true;
+        }
+        resolve(false);
+        return false;
+      } catch (e) {
+        setCarregandoSalvar(false);
+        setTimeout(() => {
+          setCarregandoGeral(false);
+        }, 1000);
+        erros(e);
+        reject(e);
+      }
     });
   };
 
@@ -542,7 +544,8 @@ const FrequenciaPlanoAula = () => {
       if (confirmou) {
         obterListaFrequencia(aulaId);
         setModoEdicaoFrequencia(false);
-        obterPlanoAula(obterAulaSelecionada(dataSelecionada));
+        const aulaSelecionada = await obterAulaSelecionada(dataSelecionada);
+        obterPlanoAula(aulaSelecionada);
         setModoEdicaoPlanoAula(false);
         resetarPlanoAula();
       }

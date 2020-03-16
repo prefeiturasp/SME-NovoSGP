@@ -23,7 +23,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join recuperacao_paralela_periodo_objetivo_resposta recRel on rec.id = recRel.recuperacao_paralela_id   ");
             query.AppendLine("inner join resposta re on re.id = recRel.resposta_id   ");
             query.AppendLine("where rec.turma_recuperacao_paralela_id = @turmaId ");
-            query.AppendLine("and recRel.periodo_recuperacao_paralela_id = @periodoId ");
             query.AppendLine("and rec.excluido = false ");
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId = turmaId.ToString(), periodoId });
         }

@@ -56,10 +56,14 @@ namespace SME.SGP.Api
                 .AllowAnyHeader()
                 .AllowCredentials());
 
+            app.UseMetricServer();
+            //app.UseMiddleware<ResponseMetricMiddleware>();
+            app.UseHttpMetrics();
+
             app.UseAuthentication();
 
             app.UseMvc();
-            app.UseMetricServer();
+
             app.UseStaticFiles();
 
             app.UseHealthChecks("/healthz", new HealthCheckOptions()
