@@ -290,8 +290,6 @@ namespace SME.SGP.Dominio.Servicos
 
                 dataRecorrencia = dataRecorrencia.AddDays(7);
             }
-            //var datasAulasExistentes = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
-            //await GerarNotificacaoRecorrencia()
 
             await NotificarUsuario(usuario, aula, Operacao.Alteracao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
         }
@@ -407,9 +405,19 @@ namespace SME.SGP.Dominio.Servicos
             ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia, diasParaIncluirRecorrencia);
 
             var datasAulasExistentes = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
-            if(datasAulasExistentes.Count() > 0)
+            if (datasAulasExistentes.Count() > 0)
             {
-                GerarNotificacaoRecorrencia(diasParaIncluirRecorrencia, datasAulasExistentes, aula, usuario.Id, true);
+                var datas = "";
+                datasAulasExistentes.ToList().ForEach(dia =>
+                {
+                    if (diasParaIncluirRecorrencia.First(d => d != dia) != null)
+                    {
+                        var dataFormatada = $"{dia.Day.ToString() }/{ dia.Month.ToString()}/{ dia.Year.ToString()}";
+                        datas = datas.Length > 0 ? $", {dataFormatada}" : dataFormatada;
+                        diasParaIncluirRecorrencia.Remove(dia);
+                    }
+                });
+                GerarNotificacaoRecorrencia(datas, aula, usuario.Id);
             }
 
             List<PodePersistirNaDataRetornoEolDto> datasPersistencia = new List<PodePersistirNaDataRetornoEolDto>();
@@ -436,20 +444,9 @@ namespace SME.SGP.Dominio.Servicos
             await GerarAulaDeRecorrenciaParaDias(aula, usuario, datasPersistencia);
         }
 
-        private async void GerarNotificacaoRecorrencia(List<DateTime> diasParaIncluirAlterarRecorrencia, IEnumerable<DateTime> datasAulasExistentes, Aula aula, long usuarioId, bool ehInclusao)
+        private void GerarNotificacaoRecorrencia(string datas, Aula aula, long usuarioId)
         {
-            var datas = "";
-            datasAulasExistentes.ToList().ForEach(dia =>
-            {
-                if (diasParaIncluirAlterarRecorrencia.First(d => d != dia) != null)
-                {
-                    var dataFormatada = $"{dia.Day.ToString() }/{ dia.Month.ToString()}/{ dia.Year.ToString()}";
-                    datas = datas.Length > 0 ? $", {dataFormatada}" : dataFormatada;
-                    diasParaIncluirAlterarRecorrencia.Remove(dia);
-                }
-            });
-            var tipoOperacao = ehInclusao ? "incluir":"alterar";
-            var mensagemUsuario = $"Não foi possível {tipoOperacao} as recorrências para a disciplina de {aula.DisciplinaNome} na(s) data(s) {datas}, " +
+            var mensagemUsuario = $"Não foi possível incluir as recorrências para a disciplina de {aula.DisciplinaNome} na(s) data(s) {datas}, " +
                 $"pois já existem aulas cadastradas nessa(s) data(s)";
             var notificacao = new Notificacao()
             {
@@ -463,16 +460,7 @@ namespace SME.SGP.Dominio.Servicos
                 TurmaId = aula.TurmaId,
                 UeId = aula.Turma.Ue.CodigoUe,
             };
-
-            try
-            {
-                servicoNotificacao.Salvar(notificacao);
-                await comandosNotificacaoAula.Inserir(notificacao.Id, aula.Id);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            servicoNotificacao.Salvar(notificacao);
         }
 
         private async Task NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro, List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = null)
