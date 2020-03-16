@@ -277,6 +277,8 @@ const CalendarioProfessor = () => {
       eventoAulaCalendarioEdicao.dre
     ) {
       setDreSelecionada(eventoAulaCalendarioEdicao.dre);
+    } else {
+      setDreSelecionada(turmaSelecionadaStore.dre);
     }
   }, [dres, eventoAulaCalendarioEdicao]);
 
@@ -325,6 +327,8 @@ const CalendarioProfessor = () => {
       eventoAulaCalendarioEdicao.unidadeEscolar
     ) {
       setUnidadeEscolarSelecionada(eventoAulaCalendarioEdicao.unidadeEscolar);
+    } else {
+      setUnidadeEscolarSelecionada(turmaSelecionadaStore.unidadeEscolar);
     }
   }, [eventoAulaCalendarioEdicao, unidadesEscolares]);
 
@@ -543,7 +547,7 @@ const CalendarioProfessor = () => {
                       valueText="desc"
                       valueSelect={dreSelecionada}
                       placeholder="Diretoria Regional de Educação (DRE)"
-                      disabled={!tipoCalendarioSelecionado || dreDesabilitada}
+                      disabled
                     />
                   </Loader>
                 </Grid>
@@ -557,7 +561,7 @@ const CalendarioProfessor = () => {
                       valueText="desc"
                       valueSelect={unidadeEscolarSelecionada}
                       placeholder="Unidade Escolar (UE)"
-                      disabled={!dreSelecionada || unidadeEscolarDesabilitada}
+                      disabled
                     />
                   </Loader>
                 </Grid>
