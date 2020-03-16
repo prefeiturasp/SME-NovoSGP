@@ -241,8 +241,7 @@ namespace SME.SGP.Aplicacao
                     {
                         mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto($"Erro ao copiar para a turma: '{turma.TurmaId}' na data '{turma.DataAtividadeAvaliativa.ToString("dd/MM/yyyy")}'. {nex.Message}"));
                     }
-                }
-                unitOfWork.PersistirTransacao();
+                }               
             }
 
             return mensagens;
