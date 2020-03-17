@@ -542,7 +542,7 @@ namespace SME.SGP.Dominio.Servicos
                     .ForEach(turmaId =>
                     {
                         if (turmaId != null)
-                            turmas.Add(repositorioTurma.ObterTurmaComUeEDrePorId(turmaId));
+                            turmas.Add(repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId));
                     });
 
                 var percentualFrequenciaFund = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));

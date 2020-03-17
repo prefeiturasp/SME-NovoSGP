@@ -29,10 +29,24 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException($"Turma de código {codigoTurma} não localizada!");
 
+            return await TurmaEmPeriodoAberto(turma, dataReferencia);
+        }
+
+        public async Task<bool> TurmaEmPeriodoAberto(long turmaId, DateTime dataReferencia)
+        {
+            var turma = await ObterComUeDrePorId(turmaId);
+            if (turma == null)
+                throw new NegocioException($"Turma de ID {turmaId} não localizada!");
+
+            return await TurmaEmPeriodoAberto(turma, dataReferencia);
+        }
+
+        public async Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia)
+        {
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
             if (tipoCalendario == null)
-                throw new NegocioException($"Tipo de calendário para turma {codigoTurma} não localizado!");
-            
+                throw new NegocioException($"Tipo de calendário para turma {turma.CodigoTurma} não localizado!");
+
             var periodoEmAberto = await consultasTipoCalendario.PeriodoEmAberto(tipoCalendario, dataReferencia);
 
             return periodoEmAberto || await consultasFechamento.TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia);
@@ -42,6 +56,9 @@ namespace SME.SGP.Aplicacao
             => repositorioTurma.ObterPorCodigo(codigoTurma);
 
         public async Task<Turma> ObterComUeDrePorCodigo(string codigoTurma)
-            => repositorioTurma.ObterTurmaComUeEDrePorId(codigoTurma);
+            => repositorioTurma.ObterTurmaComUeEDrePorCodigo(codigoTurma);
+
+        public async Task<Turma> ObterComUeDrePorId(long turmaId)
+            => repositorioTurma.ObterTurmaComUeEDrePorId(turmaId);
     }
 }

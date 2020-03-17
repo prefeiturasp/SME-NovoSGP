@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
     {
         Task Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto);
 
-        void Salvar(PlanoAnualDto planoAnualDto);
+        Task Salvar(PlanoAnualDto planoAnualDto);
     }
 }
