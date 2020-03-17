@@ -11,13 +11,17 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     public class ConsultasPeriodoEscolarTeste
     {
         private readonly IConsultasPeriodoEscolar consultas;
+        private readonly Mock<IConsultasFechamento> consultasFechamento; 
+        private readonly Mock<IConsultasTipoCalendario> consultasTipoCalendario;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorio;
 
         public ConsultasPeriodoEscolarTeste()
         {
             repositorio = new Mock<IRepositorioPeriodoEscolar>();
+            consultasFechamento = new Mock<IConsultasFechamento>();
+            consultasTipoCalendario = new Mock<IConsultasTipoCalendario>();
 
-            consultas = new ConsultasPeriodoEscolar(repositorio.Object);
+            consultas = new ConsultasPeriodoEscolar(repositorio.Object, consultasFechamento.Object, consultasTipoCalendario.Object);
         }
 
         [Fact(DisplayName = "Deve_Consultar_Periodo_Escolar")]
@@ -31,7 +35,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact(DisplayName = "Deve_Disparar_Excecao_Se_Instanciar_Sem_Dependencia")]
         public void Deve_Disparar_Excecao_Se_Instanciar_Sem_Dependencia()
         {
-            Assert.Throws<ArgumentNullException>(() => new ConsultasPeriodoEscolar(null));
+            Assert.Throws<ArgumentNullException>(() => new ConsultasPeriodoEscolar(null, null, null));
         }
     }
 }
