@@ -1,17 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// Styles
-import styled from 'styled-components';
 
 // Components
 import SelectComponent from '~/componentes/select';
 
-const SelectWrapper = styled.div`
-  .ant-select-selection {
-    width: 150px;
-  }
-`;
 
 function DiasDropDown({ onChange, selected, form }) {
   const items = [
@@ -46,19 +39,17 @@ function DiasDropDown({ onChange, selected, form }) {
   ];
 
   return (
-    <SelectWrapper>
-      <SelectComponent
-        className="fonte-14"
-        onChange={onChange}
-        lista={items}
-        valueOption="valor"
-        valueText="desc"
-        valueSelect={selected}
-        placeholder="Selecione o dia"
-        form={form}
-        name="diaSemana"
-      />
-    </SelectWrapper>
+    <SelectComponent
+      className="fonte-14"
+      onChange={onChange}
+      lista={items}
+      valueOption="valor"
+      valueText="desc"
+      valueSelect={selected}
+      placeholder="Selecione o dia"
+      form={form}
+      name="diaSemana"
+    />
   );
 }
 

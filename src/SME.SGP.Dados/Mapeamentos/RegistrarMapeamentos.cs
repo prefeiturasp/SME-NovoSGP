@@ -84,6 +84,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ObjetivoaMap());
                config.AddMap(new RespostaMap());
                config.AddMap(new NotificacaoAulaMap());
+               config.AddMap(new HistoricoEmailUsuarioMap());
                config.ForDommel();
            });
         }
