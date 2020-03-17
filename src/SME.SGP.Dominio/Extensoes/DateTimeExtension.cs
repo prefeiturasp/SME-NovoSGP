@@ -30,5 +30,8 @@ namespace SME.SGP.Dominio
             int diferenca = (((int)DayOfWeek.Saturday - (int)data.DayOfWeek + 7) % 7);
             return data.AddDays(diferenca);
         }
+
+        public static int Semestre(this DateTime data)
+            => data.Month <= 6 ? 1 : 2;
     }
 }
