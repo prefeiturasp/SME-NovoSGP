@@ -996,7 +996,6 @@ const FrequenciaPlanoAula = () => {
                       permissoesTela={permissoesTela}
                       somenteConsulta={somenteConsulta}
                       mostrarCardPrincipal={planoAulaExpandido}
-                      setMostrarCardPrincipal={setPlanoAulaExpandido}
                       temObjetivos={temObjetivos}
                       temAvaliacao={temAvaliacao}
                       auditoria={auditoriaPlano}
