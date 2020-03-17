@@ -201,6 +201,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioObjetivo, RepositorioObjetivo>();
             services.TryAddScoped<IRepositorioNotificacaoAula, RepositorioNotificacaoAula>();
             services.TryAddScoped<IRepositorioFechamentoFinal, RepositorioFechamentoFinal>();
+            services.TryAddScoped<IRepositorioHistoricoEmailUsuario, RepositorioHistoricoEmailUsuario>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
