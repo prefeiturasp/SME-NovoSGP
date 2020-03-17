@@ -93,21 +93,20 @@ namespace SME.SGP.Aplicacao
                 Alunos = new List<NotaConceitoAlunoBimestreDto>()
             };
 
+            var disciplinasId = new long[] { disciplinaId };
+            var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(disciplinasId).FirstOrDefault();
+            IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
+
+            if (disciplinaEOL.Regencia)
+                disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turmaId), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
+
+            if (!disciplinaEOL.LancaNota)
+                fechamentoBimestre.EhSintese = true;
+
             // Carrega fechamento da Turma x Disciplina x Bimestre
             var fechamentoTurma = await ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestreAtual.Value);
             if (fechamentoTurma != null)
             {
-                var disciplinasId = new long[] { disciplinaId };
-
-                var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(disciplinasId).FirstOrDefault();
-                IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
-
-                if (disciplinaEOL.Regencia)
-                    disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turmaId), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
-
-                if (!disciplinaEOL.LancaNota)
-                    fechamentoBimestre.EhSintese = true;
-
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
 
                 var bimestreDoPeriodo = consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
