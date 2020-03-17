@@ -61,7 +61,8 @@ namespace SME.SGP.Dados.Repositorios
 	                            abrangencia
                             where
 	                            usuario_id = (select id from usuario where login = @login)
-	                            and perfil = @perfil";
+	                            and perfil = @perfil
+                                and abrangencia.historico = false";
 
             return (await database.Conexao.QueryAsync<bool>(query, new { login, perfil })).FirstOrDefault();
         }
