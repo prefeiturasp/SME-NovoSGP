@@ -139,11 +139,15 @@ namespace SME.SGP.Aplicacao
             };
 
             //parecer conclusivo
-            recuperacaoRetorno.Periodo.Alunos.Where(w => w.Id == 0 && w.ParecerConclusivo.HasValue && char.GetNumericValue(w.ParecerConclusivo.Value) <= 3).ToList().ForEach(x => x.Respostas.Add(new ObjetivoRespostaDto
-            {
-                ObjetivoId = 3,
-                RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
-            }));
+            recuperacaoRetorno.Periodo.Alunos
+                .Where(w => w.Id == 0 && w.ParecerConclusivo.HasValue && char.GetNumericValue(w.ParecerConclusivo.Value) <= 3)
+                .ToList()
+                .ForEach(x => x.Respostas.Add(
+                    new ObjetivoRespostaDto
+                    {
+                        ObjetivoId = 3,
+                        RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
+                    }));
 
             if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento && alunos.Any())
             {
