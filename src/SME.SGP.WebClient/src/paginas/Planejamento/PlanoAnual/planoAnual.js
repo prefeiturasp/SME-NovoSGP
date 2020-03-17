@@ -36,6 +36,7 @@ const PlanoAnual = () => {
   const turmaSelecionada = useSelector(c => c.usuario.turmaSelecionada);
   const [possuiTurmaSelecionada, setPossuiTurmaSelecionada] = useState(false);
   const [ehEja, setEhEja] = useState(false);
+  const [ehMedio, setEhMedio] = useState(false);
   const [planoAnual, setPlanoAnual] = useState([]);
   const [registroMigrado, setRegistroMigrado] = useState(false);
   const [
@@ -121,7 +122,7 @@ const PlanoAnual = () => {
         if (
           disciplinaSelecionada.possuiObjetivos &&
           (!plano.objetivosAprendizagem ||
-            (!plano.objetivosAprendizagem.length > 0 && !ehEja))
+            (!plano.objetivosAprendizagem.length > 0 && !ehEja && !ehMedio))
         ) {
           possuiErro = true;
           err[plano.bimestre - 1].push(
@@ -346,6 +347,7 @@ const PlanoAnual = () => {
     setEmEdicao(false);
     if (turmaSelecionada && turmaSelecionada.turma) {
       setEhEja(turmaSelecionada.modalidade.toString() === modalidade.EJA.toString());
+      setEhMedio(turmaSelecionada.modalidade.toString() === modalidade.ENSINO_MEDIO.toString())
     }
   }, [turmaSelecionada]);
 
@@ -480,10 +482,7 @@ const PlanoAnual = () => {
                           bimestre={plano}
                           ano={turmaSelecionada.ano}
                           ehEja={ehEja}
-                          ehMedio={
-                            turmaSelecionada.modalidade.toString() ===
-                            modalidade.ENSINO_MEDIO.toString()
-                          }
+                          ehMedio={ehMedio}
                           disciplinaSemObjetivo={
                             !disciplinaSelecionada.possuiObjetivos
                           }
