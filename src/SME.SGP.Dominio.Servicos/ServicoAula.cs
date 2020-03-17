@@ -186,6 +186,7 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         if (aula.Turma.ModalidadeCodigo == Modalidade.EJA)
                         {
+                            var aulasNoDia = await repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, usuario.CodigoRf, data: aula.DataAula, aula.DisciplinaId);
                             if (aula.Quantidade != 5)
                                 throw new NegocioException("Para regência de EJA só é permitido a criação de 5 aulas por dia.");
                         }
@@ -207,8 +208,8 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     if (aula.ComponenteCurricularEol.Regencia)
                     {
-                        var aulaNoDia = await repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, aula.ProfessorRf, data: aula.DataAula, aula.DisciplinaId);
-                        if (aulaNoDia != null && aulaNoDia.Any())
+                        var aulasNoDia = await repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, usuario.CodigoRf, data: aula.DataAula, aula.DisciplinaId);
+                        if (aulasNoDia != null && aulasNoDia.Any())
                         {
                             if (aula.Turma.ModalidadeCodigo == Modalidade.EJA)
                                 throw new NegocioException("Para regência de EJA só é permitido a criação de 5 aulas por dia.");
