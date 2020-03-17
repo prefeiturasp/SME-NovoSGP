@@ -587,7 +587,6 @@ export default function PlanoCiclo() {
                     id="textEditor"
                     height="500px"
                     maxHeight="calc(100vh)"
-                    onBlur={onChangeTextEditor}
                     value={descricaoCiclo}
                     disabled={somenteConsulta}
                   />

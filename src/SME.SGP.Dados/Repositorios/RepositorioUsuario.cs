@@ -1,4 +1,4 @@
-﻿using Dapper;
+﻿﻿using Dapper;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -21,11 +21,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("select * from usuario");
             query.AppendLine("where 1=1");
 
-            if (!string.IsNullOrEmpty(codigoRf))
-                query.AppendLine("and rf_codigo = @codigoRf");
-
             if (!string.IsNullOrEmpty(login))
                 query.AppendLine("and login = @login");
+
+          else if (!string.IsNullOrEmpty(codigoRf))
+                query.AppendLine("and rf_codigo = @codigoRf");
 
             return database.Conexao.Query<Usuario>(query.ToString(), new { codigoRf, login })
                 .FirstOrDefault();

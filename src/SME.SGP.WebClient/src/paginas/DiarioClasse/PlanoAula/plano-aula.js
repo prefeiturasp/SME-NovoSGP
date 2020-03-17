@@ -42,7 +42,7 @@ const PlanoAula = props => {
     ehMedio,
     temObjetivos,
     setTemObjetivos,
-    expandido,
+    mostrarCardPrincipal,
     auditoria,
     temAvaliacao,
     ehRegencia,
@@ -53,7 +53,6 @@ const PlanoAula = props => {
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(false);
   const [mostrarModalCopiarConteudo, setMostrarModalCopiarConteudo] = useState(
     false
   );
@@ -231,7 +230,6 @@ const PlanoAula = props => {
         key="plano-aula"
         onClick={() => {
           onClick();
-          setMostrarCardPrincipal(!mostrarCardPrincipal);
         }}
         titulo="Plano de aula"
         indice="Plano de aula"
@@ -283,7 +281,7 @@ const PlanoAula = props => {
           </HabilitaObjetivos>
           <CardCollapse
             key="objetivos-aprendizagem"
-            onClick={() => {}}
+            onClick={() => { }}
             titulo="Objetivos de Aprendizagem e Desenvolvimento e meus objetivos (Currículo da Cidade)"
             indice="objetivos-aprendizagem"
             show
@@ -297,21 +295,21 @@ const PlanoAula = props => {
                   </h6>
                   {temObjetivos
                     ? materias.map(materia => {
-                        return (
-                          <Badge
-                            role="button"
-                            disabled={desabilitarCampos}
-                            onClick={() => selecionarMateria(materia.id)}
-                            id={materia.id}
-                            alt={materia.descricao}
-                            key={materia.id}
-                            className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
+                      return (
+                        <Badge
+                          role="button"
+                          disabled={desabilitarCampos}
+                          onClick={() => selecionarMateria(materia.id)}
+                          id={materia.id}
+                          alt={materia.descricao}
+                          key={materia.id}
+                          className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
                       ${materia.selecionada ? ' badge-selecionado' : ''}`}
-                          >
-                            {materia.descricao}
-                          </Badge>
-                        );
-                      })
+                        >
+                          {materia.descricao}
+                        </Badge>
+                      );
+                    })
                     : null}
 
                   <Loader loading={carregandoObjetivos}>
@@ -325,7 +323,7 @@ const PlanoAula = props => {
                             <ListItemButton
                               className={`${
                                 objetivo.selected ? 'objetivo-selecionado ' : ''
-                              } list-group-item d-flex align-items-center font-weight-bold fonte-14`}
+                                } list-group-item d-flex align-items-center font-weight-bold fonte-14`}
                               role="button"
                               id={objetivo.id}
                               aria-pressed={!!objetivo.selected}
@@ -379,26 +377,26 @@ const PlanoAula = props => {
                             );
                           })}
                         {objetivosAprendizagem.filter(x => x.selected).length >
-                        1 ? (
-                          <Button
-                            key="removerTodos"
-                            label="Remover Todos"
-                            color={Colors.CinzaBotao}
-                            bold
-                            alt="Remover todos os objetivos selecionados"
-                            id="removerTodos"
-                            height="38px"
-                            width="92px"
-                            fontSize="12px"
-                            padding="0px 5px"
-                            lineHeight="1.2"
-                            steady
-                            disabled={desabilitarCampos}
-                            border
-                            className="text-dark mt-3 mr-2 stretched-link"
-                            onClick={() => removerTodosObjetivos()}
-                          />
-                        ) : null}
+                          1 ? (
+                            <Button
+                              key="removerTodos"
+                              label="Remover Todos"
+                              color={Colors.CinzaBotao}
+                              bold
+                              alt="Remover todos os objetivos selecionados"
+                              id="removerTodos"
+                              height="38px"
+                              width="92px"
+                              fontSize="12px"
+                              padding="0px 5px"
+                              lineHeight="1.2"
+                              steady
+                              disabled={desabilitarCampos}
+                              border
+                              className="text-dark mt-3 mr-2 stretched-link"
+                              onClick={() => removerTodosObjetivos()}
+                            />
+                          ) : null}
                       </div>
                     </Grid>
                   </Loader>
@@ -428,7 +426,7 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="desenv-aula"
-            onClick={() => {}}
+            onClick={() => { }}
             titulo="Desenvolvimento da aula"
             indice="desenv-aula"
             show
@@ -444,7 +442,7 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="rec-continua"
-            onClick={() => {}}
+            onClick={() => { }}
             titulo="Recuperação contínua"
             indice="rec-continua"
             show={false}
@@ -460,7 +458,7 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="licao-casa"
-            onClick={() => {}}
+            onClick={() => { }}
             titulo="Lição de casa"
             indice="licao-casa"
             show={false}
@@ -482,8 +480,8 @@ const PlanoAula = props => {
               alteradoEm={auditoria.alteradoEm}
             />
           ) : (
-            ''
-          )}
+              ''
+            )}
         </Loader>
       </CardCollapse>
       <ModalCopiarConteudo

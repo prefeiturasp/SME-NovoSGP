@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,6 +30,25 @@ namespace SME.SGP.Dados.Repositorios
                 data = data.Date,
                 turmaId,
                 disciplinaId
+            });
+        }
+
+        public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplinaProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf)
+        {
+            var query = @"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = @data
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId
+                  and professor_rf = @professorRf";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
+            {
+                data = data.Date,
+                turmaId,
+                disciplinaId,
+                professorRf
             });
         }
 
@@ -234,6 +254,28 @@ namespace SME.SGP.Dados.Repositorios
                 turma,
                 semana
             });
+        }
+
+        public Aula ObterCompletoPorId(long id)
+        {
+            var query = @"select a.*,t.*, ue.*, dre.* from aula a
+                            inner join turma t
+                            on a.turma_id  = t.turma_id
+                            inner join ue ue
+                            on t.ue_id  = ue.id
+                            inner join dre dre
+                            on dre.id = ue.dre_id
+                                where a.id  = @Id ";
+
+            return database.Conexao.Query<Aula, Turma, Ue, Dre, Aula>(query,
+                        (aula, turma, ue, dre) =>
+                        {
+                            turma.AdicionarUe(ue);
+                            ue.AdicionarDre(dre);
+                            aula.AtualizaTurma(turma);
+
+                            return aula;
+                        }, param: new { id }).FirstOrDefault();
         }
 
         public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(int anoLetivo, string turmaId, string disciplinaId, long usuarioId, string usuarioRF, bool aulaCJ, bool ehDiretorOuSupervisor)
