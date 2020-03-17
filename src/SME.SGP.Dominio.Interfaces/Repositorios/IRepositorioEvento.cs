@@ -13,8 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId, bool utilizarRangeDatas = true);
 
-        bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId, long eventoId);
-
         bool ExisteEventoPorEventoTipoId(long eventoTipoId);
 
         bool ExisteEventoPorFeriadoId(long feriadoId);
@@ -45,6 +43,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, Usuario usuario, Guid usuarioPerfil,
             bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
 
-        Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento liberacaoExcepcional, long tipoCalendarioId, string UeId, string DreId);
+        Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento liberacaoExcepcional, long tipoCalendarioId, string UeId, string DreId, bool escopoRetroativo = false);
     }
 }
