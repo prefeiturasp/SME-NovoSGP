@@ -25,8 +25,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia)
         {
-            var turma = await ObterPorCodigo(codigoTurma);
+            var turma = await ObterComUeDrePorCodigo(codigoTurma);
+            if (turma == null)
+                throw new NegocioException($"Turma de código {codigoTurma} não localizada!");
+
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
+            if (tipoCalendario == null)
+                throw new NegocioException($"Tipo de calendário para turma {codigoTurma} não localizado!");
+            
             var periodoEmAberto = await consultasTipoCalendario.PeriodoEmAberto(tipoCalendario, dataReferencia);
 
             return periodoEmAberto || await consultasFechamento.TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia);
