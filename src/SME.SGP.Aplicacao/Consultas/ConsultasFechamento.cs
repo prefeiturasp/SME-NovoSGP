@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoFechamento servicoFechamento;
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                                 IRepositorioTurma repositorioTurma,
                                 IRepositorioUe repositorioUe,
                                 IRepositorioDre repositorioDre,
-                                IRepositorioTipoCalendario repositorioTipoCalendario,
+                                IConsultasTipoCalendario consultasTipoCalendario,
                                 IRepositorioEvento repositorioEvento,
                                 IRepositorioEventoFechamento repositorioEventoFechamento,
                                 IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioUe = repositorioUe ?? throw new System.ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new System.ArgumentNullException(nameof(repositorioDre));
-            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new System.ArgumentNullException(nameof(consultasTipoCalendario));
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new System.ArgumentNullException(nameof(repositorioEventoFechamento));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
@@ -42,18 +42,20 @@ namespace SME.SGP.Aplicacao
             return await servicoFechamento.ObterPorTipoCalendarioDreEUe(fechamentoDto.TipoCalendarioId, fechamentoDto.DreId, fechamentoDto.UeId);
         }
 
-        public async Task<bool> TurmaEmPeriodoDeFechamento(string turmaCodigo, DateTime dataReferencia, int bimestre)
+        public async Task<bool> TurmaEmPeriodoDeFechamento(string turmaCodigo, DateTime dataReferencia, int bimestre = 0)
         {
             var turma = repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
+
+            return await TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia);
+        }
+
+        public async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0)
+        {
             var ue = repositorioUe.ObterPorId(turma.UeId);
             var dre = repositorioDre.ObterPorId(ue.DreId);
+            var ueEmFechamento = await repositorioEventoFechamento.UeEmFechamento(dataReferencia, dre.CodigoDre, ue.CodigoUe, tipoCalendario.Id, bimestre);
 
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo
-                    , turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio
-                    , dataReferencia.Month <= 6 ? 1 : 2);
-
-            var ueEmFechamento = await repositorioEventoFechamento.UeEmFechamento(dataReferencia, dre.CodigoDre, ue.CodigoUe, bimestre, tipoCalendario.Id);
-            
             return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario.Id, ue.CodigoUe, dre.CodigoDre, bimestre, dataReferencia);
         }
 
