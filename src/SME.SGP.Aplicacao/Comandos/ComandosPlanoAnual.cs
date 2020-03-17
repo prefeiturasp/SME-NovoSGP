@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
         }
 
-        public void Salvar(PlanoAnualDto planoAnualDto)
+        public async Task Salvar(PlanoAnualDto planoAnualDto)
         {
             unitOfWork.IniciarTransacao();
 
