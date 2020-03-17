@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaExperienciasPedagogicasSemana(string turma, string semana);
 
-        IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(int anoLetivo, string turmaId, string disciplinaId, long usuarioId, string usuarioRF);
+        IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaId, string disciplinaId, long usuarioId, string usuarioRF);
 
         Aula ObterPorWorkflowId(long workflowId);
 

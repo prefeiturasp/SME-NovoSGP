@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioAula repositorio;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IServicoEOL servicoEol;
@@ -22,6 +23,7 @@ namespace SME.SGP.Aplicacao
                              IConsultasPeriodoEscolar consultasPeriodoEscolar,
                              IConsultasFrequencia consultasFrequencia,
                              IRepositorioPlanoAula repositorioPlanoAula,
+                             IRepositorioTurma repositorioTurma,
                              IServicoUsuario servicoUsuario,
                              IServicoEOL servicoEol)
         {
@@ -31,6 +33,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
         public async Task<AulaConsultaDto> BuscarPorId(long id)
@@ -86,16 +89,31 @@ namespace SME.SGP.Aplicacao
             return await repositorio.ObterAulaDataTurmaDisciplina(data, turmaId, disciplinaId);
         }
 
-        public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turma, string disciplina)
+        public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turmaCodigo, string disciplina)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var usuarioRF = usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : string.Empty;
-            return repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(anoLetivo, turma, disciplina, usuarioLogado.Id, usuarioRF)?.Select(a => new DataAulasProfessorDto
+
+            var turma = repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var periodosEscolares = await consultasPeriodoEscolar.ObterPeriodosEmAberto(turma.UeId, turma.ModalidadeCodigo, anoLetivo);
+
+            return ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplina, usuarioLogado, usuarioRF);
+        }
+
+        private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolarDto> periodosEscolares, int anoLetivo, string turmaCodigo, string disciplina, Usuario usuarioLogado, string usuarioRF)
+        {
+            foreach(var periodoEscolar in periodosEscolares.Distinct())
             {
-                Data = a.DataAula,
-                IdAula = a.Id,
-                AulaCJ = a.AulaCJ
-            });
+                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, disciplina, usuarioLogado.Id, usuarioRF))
+                {
+                    yield return new DataAulasProfessorDto
+                    {
+                        Data = aula.DataAula,
+                        IdAula = aula.Id,
+                        AulaCJ = aula.AulaCJ
+                    };
+                }
+            }
         }
 
         public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)
