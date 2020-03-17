@@ -194,9 +194,11 @@ namespace SME.SGP.Dominio.Servicos
             return validacoes.ToString();
         }
 
-        private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data)
+        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data)
         {
-            if (!servicoUsuario.PodePersistirTurma(codigoRf, turmaId, data).Result)
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurma(codigoRf, turmaId, data))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
