@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IConsultasProfessor consultasProfessor;
+        private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
@@ -25,6 +26,7 @@ namespace SME.SGP.Aplicacao
                                   IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                   IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                   IConsultasProfessor consultasProfessor,
+                                  IConsultasTurma consultasTurma,
                                   IUnitOfWork unitOfWork,
                                   IServicoUsuario servicoUsuario,
                                   IServicoEOL servicoEOL)
@@ -34,6 +36,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -76,15 +79,18 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
         }
 
-        public void Salvar(PlanoAnualDto planoAnualDto)
+        public async Task Salvar(PlanoAnualDto planoAnualDto)
         {
-            unitOfWork.IniciarTransacao();
-
             var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
             if (string.IsNullOrWhiteSpace(usuarioAtual.CodigoRf))
             {
                 throw new NegocioException("Não foi possível obter o RF do usuário.");
             }
+
+            if (!await consultasTurma.TurmaEmPeriodoAberto(planoAnualDto.TurmaId.Value, DateTime.Today))
+                throw new NegocioException("Turma não esta em período aberto");
+
+            unitOfWork.IniciarTransacao();
             foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
             {
                 PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
@@ -96,7 +102,6 @@ namespace SME.SGP.Aplicacao
                 planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao);
                 Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
             }
-
             unitOfWork.PersistirTransacao();
         }
 

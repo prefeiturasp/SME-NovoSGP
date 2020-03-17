@@ -119,7 +119,7 @@ namespace SME.SGP.Dominio
                 var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
-                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
+                var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(atividadeAvaliativa.TurmaId);
 
                 var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
                 var periodoAtividade = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
@@ -257,7 +257,7 @@ namespace SME.SGP.Dominio
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
             var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
             var dataAtual = DateTime.Now;
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(atividadeAvaliativa.TurmaId);
 
             if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR)
                 await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, atividadeAvaliativa.TurmaId, disciplinaId, dataAtual);
