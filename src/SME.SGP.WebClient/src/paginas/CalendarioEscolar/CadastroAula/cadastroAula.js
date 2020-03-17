@@ -69,7 +69,6 @@ const CadastroAula = ({ match }) => {
   const [ehAulaUnica, setEhAulaUnica] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
   const [ehEJA, setEhEja] = useState(false);
-  const [ehRecorrencia, setEhRecorrencia] = useState(false);
   const [
     visualizarFormExcRecorrencia,
     setVisualizarFormExcRecorrencia,
@@ -93,7 +92,6 @@ const CadastroAula = ({ match }) => {
 
   const [idDisciplina, setIdDisciplina] = useState();
   const [disciplinaCompartilhada, setDisciplinaCompartilhada] = useState(false);
-  const [tipoAula, setTipoAula] = useState(1);
   const [
     listaDisciplinasCompartilhadas,
     setListaDisciplinasCompartilhadas,
@@ -109,14 +107,14 @@ const CadastroAula = ({ match }) => {
       label: '1',
       value: 1,
       disabled:
-        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula && !ehReposicao) ||
+        (quantidadeMaximaAulas < 1 && controlaQuantidadeAula) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
     {
       label: '2',
       value: 2,
       disabled:
-        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula && !ehReposicao) ||
+        (quantidadeMaximaAulas < 2 && controlaQuantidadeAula) ||
         (ehRegencia && ehEJA && !ehReposicao),
     },
   ];
@@ -161,7 +159,11 @@ const CadastroAula = ({ match }) => {
     };
   }, []);
 
-  const onChangeDisciplinas = async (id, listaDisc) => {
+  const [desabilitaPorGrade, setDesabilitaPorGrade] = useState(false);
+
+  const onChangeDisciplinas = async (id, listaDisc, isReposicao) => {
+    onChangeCampos();
+
     setIdDisciplina(id);
 
     const lista =
@@ -181,73 +183,64 @@ const CadastroAula = ({ match }) => {
       const regencia = !!disciplina.regencia;
       setEhRegencia(regencia);
 
-      let resultado;
-
-      if (disciplina && !disciplina.territorioSaber) {
-        resultado = await api
-          .get(
-            `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}?ehRegencia=${regencia}`,
-            {
-              params: {
-                data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
-              },
-            }
-          )
-          .then(res => res)
-          .catch(err => {
-            const mensagemErro =
-              err &&
-              err.response &&
-              err.response.data &&
-              err.response.data.mensagens;
-
-            if (mensagemErro) {
-              erro(mensagemErro.join(','));
-              return null;
-            }
-
-            erro('Ocorreu um erro, por favor contate o suporte');
-
-            return null;
-          });
+      if (disciplina.territorioSaber || isReposicao) {
+        setControlaQuantidadeAula(false);
+        setQuantidadeMaximaAulas(0);
+        setDesabilitaPorGrade(false);
+        return;
       }
+
+      refForm.setFieldValue('recorrenciaAula', '');
+
+      const resultado = await api
+        .get(
+          `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}?ehRegencia=${regencia}`,
+          {
+            params: {
+              data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
+            },
+          }
+        )
+        .then(res => res)
+        .catch(err => {
+          const mensagemErro =
+            err &&
+            err.response &&
+            err.response.data &&
+            err.response.data.mensagens;
+
+          if (mensagemErro) {
+            erro(mensagemErro.join(','));
+            return null;
+          }
+
+          erro('Ocorreu um erro, por favor contate o suporte');
+
+          return null;
+        });
 
       if (resultado) {
         if (resultado.status === 200) {
-          setControlaQuantidadeAula(true);
+          setControlaQuantidadeAula(resultado.data.quantidadeAulasRestante < 1);
           setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
-          if (resultado.data.quantidadeAulasRestante > 0) {
-            setControlaQuantidadeAula(true);
-          }
+          setDesabilitaPorGrade(resultado.data.quantidadeAulasRestante < 1);
         } else if (resultado.status === 204) {
           setControlaQuantidadeAula(false);
+          setQuantidadeMaximaAulas(0);
+          setDesabilitaPorGrade(false);
         }
       }
     }
   };
 
   useEffect(() => {
-    onChangeDisciplinas(idDisciplina);
-  }, [tipoAula]);
-
-  useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
-      const disciplina = listaDisciplinas.find(
+      const disciplina = listaDisciplinas.filter(
         item =>
           item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
-      if (disciplina && disciplina) {
-        setDisciplinaCompartilhada(disciplina.compartilhada);
-      }
-
-      if (listaDisciplinas && listaDisciplinas.length === 1) {
-        if (Object.keys(refForm).length > 0) {
-          onChangeDisciplinas(
-            listaDisciplinas[0].codigoComponenteCurricular,
-            refForm
-          );
-        }
-      }
+      if (disciplina && disciplina[0])
+        setDisciplinaCompartilhada(disciplina[0].compartilhada);
     } else if (refForm && refForm.setFieldValue)
       refForm.setFieldValue('quantidadeTexto', '');
   }, [idDisciplina, listaDisciplinas, refForm]);
@@ -259,7 +252,7 @@ const CadastroAula = ({ match }) => {
     return disciplinas.data;
   };
 
-  const trataSomenteLeitura = async () => {
+  const trataSomenteLeitura = useCallback(async () => {
     if (somenteLeitura) {
       const id = exibirAlerta(
         'warning',
@@ -270,11 +263,11 @@ const CadastroAula = ({ match }) => {
       setIdNotificacaoSomenteLeitura(id);
       setListaDisciplinas(await buscarDisciplinasCompartilhadas());
     }
-  };
+  }, [somenteLeitura]);
 
   useEffect(() => {
     trataSomenteLeitura();
-  }, [somenteLeitura]);
+  }, [trataSomenteLeitura]);
 
   const buscarDisciplinas = async () => {
     setListaDisciplinasCompartilhadas(await buscarDisciplinasCompartilhadas());
@@ -406,33 +399,31 @@ const CadastroAula = ({ match }) => {
   };
 
   useEffect(() => {
-    if (Object.keys(refForm).length > 0) {
-      const obterDisciplinas = async () => {
-        const disciplinas = await api.get(
-          `v1/professores/turmas/${turmaId}/disciplinas`
-        );
-        setListaDisciplinas(disciplinas.data);
+    const obterDisciplinas = async () => {
+      const disciplinas = await api.get(
+        `v1/professores/turmas/${turmaId}/disciplinas`
+      );
+      setListaDisciplinas(disciplinas.data);
 
-        if (disciplinas.data && disciplinas.data.length === 1) {
-          inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
-          if (Object.keys(refForm).length > 0) {
-            onChangeDisciplinas(
-              disciplinas.data[0].codigoComponenteCurricular,
-              disciplinas.data
-            );
-          }
-          const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
-          setEhRegencia(regencia);
+      if (disciplinas.data && disciplinas.data.length === 1) {
+        inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
+        if (Object.keys(refForm).length) {
+          onChangeDisciplinas(
+            disciplinas.data[0].codigoComponenteCurricular,
+            disciplinas.data
+          );
         }
-
-        if (novoRegistro) {
-          setInicial(inicial);
-        }
-      };
-      if (turmaId) {
-        obterDisciplinas();
-        validarConsultaModoEdicaoENovo();
+        const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
+        setEhRegencia(regencia);
       }
+
+      if (novoRegistro) {
+        setInicial(inicial);
+      }
+    };
+    if (turmaId && Object.keys(refForm).length) {
+      obterDisciplinas();
+      validarConsultaModoEdicaoENovo();
     }
   }, [refForm]);
 
@@ -475,14 +466,6 @@ const CadastroAula = ({ match }) => {
     }
 
     if (!ehReposicao) {
-      // TODO
-      if (ehRecorrencia) {
-        // TODO
-      }
-      // TODO
-      if (controlaQuantidadeAula) {
-        // TODO
-      }
       if (ehRegencia) {
         if (turmaSelecionada.modalidade === modalidade.EJA) {
           setInicial({ ...inicial, quantidadeTexto: 5, quantidadeRadio: '' });
@@ -496,15 +479,14 @@ const CadastroAula = ({ match }) => {
 
     setValidacoes(Yup.object(val));
   }, [
-    aula,
-    controlaQuantidadeAula,
-    ehRecorrencia,
-    ehRegencia,
-    ehReposicao,
-    idAula,
-    quantidadeMaximaAulas,
-    turmaSelecionada.modalidade,
     idDisciplina,
+    quantidadeMaximaAulas,
+    controlaQuantidadeAula,
+    ehReposicao,
+    disciplinaCompartilhada,
+    ehRegencia,
+    turmaSelecionada.modalidade,
+    inicial,
   ]);
 
   useEffect(() => {
@@ -514,7 +496,7 @@ const CadastroAula = ({ match }) => {
   const resetarTela = form => {
     form.resetForm();
     setControlaQuantidadeAula(true);
-    setQuantidadeMaximaAulas(1);
+    setQuantidadeMaximaAulas(0);
     setModoEdicao(false);
     setEhAulaUnica(false);
   };
@@ -655,16 +637,12 @@ const CadastroAula = ({ match }) => {
 
   const excluir = async tipoRecorrencia => {
     const disciplina = listaDisciplinas.find(
-      item =>
-        String(item.codigoComponenteCurricular) ===
-        String(refForm.state.values.disciplinaId)
+      item => String(item.codigoComponenteCurricular) === String(idDisciplina)
     );
-
-    const disciplinaBase64 = btoa(disciplina.nome);
 
     const exclusao = await api
       .delete(
-        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplinaBase64}`
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplina.nome}`
       )
       .catch(e => erros(e));
     if (exclusao) {
@@ -710,9 +688,7 @@ const CadastroAula = ({ match }) => {
   return (
     <Loader loading={carregandoSalvar} tip="">
       <div className="col-md-12">
-        {controlaQuantidadeAula &&
-        quantidadeMaximaAulas <= 0 &&
-        !ehReposicao ? (
+        {controlaQuantidadeAula && quantidadeMaximaAulas <= 0 ? (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -819,7 +795,9 @@ const CadastroAula = ({ match }) => {
                     border
                     className="mr-2"
                     onClick={() => onClickCancelar(form)}
-                    disabled={somenteLeitura || !modoEdicao}
+                    disabled={
+                      somenteLeitura || !modoEdicao || desabilitaPorGrade
+                    }
                   />
                   <Button
                     id={shortid.generate()}
@@ -843,9 +821,7 @@ const CadastroAula = ({ match }) => {
                       somenteLeitura ||
                       (novoRegistro && !permissaoTela.podeIncluir) ||
                       (!novoRegistro && !permissaoTela.podeAlterar) ||
-                      (controlaQuantidadeAula &&
-                        quantidadeMaximaAulas <= 0 &&
-                        !ehReposicao)
+                      desabilitaPorGrade
                     }
                     onClick={() => validaAntesDoSubmit(form)}
                   />
@@ -862,17 +838,13 @@ const CadastroAula = ({ match }) => {
                     name="tipoAula"
                     onChange={e => {
                       setEhReposicao(e.target.value === 2);
+                      setControlaQuantidadeAula(false);
+                      onChangeDisciplinas(
+                        idDisciplina,
+                        listaDisciplinas,
+                        e.target.value === 2
+                      );
                       onChangeCampos();
-                      setControlaQuantidadeAula(e.target.value === 1);
-                      setTipoAula(e.target.value);
-                      if (
-                        listaDisciplinas &&
-                        listaDisciplinas.length &&
-                        idDisciplina &&
-                        e.target.value === 1
-                      ) {
-                        onChangeDisciplinas(idDisciplina, listaDisciplinas);
-                      }
                     }}
                   />
                 </div>
@@ -884,10 +856,7 @@ const CadastroAula = ({ match }) => {
                     lista={listaDisciplinas}
                     valueOption="codigoComponenteCurricular"
                     valueText="nome"
-                    onChange={e => {
-                      onChangeDisciplinas(e, form);
-                      onChangeCampos();
-                    }}
+                    onChange={e => onChangeDisciplinas(e, form, ehReposicao)}
                     label="Componente curricular"
                     placeholder="Selecione um componente curricular"
                     disabled={
@@ -921,7 +890,7 @@ const CadastroAula = ({ match }) => {
                     id="quantidadeRadio"
                     label="Quantidade de Aulas"
                     form={form}
-                    desabilitado={somenteLeitura}
+                    desabilitado={somenteLeitura || desabilitaPorGrade}
                     opcoes={opcoesQuantidadeAulas}
                     name="quantidadeRadio"
                     onChange={() => {
@@ -942,10 +911,9 @@ const CadastroAula = ({ match }) => {
                     desabilitado={
                       somenteLeitura ||
                       !idDisciplina ||
-                      (quantidadeMaximaAulas < 3 &&
-                        controlaQuantidadeAula &&
-                        !ehReposicao) ||
-                      (ehRegencia && !ehReposicao)
+                      (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
+                      (ehRegencia && !ehReposicao) ||
+                      desabilitaPorGrade
                     }
                     onChange={() => {
                       refForm.setFieldValue('quantidadeRadio', 0);
@@ -961,10 +929,11 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={somenteLeitura || ehReposicao || ehAulaUnica}
-                    onChange={e => {
+                    desabilitado={
+                      somenteLeitura || ehReposicao || desabilitaPorGrade
+                    }
+                    onChange={() => {
                       onChangeCampos();
-                      setEhRecorrencia(e.target.value !== 1);
                     }}
                   />
                 </div>
