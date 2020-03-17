@@ -23,11 +23,12 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioEvento = new Mock<IRepositorioEvento>();
             var context = new DefaultHttpContext();
             var httpContextAcessorObj = new HttpContextAccessor();
+            repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
             httpContextAcessorObj.HttpContext = context;
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
 
-            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), servicoUsuario.Object, repositorioEventoTipo.Object);
+            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), repositorioEventoTipo.Object, servicoUsuario.Object);
         }
 
         [Fact]
