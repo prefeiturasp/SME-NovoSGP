@@ -401,7 +401,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (!usuario.EhProfessorCj())
             {
-               var datasAtribuicao = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
+                var datasAtribuicao = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
                 if (datasAtribuicao == null || !datasAtribuicao.Any())
                     throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
                 else
@@ -597,9 +597,12 @@ namespace SME.SGP.Dominio.Servicos
             };
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario)
+        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            if (!await servicoUsuario.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, dataAula, usuario))
+            if (usuario == null)
+                usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula, usuario))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
     }
