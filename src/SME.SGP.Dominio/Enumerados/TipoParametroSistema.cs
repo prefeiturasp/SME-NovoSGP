@@ -20,10 +20,18 @@
         QuantidadeDiasNotificarProfessor = 9,
 
         //Compensação Ausência
-
         CompensacaoAusenciaPercentualRegenciaClasse = 10,
+
         CompensacaoAusenciaPercentualFund2 = 11,
         QuantidadeMaximaCompensacaoAusencia = 12,
+
+        //Recuperação Paralela PAP
+        RecuperacaoParalelaFrequencia = 13,
+
+        // Média
+        MediaBimestre = 14,
+
+        PercentualAlunosInsuficientes = 15,
 
         //Sistema
         HabilitarServicosEmBackground = 100

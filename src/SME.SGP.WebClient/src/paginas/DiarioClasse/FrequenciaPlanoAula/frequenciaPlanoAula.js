@@ -546,7 +546,8 @@ const FrequenciaPlanoAula = () => {
       if (confirmou) {
         obterListaFrequencia(aulaId);
         setModoEdicaoFrequencia(false);
-        obterPlanoAula(obterAulaSelecionada(dataSelecionada));
+        const aulaSelecionada = await obterAulaSelecionada(dataSelecionada);
+        obterPlanoAula(aulaSelecionada);
         setModoEdicaoPlanoAula(false);
         resetarPlanoAula();
       }
@@ -573,7 +574,16 @@ const FrequenciaPlanoAula = () => {
       !exibirCardFrequencia &&
       permiteRegistroFrequencia
     ) {
-      setModoEdicaoFrequencia(true);
+      let temAulas = false;
+      if (frequencia && frequencia.length) {
+        const aulas = frequencia.filter(
+          item => item.aulas && item.aulas.length
+        );
+        temAulas = !!(aulas && aulas.length);
+      }
+      if (temAulas) {
+        setModoEdicaoFrequencia(true);
+      }
     }
     setExibirCardFrequencia(!exibirCardFrequencia);
   };
@@ -963,7 +973,7 @@ const FrequenciaPlanoAula = () => {
                   temObjetivos={temObjetivos}
                   temAvaliacao={temAvaliacao}
                   auditoria={auditoriaPlano}
-                  ehRegencia={disciplinaSelecionada.regencia}
+                  ehRegencia={disciplinaSelecionada ? disciplinaSelecionada.regencia : false}
                 />
               </div>
             </div>

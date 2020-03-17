@@ -76,7 +76,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false)
+        public async Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
         {
             ObterTipoEvento(evento);
 
@@ -116,22 +116,22 @@ namespace SME.SGP.Dominio.Servicos
             if (evento.DeveSerEmDiaLetivo())
                 evento.EstaNoPeriodoLetivo(periodos);
 
-            usuario.PodeCriarEventoComDataPassada(evento);
-
             bool devePassarPorWorkflowLiberacaoExcepcional = await ValidaDatasETiposDeEventos(evento, dataConfirmada, usuario, periodos);
 
             AtribuirNullSeVazio(evento);
 
-            unitOfWork.IniciarTransacao();
+            if (!unitOfWorkJaEmUso)
+                unitOfWork.IniciarTransacao();
 
             repositorioEvento.Salvar(evento);
 
-            var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && (devePassarPorWorkflowLiberacaoExcepcional || evento.DataInicio.Date < DateTime.Today && evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional);
+            var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && (devePassarPorWorkflowLiberacaoExcepcional && evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional);
 
             if (enviarParaWorkflow)
                 await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
 
-            unitOfWork.PersistirTransacao();
+            if (!unitOfWorkJaEmUso)
+                unitOfWork.PersistirTransacao();
 
             if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
             {
@@ -398,8 +398,6 @@ namespace SME.SGP.Dominio.Servicos
 
             if (workflowDeLiberacaoExcepcional)
                 idWorkflow = CriarWorkflowParaEventoExcepcionais(evento, escola, linkParaEvento);
-            else if (evento.DataInicio.Date < DateTime.Today)
-                idWorkflow = CriarWorkflowParaDataPassada(evento, escola, linkParaEvento);
 
             evento.EnviarParaWorkflowDeAprovacao(idWorkflow);
 
@@ -435,12 +433,18 @@ namespace SME.SGP.Dominio.Servicos
         {
             var devePassarPorWorkflow = false;
 
+            if (evento.TipoEvento.Codigo == (int)TipoEvento.FechamentoBimestre)
+                return false;
             if (evento.TipoEvento.Codigo == (int)TipoEvento.LiberacaoExcepcional)
             {
                 evento.PodeCriarEventoLiberacaoExcepcional(usuario, dataConfirmada, periodos);
             }
             else
             {
+                if (evento.EhTipoEventoFechamento())
+                {
+                    throw new NegocioException("Não é possível criar eventos do tipo selecionado.");
+                }
                 var temEventoLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, evento.DreId);
 
                 if (evento.TipoEvento.Codigo == (long)TipoEvento.Recesso || evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoNoRecesso)
@@ -483,9 +487,8 @@ namespace SME.SGP.Dominio.Servicos
                                         throw new NegocioException("Não é possível cadastrar o evento pois há feriado na data selecionada.");
                                     else if (temEventoSuspensaoAtividades)
                                         throw new NegocioException("Não é possível cadastrar o evento pois há evento de suspensão de atividades na data informada.");
-                                    else if(evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday)
+                                    else if (evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday)
                                         throw new NegocioException("Não é possível cadastrar o evento letivo no final de semana.");
-
                                 }
                             }
                         }
@@ -515,6 +518,12 @@ namespace SME.SGP.Dominio.Servicos
         {
             var eventos = await repositorioEvento.ObterEventosPorTipoETipoCalendario((long)TipoEvento.OrganizacaoEscolar, evento.TipoCalendarioId);
             evento.VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(eventos, usuario);
+        }
+
+        public async Task Excluir(Evento evento)
+        {
+            evento.Excluir();
+            repositorioEvento.Salvar(evento);
         }
     }
 }

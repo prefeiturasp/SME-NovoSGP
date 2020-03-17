@@ -53,6 +53,8 @@ const Ordenacao = props => {
     ordenarColunaNumero,
     ordenarColunaTexto,
     retornoOrdenado,
+    desabilitado,
+    onChangeOrdenacao,
   } = props;
 
   const ordenarMenorParaMaior = () => {
@@ -60,6 +62,7 @@ const Ordenacao = props => {
       return a[ordenarColunaNumero] - b[ordenarColunaNumero];
     };
     const retorno = conteudoParaOrdenar.sort(ordenar);
+    onChangeOrdenacao(3);
     retornoOrdenado([...retorno]);
   };
 
@@ -68,6 +71,7 @@ const Ordenacao = props => {
       return b[ordenarColunaNumero] - a[ordenarColunaNumero];
     };
     const retorno = conteudoParaOrdenar.sort(ordenar);
+    onChangeOrdenacao(4);
     retornoOrdenado([...retorno]);
   };
 
@@ -80,6 +84,7 @@ const Ordenacao = props => {
         : 0;
     };
     const retorno = conteudoParaOrdenar.sort(ordenar);
+    onChangeOrdenacao(1);
     retornoOrdenado([...retorno]);
   };
 
@@ -92,6 +97,7 @@ const Ordenacao = props => {
         : 0;
     };
     const retorno = conteudoParaOrdenar.sort(ordenar);
+    onChangeOrdenacao(2);
     retornoOrdenado([...retorno]);
   };
 
@@ -109,7 +115,12 @@ const Ordenacao = props => {
   );
 
   return (
-    <Container trigger={['click']} overlay={menu} placement="bottomLeft">
+    <Container
+      trigger={['click']}
+      overlay={menu}
+      placement="bottomLeft"
+      disabled={desabilitado}
+    >
       <Button
         id={shortid.generate()}
         label="Ordenar"
@@ -117,6 +128,7 @@ const Ordenacao = props => {
         color={Colors.Azul}
         border
         className={`mr-2 ${className}`}
+        disabled={desabilitado}
       />
     </Container>
   );
@@ -128,13 +140,17 @@ Ordenacao.defaultProps = {
   ordenarColunaNumero: 'id',
   ordenarColunaTexto: 'nome',
   retornoOrdenado: () => {},
+  desabilitado: false,
+  onChangeOrdenacao: () => {},
 };
 
 Ordenacao.propTypes = {
   className: PropTypes.string,
-  conteudoParaOrdenar: PropTypes.array,
+  conteudoParaOrdenar: PropTypes.oneOfType([PropTypes.array]),
   ordenarColunaNumero: PropTypes.string,
   ordenarColunaTexto: PropTypes.string,
   retornoOrdenado: PropTypes.func,
+  desabilitado: PropTypes.bool,
+  onChangeOrdenacao: PropTypes.func,
 };
 export default Ordenacao;

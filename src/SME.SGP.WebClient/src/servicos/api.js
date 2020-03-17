@@ -4,6 +4,8 @@ import { store } from '~/redux';
 import history from '~/servicos/history';
 import { URL_LOGIN } from '~/constantes/url';
 import { Deslogar } from '~/redux/modulos/usuario/actions';
+import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
+import { LimparSessao } from '~/redux/modulos/sessao/actions';
 
 let url = '';
 
@@ -23,7 +25,6 @@ api.interceptors.request.use(async config => {
   const token = store.getState().usuario.token;
 
   if (!url) url = await urlBase();
-
   if (token) config.headers.Authorization = `Bearer ${token}`;
 
   config.cancelToken = CancelToken.token;
@@ -44,9 +45,9 @@ api.interceptors.response.use(
 
     if (error.response && error.response.status === 401 && !autenticacao) {
       const path = window.location.pathname;
-
+      store.dispatch(limparDadosFiltro());
       store.dispatch(Deslogar());
-
+      store.dispatch(LimparSessao());
       history.push(`${URL_LOGIN}/${btoa(path)}`);
 
       return Promise.reject(error);
