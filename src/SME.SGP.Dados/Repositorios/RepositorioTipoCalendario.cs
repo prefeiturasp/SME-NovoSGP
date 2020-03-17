@@ -113,5 +113,16 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and ano_letivo = @anoLetivo");
             return query;
         }
+
+        public async Task<bool> PeriodoEmAberto(long tipoCalendarioId, DateTime dataReferencia)
+        {
+            var query = @"select count(pe.Id)
+                          from periodo_escolar pe 
+                         where pe.tipo_calendario_id = @tipoCalendarioId
+                           and periodo_inicio <= @dataReferencia
+                           and periodo_fim >= @dataReferencia";
+
+            return await database.Conexao.QueryFirstAsync<int>(query, new { tipoCalendarioId, dataReferencia }) > 1;
+        }
     }
 }
