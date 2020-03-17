@@ -751,6 +751,23 @@ namespace SME.SGP.Aplicacao.Integracoes
                 throw new NegocioException("Não foi possível reiniciar a senha deste usuário");
         }
 
+        public async Task<UsuarioEolAutenticacaoRetornoDto> RelecionarUsuarioPerfis(string login)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", login) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/RelacionarUsuarioPerfis", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+            }
+            else return null;
+        }
+
         public async Task RemoverCJSeNecessario(Guid usuarioId)
         {
             var parametros = JsonConvert.SerializeObject(usuarioId.ToString());
