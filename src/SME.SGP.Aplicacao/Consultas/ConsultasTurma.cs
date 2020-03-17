@@ -34,5 +34,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Turma> ObterPorCodigo(string codigoTurma)
             => repositorioTurma.ObterPorCodigo(codigoTurma);
+
+        public async Task<Turma> ObterComUeDrePorCodigo(string codigoTurma)
+            => repositorioTurma.ObterTurmaComUeEDrePorId(codigoTurma);
     }
 }
