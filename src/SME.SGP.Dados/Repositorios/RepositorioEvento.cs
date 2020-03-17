@@ -718,38 +718,50 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder();
 
             MontaQueryEventosPorDiaCabecalho(query);
-            MontaQueryEventosPorDiaFromWhereVisualizacaoGeral(calendarioEventosMesesFiltro, query, true, podeVisualizarEventosLocalOcorrenciaDre, usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
-
-            query.AppendLine("union distinct");
-
-            MontaQueryEventosPorDiaCabecalho(query);
-            MontaQueryEventosPorDiaFromWhereVisualizacaoGeral(calendarioEventosMesesFiltro, query, false, podeVisualizarEventosLocalOcorrenciaDre,
-                usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
-
-            query.AppendLine("union distinct");
-
-            MontaQueryEventosPorDiaCabecalho(query);
-            MontaQueryEventosPorDiaVisualizacaoCriador(calendarioEventosMesesFiltro, query, true);
-
-            query.AppendLine("union distinct");
-
-            MontaQueryEventosPorDiaCabecalho(query);
-            MontaQueryEventosPorDiaVisualizacaoCriador(calendarioEventosMesesFiltro, query, false);
-
-            if (calendarioEventosMesesFiltro.EhEventoSme)
+            if (usuario.EhPerfilSME())
             {
-                query.AppendLine("union distinct");
-
-                MontaQueryEventosPorDiaCabecalho(query);
-                MontaQueryEventosPorDiaFromWhereVisualizacaoDreSme(calendarioEventosMesesFiltro, query, true,
-               usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, podeVisualizarEventosLocalOcorrenciaDre);
-
-                query.AppendLine("union distinct");
-
-                MontaQueryEventosPorDiaCabecalho(query);
-                MontaQueryEventosPorDiaFromWhereVisualizacaoDreSme(calendarioEventosMesesFiltro, query, false,
-               usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, podeVisualizarEventosLocalOcorrenciaDre);
+                if (string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
+                {
+                    //Obter somente eventos SME
+                    MontaQueryEventosPorDiaFromWhereVisualizacaoSME(query);
+                }
+                else
+                {
+                    MontaQueryEventosPorDiaFromWhereVisualizacaoSMEDreUe(query, calendarioEventosMesesFiltro.DreId, calendarioEventosMesesFiltro.UeId, calendarioEventosMesesFiltro.EhEventoSme);
+                }
             }
+            // MontaQueryEventosPorDiaFromWhereVisualizacaoGeral(calendarioEventosMesesFiltro, query, true, podeVisualizarEventosLocalOcorrenciaDre, usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
+
+            //query.AppendLine("union distinct");
+
+            //MontaQueryEventosPorDiaCabecalho(query);
+            //MontaQueryEventosPorDiaFromWhereVisualizacaoGeral(calendarioEventosMesesFiltro, query, false, podeVisualizarEventosLocalOcorrenciaDre,
+            //    usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
+
+            //query.AppendLine("union distinct");
+
+            //MontaQueryEventosPorDiaCabecalho(query);
+            //MontaQueryEventosPorDiaVisualizacaoCriador(calendarioEventosMesesFiltro, query, true);
+
+            //query.AppendLine("union distinct");
+
+            //MontaQueryEventosPorDiaCabecalho(query);
+            //MontaQueryEventosPorDiaVisualizacaoCriador(calendarioEventosMesesFiltro, query, false);
+
+            //if (calendarioEventosMesesFiltro.EhEventoSme)
+            //{
+            //    query.AppendLine("union distinct");
+
+            //    MontaQueryEventosPorDiaCabecalho(query);
+            //    MontaQueryEventosPorDiaFromWhereVisualizacaoDreSme(calendarioEventosMesesFiltro, query, true,
+            //   usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, podeVisualizarEventosLocalOcorrenciaDre);
+
+            //    query.AppendLine("union distinct");
+
+            //    MontaQueryEventosPorDiaCabecalho(query);
+            //    MontaQueryEventosPorDiaFromWhereVisualizacaoDreSme(calendarioEventosMesesFiltro, query, false,
+            //   usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, podeVisualizarEventosLocalOcorrenciaDre);
+            //}
 
             return await database.Conexao.QueryAsync<CalendarioEventosNoDiaRetornoDto>(query.ToString(), new
             {
@@ -766,7 +778,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void MontaQueryEventosPorDiaCabecalho(StringBuilder query)
         {
-            query.AppendLine("select e.id, e.nome,");
+            query.AppendLine("select  e.id, e.nome,");
             query.AppendLine("case");
             query.AppendLine("when e.dre_id is not null and e.ue_id is null then 'DRE'");
             query.AppendLine("when e.ue_id is not null and e.dre_id is not null then 'UE'");
@@ -863,6 +875,48 @@ namespace SME.SGP.Dados.Repositorios
             if (usuarioTemPerfilSupervisorOuDiretor || podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
                 query.AppendLine("and e.status IN (1,2)");
             else query.AppendLine("and e.status = 1");
+        }
+
+        private void MontaQueryEventosPorDiaFromWhereVisualizacaoSME(StringBuilder query)
+        {
+            query.AppendLine("from");
+            query.AppendLine("evento e");
+            query.AppendLine("inner");
+            query.AppendLine("join evento_tipo et on");
+            query.AppendLine("e.tipo_evento_id = et.id");
+            query.AppendLine("where");
+            query.AppendLine("et.ativo = true");
+            query.AppendLine("and et.excluido = false");
+
+            query.AppendLine("and e.excluido = false");
+
+            query.AppendLine("and e.status = 1");
+            query.AppendLine("and e.dre_id is null and e.ue_id is null");
+        }
+
+        private void MontaQueryEventosPorDiaFromWhereVisualizacaoSMEDreUe(StringBuilder query, string dreId, string ueId, bool mostraEventosSme)
+        {
+            query.AppendLine("from");
+            query.AppendLine("evento e");
+            query.AppendLine("inner");
+            query.AppendLine("join evento_tipo et on");
+            query.AppendLine("e.tipo_evento_id = et.id");
+            query.AppendLine("where");
+            query.AppendLine("et.ativo = true");
+            query.AppendLine("and et.excluido = false");
+            query.AppendLine("and e.excluido = false");
+            query.AppendLine("and e.status = 1");
+
+            if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine("and e.dre_id = @dreId");
+
+            if (!string.IsNullOrEmpty(ueId))
+                query.AppendLine("and e.ue_id = @ueId");
+
+            query.AppendLine("and e.tipo_calendario_id = @IdTipoCalendario");
+
+            if (mostraEventosSme)
+                query.AppendLine("and e.dre_id is null and e.ue_id is null");
         }
 
         private void MontaQueryEventosPorDiaVisualizacaoCriador(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, StringBuilder query, bool EhDataInicial)
