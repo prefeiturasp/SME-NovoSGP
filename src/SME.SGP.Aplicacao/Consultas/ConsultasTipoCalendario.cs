@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<TipoCalendario> ObterPorTurma(Turma turma, DateTime dataReferencia)
             => repositorio.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo
-                    , turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio
+                    , turma.ModalidadeTipoCalendario
                     , dataReferencia.Semestre());
 
         public Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia)
