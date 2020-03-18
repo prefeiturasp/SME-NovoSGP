@@ -130,7 +130,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var ehInclusao = aula.Id == 0;
 
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(aula.TurmaId);
 
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
@@ -376,7 +376,7 @@ namespace SME.SGP.Dominio.Servicos
             if (perfilAtual == Guid.Empty)
                 throw new NegocioException($"Não foi encontrado o perfil do usuário informado.");
 
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(aula.TurmaId);
 
             if (turma is null)
                 throw new NegocioException($"Não foi possível localizar a turma de Id {aula.TurmaId} na abrangência ");

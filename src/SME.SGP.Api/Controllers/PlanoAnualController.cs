@@ -75,9 +75,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
-        public IActionResult Post(PlanoAnualDto planoAnualDto, [FromServices]IComandosPlanoAnual comandosPlanoAnual)
+        public async Task<IActionResult> Post(PlanoAnualDto planoAnualDto, [FromServices]IComandosPlanoAnual comandosPlanoAnual)
         {
-            comandosPlanoAnual.Salvar(planoAnualDto);
+            await comandosPlanoAnual.Salvar(planoAnualDto);
             return Ok();
         }
 
