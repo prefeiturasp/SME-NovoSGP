@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -10,6 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario);
 
-        Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false);
+        Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false, IEnumerable<DateTime> datasComRegistro = null);
     }
 }
