@@ -160,20 +160,31 @@ const CadastroAula = ({ match }) => {
     };
   }, []);
 
-  const onChangeDisciplinas = async id => {
+  const onChangeDisciplinas = async (id, listaDisc) => {
+    onChangeCampos();
 
     setIdDisciplina(id);
+
+    const lista =
+      (listaDisciplinas && listaDisciplinas.length > 0 && listaDisciplinas) ||
+      listaDisc ||
+      [];
+
+    if (!lista || lista.length === 0) return;
+
     if (id) {
-      const disciplina = listaDisciplinas.find(
-        d => String(d.codigoComponenteCurricular) === id
+      const disciplina = lista.find(
+        d => String(d.codigoComponenteCurricular) === String(id)
       );
+
+      if (!disciplina) return;
 
       const regencia = !!disciplina.regencia;
       setEhRegencia(regencia);
 
       let resultado;
 
-      if (!disciplina.territorioSaber) {
+      if (disciplina && !disciplina.territorioSaber) {
         resultado = await api
           .get(
             `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}?ehRegencia=${regencia}`,
@@ -395,7 +406,7 @@ const CadastroAula = ({ match }) => {
         if (Object.keys(refForm).length > 0) {
           onChangeDisciplinas(
             disciplinas.data[0].codigoComponenteCurricular,
-            refForm
+            disciplinas.data
           );
         }
         const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
@@ -618,9 +629,11 @@ const CadastroAula = ({ match }) => {
       item => String(item.codigoComponenteCurricular) === String(idDisciplina)
     );
 
+    const disciplinaBase64 = btoa(disciplina.nome);
+
     const exclusao = await api
       .delete(
-        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplina.nome}`
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplinaBase64}`
       )
       .catch(e => erros(e));
     if (exclusao) {
@@ -913,7 +926,7 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={somenteLeitura || ehReposicao}
+                    desabilitado={somenteLeitura || ehReposicao || ehAulaUnica}
                     onChange={e => {
                       onChangeCampos();
                       setEhRecorrencia(e.target.value !== 1);
