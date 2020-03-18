@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using StackExchange.Redis;
 using System;
 using System.Threading.Tasks;
 
@@ -9,13 +10,19 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCache : IRepositorioCache
     {
-        private readonly IDistributedCache distributedCache;
+        private readonly Lazy<ConnectionMultiplexer> lazyConnection;
+
+        //private readonly IDistributedCache distributedCache;
         private readonly IServicoLog servicoLog;
 
         public RepositorioCache(IDistributedCache distributedCache, IServicoLog servicoLog)
         {
-            this.distributedCache = distributedCache ?? throw new System.ArgumentNullException(nameof(distributedCache));
+            //this.distributedCache = distributedCache ?? throw new System.ArgumentNullException(nameof(distributedCache));
             this.servicoLog = servicoLog ?? throw new System.ArgumentNullException(nameof(servicoLog));
+            this.lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
+                {
+                    return ConnectionMultiplexer.Connect("localhost");
+                });
         }
 
         public string Obter(string nomeChave)
@@ -25,7 +32,8 @@ namespace SME.SGP.Dados.Repositorios
 
             try
             {
-                var cacheParaRetorno = distributedCache.GetString(nomeChave);
+                //var cacheParaRetorno = distributedCache.GetString(nomeChave);
+                var cacheParaRetorno = lazyConnection.Value.GetDatabase().StringGet(nomeChave);
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Obtendo", inicioOperacao, timer.Elapsed, true);
 
@@ -46,7 +54,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                var stringCache = distributedCache.GetString(nomeChave);
+                //var stringCache = distributedCache.GetString(nomeChave);
+
+                var stringCache = lazyConnection.Value.GetDatabase().StringGet(nomeChave);
+
                 if (!string.IsNullOrWhiteSpace(stringCache))
                     return JsonConvert.DeserializeObject<T>(stringCache);
             }
@@ -62,13 +73,22 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                var stringCache = distributedCache.GetString(nomeChave);
-                if (!string.IsNullOrWhiteSpace(stringCache))
+                //var stringCache = distributedCache.GetString(nomeChave);
+
+                var stringCache = lazyConnection.Value.GetDatabase().StringGet(nomeChave);
+
+                if (stringCache.HasValue)
                     return JsonConvert.DeserializeObject<T>(stringCache);
 
+                //if (!string.IsNullOrWhiteSpace(stringCache))
+                //    return JsonConvert.DeserializeObject<T>(stringCache);
+
                 var dados = await buscarDados();
-                await distributedCache.SetStringAsync(nomeChave, JsonConvert.SerializeObject(dados), new DistributedCacheEntryOptions()
-                                                .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
+
+                await lazyConnection.Value.GetDatabase().StringSetAsync(nomeChave, JsonConvert.SerializeObject(dados), TimeSpan.FromMinutes(minutosParaExpirar));
+
+                //await distributedCache.SetStringAsync(nomeChave, JsonConvert.SerializeObject(dados), new DistributedCacheEntryOptions()
+                //                                .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
                 return dados;
             }
             catch (Exception ex)
@@ -85,7 +105,10 @@ namespace SME.SGP.Dados.Repositorios
             var timer = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                var cacheParaRetorno = await distributedCache.GetStringAsync(nomeChave);
+                //var cacheParaRetorno = await distributedCache.GetStringAsync(nomeChave);
+
+                var cacheParaRetorno = await lazyConnection.Value.GetDatabase().StringGetAsync(nomeChave);
+
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Obtendo async", inicioOperacao, timer.Elapsed, true);
                 return cacheParaRetorno;
@@ -107,7 +130,9 @@ namespace SME.SGP.Dados.Repositorios
 
             try
             {
-                await distributedCache.RemoveAsync(nomeChave);
+                //await distributedCache.RemoveAsync(nomeChave);
+                await lazyConnection.Value.GetDatabase().KeyDeleteAsync(nomeChave);
+
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
             }
@@ -124,8 +149,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                distributedCache.SetString(nomeChave, valor, new DistributedCacheEntryOptions()
-                                                .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
+                lazyConnection.Value.GetDatabase().StringSet(nomeChave, JsonConvert.SerializeObject(valor), TimeSpan.FromMinutes(minutosParaExpirar));
+                //distributedCache.SetString(nomeChave, valor, new DistributedCacheEntryOptions()
+                //                                .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
             }
             catch (Exception ex)
             {
@@ -140,8 +166,10 @@ namespace SME.SGP.Dados.Repositorios
             var timer = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                await distributedCache.SetStringAsync(nomeChave, valor, new DistributedCacheEntryOptions()
-                                                .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
+                await lazyConnection.Value.GetDatabase().StringSetAsync(nomeChave, valor, TimeSpan.FromMinutes(minutosParaExpirar));
+
+                //await distributedCache.SetStringAsync(nomeChave, valor, new DistributedCacheEntryOptions()
+                //                                .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
 
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar async", inicioOperacao, timer.Elapsed, true);

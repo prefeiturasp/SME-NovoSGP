@@ -99,11 +99,11 @@ namespace SME.SGP.Api
                             });
             });
 
-            services.AddDistributedRedisCache(options =>
-            {
-                options.Configuration = Configuration.GetConnectionString("SGP-Redis");
-                options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
-            });
+            //services.AddDistributedRedisCache(options =>
+            //{
+            //    options.Configuration = Configuration.GetConnectionString("SGP-Redis");
+            //    options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
+            //});
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
 
