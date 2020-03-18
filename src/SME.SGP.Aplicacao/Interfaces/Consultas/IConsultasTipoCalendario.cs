@@ -1,6 +1,8 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,5 +17,7 @@ namespace SME.SGP.Aplicacao
         IEnumerable<TipoCalendarioDto> Listar();
 
         IEnumerable<TipoCalendarioDto> ListarPorAnoLetivo(int anoLetivo);
+        Task<TipoCalendario> ObterPorTurma(Turma turma, DateTime dataReferencia);
+        Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia);
     }
 }
