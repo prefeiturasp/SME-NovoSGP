@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
         }
 
-        public void Salvar(PlanoAnualDto planoAnualDto)
+        public async Task Salvar(PlanoAnualDto planoAnualDto)
         {
             unitOfWork.IniciarTransacao();
 
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
                 PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
                 if (planoAnual != null)
                 {
-                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), planoAnualDto.ComponenteCurricularEolId.ToString(),  DateTime.Now).Result)
+                    if (!usuarioAtual.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), planoAnualDto.ComponenteCurricularEolId.ToString(), DateTime.Now))
                         throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
                 }
                 planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao);

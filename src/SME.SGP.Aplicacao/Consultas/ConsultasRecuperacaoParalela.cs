@@ -91,7 +91,6 @@ namespace SME.SGP.Aplicacao
             alunos.ForEach(x => alunosRecParalela.Add(new RetornoRecuperacaoParalela { AlunoId = Convert.ToInt64(x.CodigoAluno) }));
 
             var retorno = alunosRecParalela.Select(s => new { s.AlunoId, s.Id }).Distinct();
-
             var alunoCriado = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault();
             var alunoAlterado = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault();
 
@@ -198,6 +197,7 @@ namespace SME.SGP.Aplicacao
 
             switch (ordenacao)
             {
+                case RecuperacaoParalelaOrdenacao.AlfabeticoCrescente:
                 default:
                     recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderBy(w => w.Nome).ToList();
                     break;
@@ -368,13 +368,12 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<RecuperacaoParalelaResumoResultadoRespostaDto> ObterRespostas(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int objetivoId, bool ehAno, int anoCiclo, int total)
         {
             return items.Where(res => res.ObjetivoId == objetivoId && (ehAno ? res.Ano == anoCiclo : res.CicloId == anoCiclo))
-                .GroupBy(gre => (gre.Resposta, gre.RespostaId, gre.Ordem))
+                .GroupBy(gre => (gre.Resposta, gre.RespostaId))
                 .Select(resposta => new RecuperacaoParalelaResumoResultadoRespostaDto
                 {
                     RespostaDescricao = resposta.Key.Resposta,
                     Quantidade = resposta.Sum(q => q.Total),
-                    Porcentagem = ((double)resposta.Sum(q => q.Total) * 100) / total,
-                    Ordem = resposta.Key.Ordem
+                    Porcentagem = ((double)resposta.Sum(q => q.Total) * 100) / total
                 });
         }
 
