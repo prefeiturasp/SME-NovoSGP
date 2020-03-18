@@ -186,6 +186,7 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         if (aula.Turma.ModalidadeCodigo == Modalidade.EJA)
                         {
+                            var aulasNoDia = await repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, usuario.CodigoRf, data: aula.DataAula, aula.DisciplinaId);
                             if (aula.Quantidade != 5)
                                 throw new NegocioException("Para regência de EJA só é permitido a criação de 5 aulas por dia.");
                         }
@@ -207,8 +208,8 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     if (aula.ComponenteCurricularEol.Regencia)
                     {
-                        var aulaNoDia = await repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, "", data: aula.DataAula, aula.DisciplinaId);
-                        if (aulaNoDia != null && aulaNoDia.Any())
+                        var aulasNoDia = await repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, usuario.CodigoRf, data: aula.DataAula, aula.DisciplinaId);
+                        if (aulasNoDia != null && aulasNoDia.Any())
                         {
                             if (aula.Turma.ModalidadeCodigo == Modalidade.EJA)
                                 throw new NegocioException("Para regência de EJA só é permitido a criação de 5 aulas por dia.");
@@ -599,9 +600,12 @@ namespace SME.SGP.Dominio.Servicos
             };
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario)
+        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            if (!await servicoUsuario.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, dataAula, usuario))
+            if (usuario == null)
+                usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula, usuario))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
     }
