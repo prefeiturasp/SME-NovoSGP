@@ -308,7 +308,7 @@ Yup.addMethod(
       if (
         dataInicial &&
         dataFinal &&
-        dataInicial.isSameOrAfter(dataFinal, 'date')
+        dataInicial.isAfter(dataFinal, 'date')
       ) {
         dataValida = false;
       }

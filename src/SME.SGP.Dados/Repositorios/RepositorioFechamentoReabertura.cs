@@ -178,8 +178,8 @@ namespace SME.SGP.Dados.Repositorios
                          inner join ue on ue.id = fr.ue_id
                          where not fr.excluido
                            and frb.bimestre = @bimestre
-                           and fr.inicio = @dataInicio
-                           and fr.fim = @dataFim
+                           and TO_DATE(fr.inicio, 'yyyy/mm/dd') = TO_DATE(@dataInicio, 'yyyy/mm/dd')
+                           and TO_DATE(fr.fim, 'yyyy/mm/dd') = TO_DATE(@dataFim, 'yyyy/mm/dd')
                            and fr.tipo_calendario_id = @tipoCalendarioId
                            and dre.dre_id = @dreCodigo
                            and ue.ue_id = @ueCodigo";
