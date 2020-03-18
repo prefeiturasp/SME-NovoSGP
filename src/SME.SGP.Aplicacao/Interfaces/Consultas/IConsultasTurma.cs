@@ -10,6 +10,8 @@ namespace SME.SGP.Aplicacao
     {
         Task<Turma> ObterPorCodigo(string codigoTurma);
         Task<Turma> ObterComUeDrePorCodigo(string codigoTurma);
+        Task<Turma> ObterComUeDrePorId(long turmaId);
         Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia);
+        Task<bool> TurmaEmPeriodoAberto(long turmaId, DateTime dataReferencia);
     }
 }
