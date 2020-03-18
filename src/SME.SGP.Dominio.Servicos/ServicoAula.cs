@@ -111,13 +111,20 @@ namespace SME.SGP.Dominio.Servicos
                 await AlterarRecorrencia(aula, usuario, fimRecorrencia);
         }
 
-        public async Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false)
+        public async Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false, IEnumerable<DateTime> datasComRegistro = null)
         {
-            var aulaExistente = await repositorioAula.ObterAulaDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
-            if (aulaExistente != null && !aulaExistente.Id.Equals(aula.Id))
-                throw new NegocioException("Já existe uma aula criada para essa disciplina");
+            if (datasComRegistro != null)
+            {
+                var aulaExistente = datasComRegistro.ToList().FirstOrDefault(a => a.Date.Equals(aula.DataAula.Date));
+                if (aulaExistente != null && aulaExistente.Date.Equals(aula.DataAula.Date))
+                    throw new NegocioException("Já existe uma aula criada para essa disciplina");
+            }
             if (!ehRecorrencia)
             {
+                var aulaExistente = await repositorioAula.ObterAulaDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
+                if (aulaExistente != null && !aulaExistente.Id.Equals(aula.Id))
+                    throw new NegocioException("Já existe uma aula criada para essa disciplina");
+
                 var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
 
                 if (tipoCalendario == null)
@@ -258,6 +265,11 @@ namespace SME.SGP.Dominio.Servicos
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
             List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = new List<(DateTime data, bool existeFrequencia, bool existePlanoAula)>();
 
+            List<DateTime> diasParaAlterarRecorrencia = new List<DateTime>();
+            ObterDiasDaRecorrencia(dataRecorrencia, fimRecorrencia, diasParaAlterarRecorrencia);
+            var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaAlterarRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
+
+
             foreach (var aulaRecorrente in aulasRecorrencia)
             {
                 var existeFrequencia = await consultasFrequencia.FrequenciaAulaRegistrada(aulaRecorrente.Id);
@@ -273,7 +285,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 try
                 {
-                    await Salvar(aulaRecorrente, usuario, aulaRecorrente.RecorrenciaAula, quantidadeOriginal);
+                    await Salvar(aulaRecorrente, usuario, aulaRecorrente.RecorrenciaAula, quantidadeOriginal, true, datasComRegistro);
                 }
                 catch (NegocioException nex)
                 {
@@ -356,6 +368,8 @@ namespace SME.SGP.Dominio.Servicos
         private async Task GerarAulaDeRecorrenciaParaDias(Aula aula, Usuario usuario, IEnumerable<PodePersistirNaDataRetornoEolDto> datasParaPersistencia)
         {
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
+            List<DateTime> datasParaGeracao = datasParaPersistencia.Select(a => a.Data).ToList();
+            var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(datasParaGeracao, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
 
             foreach (var dia in datasParaPersistencia)
             {
@@ -368,7 +382,7 @@ namespace SME.SGP.Dominio.Servicos
 
                     try
                     {
-                        await Salvar(aulaParaAdicionar, usuario, aulaParaAdicionar.RecorrenciaAula, 0, true);
+                        await Salvar(aulaParaAdicionar, usuario, aulaParaAdicionar.RecorrenciaAula, 0, true, datasComRegistro);
                     }
                     catch (NegocioException nex)
                     {
