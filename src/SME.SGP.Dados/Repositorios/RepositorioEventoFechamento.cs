@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
@@ -51,9 +52,9 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<bool> UeEmFechamento(DateTime dataReferencia, string dreCodigo, string ueCodigo, int bimestre, long tipoCalendarioId)
+        public async Task<bool> UeEmFechamento(DateTime dataReferencia, string dreCodigo, string ueCodigo, long tipoCalendarioId, int bimestre)
         {
-            var query = @"select count(ef.id)
+            var query = new StringBuilder(@"select count(ef.id)
                          from evento_fechamento ef
                         inner join evento e on e.id = ef.evento_id
                         inner join periodo_fechamento_bimestre pfb on pfb.id = ef.fechamento_id
@@ -63,10 +64,11 @@ namespace SME.SGP.Dados.Repositorios
                           and e.data_fim >= @dataReferencia
                           and e.dre_id = @dreCodigo
                           and e.ue_id = @ueCodigo
-                          and pe.bimestre = @bimestre
-                          and pe.tipo_calendario_id = @tipoCalendarioId";
+                          and pe.tipo_calendario_id = @tipoCalendarioId ");
+            if (bimestre > 0)
+                query.AppendLine(" and pe.bimestre = @bimestre");
 
-            return await database.Conexao.QueryFirstAsync<int>(query, new
+            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new
             {
                 dataReferencia,
                 dreCodigo,
