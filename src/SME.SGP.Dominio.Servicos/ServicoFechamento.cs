@@ -152,7 +152,7 @@ namespace SME.SGP.Dominio.Servicos
 
             ValidarCamposObrigatorios(ehSme, ehDre, fechamento);
             ValidarHierarquiaPeriodos(ehSme, ehDre, fechamento);
-            ValidarRegistrosForaDoPeriodo(fechamentoDto, fechamento, ehSme, ehDre);
+            ValidarRegistrosForaDoPeriodo(fechamentoDto, fechamento, ehSme, ehDre);            
 
             unitOfWork.IniciarTransacao();
             var id = repositorioFechamento.Salvar(fechamento);
@@ -355,6 +355,9 @@ namespace SME.SGP.Dominio.Servicos
                     PeriodoFechamentoBimestre fechamentoBimestreExistente = fechamento.ObterFechamentoBimestre(bimestre.PeriodoEscolarId);
                     if (fechamentoBimestreExistente != null)
                     {
+                        var periodo = new PeriodoFechamentoBimestre(fechamento.Id, periodoEscolar, bimestre.InicioDoFechamento, bimestre.FinalDoFechamento);
+                        fechamento.ValidarPeriodoInicioFim(periodo);
+                        fechamento.ValidarPeriodoConcomitante(periodo);
                         fechamentoBimestreExistente.AtualizarDatas(bimestre.InicioDoFechamento, bimestre.FinalDoFechamento);
                     }
                     else
