@@ -40,5 +40,8 @@ namespace SME.SGP.Aplicacao
 
             return listaAuditoria;
         }
+
+        public async Task<AuditoriaFechamentoTurmaDto> SalvarAnotacaoAluno(AnotacaoAlunoDto anotacaoAluno)
+            => await servicoFechamentoTurmaDisciplina.SalvarAnotacaoAluno(anotacaoAluno);
     }
 }

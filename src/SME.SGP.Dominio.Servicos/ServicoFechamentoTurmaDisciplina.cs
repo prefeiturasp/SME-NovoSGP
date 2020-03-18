@@ -99,6 +99,18 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        public async Task<AuditoriaFechamentoTurmaDto> SalvarAnotacaoAluno(AnotacaoAlunoDto anotacaoAluno)
+        {
+            var notaConceitoAluno = await repositorioNotaConceitoBimestre.ObterPorAlunoEFechamento(anotacaoAluno.FechamentoId, anotacaoAluno.CodigoAluno);
+            if (notaConceitoAluno == null)
+                throw new NegocioException($"Nota/Conceito do aluno {anotacaoAluno.CodigoAluno} não localizado no fechamento");
+
+            notaConceitoAluno.Anotacao = anotacaoAluno.Anotacao;
+            await repositorioNotaConceitoBimestre.SalvarAsync(notaConceitoAluno);
+
+            return (AuditoriaFechamentoTurmaDto)notaConceitoAluno;
+        }
+
         private async Task<IEnumerable<NotaConceitoBimestre>> MapearParaEntidade(long id, IEnumerable<NotaConceitoBimestreDto> notasConceitosAlunosDto)
         {
             var notasConceitosBimestre = new List<NotaConceitoBimestre>();
