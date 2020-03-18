@@ -196,7 +196,7 @@ namespace SME.SGP.Dominio
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
 
-        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
+        public async Task<bool> PodePersistirTurmaNasDatas(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
         {
             if (usuario == null)
                 usuario = await ObterUsuarioLogado();
@@ -210,6 +210,19 @@ namespace SME.SGP.Dominio
 
                 return validacaoData.FirstOrDefault().PodePersistir;
             }
+            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
+
+            return atribuicaoCj != null && atribuicaoCj.Any();
+        }
+
+        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
+        {
+            if (usuario == null)
+                usuario = await ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj())
+                return await servicoEOL.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, data);
+            
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
