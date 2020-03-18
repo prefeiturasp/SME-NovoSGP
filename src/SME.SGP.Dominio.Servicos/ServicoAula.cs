@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,10 +95,11 @@ namespace SME.SGP.Dominio.Servicos
         {
             await ExcluirAula(aula, usuario);
 
-            if (recorrencia != RecorrenciaAula.AulaUnica)
-                await ExcluirRecorrencia(aula, recorrencia, usuario);
+            if (recorrencia == RecorrenciaAula.AulaUnica)
+                return "Aula e suas dependencias excluídas com sucesso!";
 
-            return "Aula e suas dependencias excluídas com sucesso!";
+            Cliente.Executar<IServicoAula>(s => s.ExcluirRecorrencia(aula, recorrencia, usuario));
+            return "Aula excluida com sucesso. Serão excluidas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
         }
 
         public async Task GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
@@ -170,8 +172,8 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
 
                 // Busca quantidade de aulas semanais da grade de aula
-                //Buscar tudo de uma vez?
-                var semana = (aula.DataAula.DayOfYear / 7) + 1;
+                int semana = UtilData.ObterSemanaDoAno(aula.DataAula);
+
                 var gradeAulas = await consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, Convert.ToInt64(aula.DisciplinaId), semana, aula.DataAula, usuario.CodigoRf);
 
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
@@ -317,7 +319,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
+        public async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
         {
             var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
             var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);

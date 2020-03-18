@@ -4,6 +4,8 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -31,8 +33,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> BuscarPorId(long id, [FromServices]IConsultasAula consultas)
         {
-            var aula = await consultas.BuscarPorId(id);
-            return Ok(aula);
+            return Ok(await consultas.BuscarPorId(id));
         }
 
         [HttpDelete("{id}/recorrencias/{recorrencia}/disciplinaNome/{disciplinaNome}")]
@@ -41,8 +42,9 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_E, Policy = "Bearer")]
         public async Task<IActionResult> Excluir(long id, string disciplinaNome, RecorrenciaAula recorrencia, [FromServices]IComandosAula comandos)
         {
+
             var retorno = new RetornoBaseDto();
-            retorno.Mensagens.Add(await comandos.Excluir(id, disciplinaNome, recorrencia));
+            retorno.Mensagens.Add(await comandos.Excluir(id, UtilCriptografia.DesconverterBase64(disciplinaNome), recorrencia));
             return Ok(retorno);
         }
 
@@ -68,14 +70,16 @@ namespace SME.SGP.Api.Controllers
             var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1
                 : await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
             var existeFrequenciaPlanoAula = await consultas.ChecarFrequenciaPlanoNaRecorrencia(aulaId);
-
-            return Ok(new AulaRecorrenciaDto()
+            
+            var retorno = new AulaRecorrenciaDto()
             {
                 AulaId = aulaId,
                 RecorrenciaAula = recorrencia,
                 QuantidadeAulasRecorrentes = quantidadeAulas,
                 ExisteFrequenciaOuPlanoAula = existeFrequenciaPlanoAula
-            });
+            };
+
+            return Ok(retorno);
         }
     }
 }
