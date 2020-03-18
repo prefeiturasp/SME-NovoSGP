@@ -14,12 +14,16 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioEventoTipo repositorioEventoTipo;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
-                               IContextoAplicacao contextoAplicacao, IServicoUsuario servicoUsuario) : base(contextoAplicacao)
+                               IContextoAplicacao contextoAplicacao, 
+                               IServicoUsuario servicoUsuario,
+                               IRepositorioEventoTipo repositorioEventoTipo) : base(contextoAplicacao)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
         }
 
         public async Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto)
@@ -56,6 +60,7 @@ namespace SME.SGP.Aplicacao
         public async Task<EventoCompletoDto> ObterPorId(long id)
         {
             var evento = repositorioEvento.ObterPorId(id);
+            evento.TipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
