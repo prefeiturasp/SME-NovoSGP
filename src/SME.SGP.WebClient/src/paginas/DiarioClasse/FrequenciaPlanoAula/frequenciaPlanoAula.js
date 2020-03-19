@@ -30,7 +30,7 @@ import { store } from '~/redux';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
 
 const FrequenciaPlanoAula = () => {
-  const usuario = useSelector(store => store.usuario);
+  const usuario = useSelector(state => state.usuario);
   const dispatch = useDispatch();
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -51,18 +51,15 @@ const FrequenciaPlanoAula = () => {
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
 
-  const [carregandoFrequencia, setCarregandoFrequencia] = useState(true);
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
 
-  const [listaDisciplinas, setListaDisciplinas] = useState([]);
-  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
-  const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(
-    undefined
-  );
-  const [listaDatasAulas, setListaDatasAulas] = useState([]);
-  const [dataSelecionada, setDataSelecionada] = useState('');
+  const [listaDisciplinas, setListaDisciplinas] = useState();
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState();
+  const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState();
+  const [listaDatasAulas, setListaDatasAulas] = useState();
+  const [dataSelecionada, setDataSelecionada] = useState();
 
-  const [frequencia, setFrequencia] = useState([]);
+  const [frequencia, setFrequencia] = useState();
   const [aulaId, setAulaId] = useState(0);
   const [frequenciaId, setFrequenciaId] = useState(0);
   const [
@@ -72,12 +69,12 @@ const FrequenciaPlanoAula = () => {
   const [exibirCardFrequencia, setExibirCardFrequencia] = useState(false);
   const [modoEdicaoFrequencia, setModoEdicaoFrequencia] = useState(false);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
-  const [diasParaHabilitar, setDiasParaHabilitar] = useState([]);
+  const [diasParaHabilitar, setDiasParaHabilitar] = useState();
   const [auditoria, setAuditoria] = useState([]);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
-  const [aula, setAula] = useState(undefined);
+  const [aula, setAula] = useState();
   const [auditoriaPlano, setAuditoriaPlano] = useState([]);
   const [planoAula, setPlanoAula] = useState({
     aulaId: 0,
@@ -97,12 +94,11 @@ const FrequenciaPlanoAula = () => {
   const [mostrarErros, setMostarErros] = useState(false);
 
   const [carregandoSalvar, setCarregandoSalvar] = useState(false);
-  const [dataSugerida, setDataSugerida] = useState('');
 
   const [planoAulaExpandido, setPlanoAulaExpandido] = useState(false);
 
   const dadosAulaFrequencia = useSelector(
-    store => store.calendarioProfessor.dadosAulaFrequencia
+    state => state.calendarioProfessor.dadosAulaFrequencia
   );
 
   const obterDatasDeAulasDisponiveis = useCallback(
@@ -125,8 +121,8 @@ const FrequenciaPlanoAula = () => {
         );
         setDiasParaHabilitar(habilitar);
       } else {
-        setListaDatasAulas([]);
-        setDiasParaHabilitar([]);
+        setListaDatasAulas();
+        setDiasParaHabilitar();
       }
     },
     [anoLetivo, turmaId]
@@ -138,15 +134,15 @@ const FrequenciaPlanoAula = () => {
       setDisciplinaIdSelecionada(undefined);
     }
     if (!naoData) {
-      setDataSelecionada('');
+      setDataSelecionada();
     }
-    setFrequencia([]);
+    setFrequencia();
     setExibirCardFrequencia(false);
     setModoEdicaoFrequencia(false);
     setExibirAuditoria(true);
   };
 
-  const setarDisciplina = disciplinaId => {
+  const setarDisciplina = async disciplinaId => {
     resetarTelaFrequencia(true);
     const disciplina = listaDisciplinas.find(
       disc => String(disc.codigoComponenteCurricular) === disciplinaId
@@ -154,10 +150,10 @@ const FrequenciaPlanoAula = () => {
     setDisciplinaSelecionada(disciplina);
     setDisciplinaIdSelecionada(disciplinaId);
     if (disciplinaId) {
-      obterDatasDeAulasDisponiveis(disciplinaId);
+      await obterDatasDeAulasDisponiveis(disciplinaId);
     } else {
-      setListaDatasAulas([]);
-      setDiasParaHabilitar([]);
+      setListaDatasAulas();
+      setDiasParaHabilitar();
     }
   };
 
@@ -185,55 +181,46 @@ const FrequenciaPlanoAula = () => {
   }, [turmaId, diasParaHabilitar, dispatch, obterDatasDeAulasDisponiveis]);
 
   useEffect(() => {
-    const podeConsultar = () => {
-      return (
-        disciplinaSelecionada === undefined &&
-        disciplinaIdSelecionada === undefined &&
-        dataSelecionada === '' &&
-        frequencia &&
-        frequencia.length < 1 &&
+    async function buscarDisciplinas() {
+      if (
+        turmaId &&
         aulaId === 0 &&
-        listaDisciplinas &&
-        listaDisciplinas.length < 1 &&
-        listaDatasAulas &&
-        listaDatasAulas.length < 1 &&
-        diasParaHabilitar &&
-        diasParaHabilitar.length < 1
-      );
-    };
-
-    if (podeConsultar() && (turmaId || turmaSelecionada.turma)) {
-      obterDisciplinas(turmaId || turmaSelecionada.turma);
+        !disciplinaSelecionada &&
+        !disciplinaIdSelecionada &&
+        !listaDisciplinas &&
+        !listaDatasAulas &&
+        !diasParaHabilitar &&
+        !frequencia
+      ) {
+        await obterDisciplinas(turmaId);
+      }
     }
 
+    buscarDisciplinas();
     const somenteConsultarFrequencia = verificaSomenteConsulta(permissoesTela);
     setSomenteConsulta(somenteConsultarFrequencia);
   }, [
-    dispatch,
-    obterDatasDeAulasDisponiveis,
+    aulaId,
+    diasParaHabilitar,
+    disciplinaIdSelecionada,
+    disciplinaSelecionada,
+    frequencia,
+    listaDatasAulas,
+    listaDisciplinas,
     obterDisciplinas,
     permissoesTela,
     turmaId,
-    turmaSelecionada.turma,
-    disciplinaSelecionada,
-    disciplinaIdSelecionada,
-    dataSelecionada,
-    frequencia,
-    aulaId,
-    listaDisciplinas,
-    listaDatasAulas,
-    diasParaHabilitar,
   ]);
 
-  // Caso exista alteração aqui, alterar o podeConsultar() também
   useEffect(() => {
-    setDataSugerida('');
     resetarTelaFrequencia();
     setAulaId(0);
-    setListaDisciplinas([]);
-    setListaDatasAulas([]);
+    setDisciplinaSelecionada();
+    setDisciplinaIdSelecionada();
+    setListaDisciplinas();
+    setListaDatasAulas();
+    setDiasParaHabilitar();
     setDesabilitarDisciplina(false);
-    setDiasParaHabilitar([]);
   }, [turmaSelecionada.turma]);
 
   useEffect(() => {
@@ -251,10 +238,10 @@ const FrequenciaPlanoAula = () => {
 
   const obterListaFrequencia = async id => {
     setAulaId(id);
+
     const frequenciaAlunos = await api
       .get(`v1/calendarios/frequencias`, { params: { aulaId: id } })
       .catch(e => erros(e));
-
     if (frequenciaAlunos && frequenciaAlunos.data) {
       setFrequenciaId(frequenciaAlunos.data.id);
       setAuditoria({
@@ -265,23 +252,22 @@ const FrequenciaPlanoAula = () => {
         alteradoRf: frequenciaAlunos.data.alteradoRf,
         alteradoEm: frequenciaAlunos.data.alteradoEm,
       });
-
       setExibirAuditoria(true);
       setFrequencia(frequenciaAlunos.data.listaFrequencia);
       setPermiteRegistroFrequencia(!frequenciaAlunos.data.desabilitado);
     }
-    setCarregandoFrequencia(false);
   };
 
-  const [carregandoMaterias, setCarregandoMaterias] = useState(true);
+  const [carregandoMaterias, setCarregandoMaterias] = useState(false);
 
   const obterPlanoAula = useCallback(
-    async aula => {
-      const idAula = aula.idAula || aula[0].idAula;
+    async dadosAula => {
+      setCarregandoMaterias(true);
+
+      const idAula = dadosAula.idAula || dadosAula[0].idAula;
       const plano = await api
         .get(`v1/planos/aulas/${idAula}`)
         .then(resp => {
-          setPlanoAulaExpandido(true);
           return resp;
         })
         .catch(e => {
@@ -290,6 +276,7 @@ const FrequenciaPlanoAula = () => {
         });
 
       const dadosPlano = plano && plano.data;
+
       if (dadosPlano) {
         planoAula.qtdAulas = dadosPlano.qtdAulas;
         if (dadosPlano.id > 0) {
@@ -332,7 +319,7 @@ const FrequenciaPlanoAula = () => {
             setMaterias([...disciplinasRegencia]);
           }
         } else {
-          const dataAula = aula.data || aula[0].data;
+          const dataAula = dadosAula.data || dadosAula[0].data;
           disciplinas = await api.get(
             `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}?dataAula=${dataAula}`
           );
@@ -359,10 +346,8 @@ const FrequenciaPlanoAula = () => {
             }
           }
         }
-        setCarregandoMaterias(false);
-      } else {
-        setCarregandoMaterias(false);
       }
+      setCarregandoMaterias(false);
     },
     [
       disciplinaSelecionada,
@@ -389,8 +374,9 @@ const FrequenciaPlanoAula = () => {
   const aposSalvarFrequencia = () => {
     setExibirCardFrequencia(false);
     setModoEdicaoFrequencia(false);
-    obterListaFrequencia(aulaId);
   };
+
+  const [carregandoGeral, setCarregandoGeral] = useState(false);
 
   const onSalvarFrequencia = click => {
     setCarregandoSalvar(true);
@@ -408,6 +394,9 @@ const FrequenciaPlanoAula = () => {
               aposSalvarFrequencia();
             }
             setCarregandoSalvar(false);
+            setTimeout(() => {
+              setCarregandoGeral(false);
+            }, 1000);
             resolve(true);
             return true;
           }
@@ -416,6 +405,9 @@ const FrequenciaPlanoAula = () => {
         })
         .catch(e => {
           setCarregandoSalvar(false);
+          setTimeout(() => {
+            setCarregandoGeral(false);
+          }, 1000);
           erros(e);
           reject(e);
         });
@@ -452,15 +444,18 @@ const FrequenciaPlanoAula = () => {
   };
 
   const obterAulaSelecionada = useCallback(
-    data => {
-      const aulaDataSelecionada = listaDatasAulas.filter(item => {
-        return (
-          window.moment(item.data).format('DD/MM/YYYY') ===
-          window.moment(data).format('DD/MM/YYYY')
-        );
-      });
+    async data => {
+      if (listaDatasAulas) {
+        const aulaDataSelecionada = listaDatasAulas.filter(item => {
+          return (
+            window.moment(item.data).format('DD/MM/YYYY') ===
+            window.moment(data).format('DD/MM/YYYY')
+          );
+        });
 
-      return aulaDataSelecionada;
+        return aulaDataSelecionada;
+      }
+      return null;
     },
     [listaDatasAulas]
   );
@@ -490,7 +485,7 @@ const FrequenciaPlanoAula = () => {
           if (salvouPlano && salvouPlano.status === 200) {
             sucesso('Plano de aula salvo com sucesso.');
             setModoEdicaoPlanoAula(false);
-            obterPlanoAula(obterAulaSelecionada(dataSelecionada));
+            setPlanoAulaExpandido(false);
           }
         })
         .catch(e => {
@@ -520,7 +515,8 @@ const FrequenciaPlanoAula = () => {
     }
   };
 
-  const resetarPlanoAula = useCallback(() => {
+  const resetarPlanoAula = useCallback(async () => {
+    planoAula.aulaId = 0;
     planoAula.descricao = null;
     setTemObjetivos(false);
     planoAula.qtdAulas = 0;
@@ -556,12 +552,18 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onClickSalvar = click => {
+    setCarregandoGeral(true);
     if (modoEdicaoFrequencia && permiteRegistroFrequencia) {
       onSalvarFrequencia(click);
     }
     if (modoEdicaoPlanoAula) {
       onSalvarPlanoAula();
     }
+    store.dispatch(salvarDadosAulaFrequencia());
+    setTimeout(() => {
+      setDataSelecionada();
+      setCarregandoGeral(false);
+    }, 1000);
   };
 
   const onCloseErros = () => {
@@ -589,46 +591,67 @@ const FrequenciaPlanoAula = () => {
     setExibirCardFrequencia(!exibirCardFrequencia);
   };
 
-  const onChangeDisciplinas = async disciplinaId => {
-    if (!disciplinaId) store.dispatch(salvarDadosAulaFrequencia());
-    if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
-      const confirmarParaSalvar = await pergutarParaSalvar();
-      if (confirmarParaSalvar) {
-        if (modoEdicaoFrequencia) {
-          await onSalvarFrequencia();
+  const onClickPlanoAula = useCallback(() => {
+    setPlanoAulaExpandido(!planoAulaExpandido);
+  }, [planoAulaExpandido]);
+
+  useEffect(() => {
+    if (!planoAula.aulaId && planoAulaExpandido && aula) {
+      obterPlanoAula(aula);
+    }
+  }, [obterPlanoAula, planoAula.aulaId, planoAulaExpandido, aula]);
+
+  const onChangeDisciplinas = useCallback(
+    async disciplinaId => {
+      if (!disciplinaId) store.dispatch(salvarDadosAulaFrequencia());
+      if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
+        const confirmarParaSalvar = await pergutarParaSalvar();
+        if (confirmarParaSalvar) {
+          if (modoEdicaoFrequencia) {
+            await onSalvarFrequencia();
+            setarDisciplina(disciplinaId);
+          }
+          if (modoEdicaoPlanoAula) {
+            await onSalvarPlanoAula();
+            setarDisciplina(disciplinaId);
+          }
+        } else {
           setarDisciplina(disciplinaId);
-        }
-        if (modoEdicaoPlanoAula) {
-          await onSalvarPlanoAula();
-          setarDisciplina(disciplinaId);
+          resetarPlanoAula();
         }
       } else {
         setarDisciplina(disciplinaId);
-        resetarPlanoAula();
       }
-    } else {
-      setarDisciplina(disciplinaId);
-    }
-  };
+    },
+    [
+      modoEdicaoFrequencia,
+      modoEdicaoPlanoAula,
+      onSalvarFrequencia,
+      onSalvarPlanoAula,
+      resetarPlanoAula,
+      setarDisciplina,
+    ]
+  );
 
   const [temAvaliacao, setTemAvaliacao] = useState(undefined);
   const [dataVigente, setDataVigente] = useState(false);
 
-  const obterAvaliacao = (idAula, data) => {
-    const avaliacao = api.get(`v1/planos/aulas/${idAula}`);
-    avaliacao.then(resposta => {
-      if (resposta && resposta.data) {
-        if (resposta.data.idAtividadeAvaliativa) {
-          setDataVigente(
-            window.moment(data).isSameOrAfter(window.moment(), 'day')
-          );
-          setTemAvaliacao(resposta.data.idAtividadeAvaliativa);
-        } else {
-          setTemAvaliacao(undefined);
-        }
+  const obterAvaliacao = useCallback(async () => {
+    if (dataSelecionada && planoAula) {
+      if (planoAula.idAtividadeAvaliativa) {
+        setDataVigente(
+          window.moment(dataSelecionada).isSameOrAfter(window.moment(), 'day')
+        );
+        setTemAvaliacao(planoAula.idAtividadeAvaliativa);
+      } else {
+        setTemAvaliacao(undefined);
       }
-    });
-  };
+    }
+  }, [dataSelecionada, planoAula]);
+
+  useEffect(() => {
+    obterAvaliacao();
+  }, [obterAvaliacao]);
 
   useEffect(() => {
     return () => {
@@ -645,7 +668,6 @@ const FrequenciaPlanoAula = () => {
 
   useEffect(() => {
     if (exibeEscolhaAula) {
-      setCarregandoFrequencia(true);
       setCarregandoMaterias(true);
       const aulaDataSelecionada = obterAulaSelecionada(dataSelecionada);
       const aulaSelecionada = aulaDataSelecionada.find(
@@ -656,23 +678,21 @@ const FrequenciaPlanoAula = () => {
         setAula(aulaSelecionada);
         if (aulaSelecionada && aulaSelecionada.idAula) {
           obterListaFrequencia(aulaSelecionada.idAula);
-          obterPlanoAula(aulaSelecionada);
-          obterAvaliacao(aulaSelecionada.idAula, dataSelecionada);
         }
       }
-      setCarregandoFrequencia(false);
       setCarregandoMaterias(false);
     }
-  }, [ehAulaCj]);
+  }, [dataSelecionada, ehAulaCj, exibeEscolhaAula, obterAulaSelecionada]);
 
   const validaSeTemIdAula = useCallback(
-    data => {
-      setDataSelecionada(data);
+    async data => {
       resetarTelaFrequencia(true, true);
-      resetarPlanoAula();
-      const aulaDataSelecionada = obterAulaSelecionada(data);
-      if (aulaDataSelecionada.length) {
+
+      const aulaDataSelecionada = await obterAulaSelecionada(data);
+
+      if (aulaDataSelecionada && aulaDataSelecionada.length) {
         if (
+          usuario &&
           !usuario.ehProfessor &&
           !usuario.ehProfessorCj &&
           !usuario.ehProfessorPoa &&
@@ -688,78 +708,87 @@ const FrequenciaPlanoAula = () => {
             setAula(aulaSelecionada);
             if (aulaSelecionada && aulaSelecionada.idAula) {
               obterListaFrequencia(aulaSelecionada.idAula);
-              obterPlanoAula(aulaSelecionada);
-              obterAvaliacao(aulaSelecionada.idAula, data);
             }
           }
         }
       }
+      setTimeout(() => {
+        setCarregandoGeral(false);
+      }, 1000);
     },
-    [obterAulaSelecionada, resetarPlanoAula, obterPlanoAula]
+    [obterAulaSelecionada, usuario]
+  );
+
+  const onChangeData = useCallback(
+    async data => {
+      setDataSelecionada(data);
+      setExibirCardFrequencia(false);
+
+      setAula();
+      resetarPlanoAula();
+      if (planoAulaExpandido) onClickPlanoAula();
+
+      setCarregandoGeral(true);
+
+      if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
+        const confirmarParaSalvar = await pergutarParaSalvar();
+        if (confirmarParaSalvar) {
+          if (modoEdicaoFrequencia) {
+            await onSalvarFrequencia();
+          }
+          if (modoEdicaoPlanoAula) {
+            await onSalvarPlanoAula();
+          }
+          await validaSeTemIdAula(data);
+        } else {
+          await validaSeTemIdAula(data);
+        }
+      } else {
+        await validaSeTemIdAula(data);
+      }
+    },
+    [
+      modoEdicaoFrequencia,
+      modoEdicaoPlanoAula,
+      planoAulaExpandido,
+      onClickPlanoAula,
+      onSalvarFrequencia,
+      onSalvarPlanoAula,
+      resetarPlanoAula,
+      validaSeTemIdAula,
+    ]
   );
 
   useEffect(() => {
-    if (Object.entries(dadosAulaFrequencia).length) {
-      if (listaDisciplinas.length && dadosAulaFrequencia.disciplinaId) {
-        setDisciplinaIdSelecionada(String(dadosAulaFrequencia.disciplinaId));
-      }
-      if (diasParaHabilitar && dadosAulaFrequencia.dia)
-        validaSeTemIdAula(window.moment(dadosAulaFrequencia.dia));
+    if (
+      dadosAulaFrequencia &&
+      Object.entries(dadosAulaFrequencia).length &&
+      dadosAulaFrequencia.disciplinaId &&
+      listaDisciplinas &&
+      listaDisciplinas.length &&
+      !disciplinaIdSelecionada
+    ) {
+      onChangeDisciplinas(String(dadosAulaFrequencia.disciplinaId));
     }
-  }, [dadosAulaFrequencia, listaDisciplinas, diasParaHabilitar]);
-
-  const obterDataAulaSugerida = useCallback(datasDeAulas => {
-    const habilitar = datasDeAulas.map(item =>
-      window.moment(item.data).format('YYYY-MM-DD')
-    );
-    const dataAtual = window.moment(new Date()).format('YYYY-MM-DD');
-    const datasIgualMenorHoje = habilitar.filter(
-      d => d <= window.moment(dataAtual).format('YYYY-MM-DD')
-    );
-
-    const ordenar = (a, b) => {
-      return window.moment(b).valueOf() - window.moment(a).valueOf();
-    };
-    const retorno = datasIgualMenorHoje.sort(ordenar);
-
-    if (retorno && retorno.length && retorno[0]) {
-      setDataSugerida(retorno[0]);
-    } else {
-      setDataSugerida('');
+    if (
+      dadosAulaFrequencia &&
+      Object.entries(dadosAulaFrequencia).length &&
+      dadosAulaFrequencia.dia &&
+      diasParaHabilitar &&
+      diasParaHabilitar.length &&
+      !dataSelecionada
+    ) {
+      onChangeData(window.moment(dadosAulaFrequencia.dia));
     }
-  }, []);
-
-  const onChangeData = async data => {
-    if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
-      const confirmarParaSalvar = await pergutarParaSalvar();
-      if (confirmarParaSalvar) {
-        if (modoEdicaoFrequencia) {
-          await onSalvarFrequencia();
-        }
-        if (modoEdicaoPlanoAula) {
-          await onSalvarPlanoAula();
-        }
-        validaSeTemIdAula(data);
-      } else {
-        validaSeTemIdAula(data);
-      }
-    } else {
-      validaSeTemIdAula(data);
-    }
-  };
-
-  useEffect(() => {
-    if (dataSugerida) {
-      validaSeTemIdAula(window.moment(dataSugerida));
-      setDataSugerida('');
-    }
-  }, [dataSugerida, validaSeTemIdAula]);
-
-  useEffect(() => {
-    if (listaDatasAulas && listaDatasAulas.length) {
-      obterDataAulaSugerida(listaDatasAulas);
-    }
-  }, [listaDatasAulas, obterDataAulaSugerida]);
+  }, [
+    dadosAulaFrequencia,
+    listaDisciplinas,
+    dataSelecionada,
+    diasParaHabilitar,
+    disciplinaIdSelecionada,
+    onChangeDisciplinas,
+    onChangeData,
+  ]);
 
   const onChangeFrequencia = () => {
     setModoEdicaoFrequencia(true);
@@ -782,15 +811,12 @@ const FrequenciaPlanoAula = () => {
 
   return (
     <>
-      {usuario && turmaSelecionada.turma ? (
-        ''
-      ) : (
+      {usuario && turmaSelecionada.turma ? null : (
         <Alert
           alerta={{
             tipo: 'warning',
             id: 'frequencia-selecione-turma',
-            mensagem: 'Você precisa escolher uma turma.',
-            estiloTitulo: { fontSize: '18px' },
+            mensagem: 'Você precisa escolher uma turma',
           }}
           className="mb-2"
         />
@@ -808,7 +834,7 @@ const FrequenciaPlanoAula = () => {
               </LinkAcao>
               {dataVigente && (
                 <>
-                  ou
+                  {' ou '}
                   <LinkAcao onClick={acessarNotasConceitos}>
                     Acessar Notas e Conceitos
                   </LinkAcao>
@@ -864,15 +890,16 @@ const FrequenciaPlanoAula = () => {
                 <SelectComponent
                   id="disciplina"
                   name="disciplinaId"
-                  lista={listaDisciplinas}
+                  lista={listaDisciplinas || []}
                   valueOption="codigoComponenteCurricular"
                   valueText="nome"
                   valueSelect={disciplinaIdSelecionada}
                   onChange={onChangeDisciplinas}
                   placeholder="Selecione um componente curricular"
                   disabled={
-                    desabilitarDisciplina ||
-                    !(usuario && turmaSelecionada.turma)
+                    !listaDisciplinas ||
+                    !turmaSelecionada.turma ||
+                    desabilitarDisciplina
                   }
                 />
               </Loader>
@@ -884,8 +911,9 @@ const FrequenciaPlanoAula = () => {
                 placeholder="DD/MM/AAAA"
                 formatoData="DD/MM/YYYY"
                 desabilitado={
-                  !listaDisciplinas.length ||
+                  !listaDisciplinas ||
                   !disciplinaIdSelecionada ||
+                  !diasParaHabilitar ||
                   carregandoDiasParaHabilitar
                 }
                 carregando={carregandoDiasParaHabilitar}
@@ -906,85 +934,81 @@ const FrequenciaPlanoAula = () => {
               )}
             </div>
           </div>
-          {dataSelecionada ? (
-            <div className="row">
-              <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                <CardCollapse
-                  key="frequencia-collapse"
-                  onClick={onClickFrequencia}
-                  titulo="Frequência"
-                  indice="frequencia-collapse"
-                  show={exibirCardFrequencia}
-                  alt="card-collapse-frequencia"
-                >
-                  <Loader
-                    loading={carregandoFrequencia}
-                    className="w-100 text-center"
-                  >
-                    {frequencia && frequencia.length > 0 ? (
-                      <>
-                        <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                          <Ordenacao
-                            conteudoParaOrdenar={frequencia}
-                            ordenarColunaNumero="numeroAlunoChamada"
-                            ordenarColunaTexto="nomeAluno"
-                            retornoOrdenado={retorno => setFrequencia(retorno)}
-                          />
-                          <ListaFrequencia
-                            dados={frequencia}
-                            frequenciaId={frequenciaId}
-                            onChangeFrequencia={onChangeFrequencia}
-                            permissoesTela={permissoesTela}
-                          />
-                        </div>
-                        {exibirAuditoria ? (
-                          <Auditoria
-                            className="mt-2"
-                            criadoEm={auditoria.criadoEm}
-                            criadoPor={auditoria.criadoPor}
-                            alteradoPor={auditoria.alteradoPor}
-                            alteradoEm={auditoria.alteradoEm}
-                          />
-                        ) : (
-                          ''
-                        )}
-                      </>
-                    ) : (
-                      ''
-                    )}
-                  </Loader>
-                </CardCollapse>
-              </div>
-              <div className="col-sm-12 col-md-12 col-lg-12">
-                <PlanoAula
-                  disciplinaIdSelecionada={disciplinaIdSelecionada}
-                  dataSelecionada={dataSelecionada}
-                  planoAula={planoAula}
-                  ehProfessorCj={ehProfessorCj}
-                  carregandoMaterias={carregandoMaterias}
-                  listaMaterias={materias}
-                  dataAula={aula && aula.data ? aula.data : null}
-                  ehEja={ehEja}
-                  ehMedio={ehMedio}
-                  setModoEdicao={e => setModoEdicaoPlanoAula(e)}
-                  setTemObjetivos={e => setTemObjetivos(e)}
-                  permissoesTela={permissoesTela}
-                  somenteConsulta={somenteConsulta}
-                  expandido={planoAulaExpandido}
-                  temObjetivos={temObjetivos}
-                  temAvaliacao={temAvaliacao}
-                  auditoria={auditoriaPlano}
-                  ehRegencia={
-                    disciplinaSelecionada
-                      ? disciplinaSelecionada.regencia
-                      : false
-                  }
-                />
-              </div>
-            </div>
-          ) : (
-            ''
-          )}
+          <div className="row">
+            <Loader loading={carregandoGeral} className="w-100 my-2">
+              {disciplinaSelecionada && dataSelecionada ? (
+                <>
+                  <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                    <CardCollapse
+                      key="frequencia-collapse"
+                      onClick={onClickFrequencia}
+                      titulo="Frequência"
+                      indice="frequencia-collapse"
+                      show={exibirCardFrequencia}
+                      alt="card-collapse-frequencia"
+                    >
+                      {frequencia && frequencia.length ? (
+                        <>
+                          <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                            <Ordenacao
+                              conteudoParaOrdenar={frequencia}
+                              ordenarColunaNumero="numeroAlunoChamada"
+                              ordenarColunaTexto="nomeAluno"
+                              retornoOrdenado={retorno =>
+                                setFrequencia(retorno)
+                              }
+                            />
+                            <ListaFrequencia
+                              dados={frequencia}
+                              frequenciaId={frequenciaId}
+                              onChangeFrequencia={onChangeFrequencia}
+                              permissoesTela={permissoesTela}
+                            />
+                          </div>
+                          {exibirAuditoria && (
+                            <Auditoria
+                              className="mt-2"
+                              criadoEm={auditoria.criadoEm}
+                              criadoPor={auditoria.criadoPor}
+                              alteradoPor={auditoria.alteradoPor}
+                              alteradoEm={auditoria.alteradoEm}
+                            />
+                          )}
+                        </>
+                      ) : null}
+                    </CardCollapse>
+                  </div>
+                  <div className="col-sm-12 col-md-12 col-lg-12">
+                    <PlanoAula
+                      onClick={onClickPlanoAula}
+                      disciplinaIdSelecionada={disciplinaIdSelecionada}
+                      dataSelecionada={dataSelecionada}
+                      planoAula={planoAula}
+                      ehProfessorCj={ehProfessorCj}
+                      carregandoMaterias={carregandoMaterias}
+                      listaMaterias={materias}
+                      dataAula={aula && aula.data ? aula.data : null}
+                      ehEja={ehEja}
+                      ehMedio={ehMedio}
+                      setModoEdicao={e => setModoEdicaoPlanoAula(e)}
+                      setTemObjetivos={e => setTemObjetivos(e)}
+                      permissoesTela={permissoesTela}
+                      somenteConsulta={somenteConsulta}
+                      expandido={planoAulaExpandido}
+                      temObjetivos={temObjetivos}
+                      temAvaliacao={temAvaliacao}
+                      auditoria={auditoriaPlano}
+                      ehRegencia={
+                        disciplinaSelecionada
+                          ? disciplinaSelecionada.regencia
+                          : false
+                      }
+                    />
+                  </div>
+                </>
+              ) : null}
+            </Loader>
+          </div>
         </div>
         <ModalMultiLinhas
           key="errosBimestre"
