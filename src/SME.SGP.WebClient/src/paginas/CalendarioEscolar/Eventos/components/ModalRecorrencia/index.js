@@ -161,7 +161,7 @@ function ModalRecorrencia({
     setDataTermino('');
     setDiasSemana([]);
     setValoresIniciais(valoresDefault);
-    onSaveRecorrencia(valoresDefault);
+    onSaveRecorrencia(undefined);
     onCloseRecorrencia();
   };
 
