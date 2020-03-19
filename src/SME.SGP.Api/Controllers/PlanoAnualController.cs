@@ -57,10 +57,11 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterObjetivos(FiltroPlanoAnualDisciplinaDto filtro, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
         {
             var objetivosPlano = await consultasPlanoAnual.ObterObjetivosEscolaTurmaDisciplina(filtro);
-            if (objetivosPlano != null)
-                return Ok(objetivosPlano);
-            else
-                return StatusCode(204);
+
+            if (objetivosPlano is null)
+                return NoContent();
+
+            return Ok(objetivosPlano);
         }
 
         [HttpGet("turmas/copia")]

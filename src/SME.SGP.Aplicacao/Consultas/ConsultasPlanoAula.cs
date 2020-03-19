@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao.Consultas
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioPlanoAula repositorio;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
+        private readonly IRepositorioAula repositorioAula;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasPlanoAula(IRepositorioPlanoAula repositorioPlanoAula,
@@ -24,6 +25,7 @@ namespace SME.SGP.Aplicacao.Consultas
                                 IConsultasAula consultasAula,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                 IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
+                                IRepositorioAula repositorioAula,
                                 IServicoUsuario servicoUsuario)
         {
             this.repositorio = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
@@ -32,12 +34,17 @@ namespace SME.SGP.Aplicacao.Consultas
             this.consultasAula = consultasAula ?? throw new ArgumentNullException(nameof(consultasAula));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
+            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<PlanoAulaRetornoDto> ObterPlanoAulaPorAula(long aulaId)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
+            if (!await VerificarPlanoAnualExistente(aulaId))
+            {
+                throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
+            }
             PlanoAulaRetornoDto planoAulaDto = new PlanoAulaRetornoDto();
             // Busca plano de aula por data e disciplina da aula
             var plano = await repositorio.ObterPlanoAulaPorAula(aulaId);
@@ -66,11 +73,6 @@ namespace SME.SGP.Aplicacao.Consultas
                     planoAulaDto.ObjetivosAprendizagemAula = planoAnual.ObjetivosAprendizagem
                                         .Where(c => objetivosAula.Any(a => a.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId == c.Id))
                                         .ToList();
-                }
-                else
-                {
-                    if (!usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
-                        throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
                 }
             }
             var periodoEscolar = consultasPeriodoEscolar.ObterPorTipoCalendario(aulaDto.TipoCalendarioId);
@@ -108,6 +110,18 @@ namespace SME.SGP.Aplicacao.Consultas
             }
 
             return retorno;
+        }
+
+        private async Task<bool> VerificarPlanoAnualExistente(long aulaId)
+        {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var aula = repositorioAula.ObterPorId(aulaId);
+            var periodoEscolar = consultasPeriodoEscolar.ObterPeriodoEscolarPorData(aula.TipoCalendarioId, aula.DataAula);
+            var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
+                        aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), periodoEscolar.Bimestre, long.Parse(aula.DisciplinaId));
+            if (planoAnualId <= 0 && !usuario.EhProfessorCj())
+                return false;
+            return true;
         }
 
         private PlanoAulaRetornoDto MapearParaDto(PlanoAula plano) =>
