@@ -1,128 +1,95 @@
+/* eslint-disable no-param-reassign */
 import React, { useMemo, useState, useEffect } from 'react';
-import t from 'prop-types';
+import PropTypes from 'prop-types';
 import shortid from 'shortid';
 
 // Componentes
-import { BarraNavegacao, Base, Graficos } from '~/componentes';
+import { BarraNavegacao, Graficos } from '~/componentes';
 import EixoObjetivo from './componentes/EixoObjetivo';
 
 // Estilos
 import { Linha } from '~/componentes/EstilosGlobais';
 
-function TabGraficos({ dados }) {
-  const dadosBackend = [
-    {
-      key: '0',
-      DescricaoFrequencia: 'Frequente',
-      TipoDado: 'Quantidade',
-      Cor: Base.Laranja,
-      '3C': 11,
-      '4C': 15,
-      '4E': 20,
-      '5C': 25,
-      '6C': 25,
-      '6B': 25,
-      Total: 36,
-    },
-    {
-      key: '1',
-      DescricaoFrequencia: 'Frequente',
-      TipoDado: 'Porcentagem',
-      Cor: Base.Laranja,
-      '3C': 11,
-      '4C': 15,
-      '4E': 20,
-      '5C': 25,
-      '6C': 25,
-      '6B': 25,
-      Total: 36,
-    },
-    {
-      key: '2',
-      DescricaoFrequencia: 'Pouco frequente',
-      TipoDado: 'Quantidade',
-      Cor: Base.Vermelho,
-      '3C': 11,
-      '4C': 15,
-      '4E': 20,
-      '5C': 25,
-      '6C': 25,
-      '6B': 25,
-      Total: 36,
-    },
-    {
-      key: '3',
-      DescricaoFrequencia: 'Pouco frequente',
-      TipoDado: 'Porcentagem',
-      Cor: Base.Vermelho,
-      '3C': 11,
-      '4C': 15,
-      '4E': 20,
-      '5C': 25,
-      '6C': 25,
-      '6B': 25,
-      Total: 36,
-    },
-  ];
+// Funcões
+import { removerCaracteresEspeciais } from '~/utils/funcoes/gerais';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
+function TabGraficos({ dados, periodo, ciclos }) {
+  const [itemAtivo, setItemAtivo] = useState(null);
+  const [cicloOuAno] = useState(ciclos ? 'ciclos' : 'anos');
+
+  const [chaves, setChaves] = useState([]);
+
+  // Frequência
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados.frequencia;
     const dadosFormatados = [];
-    const mapa = { turma: 'anos', ciclos: 'ciclos' };
 
-    if (frequenciaDados) {
-      frequenciaDados.forEach(x => {
+    if (frequenciaDados && frequenciaDados.length) {
+      const dadoFrequencia = {
+        Id: shortid.generate(),
+        eixoDescricao: 'Frequência',
+        descricao: 'Frequência',
+        objetivoDescricao: 'Frequência dos alunos',
+      };
+      dadoFrequencia.dados = [];
+
+      frequenciaDados.forEach(frequencia => {
         let quantidade = {
-          FrequenciaDescricao: x.frequenciaDescricao,
+          FrequenciaDescricao: frequencia.frequenciaDescricao,
           TipoDado: 'Quantidade',
         };
 
         let porcentagem = {
-          FrequenciaDescricao: x.frequenciaDescricao,
+          FrequenciaDescricao: frequencia.frequenciaDescricao,
           TipoDado: 'Porcentagem',
         };
 
-        x.linhas[0][mapa.turma].forEach((y, key) => {
-          quantidade = {
-            ...quantidade,
-            key: String(key),
-            Descricao: y.descricao,
-            [y.chave]: y.quantidade,
-            Total: y.totalQuantidade,
-          };
+        frequencia.linhas.forEach(linha => {
+          linha[cicloOuAno].forEach((l, indice) => {
+            quantidade = {
+              ...quantidade,
+              key: String(indice),
+              Descricao: l.descricao,
+              [l.chave]: l.quantidade,
+              Total: l.totalQuantidade,
+            };
 
-          porcentagem = {
-            ...porcentagem,
-            key: String(key),
-            Descricao: y.descricao,
-            [y.chave]: Math.round(y.porcentagem, 2),
-            Total: Math.round(y.totalPorcentagem, 2),
-          };
+            porcentagem = {
+              ...porcentagem,
+              key: String(indice),
+              Descricao: l.descricao,
+              [l.chave]: Math.round(l.porcentagem, 2),
+              Total: Math.round(l.totalPorcentagem, 2),
+            };
+          });
+
+          dadoFrequencia.dados.push(quantidade, porcentagem);
         });
-
-        dadosFormatados.push(quantidade, porcentagem);
       });
+
+      dadosFormatados.push(dadoFrequencia);
     }
 
     return dadosFormatados;
-  }, [dados]);
+  }, [cicloOuAno, dados.frequencia]);
 
+  // Total Estudantes
   const dadosTabelaTotalEstudantes = useMemo(() => {
-    //Linha Quantidade
     const montaDados = [];
-
     const dadoQuantidade = {};
     dadoQuantidade.Id = shortid.generate();
     dadoQuantidade.TipoDado = 'Quantidade';
     dadoQuantidade.FrequenciaDescricao = 'Total';
 
-    console.log(dados.totalEstudantes);
-    dados.totalEstudantes.anos.forEach(ano => {
-      dadoQuantidade[`${ano.anoDescricao}`] = ano.quantidade;
+    if (!dados.totalEstudantes[cicloOuAno]) return false;
+    dados.totalEstudantes[cicloOuAno].forEach(ano => {
+      dadoQuantidade[
+        `${cicloOuAno === 'ciclos' ? ano.cicloDescricao : ano.anoDescricao}`
+      ] = ano.quantidade;
     });
     dadoQuantidade.Total = dados.totalEstudantes.quantidadeTotal;
 
-    // Linha Porcentagem
     montaDados.push(dadoQuantidade);
 
     const dadoPorcentagem = {};
@@ -130,40 +97,275 @@ function TabGraficos({ dados }) {
     dadoPorcentagem.TipoDado = 'Porcentagem';
     dadoPorcentagem.FrequenciaDescricao = 'Total';
 
-    dados.totalEstudantes.anos.forEach(ano => {
-      dadoPorcentagem[`${ano.anoDescricao}`] = Math.round(ano.porcentagem, 2);
+    dados.totalEstudantes[cicloOuAno].forEach(ano => {
+      dadoPorcentagem[
+        `${cicloOuAno === 'ciclos' ? ano.cicloDescricao : ano.anoDescricao}`
+      ] = ano.porcentagem;
     });
 
     dadoPorcentagem.Total = dados.totalEstudantes.porcentagemTotal;
     montaDados.push(dadoPorcentagem);
 
     return montaDados;
-  }, [dados]);
+  }, [cicloOuAno, dados.totalEstudantes]);
 
-  const objetivos = [
-    {
-      id: 1,
-      eixoDescricao: 'Frequência',
-      objetivoDescricao: 'Frequência na turma de PAP',
-      dados: dadosTabelaFrequencia,
-    },
-    {
-      id: 2,
-      eixoDescricao: 'Total',
-      objetivoDescricao: 'Total de alunos no PAP',
-      dados: dadosTabelaTotalEstudantes,
-    },
-  ];
-  const [itemAtivo, setItemAtivo] = useState(objetivos[0]);
+  // Resultados
+  const dadosTabelaResultados = useMemo(() => {
+    const resultados = [];
+    dados.resultados.items.forEach(resultado => {
+      let objetivo = {
+        eixoDescricao: resultado.eixoDescricao,
+        dados: [],
+      };
+
+      resultado.objetivos.forEach(obj => {
+        objetivo = {
+          ...objetivo,
+          objetivoDescricao: obj.objetivoDescricao,
+          descricao: obj.objetivoDescricao,
+        };
+
+        const item = [];
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
+            if (
+              !item.find(
+                dado => dado.FrequenciaDescricao === resposta.respostaDescricao
+              )
+            ) {
+              item.push({
+                eixoDescricao: resultado.eixoDescricao,
+                objetivoDescricao: obj.objetivoDescricao,
+                descricao: obj.objetivoDescricao,
+                FrequenciaDescricao:
+                  cicloOuAno === 'ciclos'
+                    ? removerCaracteresEspeciais(resposta.respostaDescricao)
+                    : resposta.respostaDescricao,
+                TipoDado: 'Quantidade',
+                Ordem: resposta.ordem,
+              });
+
+              item.push({
+                eixoDescricao: resultado.eixoDescricao,
+                objetivoDescricao: obj.objetivoDescricao,
+                descricao: obj.objetivoDescricao,
+                FrequenciaDescricao:
+                  cicloOuAno === 'ciclos'
+                    ? removerCaracteresEspeciais(resposta.respostaDescricao)
+                    : resposta.respostaDescricao,
+                TipoDado: 'Porcentagem',
+                Ordem: resposta.ordem,
+              });
+            }
+          });
+        });
+
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
+            item
+              .filter(
+                dado =>
+                  dado.FrequenciaDescricao === resposta.respostaDescricao &&
+                  dado.TipoDado === 'Quantidade'
+              )
+              .map(dado => {
+                dado[
+                  cicloOuAno === 'ciclos'
+                    ? atual.cicloDescricao
+                    : atual.anoDescricao
+                ] = resposta.quantidade;
+                return dado;
+              });
+          });
+        });
+
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
+            item
+              .filter(
+                dado =>
+                  dado.FrequenciaDescricao === resposta.respostaDescricao &&
+                  dado.TipoDado === 'Porcentagem'
+              )
+              .map(dado => {
+                dado[
+                  cicloOuAno === 'ciclos'
+                    ? atual.cicloDescricao
+                    : atual.anoDescricao
+                ] = resposta.porcentagem;
+                return dado;
+              });
+          });
+        });
+
+        objetivo = {
+          ...objetivo,
+          id: shortid.generate(),
+          dados: item.sort(FiltroHelper.ordenarLista('Ordem')),
+        };
+
+        resultados.push(objetivo);
+      });
+    });
+
+    return resultados;
+  }, [cicloOuAno, dados.resultados.items]);
+
+  // Informações Escolares
+  const dadosTabelaInformacoesEscolares = useMemo(() => {
+    const resultados = [];
+    dados.informacoesEscolares.forEach(resultado => {
+      let objetivo = {
+        eixoDescricao: resultado.eixoDescricao,
+        dados: [],
+      };
+
+      resultado.objetivos.forEach(obj => {
+        objetivo = {
+          ...objetivo,
+          objetivoDescricao: obj.objetivoDescricao,
+          descricao: obj.objetivoDescricao,
+        };
+
+        const item = [];
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
+            if (
+              !item.find(
+                dado => dado.FrequenciaDescricao === resposta.respostaDescricao
+              )
+            ) {
+              item.push({
+                eixoDescricao: resultado.eixoDescricao,
+                objetivoDescricao: obj.objetivoDescricao,
+                descricao: obj.objetivoDescricao,
+                FrequenciaDescricao:
+                  cicloOuAno === 'ciclos'
+                    ? removerCaracteresEspeciais(resposta.respostaDescricao)
+                    : resposta.respostaDescricao,
+                TipoDado: 'Quantidade',
+              });
+
+              item.push({
+                eixoDescricao: resultado.eixoDescricao,
+                objetivoDescricao: obj.objetivoDescricao,
+                descricao: obj.objetivoDescricao,
+                FrequenciaDescricao:
+                  cicloOuAno === 'ciclos'
+                    ? removerCaracteresEspeciais(resposta.respostaDescricao)
+                    : resposta.respostaDescricao,
+                TipoDado: 'Porcentagem',
+              });
+            }
+          });
+        });
+
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
+            item
+              .filter(
+                dado =>
+                  dado.FrequenciaDescricao === resposta.respostaDescricao &&
+                  dado.TipoDado === 'Quantidade'
+              )
+              .map(dado => {
+                dado[
+                  cicloOuAno === 'ciclos'
+                    ? atual.cicloDescricao
+                    : atual.anoDescricao
+                ] = resposta.quantidade;
+                return dado;
+              });
+          });
+        });
+
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
+            item
+              .filter(
+                dado =>
+                  dado.FrequenciaDescricao === resposta.respostaDescricao &&
+                  dado.TipoDado === 'Porcentagem'
+              )
+              .map(dado => {
+                dado[
+                  cicloOuAno === 'ciclos'
+                    ? atual.cicloDescricao
+                    : atual.anoDescricao
+                ] = resposta.porcentagem;
+                return dado;
+              });
+          });
+        });
+
+        objetivo = {
+          ...objetivo,
+          id: shortid.generate(),
+          dados: item,
+        };
+
+        resultados.push(objetivo);
+      });
+    });
+
+    return resultados;
+  }, [cicloOuAno, dados.informacoesEscolares]);
+
+  const [objetivos, setObjetivos] = useState([]);
 
   useEffect(() => {
-    console.log(dadosTabelaTotalEstudantes);
-  }, [dadosTabelaTotalEstudantes]);
+    if (periodo === '1') {
+      if (dadosTabelaTotalEstudantes.length > 0) {
+        setObjetivos(atual => [
+          ...atual,
+          {
+            id: shortid.generate(),
+            eixoDescricao: 'Total',
+            objetivoDescricao: 'Total de alunos no PAP',
+            descricao: 'Total de alunos no PAP',
+            dados: dadosTabelaTotalEstudantes,
+          },
+        ]);
+      }
 
-  useEffect(() => {
-    console.log(
-      Object.keys(itemAtivo.dados[0]).filter(
-        x =>
+      setObjetivos(atual => [
+        ...atual,
+        ...dadosTabelaInformacoesEscolares,
+        ...dadosTabelaResultados,
+      ]);
+    } else {
+      if (dadosTabelaTotalEstudantes.length > 0) {
+        setObjetivos(atual => [
+          ...atual,
+          {
+            id: shortid.generate(),
+            eixoDescricao: 'Total',
+            objetivoDescricao: 'Total de alunos no PAP',
+            descricao: 'Total de alunos no PAP',
+            dados: dadosTabelaTotalEstudantes,
+          },
+        ]);
+      }
+      setObjetivos(atual => [
+        ...atual,
+        ...dadosTabelaFrequencia,
+        ...dadosTabelaResultados,
+      ]);
+    }
+  }, [
+    dadosTabelaFrequencia,
+    dadosTabelaInformacoesEscolares,
+    dadosTabelaResultados,
+    dadosTabelaTotalEstudantes,
+    periodo,
+  ]);
+
+  const montarChaves = item => {
+    const lista = [];
+
+    item.dados.forEach(dado => {
+      const itens = Object.keys(dado).filter(
+        frequencia =>
           [
             'TipoDado',
             'FrequenciaDescricao',
@@ -171,11 +373,33 @@ function TabGraficos({ dados }) {
             'Descricao',
             'Total',
             'Id',
-          ].indexOf(x) === -1
-      ),
-      dadosTabelaTotalEstudantes
-    );
-  }, [itemAtivo]);
+            'eixoDescricao',
+            'objetivoDescricao',
+            'descricao',
+            'Ordem',
+          ].indexOf(frequencia) === -1
+      );
+
+      itens.forEach(i => {
+        if (lista.indexOf(i) === -1) lista.push(i);
+      });
+    });
+
+    setChaves(lista);
+  };
+
+  useEffect(() => {
+    if (objetivos && objetivos.length) {
+      montarChaves(objetivos[0]);
+      setItemAtivo(objetivos[0]);
+    }
+  }, [objetivos]);
+
+  const aoTrocarItem = item => {
+    montarChaves(item);
+    setItemAtivo(item);
+  };
+
   return (
     <>
       <Linha style={{ marginBottom: '8px' }}>
@@ -183,10 +407,12 @@ function TabGraficos({ dados }) {
           itens={objetivos}
           itemAtivo={
             itemAtivo
-              ? objetivos.filter(x => x.id === itemAtivo.id)[0]
+              ? objetivos.filter(
+                  frequencia => frequencia.id === itemAtivo.id
+                )[0]
               : objetivos[0]
           }
-          onChangeItem={item => setItemAtivo(item)}
+          onChangeItem={item => aoTrocarItem(item)}
         />
       </Linha>
       <Linha style={{ marginBottom: '35px' }}>
@@ -196,50 +422,39 @@ function TabGraficos({ dados }) {
         />
       </Linha>
       <Linha style={{ marginBottom: '35px', textAlign: 'center' }}>
-        <h4>Quantidade</h4>
-        {itemAtivo && itemAtivo.dados && (
-          <div style={{ height: 300 }}>
-            <Graficos.Barras
-              dados={itemAtivo.dados.filter(x => x.TipoDado === 'Quantidade')}
-              indice="FrequenciaDescricao"
-              chaves={Object.keys(itemAtivo.dados[0]).filter(
-                x =>
-                  [
-                    'TipoDado',
-                    'FrequenciaDescricao',
-                    'key',
-                    'Descricao',
-                    'Total',
-                    'Id',
-                  ].indexOf(x) === -1
-              )}
-            />
-          </div>
+        {itemAtivo && itemAtivo.dados && itemAtivo.dados[0] && (
+          <>
+            <h4>Quantidade</h4>
+            <div style={{ height: 300 }}>
+              <Graficos.Barras
+                dados={itemAtivo.dados.filter(
+                  frequencia => frequencia.TipoDado === 'Quantidade'
+                )}
+                indice="FrequenciaDescricao"
+                chaves={chaves}
+              />
+            </div>
+          </>
         )}
       </Linha>
       <Linha style={{ marginBottom: '35px', textAlign: 'center' }}>
-        <h4>Porcentagem</h4>
-        {itemAtivo && itemAtivo.dados && (
-          <div style={{ height: 300 }}>
-            <Graficos.Barras
-              dados={
-                itemAtivo &&
-                itemAtivo.dados.filter(x => x.TipoDado === 'Porcentagem')
-              }
-              indice="FrequenciaDescricao"
-              chaves={Object.keys(itemAtivo && itemAtivo.dados[0]).filter(
-                x =>
-                  [
-                    'TipoDado',
-                    'FrequenciaDescricao',
-                    'key',
-                    'Descricao',
-                    'Total',
-                  ].indexOf(x) === -1
-              )}
-              porcentagem
-            />
-          </div>
+        {itemAtivo && itemAtivo.dados && itemAtivo.dados[0] && (
+          <>
+            <h4>Porcentagem</h4>
+            <div style={{ height: 300 }}>
+              <Graficos.Barras
+                dados={
+                  itemAtivo &&
+                  itemAtivo.dados.filter(
+                    frequencia => frequencia.TipoDado === 'Porcentagem'
+                  )
+                }
+                indice="FrequenciaDescricao"
+                chaves={chaves}
+                porcentagem
+              />
+            </div>
+          </>
         )}
       </Linha>
     </>
@@ -247,11 +462,15 @@ function TabGraficos({ dados }) {
 }
 
 TabGraficos.propTypes = {
-  dados: t.oneOfType([t.any]),
+  dados: PropTypes.oneOfType([PropTypes.any]),
+  periodo: PropTypes.string,
+  ciclos: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 TabGraficos.defaultProps = {
   dados: [],
+  periodo: '',
+  ciclos: true,
 };
 
 export default TabGraficos;

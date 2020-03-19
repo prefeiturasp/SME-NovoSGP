@@ -43,6 +43,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select aar.* 
                           from atividade_avaliativa_regencia aar 
                          inner join atividade_avaliativa aa on aa.id = aar.atividade_avaliativa_id 
+                         inner join tipo_avaliacao t on t.id = aa.tipo_avaliacao_id and t.codigo = 1
                          inner join periodo_escolar p on p.periodo_inicio <= aa.data_avaliacao and p.periodo_fim >= aa.data_avaliacao 
                          where not aa.excluido 
                            and aar.disciplina_contida_regencia_id = @disciplinaId

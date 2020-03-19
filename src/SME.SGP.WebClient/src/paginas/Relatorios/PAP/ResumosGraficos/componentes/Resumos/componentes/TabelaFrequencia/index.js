@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import t from 'prop-types';
+import PropTypes from 'prop-types';
 
 // Ant
 import { Table } from 'antd';
@@ -9,61 +9,6 @@ import { Base } from '~/componentes';
 
 // Estilos
 import { ContainerTabela } from './styles';
-
-const dadosBackend = [
-  {
-    key: '0',
-    DescricaoFrequencia: 'Frequente',
-    TipoDado: 'Quantidade',
-    Cor: Base.Laranja,
-    '3C': 11,
-    '4C': 15,
-    '4E': 20,
-    '5C': 25,
-    '6C': 25,
-    '6B': 25,
-    Total: 36,
-  },
-  {
-    key: '1',
-    DescricaoFrequencia: 'Frequente',
-    TipoDado: 'Porcentagem',
-    Cor: Base.Laranja,
-    '3C': 11,
-    '4C': 15,
-    '4E': 20,
-    '5C': 25,
-    '6C': 25,
-    '6B': 25,
-    Total: 36,
-  },
-  {
-    key: '2',
-    DescricaoFrequencia: 'Pouco frequente',
-    TipoDado: 'Quantidade',
-    Cor: Base.Vermelho,
-    '3C': 11,
-    '4C': 15,
-    '4E': 20,
-    '5C': 25,
-    '6C': 25,
-    '6B': 25,
-    Total: 36,
-  },
-  {
-    key: '3',
-    DescricaoFrequencia: 'Pouco frequente',
-    TipoDado: 'Porcentagem',
-    Cor: Base.Vermelho,
-    '3C': 11,
-    '4C': 15,
-    '4E': 20,
-    '5C': 25,
-    '6C': 25,
-    '6B': 25,
-    Total: 36,
-  },
-];
 
 function TabelaFrequencia({ dados }) {
   const renderizarCor = descricao => {
@@ -104,7 +49,7 @@ function TabelaFrequencia({ dados }) {
       colSpan: 0,
       width: 150,
       fixed: 'left',
-      render: (text, row, index) => {
+      render: text => {
         return {
           children: text,
           props: {
@@ -118,36 +63,39 @@ function TabelaFrequencia({ dados }) {
   ];
 
   const colunasTabela = useMemo(() => {
-    if (!dados) return colunasBase;
+    if (!Object.entries(dados).length) return [];
 
     const colunasParaExcluir = [
       'TipoDado',
       'FrequenciaDescricao',
       'key',
       'Descricao',
+      'indice',
     ];
 
     const colunasParaRenderizar = Object.keys(dados[0]).filter(
       item => colunasParaExcluir.indexOf(item) === -1
     );
 
-    const colunasParaIncluir = colunasParaRenderizar.map(item => {
-      const novaColuna = { title: item, dataIndex: item };
-      if (item === 'Total') {
+    const colunasParaIncluir = colunasParaRenderizar
+      .map(item => {
+        if (item !== 'Total') return { title: item, dataIndex: item };
+        return null;
+      })
+      .filter(item => item !== null);
+
+    colunasParaIncluir.push({
+      title: 'Total',
+      dataIndex: 'Total',
+      width: 100,
+      className: 'headerTotal',
+      fixed: 'right',
+      render: text => {
         return {
-          ...novaColuna,
-          width: 100,
-          className: 'headerTotal',
-          fixed: 'right',
-          render: (text, row, index) => {
-            return {
-              children: text,
-              className: 'itemColunaTotal',
-            };
-          },
+          children: text || '0',
+          className: 'itemColunaTotal',
         };
-      }
-      return novaColuna;
+      },
     });
 
     return [...colunasBase, ...colunasParaIncluir];
@@ -164,6 +112,7 @@ function TabelaFrequencia({ dados }) {
           rowKey="key"
           key="key"
           size="small"
+          locale={{ emptyText: 'Sem dados' }}
         />
       </ContainerTabela>
     </>
@@ -171,7 +120,7 @@ function TabelaFrequencia({ dados }) {
 }
 
 TabelaFrequencia.propTypes = {
-  dados: t.oneOfType([t.any]),
+  dados: PropTypes.oneOfType([PropTypes.any]),
 };
 
 TabelaFrequencia.defaultProps = {

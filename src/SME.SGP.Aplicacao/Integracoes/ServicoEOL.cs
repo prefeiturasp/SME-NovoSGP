@@ -19,10 +19,12 @@ namespace SME.SGP.Aplicacao.Integracoes
     {
         private readonly IRepositorioCache cache;
         private readonly HttpClient httpClient;
+        private readonly IServicoLog servicoLog;
 
-        public ServicoEOL(HttpClient httpClient, IRepositorioCache cache)
+        public ServicoEOL(HttpClient httpClient, IRepositorioCache cache, IServicoLog servicoLog)
         {
             this.httpClient = httpClient;
+            this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.cache = cache;
         }
 
@@ -240,30 +242,50 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas/planejamento";
-            return await ObterDisciplinas(url);
+            return await ObterDisciplinas(url, "ObterDisciplinasParaPlanejamento");
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurma(string codigoTurma)
         {
             var url = $"funcionarios/turmas/{codigoTurma}/disciplinas";
-            return await ObterDisciplinas(url);
+            return await ObterDisciplinas(url, "ObterDisciplinasPorCodigoTurma");
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas";
 
-            return await ObterDisciplinas(url);
+            return await ObterDisciplinas(url, "ObterDisciplinasPorCodigoTurmaLoginEPerfil");
         }
 
         public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
         {
             httpClient.DefaultRequestHeaders.Clear();
 
-            var resposta = httpClient.PostAsync("disciplinas", new StringContent(JsonConvert.SerializeObject(ids), Encoding.UTF8, "application/json-patch+json")).Result;
+            var parametros = JsonConvert.SerializeObject(ids);
+            var resposta = httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json")).Result;
 
-            if (!resposta.IsSuccessStatusCode)
+            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+                return MapearParaDtoDisciplinas(retorno);
+            }
+            throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
+        }
+
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAsync(long[] ids)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var parametros = JsonConvert.SerializeObject(ids);
+            var resposta = await httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+
+            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                await RegistrarLogSentryAsync(resposta, "obter as disciplinas", parametros);
                 return null;
+            }
 
             var json = resposta.Content.ReadAsStringAsync().Result;
             var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
@@ -274,10 +296,14 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             httpClient.DefaultRequestHeaders.Clear();
 
-            var resposta = await httpClient.PostAsync("disciplinas/SemAgrupamento", new StringContent(JsonConvert.SerializeObject(ids), Encoding.UTF8, "application/json-patch+json"));
+            var parametros = JsonConvert.SerializeObject(ids);
+            var resposta = await httpClient.PostAsync("disciplinas/SemAgrupamento", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
-            if (!resposta.IsSuccessStatusCode)
+            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                await RegistrarLogSentryAsync(resposta, "obter as disciplinas", parametros);
                 return null;
+            }
 
             var json = resposta.Content.ReadAsStringAsync().Result;
 
@@ -454,6 +480,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
             {
+                await RegistrarLogSentryAsync(resposta, "ObterMeusDados", "login = " + login);
                 throw new NegocioException("Não foi possível obter os dados do usuário");
             }
             var json = await resposta.Content.ReadAsStringAsync();
@@ -679,6 +706,23 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<bool>(json);
         }
 
+        public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, string[] datas, long codigoDisciplina)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var datasParaEnvio = JsonConvert.SerializeObject(datas);
+
+            var resposta = await httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json"));
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<PodePersistirNaDataRetornoEolDto>>(json);
+            }
+
+            throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+        }
+
         public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
             httpClient.DefaultRequestHeaders.Clear();
@@ -705,6 +749,23 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível reiniciar a senha deste usuário");
+        }
+
+        public async Task<UsuarioEolAutenticacaoRetornoDto> RelecionarUsuarioPerfis(string login)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", login) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/RelacionarUsuarioPerfis", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+            }
+            else return null;
         }
 
         public async Task RemoverCJSeNecessario(Guid usuarioId)
@@ -769,16 +830,45 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
         }
 
-        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url)
+        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url, string rotina)
         {
             var resposta = await httpClient.GetAsync(url);
 
-            if (resposta.IsSuccessStatusCode)
+            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
             }
+
+            if (resposta.StatusCode == HttpStatusCode.BadRequest)
+                throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
+
+            await RegistrarLogSentryAsync(resposta, rotina, string.Empty);
             return null;
+        }
+
+        /// <summary>
+        /// Registra log no sentry dos erros do EOL
+        /// </summary>
+        /// <param name="resposta">HttpResponse para registrar o request realizado</param>
+        /// <param name="rotina">Nome da rotina executada, Ex: Obter Disciplinas</param>
+        /// <param name="parametros">Parâmetros do requet caso utilize, Ex:Ids, Datas, Códigos</param>
+        private void RegistrarLogSentry(HttpResponseMessage resposta, string rotina, string parametros)
+        {
+            if (resposta.StatusCode != HttpStatusCode.NotFound)
+            {
+                var mensagem = resposta.Content.ReadAsStringAsync().Result;
+                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
+            }
+        }
+
+        private async Task RegistrarLogSentryAsync(HttpResponseMessage resposta, string rotina, string parametros)
+        {
+            if (resposta.StatusCode != HttpStatusCode.NotFound)
+            {
+                var mensagem = await resposta.Content.ReadAsStringAsync();
+                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
+            }
         }
     }
 }

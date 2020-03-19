@@ -34,23 +34,33 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (CodigoAlunos.Contains(aluno.CodigoAluno))
                 {
-                    double frequencia = 100 - ((aluno.TotalAusencias * aluno.TotalAulas) / 100);
+                    double frequencia = 100 - (aluno.TotalAusencias / (double)aluno.TotalAulas * 100);
                     if (frequencia >= frequente)
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente));
-                    else if (frequencia >= naoComparece && frequencia < frequente)
+                    else if (frequencia >= naoComparece)
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.PoucoFrequente));
                     else
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.NaoComparete));
                 }
             }
 
+            if (!retorno.Any())
+                return retorno;
+
+            foreach (var codigoAluno in CodigoAlunos)
+            {
+                if (retorno.Any(x => x.Key.Equals(codigoAluno)))
+                    retorno.Add(new KeyValuePair<string, int>(codigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente));
+            }
             return retorno;
         }
 
         public RecuperacaoParalelaStatus ObterStatusRecuperacaoParalela(int RespostasRecuperacaoParalela, int Objetivos)
         {
-            if (RespostasRecuperacaoParalela == Objetivos) return RecuperacaoParalelaStatus.Concluido;
-            if (RespostasRecuperacaoParalela > 0) return RecuperacaoParalelaStatus.Alerta;
+            if (RespostasRecuperacaoParalela == Objetivos)
+                return RecuperacaoParalelaStatus.Concluido;
+            if (RespostasRecuperacaoParalela > 0)
+                return RecuperacaoParalelaStatus.Alerta;
             return RecuperacaoParalelaStatus.NaoAlterado;
         }
 
