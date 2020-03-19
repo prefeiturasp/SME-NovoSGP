@@ -60,7 +60,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosCompensacaoAusenciaAluno, ComandosCompensacaoAusenciaAluno>();
             services.TryAddScopedWorkerService<IComandosCompensacaoAusenciaDisciplinaRegencia, ComandosCompensacaoAusenciaDisciplinaRegencia>();
             services.TryAddScopedWorkerService<IComandosProcessoExecutando, ComandosProcessoExecutando>();
-            services.TryAddScopedWorkerService<IComandosFechamento, ComandosFechamento>();
             services.TryAddScopedWorkerService<IComandosFechamentoFinal, ComandosFechamentoFinal>();
             services.TryAddScopedWorkerService<IComandosPeriodoFechamento, ComandosPeriodoFechamento>();
             services.TryAddScopedWorkerService<IComandosFechamentoTurmaDisciplina, ComandosFechamentoTurmaDisciplina>();
@@ -223,7 +222,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
             services.TryAddScopedWorkerService<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IServicoDeNotasConceitos, ServicoDeNotasConceitos>();
-            services.TryAddScopedWorkerService<IServicoFechamento, ServicoFechamento>();
             services.TryAddScopedWorkerService<IServicoFechamentoFinal, ServicoFechamentoFinal>();
             services.TryAddScopedWorkerService<IServicoPeriodoFechamento, ServicoPeriodoFechamento>();
             services.TryAddScopedWorkerService<IServicoFechamentoTurmaDisciplina, ServicoFechamentoTurmaDisciplina>();

@@ -65,16 +65,21 @@ namespace SME.SGP.Dominio.Servicos
             unitOfWork.PersistirTransacao();
         }
 
+
         public async Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, string dreId, string ueId)
+        {
+            var (dre, ue) = ObterDreEUe(dreId, ueId);
+            return await ObterPorTipoCalendarioDreEUe(tipoCalendarioId, dre, ue);
+        }
+
+        public async Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, Dre dre, Ue ue)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            var (dre, ue) = ObterDreEUe(dreId, ueId);
-
-            var dreIdFiltro = !string.IsNullOrWhiteSpace(ueId) || usuarioLogado.EhPerfilUE() ? dre?.Id : null;
+            var dreIdFiltro = !(dre == null) || usuarioLogado.EhPerfilUE() ? dre?.Id : null;
 
             var fechamentoSMEDre = repositorioFechamento.ObterPorFiltros(tipoCalendarioId, dreIdFiltro, null, null);
-            var ehRegistroExistente = (dreId == null && fechamentoSMEDre != null);
+            var ehRegistroExistente = dre == null && fechamentoSMEDre != null;
             if (fechamentoSMEDre == null)
             {
                 fechamentoSMEDre = repositorioFechamento.ObterPorFiltros(tipoCalendarioId, null, null, null);
@@ -117,9 +122,10 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var bimestreSME in fechamentoSMEDre.FechamentosBimestre)
             {
                 var bimestreDreUe = fechamentoDto.FechamentosBimestres.FirstOrDefault(c => c.Bimestre == bimestreSME.PeriodoEscolar.Bimestre);
+                bimestreDreUe.PeriodoEscolar = bimestreSME.PeriodoEscolar;
                 if (bimestreDreUe != null)
                 {
-                    if (fechamentoSMEDre.Id > 0 && (!string.IsNullOrWhiteSpace(dreId) || !string.IsNullOrWhiteSpace(ueId)))
+                    if (fechamentoSMEDre.Id > 0 && !(dre == null) || !(ue == null))
                     {
                         bimestreDreUe.InicioMinimo = bimestreSME.InicioDoFechamento;
                         bimestreDreUe.FinalMaximo = bimestreSME.FinalDoFechamento;

@@ -17,7 +17,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
-        private readonly IRepositorioPeriodoFechamento repositorioFechamento;
+        private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre;
         private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
@@ -25,11 +25,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
-        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
-        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
-        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -46,7 +41,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioDre repositorioDre,
                                                 IRepositorioTurma repositorioTurma,
                                                 IRepositorioUe repositorioUe,
-                                                IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
+                                                IServicoPeriodoFechamento servicoPeriodoFechamento,
                                                 IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                                 IRepositorioTipoCalendario repositorioTipoCalendario,
                                                 IRepositorioTipoAvaliacao repositorioTipoAvaliacao,
@@ -66,7 +61,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioNotaConceitoBimestre = repositorioNotaConceitoBimestre ?? throw new ArgumentNullException(nameof(repositorioNotaConceitoBimestre));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
+            this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new ArgumentNullException(nameof(servicoPeriodoFechamento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new ArgumentNullException(nameof(repositorioTipoAvaliacao));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
@@ -93,9 +88,9 @@ namespace SME.SGP.Dominio.Servicos
                                                                 , fechamentoTurma.Turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio
                                                                 , DateTime.Now.Month > 6 ? 2 : 1);
 
-            var ue = repositorioUe.ObterPorId(fechamentoTurma.Turma.UeId);
-            var periodoFechamento = repositorioPeriodoFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendario.Id, ue.DreId, ue.Id);
-            var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestre.FirstOrDefault(x => x.PeriodoEscolar.Bimestre == entidadeDto.Bimestre);
+            var ue = fechamentoTurma.Turma.Ue;
+            var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioDreEUe(tipoCalendario.Id, ue.Dre, ue);
+            var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestres.FirstOrDefault(x => x.Bimestre == entidadeDto.Bimestre);
 
             if (periodoFechamento == null || periodoFechamentoBimestre == null)
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
@@ -232,22 +227,6 @@ namespace SME.SGP.Dominio.Servicos
             servicoNotificacao.Salvar(notificacao);
         }
 
-        private (Turma, PeriodoEscolar) ValidarTurmaEPeriodoEscolar(string codigoTurma, long periodoEscolarId)
-        {
-            var turma = repositorioTurma.ObterPorId(codigoTurma);
-            if (turma == null)
-            {
-                throw new NegocioException("Turma não encontrada.");
-            }
-
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(periodoEscolarId);
-            if (periodoEscolar == null)
-            {
-                throw new NegocioException("Período escolar não encontrado.");
-            }
-            return (turma, periodoEscolar);
-        }
-
         private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data)
         {
             if (!servicoUsuario.PodePersistirTurma(codigoRf, turmaId, data).Result)
@@ -305,7 +284,7 @@ namespace SME.SGP.Dominio.Servicos
                 fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(id);
 
             fechamento.Situacao = SituacaoFechamento.EmProcessamento;
-            fechamento.Turma = repositorioTurma.ObterPorId(fechamentoDto.TurmaId);
+            fechamento.Turma = repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoDto.TurmaId);
             fechamento.TurmaId = fechamento.Turma.Id;
             fechamento.DisciplinaId = fechamentoDto.DisciplinaId;
             fechamento.Justificativa = fechamentoDto.Justificativa;
@@ -349,14 +328,6 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             return validacoes.ToString();
-        }
-
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data)
-        {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
-
-            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurma(codigoRf, turmaId, data))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
 }
