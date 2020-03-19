@@ -424,7 +424,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
             if (datasComRegistro.Count() > 0)
-                datasComRegistro.ToList().ForEach(d => diasParaIncluirRecorrencia.Remove(d));
+                datasComRegistro.Select(d => diasParaIncluirRecorrencia.Remove(d));
 
             List<PodePersistirNaDataRetornoEolDto> datasPersistencia = new List<PodePersistirNaDataRetornoEolDto>();
 
