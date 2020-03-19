@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, {
   useState,
   useReducer,
@@ -138,10 +139,23 @@ function RelatorioPAPAcompanhamento() {
         });
 
         if (!data) {
-          erro('Não foram encontrados dados para a turma e período selecionados.');
+          erro(
+            'Não foram encontrados dados para a turma e período selecionados.'
+          );
           setCarregando(false);
           return false;
         }
+
+        data.periodo.alunos.forEach(aluno => {
+          const respostas = [];
+          aluno.respostas.forEach(resposta => {
+            const respostaObjetivo = data.objetivos.find(
+              objetivo => objetivo.id === resposta.objetivoId
+            );
+            if (respostaObjetivo) respostas.unshift(resposta);
+          });
+          aluno.respostas = respostas;
+        });
 
         dispararAlteracoes(data);
         disparar(setarObjetivoAtivo(estado.Objetivos[0]));
@@ -181,20 +195,20 @@ function RelatorioPAPAcompanhamento() {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-            ...alunoCorrente.respostas.filter(
-              y => y.objetivoId !== estado.ObjetivoAtivo.id
-            ),
-            novaResposta,
-          ]
+              ...alunoCorrente.respostas.filter(
+                y => y.objetivoId !== estado.ObjetivoAtivo.id
+              ),
+              novaResposta,
+            ]
           : [novaResposta];
     } else {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-            ...alunoCorrente.respostas.filter(
-              y => y.objetivoId !== estado.ObjetivoAtivo.id
-            ),
-          ]
+              ...alunoCorrente.respostas.filter(
+                y => y.objetivoId !== estado.ObjetivoAtivo.id
+              ),
+            ]
           : [];
     }
 
@@ -203,9 +217,9 @@ function RelatorioPAPAcompanhamento() {
         estado.Alunos.map(item =>
           item.codAluno === aluno.codAluno
             ? {
-              ...aluno,
-              respostas: respostasAluno,
-            }
+                ...aluno,
+                respostas: respostasAluno,
+              }
             : item
         )
       )
