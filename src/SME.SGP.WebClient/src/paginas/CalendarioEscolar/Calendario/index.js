@@ -104,7 +104,7 @@ const CalendarioEscolar = () => {
     return modalidades;
   }, [modalidadesAbrangencia]);
 
-  const tiposDeCalendario = useMemo(() => {
+  const tiposDeCalendario = useMemo(async () => {
     let tipos = tiposCalendario;
 
     if (tipos.length > 0 && modalidadesPorAbrangencia.length === 1) {
@@ -119,18 +119,18 @@ const CalendarioEscolar = () => {
           ? 2
           : 1;
 
-      tipos = tiposCalendario
-        .filter(x => x.anoLetivo === anosLetivosAbrangencia[0].valor)
-        .filter(y => Number(y.modalidade) === Number(modalidadeSelecionada));
+      tipos =
+        tiposCalendario &&
+        tiposCalendario
+          .filter(x => x.anoLetivo === anosLetivosAbrangencia[0].valor)
+          .filter(y => Number(y.modalidade) === Number(modalidadeSelecionada));
 
       if (!tipos || tipos.length === 0) {
         erro(
           'Nenhum tipo de calendário encontrado para o ano letivo e modalidade selecionada'
         );
       } else {
-        const tipos = await obterTiposCalendario(
-          modalidadesPorAbrangencia
-        );
+        tipos = await obterTiposCalendario(modalidadesPorAbrangencia);
 
         if (!tipos || tipos.length === 0) {
           erro(
@@ -198,19 +198,6 @@ const CalendarioEscolar = () => {
       }
     }
   }, [eventoCalendarioEdicao, tiposCalendario]);
-
-  useEffect(() => {
-    if (
-      turmaSelecionadaStore &&
-      controleTurmaSelecionada === turmaSelecionadaStore.turma
-    )
-      return;
-
-    setControleTurmaSelecionada(turmaSelecionadaStore.turma);
-    setTipoCalendarioSelecionado('');
-
-    if (turmaSelecionadaStore.turma) listarTiposCalendarioPorTurmaSelecionada();
-  }, [turmaSelecionadaStore]);
 
   const [dreSelecionada, setDreSelecionada] = useState(undefined);
   const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(

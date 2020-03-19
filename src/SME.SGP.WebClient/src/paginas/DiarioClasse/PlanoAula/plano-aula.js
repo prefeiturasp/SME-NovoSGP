@@ -46,6 +46,7 @@ const PlanoAula = props => {
     auditoria,
     temAvaliacao,
     ehRegencia,
+    onClick,
   } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
