@@ -468,10 +468,14 @@ const CadastroAula = ({ match }) => {
     if (!ehReposicao) {
       if (ehRegencia) {
         if (turmaSelecionada.modalidade === modalidade.EJA) {
-          setInicial({ ...inicial, quantidadeTexto: 5, quantidadeRadio: '' });
+          setInicial(estadoAntigo => {
+            return { ...estadoAntigo, quantidadeTexto: 5, quantidadeRadio: '' };
+          });
           setEhEja(true);
         } else {
-          setInicial({ ...inicial, quantidadeTexto: '', quantidadeRadio: 1 });
+          setInicial(estadoAntigo => {
+            return { ...estadoAntigo, quantidadeTexto: '', quantidadeRadio: 1 };
+          });
           setEhEja(false);
         }
       }
@@ -479,14 +483,13 @@ const CadastroAula = ({ match }) => {
 
     setValidacoes(Yup.object(val));
   }, [
-    idDisciplina,
-    quantidadeMaximaAulas,
     controlaQuantidadeAula,
-    ehReposicao,
     disciplinaCompartilhada,
     ehRegencia,
+    ehReposicao,
+    idDisciplina,
+    quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
-    inicial,
   ]);
 
   useEffect(() => {
