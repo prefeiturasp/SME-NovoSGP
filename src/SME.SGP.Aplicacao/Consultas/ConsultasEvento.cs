@@ -17,11 +17,13 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
-                               IContextoAplicacao contextoAplicacao, IServicoUsuario servicoUsuario, IRepositorioEventoTipo repositorioEventoTipo) : base(contextoAplicacao)
+                               IContextoAplicacao contextoAplicacao,
+                               IRepositorioEventoTipo repositorioEventoTipo,
+                               IServicoUsuario servicoUsuario) : base(contextoAplicacao)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
-            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
+            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto)
@@ -67,7 +69,7 @@ namespace SME.SGP.Aplicacao
             if (!EhEventoSME(evento) &&
                 (evento.TipoEventoId == (long)TipoEvento.LiberacaoExcepcional ||
                  evento.TipoEventoId == (long)TipoEvento.ReposicaoNoRecesso))
-                podeAlterar = !usuario.TemPerfilGestaoUes();
+                podeAlterar = usuario.TemPerfilGestaoUes();
 
             return MapearParaDto(evento, podeAlterar);
         }
@@ -142,7 +144,8 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = evento.CriadoRF,
                 TipoEvento = MapearTipoEvento(evento.TipoEvento),
                 Migrado = evento.Migrado,
-                PodeAlterar = podeAlterar != null ? podeAlterar.Value && !evento.TipoEvento.SomenteLeitura : !evento.TipoEvento.SomenteLeitura
+                PodeAlterar = podeAlterar != null ? podeAlterar.Value && !evento.TipoEvento.SomenteLeitura : !evento.TipoEvento.SomenteLeitura,
+                Status = evento.Status
             };
         }
 

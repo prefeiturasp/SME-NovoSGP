@@ -516,6 +516,7 @@ const FrequenciaPlanoAula = () => {
   };
 
   const resetarPlanoAula = useCallback(async () => {
+    planoAula.aulaId = 0;
     planoAula.descricao = null;
     setTemObjetivos(false);
     planoAula.qtdAulas = 0;
@@ -590,44 +591,47 @@ const FrequenciaPlanoAula = () => {
     setExibirCardFrequencia(!exibirCardFrequencia);
   };
 
-  const onClickPlanoAula = () => {
+  const onClickPlanoAula = useCallback(() => {
     setPlanoAulaExpandido(!planoAulaExpandido);
-  };
+  }, [planoAulaExpandido]);
 
   useEffect(() => {
     if (!planoAula.aulaId && planoAulaExpandido && aula) {
-      resetarPlanoAula();
       obterPlanoAula(aula);
     }
-  }, [
-    aula,
-    obterPlanoAula,
-    planoAula.aulaId,
-    planoAulaExpandido,
-    resetarPlanoAula,
-  ]);
+  }, [obterPlanoAula, planoAula.aulaId, planoAulaExpandido, aula]);
 
-  const onChangeDisciplinas = async disciplinaId => {
-    if (!disciplinaId) store.dispatch(salvarDadosAulaFrequencia());
-    if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
-      const confirmarParaSalvar = await pergutarParaSalvar();
-      if (confirmarParaSalvar) {
-        if (modoEdicaoFrequencia) {
-          await onSalvarFrequencia();
+  const onChangeDisciplinas = useCallback(
+    async disciplinaId => {
+      if (!disciplinaId) store.dispatch(salvarDadosAulaFrequencia());
+      if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
+        const confirmarParaSalvar = await pergutarParaSalvar();
+        if (confirmarParaSalvar) {
+          if (modoEdicaoFrequencia) {
+            await onSalvarFrequencia();
+            setarDisciplina(disciplinaId);
+          }
+          if (modoEdicaoPlanoAula) {
+            await onSalvarPlanoAula();
+            setarDisciplina(disciplinaId);
+          }
+        } else {
           setarDisciplina(disciplinaId);
-        }
-        if (modoEdicaoPlanoAula) {
-          await onSalvarPlanoAula();
-          setarDisciplina(disciplinaId);
+          resetarPlanoAula();
         }
       } else {
         setarDisciplina(disciplinaId);
-        resetarPlanoAula();
       }
-    } else {
-      setarDisciplina(disciplinaId);
-    }
-  };
+    },
+    [
+      modoEdicaoFrequencia,
+      modoEdicaoPlanoAula,
+      onSalvarFrequencia,
+      onSalvarPlanoAula,
+      resetarPlanoAula,
+      setarDisciplina,
+    ]
+  );
 
   const [temAvaliacao, setTemAvaliacao] = useState(undefined);
   const [dataVigente, setDataVigente] = useState(false);
@@ -718,6 +722,12 @@ const FrequenciaPlanoAula = () => {
   const onChangeData = useCallback(
     async data => {
       setDataSelecionada(data);
+      setExibirCardFrequencia(false);
+
+      setAula();
+      resetarPlanoAula();
+      if (planoAulaExpandido) onClickPlanoAula();
+
       setCarregandoGeral(true);
 
       if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
@@ -740,8 +750,11 @@ const FrequenciaPlanoAula = () => {
     [
       modoEdicaoFrequencia,
       modoEdicaoPlanoAula,
+      planoAulaExpandido,
+      onClickPlanoAula,
       onSalvarFrequencia,
       onSalvarPlanoAula,
+      resetarPlanoAula,
       validaSeTemIdAula,
     ]
   );
