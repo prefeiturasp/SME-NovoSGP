@@ -17,8 +17,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IRepositorioCache repositorioCache;
-        private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IRepositorioHistoricoEmailUsuario repositorioHistoricoEmailUsuario;
+        private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
         private readonly IServicoEmail servicoEmail;
@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
                 .ToList();
 
             // Revoga token atual para geração de um novo
-            await servicoTokenJwt.RevogarToken(login);
+            //await servicoTokenJwt.RevogarToken(login);
 
             // Gera novo token e guarda em cache
             retornoAutenticacaoEol.Item1.Token =
@@ -197,7 +197,7 @@ namespace SME.SGP.Aplicacao
 
                 usuario.DefinirPerfilAtual(perfil);
 
-                await servicoTokenJwt.RevogarToken(loginAtual);
+                //await servicoTokenJwt.RevogarToken(loginAtual);
                 var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes);
 
                 return new TrocaPerfilDto
@@ -228,18 +228,6 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private void AdicionarHistoricoEmailUsuario(string login, string codigoRf, string email, AcaoHistoricoEmailUsuario acao)
-        {
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf, login);
-
-            repositorioHistoricoEmailUsuario.Salvar(new HistoricoEmailUsuario()
-            {
-                UsuarioId = usuario.Id,
-                Email = email,
-                Acao = acao
-            });
-        }
-
         public async Task<RevalidacaoTokenDto> RevalidarLogin()
         {
             // Obter Login do token atual
@@ -263,7 +251,7 @@ namespace SME.SGP.Aplicacao
                 .Select(a => (Permissao)a)
                 .ToList();
 
-            await servicoTokenJwt.RevogarToken(login);
+            //await servicoTokenJwt.RevogarToken(login);
 
             return new RevalidacaoTokenDto()
             {
@@ -306,6 +294,18 @@ namespace SME.SGP.Aplicacao
         {
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(token);
             return usuario != null && usuario.TokenRecuperacaoSenhaEstaValido();
+        }
+
+        private void AdicionarHistoricoEmailUsuario(string login, string codigoRf, string email, AcaoHistoricoEmailUsuario acao)
+        {
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf, login);
+
+            repositorioHistoricoEmailUsuario.Salvar(new HistoricoEmailUsuario()
+            {
+                UsuarioId = usuario.Id,
+                Email = email,
+                Acao = acao
+            });
         }
 
         private void EnviarEmailRecuperacao(Usuario usuario, string email)
