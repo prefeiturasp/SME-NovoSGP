@@ -130,13 +130,14 @@ namespace SME.SGP.Aplicacao
 
                         foreach (var notaConceitoBimestre in notasConceitoBimestre)
                         {
+                            var disciplina = disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId);
+                            var nomeDisciplina  = disciplinaEOL.Regencia ? disciplina.Nome : disciplinaEOL.Nome;
+                            var valorNotaConceito = notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota.ToString() : ObterConceito(notaConceitoBimestre.ConceitoId);
                             ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
                             {
                                 DisciplinaId = notaConceitoBimestre.DisciplinaId,
-                                Disciplina = disciplinaEOL.Regencia ?
-                                    disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
-                                    disciplinaEOL.Nome,
-                                NotaConceito = notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota.ToString() : ObterConceito(notaConceitoBimestre.ConceitoId)
+                                Disciplina = nomeDisciplina,
+                                NotaConceito = valorNotaConceito
                             });
                         }
 
