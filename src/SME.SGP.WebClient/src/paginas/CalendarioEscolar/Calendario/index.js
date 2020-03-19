@@ -119,9 +119,11 @@ const CalendarioEscolar = () => {
           ? 2
           : 1;
 
-      tipos = tiposCalendario
-        .filter(x => x.anoLetivo === anosLetivosAbrangencia[0].valor)
-        .filter(y => Number(y.modalidade) === Number(modalidadeSelecionada));
+      tipos =
+        tiposCalendario &&
+        tiposCalendario
+          .filter(x => x.anoLetivo === anosLetivosAbrangencia[0].valor)
+          .filter(y => Number(y.modalidade) === Number(modalidadeSelecionada));
 
       if (!tipos || tipos.length === 0) {
         erro(
