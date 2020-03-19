@@ -37,9 +37,16 @@ function UeDropDown({
           }))
           .sort(FiltroHelper.ordenarLista('desc'));
       }
-      if (opcaoTodas && dreId === '0') {
-        lista.unshift({ desc: 'Todas', valor: '0' });
-        setForcaDesabilitado(true);
+      if (lista.length > 1) {
+        if (opcaoTodas) {
+          lista.unshift({ desc: 'Todas', valor: '0' });
+          setForcaDesabilitado(true);
+        }
+      } else if (!lista.length) {
+        if (opcaoTodas) {
+          lista.unshift({ desc: 'Todas', valor: '0' });
+          setForcaDesabilitado(true);
+        }
       }
       setListaUes(lista);
       setCarregando(false);
@@ -52,6 +59,8 @@ function UeDropDown({
   }, [dreId, opcaoTodas, url]);
 
   useEffect(() => {
+    form.setFieldValue('ueId', undefined);
+
     if (listaUes.length === 1) {
       form.setFieldValue('ueId', listaUes[0].valor);
       onChange(listaUes[0].valor);

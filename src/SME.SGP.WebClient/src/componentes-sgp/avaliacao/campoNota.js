@@ -33,17 +33,23 @@ const CampoNota = props => {
   }, [nota.notaConceito, nota.notaOriginal, validaSeTeveAlteracao]);
 
   const setarValorNovo = async valorNovo => {
-    setNotaValorAtual(valorNovo);
-    const notaArredondada = await api
-      .get(
-        `v1/avaliacoes/${nota.atividadeAvaliativaId}/notas/${Number(
-          valorNovo
-        )}/arredondamento`
-      )
-      .catch(e => erros(e));
-    setNotaValorAtual(notaArredondada.data);
-    onChangeNotaConceito(notaArredondada.data);
-    validaSeTeveAlteracao(nota.notaOriginal, notaArredondada.data);
+    if (valorNovo) {
+      setNotaValorAtual(valorNovo);
+      const notaArredondada = await api
+        .get(
+          `v1/avaliacoes/${nota.atividadeAvaliativaId}/notas/${Number(
+            valorNovo
+          )}/arredondamento`
+        )
+        .catch(e => erros(e));
+      setNotaValorAtual(notaArredondada.data);
+      onChangeNotaConceito(notaArredondada.data);
+      validaSeTeveAlteracao(nota.notaOriginal, notaArredondada.data);
+    } else {
+      setNotaValorAtual(valorNovo);
+      onChangeNotaConceito(valorNovo);
+      validaSeTeveAlteracao(nota.notaOriginal, valorNovo);
+    }
   };
 
   return (
@@ -68,7 +74,7 @@ CampoNota.defaultProps = {
 };
 
 CampoNota.propTypes = {
-  onChangeNotaConceito: () => {},
+  onChangeNotaConceito: () => { },
 };
 
 export default CampoNota;

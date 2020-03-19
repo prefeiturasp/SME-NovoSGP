@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<bool> PodePersistirTurma(string codigoRf, string turmaId, DateTime data);
 
-        Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data);
+        Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null);
 
         void RemoverPerfisUsuarioAtual();
 

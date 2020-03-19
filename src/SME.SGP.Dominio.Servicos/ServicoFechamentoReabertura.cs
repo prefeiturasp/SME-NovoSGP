@@ -160,7 +160,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task AtualizoEvento(FechamentoReabertura fechamentoReaberturasParaAtualizar, DateTime inicio, DateTime fim)
         {
-            var eventosParaAtualizar = await repositorioEvento.EventosNosDiasETipo(fechamentoReaberturasParaAtualizar.Inicio, fechamentoReaberturasParaAtualizar.Fim, TipoEvento.FechamentoBimestre, fechamentoReaberturasParaAtualizar.TipoCalendarioId, fechamentoReaberturasParaAtualizar.Ue.CodigoUe, fechamentoReaberturasParaAtualizar.Dre.CodigoDre);
+            var eventosParaAtualizar = await repositorioEvento.EventosNosDiasETipo(fechamentoReaberturasParaAtualizar.Inicio, fechamentoReaberturasParaAtualizar.Fim, TipoEvento.FechamentoBimestre, fechamentoReaberturasParaAtualizar.TipoCalendarioId, fechamentoReaberturasParaAtualizar.Ue.CodigoUe, fechamentoReaberturasParaAtualizar.Dre.CodigoDre, false);
             if (eventosParaAtualizar != null && eventosParaAtualizar.Any())
             {
                 var eventoParaAtualizar = eventosParaAtualizar.FirstOrDefault();
@@ -185,12 +185,11 @@ namespace SME.SGP.Dominio.Servicos
             }
             if (fechamentoReaberturaParaExcluir.EhParaUe())
             {
-                var eventosParaExcluir = await repositorioEvento.EventosNosDiasETipo(fechamentoReaberturaParaExcluir.Inicio, fechamentoReaberturaParaExcluir.Fim, TipoEvento.FechamentoBimestre, fechamentoReaberturaParaExcluir.TipoCalendarioId, fechamentoReaberturaParaExcluir.Ue.CodigoUe, fechamentoReaberturaParaExcluir.Dre.CodigoDre);
+                var eventosParaExcluir = await repositorioEvento.EventosNosDiasETipo(fechamentoReaberturaParaExcluir.Inicio, fechamentoReaberturaParaExcluir.Fim, TipoEvento.FechamentoBimestre, fechamentoReaberturaParaExcluir.TipoCalendarioId, fechamentoReaberturaParaExcluir.Ue.CodigoUe, fechamentoReaberturaParaExcluir.Dre.CodigoDre, false);
                 if (eventosParaExcluir != null && eventosParaExcluir.Any())
                 {
                     var eventoParaExcluir = eventosParaExcluir.FirstOrDefault();
-                    eventoParaExcluir.Excluir();
-                    await servicoEvento.Salvar(eventoParaExcluir, false, false, true);
+                    await servicoEvento.Excluir(eventoParaExcluir);
                 }
             }
         }

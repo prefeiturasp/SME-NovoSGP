@@ -20,6 +20,12 @@ import AtribuicaoCJServico from '~/servicos/Paginas/AtribuicaoCJ';
 // Funções
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
+function objetoExistaNaLista(objeto, lista) {
+  return lista.some(
+    elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
+  );
+}
+
 function Filtro({ onFiltrar }) {
   const [refForm, setRefForm] = useState({});
 
@@ -51,7 +57,10 @@ function Filtro({ onFiltrar }) {
   };
 
   const aoTrocarDreId = id => {
-    if (!id) refForm.setFieldValue('ueId', undefined);
+    if (!id) {
+      setUeId(undefined);
+      refForm.setFieldValue('ueId', undefined);
+    }
     setDreId(id);
   };
 
@@ -86,6 +95,54 @@ function Filtro({ onFiltrar }) {
 
   const [listaAnos, setListaAnos] = useState([]);
   const [carregandoAnos, setCarregandoAnos] = useState(false);
+
+  const [listaTurmas, setListaTurmas] = useState([]);
+  const [listaTodasTurmas, setListaTodasTurmas] = useState([]);
+
+  const [anoDesabilitado, setAnoDesabilitado] = useState(false);
+
+  const aoTrocarAno = useCallback(
+    valorAno => {
+      if (valorAno) {
+        const turmas = [];
+        listaTodasTurmas.forEach(turma => {
+          const valor = turma.nome.split('');
+          if (
+            typeof parseInt(valor[0], 10) === 'number' &&
+            valor[0].toString() === valorAno.toString() &&
+            !objetoExistaNaLista(turma, turmas)
+          ) {
+            turmas.push(turma);
+          }
+        });
+
+        turmas.sort(FiltroHelper.ordenarLista('nome'));
+        if (!turmas.length || turmas.length > 1)
+          turmas.unshift({ nome: 'Todas', codigo: '0' });
+
+        setListaTurmas(turmas);
+      } else {
+        setListaTurmas([]);
+      }
+      setTurmaId(undefined);
+      refForm.setFieldValue('turmaId', undefined);
+
+      setAno(valorAno);
+    },
+    [listaTodasTurmas, refForm]
+  );
+
+  useEffect(() => {
+    if (listaTurmas) {
+      if (listaTurmas.length === 1) {
+        setTurmaId(listaTurmas[0].codigo);
+        refForm.setFieldValue('turmaId', listaTurmas[0].codigo);
+        setAnoDesabilitado(true);
+      } else {
+        setAnoDesabilitado(false);
+      }
+    }
+  }, [listaTurmas, refForm]);
 
   const aoTrocarCiclo = id => {
     setCarregandoAnos(true);
@@ -125,13 +182,18 @@ function Filtro({ onFiltrar }) {
       }
     } else {
       setListaAnos([]);
+      aoTrocarAno(undefined);
     }
+
+    setAno(undefined);
+    refForm.setFieldValue('ano', undefined);
+
+    setTurmaId(undefined);
+    refForm.setFieldValue('turmaId', undefined);
 
     setCicloId(id);
     setCarregandoAnos(false);
   };
-
-  const [listaTodasTurmas, setListaTodasTurmas] = useState([]);
 
   const buscarTurmas = useCallback(async () => {
     const turmas = await AtribuicaoCJServico.buscarTurmas(ueId, 5);
@@ -140,47 +202,45 @@ function Filtro({ onFiltrar }) {
     if (data) setListaTodasTurmas(data);
   }, [ueId]);
 
-  const [listaTurmas, setListaTurmas] = useState([]);
-
-  const [anoDesabilitado, setAnoDesabilitado] = useState(false);
+  useEffect(() => {
+    if (!dreId && refForm && Object.entries(refForm).length) {
+      refForm.setFieldValue('cicloId', undefined);
+      setCicloId(undefined);
+      refForm.setFieldValue('ano', undefined);
+      setAno(undefined);
+      setListaTurmas([]);
+      refForm.setFieldValue('turmaId', undefined);
+      setTurmaId(undefined);
+      refForm.setFieldValue('periodo', undefined);
+      setPeriodo(undefined);
+    }
+  }, [dreId, refForm]);
 
   useEffect(() => {
     if (ueId) {
-      if (ueId === '0') {
+      if (cicloId && ano && ueId === '0') {
         setListaTurmas([{ codigo: '0', nome: 'Todas' }]);
       } else {
         buscarTurmas();
       }
-    }
-  }, [buscarTurmas, ueId]);
-
-  const aoTrocarAno = valorAno => {
-    if (valorAno) {
-      const turmas = [];
-      listaTodasTurmas.forEach(turma => {
-        const valor = turma.nome.split('');
-        if (
-          typeof parseInt(valor[0], 10) === 'number' &&
-          valor[0] === valorAno &&
-          turmas.indexOf(turma) === -1
-        ) {
-          turmas.push(turma);
-        }
-      });
-      turmas.sort(FiltroHelper.ordenarLista('nome'));
-      turmas.unshift({ nome: 'Todas', codigo: '0' });
-      setListaTurmas(turmas);
-
-      if (turmas.length === 1) {
-        setAnoDesabilitado(true);
-        setTurmaId(turmas[0].codigo);
-        refForm.setFieldValue('turmaId', turmas[0].codigo);
-      }
-    } else {
-      setTurmaId(undefined);
+    } else if (refForm && Object.entries(refForm).length) {
+      refForm.setFieldValue('cicloId', undefined);
+      setCicloId(undefined);
+      refForm.setFieldValue('ano', undefined);
+      setAno(undefined);
       setListaTurmas([]);
+      refForm.setFieldValue('turmaId', undefined);
+      setTurmaId(undefined);
+      refForm.setFieldValue('periodo', undefined);
+      setPeriodo(undefined);
     }
-    setAno(valorAno);
+  }, [ano, buscarTurmas, cicloId, refForm, ueId]);
+
+  const aoTrocarUeId = valorUe => {
+    setCicloId(undefined);
+    refForm.setFieldValue('cicloId', undefined);
+    aoTrocarCiclo(undefined);
+    setUeId(valorUe);
   };
 
   return (
@@ -208,7 +268,7 @@ function Filtro({ onFiltrar }) {
               <UeDropDown
                 form={form}
                 dreId={form.values.dreId}
-                onChange={ue => setUeId(ue)}
+                onChange={ue => aoTrocarUeId(ue)}
                 opcaoTodas
               />
             </Grid>
@@ -226,7 +286,7 @@ function Filtro({ onFiltrar }) {
                   valueOption="id"
                   valueText="descricao"
                   placeholder="Selec. o ciclo"
-                  disabled={!listaCiclos.length}
+                  disabled={!ueId || !listaCiclos.length}
                 />
               </Loader>
             </Grid>
@@ -265,6 +325,7 @@ function Filtro({ onFiltrar }) {
                 valor={periodo}
                 form={form}
                 onChangePeriodo={valor => setPeriodo(valor)}
+                desabilitado={!dreId || !ueId || !cicloId}
               />
             </Grid>
           </Linha>

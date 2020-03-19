@@ -4,14 +4,17 @@ import PropTypes from 'prop-types';
 // Componentes
 import { PainelCollapse, LazyLoad } from '~/componentes';
 
-function Resumos({ dados, ciclos, anos }) {
+function Resumos({ dados, ciclos, anos, isEncaminhamento }) {
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
+  const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
+  const TabelaInformacoesEscolares = lazy(() =>
+    import('./componentes/TabelaInformacoesEscolares')
+  );
   const TabelaTotalEstudantes = lazy(() =>
     import('./componentes/TabelaTotalEstudantes')
   );
-  const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
 
-  const filtroFake = 'turma';
+  const filtro = ciclos ? 'ciclos' : 'turma';
 
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados && dados.frequencia;
@@ -19,32 +22,32 @@ function Resumos({ dados, ciclos, anos }) {
     const mapa = { turma: 'anos', ciclos: 'ciclos' };
 
     if (frequenciaDados) {
-      frequenciaDados.forEach(x => {
+      frequenciaDados.forEach(frequencia => {
         let quantidade = {
-          FrequenciaDescricao: x.frequenciaDescricao,
+          FrequenciaDescricao: frequencia.frequenciaDescricao,
           TipoDado: 'Quantidade',
         };
 
         let porcentagem = {
-          FrequenciaDescricao: x.frequenciaDescricao,
+          FrequenciaDescricao: frequencia.frequenciaDescricao,
           TipoDado: 'Porcentagem',
         };
 
-        x.linhas[0][mapa[filtroFake]].forEach((y, key) => {
+        frequencia.linhas[0][mapa[filtro]].forEach((linha, indice) => {
           quantidade = {
             ...quantidade,
-            key: String(key),
-            Descricao: y.descricao,
-            [y.chave]: y.quantidade,
-            Total: y.totalQuantidade,
+            indice: String(indice),
+            Descricao: linha.descricao,
+            [linha.chave]: linha.quantidade,
+            Total: linha.totalQuantidade,
           };
 
           porcentagem = {
             ...porcentagem,
-            key: String(key),
-            Descricao: y.descricao,
-            [y.chave]: `${Math.round(y.porcentagem, 2)}%`,
-            Total: `${Math.round(y.totalPorcentagem, 2)}%`,
+            indice: String(indice),
+            Descricao: linha.descricao,
+            [linha.chave]: `${Math.round(linha.porcentagem, 2)}%`,
+            Total: `${Math.round(linha.totalPorcentagem, 2)}%`,
           };
         });
 
@@ -53,7 +56,7 @@ function Resumos({ dados, ciclos, anos }) {
     }
 
     return dadosFormatados;
-  }, [dados]);
+  }, [dados, filtro]);
 
   return (
     <>
@@ -68,17 +71,31 @@ function Resumos({ dados, ciclos, anos }) {
           </LazyLoad>
         </PainelCollapse.Painel>
       </PainelCollapse>
-      <PainelCollapse>
-        <PainelCollapse.Painel temBorda header="Frequência">
-          <LazyLoad>
-            <TabelaFrequencia
-              dados={dadosTabelaFrequencia}
-              ciclos={ciclos}
-              anos={anos}
-            />
-          </LazyLoad>
-        </PainelCollapse.Painel>
-      </PainelCollapse>
+      {isEncaminhamento ? (
+        <PainelCollapse>
+          <PainelCollapse.Painel temBorda header="Informações escolares">
+            <LazyLoad>
+              <TabelaInformacoesEscolares
+                dados={dados.informacoesEscolares}
+                ciclos={ciclos}
+                anos={anos}
+              />
+            </LazyLoad>
+          </PainelCollapse.Painel>
+        </PainelCollapse>
+      ) : (
+        <PainelCollapse>
+          <PainelCollapse.Painel temBorda header="Frequência">
+            <LazyLoad>
+              <TabelaFrequencia
+                dados={dadosTabelaFrequencia}
+                ciclos={ciclos}
+                anos={anos}
+              />
+            </LazyLoad>
+          </PainelCollapse.Painel>
+        </PainelCollapse>
+      )}
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Resultados">
           <LazyLoad>
@@ -98,12 +115,14 @@ Resumos.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.any]),
   ciclos: PropTypes.oneOfType([PropTypes.bool]),
   anos: PropTypes.oneOfType([PropTypes.bool]),
+  isEncaminhamento: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 Resumos.defaultProps = {
   dados: [],
   ciclos: false,
   anos: false,
+  isEncaminhamento: false,
 };
 
 export default Resumos;

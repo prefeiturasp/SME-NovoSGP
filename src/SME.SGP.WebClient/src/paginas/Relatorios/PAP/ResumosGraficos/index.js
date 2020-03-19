@@ -59,13 +59,20 @@ const ResumosGraficosPAP = () => {
           ResumosGraficosPAPServico.ListarTotalEstudantes(filtroTela),
           ResumosGraficosPAPServico.ListarFrequencia(filtroTela),
           ResumosGraficosPAPServico.ListarResultados(filtroTela),
+          ResumosGraficosPAPServico.ListarInformacoesEscolares(filtroTela),
         ]);
 
         setDados({
-          totalEstudantes: { ...requisicoes[0].data },
-          frequencia: [],
-          // frequencia: [...requisicoes[1].data.frequencia],
-          resultados: { ...requisicoes[2].data },
+          totalEstudantes: requisicoes[0].data
+            ? { ...requisicoes[0].data }
+            : [],
+          frequencia: requisicoes[1].data
+            ? [...requisicoes[1].data.frequencia]
+            : [],
+          resultados: requisicoes[2].data ? { ...requisicoes[2].data } : [],
+          informacoesEscolares: requisicoes[3].data
+            ? [...requisicoes[3].data]
+            : [],
         });
 
         setCarregandoGraficos(false);
@@ -85,6 +92,10 @@ const ResumosGraficosPAP = () => {
       buscarDados();
     }
   }, [filtroTela]);
+
+  const dadosTela = useMemo(() => {
+    return dados;
+  }, [dados]);
 
   return (
     <>
@@ -109,14 +120,23 @@ const ResumosGraficosPAP = () => {
             activeKey={tabAtiva}
             defaultActiveKey="relatorios"
           >
-            <Tabs.TabPane tab="Resumos" key="relatorios">
+            <Tabs.TabPane
+              disabled={carregandoRelatorios}
+              tab="Resumos"
+              key="relatorios"
+            >
               <Loader loading={carregandoRelatorios}>
                 {tabAtiva === 'relatorios' ? (
                   <LazyLoad>
                     <Resumos
-                      dados={dados}
+                      dados={dadosTela}
                       ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
                       anos={!!filtroTela.Ano}
+                      isEncaminhamento={
+                        filtroTela &&
+                        filtroTela.Periodo &&
+                        filtroTela.Periodo.toString() === '1'
+                      }
                     />
                   </LazyLoad>
                 ) : (
@@ -124,14 +144,19 @@ const ResumosGraficosPAP = () => {
                 )}
               </Loader>
             </Tabs.TabPane>
-            <Tabs.TabPane tab="Gráficos" key="graficos">
+            <Tabs.TabPane
+              disabled={carregandoGraficos}
+              tab="Gráficos"
+              key="graficos"
+            >
               <Loader loading={carregandoGraficos}>
                 {tabAtiva === 'graficos' ? (
                   <LazyLoad>
                     <TabGraficos
-                      dados={dados}
+                      dados={dadosTela}
                       ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
                       anos={!!filtroTela.Ano}
+                      periodo={filtroTela.Periodo}
                     />
                   </LazyLoad>
                 ) : (

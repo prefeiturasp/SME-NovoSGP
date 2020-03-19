@@ -184,9 +184,7 @@ const Notas = ({ match }) => {
                 break;
             }
 
-            if (bimestreAtualizado.alunos.length > 0) {
-              setBimestreCorrente(bimestreAtualizado.numero);
-            }
+            setBimestreCorrente(dados.bimestreAtual);
           });
 
           setAuditoriaInfo({
@@ -304,8 +302,8 @@ const Notas = ({ match }) => {
             alunoId: aluno.id,
             atividadeAvaliativaId: nota.atividadeAvaliativaId,
             conceito:
-              notaTipo === notasConceitos.Conceitos ? nota.notaConceito : 0,
-            nota: notaTipo === notasConceitos.Notas ? nota.notaConceito : 0,
+              notaTipo === notasConceitos.Conceitos ? nota.notaConceito : null,
+            nota: notaTipo === notasConceitos.Notas ? nota.notaConceito : null,
           });
         }
       });
@@ -606,6 +604,7 @@ const Notas = ({ match }) => {
             bimestrePesquisado.periodoFim
           );
         }
+        setNotaTipo(dados.notaTipo);
 
         const bimestreAtualizado = {
           fechamentoTurmaId: bimestrePesquisado.fechamentoTurmaId,

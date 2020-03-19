@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
-            return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
+            return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao);
         }
 
         public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? pagina)
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
             return MapearParaDtoTotalEstudantesPorFrequencia(total, totalAlunosPorSeriesFrequencia);
         }
 
-        private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId)
+        private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId, RecuperacaoParalelaOrdenacao? ordenacao)
         {
             //alunos eol que não estão ainda na tabela de recuperação paralela
             var alunos = alunosEol.Where(w => !alunosRecuperacaoParalela.Select(s => s.AlunoId).Contains(Convert.ToInt32(w.CodigoAluno))).ToList();
@@ -91,59 +91,84 @@ namespace SME.SGP.Aplicacao
             alunos.ForEach(x => alunosRecParalela.Add(new RetornoRecuperacaoParalela { AlunoId = Convert.ToInt64(x.CodigoAluno) }));
 
             var retorno = alunosRecParalela.Select(s => new { s.AlunoId, s.Id }).Distinct();
+            var alunoCriado = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault();
+            var alunoAlterado = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault();
+
             var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {
+                Ordenacao = ordenacao,
                 Eixos = eixos,
                 Objetivos = objetivos,
                 Respostas = respostas,
                 Periodo = new RecuperacaoParalelaPeriodoListagemDto
                 {
                     Id = periodoId,
-                    CriadoPor = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault().CriadoPor,
-                    AlteradoPor = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault().AlteradoPor,
-                    AlteradoEm = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault().AlteradoEm,
-                    AlteradoRF = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault().AlteradoRF,
-                    CriadoEm = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault().CriadoEm == DateTime.MinValue ? null : alunosRecParalela.FirstOrDefault().CriadoEm,
-                    CriadoRF = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault().CriadoRF,
-                    Alunos = retorno.Select(a => new RecuperacaoParalelaAlunoListagemDto
+                    CriadoPor = alunoCriado.CriadoPor,
+                    CriadoEm = alunoCriado.CriadoEm == DateTime.MinValue ? null : alunoCriado.CriadoEm,
+                    CriadoRF = alunoCriado.CriadoRF,
+                    AlteradoPor = alunoAlterado.AlteradoPor,
+                    AlteradoEm = alunoAlterado.AlteradoEm == DateTime.MinValue ? null : alunoAlterado.AlteradoEm,
+                    AlteradoRF = alunoAlterado.AlteradoRF,
+                    Alunos = retorno.Select(a =>
                     {
-                        Id = a.Id,
-                        Concluido = servicoRecuperacaoParalela.ObterStatusRecuperacaoParalela(
-                            alunosRecuperacaoParalela
-                            .Where(w => w.Id == a.Id)
-                            .Count() - 1,
-                            objetivos.Count()),
-                        ParecerConclusivo = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.ParecerConclusivo).FirstOrDefault(),
-                        Nome = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NomeAluno).FirstOrDefault(),
-                        NumeroChamada = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NumeroAlunoChamada).FirstOrDefault(),
-                        CodAluno = a.AlunoId,
-                        Turma = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.TurmaEscola).FirstOrDefault(),
-                        TurmaId = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.CodigoTurma).FirstOrDefault(),
-                        TurmaRecuperacaoParalelaId = turmaId,
-                        Respostas = alunosRecuperacaoParalela
-                                                    .Where(w => w.Id == a.Id)
-                                                    .Select(s => new ObjetivoRespostaDto
-                                                    {
-                                                        ObjetivoId = s.ObjetivoId,
-                                                        RespostaId = s.RespostaId
-                                                    }).ToList()
-                    }).OrderBy(o => o.Nome).ToList()
+                        var aluno = alunosEol.FirstOrDefault(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId);
+
+                        return new RecuperacaoParalelaAlunoListagemDto
+                        {
+                            Id = a.Id,
+                            Concluido = servicoRecuperacaoParalela.ObterStatusRecuperacaoParalela(
+                             alunosRecuperacaoParalela.Count(x => objetivos.Any(z => z.Id == x.ObjetivoId) && x.Id == a.Id),
+                             objetivos.Count()),
+                            ParecerConclusivo = aluno.ParecerConclusivo,
+                            Nome = aluno.NomeAluno,
+                            NumeroChamada = aluno.NumeroAlunoChamada,
+                            CodAluno = a.AlunoId,
+                            Turma = aluno.TurmaEscola,
+                            TurmaId = aluno.CodigoTurma,
+                            TurmaRecuperacaoParalelaId = turmaId,
+                            Respostas = alunosRecuperacaoParalela
+                                                     .Where(w => w.Id == a.Id)
+                                                     .Select(s => new ObjetivoRespostaDto
+                                                     {
+                                                         ObjetivoId = s.ObjetivoId,
+                                                         RespostaId = s.RespostaId
+                                                     }).ToList()
+                        };
+                    }).ToList()
                 }
             };
 
             //parecer conclusivo
-            recuperacaoRetorno.Periodo.Alunos.Where(w => w.Id == 0 && w.ParecerConclusivo.HasValue && char.GetNumericValue(w.ParecerConclusivo.Value) <= 3).ToList().ForEach(x => x.Respostas.Add(new ObjetivoRespostaDto
-            {
-                ObjetivoId = 3,
-                RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
-            }));
+            recuperacaoRetorno.Periodo.Alunos
+                .Where(w => w.Id == 0 && w.ParecerConclusivo.HasValue && char.GetNumericValue(w.ParecerConclusivo.Value) <= 3)
+                .ToList()
+                .ForEach(x => x.Respostas.Add(
+                    new ObjetivoRespostaDto
+                    {
+                        ObjetivoId = 3,
+                        RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
+                    }));
 
             if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento && alunos.Any())
             {
                 //pegar o dados daquela turma pap
                 var dadosTurma = alunos.FirstOrDefault(w => w.CodigoComponenteCurricular.HasValue);
+                var codigoDisciplina = alunos.FirstOrDefault().CodigoComponenteCurricular.ToString();
+
                 //pegar as frequencias de acordo com os critérios
-                var frequencias = await servicoRecuperacaoParalela.ObterFrequencias(alunos.Select(w => w.CodigoAluno).ToArray(), dadosTurma.CodigoComponenteCurricular.ToString(), dadosTurma.Ano, (PeriodoRecuperacaoParalela)periodoId);
+                var frequencias = await servicoRecuperacaoParalela.ObterFrequencias(alunosEol.Select(w => w.CodigoAluno).ToArray(), codigoDisciplina, dadosTurma.Ano, (PeriodoRecuperacaoParalela)periodoId);
+
+                recuperacaoRetorno.Periodo.Alunos.ForEach(aluno =>
+                {
+                    var frequencia = frequencias.FirstOrDefault(x => Convert.ToInt32(x.Key) == aluno.CodAluno);
+
+                    aluno.Respostas.Add(new ObjetivoRespostaDto
+                    {
+                        ObjetivoId = 4,
+                        RespostaId = frequencia.Value
+                    });
+                });
+
                 //frequencias
                 foreach (var frequencia in frequencias)
                 {
@@ -169,6 +194,27 @@ namespace SME.SGP.Aplicacao
                     item.Respostas.Add(new ObjetivoRespostaDto { ObjetivoId = 2, RespostaId = 2 });
                 };
             }
+
+            switch (ordenacao)
+            {
+                case RecuperacaoParalelaOrdenacao.AlfabeticoCrescente:
+                default:
+                    recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderBy(w => w.Nome).ToList();
+                    break;
+
+                case RecuperacaoParalelaOrdenacao.AlfabeticoDecrescente:
+                    recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderByDescending(w => w.Nome).ToList();
+                    break;
+
+                case RecuperacaoParalelaOrdenacao.NumericoCrescente:
+                    recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderBy(w => w.NumeroChamada).ToList();
+                    break;
+
+                case RecuperacaoParalelaOrdenacao.NumericoDecrescente:
+                    recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderByDescending(w => w.NumeroChamada).ToList();
+                    break;
+            }
+
             return recuperacaoRetorno;
         }
 
@@ -275,40 +321,71 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<RecuperacaoParalelaTotalResultadoDto> MapearResultadoParaDto(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items)
         {
-            var total = items.Sum(s => s.Total);
-            return items.GroupBy(g => new { g.EixoId, g.Eixo }).Select(x => new RecuperacaoParalelaTotalResultadoDto
-            {
-                EixoDescricao = x.Key.Eixo,
-                Objetivos = items.Where(obj => obj.EixoId == x.Key.EixoId).GroupBy(objetivo => new { objetivo.ObjetivoId, objetivo.Objetivo }).Select(z => new RecuperacaoParalelaResumoResultadoObjetivoDto
+            return items
+                .GroupBy(g => new { g.EixoId, g.Eixo })
+                .Select(eixo => new RecuperacaoParalelaTotalResultadoDto
                 {
-                    ObjetivoDescricao = z.Key.Objetivo,
-                    Anos = items.Where(ano => ano.ObjetivoId == z.Key.ObjetivoId).GroupBy(h => new { h.Ano, h.ObjetivoId }).Select(a => new RecuperacaoParalelaResumoResultadoAnoDto
-                    {
-                        AnoDescricao = a.Key.Ano,
-                        Respostas = items.Where(res => res.ObjetivoId == a.Key.ObjetivoId).GroupBy(gre => new { gre.Resposta, gre.RespostaId }).Select(r => new RecuperacaoParalelaResumoResultadoRespostaDto
-                        {
-                            RespostaDescricao = r.Key.Resposta,
-                            Quantidade = r.Sum(q => q.Total),
-                            Porcentagem = ((double)r.Sum(q => q.Total) * 100) / total
-                        })
-                    }),
-                    Ciclos = items.Where(ciclo => ciclo.ObjetivoId == z.Key.ObjetivoId).GroupBy(c => new { c.Ciclo, c.ObjetivoId }).Select(cs => new RecuperacaoParalelaResumoResultadoCicloDto
-                    {
-                        CicloDescricao = cs.Key.Ciclo,
-                        Respostas = items.Where(res => res.ObjetivoId == cs.Key.ObjetivoId).GroupBy(gre => new { gre.Resposta, gre.RespostaId }).Select(r => new RecuperacaoParalelaResumoResultadoRespostaDto
-                        {
-                            RespostaDescricao = r.Key.Resposta,
-                            Quantidade = r.Sum(q => q.Total),
-                            Porcentagem = ((double)r.Sum(q => q.Total) * 100) / total
-                        })
-                    }),
-                    Total = items.Where(tot => tot.ObjetivoId == z.Key.ObjetivoId).GroupBy(gt => gt.ObjetivoId).Select(tr => new RecuperacaoParalelaResumoResultadoRespostaDto
-                    {
-                        TotalQuantidade = tr.Sum(tq => tq.Total),
-                        TotalPorcentagem = (tr.Sum(tq => tq.Total) * 100) / total
-                    })
-                })
-            });
+                    EixoDescricao = eixo.Key.Eixo,
+                    Objetivos = ObterObjetivos(items, eixo.Key.EixoId)
+                });
+        }
+
+        private IEnumerable<RecuperacaoParalelaResumoResultadoAnoDto> ObterAnos(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int objetivoId, int total)
+        {
+            return items.Where(ano => ano.ObjetivoId == objetivoId)
+                .GroupBy(h => new { h.Ano, h.ObjetivoId })
+                .Select(ano => new RecuperacaoParalelaResumoResultadoAnoDto
+                {
+                    AnoDescricao = ano.Key.Ano,
+                    Respostas = ObterRespostas(items, objetivoId, ehAno: true, ano.Key.Ano, total)
+                });
+        }
+
+        private IEnumerable<RecuperacaoParalelaResumoResultadoCicloDto> ObterCiclos(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int objetivoId, int total)
+        {
+            return items.Where(ano => ano.ObjetivoId == objetivoId)
+                .GroupBy(h => new { h.Ciclo, h.CicloId, h.ObjetivoId })
+                .Select(ciclo => new RecuperacaoParalelaResumoResultadoCicloDto
+                {
+                    CicloDescricao = ciclo.Key.Ciclo,
+                    Respostas = ObterRespostas(items, objetivoId, ehAno: false, ciclo.Key.CicloId, total)
+                });
+        }
+
+        private IEnumerable<RecuperacaoParalelaResumoResultadoObjetivoDto> ObterObjetivos(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int eixoId)
+        {
+            return items.Where(obj => obj.EixoId == eixoId)
+                .GroupBy(objetivo => new { objetivo.ObjetivoId, objetivo.Objetivo })
+                .Select(objetivo => new RecuperacaoParalelaResumoResultadoObjetivoDto
+                {
+                    Anos = ObterAnos(items, objetivo.Key.ObjetivoId, items.Where(x => x.ObjetivoId == objetivo.Key.ObjetivoId).Sum(s => s.Total)),
+                    Ciclos = ObterCiclos(items, objetivo.Key.ObjetivoId, items.Where(x => x.ObjetivoId == objetivo.Key.ObjetivoId).Sum(s => s.Total)),
+                    ObjetivoDescricao = objetivo.Key.Objetivo,
+                    Total = ObterTotalPorObjetivo(items, objetivo.Key.ObjetivoId, items.Where(x => x.ObjetivoId == objetivo.Key.ObjetivoId).Sum(s => s.Total))
+                });
+        }
+
+        private IEnumerable<RecuperacaoParalelaResumoResultadoRespostaDto> ObterRespostas(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int objetivoId, bool ehAno, int anoCiclo, int total)
+        {
+            return items.Where(res => res.ObjetivoId == objetivoId && (ehAno ? res.Ano == anoCiclo : res.CicloId == anoCiclo))
+                .GroupBy(gre => (gre.Resposta, gre.RespostaId))
+                .Select(resposta => new RecuperacaoParalelaResumoResultadoRespostaDto
+                {
+                    RespostaDescricao = resposta.Key.Resposta,
+                    Quantidade = resposta.Sum(q => q.Total),
+                    Porcentagem = ((double)resposta.Sum(q => q.Total) * 100) / total
+                });
+        }
+
+        private IEnumerable<RecuperacaoParalelaResumoResultadoRespostaDto> ObterTotalPorObjetivo(IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto> items, int objetivoId, int total)
+        {
+            return items.Where(tot => tot.ObjetivoId == objetivoId)
+                .GroupBy(gt => gt.ObjetivoId)
+                .Select(objetivoTotal => new RecuperacaoParalelaResumoResultadoRespostaDto
+                {
+                    TotalQuantidade = objetivoTotal.Sum(x => x.Total),
+                    TotalPorcentagem = (objetivoTotal.Sum(x => x.Total) * 100) / total
+                });
         }
     }
 }
