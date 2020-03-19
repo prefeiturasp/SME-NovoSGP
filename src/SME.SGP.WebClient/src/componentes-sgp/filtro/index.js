@@ -34,6 +34,7 @@ import { erro } from '~/servicos/alertas';
 import modalidade from '~/dtos/modalidade';
 import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
 import { Loader } from '~/componentes';
+import { Checkbox } from 'antd';
 
 const Filtro = () => {
   const dispatch = useDispatch();
@@ -119,12 +120,6 @@ const Filtro = () => {
   const [consideraHistorico, setConsideraHistorico] = useState(
     turmaUsuarioSelecionada && !!turmaUsuarioSelecionada.consideraHistorico
   );
-
-  const aoSelecionarHistorico = () => {
-    setTextoAutocomplete('');
-    dispatch(removerTurma());
-    dispatch(setarConsideraHistorico(!consideraHistorico));
-  };
 
   const aplicarFiltro = useCallback(() => {
     if (
@@ -239,10 +234,6 @@ const Filtro = () => {
   const filtro = useSelector(state => state.filtro);
 
   useEffect(() => {
-    dispatch(limparDadosFiltro());
-  }, [consideraHistorico, dispatch]);
-
-  useEffect(() => {
     setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo || undefined);
     setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade || undefined);
     setPeriodoSelecionado(turmaUsuarioSelecionada.periodo || undefined);
@@ -266,6 +257,10 @@ const Filtro = () => {
     turmaUsuarioSelecionada.turma,
     turmaUsuarioSelecionada.unidadeEscolar,
   ]);
+
+  const campoVazio = campo => {
+    return !campo || campo === [] || campo === '';
+  };
 
   /*
   Sessão onde obtem os dados no backend
@@ -324,7 +319,8 @@ const Filtro = () => {
 
   const obterPeriodos = useCallback(
     async deveSalvarPeriodos => {
-      if (!anoLetivoSelecionado || !modalidadeSelecionada) return [];
+      if (campoVazio(anoLetivoSelecionado) || campoVazio(modalidadeSelecionada))
+        return [];
 
       setCarregandoPeriodos(true);
 
@@ -354,7 +350,8 @@ const Filtro = () => {
 
   const obterDres = useCallback(
     async (estado, periodo) => {
-      if (!anoLetivoSelecionado || !modalidadeSelecionada) return [];
+      if (campoVazio(anoLetivoSelecionado) || campoVazio(modalidadeSelecionada))
+        return [];
 
       setCarregandoDres(true);
 
@@ -379,7 +376,11 @@ const Filtro = () => {
 
   const obterUnidadesEscolares = useCallback(
     async (deveSalvarUes, periodo) => {
-      if (!anoLetivoSelecionado || !modalidadeSelecionada || !dreSelecionada)
+      if (
+        campoVazio(anoLetivoSelecionado) ||
+        campoVazio(modalidadeSelecionada) ||
+        campoVazio(dreSelecionada)
+      )
         return [];
 
       setCarregandoUes(true);
@@ -421,10 +422,10 @@ const Filtro = () => {
   const obterTurmas = useCallback(
     async deveSalvarTurmas => {
       if (
-        !anoLetivoSelecionado ||
-        !modalidadeSelecionada ||
-        !dreSelecionada ||
-        !unidadeEscolarSelecionada
+        campoVazio(anoLetivoSelecionado) ||
+        campoVazio(modalidadeSelecionada) ||
+        campoVazio(dreSelecionada) ||
+        campoVazio(unidadeEscolarSelecionada)
       )
         return [];
 
@@ -642,6 +643,11 @@ const Filtro = () => {
     if (turmas && turmas.length === 1) setTurmaSelecionada(turmas[0].valor);
   }, [turmas]);
 
+  useEffect(() => {
+    dispatch(limparDadosFiltro());
+    obterAnosLetivos(true);
+  }, [consideraHistorico, dispatch, obterAnosLetivos]);
+
   const limparCamposSelecionados = useCallback(() => {
     setAnoLetivoSelecionado('');
     setModalidadeSelecionada('');
@@ -650,6 +656,12 @@ const Filtro = () => {
     setUnidadeEscolarSelecionada('');
     setTurmaSelecionada('');
   }, []);
+
+  const aoSelecionarHistorico = () => {
+    setTextoAutocomplete('');
+    setConsideraHistorico(!consideraHistorico);
+    limparCamposSelecionados();
+  };
 
   const limparFiltro = useCallback(() => {
     dispatch(limparDadosFiltro());
@@ -1024,7 +1036,7 @@ const Filtro = () => {
                   Exibir histórico?
                 </Checkbox>
               </Grid>
-            </div> */}
+            </div>
             */}
             <div className="form-row">
               <Grid cols={3} className="form-group">
