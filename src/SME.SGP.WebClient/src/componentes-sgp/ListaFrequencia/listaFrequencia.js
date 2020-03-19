@@ -142,132 +142,134 @@ const ListaFrequencia = props => {
             </table>
           </div>
           <div className="scroll-tabela-frequencia-tbody">
-            <table className="table mb-0">
-              <tbody className="tabela-frequencia-tbody">
-                {dataSource.map((aluno, i) => {
-                  return (
-                    <React.Fragment key={shortid.generate()}>
-                      <tr
-                        className={
-                          desabilitarCampos || aluno.desabilitado
-                            ? 'desabilitar-aluno'
-                            : ''
-                        }
-                      >
-                        <td className="width-60 text-center font-weight-bold">
-                          {aluno.numeroAlunoChamada}
-                        </td>
-                        <td className="text-left">
-                          {aluno.nomeAluno}
-                          {aluno.marcador ? (
+            {dataSource && dataSource.length && (
+              <table className="table mb-0">
+                <tbody className="tabela-frequencia-tbody">
+                  {dataSource.map((aluno, i) => {
+                    return (
+                      <React.Fragment key={shortid.generate()}>
+                        <tr
+                          className={
+                            desabilitarCampos || aluno.desabilitado
+                              ? 'desabilitar-aluno'
+                              : ''
+                          }
+                        >
+                          <td className="width-60 text-center font-weight-bold">
+                            {aluno.numeroAlunoChamada}
+                          </td>
+                          <td className="text-left">
+                            {aluno.nomeAluno}
+                            {aluno.marcador && (
+                              <>
+                                <CaixaMarcadores>
+                                  {aluno.marcador.nome}
+                                </CaixaMarcadores>
+                                <IconePlusMarcadores
+                                  onClick={() => onClickExpandir(i)}
+                                  className={
+                                    expandirLinha[i]
+                                      ? 'fas fa-minus fa-minus-linha-expandida '
+                                      : 'fas fa-plus-circle'
+                                  }
+                                />
+                              </>
+                            )}
+                          </td>
+                          {dataSource[0].aulas.length > 1 ? (
                             <>
-                              <CaixaMarcadores>
-                                {aluno.marcador.nome}
-                              </CaixaMarcadores>
-                              <IconePlusMarcadores
-                                onClick={() => onClickExpandir(i)}
-                                className={
-                                  expandirLinha[i]
-                                    ? 'fas fa-minus fa-minus-linha-expandida '
-                                    : 'fas fa-plus-circle'
-                                }
-                              />
+                              <td className="width-50">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    marcaPresencaFaltaTodasAulas(aluno, true)
+                                  }
+                                  className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${
+                                    validaSeCompareceuTodasAulas(aluno)
+                                      ? 'btn-compareceu'
+                                      : ''
+                                  } `}
+                                  disabled={
+                                    desabilitarCampos || aluno.desabilitado
+                                  }
+                                >
+                                  <i className="fas fa-check fa-sm" />
+                                </button>
+                              </td>
+                              <td className="width-50">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    marcaPresencaFaltaTodasAulas(aluno, false)
+                                  }
+                                  className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${
+                                    validaSeFaltouTodasAulas(aluno)
+                                      ? 'btn-falta'
+                                      : ''
+                                  } `}
+                                  disabled={
+                                    desabilitarCampos || aluno.desabilitado
+                                  }
+                                >
+                                  <i className="fas fa-times fa-sm" />
+                                </button>
+                              </td>
                             </>
                           ) : null}
-                        </td>
-                        {dataSource[0].aulas.length > 1 ? (
-                          <>
-                            <td className="width-50">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  marcaPresencaFaltaTodasAulas(aluno, true)
-                                }
-                                className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${
-                                  validaSeCompareceuTodasAulas(aluno)
-                                    ? 'btn-compareceu'
-                                    : ''
-                                } `}
-                                disabled={
-                                  desabilitarCampos || aluno.desabilitado
+                          {aluno.aulas.map((aula, a) => {
+                            return (
+                              <td
+                                key={shortid.generate()}
+                                className={
+                                  dataSource[0].aulas.length - 1 === a
+                                    ? 'width-70'
+                                    : 'border-right-none width-70'
                                 }
                               >
-                                <i className="fas fa-check fa-sm" />
-                              </button>
-                            </td>
-                            <td className="width-50">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  marcaPresencaFaltaTodasAulas(aluno, false)
-                                }
-                                className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${
-                                  validaSeFaltouTodasAulas(aluno)
-                                    ? 'btn-falta'
-                                    : ''
-                                } `}
-                                disabled={
-                                  desabilitarCampos || aluno.desabilitado
-                                }
-                              >
-                                <i className="fas fa-times fa-sm" />
-                              </button>
-                            </td>
-                          </>
-                        ) : null}
-                        {aluno.aulas.map((aula, a) => {
-                          return (
-                            <td
-                              key={shortid.generate()}
-                              className={
-                                dataSource[0].aulas.length - 1 === a
-                                  ? 'width-70'
-                                  : 'border-right-none width-70'
-                              }
+                                {renderSwitch(a, aula, aluno)}
+                              </td>
+                            );
+                          })}
+                          <td className="width-70">
+                            <span
+                              className={`width-70 ${
+                                aluno.indicativoFrequencia &&
+                                tipoIndicativoFrequencia.Alerta ===
+                                  aluno.indicativoFrequencia.tipo
+                                  ? 'indicativo-alerta'
+                                  : ''
+                              } ${
+                                aluno.indicativoFrequencia &&
+                                tipoIndicativoFrequencia.Critico ===
+                                  aluno.indicativoFrequencia.tipo
+                                  ? 'indicativo-critico'
+                                  : ''
+                              } `}
                             >
-                              {renderSwitch(a, aula, aluno)}
-                            </td>
-                          );
-                        })}
-                        <td className="width-70">
-                          <span
-                            className={`width-70 ${
-                              aluno.indicativoFrequencia &&
-                              tipoIndicativoFrequencia.Alerta ===
-                                aluno.indicativoFrequencia.tipo
-                                ? 'indicativo-alerta'
-                                : ''
-                            } ${
-                              aluno.indicativoFrequencia &&
-                              tipoIndicativoFrequencia.Critico ===
-                                aluno.indicativoFrequencia.tipo
-                                ? 'indicativo-critico'
-                                : ''
-                            } `}
-                          >
-                            {aluno.indicativoFrequencia
-                              ? `${aluno.indicativoFrequencia.percentual}%`
-                              : ''}
-                          </span>
-                        </td>
-                      </tr>
-                      {expandirLinha[i] ? (
-                        <>
-                          <tr className="linha-expandida">
-                            <td colSpan="1" className="text-center">
-                              <Icon type="double-right" />
-                            </td>
-                            <td colSpan={dataSource[0].aulas.length + 4}>
-                              {aluno.marcador.descricao}
-                            </td>
-                          </tr>
-                        </>
-                      ) : null}
-                    </React.Fragment>
-                  );
-                })}
-              </tbody>
-            </table>
+                              {aluno.indicativoFrequencia
+                                ? `${aluno.indicativoFrequencia.percentual}%`
+                                : ''}
+                            </span>
+                          </td>
+                        </tr>
+                        {expandirLinha[i] && (
+                          <>
+                            <tr className="linha-expandida">
+                              <td colSpan="1" className="text-center">
+                                <Icon type="double-right" />
+                              </td>
+                              <td colSpan={dataSource[0].aulas.length + 4}>
+                                {aluno.marcador.descricao}
+                              </td>
+                            </tr>
+                          </>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
         </Lista>
       ) : null}
@@ -277,7 +279,7 @@ const ListaFrequencia = props => {
 
 ListaFrequencia.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.array]),
-  onChangeFrequencia: PropTypes.func,
+  onChangeFrequencia: PropTypes.oneOfType([PropTypes.func]),
   permissoesTela: PropTypes.oneOfType([PropTypes.any]),
   frequenciaId: PropTypes.oneOfType([PropTypes.any]),
 };
