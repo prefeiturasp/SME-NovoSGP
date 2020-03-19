@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasAulaPrevista consultasAulaPrevista;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasNotaConceitoBimestre consultasNotaConceitoBimestre;
         private readonly IRepositorioConceito repositorioConceito;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
@@ -31,6 +32,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
             IConsultasAulaPrevista consultasAulaPrevista,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
+            IConsultasNotaConceitoBimestre consultasNotaConceitoBimestre,
             IServicoEOL servicoEOL,
             IServicoUsuario servicoUsuario,
             IServicoAluno servicoAluno,
@@ -44,10 +46,27 @@ namespace SME.SGP.Aplicacao
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.consultasAulaPrevista = consultasAulaPrevista ?? throw new ArgumentNullException(nameof(consultasAulaPrevista));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.consultasNotaConceitoBimestre = consultasNotaConceitoBimestre ?? throw new ArgumentNullException(nameof(consultasNotaConceitoBimestre));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
+        }
+
+        public async Task<AnotacaoAlunoCompletoDto> ObterAnotacaoAluno(string codigoAluno, long fechamentoId, string codigoTurma, int anoLetivo)
+        {
+            var consultaAnotacaoAluno = consultasNotaConceitoBimestre.ObterAnotacaoPorAlunoEFechamento(fechamentoId, codigoAluno);
+            var dadosAlunos = await servicoEOL.ObterDadosAluno(codigoAluno, anoLetivo);
+            if (dadosAlunos == null || !dadosAlunos.Any(c => c.CodigoTurma.ToString() == codigoTurma))
+                throw new NegocioException($"Não foram localizados dados do aluno {codigoAluno} na turma {codigoTurma} no EOL para o ano letivo {anoLetivo}");
+
+            var dadosAluno = (AlunoDadosBasicosDto)dadosAlunos.FirstOrDefault(c => c.CodigoTurma.ToString() == codigoTurma);
+
+            return new AnotacaoAlunoCompletoDto()
+            {
+                Aluno = dadosAluno,
+                Anotacao = await consultaAnotacaoAluno
+            };
         }
 
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
