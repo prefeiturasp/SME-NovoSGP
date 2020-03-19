@@ -1026,6 +1026,7 @@ const Filtro = () => {
             ref={divBuscaRef}
             className="container d-block position-absolute bg-white shadow rounded mt-1 px-3 pt-4 pb-1"
           >
+            {/*
             <div className="form-row">
               <Grid cols={12} className="form-group">
                 <Checkbox
@@ -1036,6 +1037,7 @@ const Filtro = () => {
                 </Checkbox>
               </Grid>
             </div>
+            */}
             <div className="form-row">
               <Grid cols={3} className="form-group">
                 <SelectComponent
