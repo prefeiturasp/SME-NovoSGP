@@ -346,7 +346,9 @@ const PlanoAnual = () => {
     setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     setEmEdicao(false);
     if (turmaSelecionada && turmaSelecionada.turma) {
-      setEhEja(turmaSelecionada.modalidade.toString() === modalidade.EJA.toString());
+      setEhEja(
+        turmaSelecionada.modalidade.toString() === modalidade.EJA.toString()
+      );
       setEhMedio(turmaSelecionada.modalidade.toString() === modalidade.ENSINO_MEDIO.toString())
     }
   }, [turmaSelecionada]);
