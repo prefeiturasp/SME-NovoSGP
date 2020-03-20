@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
         }
 
         public async Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto)
@@ -66,11 +67,11 @@ namespace SME.SGP.Aplicacao
             //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
             bool podeAlterar = !EhEventoSME(evento) || (EhEventoSME(evento) && usuario.EhPerfilSME());
 
-            if (!EhEventoSME(evento) && 
-                (evento.TipoEventoId == (long)TipoEvento.LiberacaoExcepcional || 
+            if (!EhEventoSME(evento) &&
+                (evento.TipoEventoId == (long)TipoEvento.LiberacaoExcepcional ||
                  evento.TipoEventoId == (long)TipoEvento.ReposicaoNoRecesso))
                 podeAlterar = !usuario.TemPerfilGestaoUes();
-           
+
             return MapearParaDto(evento, podeAlterar);
         }
 

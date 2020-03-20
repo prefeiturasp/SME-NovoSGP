@@ -28,13 +28,13 @@ namespace SME.SGP.Aplicacao
             var aulaOrigemQuantidade = aulaOrigem.Quantidade;
             var aula = MapearDtoParaEntidade(dto, usuario.CodigoRf, usuario.EhProfessorCj(), aulaOrigem);
 
-            return servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula, aulaOrigemQuantidade);
+            return await servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula, aulaOrigemQuantidade);
         }
 
         public async Task<string> Excluir(long id, string disciplinaNome, RecorrenciaAula recorrencia)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var aula = repositorioAula.ObterPorId(id);
+            var aula = repositorioAula.ObterCompletoPorId(id);
             aula.DisciplinaNome = disciplinaNome;
 
             return await servicoAula.Excluir(aula, recorrencia, usuario);
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var aula = MapearDtoParaEntidade(dto, usuario.CodigoRf, usuario.EhProfessorCj());
 
-            return servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
+            return await servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
         }
 
         private Aula MapearDtoParaEntidade(AulaDto dto, string usuarioRf, bool usuarioEhCJ, Aula aula = null)
