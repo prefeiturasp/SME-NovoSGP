@@ -280,7 +280,7 @@ namespace SME.SGP.Aplicacao
                 Compartilhada = disciplina.Compartilhada,
                 RegistraFrequencia = disciplina.RegistroFrequencia,
                 LancaNota = disciplina.LancaNota,
-                PossuiObjetivos = !turmaPrograma && await consultasObjetivoAprendizagem
+                PossuiObjetivos = !turmaPrograma && consultasObjetivoAprendizagem
                                     .DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
             };
 
