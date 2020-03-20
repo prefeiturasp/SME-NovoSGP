@@ -46,15 +46,17 @@ namespace SME.SGP.Dominio
         public bool AulaCJ { get; set; }
         public Aula AulaPai { get; set; }
         public long? AulaPaiId { get; set; }
+        public ComponenteCurricularEol ComponenteCurricularEol { get; set; }
         public DateTime DataAula { get; set; }
-        public string DisciplinaId { get; set; }
         public string DisciplinaCompartilhadaId { get; set; }
-
+        public string DisciplinaId { get; set; }
+        public string DisciplinaNome { get; set; }
         public bool EhAEE => ComponentesDeAEEColaborativo.Any(c => c == DisciplinaId);
         public bool EhAEEContraturno => ComponentesDeAEEContraturno.Any(c => c == DisciplinaId);
         public bool EhAulaCompartilhada => ComponentesDeAulaCompartilhada.Any(c => c == DisciplinaId);
         public bool EhRecuperacaoParalela => ComponentesDeRecuperacaoParalela.Any(c => c == DisciplinaId);
         public bool EhTecnologiaAprendizagem => ComponentesDeTecnologiaAprendizagem.Any(c => c == DisciplinaId);
+        public bool EhDataSelecionadaFutura => DataAula.Date > DateTime.Now.Date;
 
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
@@ -74,10 +76,9 @@ namespace SME.SGP.Dominio
 
         public long TipoCalendarioId { get; set; }
 
+        public Turma Turma { get; set; }
         public string TurmaId { get; set; }
-
         public string UeId { get; set; }
-
         public long? WorkflowAprovacaoId { get; set; }
 
         public void AdicionarAulaPai(Aula aula)
@@ -94,6 +95,30 @@ namespace SME.SGP.Dominio
             Status = EntidadeStatus.Aprovado;
         }
 
+        public void AtualizaComponenteCurricularEol(ComponenteCurricularEol componenteCurricularEol)
+        {
+            if (componenteCurricularEol != null)
+                ComponenteCurricularEol = componenteCurricularEol;
+        }
+
+        public void AtualizaTipoCalendario(TipoCalendario tipoCalendario)
+        {
+            if (tipoCalendario != null)
+            {
+                TipoCalendarioId = tipoCalendario.Id;
+                TipoCalendario = tipoCalendario;
+            }
+        }
+
+        public void AtualizaTurma(Turma turma)
+        {
+            if (turma != null)
+            {
+                Turma = turma;
+                TurmaId = turma.CodigoTurma;
+            }
+        }
+
         public object Clone()
         {
             return new Aula
@@ -108,6 +133,7 @@ namespace SME.SGP.Dominio
                 UeId = UeId,
                 AulaPai = AulaPai,
                 DisciplinaId = DisciplinaId,
+                DisciplinaNome = DisciplinaNome,
                 AulaPaiId = AulaPaiId,
                 DataAula = DataAula,
                 Migrado = Migrado,
