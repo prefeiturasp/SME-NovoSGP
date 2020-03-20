@@ -1,24 +1,85 @@
+import notasConceitos from '~/dtos/notasConceitos';
+
 class ServicoNota {
-    temQuantidadeMinimaAprovada = (dados, percentualMinimoAprovados) => {
-        let quantidadeAlunos = 0;
-        let valorNotaTotal = 0.0;
-        if (dados.alunos.length > 0) {
-            dados.alunos.forEach(aluno => {
-                if (aluno.podeEditar) {
-                    let totalNotas = 0.0;
-                    quantidadeAlunos++;
-                    aluno.notasBimestre.forEach(nota => {
-                        totalNotas += nota.notaConceito ? nota.notaConceito : 0;
-                    });
-                    valorNotaTotal += totalNotas;
-                }
-            });
-            const mediaNotasTotal = valorNotaTotal / quantidadeAlunos;
-            const ehPorcentagemAceitavel = (mediaNotasTotal * 10) > percentualMinimoAprovados;
-            return ehPorcentagemAceitavel;
-        }
-        return true;
+  temQuantidadeMinimaAprovada = (
+    dados,
+    percentualMinimoAprovados,
+    notaTipo,
+  ) => {
+    const validaNotas = alunos => {
+      let quantidadeTotalNotas = 0;
+      let quantidadeTotalNotasNaoAprovado = 0;
+
+      const mediaAprovacaoBimestre = dados.mediaAprovacaoBimestre;
+
+      alunos.forEach(aluno => {
+        const notasDoAluno = aluno.notasBimestre.filter(
+          nota =>
+            nota.notaConceito !== '' &&
+            nota.notaConceito !== null &&
+            nota.notaConceito !== undefined
+        );
+
+        const qtdAlunosAbaixoMedia = notasDoAluno.filter(nota => nota.notaConceito <= mediaAprovacaoBimestre );
+        quantidadeTotalNotas += notasDoAluno.length;
+        quantidadeTotalNotasNaoAprovado += qtdAlunosAbaixoMedia.length;
+      });
+
+      const persentualAbaixoMedia = quantidadeTotalNotasNaoAprovado / quantidadeTotalNotas * 100;
+      const ehPorcentagemAceitavel = persentualAbaixoMedia < percentualMinimoAprovados;
+      return ehPorcentagemAceitavel;
     };
+
+    const validaConceitos = alunos => {
+      let quantidadeTotalNotas = 0;
+      let quantidadeTotalNotasNaoAprovado = 0;
+
+      const listaTiposConceitos = dados.listaTiposConceitos;
+      const tipoNaoAprovado = listaTiposConceitos.find(tipo => !tipo.aprovado);
+      const codigoTipoNaoAprovado = tipoNaoAprovado.id;
+
+      alunos.forEach(aluno => {
+        const notasDoAluno = aluno.notasBimestre.filter(
+          nota =>
+            nota.notaConceito !== '' &&
+            nota.notaConceito !== null &&
+            nota.notaConceito !== undefined
+        );
+        const totalNaoAprovado = notasDoAluno.filter(nota => {
+          return Number(nota.notaConceito) == Number(codigoTipoNaoAprovado);
+        }); 
+        quantidadeTotalNotas += notasDoAluno.length;
+        quantidadeTotalNotasNaoAprovado += totalNaoAprovado.length;
+      });
+
+      const persentualAbaixoMedia = quantidadeTotalNotasNaoAprovado / quantidadeTotalNotas * 100;
+      const ehPorcentagemAceitavel = persentualAbaixoMedia < percentualMinimoAprovados;
+      return ehPorcentagemAceitavel;
+    };
+
+    if (dados && dados.alunos && dados.alunos.length > 0) {
+      if (notaTipo === notasConceitos.Notas) {
+
+        const alunosComNotas = dados.alunos.filter(aluno => {
+          const notasDoAluno = aluno.notasBimestre.filter(
+            nota =>
+              nota.notaConceito !== '' &&
+              nota.notaConceito !== null &&
+              nota.notaConceito !== undefined
+          );
+          return notasDoAluno.length;
+        });        
+        if (alunosComNotas && alunosComNotas.length) {
+          return validaNotas(alunosComNotas);
+        }
+      }
+      if (notaTipo === notasConceitos.Conceitos) {
+        return validaConceitos(dados.alunos);
+      }
+    }
+
+    return true;
+  };
 }
 
 export default new ServicoNota();
