@@ -5,7 +5,7 @@
         public Paginacao(int pagina, int registros)
         {
             pagina = pagina < 1 ? 1 : pagina;
-            registros = registros < 1 ? 0 : registros;
+            registros = registros < 1 ? 10 : registros;
 
             QuantidadeRegistros = registros;
             QuantidadeRegistrosIgnorados = (pagina - 1) * registros;
