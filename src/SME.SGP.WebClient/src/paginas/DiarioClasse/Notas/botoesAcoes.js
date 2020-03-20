@@ -59,7 +59,7 @@ const BotoesAcoessNotasConceitos = props => {
         border
         bold
         className="mr-2"
-        onClick={() => onClickSalvar(modoEdicaoGeralNotaFinal)}
+        onClick={onClickSalvar}
         disabled={
           desabilitarBotao || (!modoEdicaoGeral && !modoEdicaoGeralNotaFinal)
         }
