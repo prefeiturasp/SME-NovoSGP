@@ -53,6 +53,7 @@ const FechamentoBismestre = () => {
   const [ehSintese, setEhSintese] = useState(false);
   const [periodoFechamento, setPeriodoFechamento] = useState(periodo.Anual);
   const [desabilitaAbaFinal, setDesabilitaAbaFinal] = useState(false);
+  const [situacaoFechamento, setSituacaoFechamento] = useState(0);
 
   const onChangeDisciplinas = id => {
     const disciplina = listaDisciplinas.find(
@@ -120,6 +121,7 @@ const FechamentoBismestre = () => {
       if (fechamento && fechamento.data) {
         const dadosFechamento = fechamento.data;
         setEhSintese(dadosFechamento.ehSintese);
+        setSituacaoFechamento(dadosFechamento.situacao);
         setPeriodoFechamento(dadosFechamento.periodo);
         setBimestreCorrente(`${dadosFechamento.bimestre}`);
         setDadosBimestre(dadosFechamento.bimestre, dadosFechamento);
@@ -292,6 +294,7 @@ const FechamentoBismestre = () => {
                         dados={dadosBimestre1}
                         ehRegencia={ehRegencia}
                         ehSintese={ehSintese}
+                        situacaoFechamento={situacaoFechamento}
                       />
                     ) : null}
                   </TabPane>
@@ -302,6 +305,7 @@ const FechamentoBismestre = () => {
                         dados={dadosBimestre2}
                         ehRegencia={ehRegencia}
                         ehSintese={ehSintese}
+                        situacaoFechamento={situacaoFechamento}
                       />
                     ) : null}
                   </TabPane>
@@ -312,6 +316,7 @@ const FechamentoBismestre = () => {
                           dados={dadosBimestre3}
                           ehRegencia={ehRegencia}
                           ehSintese={ehSintese}
+                          situacaoFechamento={situacaoFechamento}
                         />
                       ) : null}
                     </TabPane>) : null
@@ -323,6 +328,7 @@ const FechamentoBismestre = () => {
                           dados={dadosBimestre4}
                           ehRegencia={ehRegencia}
                           ehSintese={ehSintese}
+                          situacaoFechamento={situacaoFechamento}
                         />
                       ) : null}
                     </TabPane>) : null

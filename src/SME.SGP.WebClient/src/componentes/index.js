@@ -25,3 +25,4 @@ export { default as PainelCollapse } from './PainelCollapse';
 export { default as LazyLoad } from './LazyLoad';
 export { default as Graficos } from './Graficos';
 export { default as BarraNavegacao } from './BarraNavegacao';
+export { default as ModalMultiLinhas } from './modalMultiLinhas';

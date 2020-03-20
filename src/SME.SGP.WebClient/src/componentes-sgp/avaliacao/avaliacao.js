@@ -56,21 +56,21 @@ const Avaliacao = props => {
   const montarCabecalhoAvaliacoes = () => {
     return dados.avaliacoes && dados.avaliacoes.length > 0
       ? dados.avaliacoes.map(avaliacao => {
-          const descricaoSemHtml = avaliacao.descricao.replace(
-            /<[^>]*>?/gm,
-            ''
-          );
-          return (
-            <th key={shortid.generate()} className="width-150">
-              <div className="texto-header-avaliacao">
-                <Tooltip title={avaliacao.nome}>{avaliacao.nome}</Tooltip>
-              </div>
-              <div className="texto-header-avaliacao">
-                {window.moment(avaliacao.data).format('DD/MM/YYYY')}
-              </div>
-            </th>
-          );
-        })
+        const descricaoSemHtml = avaliacao.descricao.replace(
+          /<[^>]*>?/gm,
+          ''
+        );
+        return (
+          <th key={shortid.generate()} className="width-150">
+            <div className="texto-header-avaliacao">
+              <Tooltip title={avaliacao.nome}>{avaliacao.nome}</Tooltip>
+            </div>
+            <div className="texto-header-avaliacao">
+              {window.moment(avaliacao.data).format('DD/MM/YYYY')}
+            </div>
+          </th>
+        );
+      })
       : '';
   };
 
@@ -85,20 +85,20 @@ const Avaliacao = props => {
   const montarCabecalhoInterdisciplinar = () => {
     return dados.avaliacoes && dados.avaliacoes.length > 0
       ? dados.avaliacoes.map(avaliacao => {
-          return avaliacao.ehInterdisciplinar ? (
-            <th key={shortid.generate()}>
-              <Tooltip
-                title={montarToolTipDisciplinas(avaliacao.disciplinas)}
-                placement="bottom"
-                overlayStyle={{ fontSize: '12px' }}
-              >
-                <CaixaMarcadores>Interdisciplinar</CaixaMarcadores>
-              </Tooltip>
-            </th>
-          ) : (
+        return avaliacao.ehInterdisciplinar ? (
+          <th key={shortid.generate()}>
+            <Tooltip
+              title={montarToolTipDisciplinas(avaliacao.disciplinas)}
+              placement="bottom"
+              overlayStyle={{ fontSize: '12px' }}
+            >
+              <CaixaMarcadores>Interdisciplinar</CaixaMarcadores>
+            </Tooltip>
+          </th>
+        ) : (
             <th key={shortid.generate()} />
           );
-        })
+      })
       : '';
   };
 
@@ -261,36 +261,36 @@ const Avaliacao = props => {
                                 </div>
                               </>
                             ) : (
-                              <div style={{ marginLeft: '30px' }}>
-                                {aluno.nome}
-                              </div>
-                            )}
+                                <div style={{ marginLeft: '30px' }}>
+                                  {aluno.nome}
+                                </div>
+                              )}
                           </td>
                           {aluno.notasAvaliacoes.length
                             ? aluno.notasAvaliacoes.map(nota => {
-                                return (
-                                  <td
-                                    key={shortid.generate()}
-                                    className="width-150"
-                                  >
-                                    {montarCampoNotaConceito(nota)}
-                                    {nota.ausente ? (
-                                      <Tooltip title={descricaoAlunoAusente}>
-                                        <i className="fas fa-user-times icon-aluno-ausente" />
-                                      </Tooltip>
-                                    ) : (
+                              return (
+                                <td
+                                  key={shortid.generate()}
+                                  className="width-150"
+                                >
+                                  {montarCampoNotaConceito(nota)}
+                                  {nota.ausente ? (
+                                    <Tooltip title={descricaoAlunoAusente}>
+                                      <i className="fas fa-user-times icon-aluno-ausente" />
+                                    </Tooltip>
+                                  ) : (
                                       ''
                                     )}
-                                  </td>
-                                );
-                              })
+                                </td>
+                              );
+                            })
                             : ''}
                           <td className="sticky-col col-nota-final linha-nota-conceito-final">
                             {ehRegencia ? (
                               <ColunaNotaFinalRegencia indexLinha={i} />
                             ) : (
-                              montarCampoNotaConceitoFinal(aluno)
-                            )}
+                                montarCampoNotaConceitoFinal(aluno)
+                              )}
                           </td>
 
                           <td className="sticky-col col-frequencia linha-frequencia ">
@@ -321,23 +321,23 @@ const Avaliacao = props => {
           </div>
         </TabelaColunasFixas>
       ) : (
-        <LabelSemDados
-          text="Bimestre selecionado não possui atividade avaliativa cadastrada"
-          center
-        />
-      )}
+          <LabelSemDados
+            text="Bimestre selecionado não possui atividade avaliativa cadastrada"
+            center
+          />
+        )}
     </>
   );
 };
 
 Avaliacao.propTypes = {
   notaTipo: PropTypes.number,
-  onChangeOrdenacao: () => {},
+  onChangeOrdenacao: () => { },
 };
 
 Avaliacao.defaultProps = {
   notaTipo: 0,
-  onChangeOrdenacao: () => {},
+  onChangeOrdenacao: () => { },
 };
 
 export default Avaliacao;
