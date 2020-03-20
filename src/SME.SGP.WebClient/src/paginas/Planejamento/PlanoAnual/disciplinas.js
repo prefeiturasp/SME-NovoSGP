@@ -8,7 +8,6 @@ const Disciplinas = ({
   onChange,
 }) => {
   const [listaDisciplinas, setListaDisciplinas] = useState(disciplinas);
-  const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState([]);
 
   useEffect(() => {
     if (disciplinas) {
@@ -18,24 +17,18 @@ const Disciplinas = ({
 
   const selecionarDisciplina = (codigoComponenteCurricular, selecionada) => {
     if (!layoutEspecial) {
-      const indiceDisciplina = disciplinasSelecionadas.findIndex(
-        c => c === codigoComponenteCurricular
-      );
-      if (indiceDisciplina >= 0) {
-        if (!selecionada) {
-          disciplinasSelecionadas.splice(indiceDisciplina, 1);
-        }
-      } else if (selecionada) {
-        disciplinasSelecionadas.push(codigoComponenteCurricular);
-      }
-      setDisciplinasSelecionadas([...disciplinasSelecionadas]);
-      onChange(disciplinasSelecionadas);
+      const disciplina = selecionada ? [codigoComponenteCurricular] : [];
+      disciplinas.forEach(item => {
+        item.selecionada = item.codigoComponenteCurricular === codigoComponenteCurricular
+          ? selecionada : false;
+      });
+      setListaDisciplinas([...disciplinas]);
+      onChange(disciplina);
     }
   };
 
   useEffect(() => {
-    setDisciplinasSelecionadas(preSelecionadas);
-    onChange(preSelecionadas);
+    onChange(undefined);
   }, [preSelecionadas]);
 
   return (

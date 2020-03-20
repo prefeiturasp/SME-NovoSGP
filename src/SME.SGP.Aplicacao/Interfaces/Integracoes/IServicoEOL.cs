@@ -45,6 +45,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids);
 
+        Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAsync(long[] ids);
+
         Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids);
 
         IEnumerable<DreRespostaEolDto> ObterDres();
@@ -99,9 +101,13 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data);
 
+        Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, string[] datas, long codigoDisciplina);
+
         Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data);
 
         Task ReiniciarSenha(string login);
+
+        Task<UsuarioEolAutenticacaoRetornoDto> RelecionarUsuarioPerfis(string login);
 
         Task RemoverCJSeNecessario(Guid usuarioId);
 

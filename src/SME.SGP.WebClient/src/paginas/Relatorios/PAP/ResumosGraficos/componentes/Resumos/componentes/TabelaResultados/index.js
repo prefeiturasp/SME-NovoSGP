@@ -1,19 +1,63 @@
+/* eslint-disable no-param-reassign */
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import shortid from 'shortid';
 
 // Ant
-import { Table } from 'antd';
+import { Table, Tooltip } from 'antd';
 import { Base, SelectComponent } from '~/componentes';
 
+// Helpers
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import { ordenarPor } from '~/utils/funcoes/gerais';
+
 const Tabela = styled(Table)`
+  .ant-table {
+    display: block;
+  }
+
+  @media screen and (max-width: 576px) {
+    .ant-table-thead {
+      display: none;
+    }
+    .ant-table-thead > tr th:first-of-type,
+    .ant-table-tbody > tr th:first-of-type,
+    .ant-table-thead > tr td:first-of-type,
+    .ant-table-tbody > tr td:first-of-type {
+      padding-top: 1rem;
+    }
+    .ant-table-thead > tr th:last-of-type,
+    .ant-table-tbody > tr th:last-of-type,
+    .ant-table-thead > tr td:last-of-type,
+    .ant-table-tbody > tr td:last-of-type {
+      padding-bottom: 1rem;
+    }
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > th,
+    .ant-table-thead > tr > td,
+    .ant-table-tbody > tr > td {
+      display: block;
+      width: auto;
+      border: none;
+      padding: 0 1rem;
+      font-size: 1.1rem;
+    }
+    .ant-table-thead > tr > th:last-child,
+    .ant-table-tbody > tr > th:last-child,
+    .ant-table-thead > tr > td:last-child,
+    .ant-table-tbody > tr > td:last-child {
+      border-bottom: 1px solid ${Base.CinzaMenu};
+    }
+  }
+
   th.headerTotal {
     background-color: ${Base.Roxo};
     color: ${Base.Branco};
   }
 `;
 
-function objetoExistaNaLista(objeto, lista) {
+function objetoExisteNaLista(objeto, lista) {
   return lista.some(
     elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
   );
@@ -24,39 +68,52 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
   const [colunas, setColunas] = useState([]);
 
-  const [unidadeSelecionada, setUnidadeSelecionada] = useState('quantidade');
-
-  const renderizarCor = () => {
-    const cores = [
-      Base.AzulCalendario,
-      Base.CinzaCalendario,
-      Base.Laranja,
-      Base.RosaCalendario,
-      Base.Roxo,
-      Base.Verde,
-      Base.Vermelho,
-    ];
-    return cores[Math.floor(Math.random() * 6)];
+  const UNIDADES = {
+    Q: 'quantidade',
+    P: 'porcentagem',
   };
+
+  const [unidadeSelecionada, setUnidadeSelecionada] = useState(UNIDADES.Q);
 
   const montaColunasDados = useCallback(() => {
     setDadosTabela([]);
+
+    if (Object.entries(dados).length && !Object.entries(dados.items).length)
+      return;
+
+    let eixoCores = [];
+
+    const renderizarCor = eixo => {
+      const cores = [
+        Base.AzulCalendario,
+        Base.LaranjaAlerta,
+        Base.Laranja,
+        Base.RosaCalendario,
+        Base.Roxo,
+        Base.Verde,
+        Base.Vermelho,
+      ];
+      return cores[eixoCores.indexOf(eixo)];
+    };
 
     const colunasFixas = [
       {
         title: 'Eixo',
         dataIndex: 'Eixo',
-        colSpan: 3,
-        width: 200,
+        colSpan: 1,
+        fixed: 'left',
+        width: 150,
         render: (text, row) => {
+          let valor = text;
+          if (valor.length > 50) valor = `${text.substr(0, 50)}...`;
           return {
-            children: text,
+            children: <Tooltip title={text}>{valor}</Tooltip>,
             props: {
-              rowSpan: row.AgrupaEixo
-                ? row.TamanhoObjetivos * row.TamanhoRespostas
-                : 0,
+              rowSpan: row.EixoGrupo ? row.EixoSize : 0,
               style: {
-                borderLeft: `7px solid ${renderizarCor()}`,
+                borderLeft: `${
+                  row.EixoGrupo ? `7px solid ${renderizarCor(text)}` : ``
+                }`,
                 fontWeight: 'bold',
               },
             },
@@ -66,14 +123,19 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
       {
         title: 'Objetivo',
         dataIndex: 'Objetivo',
-        colSpan: 0,
-        width: 150,
+        colSpan: 1,
+        fixed: 'left',
+        width: 100,
         render: (text, row) => {
+          let valor = text;
+          if (valor.length > 50) valor = `${text.substr(0, 50)}...`;
           return {
-            children: text,
+            children: <Tooltip title={text}>{valor}</Tooltip>,
             props: {
-              rowSpan: row.AgrupaObjetivo ? row.TamanhoRespostas : 0,
-              style: { fontWeight: 'bold' },
+              rowSpan: row.ObjetivoGrupo ? row.ObjetivoSize : 0,
+              style: {
+                fontWeight: 'bold',
+              },
             },
           };
         },
@@ -81,8 +143,9 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
       {
         title: 'Resposta',
         dataIndex: 'Resposta',
-        colSpan: 0,
-        width: 150,
+        colSpan: 1,
+        fixed: 'left',
+        width: 100,
         render: text => {
           return {
             children: text,
@@ -101,93 +164,205 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
 
       const eixos = [...dados.items];
 
+      const eixosSize = [];
+      eixos.forEach(eixo => {
+        if (!eixosSize[eixo.eixoDescricao]) eixosSize[eixo.eixoDescricao] = 0;
+
+        eixo.objetivos.forEach(objetivo => {
+          // Anos
+          if (anos && objetivo.anos && objetivo.anos.length) {
+            const respostas = [];
+            objetivo.anos.forEach(ano => {
+              ano.respostas
+                .sort(FiltroHelper.ordenarLista('ordem'))
+                .forEach(resposta => {
+                  if (
+                    !objetoExisteNaLista(resposta.respostaDescricao, respostas)
+                  )
+                    respostas.push(resposta.respostaDescricao);
+                });
+            });
+            eixosSize[eixo.eixoDescricao] += parseInt(respostas.length, 10);
+          }
+
+          // Ciclos
+          if (ciclos && objetivo.ciclos && objetivo.ciclos.length) {
+            const respostas = [];
+            objetivo.ciclos.forEach(ciclo => {
+              ciclo.respostas
+                .sort(FiltroHelper.ordenarLista('ordem'))
+                .forEach(resposta => {
+                  if (
+                    !objetoExisteNaLista(resposta.respostaDescricao, respostas)
+                  )
+                    respostas.push(resposta.respostaDescricao);
+                });
+            });
+            eixosSize[eixo.eixoDescricao] += parseInt(respostas.length, 10);
+          }
+        });
+      });
+
+      eixoCores = Object.keys(eixosSize);
+
       eixos.forEach(eixo => {
         eixo.objetivos.forEach((objetivo, o) => {
-          if (ciclos && objetivo.ciclos.length) {
+          const item = [];
+
+          if (ciclos && objetivo.ciclos && objetivo.ciclos.length) {
+            // Ciclos
+            let ciclosSize = 0;
+            objetivo.ciclos.forEach(ciclo => {
+              ciclosSize =
+                ciclo.respostas.length > ciclosSize
+                  ? ciclo.respostas.length
+                  : ciclosSize;
+            });
+
+            objetivo.ciclos.forEach((ciclo, c) => {
+              ciclo.respostas
+                .sort(FiltroHelper.ordenarLista('ordem'))
+                .forEach((resposta, r) => {
+                  if (
+                    !item.find(
+                      dado => dado.Resposta === resposta.respostaDescricao
+                    )
+                  ) {
+                    item.push({
+                      Id: shortid.generate(),
+                      Eixo: eixo.eixoDescricao,
+                      EixoGrupo: o === 0 && c === 0 && r === 0,
+                      EixoSize: eixosSize[eixo.eixoDescricao],
+                      Objetivo: objetivo.objetivoDescricao,
+                      ObjetivoGrupo: c === 0 && r === 0,
+                      Resposta: resposta.respostaDescricao,
+                      Ordem: resposta.ordem,
+                      Total: 0,
+                    });
+                  }
+                });
+            });
+
+            item.map(i => {
+              i.ObjetivoSize = item.length;
+              return i;
+            });
+
+            objetivo.ciclos.forEach(ciclo => {
+              ciclo.respostas
+                .sort(FiltroHelper.ordenarLista('ordem'))
+                .forEach(resposta => {
+                  item
+                    .filter(i => i.Resposta === resposta.respostaDescricao)
+                    .map(i => {
+                      i[ciclo.cicloDescricao] =
+                        unidadeSelecionada === UNIDADES.Q
+                          ? resposta[unidadeSelecionada]
+                          : `${resposta[unidadeSelecionada].toFixed(2)}%`;
+                      i.Total += resposta[unidadeSelecionada];
+                      return item;
+                    });
+                });
+            });
+
+            if (unidadeSelecionada === UNIDADES.P) {
+              item.forEach(i => {
+                i.Total = `${i.Total.toFixed(2)}%`;
+              });
+            }
+
             // Ciclos
             objetivo.ciclos.forEach(ciclo => {
               // Colunas
               const coluna = {
                 title: `${ciclo.cicloDescricao}`,
                 dataIndex: `${ciclo.cicloDescricao}`,
+                render: text =>
+                  text || `0${unidadeSelecionada === UNIDADES.P ? `%` : ``}`,
               };
 
-              if (!objetoExistaNaLista(coluna, montaColunas))
+              if (!objetoExisteNaLista(coluna, montaColunas))
                 montaColunas.push(coluna);
-
-              // Dados
-              ciclo.respostas.forEach((resposta, r) => {
-                const dado = {};
-                dado.Eixo = eixo.eixoDescricao;
-                dado.Objetivo = objetivo.objetivoDescricao;
-                dado.TamanhoObjetivos = eixo.objetivos.length;
-                dado.Resposta = resposta.respostaDescricao;
-                dado.TamanhoRespostas = ciclo.respostas.length;
-                dado.AgrupaEixo = o === 0 && r === 0;
-                dado.AgrupaObjetivo = r === 0;
-
-                let total = 0;
-
-                objetivo.ciclos.forEach(cicloResposta => {
-                  dado[cicloResposta.cicloDescricao] =
-                    unidadeSelecionada === 'quantidade'
-                      ? resposta[unidadeSelecionada]
-                      : `${Math.round(resposta[unidadeSelecionada], 2)}%`;
-                  total += resposta[unidadeSelecionada];
-                });
-
-                dado.Total =
-                  unidadeSelecionada === 'quantidade'
-                    ? total
-                    : `${Math.round(total, 2)}%`;
-
-                if (!objetoExistaNaLista(dado, montaDados))
-                  montaDados.push(dado);
-              });
             });
-          } else if (anos && objetivo.anos.length) {
+          } else if (anos && objetivo.anos && objetivo.anos.length) {
+            // Anos
+            let anosSize = 0;
+            objetivo.anos.forEach(ano => {
+              anosSize =
+                ano.respostas.length > anosSize
+                  ? ano.respostas.length
+                  : anosSize;
+            });
+
+            objetivo.anos.forEach((ano, a) => {
+              ano.respostas
+                .sort(FiltroHelper.ordenarLista('ordem'))
+                .forEach((resposta, r) => {
+                  if (
+                    !item.find(
+                      dado => dado.Resposta === resposta.respostaDescricao
+                    )
+                  ) {
+                    item.push({
+                      Id: shortid.generate(),
+                      Eixo: eixo.eixoDescricao,
+                      EixoGrupo: o === 0 && a === 0 && r === 0,
+                      EixoSize: eixosSize[eixo.eixoDescricao],
+                      Objetivo: objetivo.objetivoDescricao,
+                      ObjetivoGrupo: a === 0 && r === 0,
+                      Resposta: resposta.respostaDescricao,
+                      Ordem: resposta.ordem,
+                      Total: 0,
+                    });
+                  }
+                });
+            });
+
+            item.map(i => {
+              i.ObjetivoSize = item.length;
+              return i;
+            });
+
+            objetivo.anos.forEach(ano => {
+              ano.respostas
+                .sort(FiltroHelper.ordenarLista('ordem'))
+                .forEach(resposta => {
+                  item
+                    .filter(i => i.Resposta === resposta.respostaDescricao)
+                    .map(i => {
+                      i[ano.anoDescricao] =
+                        unidadeSelecionada === UNIDADES.Q
+                          ? resposta[unidadeSelecionada]
+                          : `${resposta[unidadeSelecionada].toFixed(2)}%`;
+                      i.Total += resposta[unidadeSelecionada];
+                      return item;
+                    });
+                });
+            });
+
+            if (unidadeSelecionada === UNIDADES.P) {
+              item.forEach(i => {
+                i.Total = `${i.Total.toFixed(2)}%`;
+              });
+            }
+
             // Anos
             objetivo.anos.forEach(ano => {
               // Colunas
               const coluna = {
                 title: `${ano.anoDescricao}`,
                 dataIndex: `${ano.anoDescricao}`,
+                render: text =>
+                  text || `0${unidadeSelecionada === UNIDADES.P ? `%` : ``}`,
               };
 
-              if (!objetoExistaNaLista(coluna, montaColunas))
+              if (!objetoExisteNaLista(coluna, montaColunas))
                 montaColunas.push(coluna);
-
-              // Dados
-              ano.respostas.forEach((resposta, r) => {
-                const dado = {};
-                dado.Eixo = eixo.eixoDescricao;
-                dado.Objetivo = objetivo.objetivoDescricao;
-                dado.TamanhoObjetivos = eixo.objetivos.length;
-                dado.Resposta = resposta.respostaDescricao;
-                dado.TamanhoRespostas = ano.respostas.length;
-                dado.AgrupaEixo = o === 0 && r === 0;
-                dado.AgrupaObjetivo = r === 0;
-
-                let total = 0;
-
-                objetivo.anos.forEach(anoResposta => {
-                  dado[anoResposta.anoDescricao] =
-                    unidadeSelecionada === 'quantidade'
-                      ? resposta[unidadeSelecionada]
-                      : `${Math.round(resposta[unidadeSelecionada], 2)}%`;
-                  total += resposta[unidadeSelecionada];
-                });
-
-                dado.Total =
-                  unidadeSelecionada === 'quantidade'
-                    ? total
-                    : `${Math.round(total, 2)}%`;
-
-                if (!objetoExistaNaLista(dado, montaDados))
-                  montaDados.push(dado);
-              });
             });
           }
+
+          item.sort(FiltroHelper.ordenarLista('Ordem'));
+          montaDados.push(...item);
         });
       });
 
@@ -196,8 +371,8 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
       montaColunas.push({
         title: 'Total',
         dataIndex: 'Total',
-        width: 100,
         fixed: 'right',
+        width: 100,
         className: 'headerTotal',
         render: text => {
           return {
@@ -209,9 +384,9 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         },
       });
 
-      setColunas([...colunasFixas, ...montaColunas]);
+      setColunas([...colunasFixas, ...ordenarPor(montaColunas, 'title')]);
     }
-  }, [dados, ciclos, anos, unidadeSelecionada]);
+  }, [dados, anos, ciclos, unidadeSelecionada, UNIDADES.P, UNIDADES.Q]);
 
   useEffect(() => {
     montaColunasDados();
@@ -251,6 +426,7 @@ const TabelaResultados = ({ dados, ciclos, anos }) => {
         size="middle"
         className="my-2"
         bordered
+        locale={{ emptyText: 'Sem dados' }}
       />
     </>
   );

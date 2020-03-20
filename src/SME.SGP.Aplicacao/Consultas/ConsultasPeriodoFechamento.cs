@@ -13,10 +13,10 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioDre repositorioDre;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
         public ConsultasPeriodoFechamento(IServicoPeriodoFechamento servicoPeriodoFechamento,
                                 IRepositorioTurma repositorioTurma,
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> TurmaEmPeriodoDeFechamento(string turmaCodigo, DateTime dataReferencia, int bimestre)
         {
-            var turma = repositorioTurma.ObterPorId(turmaCodigo);
+            var turma = repositorioTurma.ObterPorCodigo(turmaCodigo);
             var ue = repositorioUe.ObterPorId(turma.UeId);
             var dre = repositorioDre.ObterPorId(ue.DreId);
 
@@ -60,10 +60,10 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> UeEmReaberturaDeFechamento(long tipoCalendarioId, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
         {
             // Busca eventos de fechamento na data atual
-            var eventosFechamento = await repositorioEvento.EventosNosDiasETipo(dataReferencia, dataReferencia, 
+            var eventosFechamento = await repositorioEvento.EventosNosDiasETipo(dataReferencia, dataReferencia,
                                             TipoEvento.FechamentoBimestre, tipoCalendarioId, ueCodigo, dreCodigo);
 
-            foreach(var eventoFechamento in eventosFechamento)
+            foreach (var eventoFechamento in eventosFechamento)
             {
                 // Verifica existencia de reabertura de fechamento com mesmo inicio e fim do evento de fechamento
                 var reaberturasPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestre(

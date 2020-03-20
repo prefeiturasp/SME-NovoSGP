@@ -16,6 +16,11 @@ const ResumosGraficosPAPServico = {
       params,
     });
   },
+  ListarInformacoesEscolares(params) {
+    return api.get('v1/recuperacao-paralela/resultado/encaminhamento', {
+      params,
+    });
+  },
 };
 
 export default ResumosGraficosPAPServico;

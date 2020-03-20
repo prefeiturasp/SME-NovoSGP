@@ -25,7 +25,7 @@ namespace SME.SGP.Dominio
         private readonly IUnitOfWork unitOfWork;
 
         public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
-                              IServicoEOL servicoEOL,
+                                      IServicoEOL servicoEOL,
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
                               IUnitOfWork unitOfWork,
                               IContextoAplicacao contextoAplicacao,
@@ -190,21 +190,28 @@ namespace SME.SGP.Dominio
             var usuarioLogado = await ObterUsuarioLogado();
 
             if (!usuarioLogado.EhProfessorCj())
-                return await servicoEOL.PodePersistirTurma(codigoRf, turmaId, data);
+                return await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, data);
 
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRf);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
 
-        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data)
+        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
         {
-            var usuarioLogado = await ObterUsuarioLogado();
+            if (usuario == null)
+                usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, string.Empty);
 
-            if (!usuarioLogado.EhProfessorCj())
-                return await servicoEOL.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, data);
+            if (!usuario.EhProfessorCj())
+            {
+                var validacaoData = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, turmaId, new string[] { data.ToString("s") }, long.Parse(disciplinaId));
 
-            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRf);
+                if (validacaoData == null || !validacaoData.Any())
+                    throw new NegocioException("Não foi possível obter a validação do professor no EOL.");
+
+                return validacaoData.FirstOrDefault().PodePersistir;
+            }
+            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
@@ -241,6 +248,13 @@ namespace SME.SGP.Dominio
             if (retornoEol == null || retornoEol.Status != AutenticacaoStatusEol.Ok)
                 throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
 
+            if (retornoEol.Perfis == null || !retornoEol.Perfis.Any())
+            {
+                //pode ser que esse usuário não tenha se logado ainda no sistema, realizar chamada para o serviço de relacionar grupos
+                retornoEol = await servicoEOL.RelecionarUsuarioPerfis(usuario.Login);
+                if (retornoEol == null || !retornoEol.Perfis.Any())
+                    throw new NegocioException("Não é possível alterar o e-mail deste usuário pois o mesmo está sem perfis de acesso.");
+            }
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(retornoEol.Perfis);
             usuario.DefinirPerfis(perfisUsuario);
             usuario.DefinirEmail(novoEmail);

@@ -1,10 +1,8 @@
 import React from 'react';
+import t from 'prop-types';
 
 // Nivo
 import { ResponsiveBar } from '@nivo/bar';
-
-// Componentes
-import { Base } from '~/componentes';
 
 function Barras({
   dados,
@@ -14,26 +12,18 @@ function Barras({
   legendaEsquerda,
   porcentagem,
 }) {
-  const format = v => `${v}%`;
+  const format = v => `${Math.round(v, 2)}%`;
 
   return (
     <ResponsiveBar
       data={dados}
       keys={chaves}
       indexBy={indice}
-      margin={{ top: 50, right: 100, bottom: 50, left: 60 }}
+      margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
+      innerPadding={1}
       groupMode="grouped"
-      colors={[
-        Base.Laranja,
-        Base.Vermelho,
-        Base.Azul,
-        Base.Verde,
-        Base.Preto,
-        Base.Roxo,
-        Base.CinzaBarras,
-      ]}
-      // color={{ scheme: 'set3' }}
+      color={{ scheme: 'set3' }}
       borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
       axisTop={null}
       axisRight={null}
@@ -89,5 +79,23 @@ function Barras({
     />
   );
 }
+
+Barras.propTypes = {
+  dados: t.oneOfType([t.any]),
+  indice: t.string,
+  chaves: t.oneOfType([t.array]),
+  legendaBaixo: t.string,
+  legendaEsquerda: t.string,
+  porcentagem: t.bool,
+};
+
+Barras.defaultProps = {
+  dados: [],
+  indice: '',
+  chaves: [],
+  legendaBaixo: '',
+  legendaEsquerda: '',
+  porcentagem: false,
+};
 
 export default Barras;

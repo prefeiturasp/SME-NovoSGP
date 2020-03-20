@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -77,20 +78,33 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Componente curricular não encontrado.");
                 }
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:<br>");
+
+                // Carrega lista de professores
+                var usuariosProfessores = CarregaListaProfessores(aulasSemFrequencia.Select(a => a.ProfessorRf).Distinct());
+
                 foreach (var aula in aulasSemFrequencia)
                 {
-                    var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
-                    if (professor == null)
-                    {
-                        throw new NegocioException($"Professor com RF {aula.ProfessorRf} não encontrado.");
-                    }
+                    var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == aula.ProfessorRf);
                     mensagem.AppendLine($"Professor { aula.ProfessorRf} - { professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                 }
+
                 GerarPendencia(fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento, mensagem.ToString());
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasReposicaoPendenteAprovacao);
             return aulasSemFrequencia.Count();
+        }
+
+        private IEnumerable<Usuario> CarregaListaProfessores(IEnumerable<string> listaRFs)
+        {
+            foreach (var professorRF in listaRFs)
+            {
+                var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(professorRF);
+                if (professor == null)
+                    throw new NegocioException($"Professor com RF {professorRF} não encontrado.");
+
+                yield return professor;
+            }
         }
 
         public int ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
@@ -108,13 +122,11 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Componente curricular não encontrado.");
                 }
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:<br>");
+
+                var usuariosProfessores = CarregaListaProfessores(aulasSemPlanoAula.Select(a => a.ProfessorRf).Distinct());
                 foreach (var aula in aulasSemPlanoAula)
                 {
-                    var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
-                    if (professor == null)
-                    {
-                        throw new NegocioException($"Professor com RF {aula.ProfessorRf} não encontrado.");
-                    }
+                    var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == aula.ProfessorRf);
                     mensagem.AppendLine($"Professor { aula.ProfessorRf} - { professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                 }
 
@@ -135,13 +147,10 @@ namespace SME.SGP.Dominio.Servicos
             if (avaliacoesSemNotaParaNenhumAluno != null && avaliacoesSemNotaParaNenhumAluno.Any())
             {
                 var mensagem = new StringBuilder($"As avaliações a seguir não tiveram notas lançadas para nenhum aluno<br>");
+                var usuariosProfessores = CarregaListaProfessores(avaliacoesSemNotaParaNenhumAluno.Select(a => a.ProfessorRf).Distinct());
                 foreach (var avaliacao in avaliacoesSemNotaParaNenhumAluno)
                 {
-                    var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(avaliacao.ProfessorRf);
-                    if (professor == null)
-                    {
-                        throw new NegocioException($"Professor com RF {avaliacao.ProfessorRf} não encontrado.");
-                    }
+                    var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == avaliacao.ProfessorRf);
                     mensagem.AppendLine($"Professor { avaliacao.ProfessorRf} - { professor.Nome} - {avaliacao.NomeAvaliacao}.<br>");
                 }
 

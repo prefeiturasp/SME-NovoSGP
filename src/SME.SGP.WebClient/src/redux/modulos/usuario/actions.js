@@ -25,6 +25,12 @@ export function Deslogar() {
   };
 }
 
+export function DeslogarSessaoExpirou() {
+  return {
+    type: '@usuario/deslogarSessaoExpirou',
+  };
+}
+
 export function turmasUsuario(turmas) {
   return {
     type: '@usuario/turmasUsuario',
