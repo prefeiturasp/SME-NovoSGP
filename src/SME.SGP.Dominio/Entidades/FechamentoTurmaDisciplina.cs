@@ -2,7 +2,7 @@
 {
     public class FechamentoTurmaDisciplina : EntidadeBase
     {
-        protected FechamentoTurmaDisciplina() { }
+        public FechamentoTurmaDisciplina() { }
         public FechamentoTurmaDisciplina(long turmaId, long disciplinaId, long periodoEscolarId)
         {
             TurmaId = turmaId;
