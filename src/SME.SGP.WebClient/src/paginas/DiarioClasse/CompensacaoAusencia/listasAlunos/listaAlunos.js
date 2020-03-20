@@ -10,7 +10,7 @@ const ListaAlunos = props => {
   const montaExibicaoPercentual = (frequencia, dadosAluno) => {
     const frequenciaArredondada = frequencia
       ? Number(frequencia).toFixed(2)
-      : '';
+      : '0,00';
     if (dadosAluno.alerta) {
       return (
         <>
@@ -58,7 +58,7 @@ const ListaAlunos = props => {
           columns={colunasListaAlunos}
           dataSource={lista}
           selectMultipleRows
-          onClickRow={() => {}}
+          onClickRow={() => { }}
           pagination={false}
           pageSize={9999}
         />
@@ -76,7 +76,7 @@ ListaAlunos.propTypes = {
 ListaAlunos.defaultProps = {
   lista: [],
   idsAlunos: [],
-  onSelectRow: () => {},
+  onSelectRow: () => { },
 };
 
 export default ListaAlunos;
