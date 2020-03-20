@@ -95,17 +95,6 @@ const PlanoAula = props => {
     corBorda: '#4072d6',
   };
 
-
-
-
-
-
-
-
-
-
-
-
   useEffect(() => {
     setMostrarCardPrincipal(expandido);
   }, [expandido]);
@@ -213,18 +202,6 @@ const PlanoAula = props => {
     setMaterias([...materias]);
     setCarregandoObjetivos(false);
   };
-
-
-
-
-
-
-
-
-
-
-
-
 
   const onBlurMeusObjetivos = value => {
     if (value !== planoAula.descricao) {
