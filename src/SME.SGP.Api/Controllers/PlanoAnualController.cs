@@ -3,6 +3,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -57,10 +58,11 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterObjetivos(FiltroPlanoAnualDisciplinaDto filtro, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
         {
             var objetivosPlano = await consultasPlanoAnual.ObterObjetivosEscolaTurmaDisciplina(filtro);
-            if (objetivosPlano != null)
-                return Ok(objetivosPlano);
-            else
-                return StatusCode(204);
+
+            if (objetivosPlano is null)
+                return NoContent();
+
+            return Ok(objetivosPlano);
         }
 
         [HttpGet("turmas/copia")]
@@ -68,7 +70,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] int turmaId, [FromQuery] long componenteCurricular, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
         {
-            return Ok(await consultasPlanoAnual.ObterTurmasParaCopia(turmaId, componenteCurricular));
+            var retorno = await consultasPlanoAnual.ObterTurmasParaCopia(turmaId, componenteCurricular);
+
+            if (retorno == null || !retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpPost]

@@ -477,11 +477,7 @@ const CadastroAula = ({ match }) => {
           setEhEja(true);
         } else {
           setInicial(estadoAntigo => {
-            return {
-              ...estadoAntigo,
-              quantidadeTexto: '',
-              quantidadeRadio: 1,
-            };
+            return { ...estadoAntigo, quantidadeTexto: '', quantidadeRadio: 1 };
           });
           setEhEja(false);
         }
@@ -645,9 +641,7 @@ const CadastroAula = ({ match }) => {
 
   const excluir = async tipoRecorrencia => {
     const disciplina = listaDisciplinas.find(
-      item =>
-        String(item.codigoComponenteCurricular) ===
-        String(refForm.state.values.disciplinaId)
+      item => String(item.codigoComponenteCurricular) === String(idDisciplina)
     );
 
     const disciplinaBase64 = btoa(disciplina.nome);
