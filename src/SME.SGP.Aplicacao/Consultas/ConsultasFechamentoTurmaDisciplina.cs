@@ -107,6 +107,9 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestreAtual.Value);
             if (fechamentoTurma != null)
             {
+                fechamentoBimestre.Situacao = fechamentoTurma.Situacao;
+                fechamentoBimestre.FechamentoId = fechamentoTurma.Id;
+
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
 
                 var bimestreDoPeriodo = consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
@@ -148,9 +151,11 @@ namespace SME.SGP.Aplicacao
                             // Carrega notas do bimestre
                             var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
 
-                            foreach (var notaConceitoBimestre in notasConceitoBimestre)
-                            {
+                            if(notasConceitoBimestre.Count() > 0)
                                 alunoDto.Notas = new List<NotaConceitoBimestreRetornoDto>();
+
+                            foreach (var notaConceitoBimestre in notasConceitoBimestre)
+                            {                                
                                 ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
                                 {
                                     DisciplinaId = notaConceitoBimestre.DisciplinaId,

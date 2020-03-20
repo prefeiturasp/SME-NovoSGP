@@ -116,7 +116,7 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, onSalvarCopias }) {
         atividadeAvaliativaTurmaDatas: estado.turmas.map(x => ({
           dataAvaliacao: dataSelecionada,
           turmaId: x.turmaId,
-          disciplinaId: disciplina,
+          disciplinasId: [disciplina],
         })),
       });
 
@@ -143,24 +143,13 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, onSalvarCopias }) {
   };
 
   const onClickSalvar = async () => {
-    try {
-      dispatch(setLoaderModal(true));
-      onSalvarCopias(
-        estado.turmas.map(x => ({
-          turmaId: x.turmaId,
-          dataAvaliacao: x.data,
-          turma: listaTurmas.filter(y => x.turmaId === y.valor),
-        }))
-      );
-
-      setTimeout(() => {
-        dispatch(setLoaderModal(false));
-        onClose();
-      }, 1000);
-    } catch (error) {
-      erros(error);
-      dispatch(setLoaderModal(false));
-    }
+    const dadosParaSalvar = estado.turmas.map(x => ({
+      turmaId: x.turmaId,
+      dataAvaliacao: x.data,
+      turma: listaTurmas.filter(y => x.turmaId === y.valor),
+    }));
+    onSalvarCopias(dadosParaSalvar);
+    onClose();
   };
 
   const desabilitarSalvar = useCallback(() => {

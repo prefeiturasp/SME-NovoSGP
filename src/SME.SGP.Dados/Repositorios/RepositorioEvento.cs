@@ -99,7 +99,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno == null || retorno.Sum() == 0;
         }
 
-        public async Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)
+        public async Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId, bool utilizarRangeDatas = true)
         {
             var query = new StringBuilder();
 
@@ -147,10 +147,18 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(DreId))
                 query.AppendLine("and e.dre_id = @dreId");
 
-            query.AppendLine("and ((e.data_inicio <= TO_DATE(@dataInicio, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataInicio, 'yyyy/mm/dd'))");
-            query.AppendLine("or (e.data_inicio <= TO_DATE(@dataFim, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataFim, 'yyyy/mm/dd'))");
-            query.AppendLine("or (e.data_inicio >= TO_DATE(@dataInicio, 'yyyy/mm/dd') and e.data_fim <= TO_DATE(@dataFim, 'yyyy/mm/dd'))");
-            query.AppendLine(")");
+            if (utilizarRangeDatas)
+            {
+                query.AppendLine("and ((e.data_inicio <= TO_DATE(@dataInicio, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataInicio, 'yyyy/mm/dd'))");
+                query.AppendLine("or (e.data_inicio <= TO_DATE(@dataFim, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataFim, 'yyyy/mm/dd'))");
+                query.AppendLine("or (e.data_inicio >= TO_DATE(@dataInicio, 'yyyy/mm/dd') and e.data_fim <= TO_DATE(@dataFim, 'yyyy/mm/dd'))");
+                query.AppendLine(")");
+            }
+            else
+            {
+                query.AppendLine("and e.data_inicio = TO_DATE(@dataInicio, 'yyyy/mm/dd') ");
+                query.AppendLine("and e.data_fim = TO_DATE(@dataFim, 'yyyy/mm/dd')");
+            }
             query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
 
             var lookup = new Dictionary<long, Evento>();
@@ -179,12 +187,6 @@ namespace SME.SGP.Dados.Repositorios
             return lookup.Values;
         }
 
-        public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId, long eventoId)
-        {
-            var query = "select 1 from evento where data_inicio = @dataInicio and tipo_calendario_id = @tipoCalendarioId and id <> :eventoId;";
-            return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId, eventoId });
-        }
-
         public bool ExisteEventoPorEventoTipoId(long eventoTipoId)
         {
             var query = "select 1 from evento where tipo_evento_id = @eventoTipoId;";
@@ -209,21 +211,21 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<Evento>(query, new { eventoId, eventoPaiId, dataEvento });
         }
 
-        public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId, bool EhEventoSme = false, bool filtroDreUe = true)
+        public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId, bool EhEventoSme = false, bool filtroDreUe = true, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = true)
         {
-            var query = ObterEventos(dreId, ueId, null, null, EhEventoSme, !EhEventoSme, filtroDreUe);
+            var query = ObterEventos(dreId, ueId, null, null, EhEventoSme, !EhEventoSme, filtroDreUe, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
             return database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId });
         }
 
-        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeDia(long tipoCalendarioId, string dreId, string ueId, DateTime data, bool EhEventoSme)
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeDia(long tipoCalendarioId, string dreId, string ueId, DateTime data, bool EhEventoSme, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = true)
         {
-            var query = ObterEventos(dreId, ueId, null, data, EhEventoSme, !EhEventoSme);
+            var query = ObterEventos(dreId, ueId, null, data, EhEventoSme, !EhEventoSme, true, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
             return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId, data });
         }
 
-        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeMes(long tipoCalendarioId, string dreId, string ueId, int mes, bool EhEventoSme)
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeMes(long tipoCalendarioId, string dreId, string ueId, int mes, bool EhEventoSme, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = true)
         {
-            var query = ObterEventos(dreId, ueId, mes, null, EhEventoSme, !EhEventoSme);
+            var query = ObterEventos(dreId, ueId, mes, null, EhEventoSme, !EhEventoSme, true, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
             return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId, mes });
         }
 
@@ -298,7 +300,7 @@ namespace SME.SGP.Dados.Repositorios
             splitOn: "EventoId,TipoEventoId,TipoCalendarioId").FirstOrDefault();
         }
 
-        public async Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)
+        public async Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId, bool escopoRetroativo = false)
         {
             var query = new StringBuilder();
 
@@ -313,11 +315,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and e.excluido = false");
             query.AppendLine("and e.status = 1");
 
-            if (!string.IsNullOrEmpty(UeId))
-                query.AppendLine("and e.ue_id = @ueId");
-
-            if (!string.IsNullOrEmpty(DreId))
-                query.AppendLine("and e.dre_id = @dreId");
+            if (escopoRetroativo)
+                ObtenhaEscopoRetroativo(UeId, DreId, query);
+            else
+                ObtenhaEscopoNormal(UeId, DreId, query);
 
             query.AppendLine("and ((e.data_inicio <= TO_DATE(@dataInicio, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataInicio, 'yyyy/mm/dd'))");
             query.AppendLine("or (e.data_inicio <= TO_DATE(@dataFim, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataFim, 'yyyy/mm/dd'))");
@@ -325,7 +326,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(")");
             query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new
+            var parametros = new
             {
                 dataInicio = dataInicio.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
                 dataFim = dataFim.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
@@ -333,7 +334,9 @@ namespace SME.SGP.Dados.Repositorios
                 tipoCalendarioId,
                 UeId,
                 DreId
-            })) > 0;
+            };
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), parametros)) > 0;
         }
 
         private static void MontaFiltroTipoCalendario(StringBuilder query)
@@ -371,8 +374,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo,");
             query.AppendLine("et.tipo_data,");
             query.AppendLine("et.descricao,");
-            query.AppendLine("et.excluido,");
-            query.AppendLine("et.somente_leitura");
+            query.AppendLine("et.excluido");
         }
 
         private static void MontaQueryFrom(StringBuilder query)
@@ -381,6 +383,37 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("evento e");
             query.AppendLine("inner join evento_tipo et on");
             query.AppendLine("e.tipo_evento_id = et.id");
+        }
+
+        private static void ObtenhaEscopoNormal(string UeId, string DreId, StringBuilder query)
+        {
+            if (string.IsNullOrEmpty(DreId))
+            {
+                if (string.IsNullOrEmpty(UeId))
+                    query.AppendLine("and (e.dre_id is null and e.ue_id is null)");
+                else
+                    query.AppendLine("and e.ue_id = @ueId");
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(UeId))
+                    query.AppendLine("and (e.dre_id = @dreId and e.ue_id is null)");
+                else
+                    query.AppendLine("and (e.dre_id = @dreId and e.ue_id = @ueId)");
+            }
+        }
+
+        private static void ObtenhaEscopoRetroativo(string UeId, string DreId, StringBuilder query)
+        {
+            query.AppendLine("and ((e.dre_id is null and e.ue_id is null)");
+
+            if (!string.IsNullOrEmpty(DreId))
+                query.AppendLine("or (e.dre_id = @dreId and e.ue_id is null)");
+
+            if (!string.IsNullOrEmpty(UeId))
+                query.AppendLine("or (e.dre_id = @dreId and e.ue_id = @ueId)");
+
+            query.AppendLine(")");
         }
 
         private static void ObterContadorEventosNaoLetivosSME(string cabecalho, string whereTipoCalendario, StringBuilder query)
@@ -1263,12 +1296,15 @@ namespace SME.SGP.Dados.Repositorios
 
         #endregion Quantidade De Eventos Por Dia filtrado por mes
 
-        private string ObterEventos(string dreId, string ueId, int? mes = null, DateTime? data = null, bool EhEventoSme = false, bool naoTrazerSme = false, bool filtroDreUe = true)
+        private string ObterEventos(string dreId, string ueId, int? mes = null, DateTime? data = null, bool EhEventoSme = false, bool naoTrazerSme = false, bool filtroDreUe = true, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false)
         {
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
             MontaQueryFrom(query);
             MontaFiltroTipoCalendario(query);
+
+            if(!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
+                query.AppendFormat(" and et.codigo not in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
 
             StringBuilder queryDreUe = new StringBuilder();
 
@@ -1308,6 +1344,9 @@ namespace SME.SGP.Dados.Repositorios
                 MontaQueryFrom(query);
                 MontaFiltroTipoCalendario(query);
                 query.AppendLine("and e.dre_id is null and e.ue_id is null");
+
+                if (!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
+                    query.AppendFormat(" and et.codigo not in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
 
                 if (mes.HasValue)
                 {
