@@ -73,7 +73,6 @@ const CadastroAula = ({ match }) => {
     visualizarFormExcRecorrencia,
     setVisualizarFormExcRecorrencia,
   ] = useState(false);
-
   const [inicial, setInicial] = useState({
     tipoAula: 1,
     disciplinaId: undefined,
@@ -403,29 +402,28 @@ const CadastroAula = ({ match }) => {
       const disciplinas = await api.get(
         `v1/professores/turmas/${turmaId}/disciplinas`
       );
+
       setListaDisciplinas(disciplinas.data);
 
       if (disciplinas.data && disciplinas.data.length === 1) {
-        inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
-        if (Object.keys(refForm).length) {
-          onChangeDisciplinas(
-            disciplinas.data[0].codigoComponenteCurricular,
-            disciplinas.data
-          );
-        }
-        const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
+        const disciplina = disciplinas.data[0];
+        inicial.disciplinaId = disciplina.codigoComponenteCurricular.toString();
+        onChangeDisciplinas(
+          disciplina.codigoComponenteCurricular,
+          disciplinas.data
+        );
+        const { regencia } = disciplinas.data ? disciplina : false;
         setEhRegencia(regencia);
       }
 
-      if (novoRegistro) {
-        setInicial(inicial);
-      }
+      if (novoRegistro) setInicial(inicial);
     };
-    if (turmaId && Object.keys(refForm).length) {
+    if (turmaId && dataAula && Object.keys(refForm).length) {
       obterDisciplinas();
+    } else {
       validarConsultaModoEdicaoENovo();
     }
-  }, [refForm]);
+  }, [refForm, turmaId, dataAula, novoRegistro]);
 
   useEffect(() => {
     if (ehReposicao) refForm.setFieldValue('recorrenciaAula', 1);
