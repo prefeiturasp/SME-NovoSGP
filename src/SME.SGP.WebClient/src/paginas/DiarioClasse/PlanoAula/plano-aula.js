@@ -3,6 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import PropTypes from 'prop-types';
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 8e3098fa... Ajustes backend
 import {
   Badge,
   Corpo,
@@ -26,7 +32,14 @@ import CardCollapse from '~/componentes/cardCollapse';
 import Grid from '~/componentes/grid';
 import Editor from '~/componentes/editor/editor';
 import ModalCopiarConteudo from './componentes/ModalCopiarConteudo';
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 8e3098fa... Ajustes backend
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
+
 
 const PlanoAula = props => {
   const {
@@ -43,7 +56,7 @@ const PlanoAula = props => {
     ehMedio,
     temObjetivos,
     setTemObjetivos,
-    mostrarCardPrincipal,
+    expandido,
     auditoria,
     temAvaliacao,
     ehRegencia,
@@ -90,6 +103,20 @@ const PlanoAula = props => {
     altura: '44px',
     corBorda: '#4072d6',
   };
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 8e3098fa... Ajustes backend
 
   useEffect(() => {
     setMostrarCardPrincipal(expandido);
@@ -109,7 +136,9 @@ const PlanoAula = props => {
   useEffect(() => {
     setEscolhaHabilitaObjetivos(planoAula.objetivosAprendizagemAula.length > 0);
     setObjetivosAprendizagem([...planoAula.objetivosAprendizagemAula]);
+
     setCarregandoObjetivosSelecionados(false);
+
   }, [planoAula.objetivosAprendizagemAula]);
 
   useEffect(() => {
@@ -133,6 +162,7 @@ const PlanoAula = props => {
   };
 
   const removerObjetivo = id => {
+
     setModoEdicaoPlano(true);
     const index = objetivosAprendizagem.findIndex(
       a => a.id.toString() === id.toString()
@@ -142,6 +172,7 @@ const PlanoAula = props => {
   };
 
   const removerTodosObjetivos = () => {
+
     setModoEdicaoPlano(true);
     const objetivos = objetivosAprendizagem.map(objetivo => {
       objetivo.selected = false;
@@ -166,6 +197,10 @@ const PlanoAula = props => {
     setCarregandoObjetivos(true);
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8e3098fa... Ajustes backend
     materias.forEach(m => {
       m.selecionada = m.id === id ? !m.selecionada : false;
     });
@@ -194,6 +229,21 @@ const PlanoAula = props => {
     setCarregandoObjetivos(false);
   };
 
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 8e3098fa... Ajustes backend
   const onBlurMeusObjetivos = value => {
     if (value !== planoAula.descricao) {
       setModoEdicaoPlano(true);
@@ -545,4 +595,8 @@ PlanoAula.defaultProps = {
   onClick: () => { },
 };
 
+<<<<<<< HEAD
 export default PlanoAula;
+=======
+export default PlanoAula;
+>>>>>>> 8e3098fa... Ajustes backend

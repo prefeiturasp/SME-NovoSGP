@@ -40,7 +40,6 @@ namespace SME.SGP.Aplicacao.Consultas
 
         public async Task<PlanoAulaRetornoDto> ObterPlanoAulaPorAula(long aulaId)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
             if (!await VerificarPlanoAnualExistente(aulaId))
             {
                 throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
@@ -115,8 +114,15 @@ namespace SME.SGP.Aplicacao.Consultas
         private async Task<bool> VerificarPlanoAnualExistente(long aulaId)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
+
             var aula = repositorioAula.ObterPorId(aulaId);
+            if (aula == null) 
+                throw new NegocioException("Aula não encontrada");
+
             var periodoEscolar = consultasPeriodoEscolar.ObterPeriodoEscolarPorData(aula.TipoCalendarioId, aula.DataAula);
+            if (periodoEscolar == null)
+                throw new NegocioException("Período escolar não encontrado");
+
             var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
                         aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), periodoEscolar.Bimestre, long.Parse(aula.DisciplinaId));
             if (planoAnualId <= 0 && !usuario.EhProfessorCj())
