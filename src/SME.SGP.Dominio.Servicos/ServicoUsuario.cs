@@ -197,10 +197,10 @@ namespace SME.SGP.Dominio
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
 
-        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
+        public async Task<bool> PodePersistirTurmaNasDatas(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
         {
             if (usuario == null)
-                usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, string.Empty);
+                usuario = await ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj())
             {
@@ -211,6 +211,19 @@ namespace SME.SGP.Dominio
 
                 return validacaoData.FirstOrDefault().PodePersistir;
             }
+            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
+
+            return atribuicaoCj != null && atribuicaoCj.Any();
+        }
+
+        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
+        {
+            if (usuario == null)
+                usuario = await ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj())
+                return await servicoEOL.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, data);
+            
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
@@ -250,7 +263,10 @@ namespace SME.SGP.Dominio
 
             if (retornoEol.Perfis == null || !retornoEol.Perfis.Any())
             {
-                throw new NegocioException("Não é possível alterar o e-mail deste usuário pois o mesmo está sem perfis de acesso.");
+                //pode ser que esse usuário não tenha se logado ainda no sistema, realizar chamada para o serviço de relacionar grupos
+                retornoEol = await servicoEOL.RelecionarUsuarioPerfis(usuario.Login);
+                if (retornoEol == null || !retornoEol.Perfis.Any())
+                    throw new NegocioException("Não é possível alterar o e-mail deste usuário pois o mesmo está sem perfis de acesso.");
             }
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(retornoEol.Perfis);
             usuario.DefinirPerfis(perfisUsuario);

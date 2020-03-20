@@ -156,6 +156,7 @@ function ModalRecorrencia({
   };
 
   const onCloseModal = () => {
+    setPadraoRecorrencia(undefined);
     setDataInicio('');
     setDataTermino('');
     setDiasSemana([]);
@@ -241,7 +242,7 @@ function ModalRecorrencia({
                 </VerticalCentralizado>
               </LinhaBootstrap>
               <LinhaBootstrap paddingBottom={3}>
-                <VerticalCentralizado className="col-lg-12">
+                <div className="col-lg-12">
                   {tipoRecorrencia && tipoRecorrencia.value === '1' ? (
                     <DiasDaSemana
                       currentState={diasSemana || null}
@@ -258,7 +259,7 @@ function ModalRecorrencia({
                       form={form}
                     />
                   )}
-                </VerticalCentralizado>
+                </div>
               </LinhaBootstrap>
               <TextoDiasDaSemana diasSemana={diasSemana} />
               <TextoInformativo dataTermino={dataTermino} />
