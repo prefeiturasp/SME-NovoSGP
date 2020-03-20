@@ -491,15 +491,14 @@ const CadastroAula = ({ match }) => {
 
     setValidacoes(Yup.object(val));
   }, [
-    aula,
     controlaQuantidadeAula,
+    disciplinaCompartilhada,
     ehRecorrencia,
     ehRegencia,
     ehReposicao,
-    idAula,
+    idDisciplina,
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
-    idDisciplina,
   ]);
 
   useEffect(() => {
