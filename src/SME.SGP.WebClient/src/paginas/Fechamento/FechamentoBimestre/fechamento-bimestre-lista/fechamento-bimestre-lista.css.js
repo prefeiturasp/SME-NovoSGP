@@ -63,3 +63,15 @@ export const MaisMenos = styled.i`
   color: ${Base.Roxo} !important;
   font-size: 18px;
 `;
+
+export const SituacaoProcessadoComPendencias = styled.div`
+  background-color: ${Base.Roxo};
+  color: ${Base.Branco};
+  height: 22px;
+  font-size: 12px;
+  border-radius: 4px;
+  margin-top: 15px;
+  span {
+    margin: 10px;
+  }
+`;
