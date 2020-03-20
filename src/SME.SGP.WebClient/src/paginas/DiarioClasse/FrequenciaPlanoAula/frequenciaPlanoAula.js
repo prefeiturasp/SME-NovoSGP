@@ -268,7 +268,6 @@ const FrequenciaPlanoAula = () => {
       const plano = await api
         .get(`v1/planos/aulas/${idAula}`)
         .then(resp => {
-          setPlanoAulaExpandido(!planoAulaExpandido);
           return resp;
         })
         .catch(e => {
@@ -995,7 +994,7 @@ const FrequenciaPlanoAula = () => {
                       setTemObjetivos={e => setTemObjetivos(e)}
                       permissoesTela={permissoesTela}
                       somenteConsulta={somenteConsulta}
-                      mostrarCardPrincipal={planoAulaExpandido}
+                      expandido={planoAulaExpandido}
                       temObjetivos={temObjetivos}
                       temAvaliacao={temAvaliacao}
                       auditoria={auditoriaPlano}
