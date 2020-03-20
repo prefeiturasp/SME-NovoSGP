@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -77,15 +78,24 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Componente curricular não encontrado.");
                 }
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:<br>");
+
+                // Carrega lista de professores
+                var usuariosProfessores = new List<Usuario>();
+                foreach (var professorRF in aulasSemFrequencia.Select(a => a.ProfessorRf).Distinct())
+                {
+                    var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(professorRF);
+                    if (professor == null)
+                        throw new NegocioException($"Professor com RF {professorRF} não encontrado.");
+
+                    usuariosProfessores.Add(professor);
+                }
+
                 foreach (var aula in aulasSemFrequencia)
                 {
-                    var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
-                    if (professor == null)
-                    {
-                        throw new NegocioException($"Professor com RF {aula.ProfessorRf} não encontrado.");
-                    }
+                    var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == aula.ProfessorRf);
                     mensagem.AppendLine($"Professor { aula.ProfessorRf} - { professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                 }
+
                 GerarPendencia(fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento, mensagem.ToString());
             }
             else
