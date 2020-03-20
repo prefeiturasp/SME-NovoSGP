@@ -226,6 +226,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
+        [Obsolete("não utilizar mais esse método, utilize o ObterAlunosPorTurma")]
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
@@ -750,6 +751,23 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível reiniciar a senha deste usuário");
+        }
+
+        public async Task<UsuarioEolAutenticacaoRetornoDto> RelecionarUsuarioPerfis(string login)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", login) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/RelacionarUsuarioPerfis", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+            }
+            else return null;
         }
 
         public async Task RemoverCJSeNecessario(Guid usuarioId)
