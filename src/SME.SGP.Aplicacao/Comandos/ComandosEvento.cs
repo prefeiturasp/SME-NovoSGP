@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
         {
             var evento = repositorioEvento.ObterPorId(id);
-            if (evento.Status == EntidadeStatus.AguardandoAprovacao)
+            if (!evento.PodeAlterar())
                 throw new NegocioException("Não é possível editar um evento em aprovação");
 
             evento = MapearParaEntidade(evento, eventoDto);
