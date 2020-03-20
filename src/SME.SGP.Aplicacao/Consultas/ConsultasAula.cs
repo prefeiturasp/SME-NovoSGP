@@ -191,7 +191,7 @@ namespace SME.SGP.Aplicacao
         {
             IEnumerable<DisciplinaResposta> disciplinasUsuario;
             if (ehCJ)
-                disciplinasUsuario = await consultasDisciplina.ObterComponentesCJ(null, aula.TurmaId, string.Empty, long.Parse(aula.DisciplinaId), usuarioLogado.CodigoRf);
+                disciplinasUsuario = await consultasDisciplina.ObterDisciplinasPerfilCJ(aula.TurmaId, usuarioLogado.Login);
             else
                 disciplinasUsuario = await servicoEol.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
             var disciplina = disciplinasUsuario?.FirstOrDefault(x => x.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));

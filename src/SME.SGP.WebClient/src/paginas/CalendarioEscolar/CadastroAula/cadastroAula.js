@@ -161,8 +161,6 @@ const CadastroAula = ({ match }) => {
   }, []);
 
   const onChangeDisciplinas = async (id, listaDisc) => {
-    onChangeCampos();
-
     setIdDisciplina(id);
 
     const lista =
@@ -628,12 +626,16 @@ const CadastroAula = ({ match }) => {
 
   const excluir = async tipoRecorrencia => {
     const disciplina = listaDisciplinas.find(
-      item => String(item.codigoComponenteCurricular) === String(idDisciplina)
+      item =>
+        String(item.codigoComponenteCurricular) ===
+        String(refForm.state.values.disciplinaId)
     );
+
+    const disciplinaBase64 = btoa(disciplina.nome);
 
     const exclusao = await api
       .delete(
-        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplina.nome}`
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplinaBase64}`
       )
       .catch(e => erros(e));
     if (exclusao) {
@@ -852,7 +854,10 @@ const CadastroAula = ({ match }) => {
                     lista={listaDisciplinas}
                     valueOption="codigoComponenteCurricular"
                     valueText="nome"
-                    onChange={e => onChangeDisciplinas(e, form)}
+                    onChange={e => {
+                      onChangeDisciplinas(e, form);
+                      onChangeCampos();
+                    }}
                     label="Componente curricular"
                     placeholder="Selecione um componente curricular"
                     disabled={
@@ -924,7 +929,7 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={somenteLeitura || ehReposicao}
+                    desabilitado={somenteLeitura || ehReposicao || ehAulaUnica}
                     onChange={e => {
                       onChangeCampos();
                       setEhRecorrencia(e.target.value !== 1);

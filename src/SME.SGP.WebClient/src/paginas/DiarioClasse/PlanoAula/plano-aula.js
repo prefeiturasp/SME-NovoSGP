@@ -53,6 +53,7 @@ const PlanoAula = props => {
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
+  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(expandido);
   const [mostrarModalCopiarConteudo, setMostrarModalCopiarConteudo] = useState(
     false
   );
@@ -82,6 +83,10 @@ const PlanoAula = props => {
     carregandoObjetivosSelecionados,
     setCarregandoObjetivosSelecionados,
   ] = useState(false);
+
+  useEffect(() => {
+    setMostrarCardPrincipal(expandido);
+  }, [expandido]);
 
   useEffect(() => {
     const verificaHabilitarDesabilitarCampos = () => {
@@ -228,9 +233,7 @@ const PlanoAula = props => {
     <Corpo>
       <CardCollapse
         key="plano-aula"
-        onClick={() => {
-          onClick();
-        }}
+        onClick={onClick}
         titulo="Plano de aula"
         indice="Plano de aula"
         show={mostrarCardPrincipal}

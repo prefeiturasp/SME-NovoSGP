@@ -30,5 +30,8 @@ namespace SME.SGP.Dominio
             int diferenca = (((int)DayOfWeek.Saturday - (int)data.DayOfWeek + 7) % 7);
             return data.AddDays(diferenca);
         }
+
+        public static bool FimDeSemana(this DateTime data)
+            => data.DayOfWeek == DayOfWeek.Saturday || data.DayOfWeek == DayOfWeek.Sunday;
     }
 }
