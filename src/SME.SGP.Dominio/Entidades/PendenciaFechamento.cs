@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio
 {
     public class PendenciaFechamento: EntidadeBase
     {
-        public PendenciaFechamento() { }
+        protected PendenciaFechamento() { }
         public PendenciaFechamento(long fechamentoTurmaDisciplinaId, long pendenciaId)
         {
             this.FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId;

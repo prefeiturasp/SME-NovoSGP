@@ -14,16 +14,17 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoFechamentoTurmaDisciplina : IServicoFechamentoTurmaDisciplina
     {
+        private readonly IConsultasDisciplina consultasDisciplina;
+        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
+        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
+        private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre;
+        private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
-        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
-        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
-        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -40,7 +41,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioDre repositorioDre,
                                                 IRepositorioTurma repositorioTurma,
                                                 IRepositorioUe repositorioUe,
-                                                IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
+                                                IServicoPeriodoFechamento servicoPeriodoFechamento,
                                                 IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                                 IRepositorioTipoCalendario repositorioTipoCalendario,
                                                 IRepositorioTipoAvaliacao repositorioTipoAvaliacao,
@@ -60,7 +61,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioNotaConceitoBimestre = repositorioNotaConceitoBimestre ?? throw new ArgumentNullException(nameof(repositorioNotaConceitoBimestre));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
+            this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new ArgumentNullException(nameof(servicoPeriodoFechamento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new ArgumentNullException(nameof(repositorioTipoAvaliacao));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
@@ -87,9 +88,9 @@ namespace SME.SGP.Dominio.Servicos
                                                                 , fechamentoTurma.Turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio
                                                                 , DateTime.Now.Month > 6 ? 2 : 1);
 
-            var ue = repositorioUe.ObterPorId(fechamentoTurma.Turma.UeId);
-            var periodoFechamento = repositorioPeriodoFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendario.Id, ue.DreId, ue.Id);
-            var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestre.FirstOrDefault(x => x.PeriodoEscolar.Bimestre == entidadeDto.Bimestre);
+            var ue = fechamentoTurma.Turma.Ue;
+            var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioDreEUe(tipoCalendario.Id, ue.Dre, ue);
+            var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestres.FirstOrDefault(x => x.Bimestre == entidadeDto.Bimestre);
 
             if (periodoFechamento == null || periodoFechamentoBimestre == null)
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
@@ -108,7 +109,7 @@ namespace SME.SGP.Dominio.Servicos
             try
             {
                 await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurma);
-                foreach(var notaBimestre in notasConceitosBimestre)
+                foreach (var notaBimestre in notasConceitosBimestre)
                 {
                     notaBimestre.FechamentoTurmaDisciplinaId = fechamentoTurma.Id;
                     repositorioNotaConceitoBimestre.Salvar(notaBimestre);
@@ -226,22 +227,6 @@ namespace SME.SGP.Dominio.Servicos
             servicoNotificacao.Salvar(notificacao);
         }
 
-        private (Turma, PeriodoEscolar) ValidarTurmaEPeriodoEscolar(string codigoTurma, long periodoEscolarId)
-        {
-            var turma = repositorioTurma.ObterPorId(codigoTurma);
-            if (turma == null)
-            {
-                throw new NegocioException("Turma não encontrada.");
-            }
-
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(periodoEscolarId);
-            if (periodoEscolar == null)
-            {
-                throw new NegocioException("Período escolar não encontrado.");
-            }
-            return (turma, periodoEscolar);
-        }
-
         private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data)
         {
             if (!servicoUsuario.PodePersistirTurma(codigoRf, turmaId, data).Result)
@@ -299,12 +284,50 @@ namespace SME.SGP.Dominio.Servicos
                 fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(id);
 
             fechamento.Situacao = SituacaoFechamento.EmProcessamento;
-            fechamento.Turma = repositorioTurma.ObterPorId(fechamentoDto.TurmaId);
+            fechamento.Turma = repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoDto.TurmaId);
             fechamento.TurmaId = fechamento.Turma.Id;
             fechamento.DisciplinaId = fechamentoDto.DisciplinaId;
             fechamento.Justificativa = fechamentoDto.Justificativa;
 
             return fechamento;
+        }
+
+        private async Task<string> ValidaMinimoAvaliacoesBimestre(long tipoCalendarioId, string turmaId, long disciplinaId, int bimestre)
+        {
+            var validacoes = new StringBuilder();
+            var tipoAvaliacaoBimestral = await repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral();
+
+            var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId });
+
+            if (disciplinasEOL == null || !disciplinasEOL.Any())
+                throw new NegocioException("Não foi possível localizar a disciplina no EOL.");
+
+            if (disciplinasEOL.First().Regencia)
+            {
+                // Disciplinas Regencia de Classe
+                disciplinasEOL = await consultasDisciplina.ObterDisciplinasParaPlanejamento(new FiltroDisciplinaPlanejamentoDto()
+                {
+                    CodigoTurma = long.Parse(turmaId),
+                    CodigoDisciplina = disciplinaId,
+                    Regencia = true
+                });
+
+                foreach (var disciplina in disciplinasEOL)
+                {
+                    var avaliacoes = await repositorioAtividadeAvaliativaRegencia.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaId, disciplina.CodigoComponenteCurricular.ToString(), bimestre);
+                    if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
+                        validacoes.AppendLine($"A disciplina [{disciplina.Nome}] não tem o número mínimo de avaliações bimestrais: Necessário {tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre}");
+                }
+            }
+            else
+            {
+                var disciplinaEOL = disciplinasEOL.First();
+                var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaId, disciplinaEOL.CodigoComponenteCurricular.ToString(), bimestre);
+                if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
+                    validacoes.AppendLine($"A disciplina [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais: Necessário {tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre}");
+            }
+
+            return validacoes.ToString();
         }
     }
 }

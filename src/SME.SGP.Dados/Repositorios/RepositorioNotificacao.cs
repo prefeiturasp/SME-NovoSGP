@@ -23,8 +23,11 @@ namespace SME.SGP.Dados.Repositorios
 
         public override void Remover(Notificacao entidade)
         {
-            entidade.Excluida = true;
-            Salvar(entidade);
+            if (entidade != null)
+            {
+                entidade.Excluida = true;
+                Salvar(entidade);
+            }
         }
 
         public async Task<PaginacaoResultadoDto<Notificacao>> Obter(string dreId, string ueId, int statusId,

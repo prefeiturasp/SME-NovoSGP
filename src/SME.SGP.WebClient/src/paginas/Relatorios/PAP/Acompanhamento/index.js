@@ -45,6 +45,7 @@ import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 function RelatorioPAPAcompanhamento() {
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
   const [periodo, setPeriodo] = useState(undefined);
+  const [ordenacao, setOrdenacao] = useState(2);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [estadoOriginalAlunos, setEstadoOriginalAlunos] = useState(null);
@@ -66,6 +67,7 @@ function RelatorioPAPAcompanhamento() {
       try {
         setCarregando(true);
         const req = await AcompanhamentoPAPServico.Salvar({
+          ordenacao,
           periodo: {
             ...estado.Periodo,
             alunos: estado.Alunos,
@@ -85,7 +87,7 @@ function RelatorioPAPAcompanhamento() {
         erro(`${err.response.data.mensagens[0]}`);
       }
     },
-    [estado.Alunos, estado.Periodo]
+    [estado.Alunos, estado.Periodo, ordenacao]
   );
 
   const onChangeObjetivoHandler = useCallback(
@@ -136,9 +138,9 @@ function RelatorioPAPAcompanhamento() {
         });
 
         if (!data) {
-          erro('Não foi encontrado dados de acompanhamento PAP');
+          erro('Não foram encontrados dados para a turma e período selecionados.');
           setCarregando(false);
-          return;
+          return false;
         }
 
         dispararAlteracoes(data);
@@ -148,10 +150,19 @@ function RelatorioPAPAcompanhamento() {
     } catch (err) {
       setCarregando(false);
 
-      if (err.response)
-        erro(`Não foi possível completar a requisição: ${JSON.stringify(err)}`);
-      else erro('Ocorreu um erro interno, por favor contate o suporte');
+      if (err.response) {
+        const { data } = err.response;
+        if (data) {
+          const { mensagens } = data;
+          erro(`${mensagens[0]}`);
+        } else {
+          erro('Não foi possível completar a requisição');
+        }
+      } else {
+        erro('Ocorreu um erro interno, por favor contate o suporte');
+      }
     }
+    return true;
   };
 
   const onChangeRespostaHandler = async (aluno, valor) => {
@@ -170,20 +181,20 @@ function RelatorioPAPAcompanhamento() {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-              ...alunoCorrente.respostas.filter(
-                y => y.objetivoId !== estado.ObjetivoAtivo.id
-              ),
-              novaResposta,
-            ]
+            ...alunoCorrente.respostas.filter(
+              y => y.objetivoId !== estado.ObjetivoAtivo.id
+            ),
+            novaResposta,
+          ]
           : [novaResposta];
     } else {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-              ...alunoCorrente.respostas.filter(
-                y => y.objetivoId !== estado.ObjetivoAtivo.id
-              ),
-            ]
+            ...alunoCorrente.respostas.filter(
+              y => y.objetivoId !== estado.ObjetivoAtivo.id
+            ),
+          ]
           : [];
     }
 
@@ -192,9 +203,9 @@ function RelatorioPAPAcompanhamento() {
         estado.Alunos.map(item =>
           item.codAluno === aluno.codAluno
             ? {
-                ...aluno,
-                respostas: respostasAluno,
-              }
+              ...aluno,
+              respostas: respostasAluno,
+            }
             : item
         )
       )
@@ -262,7 +273,7 @@ function RelatorioPAPAcompanhamento() {
   return (
     <>
       <AlertaSelecionarTurma />
-      <Cabecalho pagina="Relatório de acompanhamento PAP" />
+      <Cabecalho pagina="Relatório de encaminhamento e acompanhamento do PAP" />
       <Loader loading={carregando}>
         <Card mx="mx-0">
           <ButtonGroup
@@ -319,7 +330,8 @@ function RelatorioPAPAcompanhamento() {
               ordenarColunaNumero="numeroChamada"
               ordenarColunaTexto="nome"
               conteudoParaOrdenar={estado.Alunos}
-              desabilitado={estado.Alunos.length > 1}
+              desabilitado={estado.Alunos.length <= 0}
+              onChangeOrdenacao={valor => setOrdenacao(valor)}
             />
           </Grid>
           <Grid className="p-0 mt-2" cols={12}>

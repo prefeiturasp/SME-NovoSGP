@@ -20,7 +20,18 @@ namespace SME.SGP.Dominio
 
         public void AdicionarUe(Ue ue)
         {
-            Ue = ue;
+            if (ue != null)
+            {
+                Ue = ue;
+                UeId = ue.Id;
+            }
+        }
+
+        public ModalidadeTipoCalendario ObterModalidadeTipoCalendario()
+        {
+            if (ModalidadeCodigo == Modalidade.Fundamental || ModalidadeCodigo == Modalidade.Medio)
+                return ModalidadeTipoCalendario.FundamentalMedio;
+            else return ModalidadeTipoCalendario.EJA;
         }
 
         public bool MesmaModalidadePeriodoEscolar(ModalidadeTipoCalendario modalidade)

@@ -157,6 +157,18 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FechamentoReaberturaNotificacao>("SELECT * FROM FECHAMENTO_REABERTURA_NOTIFICACAO FRN WHERE FRN.FECHAMENTO_REABERTURA_ID = @Id", new { id });
         }
 
+        public async Task<FechamentoReabertura> ObterPorTurma(long turmaId)
+        {
+            var query = @"select distinct fr.id from fechamento_reabertura fr
+                            inner join ue u
+                            on fr.ue_id = u.id
+                            inner join turma t
+                            on t.ue_id = u.id
+                             where t.id = @turmaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoReabertura>(query, new { turmaId });
+        }
+
         public async Task<IEnumerable<FechamentoReabertura>> ObterReaberturaFechamentoBimestre(int bimestre, DateTime dataInicio, DateTime dataFim, long tipoCalendarioId, string dreCodigo, string ueCodigo)
         {
             var query = @"select fr.* 
@@ -166,8 +178,8 @@ namespace SME.SGP.Dados.Repositorios
                          inner join ue on ue.id = fr.ue_id
                          where not fr.excluido
                            and frb.bimestre = @bimestre
-                           and fr.inicio = @dataInicio
-                           and fr.fim = @dataFim
+                           and TO_DATE(fr.inicio, 'yyyy/mm/dd') = TO_DATE(@dataInicio, 'yyyy/mm/dd')
+                           and TO_DATE(fr.fim, 'yyyy/mm/dd') = TO_DATE(@dataFim, 'yyyy/mm/dd')
                            and fr.tipo_calendario_id = @tipoCalendarioId
                            and dre.dre_id = @dreCodigo
                            and ue.ue_id = @ueCodigo";

@@ -60,9 +60,11 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosCompensacaoAusenciaAluno, ComandosCompensacaoAusenciaAluno>();
             services.TryAddScopedWorkerService<IComandosCompensacaoAusenciaDisciplinaRegencia, ComandosCompensacaoAusenciaDisciplinaRegencia>();
             services.TryAddScopedWorkerService<IComandosProcessoExecutando, ComandosProcessoExecutando>();
+            services.TryAddScopedWorkerService<IComandosFechamentoFinal, ComandosFechamentoFinal>();
             services.TryAddScopedWorkerService<IComandosPeriodoFechamento, ComandosPeriodoFechamento>();
             services.TryAddScopedWorkerService<IComandosFechamentoTurmaDisciplina, ComandosFechamentoTurmaDisciplina>();
             services.TryAddScopedWorkerService<IComandosNotaConceitoBimestre, ComandosNotaConceitoBimestre>();
+            services.TryAddScopedWorkerService<IComandosNotificacaoAula, ComandosNotificacaoAula>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -186,6 +188,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioFechamentoTurmaDisciplina, RepositorioFechamentoTurmaDisciplina>();
             services.TryAddScopedWorkerService<IRepositorioNotaConceitoBimestre, RepositorioNotaConceitoBimestre>();
             services.TryAddScopedWorkerService<IRepositorioFechamentoReabertura, RepositorioFechamentoReabertura>();
+            services.TryAddScopedWorkerService<IRepositorioNotificacaoAula, RepositorioNotificacaoAula>();
+            services.TryAddScopedWorkerService<IRepositorioHistoricoEmailUsuario, RepositorioHistoricoEmailUsuario>();
+            services.TryAddScopedWorkerService<IRepositorioFechamentoFinal, RepositorioFechamentoFinal>();
             services.TryAddScopedWorkerService<IRepositorioPendencia, RepositorioPendencia>();
             services.TryAddScopedWorkerService<IRepositorioPendenciaFechamento, RepositorioPendenciaFechamento>();
         }
@@ -217,6 +222,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
             services.TryAddScopedWorkerService<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IServicoDeNotasConceitos, ServicoDeNotasConceitos>();
+            services.TryAddScopedWorkerService<IServicoFechamentoFinal, ServicoFechamentoFinal>();
             services.TryAddScopedWorkerService<IServicoPeriodoFechamento, ServicoPeriodoFechamento>();
             services.TryAddScopedWorkerService<IServicoFechamentoTurmaDisciplina, ServicoFechamentoTurmaDisciplina>();
             services.TryAddScopedWorkerService<IServicoPendenciaFechamento, ServicoPendenciaFechamento>();

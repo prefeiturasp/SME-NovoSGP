@@ -19,4 +19,5 @@ Acessar o readme do projeto de [Back](https://github.com/prefeiturasp/SME-NovoSG
 
 Executar o comando na **raiz da solução**
 
+
 `docker-compose up --build`

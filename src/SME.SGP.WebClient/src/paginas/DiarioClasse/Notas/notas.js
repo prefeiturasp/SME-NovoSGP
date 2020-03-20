@@ -213,7 +213,7 @@ const Notas = ({ match }) => {
                 break;
             }
 
-            setBimestreCorrente(numeroBimestre);
+            setBimestreCorrente(dados.bimestreAtual);
           });
 
           setAuditoriaInfo({
@@ -333,8 +333,8 @@ const Notas = ({ match }) => {
             alunoId: aluno.id,
             atividadeAvaliativaId: nota.atividadeAvaliativaId,
             conceito:
-              notaTipo === notasConceitos.Conceitos ? nota.notaConceito : 0,
-            nota: notaTipo === notasConceitos.Notas ? nota.notaConceito : 0,
+              notaTipo === notasConceitos.Conceitos ? nota.notaConceito : null,
+            nota: notaTipo === notasConceitos.Notas ? nota.notaConceito : null,
           });
         }
       });
@@ -718,6 +718,7 @@ const Notas = ({ match }) => {
             bimestrePesquisado.periodoFim
           );
         }
+        setNotaTipo(dados.notaTipo);
 
         setNotaTipo(dados.notaTipo);
 
