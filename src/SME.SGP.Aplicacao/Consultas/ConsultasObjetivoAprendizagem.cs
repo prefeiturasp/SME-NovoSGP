@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
 
             var objetivosCacheString = await repositorioCache.ObterAsync("ObjetivosAprendizagem");
 
-            if (string.IsNullOrEmpty(objetivosCacheString))
+            if (!string.IsNullOrWhiteSpace(objetivosCacheString))
             {
                 var objetivosJuremaDto = await servicoJurema.ObterListaObjetivosAprendizagem();
                 objetivos = MapearParaDto(objetivosJuremaDto).ToList();
