@@ -160,47 +160,69 @@ const CadastroAula = ({ match }) => {
     };
   }, []);
 
-  const onChangeDisciplinas = async id => {
+  const onChangeDisciplinas = async (id, listaDisc) => {
     onChangeCampos();
 
     setIdDisciplina(id);
-    const disciplina = listaDisciplinas.find(c => c.id === id);
 
-    const { regencia } = disciplina || false;
-    setEhRegencia(regencia);
-    const resultado = await api
-      .get(`v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`, {
-        params: {
-          data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
-        },
-      })
-      .then(res => res)
-      .catch(err => {
-        const mensagemErro =
-          err &&
-          err.response &&
-          err.response.data &&
-          err.response.data.mensagens;
+    const lista =
+      (listaDisciplinas && listaDisciplinas.length > 0 && listaDisciplinas) ||
+      listaDisc ||
+      [];
 
-        if (mensagemErro) {
-          erro(mensagemErro.join(','));
-          return null;
-        }
+    if (!lista || lista.length === 0) return;
 
-        erro('Ocorreu um erro, por favor contate o suporte');
+    if (id) {
+      const disciplina = lista.find(
+        d => String(d.codigoComponenteCurricular) === String(id)
+      );
 
-        return null;
-      });
+      if (!disciplina) return;
 
-    if (resultado) {
-      if (resultado.status === 200) {
-        setControlaQuantidadeAula(true);
-        setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
-        if (resultado.data.quantidadeAulasRestante > 0) {
+      const regencia = !!disciplina.regencia;
+      setEhRegencia(regencia);
+
+      let resultado;
+
+      if (disciplina && !disciplina.territorioSaber) {
+        resultado = await api
+          .get(
+            `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}?ehRegencia=${regencia}`,
+            {
+              params: {
+                data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
+              },
+            }
+          )
+          .then(res => res)
+          .catch(err => {
+            const mensagemErro =
+              err &&
+              err.response &&
+              err.response.data &&
+              err.response.data.mensagens;
+
+            if (mensagemErro) {
+              erro(mensagemErro.join(','));
+              return null;
+            }
+
+            erro('Ocorreu um erro, por favor contate o suporte');
+
+            return null;
+          });
+      }
+
+      if (resultado) {
+        if (resultado.status === 200) {
           setControlaQuantidadeAula(true);
+          setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
+          if (resultado.data.quantidadeAulasRestante > 0) {
+            setControlaQuantidadeAula(true);
+          }
+        } else if (resultado.status === 204) {
+          setControlaQuantidadeAula(false);
         }
-      } else if (resultado.status === 204) {
-        setControlaQuantidadeAula(false);
       }
     }
   };
@@ -213,6 +235,9 @@ const CadastroAula = ({ match }) => {
       );
       if (disciplina && disciplina[0])
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
+    } else {
+      if (refForm && refForm.setFieldValue)
+        refForm.setFieldValue('quantidadeTexto', '');
     }
   }, [idDisciplina, listaDisciplinas]);
 
@@ -381,7 +406,7 @@ const CadastroAula = ({ match }) => {
         if (Object.keys(refForm).length > 0) {
           onChangeDisciplinas(
             disciplinas.data[0].codigoComponenteCurricular,
-            refForm
+            disciplinas.data
           );
         }
         const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
@@ -407,10 +432,10 @@ const CadastroAula = ({ match }) => {
       .typeError('O valor informado deve ser um número')
       .when('quantidadeRadio', (quantidadeRadio, schema) => {
         return quantidadeRadio <= 0
-          ? schema.required('A quantidade de aulas é obrigatóriia')
+          ? schema.required('A quantidade de aulas é obrigatória')
           : schema.required(false);
       })
-      .required('A quantidade de aulas é obrigatóriia')
+      .required('A quantidade de aulas é obrigatória')
       .positive('Valor inválido')
       .integer();
 
@@ -419,12 +444,15 @@ const CadastroAula = ({ match }) => {
       disciplinaId: Yup.string().required('Componente curricular obrigatório'),
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
-      quantidadeTexto: controlaQuantidadeAula
-        ? validacaoQuantidade.lessThan(
-            quantidadeMaximaAulas + 1,
-            `Valor não pode ser maior que ${quantidadeMaximaAulas}`
-          )
-        : validacaoQuantidade,
+      quantidadeTexto:
+        idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2
+          ? controlaQuantidadeAula && !ehReposicao
+            ? validacaoQuantidade.lessThan(
+              quantidadeMaximaAulas + 1,
+              `Valor não pode ser maior que ${quantidadeMaximaAulas}`
+            )
+            : validacaoQuantidade
+          : Yup.string().required(false),
     };
 
     if (disciplinaCompartilhada) {
@@ -444,27 +472,31 @@ const CadastroAula = ({ match }) => {
       }
       if (ehRegencia) {
         if (turmaSelecionada.modalidade === modalidade.EJA) {
-          setInicial({ ...inicial, quantidadeTexto: 5, quantidadeRadio: '' });
+          setInicial(estadoAntigo => {
+            return { ...estadoAntigo, quantidadeTexto: 5, quantidadeRadio: '' };
+          });
           setEhEja(true);
         } else {
-          setInicial({ ...inicial, quantidadeTexto: '', quantidadeRadio: 1 });
+          setInicial(estadoAntigo => {
+            return {
+              ...estadoAntigo,
+              quantidadeTexto: '',
+              quantidadeRadio: 1,
+            };
+          });
           setEhEja(false);
         }
       }
     }
-    if (refForm && refForm.fields) {
-      refForm.setFieldValue('quantidadeRadio', inicial.quantidadeRadio);
-      refForm.setFieldValue('quantidadeTexto', inicial.quantidadeTexto);
-    }
 
     setValidacoes(Yup.object(val));
   }, [
-    aula,
     controlaQuantidadeAula,
+    disciplinaCompartilhada,
     ehRecorrencia,
     ehRegencia,
     ehReposicao,
-    idAula,
+    idDisciplina,
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
   ]);
@@ -515,6 +547,14 @@ const CadastroAula = ({ match }) => {
     }
 
     dados.dataAula = dados.dataAula.format();
+
+    if (dados && dados.disciplinaId) {
+      const componenteCurricular = listaDisciplinas.find(
+        item => String(item.codigoComponenteCurricular) === dados.disciplinaId
+      );
+      if (componenteCurricular)
+        dados.disciplinaNome = componenteCurricular.nome;
+    }
 
     const cadastrado = await ServicoAula.salvar(idAula, dados).catch(e =>
       erros(e)
@@ -571,7 +611,7 @@ const CadastroAula = ({ match }) => {
     }
   };
 
-  const onClickVoltar = async () => {
+  const onClickVoltar = async form => {
     if (modoEdicao && !somenteLeitura) {
       const confirmado = await confirmar(
         'Atenção',
@@ -582,7 +622,7 @@ const CadastroAula = ({ match }) => {
       );
 
       if (confirmado) {
-        onClickCadastrar(refForm.state.values);
+        validaAntesDoSubmit(form);
       } else {
         history.push('/calendario-escolar/calendario-professor');
       }
@@ -592,9 +632,15 @@ const CadastroAula = ({ match }) => {
   };
 
   const excluir = async tipoRecorrencia => {
+    const disciplina = listaDisciplinas.find(
+      item => String(item.codigoComponenteCurricular) === String(idDisciplina)
+    );
+
+    const disciplinaBase64 = btoa(disciplina.nome);
+
     const exclusao = await api
       .delete(
-        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}`
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplinaBase64}`
       )
       .catch(e => erros(e));
     if (exclusao) {
@@ -751,7 +797,7 @@ const CadastroAula = ({ match }) => {
                     color={Colors.Azul}
                     border
                     className="mr-2"
-                    onClick={onClickVoltar}
+                    onClick={() => onClickVoltar(form)}
                   />
                   <Button
                     id={shortid.generate()}
@@ -812,7 +858,10 @@ const CadastroAula = ({ match }) => {
                     lista={listaDisciplinas}
                     valueOption="codigoComponenteCurricular"
                     valueText="nome"
-                    onChange={e => onChangeDisciplinas(e, form)}
+                    onChange={e => {
+                      onChangeDisciplinas(e, form);
+                      onChangeCampos();
+                    }}
                     label="Componente curricular"
                     placeholder="Selecione um componente curricular"
                     disabled={
@@ -866,7 +915,7 @@ const CadastroAula = ({ match }) => {
                     id="quantidadeTexto"
                     desabilitado={
                       somenteLeitura ||
-                      !form.values.disciplinaId ||
+                      !idDisciplina ||
                       (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
                       (ehRegencia && !ehReposicao)
                     }
@@ -884,7 +933,7 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={somenteLeitura || ehReposicao}
+                    desabilitado={somenteLeitura || ehReposicao || ehAulaUnica}
                     onChange={e => {
                       onChangeCampos();
                       setEhRecorrencia(e.target.value !== 1);

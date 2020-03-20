@@ -93,20 +93,22 @@ namespace SME.SGP.Aplicacao
                 Alunos = new List<NotaConceitoAlunoBimestreDto>()
             };
 
+            var disciplinasId = new long[] { disciplinaId };
+            var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(disciplinasId).FirstOrDefault();
+            IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
+
+            if (disciplinaEOL.Regencia)
+                disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turmaId), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
+
+            if (!disciplinaEOL.LancaNota)
+                fechamentoBimestre.EhSintese = true;
+
             // Carrega fechamento da Turma x Disciplina x Bimestre
             var fechamentoTurma = await ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestreAtual.Value);
             if (fechamentoTurma != null)
             {
-                var disciplinasId = new long[] { disciplinaId };
-
-                var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(disciplinasId).FirstOrDefault();
-                IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
-
-                if (disciplinaEOL.Regencia)
-                    disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turmaId), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
-
-                if (!disciplinaEOL.LancaNota)
-                    fechamentoBimestre.EhSintese = true;
+                fechamentoBimestre.Situacao = fechamentoTurma.Situacao;
+                fechamentoBimestre.FechamentoId = fechamentoTurma.Id;
 
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
 
@@ -149,9 +151,11 @@ namespace SME.SGP.Aplicacao
                             // Carrega notas do bimestre
                             var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
 
-                            foreach (var notaConceitoBimestre in notasConceitoBimestre)
-                            {
+                            if(notasConceitoBimestre.Count() > 0)
                                 alunoDto.Notas = new List<NotaConceitoBimestreRetornoDto>();
+
+                            foreach (var notaConceitoBimestre in notasConceitoBimestre)
+                            {                                
                                 ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
                                 {
                                     DisciplinaId = notaConceitoBimestre.DisciplinaId,
