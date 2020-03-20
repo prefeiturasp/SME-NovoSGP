@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Tooltip, Switch } from 'antd';
@@ -41,7 +41,9 @@ const CalendarioProfessor = () => {
   const [controleTurmaSelecionada, setControleTurmaSelecionada] = useState();
 
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
-  const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
+  const anoLetivo = useMemo(() => {
+    return (turmaSelecionadaStore && turmaSelecionadaStore.anoLetivo) || null;
+  }, [turmaSelecionadaStore]);
 
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
@@ -57,14 +59,10 @@ const CalendarioProfessor = () => {
       if (lista && lista.data) {
         const tiposCalendarioLista = [];
         if (lista.data) {
-          const anos = [];
-          anosLetivosAbrangencia.forEach(ano => {
-            if (!anos.includes(ano.valor)) anos.push(ano.valor);
-          });
           const tipos = lista.data.filter(tipo => {
             return (
               modalidades.indexOf(tipo.modalidade) > -1 &&
-              anos.indexOf(tipo.anoLetivo) > -1
+              tipo.anoLetivo === anoLetivo
             );
           });
           tipos.forEach(tipo => {
@@ -81,10 +79,10 @@ const CalendarioProfessor = () => {
       setCarregandoTipos(false);
       return lista.data;
     },
-    [anosLetivosAbrangencia, turmaSelecionadaStore.anoLetivo]
+    [anoLetivo, turmaSelecionadaStore.anoLetivo]
   );
 
-  const listarModalidadesPorAbrangencia = useCallback(() => {
+  const modalidadesPorAbrangencia = useMemo(() => {
     const modalidades = [];
     if (modalidadesAbrangencia) {
       modalidadesAbrangencia.forEach(modalidade => {
@@ -116,9 +114,7 @@ const CalendarioProfessor = () => {
             })
           );
         } else {
-          const tipos = await obterTiposCalendario(
-            listarModalidadesPorAbrangencia()
-          );
+          const tipos = await obterTiposCalendario(modalidadesPorAbrangencia);
 
           if (!tipos || tipos.length === 0) {
             erro(
@@ -135,11 +131,7 @@ const CalendarioProfessor = () => {
         }
       }
     },
-    [
-      listarModalidadesPorAbrangencia,
-      obterTiposCalendario,
-      turmaSelecionadaStore,
-    ]
+    [modalidadesPorAbrangencia, obterTiposCalendario, turmaSelecionadaStore]
   );
 
   const eventoAulaCalendarioEdicao = useSelector(
