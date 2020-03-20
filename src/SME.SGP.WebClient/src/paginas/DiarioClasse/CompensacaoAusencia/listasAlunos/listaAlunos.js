@@ -10,7 +10,7 @@ const ListaAlunos = props => {
   const montaExibicaoPercentual = (frequencia, dadosAluno) => {
     const frequenciaArredondada = frequencia
       ? Number(frequencia).toFixed(2)
-      : '0,00';
+      : '0.00';
     if (dadosAluno.alerta) {
       return (
         <>
