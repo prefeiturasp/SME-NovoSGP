@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IConsultasPeriodoFechamento consultasFechamento;
 
         public ConsultasFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IRepositorioTipoCalendario repositorioTipoCalendario,
@@ -36,7 +37,8 @@ namespace SME.SGP.Aplicacao
             IServicoUsuario servicoUsuario,
             IServicoAluno servicoAluno,
             IRepositorioConceito repositorioConceito,
-            IRepositorioParametrosSistema repositorioParametrosSistema
+            IRepositorioParametrosSistema repositorioParametrosSistema,
+            IConsultasPeriodoFechamento consultasFechamento
             )
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
@@ -51,6 +53,7 @@ namespace SME.SGP.Aplicacao
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
+            this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
         }
 
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
@@ -182,6 +185,8 @@ namespace SME.SGP.Aplicacao
             fechamentoBimestre.Bimestre = bimestreAtual.Value;
             fechamentoBimestre.TotalAulasDadas = aulaPrevistaBimestreAtual.Cumpridas;
             fechamentoBimestre.TotalAulasPrevistas = aulaPrevistaBimestreAtual.Previstas.Quantidade;
+
+            fechamentoBimestre.PodeProcessarReprocessar =  await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Now, bimestreAtual.Value);
 
             return fechamentoBimestre;
         }
