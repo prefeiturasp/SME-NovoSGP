@@ -159,6 +159,7 @@ const CadastroAula = ({ match }) => {
   }, []);
 
   const [desabilitaPorGrade, setDesabilitaPorGrade] = useState(false);
+  const [carregandoSalvar, setCarregandoSalvar] = useState(false);
 
   const onChangeDisciplinas = async (id, listaDisc, isReposicao) => {
     onChangeCampos();
@@ -191,6 +192,8 @@ const CadastroAula = ({ match }) => {
 
       refForm.setFieldValue('recorrenciaAula', '');
 
+      setCarregandoSalvar(true);
+
       const resultado = await api
         .get(
           `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}?ehRegencia=${regencia}`,
@@ -208,11 +211,12 @@ const CadastroAula = ({ match }) => {
             err.response.data &&
             err.response.data.mensagens;
 
+          setCarregandoSalvar(false);
+
           if (mensagemErro) {
             erro(mensagemErro.join(','));
             return null;
           }
-
           erro('Ocorreu um erro, por favor contate o suporte');
 
           return null;
@@ -228,6 +232,7 @@ const CadastroAula = ({ match }) => {
           setQuantidadeMaximaAulas(0);
           setDesabilitaPorGrade(false);
         }
+        setCarregandoSalvar(false);
       }
     }
   };
@@ -565,8 +570,6 @@ const CadastroAula = ({ match }) => {
       }
     }
   };
-
-  const [carregandoSalvar, setCarregandoSalvar] = useState(false);
 
   const onClickCadastrar = async valoresForm => {
     setCarregandoSalvar(true);
