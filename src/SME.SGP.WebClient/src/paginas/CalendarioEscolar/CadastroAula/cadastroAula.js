@@ -160,21 +160,29 @@ const CadastroAula = ({ match }) => {
     };
   }, []);
 
-  const onChangeDisciplinas = async id => {
-    onChangeCampos();
-
+  const onChangeDisciplinas = async (id, listaDisc) => {
     setIdDisciplina(id);
+
+    const lista =
+      (listaDisciplinas && listaDisciplinas.length > 0 && listaDisciplinas) ||
+      listaDisc ||
+      [];
+
+    if (!lista || lista.length === 0) return;
+
     if (id) {
-      const disciplina = listaDisciplinas.find(
-        d => String(d.codigoComponenteCurricular) === id
+      const disciplina = lista.find(
+        d => String(d.codigoComponenteCurricular) === String(id)
       );
+
+      if (!disciplina) return;
 
       const regencia = !!disciplina.regencia;
       setEhRegencia(regencia);
 
       let resultado;
 
-      if (!disciplina.territorioSaber) {
+      if (disciplina && !disciplina.territorioSaber) {
         resultado = await api
           .get(
             `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}?ehRegencia=${regencia}`,
@@ -394,7 +402,7 @@ const CadastroAula = ({ match }) => {
         if (Object.keys(refForm).length > 0) {
           onChangeDisciplinas(
             disciplinas.data[0].codigoComponenteCurricular,
-            refForm
+            disciplinas.data
           );
         }
         const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
@@ -460,10 +468,18 @@ const CadastroAula = ({ match }) => {
       }
       if (ehRegencia) {
         if (turmaSelecionada.modalidade === modalidade.EJA) {
-          setInicial({ ...inicial, quantidadeTexto: 5, quantidadeRadio: '' });
+          setInicial(estadoAntigo => {
+            return { ...estadoAntigo, quantidadeTexto: 5, quantidadeRadio: '' };
+          });
           setEhEja(true);
         } else {
-          setInicial({ ...inicial, quantidadeTexto: '', quantidadeRadio: 1 });
+          setInicial(estadoAntigo => {
+            return {
+              ...estadoAntigo,
+              quantidadeTexto: '',
+              quantidadeRadio: 1,
+            };
+          });
           setEhEja(false);
         }
       }
@@ -471,15 +487,14 @@ const CadastroAula = ({ match }) => {
 
     setValidacoes(Yup.object(val));
   }, [
-    aula,
     controlaQuantidadeAula,
+    disciplinaCompartilhada,
     ehRecorrencia,
     ehRegencia,
     ehReposicao,
-    idAula,
+    idDisciplina,
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
-    idDisciplina,
   ]);
 
   useEffect(() => {
@@ -618,12 +633,16 @@ const CadastroAula = ({ match }) => {
 
   const excluir = async tipoRecorrencia => {
     const disciplina = listaDisciplinas.find(
-      item => String(item.codigoComponenteCurricular) === String(idDisciplina)
+      item =>
+        String(item.codigoComponenteCurricular) ===
+        String(refForm.state.values.disciplinaId)
     );
+
+    const disciplinaBase64 = btoa(disciplina.nome);
 
     const exclusao = await api
       .delete(
-        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplina.nome}`
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}/disciplinaNome/${disciplinaBase64}`
       )
       .catch(e => erros(e));
     if (exclusao) {
@@ -842,7 +861,10 @@ const CadastroAula = ({ match }) => {
                     lista={listaDisciplinas}
                     valueOption="codigoComponenteCurricular"
                     valueText="nome"
-                    onChange={e => onChangeDisciplinas(e, form)}
+                    onChange={e => {
+                      onChangeDisciplinas(e, form);
+                      onChangeCampos();
+                    }}
                     label="Componente curricular"
                     placeholder="Selecione um componente curricular"
                     disabled={
@@ -914,7 +936,7 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={somenteLeitura || ehReposicao}
+                    desabilitado={somenteLeitura || ehReposicao || ehAulaUnica}
                     onChange={e => {
                       onChangeCampos();
                       setEhRecorrencia(e.target.value !== 1);

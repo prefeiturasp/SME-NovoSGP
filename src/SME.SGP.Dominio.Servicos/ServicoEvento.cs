@@ -107,8 +107,6 @@ namespace SME.SGP.Dominio.Servicos
             if (evento.DeveSerEmDiaLetivo())
                 evento.EstaNoPeriodoLetivo(periodos);
 
-            usuario.PodeCriarEventoComDataPassada(evento);
-
             bool devePassarPorWorkflowLiberacaoExcepcional = await ValidaDatasETiposDeEventos(evento, dataConfirmada, usuario, periodos);
 
             AtribuirNullSeVazio(evento);
@@ -394,8 +392,6 @@ namespace SME.SGP.Dominio.Servicos
 
             if (workflowDeLiberacaoExcepcional)
                 idWorkflow = CriarWorkflowParaEventoExcepcionais(evento, escola, linkParaEvento);
-            else if (evento.DataInicio.Date < DateTime.Today)
-                idWorkflow = CriarWorkflowParaDataPassada(evento, escola, linkParaEvento);
 
             evento.EnviarParaWorkflowDeAprovacao(idWorkflow);
 
@@ -477,7 +473,7 @@ namespace SME.SGP.Dominio.Servicos
                         {
                             var temEventoSuspensaoAtividades = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, evento.UeId, evento.DreId, escopoRetroativo: true);
                             var temEventoFeriado = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Feriado, evento.TipoCalendarioId, string.Empty, string.Empty);
-                            if ((temEventoFeriado || temEventoSuspensaoAtividades || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday || evento.DataFim.DayOfWeek == DayOfWeek.Sunday) && evento.Letivo == EventoLetivo.Sim)
+                            if ((temEventoFeriado || temEventoSuspensaoAtividades || evento.DataInicio.FimDeSemana() || evento.DataFim.FimDeSemana()) && evento.Letivo == EventoLetivo.Sim)
                             {
                                 if (temEventoLiberacaoExcepcional)
                                     return true;
