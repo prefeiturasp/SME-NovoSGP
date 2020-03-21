@@ -7,7 +7,8 @@ const ServicoFechamentoBimestre = {
     );
   },
 
-  reprocessar(fechamentoId) {
+  // TODO Alteraçõs serao realizadas no back!
+  processarReprocessar(fechamentoId) {
     return api.post(`/v1/fechamentos/turmas/reprocessar/${fechamentoId}`);
   },
 };

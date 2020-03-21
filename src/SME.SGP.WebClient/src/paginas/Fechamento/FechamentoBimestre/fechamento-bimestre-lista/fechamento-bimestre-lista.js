@@ -21,11 +21,12 @@ const FechamentoBimestreLista = props => {
   const [dadosLista, setDadosLista] = useState(
     dados ? dados.alunos : undefined
   );
-  
-  const [situacaoFechamento, setSituacaoFechamento] = useState(dados.situacao);
 
-  const onClickReprocessar = async () => {
-    const processando = await ServicoFechamentoBimestre.reprocessar(
+  const [situacaoFechamento, setSituacaoFechamento] = useState(dados.situacao);
+  const [podeProcessarReprocessar] = useState(dados.podeProcessarReprocessar);
+
+  const onClickProcessarReprocessar = async () => {
+    const processando = await ServicoFechamentoBimestre.processarReprocessar(
       dados.fechamentoId
     ).catch(e => erros(e));
     if (processando && processando.status == 200) {
@@ -47,22 +48,26 @@ const FechamentoBimestreLista = props => {
             }}
             desabilitado={dadosLista ? dadosLista.length <= 0 : true}
           />
-          {situacaoFechamento ==
-          situacaoFechamentoDto.ProcessadoComPendencias ? (
+          {podeProcessarReprocessar &&
+          (situacaoFechamento == situacaoFechamentoDto.ProcessadoComPendencias ||
+           situacaoFechamento == situacaoFechamentoDto.NaoProcessado) ? (
             <Button
-              label="Reprocessar"
+              label={`${
+                situacaoFechamento == situacaoFechamentoDto.ProcessadoComPendencias
+                  ? 'Reprocessar'
+                  : 'Processar'
+              }`}
               color={Colors.Azul}
               border
               className="mr-2"
-              onClick={onClickReprocessar}
+              onClick={()=>{}}
             />
           ) : (
             ''
           )}
         </div>
         <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
-          {situacaoFechamento ==
-          situacaoFechamentoDto.ProcessadoComPendencias ? (
+          {podeProcessarReprocessar && situacaoFechamento == situacaoFechamentoDto.ProcessadoComPendencias ? (
             <SituacaoProcessadoComPendencias>
               <span>Processado Com Pendências</span>
             </SituacaoProcessadoComPendencias>
