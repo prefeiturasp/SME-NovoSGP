@@ -46,6 +46,7 @@ import PeriodoFechamentoReaberturaLista from '~/paginas/CalendarioEscolar/Period
 import PeriodoFechamentoReaberturaForm from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaForm';
 import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento';
 import PendenciasFechamentoLista from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoLista';
+import PendenciasFechamentoForm from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoForm';
 
 const rotas = new Map();
 
@@ -661,6 +662,17 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}`, {
   menu: ['Fechamento'],
   parent: '/',
   component: PendenciasFechamentoLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
+});
+
+rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/editar/:id`, {
+  breadcrumbName: 'Pendências do Fechamento',
+  menu: ['Fechamento'],
+  parent: RotasDto.PENDENCIAS_FECHAMENTO,
+  component: PendenciasFechamentoForm,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   // temPermissionamento: true,
