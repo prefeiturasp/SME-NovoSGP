@@ -125,9 +125,11 @@ namespace SME.SGP.Aplicacao
                         // Carrega notas do bimestre
                         var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
 
+                        if(notasConceitoBimestre.Count() > 0)
+                            alunoDto.Notas = new List<NotaConceitoBimestreRetornoDto>();
+
                         foreach (var notaConceitoBimestre in notasConceitoBimestre)
                         {
-                            alunoDto.Notas = new List<NotaConceitoBimestreRetornoDto>();
                             ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
                             {
                                 DisciplinaId = notaConceitoBimestre.DisciplinaId,

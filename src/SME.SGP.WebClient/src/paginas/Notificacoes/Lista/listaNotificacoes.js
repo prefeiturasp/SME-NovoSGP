@@ -67,7 +67,6 @@ export default function NotificacoesLista() {
   const usuario = useSelector(store => store.usuario);
   const turmaSelecionada = useSelector(store => store.usuario.turmaSelecionada);
 
-  const [notificacoesSelecionadas, setNotificacoesSelecionadas] = useState([]);
   const [listaCategorias, setListaCategorias] = useState([]);
   const [listaStatus, setListaStatus] = useState([]);
   const [listaTipos, setTipos] = useState([]);
@@ -152,7 +151,6 @@ export default function NotificacoesLista() {
   }
   const onSelecionarItems = items => {
     if (items && items.length > 0) {
-      setNotificacoesSelecionadas(items);
       const naoPodeRemover = items.find(item => !item.podeRemover);
       if (naoPodeRemover) {
         setDesabilitarBotaoExcluir(true);
@@ -258,6 +256,7 @@ export default function NotificacoesLista() {
       servicoNotificacao.excluir(idNotificacoesSelecionadas, () => {
         onClickFiltrar();
         setIdNotificacoesSelecionadas([]);
+        setDesabilitarBotaoExcluir(true);
       });
     }
   }
@@ -353,7 +352,12 @@ export default function NotificacoesLista() {
             border
             className="mb-2 ml-2 float-right"
             onClick={excluir}
-            disabled={desabilitarBotaoExcluir || !permissoesTela.podeExcluir}
+            disabled={
+              (idNotificacoesSelecionadas &&
+                idNotificacoesSelecionadas.length < 1) ||
+              !permissoesTela.podeExcluir ||
+              desabilitarBotaoExcluir
+            }
           />
           <Button
             label="Marcar como lida"
@@ -375,7 +379,6 @@ export default function NotificacoesLista() {
           <ListaPaginada
             url="v1/notificacoes/"
             id="lista-notificacoes"
-            colunaChave="codigo"
             colunas={colunasTabela}
             filtro={filtro}
             onClick={permissoesTela.podeAlterar && onClickEditar}

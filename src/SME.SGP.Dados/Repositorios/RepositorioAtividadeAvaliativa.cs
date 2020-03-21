@@ -13,12 +13,12 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioAtividadeAvaliativa : RepositorioBase<AtividadeAvaliativa>, IRepositorioAtividadeAvaliativa
     {
         private readonly string fromCompleto = @"from atividade_avaliativa a
-                                                inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id 
+                                                inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id
                                                 inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = a.id";
 
         private readonly string fromCompletoRegencia = @"from atividade_avaliativa a
                                                         inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id
-                                                        inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id 
+                                                        inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id
                                                         inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = a.id";
 
         public RepositorioAtividadeAvaliativa(ISgpContext conexao) : base(conexao)
@@ -119,6 +119,26 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
+        public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasSemNotaParaNenhumAluno(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var sql = @"select
+	                        *
+                        from
+	                        atividade_avaliativa av
+                        where
+	                        turma_id = @turmaCodigo
+	                        and not exists (
+	                        select
+		                        1
+	                        from
+		                        notas_conceito
+	                        where
+		                        atividade_avaliativa = av.id
+		                        and disciplina_id = @disciplinaId)";
+
+            return database.Query<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, disciplinaId, inicioPeriodo, fimPeriodo });
+        }
+
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesPorDia(string dreId, string ueId, DateTime dataAvaliacao, string professorRf, string turmaId)
         {
             StringBuilder query = new StringBuilder();
@@ -216,7 +236,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
             query.AppendLine(fromCompleto);
-            MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf, null, null, false,null, disciplinasId, false, null, null, id, id.HasValue); ;
+            MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf, null, null, false, null, disciplinasId, false, null, null, id, id.HasValue); ;
 
             var resultado = (await database.Conexao.QueryAsync<AtividadeAvaliativa>(query.ToString(), new
             {

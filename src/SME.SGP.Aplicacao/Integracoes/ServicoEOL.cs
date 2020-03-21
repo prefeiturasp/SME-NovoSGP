@@ -226,6 +226,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
+        [Obsolete("não utilizar mais esse método, utilize o ObterAlunosPorTurma")]
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
@@ -265,15 +266,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             var parametros = JsonConvert.SerializeObject(ids);
             var resposta = httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json")).Result;
 
-            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
-                RegistrarLogSentry(resposta, "obter as disciplinas", parametros);
-                return null;
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+                return MapearParaDtoDisciplinas(retorno);
             }
-
-            var json = resposta.Content.ReadAsStringAsync().Result;
-            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
-            return MapearParaDtoDisciplinas(retorno);
+            throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
         }
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAsync(long[] ids)
@@ -482,6 +481,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
             {
+                await RegistrarLogSentryAsync(resposta, "ObterMeusDados", "login = " + login);
                 throw new NegocioException("Não foi possível obter os dados do usuário");
             }
             var json = await resposta.Content.ReadAsStringAsync();
@@ -707,6 +707,23 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<bool>(json);
         }
 
+        public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, string[] datas, long codigoDisciplina)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var datasParaEnvio = JsonConvert.SerializeObject(datas);
+
+            var resposta = await httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json"));
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<PodePersistirNaDataRetornoEolDto>>(json);
+            }
+
+            throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+        }
+
         public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
             httpClient.DefaultRequestHeaders.Clear();
@@ -733,6 +750,23 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível reiniciar a senha deste usuário");
+        }
+
+        public async Task<UsuarioEolAutenticacaoRetornoDto> RelecionarUsuarioPerfis(string login)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", login) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/RelacionarUsuarioPerfis", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+            }
+            else return null;
         }
 
         public async Task RemoverCJSeNecessario(Guid usuarioId)
@@ -806,6 +840,10 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
             }
+
+            if (resposta.StatusCode == HttpStatusCode.BadRequest)
+                throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
+
             await RegistrarLogSentryAsync(resposta, rotina, string.Empty);
             return null;
         }
