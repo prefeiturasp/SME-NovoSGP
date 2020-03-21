@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
@@ -19,6 +20,7 @@ namespace SME.SGP.Infra
         public DateTime InicioMinimo { get; set; }
 
         [Required(ErrorMessage = "O período escolar é obrigatório")]
+        public PeriodoEscolar PeriodoEscolar { get; set; }
         public long PeriodoEscolarId { get; set; }
     }
 }

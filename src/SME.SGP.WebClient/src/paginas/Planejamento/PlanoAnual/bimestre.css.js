@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { Base } from '../../../componentes/colors';
 
 export const Badge = styled.button`
+  color: ${props => (props.disabled ? Base.CinzaDesabilitado : Base.Preto)} !important;
   &:last-child {
     margin-right: 10 !important;
   }

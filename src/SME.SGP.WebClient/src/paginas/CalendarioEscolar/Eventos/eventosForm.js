@@ -290,11 +290,6 @@ const EventosForm = ({ match }) => {
   const validarConsultaModoEdicaoENovo = async () => {
     if (match && match.params && match.params.id) {
       setNovoRegistro(false);
-      setBreadcrumbManual(
-        match.url,
-        'Cadastro de Eventos no Calendário Escolar',
-        '/calendario-escolar/eventos'
-      );
       setIdEvento(match.params.id);
       consultaPorId(match.params.id);
     } else {
@@ -318,6 +313,11 @@ const EventosForm = ({ match }) => {
       }
       inicial.tipoCalendarioId = match.params.tipoCalendarioId;
     }
+    setBreadcrumbManual(
+      match.url,
+      'Cadastro de Eventos no Calendário Escolar',
+      '/calendario-escolar/eventos'
+    );
   };
 
   const montarTipoCalendarioPorId = async id => {
@@ -385,14 +385,6 @@ const EventosForm = ({ match }) => {
       onChangeTipoEvento(evento.data.tipoEventoId);
 
       setExibirAuditoria(true);
-
-      if (Object.entries(eventoCalendarioEdicao).length > 0) {
-        setBreadcrumbManual(
-          match.url,
-          'Cadastro de Eventos no Calendário Escolar',
-          '/calendario-escolar'
-        );
-      }
     }
   };
 
@@ -428,6 +420,21 @@ const EventosForm = ({ match }) => {
     setListaFeriados(feriados.data);
   };
 
+  const urlTelaListagemEventos = () => {
+    if (match && match.params && match.params.tipoCalendarioId) {
+      return `/calendario-escolar/eventos/${match.params.tipoCalendarioId}`;
+    }
+    return '/calendario-escolar/eventos';
+  };
+
+  const setBreadcrumbLista = () => {
+    setBreadcrumbManual(
+      `/calendario-escolar/eventos/${match.params.tipoCalendarioId}`,
+      '',
+      '/calendario-escolar/eventos'
+    );
+  }
+
   const onClickVoltar = async () => {
     if (modoEdicao && valoresIniciais.podeAlterar) {
       const confirmado = await confirmar(
@@ -436,14 +443,16 @@ const EventosForm = ({ match }) => {
         'Deseja voltar para tela de listagem agora?'
       );
       if (Object.entries(eventoCalendarioEdicao).length > 0) {
+        setBreadcrumbLista();
         history.push('/calendario-escolar');
       } else if (confirmado) {
-        history.push('/calendario-escolar/eventos');
+        history.push(urlTelaListagemEventos());
       }
     } else if (Object.entries(eventoCalendarioEdicao).length > 0) {
       history.push('/calendario-escolar');
     } else {
-      history.push('/calendario-escolar/eventos');
+      setBreadcrumbLista();
+      history.push(urlTelaListagemEventos());
     }
   };
 
@@ -506,10 +515,12 @@ const EventosForm = ({ match }) => {
           sucesso(resposta.data[0].mensagem);
         } else {
           sucesso(
-            'Evento cadastrado com sucesso. Serão cadastrados eventos recorrentes, em breve você receberá uma notificação com o resultado do processamento.'
+            `Evento ${
+              idEvento ? 'alterado' : 'cadastrado'
+            } com sucesso. Serão cadastrados eventos recorrentes, em breve você receberá uma notificação com o resultado do processamento.`
           );
         }
-        history.push('/calendario-escolar/eventos');
+        history.push(urlTelaListagemEventos());
       }
     };
 
@@ -561,9 +572,9 @@ const EventosForm = ({ match }) => {
   const onClickExcluir = async () => {
     if (!novoRegistro) {
       const confirmado = await confirmar(
-        'Excluir tipo de calendário escolar',
+        'Excluir evento',
         '',
-        'Deseja realmente excluir este calendário?',
+        'Deseja realmente excluir este evento?',
         'Excluir',
         'Cancelar'
       );
@@ -573,7 +584,7 @@ const EventosForm = ({ match }) => {
           .catch(e => erros(e));
         if (excluir) {
           sucesso('Evento excluído com sucesso.');
-          history.push('/calendario-escolar/eventos');
+          history.push(urlTelaListagemEventos());
         }
       }
     }
@@ -746,7 +757,7 @@ const EventosForm = ({ match }) => {
 
   const onCloseRetornoCopiarEvento = () => {
     setExibirModalRetornoCopiarEvento(false);
-    history.push('/calendario-escolar/eventos');
+    history.push(urlTelaListagemEventos());
   };
 
   const validaAntesDoSubmit = form => {

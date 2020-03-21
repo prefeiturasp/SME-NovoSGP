@@ -52,7 +52,6 @@ namespace SME.SGP.Dominio.Servicos
                 if (retorno.Any(x => x.Key.Equals(codigoAluno)))
                     retorno.Add(new KeyValuePair<string, int>(codigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente));
             }
-
             return retorno;
         }
 

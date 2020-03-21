@@ -31,6 +31,8 @@
         // Média
         MediaBimestre = 14,
 
+        PercentualAlunosInsuficientes = 15,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
