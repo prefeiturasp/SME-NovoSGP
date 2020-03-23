@@ -378,7 +378,7 @@ namespace SME.SGP.Dados.Repositorios
                         }, param: new { id }).FirstOrDefault();
         }
 
-        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(int anoLetivo, string turmaId, string disciplinaId, long usuarioId, string usuarioRF, bool aulaCJ, bool ehDiretorOuSupervisor)
+        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehDiretorOuSupervisor = false)
         {
             var query = new StringBuilder("select distinct a.* ");
             query.AppendLine("from aula a ");
@@ -408,7 +408,6 @@ namespace SME.SGP.Dados.Repositorios
             {
                 periodoEscolarId,
                 usuarioRF,
-                usuarioId,
                 anoLetivo,
                 turmaCodigo,
                 disciplinaId

@@ -286,7 +286,7 @@ namespace SME.SGP.Dominio.Servicos
                 fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(id);
 
             fechamento.Situacao = SituacaoFechamento.EmProcessamento;
-            fechamento.Turma = repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoDto.TurmaId);
+            fechamento.Turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(fechamentoDto.TurmaId);
             fechamento.TurmaId = fechamento.Turma.Id;
             fechamento.DisciplinaId = fechamentoDto.DisciplinaId;
             fechamento.Justificativa = fechamentoDto.Justificativa;

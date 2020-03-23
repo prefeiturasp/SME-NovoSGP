@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasDisciplinas = new Mock<IConsultasDisciplina>();
             repositorioTurma = new Mock<IRepositorioTurma>();
 
-            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, repositorioPlanoAula.Object, servicoUsuario.Object, servicoEol.Object, consultasDisciplinas.Object);
+            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, repositorioPlanoAula.Object, repositorioTurma.Object, servicoUsuario.Object, servicoEol.Object, consultasDisciplinas.Object);
 
             Setup();
         }
