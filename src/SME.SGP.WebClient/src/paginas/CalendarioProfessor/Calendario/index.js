@@ -83,7 +83,7 @@ const CalendarioProfessor = () => {
           : 1;
 
       tipos = tiposCalendario
-        .filter(x => x.anoLetivo === anosLetivosAbrangencia[0].valor)
+        .filter(x => x.anoLetivo === anoLetivo)
         .filter(y => Number(y.modalidade) === Number(modalidadeSelecionada));
 
       if (!tipos || tipos.length === 0) {
@@ -103,7 +103,7 @@ const CalendarioProfessor = () => {
 
     return tipos;
   }, [
-    anosLetivosAbrangencia,
+    anoLetivo,
     modalidadesPorAbrangencia,
     tiposCalendario,
     turmaSelecionadaStore,
