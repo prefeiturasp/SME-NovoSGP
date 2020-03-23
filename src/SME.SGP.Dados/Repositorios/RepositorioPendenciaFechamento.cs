@@ -19,17 +19,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             var retorno = new PaginacaoResultadoDto<PendenciaFechamentoResumoDto>();
 
-            var query = new StringBuilder(@"select p.descricao, p.situacao, ftd.disciplina_id as DisciplinaId
-                                  from pendencia_fechamento pf 
-                                 inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id 
-                                 inner join turma t on t.id = ftd.turma_id 
-                                 inner join periodo_escolar pe on pe.id = ftd.periodo_escolar_id 
-                                 inner join pendencia p on p.id = pf.pendencia_id 
-                                  where t.turma_id = @turmaCodigo ");
-            if (bimestre > 0)
-                query.AppendLine(" and pe.bimestre = @bimestre");
-            if (componenteCurricularId > 0)
-                query.AppendLine(" and ftd.disciplina_id = @componenteCurricularId");
+            var query = new StringBuilder(MontaQuery(paginacao, bimestre, componenteCurricularId));
+            query.AppendLine(";");
+            query.AppendLine(MontaQuery(paginacao, bimestre, componenteCurricularId, true));
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new {turmaCodigo, bimestre, componenteCurricularId }))
             {
@@ -39,6 +31,27 @@ namespace SME.SGP.Dados.Repositorios
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
+        }
+
+        private string MontaQuery(Paginacao paginacao, int bimestre, long componenteCurricularId, bool contador = false)
+        {
+            var fields = contador ? "count(p.id)" : "p.descricao, p.situacao, ftd.disciplina_id as DisciplinaId";
+            var query = new StringBuilder(string.Format(@"select {0}
+                                  from pendencia_fechamento pf 
+                                 inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id 
+                                 inner join turma t on t.id = ftd.turma_id 
+                                 inner join periodo_escolar pe on pe.id = ftd.periodo_escolar_id 
+                                 inner join pendencia p on p.id = pf.pendencia_id 
+                                  where t.turma_id = @turmaCodigo ", fields));
+            if (bimestre > 0)
+                query.AppendLine(" and pe.bimestre = @bimestre");
+            if (componenteCurricularId > 0)
+                query.AppendLine(" and ftd.disciplina_id = @componenteCurricularId");
+
+            if (paginacao.QuantidadeRegistros > 0 && !contador)
+                query.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
+
+            return query.ToString();
         }
     }
 }
