@@ -42,7 +42,9 @@ const CalendarioProfessor = () => {
   const [controleTurmaSelecionada, setControleTurmaSelecionada] = useState();
 
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
-  const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
+  const anoLetivo = useMemo(() => {
+    return (turmaSelecionadaStore && turmaSelecionadaStore.anoLetivo) || null;
+  }, [turmaSelecionadaStore]);
 
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
