@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
-using Sentry;
 using SME.SGP.Dominio;
-using System;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 
 namespace SME.SGP.Api.Middlewares
 {
@@ -24,13 +19,13 @@ namespace SME.SGP.Api.Middlewares
 
         public override void OnException(ExceptionContext context)
         {
-            using (SentrySdk.Init(sentryDSN))
-            {
-                var internalIP = Dns.GetHostEntry(Dns.GetHostName()).AddressList?.Where(c => c.AddressFamily == AddressFamily.InterNetwork).ToString();
-                SentrySdk.AddBreadcrumb($"{Environment.MachineName ?? string.Empty} - {internalIP ?? string.Empty }", "Machine Identification");
+            //using (SentrySdk.Init(sentryDSN))
+            //{
+            //    var internalIP = Dns.GetHostEntry(Dns.GetHostName()).AddressList?.Where(c => c.AddressFamily == AddressFamily.InterNetwork).ToString();
+            //    SentrySdk.AddBreadcrumb($"{Environment.MachineName ?? string.Empty} - {internalIP ?? string.Empty }", "Machine Identification");
 
-                SentrySdk.CaptureException(context.Exception);
-            }
+            //    SentrySdk.CaptureException(context.Exception);
+            //}
 
             context.Result = context.Exception is NegocioException
                 ? new ResultadoBaseResult(context.Exception.Message, ((NegocioException)context.Exception).StatusCode)

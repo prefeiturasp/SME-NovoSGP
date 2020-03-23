@@ -16,17 +16,17 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioGrade> repositorioGrade;
         private readonly Mock<IRepositorioTurma> repositorioTurma;
         private readonly Mock<IRepositorioUe> repositorioUe;
-        private readonly Mock<IServicoEOL> servicoEOL;
+        private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ConsultasGradeTeste()
         {
             repositorioGrade = new Mock<IRepositorioGrade>();
             consultasAbrangencia = new Mock<IConsultasAbrangencia>();
             consultasAula = new Mock<IConsultasAula>();
-            servicoEOL = new Mock<IServicoEOL>();
+            servicoUsuario = new Mock<IServicoUsuario>();
             repositorioUe = new Mock<IRepositorioUe>();
             repositorioTurma = new Mock<IRepositorioTurma>();
-            consultasGrade = new ConsultasGrade(repositorioGrade.Object, consultasAbrangencia.Object, consultasAula.Object, servicoEOL.Object, repositorioUe.Object, repositorioTurma.Object);
+            consultasGrade = new ConsultasGrade(repositorioGrade.Object, consultasAbrangencia.Object, consultasAula.Object, servicoUsuario.Object, repositorioUe.Object, repositorioTurma.Object);
 
             Setup();
         }
