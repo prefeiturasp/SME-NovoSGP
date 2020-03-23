@@ -96,7 +96,7 @@ namespace SME.SGP.Dominio
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
         {
-            turma = repositorioTurma.ObterTurmaComUeEDrePorId(turmaId);
+            turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException($"Turma com código [{turmaId}] não localizada");
 

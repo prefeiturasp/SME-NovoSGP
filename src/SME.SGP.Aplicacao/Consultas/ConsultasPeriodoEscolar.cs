@@ -11,15 +11,15 @@ namespace SME.SGP.Aplicacao.Consultas
     public class ConsultasPeriodoEscolar : IConsultasPeriodoEscolar
     {
         private readonly IRepositorioPeriodoEscolar repositorio;
-        private readonly IConsultasFechamento consultasFechamento;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
 
         public ConsultasPeriodoEscolar(IRepositorioPeriodoEscolar repositorio,
-                                    IConsultasFechamento consultasFechamento,
+                                    IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                     IConsultasTipoCalendario consultasTipoCalendario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
-            this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
         }
 
@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
             var periodoAtual = ObterPeriodoEscolarPorData(tipoCalendario.Id, DateTime.Now.Date);
             var periodos = new List<PeriodoEscolarDto>() { periodoAtual };
-            periodos.AddRange(await consultasFechamento.ObterPeriodosEmAberto(ueId));
+            periodos.AddRange(await consultasPeriodoFechamento.ObterPeriodosEmAberto(ueId));
 
             return periodos;
         }

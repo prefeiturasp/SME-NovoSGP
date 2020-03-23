@@ -11,17 +11,17 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     public class ConsultasPeriodoEscolarTeste
     {
         private readonly IConsultasPeriodoEscolar consultas;
-        private readonly Mock<IConsultasFechamento> consultasFechamento; 
+        private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento; 
         private readonly Mock<IConsultasTipoCalendario> consultasTipoCalendario;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorio;
 
         public ConsultasPeriodoEscolarTeste()
         {
             repositorio = new Mock<IRepositorioPeriodoEscolar>();
-            consultasFechamento = new Mock<IConsultasFechamento>();
+            consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
             consultasTipoCalendario = new Mock<IConsultasTipoCalendario>();
 
-            consultas = new ConsultasPeriodoEscolar(repositorio.Object, consultasFechamento.Object, consultasTipoCalendario.Object);
+            consultas = new ConsultasPeriodoEscolar(repositorio.Object, consultasPeriodoFechamento.Object, consultasTipoCalendario.Object);
         }
 
         [Fact(DisplayName = "Deve_Consultar_Periodo_Escolar")]
