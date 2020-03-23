@@ -340,7 +340,9 @@ namespace SME.SGP.Dominio.Servicos
 
         private async void ValidaProfessorPodePersistirTurma(string turmaId, string codigoRf, DateTime dataAula)
         {
-            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula.Local()))
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj() && !await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula.Local()))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
 

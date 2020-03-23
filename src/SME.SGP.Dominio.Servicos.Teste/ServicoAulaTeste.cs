@@ -17,8 +17,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
     {
         #region Mocks
 
-        private readonly Mock<IComandosPlanoAula> comandosPlanoAula;
         private readonly Mock<IComandosNotificacaoAula> comandosNotificacaoAula;
+        private readonly Mock<IComandosPlanoAula> comandosPlanoAula;
         private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
         private readonly Mock<IConfiguration> configuration;
         private readonly Mock<IConsultasFrequencia> consultasFrequencia;
@@ -107,7 +107,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             aula.Id = 1;
             aula.DataAula = aula.DataAula.AddDays(2);
 
-            var msg = servicoAula.Salvar(aula, usuario, RecorrenciaAula.RepetirBimestreAtual, aula.Quantidade);
+            var msg = await servicoAula.Salvar(aula, usuario, RecorrenciaAula.RepetirBimestreAtual, aula.Quantidade);
 
             // ASSERT
             Assert.False(msg == "");
@@ -120,7 +120,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         {
             servicoDiaLetivo.Setup(a => a.ValidarSeEhDiaLetivo(It.IsAny<DateTime>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
 
-            Assert.Throws<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         {
             aula.DisciplinaId = "2";
 
-            Assert.Throws<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
         }
 
         [Fact]
@@ -136,7 +136,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         {
             aula.Quantidade = 2;
 
-            Assert.Throws<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
         }
 
         [Fact]
@@ -145,7 +145,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             aula.TipoAula = TipoAula.Reposicao;
             aula.RecorrenciaAula = RecorrenciaAula.RepetirBimestreAtual;
 
-            Assert.Throws<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         public async void Deve_Incluir_Aula()
         {
             //ACT
-            servicoAula.Salvar(aula, usuario, RecorrenciaAula.AulaUnica);
+            await servicoAula.Salvar(aula, usuario, RecorrenciaAula.AulaUnica);
 
             //ASSERT
             repositorioAula.Verify(c => c.Salvar(aula), Times.Once);
@@ -188,7 +188,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             consultasPeriodoEscolar.Setup(a => a.ObterFimPeriodoRecorrencia(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<RecorrenciaAula>())).Returns(new DateTime(2019, 3, 31));
 
             //ACT
-            servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
+            await servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
 
             //ASSERT
             repositorioAula.Verify(c => c.Salvar(aula), Times.Exactly(1));
@@ -226,7 +226,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoEol.Setup(a => a.ObterDisciplinasPorCodigoTurmaLoginEPerfil(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(disciplinaRespotas));
 
             //repositorioPeriodoEscolar.Setup(a => a.ObterPorTipoCalendarioData(aula.TipoCalendarioId, aula.DataAula)).Returns(new PeriodoEscolar());
-            consultasGrade.Setup(a => a.ObterGradeAulasTurmaProfessor(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<string>()))
+            consultasGrade.Setup(a => a.ObterGradeAulasTurmaProfessor(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(Task.FromResult(new GradeComponenteTurmaAulasDto() { QuantidadeAulasGrade = 1, QuantidadeAulasRestante = 1 }));
 
             servicoDiaLetivo.Setup(a => a.ValidarSeEhDiaLetivo(It.IsAny<DateTime>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
