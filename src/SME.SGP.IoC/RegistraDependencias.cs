@@ -117,6 +117,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasEventoFechamento, ConsultasEventoFechamento>();
             services.TryAddScoped<IConsultaRecuperacaoParalela, ConsultasRecuperacaoParalela>();
             services.TryAddScoped<IConsultasFechamentoFinal, ConsultasFechamentoFinal>();
+            services.TryAddScoped<IConsultasPendenciaFechamento, ConsultasPendenciaFechamento>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)

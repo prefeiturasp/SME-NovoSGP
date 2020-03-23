@@ -122,9 +122,9 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var bimestreSME in fechamentoSMEDre.FechamentosBimestre)
             {
                 var bimestreDreUe = fechamentoDto.FechamentosBimestres.FirstOrDefault(c => c.Bimestre == bimestreSME.PeriodoEscolar.Bimestre);
-                bimestreDreUe.PeriodoEscolar = bimestreSME.PeriodoEscolar;
                 if (bimestreDreUe != null)
                 {
+                    bimestreDreUe.PeriodoEscolar = bimestreSME.PeriodoEscolar;
                     if (fechamentoSMEDre.Id > 0 && !(dre == null) || !(ue == null))
                     {
                         bimestreDreUe.InicioMinimo = bimestreSME.InicioDoFechamento;
