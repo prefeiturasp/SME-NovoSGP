@@ -411,10 +411,7 @@ const Notas = ({ match }) => {
         if (notaFinal.modoEdicao) {
           notaConceitoAlunos.push({
             codigoAluno: aluno.id,
-            disciplinaId:
-              notasConceitos.Notas == notaTipo
-                ? disciplinaSelecionada
-                : notaFinal.disciplinaId,
+            disciplinaId: notaFinal.disciplinaId,
             nota:
               notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : 0,
             conceitoId:
@@ -630,7 +627,7 @@ const Notas = ({ match }) => {
       if (!clicouSalvar) {
         confirmado = await pergutarParaSalvar();
       }
-      
+
       if (confirmado) {
         const bimestre = getDadosBimestreAtual();
         const temPorcentagemAceitavel = verificaPorcentagemAprovados();
@@ -846,7 +843,7 @@ const Notas = ({ match }) => {
       <ModalConteudoHtml
         key="inserirJutificativa"
         visivel={exibeModalJustificativa}
-        onClose={() => {}}
+        onClose={() => { }}
         titulo="Inserir justificativa"
         esconderBotaoPrincipal
         esconderBotaoSecundario
@@ -871,7 +868,7 @@ const Notas = ({ match }) => {
                   alerta={{
                     tipo: 'warning',
                     id: 'justificativa-porcentagem',
-                    mensagem: `A maioria dos estudantes está com ${notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos' } abaixo do
+                    mensagem: `A maioria dos estudantes está com ${notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'} abaixo do
                                mínimo considerado para aprovação, por isso é necessário que você insira uma justificativa.`,
                     estiloTitulo: { fontSize: '18px' },
                   }}
@@ -888,14 +885,14 @@ const Notas = ({ match }) => {
                 </fieldset>
               </div>
               <div className="d-flex justify-content-end">
-              <Button
+                <Button
                   key="btn-cancelar-justificativa"
                   label="Cancelar"
                   color={Colors.Roxo}
                   bold
                   border
                   className="mr-3 mt-2 padding-btn-confirmacao"
-                  onClick={() => { 
+                  onClick={() => {
                     onChangeJustificativa('');
                     form.resetForm();
                     setExibeModalJustificativa(false);
@@ -989,8 +986,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {segundoBimestre.numero ? (
                         <TabPane
                           tab={segundoBimestre.descricao}
@@ -1006,8 +1003,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {terceiroBimestre.numero ? (
                         <TabPane
                           tab={terceiroBimestre.descricao}
@@ -1023,8 +1020,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {quartoBimestre.numero ? (
                         <TabPane
                           tab={quartoBimestre.descricao}
@@ -1040,8 +1037,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                     </ContainerTabsCard>
                   </div>
                 </div>
@@ -1067,8 +1064,8 @@ const Notas = ({ match }) => {
                 </div>
               </>
             ) : (
-              ''
-            )}
+                ''
+              )}
           </div>
         </Card>
       </Loader>
