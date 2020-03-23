@@ -261,19 +261,55 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            List<RetornoDisciplinaDto> lista = ObterDisciplinasPorIdsConsultaRedis(ids);
+            var retorno = new List<RetornoDisciplinaDto>();
 
-            var parametros = JsonConvert.SerializeObject(ids);
-            var resposta = httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json")).Result;
+            var codigos = ids.ToList().Where(x => !lista.Any(z => z.CdComponenteCurricular == x));
 
-            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
+            if(!codigos.Any())
+                return MapearParaDtoDisciplinas(lista);
+
+            retorno.AddRange(ObterDisciplinasPorIdsConsultaEOL(codigos));
+
+            foreach (var disciplina in retorno)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
-                var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
-                return MapearParaDtoDisciplinas(retorno);
+                cache.Salvar($"obter-disciplinas-por-id-{disciplina.CdComponenteCurricular}", JsonConvert.SerializeObject(disciplina));
+                lista.Add(disciplina);
             }
 
-            throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
+            return MapearParaDtoDisciplinas(lista);
+
+        }
+
+        private List<RetornoDisciplinaDto> ObterDisciplinasPorIdsConsultaRedis(long[] ids)
+        {
+            var chaves = ids.Select(x => $"obter-disciplinas-por-id-{x}");
+            var lista = new List<RetornoDisciplinaDto>();
+
+            foreach (var chave in chaves)
+            {
+                var disciplina = cache.Obter<RetornoDisciplinaDto>(chave);
+
+                if (disciplina != null)
+                    lista.Add(disciplina);
+            }
+
+            return lista;
+        }
+
+        private IEnumerable<RetornoDisciplinaDto> ObterDisciplinasPorIdsConsultaEOL(IEnumerable<long> codigos)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var parametros = JsonConvert.SerializeObject(codigos);
+            var resposta = httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json")).Result;
+
+            if (!resposta.IsSuccessStatusCode || resposta.StatusCode != HttpStatusCode.OK)
+                throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+            return retorno;
         }
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAsync(long[] ids)
