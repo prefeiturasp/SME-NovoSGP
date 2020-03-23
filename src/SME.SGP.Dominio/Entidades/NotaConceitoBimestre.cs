@@ -6,7 +6,7 @@
         public FechamentoTurmaDisciplina FechamentoTurmaDisciplina { get; set; }
         public long DisciplinaId { get; set; }
         public string CodigoAluno { get; set; }
-        public double Nota { get; set; }
+        public double? Nota { get; set; }
         public long? ConceitoId { get; set; }
         public Conceito Conceito { get; set; }
 
