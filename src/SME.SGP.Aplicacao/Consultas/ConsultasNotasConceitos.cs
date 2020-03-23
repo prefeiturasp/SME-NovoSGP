@@ -243,7 +243,7 @@ namespace SME.SGP.Aplicacao
                                     };
                                     var notaRegencia = notasConceitoBimestre?.FirstOrDefault(c => c.DisciplinaId == disciplinaRegencia.CodigoComponenteCurricular);
                                     if (notaRegencia != null)
-                                        nota.NotaConceito = (notaRegencia.Nota > 0 ? notaRegencia.Nota : notaRegencia.ConceitoId).ToString();
+                                        nota.NotaConceito = (notaRegencia.ConceitoId > 0 ? notaRegencia.ConceitoId : notaRegencia.Nota ).ToString();
 
                                     notaConceitoAluno.NotasBimestre.Add(nota);
                                 }
@@ -254,9 +254,9 @@ namespace SME.SGP.Aplicacao
                                     {
                                         DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                         Disciplina = disciplinaEOL.Nome,
-                                        NotaConceito = notaConceitoBimestre.Nota > 0 ?
-                                            notaConceitoBimestre.Nota.ToString() :
-                                            notaConceitoBimestre.ConceitoId.ToString()
+                                        NotaConceito = notaConceitoBimestre.ConceitoId > 0 ?
+                                            notaConceitoBimestre.ConceitoId.ToString() :
+                                            notaConceitoBimestre.Nota.ToString()
                                     });
                         }
                         else
