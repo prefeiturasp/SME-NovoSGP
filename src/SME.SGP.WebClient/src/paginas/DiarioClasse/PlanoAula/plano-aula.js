@@ -2,11 +2,7 @@ import { Switch } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
-import { Colors, Auditoria, Loader } from '~/componentes';
-import Button from '~/componentes/button';
-import CardCollapse from '~/componentes/cardCollapse';
-import Grid from '~/componentes/grid';
-import Editor from '~/componentes/editor/editor';
+import PropTypes from 'prop-types';
 import {
   Badge,
   Corpo,
@@ -19,12 +15,17 @@ import {
 } from './plano-aula.css';
 import api from '~/servicos/api';
 import { store } from '~/redux';
-
-// Componentes
-import ModalCopiarConteudo from './componentes/ModalCopiarConteudo';
+import { selecionaDia } from '~/redux/modulos/calendarioProfessor/actions';
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
-import { selecionaDia } from '~/redux/modulos/calendarioProfessor/actions';
+
+// Componentes
+import { Colors, Auditoria, Loader, Label } from '~/componentes';
+import Button from '~/componentes/button';
+import CardCollapse from '~/componentes/cardCollapse';
+import Grid from '~/componentes/grid';
+import Editor from '~/componentes/editor/editor';
+import ModalCopiarConteudo from './componentes/ModalCopiarConteudo';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 
 const PlanoAula = props => {
@@ -53,25 +54,11 @@ const PlanoAula = props => {
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(false);
+  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(expandido);
   const [mostrarModalCopiarConteudo, setMostrarModalCopiarConteudo] = useState(
     false
   );
   const [materias, setMaterias] = useState([...listaMaterias]);
-  const setModoEdicaoPlano = ehEdicao => {
-    setModoEdicao(ehEdicao);
-  };
-  const habilitaDesabilitaObjetivos = temObj => {
-    setTemObjetivos(temObj);
-    if (!temObj && objetivosAprendizagem.length > 0) {
-      setModoEdicaoPlano(true);
-    }
-    setEscolhaHabilitaObjetivos(temObj);
-  };
-  const configCabecalho = {
-    altura: '44px',
-    corBorda: '#4072d6',
-  };
   const [objetivosAprendizagem, setObjetivosAprendizagem] = useState(
     planoAula.objetivosAprendizagemAula
   );
@@ -83,6 +70,27 @@ const PlanoAula = props => {
     carregandoObjetivosSelecionados,
     setCarregandoObjetivosSelecionados,
   ] = useState(false);
+
+  const setModoEdicaoPlano = ehEdicao => {
+    setModoEdicao(ehEdicao);
+  };
+
+  const habilitaDesabilitaObjetivos = temObj => {
+    setTemObjetivos(temObj);
+    if (!temObj && objetivosAprendizagem.length > 0) {
+      setModoEdicaoPlano(true);
+    }
+    setEscolhaHabilitaObjetivos(temObj);
+  };
+
+  const configCabecalho = {
+    altura: '44px',
+    corBorda: '#4072d6',
+  };
+
+  useEffect(() => {
+    setMostrarCardPrincipal(expandido);
+  }, [expandido]);
 
   useEffect(() => {
     const verificaHabilitarDesabilitarCampos = () => {
@@ -139,11 +147,22 @@ const PlanoAula = props => {
     setObjetivos(objetivos);
   };
 
+  const removerObjetivosNaoSelecionados = () => {
+    const objetivosRemover = [];
+    objetivosAprendizagem.forEach(objetivo => {
+      if (!objetivo.selected) {
+        objetivosRemover.push(objetivo);
+      }
+    });
+    objetivosRemover.forEach(obj => {
+      objetivosAprendizagem.splice(objetivosAprendizagem.indexOf(obj), 1);
+    });
+  };
+
   const selecionarMateria = async id => {
     setCarregandoObjetivos(true);
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
-    //materia.selecionada = !materia.selecionada;
     materias.forEach(m => {
       m.selecionada = m.id === id ? !m.selecionada : false;
     });
@@ -154,7 +173,7 @@ const PlanoAula = props => {
       );
       if (objetivos && objetivos.data && objetivos.data.length > 0) {
         materia.objetivos = objetivos.data;
-        let novosObjetivos = [];
+        const novosObjetivos = [];
         materia.objetivos.forEach(objetivo => {
           const idx = objetivosAprendizagem.findIndex(
             obj => obj.id === objetivo.id
@@ -170,18 +189,6 @@ const PlanoAula = props => {
     }
     setMaterias([...materias]);
     setCarregandoObjetivos(false);
-  };
-
-  const removerObjetivosNaoSelecionados = () => {
-    let objetivosRemover = [];
-    objetivosAprendizagem.forEach(objetivo => {
-      if (!objetivo.selected) {
-        objetivosRemover.push(objetivo);
-      }
-    });
-    objetivosRemover.forEach(obj => {
-      objetivosAprendizagem.splice(objetivosAprendizagem.indexOf(obj), 1);
-    });
   };
 
   const onBlurMeusObjetivos = value => {
@@ -229,10 +236,7 @@ const PlanoAula = props => {
     <Corpo>
       <CardCollapse
         key="plano-aula"
-        onClick={() => {
-          onClick();
-          setMostrarCardPrincipal(!mostrarCardPrincipal);
-        }}
+        onClick={onClick}
         titulo="Plano de aula"
         indice="Plano de aula"
         show={mostrarCardPrincipal}
@@ -240,7 +244,7 @@ const PlanoAula = props => {
         <Loader loading={mostrarCardPrincipal && carregandoMaterias}>
           <QuantidadeBotoes className="col-md-12">
             <span>Quantidade de aulas: {planoAula.qtdAulas}</span>
-            {!temAvaliacao ? (
+            {planoAula && planoAula.id && !temAvaliacao ? (
               <Button
                 id={shortid.generate()}
                 label="Nova Avaliação"
@@ -269,7 +273,7 @@ const PlanoAula = props => {
             className="row d-inline-block col-md-12"
             hidden={!ehProfessorCj || ehEja || ehMedio}
           >
-            <label>Objetivos de Aprendizagem e Desenvolvimento</label>
+            <Label>Objetivos de Aprendizagem e Desenvolvimento</Label>
             <Switch
               onChange={() => habilitaDesabilitaObjetivos(!temObjetivos)}
               checked={habilitaEscolhaObjetivos}
@@ -494,6 +498,48 @@ const PlanoAula = props => {
       />
     </Corpo>
   );
+};
+
+PlanoAula.propTypes = {
+  planoAula: PropTypes.oneOfType([PropTypes.any]),
+  listaMaterias: PropTypes.oneOfType([PropTypes.any]),
+  carregandoMaterias: PropTypes.oneOfType([PropTypes.any]),
+  disciplinaIdSelecionada: PropTypes.oneOfType([PropTypes.any]),
+  dataAula: PropTypes.oneOfType([PropTypes.any]),
+  ehProfessorCj: PropTypes.oneOfType([PropTypes.any]),
+  ehEja: PropTypes.oneOfType([PropTypes.any]),
+  setModoEdicao: PropTypes.oneOfType([PropTypes.any]),
+  permissoesTela: PropTypes.oneOfType([PropTypes.any]),
+  somenteConsulta: PropTypes.oneOfType([PropTypes.any]),
+  ehMedio: PropTypes.oneOfType([PropTypes.any]),
+  temObjetivos: PropTypes.oneOfType([PropTypes.any]),
+  setTemObjetivos: PropTypes.oneOfType([PropTypes.any]),
+  expandido: PropTypes.oneOfType([PropTypes.any]),
+  auditoria: PropTypes.oneOfType([PropTypes.any]),
+  temAvaliacao: PropTypes.oneOfType([PropTypes.any]),
+  ehRegencia: PropTypes.oneOfType([PropTypes.any]),
+  onClick: PropTypes.oneOfType([PropTypes.any]),
+};
+
+PlanoAula.defaultProps = {
+  planoAula: {},
+  listaMaterias: [],
+  carregandoMaterias: false,
+  disciplinaIdSelecionada: 0,
+  dataAula: window.moment(),
+  ehProfessorCj: false,
+  ehEja: false,
+  setModoEdicao: false,
+  permissoesTela: {},
+  somenteConsulta: false,
+  ehMedio: false,
+  temObjetivos: false,
+  setTemObjetivos: false,
+  expandido: false,
+  auditoria: {},
+  temAvaliacao: false,
+  ehRegencia: false,
+  onClick: () => {},
 };
 
 export default PlanoAula;

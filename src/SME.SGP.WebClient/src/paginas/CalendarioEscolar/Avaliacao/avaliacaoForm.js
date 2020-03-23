@@ -97,6 +97,10 @@ const AvaliacaoForm = ({ match }) => {
     listaDisciplinasSelecionadas,
     setListaDisciplinasSelecionadas,
   ] = useState([]);
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
+  const [desabilitarCopiarAvaliacao, setDesabilitarCopiarAvaliacao] = useState(
+    false
+  );
 
   const usuario = useSelector(store => store.usuario);
 
@@ -159,11 +163,21 @@ const AvaliacaoForm = ({ match }) => {
         });
 
         if (salvar && salvar.status === 200) {
-          sucesso(
-            `Avaliação ${
-              idAvaliacao ? 'atualizada' : 'cadastrada'
-            } com sucesso.`
-          );
+          if (salvar.data && salvar.data.length) {
+            salvar.data.forEach(item => {
+              if (item.mensagem.includes('Erro')) {
+                erro(item.mensagem);
+              } else {
+                sucesso(item.mensagem);
+              }
+            });
+          } else {
+            sucesso(
+              `Avaliação ${
+                idAvaliacao ? 'atualizada' : 'cadastrada'
+              } com sucesso.`
+            );
+          }
           history.push(RotasDTO.CALENDARIO_PROFESSOR);
         } else {
           erro(salvar);
@@ -284,6 +298,7 @@ const AvaliacaoForm = ({ match }) => {
         disciplinasId: listaDisciplinas[0].codigoComponenteCurricular.toString(),
       });
       setDisciplinaDesabilitada(true);
+      setDisciplinaSelecionada(listaDisciplinas[0].codigoComponenteCurricular);
     }
   }, [listaDisciplinas]);
 
@@ -312,10 +327,21 @@ const AvaliacaoForm = ({ match }) => {
       setIdAvaliacao(match.params.id);
   }, []);
 
+  const validaInterdisciplinar = categoriaSelecionada => {
+    if (categoriaSelecionada == categorias.INTERDISCIPLINAR) {
+      setCopias([]);
+      setDesabilitarCopiarAvaliacao(true);
+    } else {
+      setDesabilitarCopiarAvaliacao(false);
+    }
+  };
+
   const obterAvaliacao = async () => {
     const avaliacao = await ServicoAvaliacao.buscar(idAvaliacao);
     if (avaliacao && avaliacao.data) {
       setListaDisciplinasSelecionadas(avaliacao.data.disciplinasId);
+      setDisciplinaSelecionada(avaliacao.data.disciplinasId[0]);
+      validaInterdisciplinar(avaliacao.data.categoriaId);
       const tipoAvaliacaoId = avaliacao.data.tipoAvaliacaoId.toString();
       setDadosAvaliacao({ ...avaliacao.data, tipoAvaliacaoId });
       setDescricao(avaliacao.data.descricao);
@@ -378,15 +404,19 @@ const AvaliacaoForm = ({ match }) => {
 
   return (
     <Div className="col-12">
-      <ModalCopiarAvaliacao
-        show={mostrarModalCopiarAvaliacao}
-        onClose={() => setMostrarModalCopiarAvaliacao(false)}
-        disciplina={dadosAvaliacao && dadosAvaliacao.disciplinaId}
-        onSalvarCopias={copiasAvaliacoes => {
-          setCopias(copiasAvaliacoes);
-          setModoEdicao(true);
-        }}
-      />
+      {mostrarModalCopiarAvaliacao ? (
+        <ModalCopiarAvaliacao
+          show={mostrarModalCopiarAvaliacao}
+          onClose={() => setMostrarModalCopiarAvaliacao(false)}
+          disciplina={disciplinaSelecionada}
+          onSalvarCopias={copiasAvaliacoes => {
+            setCopias(copiasAvaliacoes);
+            setModoEdicao(true);
+          }}
+        />
+      ) : (
+        ''
+      )}
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">
           {`Cadastro de avaliação - ${
@@ -461,6 +491,7 @@ const AvaliacaoForm = ({ match }) => {
                       aoTrocarCampos();
                       resetDisciplinasSelecionadas(form);
                       montaValidacoes(e.target.value);
+                      validaInterdisciplinar(e.target.value);
                     }}
                   />
                 </Grid>
@@ -519,7 +550,11 @@ const AvaliacaoForm = ({ match }) => {
                         disabled={disciplinaDesabilitada}
                         placeholder="Selecione um componente curricular"
                         form={form}
-                        onChange={aoTrocarCampos}
+                        onChange={valor => {
+                          setDisciplinaSelecionada(valor);
+                          aoTrocarCampos();
+                        }}
+                        valueSelect={disciplinaSelecionada}
                       />
                     )}
                   </Grid>
@@ -579,6 +614,7 @@ const AvaliacaoForm = ({ match }) => {
                     border
                     className="btnGroupItem"
                     onClick={() => setMostrarModalCopiarAvaliacao(true)}
+                    disabled={desabilitarCopiarAvaliacao}
                   />
                   {copias.length > 0 && (
                     <div style={{ marginLeft: '14px' }}>

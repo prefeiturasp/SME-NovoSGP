@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao.Servicos
             tokenGerado = new JwtSecurityTokenHandler()
                       .WriteToken(token);
 
-            SalvarToken(usuarioLogin);
+            //SalvarToken(usuarioLogin);
 
             return tokenGerado;
         }
