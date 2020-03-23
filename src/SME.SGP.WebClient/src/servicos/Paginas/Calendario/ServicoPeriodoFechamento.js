@@ -14,6 +14,12 @@ class ServicoPeriodoFechamento {
   salvar = async fechamento => {
     return api.post('/v1/periodos/fechamentos/aberturas', fechamento);
   };
+
+  verificarSePodeAlterarNoPeriodo = async (turmaCodigo, bimestre) => {
+    return api.get(
+      `/v1/periodos/fechamentos/aberturas/turmas/${turmaCodigo}/bimestres/${bimestre}/aberto`
+    );
+  };
 }
 
 export default new ServicoPeriodoFechamento();
