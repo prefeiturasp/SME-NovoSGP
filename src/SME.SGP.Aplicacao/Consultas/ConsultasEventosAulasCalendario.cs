@@ -91,7 +91,10 @@ namespace SME.SGP.Aplicacao
             if (idsDisciplinasCompartilhadas != null && idsDisciplinasCompartilhadas.Any())
                 idsDisciplinasAulas.AddRange(idsDisciplinasCompartilhadas);
 
-            IEnumerable<DisciplinaDto> disciplinasEol = new List<DisciplinaDto>();
+            IEnumerable<DisciplinaDto> disciplinasEol = MapearDisciplinaEOL(disciplinasUsuario);
+
+            idsDisciplinasAulas.RemoveAll(x => disciplinasEol.Any(z => z.CodigoComponenteCurricular == x));
+
             if (idsDisciplinasAulas != null && idsDisciplinasAulas.Any())
                 disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
 
@@ -171,6 +174,22 @@ namespace SME.SGP.Aplicacao
                 EventosAulas = eventosAulas,
                 Letivo = comandosDiasLetivos.VerificarSeDataLetiva(eventos, data)
             };
+        }
+
+        private static IEnumerable<DisciplinaDto> MapearDisciplinaEOL(IEnumerable<DisciplinaResposta> disciplinasUsuario)
+        {
+            return disciplinasUsuario.Select(x =>
+                        new DisciplinaDto
+                        {
+                            CodigoComponenteCurricular = x.CodigoComponenteCurricular,
+                            CdComponenteCurricularPai = x.CodigoComponenteCurricularPai,
+                            Compartilhada = x.Compartilhada,
+                            LancaNota = x.LancaNota,
+                            Nome = x.Nome,
+                            Regencia = x.Regencia,
+                            RegistraFrequencia = x.RegistroFrequencia,
+                            TerritorioSaber = x.TerritorioSaber
+                        });
         }
 
         public async Task<IEnumerable<EventosAulasCalendarioDto>> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)
