@@ -413,11 +413,11 @@ const Notas = ({ match }) => {
             codigoAluno: aluno.id,
             disciplinaId: notaFinal.disciplinaId,
             nota:
-              notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : 0,
+              notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : null,
             conceitoId:
               notaTipo === notasConceitos.Conceitos
                 ? notaFinal.notaConceito
-                : 0,
+                : null,
           });
         }
       });
