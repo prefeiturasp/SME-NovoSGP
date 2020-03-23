@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
         private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
+        private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private AulaConsultaDto aula;
         private IEnumerable<ObjetivoAprendizagemAula> objetivos;
@@ -29,6 +30,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             repositorioPlanoAula = new Mock<IRepositorioPlanoAula>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
+            repositorioAula = new Mock<IRepositorioAula>();
             consultasPlanoAnual = new Mock<IConsultasPlanoAnual>();
             consultasObjetivosAprendizagemAula = new Mock<IConsultasObjetivoAprendizagemAula>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
@@ -41,6 +43,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                 consultasAula.Object,
                                                 consultasPeriodoEscolar.Object,
                                                 repositorioAtividadeAvaliativa.Object,
+                                                repositorioAula.Object,
                                                 servicoUsuario.Object);
             Setup();
         }

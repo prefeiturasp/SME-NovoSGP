@@ -169,7 +169,6 @@ namespace SME.SGP.Dominio
                 login = codigoRf;
 
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
-
             repositorioUsuario.Salvar(usuario);
 
             return usuario;

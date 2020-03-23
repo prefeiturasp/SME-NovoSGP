@@ -1,10 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-
 // Components
 import SelectComponent from '~/componentes/select';
-
 
 function DiasDropDown({ onChange, selected, form }) {
   const items = [
@@ -62,7 +60,11 @@ DiasDropDown.defaultProps = {
 DiasDropDown.propTypes = {
   onChange: PropTypes.func,
   form: PropTypes.oneOfType([PropTypes.object, PropTypes.symbol]),
-  selected: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  selected: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+    PropTypes.any,
+  ]),
 };
 
 export default DiasDropDown;
