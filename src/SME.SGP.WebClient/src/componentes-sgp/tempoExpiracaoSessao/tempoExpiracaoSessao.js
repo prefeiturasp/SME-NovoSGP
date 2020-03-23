@@ -9,7 +9,7 @@ import { store } from '~/redux';
 import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
 import { LimparSessao } from '~/redux/modulos/sessao/actions';
 import {
-  Deslogar,
+  DeslogarSessaoExpirou,
   salvarLoginRevalidado,
 } from '~/redux/modulos/usuario/actions';
 import { erros } from '~/servicos/alertas';
@@ -96,10 +96,9 @@ const TempoExpiracaoSessao = () => {
 
   const deslogarDoUsuario = () => {
     store.dispatch(limparDadosFiltro());
-    store.dispatch(Deslogar());
+    store.dispatch(DeslogarSessaoExpirou());
     store.dispatch(LimparSessao());
     history.push(URL_LOGIN);
-    store.dispatch(setExibirMensagemSessaoExpirou(true));
   };
 
   useEffect(() => {

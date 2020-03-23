@@ -37,10 +37,6 @@ namespace SME.SGP.Dominio
 
         public void AtualizarDatas(DateTime? inicioDoFechamento, DateTime? finalDoFechamento)
         {
-            if (inicioDoFechamento > finalDoFechamento)
-            {
-                throw new NegocioException("A data de início deve ser menor que a data final.");
-            }
             if (inicioDoFechamento.HasValue)
                 InicioDoFechamento = inicioDoFechamento.Value;
 

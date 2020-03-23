@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -41,7 +42,12 @@ namespace SME.SGP.Api.Controllers
         [Route("anos/letivos/{anoLetivo}")]
         public IActionResult BuscarPorAnoLetivo(int anoLetivo)
         {
-            return Ok(consultas.ListarPorAnoLetivo(anoLetivo));
+            var retorno = consultas.ListarPorAnoLetivo(anoLetivo);
+
+            if (retorno == null || !retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpGet]

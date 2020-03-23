@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IServicoEOL> servicoEol;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IRepositorioTurma> repositorioTurma;
+        private Mock<IConsultasDisciplina> consultasDisciplinas;
 
         public ConsultasAulasTeste()
         {
@@ -29,9 +30,10 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioPlanoAula = new Mock<IRepositorioPlanoAula>();
             consultasFrequencia = new Mock<IConsultasFrequencia>();
             servicoEol = new Mock<IServicoEOL>();
+            consultasDisciplinas = new Mock<IConsultasDisciplina>();
             repositorioTurma = new Mock<IRepositorioTurma>();
 
-            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, repositorioPlanoAula.Object, repositorioTurma.Object, servicoUsuario.Object, servicoEol.Object);
+            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, repositorioPlanoAula.Object, servicoUsuario.Object, servicoEol.Object, consultasDisciplinas.Object);
 
             Setup();
         }
@@ -49,7 +51,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact]
         public async Task DeveObterQuantidadeAulas()
         {
-            var qtd = await consultas.ObterQuantidadeAulasTurmaSemanaProfessor("123", "7", "3", null);
+            var qtd = await consultas.ObterQuantidadeAulasTurmaSemanaProfessor("123", "7", 3, null);
 
             Assert.True(qtd == 4);
         }
@@ -75,7 +77,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 new AulasPorTurmaDisciplinaDto() { ProfessorId = 1, Quantidade = 3, DataAula = new System.DateTime(2019,11,15) },
             };
 
-            repositorioAula.Setup(c => c.ObterAulasTurmaDisciplinaSemanaProfessor(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null))
+            repositorioAula.Setup(c => c.ObterAulasTurmaDisciplinaSemanaProfessor(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), null))
                 .Returns(Task.FromResult(aulas));
         }
     }
