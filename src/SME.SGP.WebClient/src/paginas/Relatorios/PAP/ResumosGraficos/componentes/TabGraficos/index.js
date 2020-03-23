@@ -1,5 +1,6 @@
+/* eslint-disable no-param-reassign */
 import React, { useMemo, useState, useEffect } from 'react';
-import t from 'prop-types';
+import PropTypes from 'prop-types';
 import shortid from 'shortid';
 
 // Componentes
@@ -11,58 +12,69 @@ import { Linha } from '~/componentes/EstilosGlobais';
 
 // Funcões
 import { removerCaracteresEspeciais } from '~/utils/funcoes/gerais';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
 function TabGraficos({ dados, periodo, ciclos }) {
   const [itemAtivo, setItemAtivo] = useState(null);
   const [cicloOuAno] = useState(ciclos ? 'ciclos' : 'anos');
 
-  const objetoExistaNaLista = (objeto, lista) => {
-    return lista.some(
-      elemento => JSON.stringify(elemento) === JSON.stringify(objeto)
-    );
-  };
+  const [chaves, setChaves] = useState([]);
 
+  // Frequência
   const dadosTabelaFrequencia = useMemo(() => {
     const frequenciaDados = dados.frequencia;
     const dadosFormatados = [];
 
-    if (frequenciaDados) {
-      frequenciaDados.forEach(x => {
+    if (frequenciaDados && frequenciaDados.length) {
+      const dadoFrequencia = {
+        Id: shortid.generate(),
+        eixoDescricao: 'Frequência',
+        descricao: 'Frequência',
+        objetivoDescricao: 'Frequência dos alunos',
+      };
+      dadoFrequencia.dados = [];
+
+      frequenciaDados.forEach(frequencia => {
         let quantidade = {
-          FrequenciaDescricao: x.frequenciaDescricao,
+          FrequenciaDescricao: frequencia.frequenciaDescricao,
           TipoDado: 'Quantidade',
         };
 
         let porcentagem = {
-          FrequenciaDescricao: x.frequenciaDescricao,
+          FrequenciaDescricao: frequencia.frequenciaDescricao,
           TipoDado: 'Porcentagem',
         };
 
-        x.linhas[0][cicloOuAno].forEach((y, key) => {
-          quantidade = {
-            ...quantidade,
-            key: String(key),
-            Descricao: y.descricao,
-            [y.chave]: y.quantidade,
-            Total: y.totalQuantidade,
-          };
+        frequencia.linhas.forEach(linha => {
+          linha[cicloOuAno].forEach((l, indice) => {
+            quantidade = {
+              ...quantidade,
+              key: String(indice),
+              Descricao: l.descricao,
+              [l.chave]: l.quantidade,
+              Total: l.totalQuantidade,
+            };
 
-          porcentagem = {
-            ...porcentagem,
-            key: String(key),
-            Descricao: y.descricao,
-            [y.chave]: Math.round(y.porcentagem, 2),
-            Total: Math.round(y.totalPorcentagem, 2),
-          };
+            porcentagem = {
+              ...porcentagem,
+              key: String(indice),
+              Descricao: l.descricao,
+              [l.chave]: Math.round(l.porcentagem, 2),
+              Total: Math.round(l.totalPorcentagem, 2),
+            };
+          });
+
+          dadoFrequencia.dados.push(quantidade, porcentagem);
         });
-
-        dadosFormatados.push(quantidade, porcentagem);
       });
+
+      dadosFormatados.push(dadoFrequencia);
     }
 
     return dadosFormatados;
   }, [cicloOuAno, dados.frequencia]);
 
+  // Total Estudantes
   const dadosTabelaTotalEstudantes = useMemo(() => {
     const montaDados = [];
     const dadoQuantidade = {};
@@ -88,16 +100,16 @@ function TabGraficos({ dados, periodo, ciclos }) {
     dados.totalEstudantes[cicloOuAno].forEach(ano => {
       dadoPorcentagem[
         `${cicloOuAno === 'ciclos' ? ano.cicloDescricao : ano.anoDescricao}`
-      ] = ano.porcentagem; //Math.round(ano.porcentagem, 2);
+      ] = ano.porcentagem;
     });
 
     dadoPorcentagem.Total = dados.totalEstudantes.porcentagemTotal;
     montaDados.push(dadoPorcentagem);
 
-    console.log(montaDados);
     return montaDados;
   }, [cicloOuAno, dados.totalEstudantes]);
 
+  // Resultados
   const dadosTabelaResultados = useMemo(() => {
     const resultados = [];
     dados.resultados.items.forEach(resultado => {
@@ -110,11 +122,12 @@ function TabGraficos({ dados, periodo, ciclos }) {
         objetivo = {
           ...objetivo,
           objetivoDescricao: obj.objetivoDescricao,
+          descricao: obj.objetivoDescricao,
         };
 
         const item = [];
-        obj[cicloOuAno].forEach((atual, a) => {
-          atual.respostas.forEach((resposta, r) => {
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
             if (
               !item.find(
                 dado => dado.FrequenciaDescricao === resposta.respostaDescricao
@@ -123,21 +136,25 @@ function TabGraficos({ dados, periodo, ciclos }) {
               item.push({
                 eixoDescricao: resultado.eixoDescricao,
                 objetivoDescricao: obj.objetivoDescricao,
+                descricao: obj.objetivoDescricao,
                 FrequenciaDescricao:
                   cicloOuAno === 'ciclos'
                     ? removerCaracteresEspeciais(resposta.respostaDescricao)
                     : resposta.respostaDescricao,
                 TipoDado: 'Quantidade',
+                Ordem: resposta.ordem,
               });
 
               item.push({
                 eixoDescricao: resultado.eixoDescricao,
                 objetivoDescricao: obj.objetivoDescricao,
+                descricao: obj.objetivoDescricao,
                 FrequenciaDescricao:
                   cicloOuAno === 'ciclos'
                     ? removerCaracteresEspeciais(resposta.respostaDescricao)
                     : resposta.respostaDescricao,
                 TipoDado: 'Porcentagem',
+                Ordem: resposta.ordem,
               });
             }
           });
@@ -184,7 +201,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
         objetivo = {
           ...objetivo,
           id: shortid.generate(),
-          dados: item,
+          dados: item.sort(FiltroHelper.ordenarLista('Ordem')),
         };
 
         resultados.push(objetivo);
@@ -194,6 +211,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
     return resultados;
   }, [cicloOuAno, dados.resultados.items]);
 
+  // Informações Escolares
   const dadosTabelaInformacoesEscolares = useMemo(() => {
     const resultados = [];
     dados.informacoesEscolares.forEach(resultado => {
@@ -206,11 +224,12 @@ function TabGraficos({ dados, periodo, ciclos }) {
         objetivo = {
           ...objetivo,
           objetivoDescricao: obj.objetivoDescricao,
+          descricao: obj.objetivoDescricao,
         };
 
         const item = [];
-        obj[cicloOuAno].forEach((atual, a) => {
-          atual.respostas.forEach((resposta, r) => {
+        obj[cicloOuAno].forEach(atual => {
+          atual.respostas.forEach(resposta => {
             if (
               !item.find(
                 dado => dado.FrequenciaDescricao === resposta.respostaDescricao
@@ -219,6 +238,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
               item.push({
                 eixoDescricao: resultado.eixoDescricao,
                 objetivoDescricao: obj.objetivoDescricao,
+                descricao: obj.objetivoDescricao,
                 FrequenciaDescricao:
                   cicloOuAno === 'ciclos'
                     ? removerCaracteresEspeciais(resposta.respostaDescricao)
@@ -229,6 +249,7 @@ function TabGraficos({ dados, periodo, ciclos }) {
               item.push({
                 eixoDescricao: resultado.eixoDescricao,
                 objetivoDescricao: obj.objetivoDescricao,
+                descricao: obj.objetivoDescricao,
                 FrequenciaDescricao:
                   cicloOuAno === 'ciclos'
                     ? removerCaracteresEspeciais(resposta.respostaDescricao)
@@ -290,35 +311,94 @@ function TabGraficos({ dados, periodo, ciclos }) {
     return resultados;
   }, [cicloOuAno, dados.informacoesEscolares]);
 
-  const [objetivos, setObjetivos] = useState([
-    {
-      id: shortid.generate(),
-      eixoDescricao: 'Total',
-      objetivoDescricao: 'Total de alunos no PAP',
-      dados: dadosTabelaTotalEstudantes,
-    },
-  ]);
+  const [objetivos, setObjetivos] = useState([]);
 
   useEffect(() => {
     if (periodo === '1') {
+      if (dadosTabelaTotalEstudantes.length > 0) {
+        setObjetivos(atual => [
+          ...atual,
+          {
+            id: shortid.generate(),
+            eixoDescricao: 'Total',
+            objetivoDescricao: 'Total de alunos no PAP',
+            descricao: 'Total de alunos no PAP',
+            dados: dadosTabelaTotalEstudantes,
+          },
+        ]);
+      }
+
       setObjetivos(atual => [
         ...atual,
         ...dadosTabelaInformacoesEscolares,
         ...dadosTabelaResultados,
       ]);
     } else {
-      setObjetivos(atual => [...atual, ...dadosTabelaResultados]);
+      if (dadosTabelaTotalEstudantes.length > 0) {
+        setObjetivos(atual => [
+          ...atual,
+          {
+            id: shortid.generate(),
+            eixoDescricao: 'Total',
+            objetivoDescricao: 'Total de alunos no PAP',
+            descricao: 'Total de alunos no PAP',
+            dados: dadosTabelaTotalEstudantes,
+          },
+        ]);
+      }
+      setObjetivos(atual => [
+        ...atual,
+        ...dadosTabelaFrequencia,
+        ...dadosTabelaResultados,
+      ]);
     }
   }, [
     dadosTabelaFrequencia,
     dadosTabelaInformacoesEscolares,
     dadosTabelaResultados,
+    dadosTabelaTotalEstudantes,
     periodo,
   ]);
 
+  const montarChaves = item => {
+    const lista = [];
+
+    item.dados.forEach(dado => {
+      const itens = Object.keys(dado).filter(
+        frequencia =>
+          [
+            'TipoDado',
+            'FrequenciaDescricao',
+            'key',
+            'Descricao',
+            'Total',
+            'Id',
+            'eixoDescricao',
+            'objetivoDescricao',
+            'descricao',
+            'Ordem',
+          ].indexOf(frequencia) === -1
+      );
+
+      itens.forEach(i => {
+        if (lista.indexOf(i) === -1) lista.push(i);
+      });
+    });
+
+    setChaves(lista);
+  };
+
   useEffect(() => {
-    setItemAtivo(objetivos[0]);
+    if (objetivos && objetivos.length) {
+      montarChaves(objetivos[0]);
+      setItemAtivo(objetivos[0]);
+    }
   }, [objetivos]);
+
+  const aoTrocarItem = item => {
+    montarChaves(item);
+    setItemAtivo(item);
+  };
 
   return (
     <>
@@ -327,10 +407,12 @@ function TabGraficos({ dados, periodo, ciclos }) {
           itens={objetivos}
           itemAtivo={
             itemAtivo
-              ? objetivos.filter(x => x.id === itemAtivo.id)[0]
+              ? objetivos.filter(
+                  frequencia => frequencia.id === itemAtivo.id
+                )[0]
               : objetivos[0]
           }
-          onChangeItem={item => setItemAtivo(item)}
+          onChangeItem={item => aoTrocarItem(item)}
         />
       </Linha>
       <Linha style={{ marginBottom: '35px' }}>
@@ -340,55 +422,39 @@ function TabGraficos({ dados, periodo, ciclos }) {
         />
       </Linha>
       <Linha style={{ marginBottom: '35px', textAlign: 'center' }}>
-        <h4>Quantidade</h4>
-        {itemAtivo && itemAtivo.dados && (
-          <div style={{ height: 300 }}>
-            <Graficos.Barras
-              dados={itemAtivo.dados.filter(x => x.TipoDado === 'Quantidade')}
-              indice="FrequenciaDescricao"
-              chaves={Object.keys(itemAtivo.dados[0]).filter(
-                x =>
-                  [
-                    'TipoDado',
-                    'FrequenciaDescricao',
-                    'key',
-                    'Descricao',
-                    'Total',
-                    'Id',
-                    'eixoDescricao',
-                    'objetivoDescricao',
-                  ].indexOf(x) === -1
-              )}
-            />
-          </div>
+        {itemAtivo && itemAtivo.dados && itemAtivo.dados[0] && (
+          <>
+            <h4>Quantidade</h4>
+            <div style={{ height: 300 }}>
+              <Graficos.Barras
+                dados={itemAtivo.dados.filter(
+                  frequencia => frequencia.TipoDado === 'Quantidade'
+                )}
+                indice="FrequenciaDescricao"
+                chaves={chaves}
+              />
+            </div>
+          </>
         )}
       </Linha>
       <Linha style={{ marginBottom: '35px', textAlign: 'center' }}>
-        <h4>Porcentagem</h4>
-        {itemAtivo && itemAtivo.dados && (
-          <div style={{ height: 300 }}>
-            <Graficos.Barras
-              dados={
-                itemAtivo &&
-                itemAtivo.dados.filter(x => x.TipoDado === 'Porcentagem')
-              }
-              indice="FrequenciaDescricao"
-              chaves={Object.keys(itemAtivo && itemAtivo.dados[0]).filter(
-                x =>
-                  [
-                    'TipoDado',
-                    'FrequenciaDescricao',
-                    'key',
-                    'Descricao',
-                    'Total',
-                    'Id',
-                    'eixoDescricao',
-                    'objetivoDescricao',
-                  ].indexOf(x) === -1
-              )}
-              porcentagem
-            />
-          </div>
+        {itemAtivo && itemAtivo.dados && itemAtivo.dados[0] && (
+          <>
+            <h4>Porcentagem</h4>
+            <div style={{ height: 300 }}>
+              <Graficos.Barras
+                dados={
+                  itemAtivo &&
+                  itemAtivo.dados.filter(
+                    frequencia => frequencia.TipoDado === 'Porcentagem'
+                  )
+                }
+                indice="FrequenciaDescricao"
+                chaves={chaves}
+                porcentagem
+              />
+            </div>
+          </>
         )}
       </Linha>
     </>
@@ -396,13 +462,15 @@ function TabGraficos({ dados, periodo, ciclos }) {
 }
 
 TabGraficos.propTypes = {
-  dados: t.oneOfType([t.any]),
-  periodo: t.string,
+  dados: PropTypes.oneOfType([PropTypes.any]),
+  periodo: PropTypes.string,
+  ciclos: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 TabGraficos.defaultProps = {
   dados: [],
   periodo: '',
+  ciclos: true,
 };
 
 export default TabGraficos;

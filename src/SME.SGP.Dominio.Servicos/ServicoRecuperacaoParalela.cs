@@ -37,7 +37,7 @@ namespace SME.SGP.Dominio.Servicos
                     double frequencia = 100 - (aluno.TotalAusencias / (double)aluno.TotalAulas * 100);
                     if (frequencia >= frequente)
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente));
-                    else if (frequencia >= naoComparece && frequencia < frequente)
+                    else if (frequencia >= naoComparece)
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.PoucoFrequente));
                     else
                         retorno.Add(new KeyValuePair<string, int>(aluno.CodigoAluno, (int)RecuperacaoParalelaFrequencia.NaoComparete));
@@ -57,8 +57,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public RecuperacaoParalelaStatus ObterStatusRecuperacaoParalela(int RespostasRecuperacaoParalela, int Objetivos)
         {
-            if (RespostasRecuperacaoParalela == Objetivos) return RecuperacaoParalelaStatus.Concluido;
-            if (RespostasRecuperacaoParalela > 0) return RecuperacaoParalelaStatus.Alerta;
+            if (RespostasRecuperacaoParalela == Objetivos)
+                return RecuperacaoParalelaStatus.Concluido;
+            if (RespostasRecuperacaoParalela > 0)
+                return RecuperacaoParalelaStatus.Alerta;
             return RecuperacaoParalelaStatus.NaoAlterado;
         }
 

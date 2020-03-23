@@ -32,5 +32,8 @@ namespace SME.SGP.Infra
                 Id = (int)Convert.ChangeType(v, Enum.GetUnderlyingType(v.GetType()))
             }).ToList();
         }
+
+        public static string Name(this Enum enumValue)
+            => enumValue.GetAttribute<DisplayAttribute>().Name;
     }
 }
