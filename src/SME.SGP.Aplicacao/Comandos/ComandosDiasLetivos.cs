@@ -58,6 +58,9 @@ namespace SME.SGP.Aplicacao
             var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, false, false);
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(filtro.TipoCalendarioId);
 
+            if (tipoCalendario == null)
+                throw new NegocioException("Tipo de calendario não encontrado");
+
             var anoLetivo = tipoCalendario.AnoLetivo;
 
             List<DateTime> diasEventosNaoLetivos = new List<DateTime>();

@@ -367,6 +367,18 @@ rotas.set(RotasDto.EVENTOS, {
   chavePermissao: RotasDto.EVENTOS,
 });
 
+rotas.set(`${RotasDto.EVENTOS}/:tipoCalendarioId`, {
+  breadcrumbName: 'Evento do Calendário Escolar',
+  menu: ['Calendário Escolar'],
+  parent: '/',
+  component: EventosLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.EVENTOS,
+});
+
+
 rotas.set('/calendario-escolar/eventos/novo/:tipoCalendarioId', {
   breadcrumbName: 'Cadastro de Eventos no Calendário Escolar',
   parent: '/calendario-escolar/eventos',
@@ -378,6 +390,16 @@ rotas.set('/calendario-escolar/eventos/novo/:tipoCalendarioId', {
 });
 
 rotas.set('/calendario-escolar/eventos/editar/:id', {
+  breadcrumbName: 'Cadastro de Eventos no Calendário Escolar',
+  parent: '/calendario-escolar/eventos',
+  component: EventosForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.EVENTOS,
+});
+
+rotas.set('/calendario-escolar/eventos/editar/:id/:tipoCalendarioId', {
   breadcrumbName: 'Cadastro de Eventos no Calendário Escolar',
   parent: '/calendario-escolar/eventos',
   component: EventosForm,
