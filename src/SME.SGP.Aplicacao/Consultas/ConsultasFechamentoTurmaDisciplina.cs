@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao
 
                 var bimestreDoPeriodo = consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
 
-                foreach (var aluno in alunos)
+                foreach (var aluno in alunos.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
                 {
                     var alunoDto = new NotaConceitoAlunoBimestreDto();
                     alunoDto.NumeroChamada = aluno.NumeroAlunoChamada;
