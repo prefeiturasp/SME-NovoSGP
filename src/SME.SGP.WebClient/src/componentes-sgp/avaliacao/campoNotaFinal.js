@@ -46,7 +46,8 @@ const CampoNotaFinal = props => {
 
   const validaSeEstaAbaixoDaMedia = useCallback(
     valorAtual => {
-      if (String(valorAtual) && valorAtual < mediaAprovacaoBimestre) {
+      valorAtual = removerCaracteresInvalidos(String(valorAtual));      
+      if (valorAtual && valorAtual < mediaAprovacaoBimestre) {
         notaBimestre.abaixoDaMedia = true;
         setAbaixoDaMedia(true);
       } else {
