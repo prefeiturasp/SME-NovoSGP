@@ -113,6 +113,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasFechamentoTurmaDisciplina, ConsultasFechamentoTurmaDisciplina>();
             services.TryAddScopedWorkerService<IConsultasNotaConceitoBimestre, ConsultasNotaConceitoBimestre>();
             services.TryAddScopedWorkerService<IConsultasFechamentoReabertura, ConsultasFechamentoReabertura>();
+            services.TryAddScopedWorkerService<IConsultasTurma, ConsultasTurma>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)

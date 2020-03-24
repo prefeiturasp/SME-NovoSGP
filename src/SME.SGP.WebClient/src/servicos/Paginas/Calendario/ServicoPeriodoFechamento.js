@@ -1,4 +1,5 @@
 import api from '~/servicos/api';
+import * as moment from 'moment';
 
 class ServicoPeriodoFechamento {
   obterPorTipoCalendarioDreEUe = async (
@@ -15,13 +16,17 @@ class ServicoPeriodoFechamento {
     return api.post('/v1/periodos/fechamentos/aberturas', fechamento);
   };
 
-  verificarSePodeAlterarNoPeriodo = async (turmaCodigo, bimestre, dataReferencia?) => {
+  verificarSePodeAlterarNoPeriodo = async (
+    turmaCodigo,
+    bimestre,
+    dataReferencia = ''
+  ) => {
+    let url = `/v1/periodo-escolar/bimestres/${bimestre}/turmas/${turmaCodigo}/aberto`;
     if (dataReferencia) {
-      dataReferencia = window.moment(dataReferencia).format('YYYY-MM-DD');
+      dataReferencia = moment(dataReferencia).format('YYYY-MM-DD');
+      url = `${url}?dataReferencia=${dataReferencia}`;
     }
-    return api.get(
-      `/v1/periodos/fechamentos/aberturas/turmas/${turmaCodigo}/bimestres/
-      ${bimestre}/aberto?dataReferencia=2015-01-01`);
+    return api.get(url);
   };
 }
 
