@@ -33,9 +33,23 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
+        public async Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId)
+        {
+            var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento
+                                , p.situacao, ftd.disciplina_id as DisciplinaId, pe.bimestre
+                          from pendencia_fechamento pf 
+                         inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id 
+                         inner join turma t on t.id = ftd.turma_id 
+                         inner join periodo_escolar pe on pe.id = ftd.periodo_escolar_id 
+                         inner join pendencia p on p.id = pf.pendencia_id  
+                         where p.id = @pendenciaId";
+
+            return await database.Conexao.QueryFirstAsync<PendenciaFechamentoCompletoDto>(query, new { pendenciaId });
+        }
+
         private string MontaQuery(Paginacao paginacao, int bimestre, long componenteCurricularId, bool contador = false)
         {
-            var fields = contador ? "count(p.id)" : "p.descricao, p.situacao, ftd.disciplina_id as DisciplinaId";
+            var fields = contador ? "count(p.id)" : "p.id as PendenciaId, p.descricao, p.situacao, ftd.disciplina_id as DisciplinaId";
             var query = new StringBuilder(string.Format(@"select {0}
                                   from pendencia_fechamento pf 
                                  inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id 
