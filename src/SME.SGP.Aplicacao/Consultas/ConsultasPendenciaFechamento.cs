@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -35,6 +36,21 @@ namespace SME.SGP.Aplicacao
             }
 
             return retornoConsultaPaginada;
+        }
+
+        public async Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId)
+        {
+            var pendencia = await repositorioPendenciaFechamento.ObterPorPendenciaId(pendenciaId);
+            if (pendencia == null)
+                throw new NegocioException("Pendencia informada não localizada.");
+
+            var disciplinasEOL = await servicoEOL.ObterDisciplinasPorIdsAsync(new long[] { pendencia.DisciplinaId });
+            if (disciplinasEOL == null || !disciplinasEOL.Any())
+                throw new NegocioException("Disciplina informada não localizada.");
+
+            var disciplinaEOL = disciplinasEOL.First();
+            pendencia.ComponenteCurricular = disciplinaEOL.Nome;
+            return pendencia;
         }
     }
 }
