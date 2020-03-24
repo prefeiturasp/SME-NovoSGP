@@ -19,6 +19,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        distinct a.turma_id as CodigoTurma,
 	                        t.nome as NomeTurma ,
 	                        ue.ue_id as CodigoUe,
+							ue.tipo_escola as TipoEscola,
 	                        ue.nome as NomeUe ,
 	                        dre.dre_id as CodigoDre,
 	                        dre.nome as NomeDre ,

@@ -136,11 +136,21 @@ const MesCompleto = props => {
 
       setDiasDaSemana(diasDaSemanaLista);
       setUltimoUsado(mesSelecionado);
-      setEstaAberto({ ...estaAberto, [mesSelecionado]: true });
+      setEstaAberto(estadoAntigo => {
+        return { ...estadoAntigo, [mesSelecionado]: true };
+      });
       obterTipoEventosDia(mesSelecionado);
     }
-    return () => setEstaAberto({ ...estaAberto, [mesSelecionado]: false });
-  }, [mesSelecionado, turmaSelecionada]);
+    return () =>
+      setEstaAberto(estadoAntigo => {
+        return { ...estadoAntigo, [mesSelecionado]: false };
+      });
+  }, [
+    mesSelecionado,
+    obterTipoEventosDia,
+    turmaSelecionada,
+    turmaSelecionadaStore.anoLetivo,
+  ]);
 
   return mesSelecionado > 0 && estaAberto[mesSelecionado] ? (
     <Div
