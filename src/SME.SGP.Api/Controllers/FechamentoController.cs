@@ -36,9 +36,11 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/{turmaCodigo}/bimestres/{bimestre}/aberto")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PFA_C, Policy = "Bearer")]
+        //[Permissao(Permissao.PFA_C, Policy = "Bearer")]
         public async Task<IActionResult> PeriodoTurmaAberto(string turmaCodigo, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices] IConsultasFechamento consultasFechamento)
         {
+            if (dataReferencia == DateTime.MinValue)
+                dataReferencia = DateTime.Now;
             return Ok(await consultasFechamento.TurmaEmPeriodoDeFechamento(turmaCodigo, dataReferencia, bimestre));
         }
 

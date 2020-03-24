@@ -15,10 +15,13 @@ class ServicoPeriodoFechamento {
     return api.post('/v1/periodos/fechamentos/aberturas', fechamento);
   };
 
-  verificarSePodeAlterarNoPeriodo = async (turmaCodigo, bimestre, dataReferencia) => {
+  verificarSePodeAlterarNoPeriodo = async (turmaCodigo, bimestre, dataReferencia?) => {
+    if (dataReferencia) {
+      dataReferencia = window.moment(dataReferencia).format('YYYY-MM-DD');
+    }
     return api.get(
-      `/v1/periodos/fechamentos/aberturas/turmas/${turmaCodigo}/bimestres/${bimestre}/aberto?dataReferencia=${dataReferencia}`
-    );
+      `/v1/periodos/fechamentos/aberturas/turmas/${turmaCodigo}/bimestres/
+      ${bimestre}/aberto?dataReferencia=2015-01-01`);
   };
 }
 

@@ -23,6 +23,8 @@ import CopiarCompensacao from './copiarCompensacao';
 import ListaAlunos from './listasAlunos/listaAlunos';
 import ListaAlunosAusenciasCompensadas from './listasAlunos/listaAlunosAusenciasCompensadas';
 import { Badge, BotaoListaAlunos, ColunaBotaoListaAlunos, ListaCopiarCompensacoes } from './styles';
+import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
+import moment from 'moment';
 
 const CompensacaoAusenciaForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -383,6 +385,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
 
   const onChangeBimestre = async (bimestre, form) => {
     let podeEditar = false;
+    const podeAlterarNoPeriodo = await ServicoPeriodoFechamento.verificarSePodeAlterarNoPeriodo(
+      turmaSelecionada.turma, bimestre
+    ).catch(e => {
+      erros(e);
+    });
+    if (!podeAlterarNoPeriodo.data) {
+      erro('Compensação de ausência fora dos períodos');
+    }
     const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
       turmaSelecionada.turma,
       form.values.disciplinaId,
