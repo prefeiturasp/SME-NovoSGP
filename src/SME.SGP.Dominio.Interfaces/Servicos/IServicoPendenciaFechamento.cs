@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -13,5 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
         int ValidarAvaliacoesSemNotasParaNenhumAluno(long fechamentoId, string codigoTurma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo);
 
         int ValidarPercentualAlunosAbaixoDaMedia(FechamentoTurmaDisciplina fechamentoTurma);
+        Task<AuditoriaDto> Aprovar(long pendenciaId);
+        bool VerificaPendenciasFechamento(long fechamentoId);
     }
 }
