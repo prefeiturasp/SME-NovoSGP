@@ -23,7 +23,7 @@ class ServicoPeriodoFechamento {
   ) => {
     let url = `/v1/periodo-escolar/bimestres/${bimestre}/turmas/${turmaCodigo}/aberto`;
     if (dataReferencia) {
-      dataReferencia = moment(dataReferencia).toISOString();
+      dataReferencia = moment(dataReferencia).format('YYYY-MM-DD');
       url = `${url}?dataReferencia=${dataReferencia}`;
     }
     return api.get(url);
