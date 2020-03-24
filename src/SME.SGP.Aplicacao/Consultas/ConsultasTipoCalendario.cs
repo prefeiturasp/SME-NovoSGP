@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
                     , turma.ModalidadeTipoCalendario
                     , dataReferencia.Semestre());
 
-        public Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia)
-            => repositorio.PeriodoEmAberto(tipoCalendario.Id, dataReferencia);
+        public Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0)
+            => repositorio.PeriodoEmAberto(tipoCalendario.Id, dataReferencia, bimestre);
     }
 }

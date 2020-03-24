@@ -15,6 +15,6 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<TipoCalendario> ObterTiposCalendario();
 
         Task<bool> VerificarRegistroExistente(long id, string nome);
-        Task<bool> PeriodoEmAberto(long tipoCalendarioId, DateTime dataReferencia);
+        Task<bool> PeriodoEmAberto(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0);
     }
 }
