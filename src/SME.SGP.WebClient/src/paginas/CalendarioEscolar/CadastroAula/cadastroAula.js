@@ -477,7 +477,11 @@ const CadastroAula = ({ match }) => {
           setEhEja(true);
         } else {
           setInicial(estadoAntigo => {
-            return { ...estadoAntigo, quantidadeTexto: '', quantidadeRadio: 1 };
+            return {
+              ...estadoAntigo,
+              quantidadeTexto: '',
+              quantidadeRadio: 1,
+            };
           });
           setEhEja(false);
         }
