@@ -380,17 +380,20 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObtenhaEscopoNormal(string UeId, string DreId, StringBuilder query)
         {
-            if (!string.IsNullOrEmpty(DreId) && !string.IsNullOrEmpty(UeId))
-                query.AppendLine("and (e.dre_id is null and e.ue_id is null)");
-
-            if (!string.IsNullOrEmpty(DreId) && string.IsNullOrWhiteSpace(UeId))
-                query.AppendLine("and (e.dre_id = @dreId and e.ue_id is null)");
-
-            if (string.IsNullOrEmpty(DreId) && !string.IsNullOrEmpty(UeId))
-                query.AppendLine("and e.ue_id = @ueId");
-
-            if (!string.IsNullOrEmpty(UeId))
-                query.AppendLine("and (e.dre_id = @dreId and e.ue_id = @ueId)");
+            if (string.IsNullOrEmpty(DreId))
+            {
+                if (string.IsNullOrEmpty(UeId))
+                    query.AppendLine("and (e.dre_id is null and e.ue_id is null)");
+                else
+                    query.AppendLine("and e.ue_id = @ueId");
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(UeId))
+                    query.AppendLine("and (e.dre_id = @dreId and e.ue_id is null)");
+                else
+                    query.AppendLine("and (e.dre_id = @dreId and e.ue_id = @ueId)");
+            }
         }
 
         private static void ObtenhaEscopoRetroativo(string UeId, string DreId, StringBuilder query)
