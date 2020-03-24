@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Tooltip, Switch } from 'antd';
@@ -20,6 +20,7 @@ import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 import { Loader } from '~/componentes';
+import { erro } from '~/servicos/alertas';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -39,6 +40,9 @@ const CalendarioEscolar = () => {
   const turmaSelecionadaStore = useSelector(
     state => state.usuario.turmaSelecionada
   );
+
+  const [controleTurmaSelecionada, setControleTurmaSelecionada] = useState();
+
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
 
@@ -48,7 +52,9 @@ const CalendarioEscolar = () => {
 
   const obterTiposCalendario = async modalidades => {
     setCarregandoTipos(true);
-    const lista = await ServicoCalendarios.obterTiposCalendario();
+    const lista = await ServicoCalendarios.obterTiposCalendario(
+      turmaSelecionadaStore.anoLetivo
+    );
     if (lista && lista.data) {
       const tiposCalendarioLista = [];
       if (lista.data) {
@@ -80,7 +86,7 @@ const CalendarioEscolar = () => {
     return lista;
   };
 
-  const listarModalidadesPorAbrangencia = () => {
+  const modalidadesPorAbrangencia = useMemo(() => {
     const modalidades = [];
     if (modalidadesAbrangencia) {
       modalidadesAbrangencia.forEach(modalidade => {
@@ -94,67 +100,89 @@ const CalendarioEscolar = () => {
           modalidades.push(2);
       });
     }
-    return modalidades;
-  };
 
-  const listarTiposCalendarioPorTurmaSelecionada = async tiposLista => {
-    if (Object.entries(turmaSelecionadaStore).length) {
+    return modalidades;
+  }, [modalidadesAbrangencia]);
+
+  const tiposDeCalendario = useMemo(async () => {
+    let tipos = tiposCalendario;
+
+    if (tipos.length > 0 && modalidadesPorAbrangencia.length === 1) {
+      tipos = tiposCalendario.filter(
+        x => Number(x.modalidade) === modalidadesPorAbrangencia[0]
+      );
+    }
+
+    if (Object.entries(turmaSelecionadaStore).length > 0) {
       const modalidadeSelecionada =
         turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
           ? 2
           : 1;
 
-      if (tiposLista && tiposLista.length) {
-        setTiposCalendario(
-          tiposLista.filter(tipo => {
-            return tipo.modalidade === modalidadeSelecionada;
-          })
+      tipos =
+        tiposCalendario &&
+        tiposCalendario
+          .filter(x => x.anoLetivo === anosLetivosAbrangencia[0].valor)
+          .filter(y => Number(y.modalidade) === Number(modalidadeSelecionada));
+
+      if (!tipos || tipos.length === 0) {
+        erro(
+          'Nenhum tipo de calendário encontrado para o ano letivo e modalidade selecionada'
         );
-      } else if (tiposCalendario && tiposCalendario.length) {
+      } else {
+        tipos = await obterTiposCalendario(modalidadesPorAbrangencia);
+
+        if (!tipos || tipos.length === 0) {
+          erro(
+            'Nenhum tipo de calendário encontrado para o ano letivo e modalidade selecionada'
+          );
+          return;
+        }
+
         setTiposCalendario(
-          tiposCalendario.filter(tipo => {
+          tipos.filter(tipo => {
             return tipo.modalidade === modalidadeSelecionada;
           })
         );
       }
-    } else {
-      setTiposCalendario(
-        await obterTiposCalendario(listarModalidadesPorAbrangencia())
-      );
     }
-  };
+
+    if (tipos && tipos.length > 0)
+      setTipoCalendarioSelecionado(tipos[0].valor.toString());
+
+    return tipos;
+  }, [
+    anosLetivosAbrangencia,
+    modalidadesPorAbrangencia,
+    tiposCalendario,
+    turmaSelecionadaStore,
+  ]);
 
   useEffect(() => {
-    if (tiposCalendario.length && tiposCalendario.length === 1) {
-      if (Object.entries(turmaSelecionadaStore).length) {
-        const modalidadeSelecionada =
-          turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
-            ? 2
-            : 1;
-        const tipoCalendario = tiposCalendario.filter(tipo => {
-          return tipo.modalidade === modalidadeSelecionada;
-        })[0];
-        if (tipoCalendario) {
-          setTipoCalendarioSelecionado(tipoCalendario.valor.toString());
-        }
+    // Busca os calendarios disponíveis por ano letivo
+    const buscarTipos = async () => {
+      setCarregandoTipos(true);
+      const { data, status } = await ServicoCalendarios.obterTiposCalendario(
+        turmaSelecionadaStore.anoLetivo
+      );
+      if (data && status === 200) {
+        setTiposCalendario(
+          data.map(x => ({
+            desc: x.nome,
+            valor: x.id,
+            modalidade: x.modalidade,
+            anoLetivo: x.anoLetivo,
+          }))
+        );
+        setCarregandoTipos(false);
       }
-    }
-  }, [tiposCalendario, turmaSelecionadaStore]);
-
-  const listarTiposCalendario = async () => {
-    listarTiposCalendarioPorTurmaSelecionada(
-      await obterTiposCalendario(listarModalidadesPorAbrangencia())
-    );
-  };
+    };
+    buscarTipos();
+  }, [turmaSelecionadaStore.anoLetivo]);
 
   const eventoCalendarioEdicao = useSelector(
     state => state.calendarioEscolar.eventoCalendarioEdicao
   );
-
-  useEffect(() => {
-    listarTiposCalendario();
-    return () => store.dispatch(zeraCalendario());
-  }, []);
 
   const [eventoSme, setEventoSme] = useState(true);
 
@@ -169,11 +197,7 @@ const CalendarioEscolar = () => {
         setEventoSme(eventoCalendarioEdicao.eventoSme);
       }
     }
-  }, [tiposCalendario]);
-
-  useEffect(() => {
-    listarTiposCalendarioPorTurmaSelecionada();
-  }, [turmaSelecionadaStore]);
+  }, [eventoCalendarioEdicao, tiposCalendario]);
 
   const [dreSelecionada, setDreSelecionada] = useState(undefined);
   const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
@@ -419,7 +443,7 @@ const CalendarioEscolar = () => {
                 <SelectComponent
                   className="fonte-14"
                   onChange={aoSelecionarTipoCalendario}
-                  lista={tiposCalendario}
+                  lista={tiposDeCalendario}
                   valueOption="valor"
                   valueText="desc"
                   valueSelect={tipoCalendarioSelecionado}
@@ -483,6 +507,7 @@ const CalendarioEscolar = () => {
                     checked={eventoSme}
                     size="small"
                     className="mr-2"
+                    disabled={!tipoCalendarioSelecionado}
                   />
                   <Label className="my-auto">SME</Label>
                 </Tooltip>

@@ -3,6 +3,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -68,17 +69,21 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] int turmaId, [FromQuery] long componenteCurricular, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
         {
-            return Ok(await consultasPlanoAnual.ObterTurmasParaCopia(turmaId, componenteCurricular));
+            var retorno = await consultasPlanoAnual.ObterTurmasParaCopia(turmaId, componenteCurricular);
+
+            if (retorno == null || !retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(IEnumerable<PlanoAnualCompletoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
         public async Task<IActionResult> Post(PlanoAnualDto planoAnualDto, [FromServices]IComandosPlanoAnual comandosPlanoAnual)
-        {
-            await comandosPlanoAnual.Salvar(planoAnualDto);
-            return Ok();
+        {            
+            return Ok(await comandosPlanoAnual.Salvar(planoAnualDto));
         }
 
         [HttpPost("validar-existente")]

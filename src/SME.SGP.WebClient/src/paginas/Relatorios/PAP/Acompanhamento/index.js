@@ -138,7 +138,7 @@ function RelatorioPAPAcompanhamento() {
         });
 
         if (!data) {
-          erro('Não foi encontrado dados de acompanhamento PAP');
+          erro('Não foram encontrados dados para a turma e período selecionados.');
           setCarregando(false);
           return false;
         }
@@ -162,6 +162,7 @@ function RelatorioPAPAcompanhamento() {
         erro('Ocorreu um erro interno, por favor contate o suporte');
       }
     }
+    return true;
   };
 
   const onChangeRespostaHandler = async (aluno, valor) => {
@@ -180,20 +181,20 @@ function RelatorioPAPAcompanhamento() {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-              ...alunoCorrente.respostas.filter(
-                y => y.objetivoId !== estado.ObjetivoAtivo.id
-              ),
-              novaResposta,
-            ]
+            ...alunoCorrente.respostas.filter(
+              y => y.objetivoId !== estado.ObjetivoAtivo.id
+            ),
+            novaResposta,
+          ]
           : [novaResposta];
     } else {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-              ...alunoCorrente.respostas.filter(
-                y => y.objetivoId !== estado.ObjetivoAtivo.id
-              ),
-            ]
+            ...alunoCorrente.respostas.filter(
+              y => y.objetivoId !== estado.ObjetivoAtivo.id
+            ),
+          ]
           : [];
     }
 
@@ -202,9 +203,9 @@ function RelatorioPAPAcompanhamento() {
         estado.Alunos.map(item =>
           item.codAluno === aluno.codAluno
             ? {
-                ...aluno,
-                respostas: respostasAluno,
-              }
+              ...aluno,
+              respostas: respostasAluno,
+            }
             : item
         )
       )

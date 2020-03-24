@@ -89,6 +89,9 @@ const BreadcrumbSgp = () => {
 
   const setItensBreadcrumb = item => {
     const newItens = [];
+    if ((!item.breadcrumbName || !item.breadcrumbName === '') && item.parent) {
+      item = rotas.get(item.parent);
+    }
     carregaBreadcrumbsExtra(item, newItens);
     newItens.push(
       criarItemBreadcrumb(

@@ -12,15 +12,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
-        private readonly IConsultasFechamento consultasFechamento;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
         public ConsultasTurma(IRepositorioTurma repositorioTurma,
                                 IConsultasTipoCalendario consultasTipoCalendario,
-                                IConsultasFechamento consultasFechamento)
+                                IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
-            this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
 
         public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia)
@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
 
             var periodoEmAberto = await consultasTipoCalendario.PeriodoEmAberto(tipoCalendario, dataReferencia);
 
-            return periodoEmAberto || await consultasFechamento.TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia);
+            return periodoEmAberto || await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia);
         }
 
         public async Task<Turma> ObterPorCodigo(string codigoTurma)

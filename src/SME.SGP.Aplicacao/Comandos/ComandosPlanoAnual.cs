@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IConsultasProfessor consultasProfessor;
         private readonly IConsultasTurma consultasTurma;
+        private readonly IConsultasPlanoAnual consultasPlanoAnual;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
@@ -27,6 +28,7 @@ namespace SME.SGP.Aplicacao
                                   IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                   IConsultasProfessor consultasProfessor,
                                   IConsultasTurma consultasTurma,
+                                  IConsultasPlanoAnual consultasPlanoAnual,
                                   IUnitOfWork unitOfWork,
                                   IServicoUsuario servicoUsuario,
                                   IServicoEOL servicoEOL)
@@ -37,6 +39,7 @@ namespace SME.SGP.Aplicacao
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
+            this.consultasPlanoAnual = consultasPlanoAnual ?? throw new ArgumentNullException(nameof(consultasProfessor));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -79,7 +82,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
         }
 
-        public async Task Salvar(PlanoAnualDto planoAnualDto)
+        public async Task<IEnumerable<PlanoAnualCompletoDto>> Salvar(PlanoAnualDto planoAnualDto)
         {
             var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
             if (string.IsNullOrWhiteSpace(usuarioAtual.CodigoRf))
@@ -96,13 +99,17 @@ namespace SME.SGP.Aplicacao
                 PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
                 if (planoAnual != null)
                 {
-                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), planoAnualDto.ComponenteCurricularEolId.ToString(),  DateTime.Now).Result)
+                    var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), planoAnualDto.ComponenteCurricularEolId.ToString(), DateTime.Now);
+                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistir)
                         throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
                 }
                 planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao);
                 Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
             }
             unitOfWork.PersistirTransacao();
+
+            var resposta = await consultasPlanoAnual.ObterPorUETurmaAnoEComponenteCurricular(planoAnualDto.EscolaId, planoAnualDto.TurmaId.ToString(), planoAnualDto.AnoLetivo.Value, planoAnualDto.ComponenteCurricularEolId);
+            return resposta; 
         }
 
         private static void ValidarObjetivoPertenceAoComponenteCurricular(IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem,
