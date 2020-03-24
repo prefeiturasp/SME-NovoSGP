@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
                         // Carrega notas do bimestre
                         var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
 
-                        if(notasConceitoBimestre.Count() > 0)
+                        if (notasConceitoBimestre.Count() > 0)
                             alunoDto.Notas = new List<NotaConceitoBimestreRetornoDto>();
 
                         foreach (var notaConceitoBimestre in notasConceitoBimestre)
@@ -138,7 +138,11 @@ namespace SME.SGP.Aplicacao
                                 Disciplina = disciplinaEOL.Regencia ?
                                     disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
                                     disciplinaEOL.Nome,
-                                NotaConceito = notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota.ToString() : ObterConceito(notaConceitoBimestre.ConceitoId.Value)
+                                NotaConceito = notaConceitoBimestre.Nota > 0
+                                ? (notaConceitoBimestre.Nota % 2 == 0 || notaConceitoBimestre.Nota % 2 == 1
+                                ? $"{notaConceitoBimestre.Nota.ToString()}.0"
+                                : notaConceitoBimestre.Nota.ToString().Replace(",", "."))
+                                : ObterConceito(notaConceitoBimestre.ConceitoId.Value)
                             });
                         }
 
