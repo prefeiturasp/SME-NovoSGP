@@ -2,6 +2,7 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -34,5 +35,13 @@ namespace SME.SGP.Api.Controllers
             comandoPeriodo.Salvar(periodos);
             return Ok();
         }
+
+        [HttpGet("bimestres/{bimestre}/turmas/{turmaCodigo}/aberto")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PE_C, Policy = "Bearer")]
+        public IActionResult PeriodoEmAberto(string turmaCodigo, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices]IConsultasTurma consultas)
+            => Ok(consultas.TurmaEmPeriodoAberto(turmaCodigo, dataReferencia, bimestre));
     }
 }

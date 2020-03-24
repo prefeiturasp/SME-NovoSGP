@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
 
-        public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia)
+        public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia, int bimestre = 0)
         {
             var turma = await ObterComUeDrePorCodigo(codigoTurma);
             if (turma == null)
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             return await TurmaEmPeriodoAberto(turma, dataReferencia);
         }
 
-        public async Task<bool> TurmaEmPeriodoAberto(long turmaId, DateTime dataReferencia)
+        public async Task<bool> TurmaEmPeriodoAberto(long turmaId, DateTime dataReferencia, int bimestre = 0)
         {
             var turma = await ObterComUeDrePorId(turmaId);
             if (turma == null)
@@ -41,15 +41,15 @@ namespace SME.SGP.Aplicacao
             return await TurmaEmPeriodoAberto(turma, dataReferencia);
         }
 
-        public async Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia)
+        public async Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia, int bimestre = 0)
         {
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
             if (tipoCalendario == null)
                 throw new NegocioException($"Tipo de calendário para turma {turma.CodigoTurma} não localizado!");
 
-            var periodoEmAberto = await consultasTipoCalendario.PeriodoEmAberto(tipoCalendario, dataReferencia);
+            var periodoEmAberto = await consultasTipoCalendario.PeriodoEmAberto(tipoCalendario, dataReferencia, bimestre);
 
-            return periodoEmAberto || await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia);
+            return periodoEmAberto || await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, bimestre);
         }
 
         public async Task<Turma> ObterPorCodigo(string codigoTurma)
