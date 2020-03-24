@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
             var objetivosCacheString = await repositorioCache.ObterAsync("ObjetivosAprendizagem");
 
-            if (string.IsNullOrEmpty(objetivosCacheString))
+            if (!string.IsNullOrWhiteSpace(objetivosCacheString))
                 return JsonConvert.DeserializeObject<List<ObjetivoAprendizagemDto>>(objetivosCacheString);
 
             var objetivosJuremaDto = await servicoJurema.ObterListaObjetivosAprendizagem();
