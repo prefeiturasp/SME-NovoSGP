@@ -32,7 +32,6 @@ const { Panel } = Collapse;
 
 const PlanoAnual = () => {
   const turmaSelecionada = useSelector(c => c.usuario.turmaSelecionada);
-  const [possuiTurmaSelecionada, setPossuiTurmaSelecionada] = useState(false);
   const [ehEja, setEhEja] = useState(false);
   const [planoAnual, setPlanoAnual] = useState([]);
   const [registroMigrado, setRegistroMigrado] = useState(false);
@@ -278,9 +277,14 @@ const PlanoAnual = () => {
    *carrega a lista de planos
    */
   useEffect(() => {
-    if (codigoDisciplinaSelecionada) {
+    setPlanoAnual([]);
+
+    if (
+      codigoDisciplinaSelecionada &&
+      turmaSelecionada &&
+      turmaSelecionada.turma
+    ) {
       setCarregandoDados(true);
-      setPlanoAnual([]);
       servicoPlanoAnual
         .obter(
           turmaSelecionada.anoLetivo,
@@ -340,12 +344,14 @@ const PlanoAnual = () => {
   }, [codigoDisciplinaSelecionada, disciplinaSelecionada, turmaSelecionada]);
 
   useEffect(() => {
-    setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     setEmEdicao(false);
-    if (turmaSelecionada && turmaSelecionada.turma) {
+    if (turmaSelecionada && turmaSelecionada !== [] && turmaSelecionada.turma) {
       setEhEja(
         turmaSelecionada.modalidade.toString() === modalidade.EJA.toString()
       );
+    } else {
+      setDisciplinaSelecionada(null);
+      setCodigoDisciplinaSelecionada(null);
     }
   }, [turmaSelecionada]);
 
@@ -497,10 +503,13 @@ const PlanoAnual = () => {
                           ano={turmaSelecionada.ano}
                           ehEja={ehEja}
                           ehMedio={
+                            turmaSelecionada &&
+                            turmaSelecionada.modalidade &&
                             turmaSelecionada.modalidade.toString() ===
-                            modalidade.ENSINO_MEDIO.toString()
+                              modalidade.ENSINO_MEDIO.toString()
                           }
                           disciplinaSemObjetivo={
+                            disciplinaSelecionada &&
                             !disciplinaSelecionada.possuiObjetivos
                           }
                           onChange={onChangeBimestre}
