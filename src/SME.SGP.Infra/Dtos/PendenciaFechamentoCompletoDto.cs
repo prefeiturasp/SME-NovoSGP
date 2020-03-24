@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class PendenciaFechamentoCompletoDto
+    public class PendenciaFechamentoCompletoDto: AuditoriaDto
     {
         public long PendenciaId { get; set; }
         public long FechamentoId { get; set; }
@@ -14,5 +14,6 @@ namespace SME.SGP.Infra
         public string Descricao { get; set; }
         public string Detalhamento { get; set; }
         public string Situacao { get; set; }
+
     }
 }
