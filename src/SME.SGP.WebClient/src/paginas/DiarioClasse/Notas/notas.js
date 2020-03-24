@@ -28,6 +28,7 @@ import BotoesAcoessNotasConceitos from './botoesAcoes';
 import { Container, ContainerAuditoria } from './notas.css';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
+import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
 
 const { TabPane } = Tabs;
 
@@ -82,14 +83,46 @@ const Notas = ({ match }) => {
   const [clicouNoBotaoSalvar, setClicouNoBotaoSalvar] = useState(false);
   const [clicouNoBotaoVoltar, setClicouNoBotaoVoltar] = useState(false);
 
-  useEffect(() => {
+  const [showMsgPeriodoFechamento, setShowMsgPeriodoFechamento] = useState(false);
+
+  const validaSeDesabilitaCampos = async bimestre => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
     const desabilitar =
       somenteConsulta ||
       !permissoesTela.podeAlterar ||
       !permissoesTela.podeIncluir;
-    setDesabilitarCampos(desabilitar);
-  }, [permissoesTela]);
+
+    let dentroDoPeriodo = true;
+    if (!desabilitar && bimestre && usuario.turmaSelecionada.turma) {
+      const retorno = await ServicoPeriodoFechamento.verificarSePodeAlterarNoPeriodo(
+        usuario.turmaSelecionada.turma,
+        bimestre
+      ).catch(e => {
+        erros(e);
+      });
+      if (retorno && retorno.status == 200) {
+        dentroDoPeriodo = retorno.data;
+      }
+    }
+
+    if (desabilitar) {
+      setDesabilitarCampos(desabilitar);
+      setShowMsgPeriodoFechamento(false);
+      return;
+    }
+
+    if (!dentroDoPeriodo) {
+      setDesabilitarCampos(true);
+      setShowMsgPeriodoFechamento(true);
+    } else {
+      setDesabilitarCampos(desabilitar);
+      setShowMsgPeriodoFechamento(false);
+    }
+  };
+
+  useEffect(() => {
+    validaSeDesabilitaCampos(bimestreCorrente);
+  }, [permissoesTela, usuario.turmaSelecionada.turma]);
 
   const resetarTela = useCallback(() => {
     setDisciplinaSelecionada(undefined);
@@ -156,7 +189,8 @@ const Notas = ({ match }) => {
     async (disciplinaId, numeroBimestre) => {
       if (disciplinaId > 0) {
         setCarregandoListaBimestres(true);
-        const dados = await obterBimestres(disciplinaId, numeroBimestre);
+        const dados = await obterBimestres(disciplinaId, numeroBimestre);        
+        validaPeriodoFechamento(dados);
         if (dados && dados.bimestres && dados.bimestres.length) {
           dados.bimestres.forEach(async item => {
             item.alunos.forEach(aluno => {
@@ -671,6 +705,15 @@ const Notas = ({ match }) => {
     }
   };
 
+  const validaPeriodoFechamento = dados => {
+    const temDados = dados.bimestres.find(bimestre => bimestre.alunos && bimestre.alunos.length);
+    if (temDados) {
+      validaSeDesabilitaCampos(dados.bimestreAtual);
+    } else {
+      setShowMsgPeriodoFechamento(false);
+    }
+  }
+
   const confirmarTrocaTab = async numeroBimestre => {
     if (disciplinaSelecionada) {
       resetarBimestres();
@@ -688,7 +731,8 @@ const Notas = ({ match }) => {
       setBimestreCorrente(numeroBimestre);
 
       setCarregandoListaBimestres(true);
-      const dados = await obterBimestres(disciplinaSelecionada, numeroBimestre);
+      const dados = await obterBimestres(disciplinaSelecionada, numeroBimestre);      
+      validaPeriodoFechamento(dados);
       if (dados && dados.bimestres && dados.bimestres.length) {
         const bimestrePesquisado = dados.bimestres.find(
           item => Number(item.numero) === Number(numeroBimestre)
@@ -929,6 +973,23 @@ const Notas = ({ match }) => {
           </Grid>
         </Row>
       ) : null}
+      {showMsgPeriodoFechamento ? (
+        <Row className="mb-0 pb-0">
+          <Grid cols={12} className="mb-0 pb-0">
+            <Container>
+              <Alert
+                alerta={{
+                  tipo: 'warning',
+                  id: 'alerta-perido-fechamento',
+                  mensagem:
+                    'Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.',
+                  estiloTitulo: { fontSize: '18px' },
+                }}
+              />
+            </Container>
+          </Grid>
+        </Row>
+      ) : null}
       <Cabecalho pagina={tituloNotasConceitos} />
       <Loader loading={carregandoListaBimestres}>
         <Card>
@@ -986,8 +1047,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {segundoBimestre.numero ? (
                         <TabPane
                           tab={segundoBimestre.descricao}
@@ -1003,8 +1064,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {terceiroBimestre.numero ? (
                         <TabPane
                           tab={terceiroBimestre.descricao}
@@ -1020,8 +1081,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {quartoBimestre.numero ? (
                         <TabPane
                           tab={quartoBimestre.descricao}
@@ -1037,8 +1098,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                     </ContainerTabsCard>
                   </div>
                 </div>
@@ -1064,8 +1125,8 @@ const Notas = ({ match }) => {
                 </div>
               </>
             ) : (
-                ''
-              )}
+              ''
+            )}
           </div>
         </Card>
       </Loader>
