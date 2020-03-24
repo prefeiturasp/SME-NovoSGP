@@ -79,7 +79,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
         }
 
-        public async Task<AuditoriaFechamentoTurmaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto)
+        public async Task<AuditoriaFechamentoTurmaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false)
         {
             var fechamentoTurma = MapearParaEntidade(id, entidadeDto);
 
@@ -117,7 +117,7 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.PersistirTransacao();
 
                 var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-                Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurma.DisciplinaId, fechamentoTurma.Turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurma, usuarioLogado));
+                Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurma.DisciplinaId, fechamentoTurma.Turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurma, usuarioLogado, componenteSemNota));
 
                 return (AuditoriaFechamentoTurmaDto)fechamentoTurma;
             }
@@ -151,15 +151,22 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Mais de {percentualReprovacao}% das notas/conceitos foi considerada insuficiente. Necessário incluir uma justificativa");
         }
 
-        public async Task GerarPendenciasFechamento(long disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, FechamentoTurmaDisciplina fechamento, Usuario usuarioLogado)
+        public async Task GerarPendenciasFechamento(long disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, FechamentoTurmaDisciplina fechamento, Usuario usuarioLogado, bool componenteSemNota = false)
         {
             var situacaoFechamento = SituacaoFechamento.ProcessadoComSucesso;
 
-            var avaliacoesSemnota = servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            int avaliacoesSemnota = 0;
+            int alunosAbaixoMedia = 0;
+
+            if (!componenteSemNota)
+            {
+                avaliacoesSemnota = servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+                alunosAbaixoMedia = servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
+            }
+            
             var aulasReposicaoPendentes = servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
             var aulasSemPlanoAula = servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
             var aulasSemFrequencia = servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-            var alunosAbaixoMedia = servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
 
             var quantidadePendencias = avaliacoesSemnota + aulasReposicaoPendentes + aulasSemPlanoAula + aulasSemFrequencia + alunosAbaixoMedia;
             if (quantidadePendencias > 0)
@@ -195,7 +202,7 @@ namespace SME.SGP.Dominio.Servicos
             repositorioFechamentoTurmaDisciplina.Salvar(fechamento);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuarioLogado));
+            Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuarioLogado, false));
         }
 
         private void GerarNotificacaoFechamento(FechamentoTurmaDisciplina fechamento, Turma turma, int quantidadePendencias, Usuario usuarioLogado)
@@ -253,6 +260,9 @@ namespace SME.SGP.Dominio.Servicos
 
                         if (notaConceitoAlunoDto.ConceitoId > 0)
                             notaConceitoBimestre.ConceitoId = notaConceitoAlunoDto.ConceitoId;
+
+                        if (notaConceitoAlunoDto.SinteseId > 0)
+                            notaConceitoBimestre.SinteseId = notaConceitoAlunoDto.SinteseId;
                     }
                     else
                         notasConceitosBimestre.Add(MapearParaEntidade(notaConceitoAlunoDto));
@@ -276,7 +286,8 @@ namespace SME.SGP.Dominio.Servicos
                   CodigoAluno = notaConceitoAlunoDto.CodigoAluno,
                   DisciplinaId = notaConceitoAlunoDto.DisciplinaId,
                   Nota = notaConceitoAlunoDto.Nota,
-                  ConceitoId = notaConceitoAlunoDto.ConceitoId
+                  ConceitoId = notaConceitoAlunoDto.ConceitoId,
+                  SinteseId = notaConceitoAlunoDto.ConceitoId
               };
 
         private FechamentoTurmaDisciplina MapearParaEntidade(long id, FechamentoTurmaDisciplinaDto fechamentoDto)

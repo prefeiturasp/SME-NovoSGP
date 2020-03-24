@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public long DisciplinaId { get; set; }
         public double? Nota { get; set; }
         public long? ConceitoId { get; set; }
+        public long? SinteseId { get; set; }
     }
 }
