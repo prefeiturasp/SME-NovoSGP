@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -281,7 +282,9 @@ namespace SME.SGP.Dominio.Servicos
             {
                 foreach (var ue in ues)
                 {
-                    Notificacao notificacao = MontaNotificacao(ue.Nome, "DRE", fechamentosBimestre, null, ue.CodigoUe);
+                    var nomeUe = $"{ue.TipoEscola.GetAttribute<DisplayAttribute>().ShortName} {ue.Nome}";
+
+                    Notificacao notificacao = MontaNotificacao(nomeUe, "DRE", fechamentosBimestre, null, ue.CodigoUe);
                     var diretores = servicoEol.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.Diretor);
                     if (diretores == null || !diretores.Any())
                         throw new NegocioException($"Não foram localizados diretores para Ue {ue.CodigoUe}.");
@@ -344,7 +347,7 @@ namespace SME.SGP.Dominio.Servicos
                 foreach (var bimestre in fechamentoDto.FechamentosBimestres)
                 {
                     var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(bimestre.PeriodoEscolarId);
-                    PeriodoFechamentoBimestre fechamentoBimestreExistente = fechamento.ObterFechamentoBimestre(bimestre.PeriodoEscolarId);
+                    PeriodoFechamentoBimestre fechamentoBimestreExistente = fechamento.ObterFechamentoBimestre(bimestre.PeriodoEscolarId);                    
                     if (fechamentoBimestreExistente != null)
                     {
                         var periodo = new PeriodoFechamentoBimestre(fechamento.Id, periodoEscolar, bimestre.InicioDoFechamento, bimestre.FinalDoFechamento);
@@ -354,6 +357,8 @@ namespace SME.SGP.Dominio.Servicos
                     }
                     else
                         fechamento.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamento.Id, periodoEscolar, bimestre.InicioDoFechamento, bimestre.FinalDoFechamento));
+
+                    bimestre.PeriodoEscolar.TipoCalendario = tipoCalendario;
                 }
             }
             return fechamento;
