@@ -723,7 +723,7 @@ const FrequenciaPlanoAula = () => {
     async data => {
       setDataSelecionada(data);
       setExibirCardFrequencia(false);
-
+      setTemAvaliacao(undefined);
       setAula();
       resetarPlanoAula();
       if (planoAulaExpandido) onClickPlanoAula();
@@ -830,6 +830,7 @@ const FrequenciaPlanoAula = () => {
             >
               Atenção, existe uma avaliação neste dia:
               <LinkAcao onClick={acessarEditarAvaliacao}>
+                {' '}
                 Editar Avaliação
               </LinkAcao>
               {dataVigente && (
