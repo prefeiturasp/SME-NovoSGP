@@ -24,7 +24,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -130,17 +129,19 @@ namespace SME.SGP.Dominio.Servicos
 
         private void VarificaPercentualReprovacao(FechamentoTurmaDisciplinaDto fechamentoTurmaDto, PeriodoEscolar periodoEscolar)
         {
-            var mediaBimestre = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
             var percentualReprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
             var qtdReprovados = 0;
 
             // Verifica se lança nota ou conceito
-            if (fechamentoTurmaDto.NotaConceitoAlunos.Any(a => a.Nota > 0))
-                qtdReprovados = fechamentoTurmaDto.NotaConceitoAlunos.Where(c => c.Nota < mediaBimestre).Count();
-            else
+            if (fechamentoTurmaDto.NotaConceitoAlunos.Any(a => a.ConceitoId > 0))
             {
                 var conceitos = repositorioConceito.ObterPorData(periodoEscolar.PeriodoFim);
                 qtdReprovados = fechamentoTurmaDto.NotaConceitoAlunos.Where(n => !conceitos.First(c => c.Id == n.ConceitoId).Aprovado).Count();
+            }
+            else
+            {
+                var mediaBimestre = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+                qtdReprovados = fechamentoTurmaDto.NotaConceitoAlunos.Where(c => c.Nota < mediaBimestre).Count();
             }
 
             // Mais de 50% reprovados
@@ -328,6 +329,18 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             return validacoes.ToString();
+        }
+
+        public void VerificaPendenciasFechamento(long fechamentoId)
+        {
+            // Verifica existencia de pendencia em aberto
+            if (!servicoPendenciaFechamento.VerificaPendenciasFechamento(fechamentoId))
+            {
+                var fechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina.ObterPorId(fechamentoId);
+                // Atualiza situação do fechamento
+                fechamentoTurmaDisciplina.Situacao = SituacaoFechamento.ProcessadoComSucesso;
+                repositorioFechamentoTurmaDisciplina.Salvar(fechamentoTurmaDisciplina);
+            }
         }
     }
 }
