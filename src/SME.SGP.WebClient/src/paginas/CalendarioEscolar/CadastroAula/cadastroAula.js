@@ -499,6 +499,16 @@ const CadastroAula = ({ match }) => {
     turmaSelecionada.modalidade,
   ]);
 
+  const [desabilitaPorQuantidade, setDesabilitaPorQuantidade] = useState(false);
+
+  useEffect(() => {
+    if (quantidadeMaximaAulas && quantidadeMaximaAulas === 1) {
+      refForm.setFieldValue('quantidadeTexto', '');
+      refForm.setFieldValue('quantidadeRadio', quantidadeMaximaAulas);
+      setDesabilitaPorQuantidade(true);
+    }
+  }, [quantidadeMaximaAulas, refForm]);
+
   useEffect(() => {
     montaValidacoes();
   }, [montaValidacoes]);
@@ -902,7 +912,11 @@ const CadastroAula = ({ match }) => {
                     id="quantidadeRadio"
                     label="Quantidade de Aulas"
                     form={form}
-                    desabilitado={somenteLeitura || desabilitaPorGrade}
+                    desabilitado={
+                      somenteLeitura ||
+                      desabilitaPorGrade ||
+                      desabilitaPorQuantidade
+                    }
                     opcoes={opcoesQuantidadeAulas}
                     name="quantidadeRadio"
                     onChange={() => {
@@ -925,7 +939,8 @@ const CadastroAula = ({ match }) => {
                       !idDisciplina ||
                       (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
                       (ehRegencia && !ehReposicao) ||
-                      desabilitaPorGrade
+                      desabilitaPorGrade ||
+                      desabilitaPorQuantidade
                     }
                     onChange={() => {
                       refForm.setFieldValue('quantidadeRadio', 0);
