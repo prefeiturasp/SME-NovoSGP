@@ -27,7 +27,13 @@ import PlanoAulaServico from '~/servicos/Paginas/PlanoAula';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, erro, sucesso } from '~/servicos/alertas';
 
-function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
+function ModalCopiarConteudo({
+  show,
+  disciplina,
+  onClose,
+  planoAula,
+  dataAula,
+}) {
   const filtro = useSelector(store => store.usuario.turmaSelecionada);
   const [carregando, setCarregando] = useState(false);
   const dispatch = useDispatch();
@@ -85,9 +91,11 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
   const onChangeTurma = async (turma, linha) => {
     if (turma)
       try {
+        setCarregando(true);
         const { data, status } = await api.get(
           `v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turma}/disciplinas/${disciplina}`
         );
+        setCarregando(false);
         if (data && status === 200) {
           setTurmas(
             turmas.map(x =>
@@ -95,9 +103,9 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
                 ? {
                     ...linha,
                     turmaId: turma,
-                    diasParaHabilitar: data.map(y =>
-                      window.moment(y.data).format('YYYY-MM-DD')
-                    ),
+                    diasParaHabilitar: data
+                      .filter(c => c.data != dataAula)
+                      .map(y => window.moment(y.data).format('YYYY-MM-DD')),
                   }
                 : x
             )
@@ -105,6 +113,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
         }
       } catch (error) {
         erro(error);
+        setCarregando(false);
       }
   };
 
@@ -140,6 +149,29 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
     onClose();
   };
 
+  const copiar = async () => {
+    dispatch(setLoaderModal(true));
+    const {
+      data: dados,
+      status: resposta,
+    } = await PlanoAulaServico.migrarPlano({
+      idsPlanoTurmasDestino: turmas.map(x => ({
+        ...x,
+        sobreescrever: true,
+      })),
+      planoAulaId: planoAula.id,
+      disciplinaId: disciplina,
+      migrarLicaoCasa: valoresCheckbox.licaoCasa,
+      migrarRecuperacaoAula: valoresCheckbox.recuperacaoContinua,
+      migrarObjetivos: valoresCheckbox.objetivosAprendizagem,
+    });
+    if (dados || resposta === 200) {
+      sucesso('Plano de aula copiado com sucesso!');
+      dispatch(setLoaderModal(false));
+      onCloseModal();
+    }
+  };
+
   const onClickSalvar = async () => {
     try {
       if (!confirmado) {
@@ -168,33 +200,14 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
               );
             });
             setAlerta(true);
-          }
+          } else copiar();
           setConfirmado(true);
           setCarregando(false);
         }
       }
 
       if (confirmado) {
-        dispatch(setLoaderModal(true));
-        const {
-          data: dados,
-          status: resposta,
-        } = await PlanoAulaServico.migrarPlano({
-          idsPlanoTurmasDestino: turmas.map(x => ({
-            ...x,
-            sobreescrever: true,
-          })),
-          planoAulaId: planoAula.id,
-          disciplinaId: disciplina,
-          migrarLicaoCasa: valoresCheckbox.licaoCasa,
-          migrarRecuperacaoAula: valoresCheckbox.recuperacaoContinua,
-          migrarObjetivos: valoresCheckbox.objetivosAprendizagem,
-        });
-        if (dados || resposta === 200) {
-          sucesso('Plano de aula copiado com sucesso!');
-          dispatch(setLoaderModal(false));
-          onCloseModal();
-        }
+        copiar();
       }
     } catch (error) {
       erros(error);
@@ -282,6 +295,7 @@ ModalCopiarConteudo.propTypes = {
   disciplina: t.string,
   onClose: t.func,
   planoAula: t.oneOfType([t.object]),
+  dataAula: t.string,
 };
 
 ModalCopiarConteudo.defaultProps = {
@@ -289,6 +303,7 @@ ModalCopiarConteudo.defaultProps = {
   disciplina: null,
   onClose: null,
   planoAula: null,
+  dataAula: null,
 };
 
 export default ModalCopiarConteudo;
