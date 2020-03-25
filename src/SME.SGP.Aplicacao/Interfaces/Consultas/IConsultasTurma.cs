@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,5 +15,6 @@ namespace SME.SGP.Aplicacao
         Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia, int bimestre = 0);
         Task<bool> TurmaEmPeriodoAberto(long turmaId, DateTime dataReferencia, int bimestre = 0);
         Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia, int bimestre = 0);
+        Task<IEnumerable<PeriodoEscolarAbertoDto>> PeriodosEmAbertoTurma(string turmaCodigo, DateTime dataReferencia);
     }
 }
