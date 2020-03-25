@@ -37,6 +37,7 @@ import MesesDropDown from '../componentes/MesesDropDown';
 
 // Styles
 import { Row } from './styles';
+import { Linha } from '~/componentes/EstilosGlobais';
 
 // Funçoes
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
@@ -258,7 +259,7 @@ function RegistroPOAForm({ match }) {
             validateOnChange
           >
             {form => (
-              <Form>
+              <Form className="col-md-12 mb-4">
                 <ButtonGroup
                   form={form}
                   permissoesTela={permissoesTela[RotasDto.REGISTRO_POA]}
@@ -272,7 +273,7 @@ function RegistroPOAForm({ match }) {
                   onClickExcluir={() => onClickExcluir(form)}
                   modoEdicao={modoEdicao}
                 />
-                <Row className="row mb-2">
+                <Linha className="row mb-2">
                   <Grid cols={6}>
                     <DreDropDown
                       url="v1/dres/atribuicoes"
@@ -292,8 +293,8 @@ function RegistroPOAForm({ match }) {
                       desabilitado={somenteConsulta}
                     />
                   </Grid>
-                </Row>
-                <Row className="row mb-2">
+                </Linha>
+                <Linha className="row mb-2">
                   <Localizador
                     dreId={form.values.dreId}
                     anoLetivo={anoLetivo}
@@ -302,8 +303,8 @@ function RegistroPOAForm({ match }) {
                     showLabel
                     desabilitado={somenteConsulta}
                   />
-                </Row>
-                <Row className="row">
+                </Linha>
+                <Linha className="row">
                   <Grid cols={2}>
                     <MesesDropDown
                       label="Bimestre"
@@ -322,8 +323,8 @@ function RegistroPOAForm({ match }) {
                       desabilitado={somenteConsulta}
                     />
                   </Grid>
-                </Row>
-                <Row className="row">
+                </Linha>
+                <Linha className="row">
                   <Grid cols={12}>
                     <Label text="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente" />
                     <TextEditor
@@ -339,7 +340,7 @@ function RegistroPOAForm({ match }) {
                       disabled={somenteConsulta}
                     />
                   </Grid>
-                </Row>
+                </Linha>
               </Form>
             )}
           </Formik>
