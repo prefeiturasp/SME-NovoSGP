@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -9,6 +10,17 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioPendencia(ISgpContext database) : base(database)
         {
+        }
+
+        public async Task<AuditoriaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia)
+        {
+            var pendencia = ObterPorId(pendenciaId);
+            if (pendencia == null)
+                throw new NegocioException("Pendência de fechamento não localizada com o identificador consultado");
+
+            pendencia.Situacao = situacaoPendencia;
+            await SalvarAsync(pendencia);
+            return (AuditoriaDto)pendencia;
         }
 
         public void AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia)
