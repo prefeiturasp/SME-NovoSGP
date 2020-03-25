@@ -27,12 +27,19 @@ namespace SME.SGP.Aplicacao
         {
             var retornoConsultaPaginada = await repositorioPendenciaFechamento.ListarPaginada(Paginacao, filtro.TurmaCodigo, filtro.Bimestre, filtro.ComponenteCurricularId);
 
-            // Carrega nomes das disciplinas para o DTO de retorno
-            var disciplinasEOL = await servicoEOL.ObterDisciplinasPorIdsAsync(retornoConsultaPaginada.Items.Select(a => a.DisciplinaId).Distinct().ToArray());
-            foreach(var disciplinaEOL in disciplinasEOL)
+            if (retornoConsultaPaginada.Items != null && retornoConsultaPaginada.Items.Any())
             {
-                retornoConsultaPaginada.Items.Where(c => c.DisciplinaId == disciplinaEOL.CodigoComponenteCurricular).ToList()
-                    .ForEach(d => d.ComponenteCurricular = disciplinaEOL.Nome);
+                // Atualiza nome da situacao
+                retornoConsultaPaginada.Items.ToList()
+                    .ForEach(i => i.SituacaoNome = Enum.GetName(typeof(SituacaoPendencia), i.Situacao));
+
+                // Carrega nomes das disciplinas para o DTO de retorno
+                var disciplinasEOL = await servicoEOL.ObterDisciplinasPorIdsAsync(retornoConsultaPaginada.Items.Select(a => a.DisciplinaId).Distinct().ToArray());
+                foreach(var disciplinaEOL in disciplinasEOL)
+                {
+                    retornoConsultaPaginada.Items.Where(c => c.DisciplinaId == disciplinaEOL.CodigoComponenteCurricular).ToList()
+                        .ForEach(d => d.ComponenteCurricular = disciplinaEOL.Nome);
+                }
             }
 
             return retornoConsultaPaginada;
@@ -43,6 +50,8 @@ namespace SME.SGP.Aplicacao
             var pendencia = await repositorioPendenciaFechamento.ObterPorPendenciaId(pendenciaId);
             if (pendencia == null)
                 throw new NegocioException("Pendencia informada não localizada.");
+
+            pendencia.SituacaoNome = Enum.GetName(typeof(SituacaoPendencia), pendencia.Situacao);
 
             var disciplinasEOL = await servicoEOL.ObterDisciplinasPorIdsAsync(new long[] { pendencia.DisciplinaId });
             if (disciplinasEOL == null || !disciplinasEOL.Any())

@@ -14,6 +14,12 @@ import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoPendenciasFechamento from '~/servicos/Paginas/Fechamento/ServicoPendenciasFechamento';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import situacaoPendenciaDto from '~/dtos/situacaoPendenciaDto';
+import {
+  AprovadoList,
+  PendenteList,
+  ResolvidoList,
+} from './labelSituacaoFechamento.css';
 
 const PendenciasFechamentoLista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -31,9 +37,29 @@ const PendenciasFechamentoLista = () => {
     undefined
   );
 
-  const montaExibicaoSituacao = pendencia => {
-    // TODO Fazer estilo dos marcadores de situação quando retornar dados do backend!
-    return pendencia;
+  const montaExibicaoSituacao = (situacaoId, pendencia) => {
+    switch (situacaoId) {
+      case situacaoPendenciaDto.Pendente:
+        return (
+          <PendenteList>
+            <span>{pendencia.situacaoNome}</span>
+          </PendenteList>
+        );
+      case situacaoPendenciaDto.Resolvida:
+        return (
+          <ResolvidoList>
+            <span>{pendencia.situacaoNome}</span>
+          </ResolvidoList>
+        );
+      case situacaoPendenciaDto.Aprovada:
+        return (
+          <AprovadoList>
+            <span>{pendencia.situacaoNome}</span>
+          </AprovadoList>
+        );
+      default:
+        return '';
+    }
   };
 
   const colunas = [
@@ -45,20 +71,20 @@ const PendenciasFechamentoLista = () => {
     {
       title: 'Descrição',
       dataIndex: 'descricao',
-      width: '60%',
+      width: '65%',
     },
     {
       title: 'Situação',
       dataIndex: 'situacao',
-      width: '20%',
-      render: dados => montaExibicaoSituacao(dados),
+      width: '8%',
+      render: (situacaoId, dados) => montaExibicaoSituacao(situacaoId, dados),
     },
   ];
 
   const filtrar = useCallback(() => {
     const paramsFiltrar = {
-      turmaId: turmaSelecionada.turma,
-      disciplinaId: disciplinaIdSelecionada,
+      turmaCodigo: turmaSelecionada.turma,
+      componenteCurricularId: disciplinaIdSelecionada,
       bimestre: bimestreSelecionado,
     };
     setPendenciasSelecionadas([]);
@@ -84,13 +110,14 @@ const PendenciasFechamentoLista = () => {
       } else {
         setListaDisciplinas([]);
       }
-      if (disciplinas && disciplinas.data && disciplinas.data.length === 1) {
-        const disciplina = disciplinas.data[0];
-        setDisciplinaIdSelecionada(
-          String(disciplina.codigoComponenteCurricular)
-        );
-        setDesabilitarDisciplina(true);
-      }
+      // TODO
+      // if (disciplinas && disciplinas.data && disciplinas.data.length === 1) {
+      //   const disciplina = disciplinas.data[0];
+      //   setDisciplinaIdSelecionada(
+      //     String(disciplina.codigoComponenteCurricular)
+      //   );
+      //   setDesabilitarDisciplina(true);
+      // }
       setCarregandoDisciplinas(false);
     };
 
@@ -128,18 +155,26 @@ const PendenciasFechamentoLista = () => {
   }, [disciplinaIdSelecionada, filtrar]);
 
   const onChangeDisciplinas = disciplinaId => {
-    if (!disciplinaId) {
-      setBimestreSelecionado(undefined);
-    }
     setDisciplinaIdSelecionada(disciplinaId);
   };
 
   const onChangeBimestre = bimestre => {
     setBimestreSelecionado(bimestre);
+    if (!bimestre) {
+      setDisciplinaIdSelecionada(undefined);
+    }
+
+    if (bimestre && listaDisciplinas && listaDisciplinas.length == 1) {
+      const disciplina = listaDisciplinas[0];
+      setDisciplinaIdSelecionada(
+        String(disciplina.codigoComponenteCurricular)
+      );
+      setDesabilitarDisciplina(true);
+    }
   };
 
   const onClickEditar = pendencia => {
-    history.push(`pendencias-fechamento/editar/${pendencia.id}`);
+    history.push(`pendencias-fechamento/editar/${pendencia.pendenciaId}`);
   };
 
   const onClickVoltar = () => {
@@ -163,7 +198,7 @@ const PendenciasFechamentoLista = () => {
         'Cancelar'
       );
       if (confirmadoParaExcluir) {
-        const idsDeletar = pendenciasSelecionadas.map(c => c.id);
+        const idsDeletar = pendenciasSelecionadas.map(c => c.pendenciaId);
         const excluir = await ServicoPendenciasFechamento.deletar(
           idsDeletar
         ).catch(e => erros(e));
@@ -180,7 +215,7 @@ const PendenciasFechamentoLista = () => {
     }
   };
 
-  const onSelecionarItems = items => {
+  const onSelecionarItems = items => {    
     setPendenciasSelecionadas(items);
   };
 
@@ -266,7 +301,7 @@ const PendenciasFechamentoLista = () => {
                   valueSelect={disciplinaIdSelecionada}
                   onChange={onChangeDisciplinas}
                   placeholder="Selecione o componente curricular"
-                  disabled={desabilitarDisciplina}
+                  disabled={desabilitarDisciplina || !bimestreSelecionado }
                 />
               </Loader>
             </div>
@@ -275,10 +310,9 @@ const PendenciasFechamentoLista = () => {
         {exibirLista ? (
           <div className="col-md-12 pt-2">
             <ListaPaginada
-              // TODO Ajustar URL quando tiver controller no backend!
-              url="v1/fechamento/pendencias"
+              url="v1/fechamentos/pendencias/listar"
               id="lista-pendencias-fechamento"
-              colunaChave="id"
+              colunaChave="pendenciaId"
               colunas={colunas}
               filtro={filtro}
               onClick={onClickEditar}

@@ -34,3 +34,35 @@ export const PendenteForm = styled.div`
   border: solid 1px #afa2fa;
   background-color: #f9f0ff;
 `;
+
+export const ResolvidoList = styled.div`  
+  border-radius: 4px;
+  display: inline-grid;
+  padding-right: 20px;
+  padding-left: 20px;  
+  justify-items: center;
+  color: #d06d12;
+  background-color: #fff2e8;
+  border: solid 1px #eec4ad;
+`;
+export const AprovadoList = styled.div`  
+  border-radius: 4px;
+  display: inline-grid;
+  padding-right: 20px;
+  padding-left: 20px;
+  justify-items: center;
+  color: #198459;
+  border: solid 1px #90ceb5;
+  background-color: #f6ffed;
+`;
+
+export const PendenteList = styled.div`
+  border-radius: 4px;
+  display: inline-grid;
+  padding-right: 20px;
+  padding-left: 20px;
+  justify-items: center;
+  color: #490cf5;
+  border: solid 1px #afa2fa;
+  background-color: #f9f0ff;
+`;
