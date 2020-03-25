@@ -3,6 +3,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -46,6 +47,17 @@ namespace SME.SGP.Api.Controllers
         {
             var dataConsulta = dataReferencia == DateTime.MinValue ? DateTime.Today : dataReferencia;
             return Ok(await consultas.TurmaEmPeriodoAberto(turmaCodigo, dataConsulta, bimestre));
+        }
+
+        [HttpGet("turmas/{turmaCodigo}/bimestres/aberto")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarAbertoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.PE_C, Policy = "Bearer")]
+        public async Task<IActionResult> PeriodosEmAberto(string turmaCodigo, [FromQuery] DateTime dataReferencia, [FromServices]IConsultasTurma consultas)
+        {
+            var dataConsulta = dataReferencia == DateTime.MinValue ? DateTime.Today : dataReferencia;
+            return Ok(await consultas.PeriodosEmAbertoTurma(turmaCodigo, dataConsulta));
         }
     }
 }
