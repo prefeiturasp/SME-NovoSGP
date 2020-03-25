@@ -112,7 +112,8 @@ namespace SME.SGP.Aplicacao
                     {
                         Data = aula.DataAula,
                         IdAula = aula.Id,
-                        AulaCJ = aula.AulaCJ
+                        AulaCJ = aula.AulaCJ,
+                        Bimestre = periodoEscolar.Bimestre
                     };
                 }
             }
