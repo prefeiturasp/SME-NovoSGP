@@ -36,7 +36,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId)
         {
             var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento
-                                , p.situacao, ftd.disciplina_id as DisciplinaId, pe.bimestre
+                                , p.situacao, ftd.disciplina_id as DisciplinaId, pe.bimestre, pf.fechamento_turma_disciplina_id as FechamentoId
+                                , criado_em as CriadoEm, criado_por as CriadoPor, criado_rf as CriadoRf, alterado_em as AlteradoEm, alterado_por as AlteradoPor, alterado_rf as AlteradoRf
                           from pendencia_fechamento pf 
                          inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id 
                          inner join turma t on t.id = ftd.turma_id 
@@ -45,6 +46,17 @@ namespace SME.SGP.Dados.Repositorios
                          where p.id = @pendenciaId";
 
             return await database.Conexao.QueryFirstAsync<PendenciaFechamentoCompletoDto>(query, new { pendenciaId });
+        }
+
+        public bool VerificaPendenciasAbertoPorFechamento(long fechamentoId)
+        {
+            var query = @"select count(p.id) 
+                      from pendencia_fechamento pf 
+                     inner join pendencia p on p.id = pf.pendencia_id 
+                     where pf.fechamento_turma_disciplina_id = @fechamentoId
+                       and p.situacao = 1";
+
+            return database.Conexao.QueryFirst<int>(query, new { fechamentoId }) > 0;
         }
 
         private string MontaQuery(Paginacao paginacao, int bimestre, long componenteCurricularId, bool contador = false)

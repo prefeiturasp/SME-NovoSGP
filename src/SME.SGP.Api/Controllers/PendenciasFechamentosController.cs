@@ -28,5 +28,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await consultasPendenciaFechamento.ObterPorPendenciaId(pendenciaId));
         }
+
+        [HttpPost("{pendenciaId}")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.PF_C, Policy = "Bearer")]
+        public async Task<IActionResult> Aprovar(long pendenciaId, [FromServices]IComandosPendenciaFechamento comandosPendenciaFechamento)
+        {
+            return Ok(await comandosPendenciaFechamento.Aprovar(pendenciaId));
+        }
+
     }
 }
