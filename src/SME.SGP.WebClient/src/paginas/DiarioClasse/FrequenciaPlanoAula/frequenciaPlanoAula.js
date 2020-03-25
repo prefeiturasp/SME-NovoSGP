@@ -874,6 +874,7 @@ const FrequenciaPlanoAula = () => {
             >
               Atenção, existe uma avaliação neste dia:
               <LinkAcao onClick={acessarEditarAvaliacao}>
+                {' '}
                 Editar Avaliação
               </LinkAcao>
               {dataVigente && (
