@@ -10,6 +10,11 @@ const ServicoFechamentoBimestre = {
   reprocessar(fechamentoId) {
     return api.post(`/v1/fechamentos/turmas/reprocessar/${fechamentoId}`);
   },
+
+  formatarNotaConceito(valor) {
+    const novoValor = Number(valor.replace(',', '.')).toFixed(1);
+    return isNaN(novoValor) ? valor : novoValor;
+  },
 };
 
 export default ServicoFechamentoBimestre;
