@@ -448,9 +448,9 @@ const CadastroAula = ({ match }) => {
         idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2
           ? controlaQuantidadeAula && !ehReposicao
             ? validacaoQuantidade.lessThan(
-              quantidadeMaximaAulas + 1,
-              `Valor não pode ser maior que ${quantidadeMaximaAulas}`
-            )
+                quantidadeMaximaAulas + 1,
+                `Valor não pode ser maior que ${quantidadeMaximaAulas}`
+              )
             : validacaoQuantidade
           : Yup.string().required(false),
     };
@@ -500,6 +500,16 @@ const CadastroAula = ({ match }) => {
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
   ]);
+
+  const [desabilitaPorQuantidade, setDesabilitaPorQuantidade] = useState(false);
+
+  useEffect(() => {
+    if (quantidadeMaximaAulas && quantidadeMaximaAulas === 1) {
+      refForm.setFieldValue('quantidadeTexto', '');
+      refForm.setFieldValue('quantidadeRadio', quantidadeMaximaAulas);
+      setDesabilitaPorQuantidade(true);
+    }
+  }, [quantidadeMaximaAulas, refForm]);
 
   useEffect(() => {
     montaValidacoes();
@@ -895,7 +905,11 @@ const CadastroAula = ({ match }) => {
                     id="quantidadeRadio"
                     label="Quantidade de Aulas"
                     form={form}
-                    desabilitado={somenteLeitura}
+                    desabilitado={
+                      somenteLeitura ||
+                      desabilitaPorGrade ||
+                      desabilitaPorQuantidade
+                    }
                     opcoes={opcoesQuantidadeAulas}
                     name="quantidadeRadio"
                     onChange={() => {
@@ -917,7 +931,9 @@ const CadastroAula = ({ match }) => {
                       somenteLeitura ||
                       !idDisciplina ||
                       (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
-                      (ehRegencia && !ehReposicao)
+                      (ehRegencia && !ehReposicao) ||
+                      desabilitaPorGrade ||
+                      desabilitaPorQuantidade
                     }
                     onChange={() => {
                       refForm.setFieldValue('quantidadeRadio', 0);
