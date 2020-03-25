@@ -88,6 +88,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new HistoricoEmailUsuarioMap());
                config.AddMap(new PendenciaMap());
                config.AddMap(new PendenciaFechamentoMap());
+               config.AddMap(new SinteseValorMap());
                config.ForDommel();
            });
         }
