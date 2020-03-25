@@ -20,6 +20,7 @@ import {
   PendenteList,
   ResolvidoList,
 } from './labelSituacaoFechamento.css';
+import api from '~/servicos/api';
 
 const PendenciasFechamentoLista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -99,7 +100,37 @@ const PendenciasFechamentoLista = () => {
   };
 
   useEffect(() => {
-    const obterDisciplinas = async () => {
+    const montaBimestres = async () => {      
+      let listaBi = [];
+      if (turmaSelecionada.modalidade == modalidade.EJA) {
+        listaBi = [
+          { valor: 1, descricao: 'Primeiro bimestre' },
+          { valor: 2, descricao: 'Segundo bimestre' },
+        ];
+      } else {
+        listaBi = [
+          { valor: 1, descricao: 'Primeiro bimestre' },
+          { valor: 2, descricao: 'Segundo bimestre' },
+          { valor: 3, descricao: 'Terceiro bimestre' },
+          { valor: 4, descricao: 'Quarto bimestre' },
+        ];
+      }
+      setListaBimestres(listaBi);
+
+      const bimestreAtual = await api
+        .get(
+          `v1/periodo-escolar/modalidades/${turmaSelecionada.modalidade}/bimestres/atual`
+        )
+        .catch(e => erros(e));        
+
+      if (bimestreAtual && bimestreAtual.data) {
+        setBimestreSelecionado(String(bimestreAtual.data));
+        return true;
+      }      
+      return false;
+    };
+
+    const obterDisciplinas = async temSugestaoBimestre => {
       setCarregandoDisciplinas(true);
       const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
         turmaSelecionada.turma
@@ -110,39 +141,28 @@ const PendenciasFechamentoLista = () => {
       } else {
         setListaDisciplinas([]);
       }
-      // TODO
-      // if (disciplinas && disciplinas.data && disciplinas.data.length === 1) {
-      //   const disciplina = disciplinas.data[0];
-      //   setDisciplinaIdSelecionada(
-      //     String(disciplina.codigoComponenteCurricular)
-      //   );
-      //   setDesabilitarDisciplina(true);
-      // }
+      
+      if (temSugestaoBimestre && disciplinas && disciplinas.data && disciplinas.data.length === 1) {
+        const disciplina = disciplinas.data[0];
+        setDisciplinaIdSelecionada(
+          String(disciplina.codigoComponenteCurricular)
+        );
+        setDesabilitarDisciplina(true);
+      }
       setCarregandoDisciplinas(false);
     };
 
-    if (turmaSelecionada.turma) {
-      resetarFiltro();
-      obterDisciplinas(turmaSelecionada.turma);
-    } else {
-      resetarFiltro();
-    }
 
-    let listaBi = [];
-    if (turmaSelecionada.modalidade == modalidade.EJA) {
-      listaBi = [
-        { valor: 1, descricao: 'Primeiro bimestre' },
-        { valor: 2, descricao: 'Segundo bimestre' },
-      ];
+
+    resetarFiltro();
+    
+    if (turmaSelecionada.turma) {
+      montaBimestres().then(temSugestaoBimestre => {        
+        obterDisciplinas(temSugestaoBimestre);
+      });
     } else {
-      listaBi = [
-        { valor: 1, descricao: 'Primeiro bimestre' },
-        { valor: 2, descricao: 'Segundo bimestre' },
-        { valor: 3, descricao: 'Terceiro bimestre' },
-        { valor: 4, descricao: 'Quarto bimestre' },
-      ];
+      resetarFiltro();
     }
-    setListaBimestres(listaBi);
   }, [turmaSelecionada.turma, turmaSelecionada.modalidade]);
 
   useEffect(() => {
@@ -164,11 +184,9 @@ const PendenciasFechamentoLista = () => {
       setDisciplinaIdSelecionada(undefined);
     }
 
-    if (bimestre && listaDisciplinas && listaDisciplinas.length == 1) {
+    if (bimestre && listaDisciplinas && listaDisciplinas.length === 1) {
       const disciplina = listaDisciplinas[0];
-      setDisciplinaIdSelecionada(
-        String(disciplina.codigoComponenteCurricular)
-      );
+      setDisciplinaIdSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
     }
   };
@@ -181,41 +199,7 @@ const PendenciasFechamentoLista = () => {
     history.push(URL_HOME);
   };
 
-  const onClickExcluir = async () => {
-    if (pendenciasSelecionadas && pendenciasSelecionadas.length > 0) {
-      const listaExcluir = pendenciasSelecionadas.map(
-        item => item.nomeAtividade
-      );
-      const confirmadoParaExcluir = await confirmar(
-        'Excluir pendência',
-        listaExcluir,
-        `Deseja realmente excluir ${
-          pendenciasSelecionadas.length > 1
-            ? 'estas pendências'
-            : 'esta pendência'
-        }?`,
-        'Excluir',
-        'Cancelar'
-      );
-      if (confirmadoParaExcluir) {
-        const idsDeletar = pendenciasSelecionadas.map(c => c.pendenciaId);
-        const excluir = await ServicoPendenciasFechamento.deletar(
-          idsDeletar
-        ).catch(e => erros(e));
-        if (excluir && excluir.status === 200) {
-          const mensagemSucesso = `${
-            pendenciasSelecionadas.length > 1
-              ? 'Pendências excluídas'
-              : 'Pendência excluída'
-          } com sucesso.`;
-          sucesso(mensagemSucesso);
-          filtrar();
-        }
-      }
-    }
-  };
-
-  const onSelecionarItems = items => {    
+  const onSelecionarItems = items => {
     setPendenciasSelecionadas(items);
   };
 
@@ -251,16 +235,6 @@ const PendenciasFechamentoLista = () => {
                 border
                 className="mr-2"
                 onClick={onClickVoltar}
-              />
-              <Button
-                label="Excluir"
-                color={Colors.Vermelho}
-                border
-                className="mr-2"
-                onClick={onClickExcluir}
-                disabled={
-                  pendenciasSelecionadas && pendenciasSelecionadas.length < 1
-                }
               />
               <Button
                 label="Aprovar"
@@ -301,7 +275,7 @@ const PendenciasFechamentoLista = () => {
                   valueSelect={disciplinaIdSelecionada}
                   onChange={onChangeDisciplinas}
                   placeholder="Selecione o componente curricular"
-                  disabled={desabilitarDisciplina || !bimestreSelecionado }
+                  disabled={desabilitarDisciplina || !bimestreSelecionado}
                 />
               </Loader>
             </div>
