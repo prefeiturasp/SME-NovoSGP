@@ -204,6 +204,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioHistoricoEmailUsuario, RepositorioHistoricoEmailUsuario>();
             services.TryAddScoped<IRepositorioPendencia, RepositorioPendencia>();
             services.TryAddScoped<IRepositorioPendenciaFechamento, RepositorioPendenciaFechamento>();
+            services.TryAddScoped<IRepositorioSintese, RepositorioSintese>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
