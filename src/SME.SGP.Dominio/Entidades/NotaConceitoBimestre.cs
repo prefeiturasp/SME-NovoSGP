@@ -10,7 +10,7 @@
         public long? ConceitoId { get; set; }
         public Conceito Conceito { get; set; }
         public long? SinteseId { get; set; }
-        public Conceito Sintese { get; set; }
+        public Sintese Sintese { get; set; }
         public bool Migrado { get; set; }
         public bool Excluido { get; set; }
     }
