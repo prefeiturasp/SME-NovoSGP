@@ -787,7 +787,7 @@ const EventosForm = ({ match }) => {
   };
 
   return (
-    <Loader loading={carregandoSalvar} tip="">
+     <>
       <div className="row">
         <div
           className={`${
