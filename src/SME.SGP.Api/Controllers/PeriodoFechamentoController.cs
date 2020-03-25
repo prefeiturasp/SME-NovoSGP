@@ -37,7 +37,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PFA_C, Policy = "Bearer")]
-        public async Task<IActionResult> PeriodoTurmaAberto(string turmaCodigo, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices] IConsultasFechamento consultasFechamento)
+        public async Task<IActionResult> PeriodoTurmaAberto(string turmaCodigo, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices] IConsultasPeriodoFechamento consultasFechamento)
         {
             if (dataReferencia == DateTime.MinValue)
                 dataReferencia = DateTime.Now;
