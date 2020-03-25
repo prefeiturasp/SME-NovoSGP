@@ -21,7 +21,11 @@ import {
   PendenteForm,
   AprovadoForm,
   ResolvidoForm,
-} from './labelSituacaoFechamento.css';
+  CampoDescricao,
+  Campo,
+} from './situacaoFechamento.css';
+import ServicoPendenciasFechamento from '~/servicos/Paginas/Fechamento/ServicoPendenciasFechamento';
+import Editor from '~/componentes/editor/editor';
 
 const { TextArea } = Input;
 
@@ -40,11 +44,41 @@ const PendenciasFechamentoForm = ({ match }) => {
     undefined
   );
   const [bimestre, setBimestre] = useState('');
-  const [situacaoPendencia, setSituacaoPendencia] = useState();
+  const [situacaoId, setSituacaoId] = useState('');
+  const [situacaoNome, setSituacaoNome] = useState('');
   const [descricao, setdescricao] = useState('');
   const [detalhamento, setDetalhamento] = useState('');
 
+  const resetarTela = ()=> {
+    setSituacaoId('');
+    setSituacaoNome('');
+    setCodigoComponenteCurricular('');
+    setBimestre('');
+    setdescricao('');
+    setDetalhamento('');
+    setAuditoria({});
+    setExibirAuditoria(false);
+  }
+
   useEffect(() => {
+    const montaBimestre = () => {
+      let listaBi = [];
+      if (turmaSelecionada.modalidade == modalidade.EJA) {
+        listaBi = [
+          { valor: 1, descricao: 'Primeiro bimestre' },
+          { valor: 2, descricao: 'Segundo bimestre' },
+        ];
+      } else {
+        listaBi = [
+          { valor: 1, descricao: 'Primeiro bimestre' },
+          { valor: 2, descricao: 'Segundo bimestre' },
+          { valor: 3, descricao: 'Terceiro bimestre' },
+          { valor: 4, descricao: 'Quarto bimestre' },
+        ];
+      }
+      setListaBimestres(listaBi);
+    };
+
     const obterDisciplinas = async () => {
       setCarregandoDisciplinas(true);
       const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
@@ -60,50 +94,12 @@ const PendenciasFechamentoForm = ({ match }) => {
     };
 
     if (turmaSelecionada.turma) {
+      montaBimestre();
       obterDisciplinas(turmaSelecionada.turma);
-    }
-
-    let listaBi = [];
-    if (turmaSelecionada.modalidade == modalidade.EJA) {
-      listaBi = [
-        { valor: 1, descricao: 'Primeiro bimestre' },
-        { valor: 2, descricao: 'Segundo bimestre' },
-      ];
     } else {
-      listaBi = [
-        { valor: 1, descricao: 'Primeiro bimestre' },
-        { valor: 2, descricao: 'Segundo bimestre' },
-        { valor: 3, descricao: 'Terceiro bimestre' },
-        { valor: 4, descricao: 'Quarto bimestre' },
-      ];
+      resetarTela();
     }
-    setListaBimestres(listaBi);
   }, [turmaSelecionada.turma, turmaSelecionada.modalidade]);
-
-  const mock = () => {
-    setSituacaoPendencia({
-      id: 1,
-      descricao: 'Pendente',
-    });
-    setCodigoComponenteCurricular('1105');
-    setBimestre('2');
-    setdescricao(
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore reprehenderit in voluptate velit esse cillum dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore reprehenderit in voluptate velit esse cillum dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore reprehenderit in voluptate velit esse cillum dolore '
-    );
-    setDetalhamento(
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore reprehenderit in voluptate velit esse cillum dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore reprehenderit in voluptate velit esse cillum dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore reprehenderit in voluptate velit esse cillum dolore '
-    );
-    setExibirAuditoria(true);
-    setAuditoria({
-      criadoPor: 'TESTE',
-      criadoRf: '999999',
-      criadoEm: '01/01/2020',
-      alteradoPor: 'TESTE 2',
-      alteradoRf: '000000',
-      alteradoEm: '01/01/2020',
-    });
-    debugger;
-  };
 
   useEffect(() => {
     const consultaPorId = async () => {
@@ -115,25 +111,25 @@ const PendenciasFechamentoForm = ({ match }) => {
         );
         setIdPendenciaFechamento(match.params.id);
 
-        // TODO Remover
-        mock();
+        const retorno = await ServicoPendenciasFechamento.obterPorId(
+          match.params.id
+        ).catch(e => erros(e));
 
-        // const retorno = await api
-        //   .get(`v1/fechamento/pendencias-fechamento/${match.params.id}`)
-        //   .catch(e => erros(e));
+        if (retorno && retorno.data) {
+          const { situacao, situacaoNome, componenteCurricular, bimestre, descricao, detalhamento } = retorno.data;
+          setSituacaoId(situacao);
+          setSituacaoNome(situacaoNome);
+          setCodigoComponenteCurricular(String(componenteCurricular));
+          setBimestre(String(bimestre));
+          setdescricao(descricao);
+          setDetalhamento(detalhamento);          
 
-        // if (retorno && retorno.data) {
-        //   // SETAR DADOS!
-        //   setAuditoria({
-        //     criadoPor: cadastrado.data.criadoPor,
-        //     criadoRf: cadastrado.data.criadoRf,
-        //     criadoEm: cadastrado.data.criadoEm,
-        //     alteradoPor: cadastrado.data.alteradoPor,
-        //     alteradoRf: cadastrado.data.alteradoRf,
-        //     alteradoEm: cadastrado.data.alteradoEm,
-        //   });
-        //   setExibirAuditoria(true);
-        // }
+          const { criadoPor, criadoRf, criadoEm, alteradoPor, alteradoRf, alteradoEm } = retorno.data;
+          setAuditoria({ criadoPor, criadoRf, criadoEm, alteradoPor, alteradoRf, alteradoEm });
+          setExibirAuditoria(true);
+        } else {
+          resetarTela();
+        }
       }
     };
 
@@ -148,31 +144,28 @@ const PendenciasFechamentoForm = ({ match }) => {
   };
 
   const montarLabelSituacaoPendencia = () => {
-    if (situacaoPendencia && situacaoPendencia.id) {
-      switch (situacaoPendencia.id) {
-        case situacaoPendenciaDto.Aprovada:
-          return (
-            <AprovadoForm>
-              <span>{situacaoPendencia.descricao}</span>
-            </AprovadoForm>
-          );
-        case situacaoPendenciaDto.Pendente:
-          return (
-            <PendenteForm>
-              <span>{situacaoPendencia.descricao}</span>
-            </PendenteForm>
-          );
-        case situacaoPendenciaDto.Resolvida:
-          return (
-            <ResolvidoForm>
-              <span>{situacaoPendencia.descricao}</span>
-            </ResolvidoForm>
-          );
-        default:
-          return '';
-      }
+    switch (situacaoId) {
+      case situacaoPendenciaDto.Pendente:
+        return (
+          <PendenteForm>
+            <span>{situacaoNome}</span>
+          </PendenteForm>
+        );
+      case situacaoPendenciaDto.Resolvida:
+        return (
+          <ResolvidoForm>
+            <span>{situacaoNome}</span>
+          </ResolvidoForm>
+        );
+      case situacaoPendenciaDto.Aprovada:
+        return (
+          <AprovadoForm>
+            <span>{situacaoNome}</span>
+          </AprovadoForm>
+        );
+      default:
+        return '';
     }
-    return '';
   };
 
   return (
@@ -241,22 +234,21 @@ const PendenciasFechamentoForm = ({ match }) => {
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-2">
               {montarLabelSituacaoPendencia()}
             </div>
-            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+            <Campo className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
               <Label text="Descrição" />
-              <TextArea
+              <CampoDescricao
                 id="descricao"
-                autoSize={{ minRows: 3, maxRows: 5 }}
+                autoSize={{ minRows: 2, maxRows: 2 }}
                 value={descricao}
-                disabled
-              />
-            </div>
-            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-              <Label text="Detalhamento" />
-              <TextArea
-                id="detalhamento"
-                autoSize={{ minRows: 3, maxRows: 5 }}
-                value={detalhamento}
-                disabled
+                readOnly
+                />                
+            </Campo>
+            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">    
+              <Editor
+                label="Detalhamento"
+                inicial={detalhamento}
+                removerToolbar
+                desabilitar
               />
             </div>
           </div>

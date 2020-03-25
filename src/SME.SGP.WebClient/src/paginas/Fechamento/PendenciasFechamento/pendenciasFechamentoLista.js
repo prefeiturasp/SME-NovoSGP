@@ -19,7 +19,7 @@ import {
   AprovadoList,
   PendenteList,
   ResolvidoList,
-} from './labelSituacaoFechamento.css';
+} from './situacaoFechamento.css';
 import api from '~/servicos/api';
 
 const PendenciasFechamentoLista = () => {
