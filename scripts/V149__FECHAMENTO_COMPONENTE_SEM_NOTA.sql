@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS public.sintese_valores (
 	alterado_por varchar(200) NULL,
 	alterado_rf varchar(200) NULL,
 	alterado_em timestamp NULL,
-	CONSTRAINT conceito_valores_pk PRIMARY KEY (id)
+	CONSTRAINT sinstese_valores_pk PRIMARY KEY (id)
 );
 
 CREATE INDEX sintese_valores_valor_idx ON public.conceito_valores USING btree (valor);
