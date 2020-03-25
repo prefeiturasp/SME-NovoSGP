@@ -392,7 +392,10 @@ const CompensacaoAusenciaForm = ({ match }) => {
       erros(e);
     });
     if (!podeAlterarNoPeriodo.data) {
-      erro('Compensação de ausência fora dos períodos');
+      erro('Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.');
+      setSomenteConsulta(true);
+    } else {
+      setSomenteConsulta(false);
     }
     const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
       turmaSelecionada.turma,
@@ -403,7 +406,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
     });
     if (
       exucutandoCalculoFrequencia &&
-      exucutandoCalculoFrequencia.status == 200
+      exucutandoCalculoFrequencia.status === 200
     ) {
       const temProcessoEmExecucao =
         exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data;
@@ -856,7 +859,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       valueText="descricao"
                       onChange={bi => onChangeBimestre(bi, form)}
                       placeholder="Bimestre"
-                      disabled={desabilitarCampos || !novoRegistro}
+                      disabled={!novoRegistro}
                     />
                   </div>
                   <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
