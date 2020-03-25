@@ -100,7 +100,9 @@ namespace SME.SGP.Dominio.Servicos
 
             fechamentoTurma.PeriodoEscolarId = periodoFechamentoBimestre.PeriodoEscolarId;
             fechamentoTurma.PeriodoEscolar = periodoFechamentoBimestre.PeriodoEscolar;
-            VarificaPercentualReprovacao(entidadeDto, fechamentoTurma.PeriodoEscolar);
+
+            if (!componenteSemNota)
+                VerificaPercentualReprovacao(entidadeDto, fechamentoTurma.PeriodoEscolar);
 
             // Carrega notas alunos
             var notasConceitosBimestre = await MapearParaEntidade(id, entidadeDto.NotaConceitoAlunos);
@@ -128,12 +130,12 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void VarificaPercentualReprovacao(FechamentoTurmaDisciplinaDto fechamentoTurmaDto, PeriodoEscolar periodoEscolar)
+        private void VerificaPercentualReprovacao(FechamentoTurmaDisciplinaDto fechamentoTurmaDto, PeriodoEscolar periodoEscolar)
         {
             var percentualReprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
             var qtdReprovados = 0;
 
-            // Verifica se lança nota ou conceito
+            // Verifica se lança nota, conceito ou sintese
             if (fechamentoTurmaDto.NotaConceitoAlunos.Any(a => a.ConceitoId > 0))
             {
                 var conceitos = repositorioConceito.ObterPorData(periodoEscolar.PeriodoFim);
@@ -163,7 +165,7 @@ namespace SME.SGP.Dominio.Servicos
                 avaliacoesSemnota = servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
                 alunosAbaixoMedia = servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
             }
-            
+
             var aulasReposicaoPendentes = servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
             var aulasSemPlanoAula = servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
             var aulasSemFrequencia = servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
@@ -287,7 +289,7 @@ namespace SME.SGP.Dominio.Servicos
                   DisciplinaId = notaConceitoAlunoDto.DisciplinaId,
                   Nota = notaConceitoAlunoDto.Nota,
                   ConceitoId = notaConceitoAlunoDto.ConceitoId,
-                  SinteseId = notaConceitoAlunoDto.ConceitoId
+                  SinteseId = notaConceitoAlunoDto.SinteseId
               };
 
         private FechamentoTurmaDisciplina MapearParaEntidade(long id, FechamentoTurmaDisciplinaDto fechamentoDto)
