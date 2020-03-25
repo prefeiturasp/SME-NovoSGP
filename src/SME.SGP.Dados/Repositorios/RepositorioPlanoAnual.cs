@@ -61,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { ano, ueId, turmaId = int.Parse(turmaId), componenteCurricularEolId });
         }
 
-        public Task<PlanoAnual> ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
+        public async Task<PlanoAnual> ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
         {
             StringBuilder query = new StringBuilder();
 
@@ -76,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("turma_id = @turmaId and");
             query.AppendLine("componente_curricular_eol_id = @disciplinaId");
 
-            return database.Conexao.QueryFirstOrDefaultAsync<PlanoAnual>(query.ToString(),
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAnual>(query.ToString(),
                 new
                 {
                     ano,
@@ -87,7 +87,7 @@ namespace SME.SGP.Dados.Repositorios
                 });
         }
 
-        public Task<long> ObterPlanoAnualIdPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
+        public async Task<long> ObterPlanoAnualIdPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
         {
             string query = @"select id
                              from plano_anual
@@ -97,7 +97,7 @@ namespace SME.SGP.Dados.Repositorios
                              and turma_id = @turmaId 
                              and componente_curricular_eol_id = @disciplinaId";
 
-            return database.Conexao.QueryFirstOrDefaultAsync<long>(query,
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query,
                 new
                 {
                     ano,
