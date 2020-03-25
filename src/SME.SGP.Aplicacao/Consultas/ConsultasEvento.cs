@@ -13,8 +13,8 @@ namespace SME.SGP.Aplicacao
     public class ConsultasEvento : ConsultasBase, IConsultasEvento
     {
         private readonly IRepositorioEvento repositorioEvento;
-        private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
                                IContextoAplicacao contextoAplicacao, 
@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao
                                IRepositorioEventoTipo repositorioEventoTipo) : base(contextoAplicacao)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
         }
@@ -144,7 +145,8 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = evento.CriadoRF,
                 TipoEvento = MapearTipoEvento(evento.TipoEvento),
                 Migrado = evento.Migrado,
-                PodeAlterar = podeAlterar != null ? podeAlterar.Value && !evento.TipoEvento.SomenteLeitura : !evento.TipoEvento.SomenteLeitura
+                PodeAlterar = podeAlterar != null ? podeAlterar.Value && evento.PodeAlterar() : evento.PodeAlterar(),
+                Status = evento.Status
             };
         }
 

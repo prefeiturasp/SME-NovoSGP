@@ -41,12 +41,13 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import LocalOcorrencia from '~/constantes/localOcorrencia';
 
 // Styles
-import { ListaCopiarEventos } from './eventos.css';
+import { ListaCopiarEventos, StatusAguardandoAprovacao } from './eventos.css';
 
 // Utils
 import { parseScreenObject } from '~/utils/parsers/eventRecurrence';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+import entidadeStatusDto from '~/dtos/entidadeStatusDto';
 
 const EventosForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -124,6 +125,8 @@ const EventosForm = ({ match }) => {
   const [dataAlterada, setDataAlterada] = useState(false);
   const [recorrencia, setRecorrencia] = useState(null);
 
+  const [aguardandoAprovacao, setAguardandoAprovacao] = useState(false);
+
   const obterUesPorDre = dre => {
     return api.get(`/v1/abrangencias/false/dres/${dre}/ues`);
   };
@@ -173,6 +176,11 @@ const EventosForm = ({ match }) => {
     const desabilitar = novoRegistro
       ? somenteConsulta || !permissoesTela.podeIncluir
       : somenteConsulta || !permissoesTela.podeAlterar;
+
+    if (aguardandoAprovacao) {
+      setDesabilitarCampos(aguardandoAprovacao);
+      return;
+    }
     setDesabilitarCampos(desabilitar);
   }, [
     somenteConsulta,
@@ -180,6 +188,7 @@ const EventosForm = ({ match }) => {
     permissoesTela.podeIncluir,
     permissoesTela.podeAlterar,
     usuarioPodeAlterar,
+    aguardandoAprovacao,
   ]);
 
   const montaValidacoes = useCallback(() => {
@@ -339,6 +348,11 @@ const EventosForm = ({ match }) => {
     const evento = await servicoEvento.obterPorId(id).catch(e => erros(e));
 
     if (evento && evento.data) {
+      if (evento.data.status == entidadeStatusDto.AguardandoAprovacao) {
+        setAguardandoAprovacao(true);
+      } else {
+        setAguardandoAprovacao(false);
+      }
       if (evento.data.dreId && evento.data.dreId > 0) {
         carregarUes(evento.data.dreId);
       }
@@ -773,8 +787,27 @@ const EventosForm = ({ match }) => {
   };
 
   return (
-    <>
-      <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
+    <Loader loading={carregandoSalvar} tip="">
+      <div className="row">
+        <div
+          className={`${
+            aguardandoAprovacao
+              ? 'col-sm-12 col-md-7 col-lg-7 col-xl-9'
+              : 'col-md-12'
+          }`}
+        >
+          <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
+        </div>
+        {aguardandoAprovacao ? (
+          <div className="col-sm-12 col-md-5 col-lg-5 col-xl-3 pb-2 d-flex justify-content-end">
+            <StatusAguardandoAprovacao>
+              Aguardando Aprovação
+            </StatusAguardandoAprovacao>
+          </div>
+        ) : (
+          ''
+        )}
+      </div>
       <ModalRecorrencia
         onCloseRecorrencia={onCloseRecorrencia}
         onSaveRecorrencia={onSaveRecorrencia}
