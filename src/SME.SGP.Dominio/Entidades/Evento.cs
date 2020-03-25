@@ -178,7 +178,7 @@ namespace SME.SGP.Dominio
             return TipoEvento.Concomitancia;
         }
 
-        public bool? PodeAlterar()
+        public bool PodeAlterar()
             => !TipoEvento.SomenteLeitura && Status != EntidadeStatus.AguardandoAprovacao;
 
         public void PodeCriarEventoLiberacaoExcepcional(Usuario usuario, bool dataConfirmada, IEnumerable<PeriodoEscolar> periodos)
