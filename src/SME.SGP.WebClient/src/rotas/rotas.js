@@ -667,6 +667,16 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}`, {
   // temPermissionamento: true,
   // chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
+rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/ver-pendencias/:bimestre/:codigoComponenteCurricular`, {
+  breadcrumbName: 'Pendências do Fechamento',
+  menu: ['Fechamento'],
+  parent: '/',
+  component: PendenciasFechamentoLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
+});
 
 rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/editar/:id`, {
   breadcrumbName: 'Pendências do Fechamento',
