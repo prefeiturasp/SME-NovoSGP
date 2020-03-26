@@ -195,7 +195,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task<AuditoriaDto> Aprovar(long pendenciaId)
+        public async Task<AuditoriaPersistenciaDto> Aprovar(long pendenciaId)
         {
             var auditoriaDto = await repositorioPendencia.AtualizarPendencia(pendenciaId, SituacaoPendencia.Aprovada);
 
