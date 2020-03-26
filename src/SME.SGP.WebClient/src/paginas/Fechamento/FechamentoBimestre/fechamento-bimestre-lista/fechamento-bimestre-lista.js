@@ -15,9 +15,11 @@ import Button from '~/componentes/button';
 import situacaoFechamentoDto from '~/dtos/situacaoFechamentoDto';
 import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFechamentoBimestre';
 import { erros } from '~/servicos/alertas';
+import history from '~/servicos/history';
+import RotasDto from '~/dtos/rotasDto';
 
 const FechamentoBimestreLista = props => {
-  const { dados, ehRegencia } = props;
+  const { dados, ehRegencia, codigoComponenteCurricular } = props;
   const [dadosLista, setDadosLista] = useState(
     dados ? dados.alunos : undefined
   );
@@ -31,6 +33,11 @@ const FechamentoBimestreLista = props => {
     if (processando && processando.status == 200) {
       setSituacaoFechamento(situacaoFechamentoDto.EmProcessamento);
     }
+  };
+
+  const onClickVerPendecias = async () => {
+    const { bimestre } = dados;
+    history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/ver-pendencias/${bimestre}/${codigoComponenteCurricular}`);
   };
 
   return (
@@ -49,13 +56,22 @@ const FechamentoBimestreLista = props => {
           />
           {situacaoFechamento ==
             situacaoFechamentoDto.ProcessadoComPendencias ? (
-              <Button
-                label="Reprocessar"
-                color={Colors.Azul}
-                border
-                className="mr-2"
-                onClick={onClickReprocessar}
-              />
+              <>
+                <Button
+                  label="Reprocessar"
+                  color={Colors.Azul}
+                  border
+                  className="mr-2"
+                  onClick={onClickReprocessar}
+                />
+                <Button
+                  label="Ver pendências"
+                  color={Colors.Azul}
+                  border
+                  className="mr-2"
+                  onClick={onClickVerPendecias}
+                />
+              </>
             ) : (
               ''
             )}

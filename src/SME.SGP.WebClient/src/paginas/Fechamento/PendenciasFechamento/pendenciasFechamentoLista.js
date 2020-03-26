@@ -21,8 +21,10 @@ import {
   ResolvidoList,
 } from './situacaoFechamento.css';
 import api from '~/servicos/api';
+import RotasDto from '~/dtos/rotasDto';
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 
-const PendenciasFechamentoLista = () => {
+const PendenciasFechamentoLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
 
@@ -117,17 +119,36 @@ const PendenciasFechamentoLista = () => {
       }
       setListaBimestres(listaBi);
 
-      const bimestreAtual = await api
-        .get(
-          `v1/periodo-escolar/modalidades/${turmaSelecionada.modalidade}/bimestres/atual`
-        )
-        .catch(e => erros(e));        
+      if (
+        match &&
+        match.params &&
+        match.params.codigoComponenteCurricular &&
+        match.params.bimestre
+      ) {
+        const { bimestre, codigoComponenteCurricular } = match.params;
+        setBimestreSelecionado(String(bimestre));
+        setDisciplinaIdSelecionada(String(codigoComponenteCurricular));
 
-      if (bimestreAtual && bimestreAtual.data) {
-        setBimestreSelecionado(String(bimestreAtual.data));
+        setBreadcrumbManual(
+          `${match.url}`,
+          '',
+          `${RotasDto.PENDENCIAS_FECHAMENTO}`
+        );
+
         return true;
-      }      
-      return false;
+      } else {
+        const bimestreAtual = await api
+          .get(
+            `v1/periodo-escolar/modalidades/${turmaSelecionada.modalidade}/bimestres/atual`
+          )
+          .catch(e => erros(e));        
+  
+        if (bimestreAtual && bimestreAtual.data) {
+          setBimestreSelecionado(String(bimestreAtual.data));
+          return true;
+        }
+        return false;
+      }
     };
 
     const obterDisciplinas = async temSugestaoBimestre => {
@@ -192,7 +213,7 @@ const PendenciasFechamentoLista = () => {
   };
 
   const onClickEditar = pendencia => {
-    history.push(`pendencias-fechamento/editar/${pendencia.pendenciaId}`);
+    history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/editar/${pendencia.pendenciaId}`);
   };
 
   const onClickVoltar = () => {
