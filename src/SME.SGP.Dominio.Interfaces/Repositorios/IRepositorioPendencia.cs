@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioPendencia : IRepositorioBase<Pendencia>
     {
         void AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia);
-        Task<AuditoriaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia);
+        Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia);
     }
 }

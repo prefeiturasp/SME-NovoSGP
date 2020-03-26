@@ -78,7 +78,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
         }
 
-        public async Task<AuditoriaFechamentoTurmaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto)
+        public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto)
         {
             var fechamentoTurma = MapearParaEntidade(id, entidadeDto);
 
@@ -118,7 +118,7 @@ namespace SME.SGP.Dominio.Servicos
                 var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
                 Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurma.DisciplinaId, fechamentoTurma.Turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurma, usuarioLogado));
 
-                return (AuditoriaFechamentoTurmaDto)fechamentoTurma;
+                return (AuditoriaPersistenciaDto)fechamentoTurma;
             }
             catch (Exception e)
             {
