@@ -37,6 +37,7 @@ import AnoLetivoTag from '../componentes/AnoLetivoTag';
 
 // Styles
 import { Row } from './styles';
+import { Linha } from '~/componentes/EstilosGlobais';
 
 // Funçoes
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
@@ -245,7 +246,7 @@ function AtribuicaoEsporadicaForm({ match }) {
             validateOnChange
           >
             {form => (
-              <Form>
+              <Form className="col-md-12 mb-4">
                 <ButtonGroup
                   form={form}
                   permissoesTela={
@@ -259,7 +260,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                   onClickExcluir={() => onClickExcluir(form)}
                   modoEdicao={modoEdicao}
                 />
-                <Row className="row">
+                <Linha className="row">
                   <Grid cols={2}>
                     <AnoLetivoTag label="Ano Letivo" />
                   </Grid>
@@ -280,8 +281,8 @@ function AtribuicaoEsporadicaForm({ match }) {
                       desabilitado={somenteConsulta}
                     />
                   </Grid>
-                </Row>
-                <Row className="row">
+                </Linha>
+                <Linha className="row">
                   <Grid cols={8}>
                     <Row className="row">
                       <Localizador
@@ -315,7 +316,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                       desabilitado={somenteConsulta}
                     />
                   </Grid>
-                </Row>
+                </Linha>
               </Form>
             )}
           </Formik>

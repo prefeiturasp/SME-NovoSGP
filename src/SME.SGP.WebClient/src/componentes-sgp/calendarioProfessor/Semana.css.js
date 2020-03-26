@@ -12,6 +12,11 @@ export const TipoEvento = styled(Div).attrs(props => ({
   className: 'd-block badge badge-pill text-white ml-auto mr-0',
   cor: props.cor ? props.cor : Base.Roxo,
 }))`
+  @media screen and (min-width: 0px) and (max-width: 900px) {
+    min-width: auto !important;
+    font-size: 9px;
+  }
+
   background: ${props => props.cor};
   font-size: 10px;
   margin-bottom: 2px;
