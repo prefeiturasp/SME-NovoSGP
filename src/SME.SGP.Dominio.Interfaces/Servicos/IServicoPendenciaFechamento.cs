@@ -17,5 +17,7 @@ namespace SME.SGP.Dominio.Interfaces
         int ValidarPercentualAlunosAbaixoDaMedia(FechamentoTurmaDisciplina fechamentoTurma);
         Task<AuditoriaPersistenciaDto> Aprovar(long pendenciaId);
         bool VerificaPendenciasFechamento(long fechamentoId);
+
+        Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia);
     }
 }

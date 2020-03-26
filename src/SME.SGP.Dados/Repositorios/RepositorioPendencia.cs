@@ -12,17 +12,6 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia)
-        {
-            var pendencia = ObterPorId(pendenciaId);
-            if (pendencia == null)
-                throw new NegocioException("Pendência de fechamento não localizada com o identificador consultado");
-
-            pendencia.Situacao = situacaoPendencia;
-            await SalvarAsync(pendencia);
-            return (AuditoriaPersistenciaDto)pendencia;
-        }
-
         public void AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia)
         {
             var query = @"update
