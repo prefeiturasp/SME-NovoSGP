@@ -1,7 +1,7 @@
 const situacaoPendenciaDto = {
   Pendente: 1,
-  Resolvida: 2,
-  Aprovada: 3,
+  Aprovada: 2,
+  Resolvida: 3,
 };
 
 export default situacaoPendenciaDto;

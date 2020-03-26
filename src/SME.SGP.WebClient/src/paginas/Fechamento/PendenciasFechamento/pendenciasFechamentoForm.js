@@ -9,7 +9,7 @@ import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import Label from '~/componentes/label';
 import modalidade from '~/dtos/modalidade';
-import { erros } from '~/servicos/alertas';
+import { erros, erro, sucesso } from '~/servicos/alertas';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { Input } from 'antd';
 import history from '~/servicos/history';
@@ -136,11 +136,24 @@ const PendenciasFechamentoForm = ({ match }) => {
     consultaPorId();
   }, []);
 
-  const onClickVoltar = () => history.push('/fechamento/pendencias-fechamento');
+  const onClickVoltar = () => history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}`);
 
-  const onClickAprovar = () => {
-    // TODO Chamar endpoint
-    alert('Aprovar');
+  const onClickAprovar = async () => {
+    const retorno = await ServicoPendenciasFechamento.aprovar([idPendenciaFechamento]).catch(e =>
+      erros(e)
+      );
+    if (retorno && retorno.data) {
+      const comErros = retorno.data.filter(item => !item.sucesso);
+      if (comErros && comErros.length) {
+        const mensagensErros = comErros.map(e => e.mensagemConsistencia);
+        mensagensErros.forEach(msg => {
+          erro(msg);          
+        });
+      } else {
+        sucesso(`Pendência aprovada com sucesso`);
+        onClickVoltar();
+      }
+    }
   };
 
   const montarLabelSituacaoPendencia = () => {
@@ -203,6 +216,7 @@ const PendenciasFechamentoForm = ({ match }) => {
                 bold
                 className="mr-2"
                 onClick={onClickAprovar}
+                disabled={!situacaoId || situacaoId == situacaoPendenciaDto.Aprovada}
               />
             </div>
           </div>

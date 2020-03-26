@@ -37,7 +37,7 @@ const FechamentoBimestreLista = props => {
 
   const onClickVerPendecias = async () => {
     const { bimestre } = dados;
-    history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/ver-pendencias/${bimestre}/${codigoComponenteCurricular}`);
+    history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${bimestre}/${codigoComponenteCurricular}`);
   };
 
   return (

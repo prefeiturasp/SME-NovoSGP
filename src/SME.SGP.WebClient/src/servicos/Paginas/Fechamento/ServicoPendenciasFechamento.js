@@ -8,8 +8,8 @@ class ServicoPendenciasFechamento {
     return api.get(`${urlPadrao}/${id}`);
   };
 
-  aprovar = pendenciaId => {    
-    return api.post(`${urlPadrao}/${pendenciaId}`);
+  aprovar = pendenciasIds => {    
+    return api.post(`${urlPadrao}/aprovar`, pendenciasIds);
   };
 }
 
