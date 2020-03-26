@@ -197,7 +197,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<AuditoriaPersistenciaDto> Aprovar(long pendenciaId)
         {
-            var auditoriaDto = await repositorioPendencia.AtualizarPendencia(pendenciaId, SituacaoPendencia.Aprovada);
+            var auditoriaDto = await AtualizarPendencia(pendenciaId, SituacaoPendencia.Aprovada);
 
             var pendenciaFechamento = await repositorioPendenciaFechamento.ObterPorPendenciaId(pendenciaId);
             if (pendenciaFechamento == null)
@@ -209,5 +209,16 @@ namespace SME.SGP.Dominio.Servicos
 
         public bool VerificaPendenciasFechamento(long fechamentoId)
             => repositorioPendenciaFechamento.VerificaPendenciasAbertoPorFechamento(fechamentoId);
+
+        public async Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia)
+        {
+            var pendencia = repositorioPendencia.ObterPorId(pendenciaId);
+            if (pendencia == null)
+                throw new NegocioException("Pendência de fechamento não localizada com o identificador consultado");
+
+            pendencia.Situacao = situacaoPendencia;
+            await repositorioPendencia.SalvarAsync(pendencia);
+            return (AuditoriaPersistenciaDto)pendencia;
+        }
     }
 }
