@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
         int ValidarAvaliacoesSemNotasParaNenhumAluno(long fechamentoId, string codigoTurma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo);
 
         int ValidarPercentualAlunosAbaixoDaMedia(FechamentoTurmaDisciplina fechamentoTurma);
-        Task<AuditoriaDto> Aprovar(long pendenciaId);
+        Task<AuditoriaPersistenciaDto> Aprovar(long pendenciaId);
         bool VerificaPendenciasFechamento(long fechamentoId);
     }
 }

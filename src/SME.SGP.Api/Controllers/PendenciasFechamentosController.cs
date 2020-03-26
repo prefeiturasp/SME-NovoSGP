@@ -2,6 +2,7 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -29,13 +30,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasPendenciaFechamento.ObterPorPendenciaId(pendenciaId));
         }
 
-        [HttpPost("{pendenciaId}")]
-        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [HttpPost("aprovar")]
+        [ProducesResponseType(typeof(IEnumerable<AuditoriaPersistenciaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.PF_C, Policy = "Bearer")]
-        public async Task<IActionResult> Aprovar(long pendenciaId, [FromServices]IComandosPendenciaFechamento comandosPendenciaFechamento)
+        public async Task<IActionResult> Aprovar([FromBody] IEnumerable<long> pendenciasIds, [FromServices]IComandosPendenciaFechamento comandosPendenciaFechamento)
         {
-            return Ok(await comandosPendenciaFechamento.Aprovar(pendenciaId));
+            return Ok(await comandosPendenciaFechamento.Aprovar(pendenciasIds));
         }
 
     }

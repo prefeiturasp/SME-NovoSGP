@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<AuditoriaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia)
+        public async Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia)
         {
             var pendencia = ObterPorId(pendenciaId);
             if (pendencia == null)
@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
 
             pendencia.Situacao = situacaoPendencia;
             await SalvarAsync(pendencia);
-            return (AuditoriaDto)pendencia;
+            return (AuditoriaPersistenciaDto)pendencia;
         }
 
         public void AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia)
