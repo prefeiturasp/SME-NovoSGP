@@ -2,6 +2,7 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -33,6 +34,15 @@ namespace SME.SGP.Api.Controllers
         {
             comandoPeriodo.Salvar(periodos);
             return Ok();
+        }
+
+        [HttpGet("modalidades/{modalidade}/bimestres/atual")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult ObterAtual(int modalidade, [FromServices]IConsultasPeriodoEscolar consultas)
+        {
+            return Ok(consultas.ObterBimestre(DateTime.Today, (Dominio.Modalidade)modalidade));
         }
     }
 }
