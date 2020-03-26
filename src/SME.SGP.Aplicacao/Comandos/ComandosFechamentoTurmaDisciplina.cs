@@ -20,6 +20,9 @@ namespace SME.SGP.Aplicacao
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));
         }
 
+        public async Task Reprocessar(long fechamentoId)
+            => await servicoFechamentoTurmaDisciplina.Reprocessar(fechamentoId);
+
         public async Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
         {
             var listaAuditoria = new List<AuditoriaFechamentoTurmaDto>();
@@ -31,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception e)
                 {
-                    listaAuditoria.Add(new AuditoriaFechamentoTurmaDto() { Sucesso = false, MensagemConsistencia = e.Message });
+                    listaAuditoria.Add(new AuditoriaFechamentoTurmaDto() { Sucesso = false, MensagemConsistencia = $"{fechamentoTurma.Bimestre}º Bimestre: {e.Message}" });
                 }
             }
 

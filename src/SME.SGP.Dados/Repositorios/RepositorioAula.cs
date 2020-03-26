@@ -193,6 +193,87 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { aulaPaiId, aulaIdInicioRecorrencia, dataFinal });
         }
 
+        public IEnumerable<Aula> ObterAulasReposicaoPendentes(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var query = @"select
+	                            *
+                            from
+	                            aula
+                            where
+	                            tipo_aula = 2
+	                            and status = 2
+	                            and turma_id = @codigoTurma
+	                            and disciplina_id = @disciplinaId
+	                            and data_aula >= @inicioPeriodo
+	                            and data_aula <= @fimPeriodo";
+            return database.Conexao.Query<Aula>(query, new
+            {
+                codigoTurma,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo
+            });
+        }
+
+        public IEnumerable<Aula> ObterAulasSemFrequenciaRegistrada(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var query = @"select
+	                            *
+                            from
+	                            aula a
+                            where
+	                            turma_id = @codigoTurma
+	                            and disciplina_id = @disciplinaId
+	                            and data_aula >= @inicioPeriodo
+	                            and data_aula <= @fimPeriodo
+                                and data_aula <= @dataAtual
+	                            and not exists (
+	                            select
+		                            1
+	                            from
+		                            registro_frequencia
+	                            where
+		                            aula_pai_id = a.id)";
+            return database.Conexao.Query<Aula>(query, new
+            {
+                codigoTurma,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo,
+                dataAtual = DateTime.Now
+            });
+        }
+
+        public IEnumerable<Aula> ObterAulasSemPlanoAulaNaDataAtual(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var query = @"select
+                                *
+                            from
+                                aula a
+                            where
+                                turma_id = @codigoTurma
+                                and disciplina_id = @disciplinaId
+                                and data_aula >= @inicioPeriodo
+                                and data_aula <= @fimPeriodo
+                                and data_aula <= @dataAtual
+                                and not exists(
+                                select
+                                    *
+                                from
+                                    plano_aula
+
+                                where
+                                    aula_pai_id = a.id)";
+            return database.Conexao.Query<Aula>(query, new
+            {
+                codigoTurma,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo,
+                dataAtual = DateTime.Now
+            });
+        }
+
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaDiaProfessor(string turma, string disciplina, DateTime dataAula, string codigoRf)
         {
             StringBuilder query = new StringBuilder();

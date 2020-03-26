@@ -33,5 +33,13 @@ namespace SME.SGP.Dominio
                 return ModalidadeTipoCalendario.FundamentalMedio;
             else return ModalidadeTipoCalendario.EJA;
         }
+
+        public bool MesmaModalidadePeriodoEscolar(ModalidadeTipoCalendario modalidade)
+        {
+            if (modalidade == ModalidadeTipoCalendario.EJA)
+                return ModalidadeCodigo == Modalidade.EJA;
+            else
+                return ModalidadeCodigo != Modalidade.EJA;
+        }
     }
 }

@@ -81,7 +81,7 @@ const PeriodoFechamentoAbertura = () => {
     ),
     bimestre1FinalDoFechamento: momentSchema
       .required('Data final obrigatória')
-      .dataMenorIgualQue(
+      .dataMenorQue(
         'bimestre1InicioDoFechamento',
         'bimestre1FinalDoFechamento',
         'Data inválida'
@@ -98,7 +98,7 @@ const PeriodoFechamentoAbertura = () => {
       ),
     bimestre2FinalDoFechamento: momentSchema
       .required('Data final obrigatória')
-      .dataMenorIgualQue(
+      .dataMenorQue(
         'bimestre2InicioDoFechamento',
         'bimestre2FinalDoFechamento',
         'Data inválida'
@@ -115,7 +115,7 @@ const PeriodoFechamentoAbertura = () => {
       ),
     bimestre3FinalDoFechamento: momentSchema
       .required('Data final obrigatória')
-      .dataMenorIgualQue(
+      .dataMenorQue(
         'bimestre3InicioDoFechamento',
         'bimestre3FinalDoFechamento',
         'Data inválida'
@@ -132,7 +132,7 @@ const PeriodoFechamentoAbertura = () => {
       ),
     bimestre4FinalDoFechamento: momentSchema
       .required('Data final obrigatória')
-      .dataMenorIgualQue(
+      .dataMenorQue(
         'bimestre4InicioDoFechamento',
         'bimestre4FinalDoFechamento',
         'Data inválida'
@@ -306,8 +306,11 @@ const PeriodoFechamentoAbertura = () => {
     }
   };
 
-  const onChangeCamposData = valor => {
-    setModoEdicao(true);
+  const onChangeCamposData = form => {
+    if (!modoEdicao) {
+      touchedFields(form);
+      setModoEdicao(true);
+    }
   };
 
   const onClickVoltar = async form => {
@@ -331,11 +334,15 @@ const PeriodoFechamentoAbertura = () => {
     }
   };
 
-  const validaAntesDoSubmit = form => {
+  const touchedFields =  form => {
     const arrayCampos = Object.keys(fechamento);
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
-    });    
+    });
+  }
+
+  const validaAntesDoSubmit = form => {
+    touchedFields(form);
     form.validateForm().then(() => {
       if (
         form.isValid ||
@@ -474,7 +481,7 @@ const PeriodoFechamentoAbertura = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name={chaveDataInicial}
-            onChange={valor => onChangeCamposData(valor)}
+            onChange={() => onChangeCamposData(form)}
             diasParaHabilitar={diasParaHabilitar}            
             desabilitado={desabilitarCampos}
           />          
@@ -485,7 +492,7 @@ const PeriodoFechamentoAbertura = () => {
             placeholder="Fim do Bimestre"
             formatoData="DD/MM/YYYY"
             name={chaveDataFinal}
-            onChange={onChangeCamposData}            
+            onChange={() => onChangeCamposData(form)}
             diasParaHabilitar={diasParaHabilitar}
             desabilitado={desabilitarCampos}
           />          

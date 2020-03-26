@@ -28,5 +28,16 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> Listar(string turmaCodigo, long disciplinaCodigo, int? bimestre, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
             => Ok(await consultas.ObterNotasFechamentoTurmaDisciplina(turmaCodigo, disciplinaCodigo, bimestre));
+
+        [HttpPost("reprocessar/{fechamentoId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> Reprocessar(long fechamentoId, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
+        {
+            await comandos.Reprocessar(fechamentoId);
+            return Ok();
+        }
     }
 }
