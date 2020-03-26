@@ -5,6 +5,7 @@ import {
   TdRegencia,
   TrRegencia,
 } from './fechamento-regencia.css';
+import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFechamentoBimestre';
 
 const FechamentoRegencia = props => {
   const { idRegencia, dados } = props;
@@ -18,11 +19,13 @@ const FechamentoRegencia = props => {
         <LinhaNotaRegencia>
           {dados
             ? dados.map(item => (
-                <CampoNotaRegencia>
-                  <span className="centro disciplina">{item.disciplina}</span>
-                  <span className="centro nota">{item.notaConceito}</span>
-                </CampoNotaRegencia>
-              ))
+              <CampoNotaRegencia>
+                <span className="centro disciplina">{item.disciplina}</span>
+                <span className="centro nota">
+                  {ServicoFechamentoBimestre.formatarNotaConceito(item.notaConceito)}
+                </span>
+              </CampoNotaRegencia>
+            ))
             : null}
         </LinhaNotaRegencia>
       </TdRegencia>

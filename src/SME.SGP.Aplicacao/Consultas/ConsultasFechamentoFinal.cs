@@ -106,8 +106,7 @@ namespace SME.SGP.Aplicacao
             var professorTitular = await ObterRfProfessorTitularDisciplina(turma.CodigoTurma, filtros.DisciplinaCodigo);
             if (string.IsNullOrEmpty(professorTitular))
                 throw new NegocioException("Não foi possível localizar o professor titular.");
-
-            foreach (var aluno in alunosDaTurma.OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeAluno))
+            foreach (var aluno in alunosDaTurma.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
             {
                 var totalAusencias = 0;
                 var totalAusenciasCompensadas = 0;
