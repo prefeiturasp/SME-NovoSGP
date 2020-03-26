@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
         public long DisciplinaId { get; set; }
         public string ComponenteCurricular { get; set; }
         public string Descricao { get; set; }
-        public string Situacao { get; set; }
+        public int Situacao { get; set; }
+        public string SituacaoNome { get; set; }
     }
 }

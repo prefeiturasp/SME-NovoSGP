@@ -61,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private string MontaQuery(Paginacao paginacao, int bimestre, long componenteCurricularId, bool contador = false)
         {
-            var fields = contador ? "count(p.id)" : "p.id as PendenciaId, p.descricao, p.situacao, ftd.disciplina_id as DisciplinaId";
+            var fields = contador ? "count(p.id)" : "p.id as PendenciaId, p.titulo as descricao, p.situacao, ftd.disciplina_id as DisciplinaId";
             var query = new StringBuilder(string.Format(@"select {0}
                                   from pendencia_fechamento pf 
                                  inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id 
