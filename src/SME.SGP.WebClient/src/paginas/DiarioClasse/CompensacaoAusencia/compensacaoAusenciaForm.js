@@ -81,6 +81,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
 
   const [validacoes] = useState(
     Yup.object({
+      descricao: Yup.string().required('Disciplina obrigatória'),
       disciplinaId: Yup.string().required('Disciplina obrigatória'),
       bimestre: Yup.string().required('Bimestre obrigatório'),
       atividade: Yup.string()
