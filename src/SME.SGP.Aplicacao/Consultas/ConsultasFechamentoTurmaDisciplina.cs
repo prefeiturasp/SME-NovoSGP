@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -108,10 +109,13 @@ namespace SME.SGP.Aplicacao
 
             // Carrega fechamento da Turma x Disciplina x Bimestre
             var fechamentoTurma = await ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestreAtual.Value);
-            if (fechamentoTurma != null)
+            if (fechamentoTurma != null || fechamentoBimestre.EhSintese)
             {
-                fechamentoBimestre.Situacao = fechamentoTurma.Situacao;
-                fechamentoBimestre.FechamentoId = fechamentoTurma.Id;
+                if (!fechamentoBimestre.EhSintese)
+                {
+                    fechamentoBimestre.Situacao = fechamentoTurma.Situacao;
+                    fechamentoBimestre.FechamentoId = fechamentoTurma.Id;
+                }
 
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
 
@@ -145,20 +149,22 @@ namespace SME.SGP.Aplicacao
                         {
                             var mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
 
-                            if (alunoDto.PercentualFrequencia >= mediaFrequencia)
-                                alunoDto.Sintese = "Frequente";
-                            else alunoDto.Sintese = "Não frequente";
+                            bool frequente = alunoDto.PercentualFrequencia >= mediaFrequencia;
+
+                            alunoDto.SinteseId = frequente ? (int)SinteseEnum.Frequente : (int)SinteseEnum.NaoFrequente;
+                            alunoDto.Sintese = frequente ? SinteseEnum.Frequente.GetAttribute<DisplayAttribute>().Name :
+                                                           SinteseEnum.NaoFrequente.GetAttribute<DisplayAttribute>().Name;
                         }
                         else
                         {
                             // Carrega notas do bimestre
                             var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
 
-                            if(notasConceitoBimestre.Count() > 0)
+                            if (notasConceitoBimestre.Count() > 0)
                                 alunoDto.Notas = new List<NotaConceitoBimestreRetornoDto>();
 
                             foreach (var notaConceitoBimestre in notasConceitoBimestre)
-                            {                                
+                            {
                                 ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
                                 {
                                     DisciplinaId = notaConceitoBimestre.DisciplinaId,
@@ -186,7 +192,7 @@ namespace SME.SGP.Aplicacao
             fechamentoBimestre.TotalAulasDadas = aulaPrevistaBimestreAtual.Cumpridas;
             fechamentoBimestre.TotalAulasPrevistas = aulaPrevistaBimestreAtual.Previstas.Quantidade;
 
-            fechamentoBimestre.PodeProcessarReprocessar =  await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Now, bimestreAtual.Value);
+            fechamentoBimestre.PodeProcessarReprocessar = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Now, bimestreAtual.Value);
 
             return fechamentoBimestre;
         }

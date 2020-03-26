@@ -191,6 +191,11 @@ namespace SME.SGP.Dominio.Servicos
             {
                 throw new NegocioException("Turma não encontrada.");
             }
+            var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { fechamento.DisciplinaId }).FirstOrDefault();
+            if (disciplinaEOL == null)
+            {
+                throw new NegocioException("Disciplina não encontrada.");
+            }
 
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(fechamento.PeriodoEscolarId);
             if (periodoEscolar == null)
@@ -202,7 +207,7 @@ namespace SME.SGP.Dominio.Servicos
             repositorioFechamentoTurmaDisciplina.Salvar(fechamento);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuarioLogado, false));
+            Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuarioLogado, !disciplinaEOL.LancaNota));
         }
 
         private void GerarNotificacaoFechamento(FechamentoTurmaDisciplina fechamento, Turma turma, int quantidadePendencias, Usuario usuarioLogado)
