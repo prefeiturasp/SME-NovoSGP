@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosPendenciaFechamento
     {
-        Task<AuditoriaDto> Aprovar(long pendenciaId);
+        Task<IEnumerable<AuditoriaPersistenciaDto>> Aprovar(IEnumerable<long> pendenciasIds);
     }
 }
