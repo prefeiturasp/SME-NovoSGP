@@ -173,7 +173,7 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var aluno in alunos.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
                     {
-                        var notaConceitoAluno = new NotasConceitosAlunoRetornoDto() { Id = aluno.CodigoAluno, Nome = aluno.NomeValido(), NumeroChamada = aluno.NumeroAlunoChamada };
+                        var notaConceitoAluno = new NotasConceitosAlunoRetornoDto() { Id = aluno.CodigoAluno, Nome = aluno.NomeValido(), NumeroChamada = aluno.NumeroAlunoChamada, PodeEditar = true };
                         var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoRetornoDto>();
 
                         foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)
@@ -204,9 +204,9 @@ namespace SME.SGP.Aplicacao
 
                             var ausente = ausenciasAtividadesAvaliativas.Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
 
-                            bool podeEditar = PodeEditarNotaOuConceito(usuarioLogado, professorRfTitularTurmaDisciplina, atividadeAvaliativa, aluno);
+                            //bool podeEditar = PodeEditarNotaOuConceito(usuarioLogado, professorRfTitularTurmaDisciplina, atividadeAvaliativa, aluno);
 
-                            var notaAvaliacao = new NotasConceitosNotaAvaliacaoRetornoDto() { AtividadeAvaliativaId = atividadeAvaliativa.Id, NotaConceito = notaParaVisualizar, Ausente = ausente, PodeEditar = podeEditar };
+                            var notaAvaliacao = new NotasConceitosNotaAvaliacaoRetornoDto() { AtividadeAvaliativaId = atividadeAvaliativa.Id, NotaConceito = notaParaVisualizar, Ausente = ausente, PodeEditar = true };
                             notasAvaliacoes.Add(notaAvaliacao);
                         }
 
@@ -217,7 +217,7 @@ namespace SME.SGP.Aplicacao
                             PeriodoFim = periodoAtual.PeriodoFim
                         });
 
-                        notaConceitoAluno.PodeEditar = notaConceitoAluno.Marcador == null || notaConceitoAluno.Marcador.Tipo == TipoMarcadorFrequencia.Novo;
+                        //notaConceitoAluno.PodeEditar = notaConceitoAluno.Marcador == null || notaConceitoAluno.Marcador.Tipo == TipoMarcadorFrequencia.Novo;
                         notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                         // Carrega Notas do Bimestre
