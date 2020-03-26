@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dto;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dto;
 using System;
 
 namespace SME.SGP.Infra
@@ -14,5 +15,6 @@ namespace SME.SGP.Infra
         public long Id { get; set; }
         public EventoTipoDto TipoEvento { get; set; }
         public bool? PodeAlterar { get; set; }
+        public EntidadeStatus Status { get; set; }
     }
 }
