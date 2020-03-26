@@ -667,7 +667,7 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}`, {
   // temPermissionamento: true,
   // chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
-rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/ver-pendencias/:bimestre/:codigoComponenteCurricular`, {
+rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`, {
   breadcrumbName: 'Pendências do Fechamento',
   menu: ['Fechamento'],
   parent: '/',
@@ -678,7 +678,7 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/ver-pendencias/:bimestre/:codigoCom
   // chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
 
-rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/editar/:id`, {
+rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/:id`, {
   breadcrumbName: 'Pendências do Fechamento',
   menu: ['Fechamento'],
   parent: RotasDto.PENDENCIAS_FECHAMENTO,

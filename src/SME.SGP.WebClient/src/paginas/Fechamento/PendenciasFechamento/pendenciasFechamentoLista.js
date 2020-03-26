@@ -10,7 +10,7 @@ import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import { erro, erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoPendenciasFechamento from '~/servicos/Paginas/Fechamento/ServicoPendenciasFechamento';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
@@ -39,6 +39,7 @@ const PendenciasFechamentoLista = ({ match }) => {
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(
     undefined
   );
+  const [filtrouValoresRota, setFiltrouValoresRota] = useState(false);
 
   const montaExibicaoSituacao = (situacaoId, pendencia) => {
     switch (situacaoId) {
@@ -120,21 +121,21 @@ const PendenciasFechamentoLista = ({ match }) => {
       setListaBimestres(listaBi);
 
       if (
+        !filtrouValoresRota &&
         match &&
         match.params &&
-        match.params.codigoComponenteCurricular &&
         match.params.bimestre
       ) {
-        const { bimestre, codigoComponenteCurricular } = match.params;
-        setBimestreSelecionado(String(bimestre));
-        setDisciplinaIdSelecionada(String(codigoComponenteCurricular));
-
+        const { bimestre } = match.params;
+        const temBimestreNaLista = listaBi.find(item => item.valor == bimestre);
+        if (temBimestreNaLista) {
+          setBimestreSelecionado(String(bimestre));
+        }
         setBreadcrumbManual(
           `${match.url}`,
           '',
           `${RotasDto.PENDENCIAS_FECHAMENTO}`
         );
-
         return true;
       } else {
         const bimestreAtual = await api
@@ -170,6 +171,21 @@ const PendenciasFechamentoLista = ({ match }) => {
         );
         setDesabilitarDisciplina(true);
       }
+
+      if (
+        !filtrouValoresRota &&
+        match &&
+        match.params &&
+        match.params.codigoComponenteCurricular
+      ) {
+        const { codigoComponenteCurricular } = match.params;
+        const temNaLista = disciplinas.data.find(item => item.codigoComponenteCurricular == codigoComponenteCurricular);
+        if (temNaLista) {
+          setDisciplinaIdSelecionada(String(codigoComponenteCurricular));
+          setFiltrouValoresRota(true);
+        }
+      }
+
       setCarregandoDisciplinas(false);
     };
 
@@ -213,7 +229,7 @@ const PendenciasFechamentoLista = ({ match }) => {
   };
 
   const onClickEditar = pendencia => {
-    history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/editar/${pendencia.pendenciaId}`);
+    history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${pendencia.pendenciaId}`);
   };
 
   const onClickVoltar = () => {
@@ -224,9 +240,23 @@ const PendenciasFechamentoLista = ({ match }) => {
     setPendenciasSelecionadas(items);
   };
 
-  const onClickAprovar = () => {
-    // TODO Chamar endpoint
-    alert('Aprovar');
+  const onClickAprovar = async () => {
+    const ids = pendenciasSelecionadas.map(e => e.pendenciaId);
+    const retorno = await ServicoPendenciasFechamento.aprovar(ids).catch(e =>
+      erros(e)
+      );
+    if (retorno && retorno.data) {
+      const comErros = retorno.data.filter(item => !item.sucesso);
+      if (comErros && comErros.length) {
+        const mensagensErros = comErros.map(e => e.mensagemConsistencia);
+        mensagensErros.forEach(msg => {
+          erro(msg);          
+        });
+      } else {
+        sucesso(`Pendências aprovada(s) com sucesso`);
+        filtrar();
+      }
+    }
   };
 
   return (
@@ -267,7 +297,8 @@ const PendenciasFechamentoLista = ({ match }) => {
                 disabled={
                   !turmaSelecionada.turma ||
                   (turmaSelecionada.turma && listaDisciplinas.length < 1) ||
-                  (pendenciasSelecionadas && pendenciasSelecionadas.length < 1)
+                  (pendenciasSelecionadas && pendenciasSelecionadas.length < 1) || 
+                  pendenciasSelecionadas.filter(item => item.situacao == situacaoPendenciaDto.Aprovada).length > 0
                 }
               />
             </div>
