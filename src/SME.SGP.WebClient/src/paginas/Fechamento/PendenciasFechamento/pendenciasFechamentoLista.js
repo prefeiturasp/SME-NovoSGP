@@ -263,7 +263,11 @@ const PendenciasFechamentoLista = ({ match }) => {
           erro(msg);          
         });
       } else {
-        sucesso(`Pendências aprovada(s) com sucesso`);
+        if (ids && ids.length > 1) {
+          sucesso(`Pendências aprovadas com sucesso`);
+        } else {
+          sucesso(`Pendência aprovada com sucesso`);
+        }
         filtrar();
       }
     }
