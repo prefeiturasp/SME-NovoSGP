@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasObjetivoAprendizagem
     {
-        Task<bool> DisciplinaPossuiObjetivosDeAprendizagem(long codigoDisciplina);
+        bool DisciplinaPossuiObjetivosDeAprendizagem(long codigoDisciplina);
 
         Task<IEnumerable<ObjetivoAprendizagemDto>> Filtrar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto);
 

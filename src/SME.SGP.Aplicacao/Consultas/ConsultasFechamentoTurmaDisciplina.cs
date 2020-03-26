@@ -102,11 +102,13 @@ namespace SME.SGP.Aplicacao
                 if (disciplinaEOL.Regencia)
                     disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turmaId), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
 
+                fechamentoBimestre.Situacao = fechamentoTurma.Situacao;
+                fechamentoBimestre.FechamentoId = fechamentoTurma.Id;
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
 
                 var bimestreDoPeriodo = consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
 
-                foreach (var aluno in alunos)
+                foreach (var aluno in alunos.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
                 {
                     var alunoDto = new NotaConceitoAlunoBimestreDto();
                     alunoDto.NumeroChamada = aluno.NumeroAlunoChamada;
@@ -136,7 +138,7 @@ namespace SME.SGP.Aplicacao
                                 Disciplina = disciplinaEOL.Regencia ?
                                     disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
                                     disciplinaEOL.Nome,
-                                NotaConceito = notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota.ToString() : ObterConceito(notaConceitoBimestre.ConceitoId)
+                                NotaConceito = notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota.ToString() : ObterConceito(notaConceitoBimestre.ConceitoId.Value)
                             });
                         }
 
