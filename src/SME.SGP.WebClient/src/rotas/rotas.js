@@ -664,8 +664,8 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}`, {
   component: PendenciasFechamentoLista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
 rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`, {
   breadcrumbName: 'Pendências do Fechamento',
@@ -674,8 +674,8 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricul
   component: PendenciasFechamentoLista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
 
 rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/:id`, {
@@ -685,8 +685,8 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/:id`, {
   component: PendenciasFechamentoForm,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
 
 rotas.set('/erro', {

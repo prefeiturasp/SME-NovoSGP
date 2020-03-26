@@ -23,10 +23,14 @@ import {
 import api from '~/servicos/api';
 import RotasDto from '~/dtos/rotasDto';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const PendenciasFechamentoLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
+
+  const permissoesTela = usuario.permissoes[RotasDto.PENDENCIAS_FECHAMENTO];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const [exibirLista, setExibirLista] = useState(false);
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
@@ -40,6 +44,10 @@ const PendenciasFechamentoLista = ({ match }) => {
     undefined
   );
   const [filtrouValoresRota, setFiltrouValoresRota] = useState(false);
+
+  useEffect(() => {    
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
 
   const montaExibicaoSituacao = (situacaoId, pendencia) => {
     switch (situacaoId) {
@@ -229,7 +237,9 @@ const PendenciasFechamentoLista = ({ match }) => {
   };
 
   const onClickEditar = pendencia => {
-    history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${pendencia.pendenciaId}`);
+    if (permissoesTela.podeConsultar) {
+      history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${pendencia.pendenciaId}`);
+    }
   };
 
   const onClickVoltar = () => {
@@ -294,8 +304,10 @@ const PendenciasFechamentoLista = ({ match }) => {
                 bold
                 className="mr-2"
                 onClick={onClickAprovar}
-                disabled={
+                disabled={                  
                   !turmaSelecionada.turma ||
+                  somenteConsulta ||
+                  !permissoesTela.podeAlterar ||
                   (turmaSelecionada.turma && listaDisciplinas.length < 1) ||
                   (pendenciasSelecionadas && pendenciasSelecionadas.length < 1) || 
                   pendenciasSelecionadas.filter(item => item.situacao == situacaoPendenciaDto.Aprovada).length > 0
@@ -342,7 +354,7 @@ const PendenciasFechamentoLista = ({ match }) => {
               colunas={colunas}
               filtro={filtro}
               onClick={onClickEditar}
-              multiSelecao
+              multiSelecao={!somenteConsulta}
               selecionarItems={onSelecionarItems}
             />
           </div>

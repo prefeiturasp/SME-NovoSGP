@@ -11,7 +11,6 @@ import Label from '~/componentes/label';
 import modalidade from '~/dtos/modalidade';
 import { erros, erro, sucesso } from '~/servicos/alertas';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
-import { Input } from 'antd';
 import history from '~/servicos/history';
 import RotasDto from '~/dtos/rotasDto';
 import situacaoPendenciaDto from '~/dtos/situacaoPendenciaDto';
@@ -26,12 +25,14 @@ import {
 } from './situacaoFechamento.css';
 import ServicoPendenciasFechamento from '~/servicos/Paginas/Fechamento/ServicoPendenciasFechamento';
 import Editor from '~/componentes/editor/editor';
-
-const { TextArea } = Input;
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const PendenciasFechamentoForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
+
+  const permissoesTela = usuario.permissoes[RotasDto.PENDENCIAS_FECHAMENTO];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
@@ -59,6 +60,10 @@ const PendenciasFechamentoForm = ({ match }) => {
     setAuditoria({});
     setExibirAuditoria(false);
   }
+
+  useEffect(() => {    
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
 
   useEffect(() => {
     const montaBimestre = () => {
@@ -216,7 +221,12 @@ const PendenciasFechamentoForm = ({ match }) => {
                 bold
                 className="mr-2"
                 onClick={onClickAprovar}
-                disabled={!situacaoId || situacaoId == situacaoPendenciaDto.Aprovada}
+                disabled={
+                  somenteConsulta ||
+                  !permissoesTela.podeAlterar ||
+                  !situacaoId ||
+                  situacaoId == situacaoPendenciaDto.Aprovada
+                }
               />
             </div>
           </div>
