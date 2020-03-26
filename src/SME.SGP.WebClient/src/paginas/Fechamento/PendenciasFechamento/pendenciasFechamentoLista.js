@@ -197,10 +197,7 @@ const PendenciasFechamentoLista = ({ match }) => {
       setCarregandoDisciplinas(false);
     };
 
-
-
-    resetarFiltro();
-    
+    resetarFiltro();    
     if (turmaSelecionada.turma) {
       montaBimestres().then(temSugestaoBimestre => {        
         obterDisciplinas(temSugestaoBimestre);
