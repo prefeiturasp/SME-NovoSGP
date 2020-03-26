@@ -35,7 +35,7 @@ namespace SME.SGP.Dominio
         public string CodigoAluno { get; set; }
         public string DisciplinaId { get; set; }
         public int NumeroFaltasNaoCompensadas { get => TotalAusencias - TotalCompensacoes; }
-        public double PercentualFrequencia => 100 - ((double)(NumeroFaltasNaoCompensadas / TotalAulas) * 100);
+        public double PercentualFrequencia => 100 - ((double)NumeroFaltasNaoCompensadas / TotalAulas) * 100;
         public DateTime PeriodoFim { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public TipoFrequenciaAluno Tipo { get; set; }
