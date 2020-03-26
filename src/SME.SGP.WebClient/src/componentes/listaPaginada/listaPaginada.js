@@ -151,7 +151,7 @@ const ListaPaginada = props => {
           pageSize: paginaAtual.pageSize,
           total,
           showSizeChanger: true,
-          pageSizeOptions: ['1', '20', '50', '100'],
+          pageSizeOptions: ['10', '20', '50', '100'],
           locale: { items_per_page: '' },
           current: paginaAtual.current,
         }}
