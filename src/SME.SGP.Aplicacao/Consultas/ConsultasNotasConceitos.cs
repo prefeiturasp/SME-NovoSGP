@@ -496,6 +496,6 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> VerificaPeriodoFechamentoEmAberto(string turmaCodigo, int bimestre)
-            => await consultasFechamento.TurmaEmPeriodoDeFechamento(turmaCodigo, DateTime.Now, bimestre);
+            => await consultasFechamento.TurmaEmPeriodoDeFechamento(turmaCodigo, DateTime.Today, bimestre);
     }
 }
