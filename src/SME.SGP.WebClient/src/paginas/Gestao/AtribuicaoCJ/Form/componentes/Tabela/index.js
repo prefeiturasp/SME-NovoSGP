@@ -23,7 +23,7 @@ function Tabela({ carregando, lista, onChangeSubstituir }) {
       title: 'Substituir',
       dataIndex: 'substituir',
       key: 'substituir',
-      width: '10%',
+      width: '25%',
       align: 'center',
       render: (valor, registro) => {
         return (

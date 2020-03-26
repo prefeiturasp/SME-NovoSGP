@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
         {
             List<ObjetivoAprendizagemDto> objetivos;
 
-            var objetivosCacheString = await repositorioCache.ObterAsync("ObjetivosAprendizagem");
+            var objetivosCacheString = await repositorioCache.ObterAsync("ObjetivosAprendizagem", true);
 
             if (!string.IsNullOrWhiteSpace(objetivosCacheString))
                 return JsonConvert.DeserializeObject<List<ObjetivoAprendizagemDto>>(objetivosCacheString);
@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
 
             var tempoExpiracao = int.Parse(configuration.GetSection("ExpiracaoCache").GetSection("ObjetivosAprendizagem").Value);
 
-            await repositorioCache.SalvarAsync("ObjetivosAprendizagem", JsonConvert.SerializeObject(objetivos), tempoExpiracao);
+            await repositorioCache.SalvarAsync("ObjetivosAprendizagem", JsonConvert.SerializeObject(objetivos), tempoExpiracao, true);
 
             return objetivos;
         }
