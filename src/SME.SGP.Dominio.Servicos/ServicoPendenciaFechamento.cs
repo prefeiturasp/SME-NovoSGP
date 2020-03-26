@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using SME.Background.Core;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -191,6 +193,32 @@ namespace SME.SGP.Dominio.Servicos
 
                 unitOfWork.PersistirTransacao();
             }
+        }
+
+        public async Task<AuditoriaPersistenciaDto> Aprovar(long pendenciaId)
+        {
+            var auditoriaDto = await AtualizarPendencia(pendenciaId, SituacaoPendencia.Aprovada);
+
+            var pendenciaFechamento = await repositorioPendenciaFechamento.ObterPorPendenciaId(pendenciaId);
+            if (pendenciaFechamento == null)
+                throw new NegocioException("Pendência de fechamento não localizada com o identificador consultado");
+
+            Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.VerificaPendenciasFechamento(pendenciaFechamento.FechamentoId));
+            return auditoriaDto;
+        }
+
+        public bool VerificaPendenciasFechamento(long fechamentoId)
+            => repositorioPendenciaFechamento.VerificaPendenciasAbertoPorFechamento(fechamentoId);
+
+        public async Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia)
+        {
+            var pendencia = repositorioPendencia.ObterPorId(pendenciaId);
+            if (pendencia == null)
+                throw new NegocioException("Pendência de fechamento não localizada com o identificador consultado");
+
+            pendencia.Situacao = situacaoPendencia;
+            await repositorioPendencia.SalvarAsync(pendencia);
+            return (AuditoriaPersistenciaDto)pendencia;
         }
     }
 }

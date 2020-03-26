@@ -24,7 +24,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -79,7 +78,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
         }
 
-        public async Task<AuditoriaFechamentoTurmaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto)
+        public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto)
         {
             var fechamentoTurma = MapearParaEntidade(id, entidadeDto);
 
@@ -119,7 +118,7 @@ namespace SME.SGP.Dominio.Servicos
                 var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
                 Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurma.DisciplinaId, fechamentoTurma.Turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurma, usuarioLogado));
 
-                return (AuditoriaFechamentoTurmaDto)fechamentoTurma;
+                return (AuditoriaPersistenciaDto)fechamentoTurma;
             }
             catch (Exception e)
             {
@@ -330,6 +329,18 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             return validacoes.ToString();
+        }
+
+        public void VerificaPendenciasFechamento(long fechamentoId)
+        {
+            // Verifica existencia de pendencia em aberto
+            if (!servicoPendenciaFechamento.VerificaPendenciasFechamento(fechamentoId))
+            {
+                var fechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina.ObterPorId(fechamentoId);
+                // Atualiza situação do fechamento
+                fechamentoTurmaDisciplina.Situacao = SituacaoFechamento.ProcessadoComSucesso;
+                repositorioFechamentoTurmaDisciplina.Salvar(fechamentoTurmaDisciplina);
+            }
         }
     }
 }
