@@ -239,15 +239,13 @@ const CadastroAula = ({ match }) => {
 
   useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
-      const disciplina = listaDisciplinas.filter(
+      const disciplina = listaDisciplinas.find(
         item =>
           item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
-      if (disciplina && disciplina[0])
-        setDisciplinaCompartilhada(disciplina[0].compartilhada);
-    } else if (refForm && refForm.setFieldValue)
-      refForm.setFieldValue('quantidadeTexto', '');
-  }, [idDisciplina, listaDisciplinas, refForm]);
+      if (disciplina) setDisciplinaCompartilhada(disciplina.compartilhada);
+    }
+  }, [idDisciplina, listaDisciplinas]);
 
   const buscarDisciplinasCompartilhadas = async () => {
     const disciplinas = await api.get(
@@ -371,6 +369,7 @@ const CadastroAula = ({ match }) => {
       ) {
         val.quantidadeTexto = buscaAula.data.quantidade;
       }
+      setIdDisciplina(buscaAula.data.disciplinaId.toString());
       setInicial(val);
       setAuditoria({
         criadoPor: buscaAula.data.criadoPor,
