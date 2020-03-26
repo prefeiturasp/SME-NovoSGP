@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
         public double PercentualFrequencia { get; set; }
         public double QuantidadeCompensacoes { get; set; }
         public double QuantidadeFaltas { get; set; }
+        public int SinteseId { get; set; }
         public string Sintese { get; set; }
     }
 }
