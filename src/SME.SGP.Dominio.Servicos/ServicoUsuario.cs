@@ -154,6 +154,10 @@ namespace SME.SGP.Dominio
 
         public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "")
         {
+            var eNumero = int.TryParse(codigoRf, out int n);
+
+            codigoRf = eNumero ? codigoRf : null;
+
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, login);
             if (usuario != null)
             {
@@ -167,6 +171,7 @@ namespace SME.SGP.Dominio
 
             if (string.IsNullOrEmpty(login))
                 login = codigoRf;
+                      
 
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
 
@@ -197,7 +202,7 @@ namespace SME.SGP.Dominio
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
 
-        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
+        public async Task<bool> PodePersistirTurmaNasDatas(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
         {
             if (usuario == null)
                 usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, string.Empty);
@@ -211,6 +216,19 @@ namespace SME.SGP.Dominio
 
                 return validacaoData.FirstOrDefault().PodePersistir;
             }
+            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
+
+            return atribuicaoCj != null && atribuicaoCj.Any();
+        }
+
+        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
+        {
+            if (usuario == null)
+                usuario = await ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj())
+                return await servicoEOL.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, data);
+            
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
 
             return atribuicaoCj != null && atribuicaoCj.Any();

@@ -1,10 +1,12 @@
-﻿using SME.Background.Core;
+﻿using Sentry;
+using SME.Background.Core;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,16 +57,24 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task AlterarPeriodosComHierarquiaInferior(PeriodoFechamento fechamento)
         {
-            var ehParaUe = fechamento.DreId != null && fechamento.DreId > 0;
+            var somenteUe = fechamento.DreId != null && fechamento.DreId > 0;
+
             unitOfWork.IniciarTransacao();
+
+            AlterarBimestresPeriodosComHierarquiaInferior(fechamento);
+
+            EnviarNotificacaoDeAlteracaoDePeriodo(fechamento, fechamento.FechamentosBimestre, somenteUe);
+
+            unitOfWork.PersistirTransacao();
+        }
+
+        private void AlterarBimestresPeriodosComHierarquiaInferior(PeriodoFechamento fechamento)
+        {
             foreach (var fechamentoBimestre in fechamento.FechamentosBimestre)
             {
                 repositorioFechamento.AlterarPeriodosComHierarquiaInferior(fechamentoBimestre.InicioDoFechamento, fechamentoBimestre.FinalDoFechamento, fechamentoBimestre.PeriodoEscolarId, fechamento.DreId);
             }
-            EnviarNotificacaoDeAlteracaoDePeriodo(fechamento, fechamento.FechamentosBimestre, ehParaUe);
-            unitOfWork.PersistirTransacao();
         }
-
 
         public async Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, string dreId, string ueId)
         {
@@ -122,9 +132,9 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var bimestreSME in fechamentoSMEDre.FechamentosBimestre)
             {
                 var bimestreDreUe = fechamentoDto.FechamentosBimestres.FirstOrDefault(c => c.Bimestre == bimestreSME.PeriodoEscolar.Bimestre);
-                bimestreDreUe.PeriodoEscolar = bimestreSME.PeriodoEscolar;
                 if (bimestreDreUe != null)
                 {
+                    bimestreDreUe.PeriodoEscolar = bimestreSME.PeriodoEscolar;
                     if (fechamentoSMEDre.Id > 0 && !(dre == null) || !(ue == null))
                     {
                         bimestreDreUe.InicioMinimo = bimestreSME.InicioDoFechamento;
@@ -149,7 +159,7 @@ namespace SME.SGP.Dominio.Servicos
 
             ValidarCamposObrigatorios(ehSme, ehDre, fechamento);
             ValidarHierarquiaPeriodos(ehSme, ehDre, fechamento);
-            ValidarRegistrosForaDoPeriodo(fechamentoDto, fechamento, ehSme, ehDre);            
+            ValidarRegistrosForaDoPeriodo(fechamentoDto, fechamento, ehSme, ehDre);
 
             unitOfWork.IniciarTransacao();
             var id = repositorioFechamento.Salvar(fechamento);
@@ -276,37 +286,50 @@ namespace SME.SGP.Dominio.Servicos
 
         private void EnviaNotificacaoParaUe(IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, long dreId)
         {
-            var ues = repositorioUe.ObterPorDre(dreId);
-            if (ues != null && ues.Any())
+            try
             {
-                foreach (var ue in ues)
+                var todaRede = dreId == 0;
+
+                var ues = !todaRede ? repositorioUe.ObterPorDre(dreId) : repositorioUe.ObterTodas();
+
+                if (ues != null && ues.Any())
                 {
-                    Notificacao notificacao = MontaNotificacao(ue.Nome, "DRE", fechamentosBimestre, null, ue.CodigoUe);
-                    var diretores = servicoEol.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.Diretor);
-                    if (diretores == null || !diretores.Any())
-                        throw new NegocioException($"Não foram localizados diretores para Ue {ue.CodigoUe}.");
-
-                    foreach (var diretor in diretores)
+                    foreach (var ue in ues)
                     {
-                        var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
-                        notificacao.UsuarioId = usuario.Id;
+                        var nomeUe = $"{ue.TipoEscola.GetAttribute<DisplayAttribute>().ShortName} {ue.Nome}";
 
-                        servicoNotificacao.Salvar(notificacao);
+                        Notificacao notificacao = MontaNotificacao(nomeUe, todaRede ? "SME" : "DRE", fechamentosBimestre, null, ue.CodigoUe);
+                        var diretores = servicoEol.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.Diretor);
+                        if (diretores == null || !diretores.Any())
+                        {                           
+                            SentrySdk.AddBreadcrumb($"Não foram localizados diretores para Ue {ue.CodigoUe}.");
+                            continue;
+                        }
+
+                        foreach (var diretor in diretores)
+                        {
+                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
+                            notificacao.UsuarioId = usuario.Id;
+
+                            servicoNotificacao.Salvar(notificacao);
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+            }
         }
 
-        private void EnviarNotificacaoDeAlteracaoDePeriodo(PeriodoFechamento fechamento, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, bool paraUe)
+        private void EnviarNotificacaoDeAlteracaoDePeriodo(PeriodoFechamento fechamento, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, bool somenteUE)
         {
-            if (paraUe)
-            {
-                EnviaNotificacaoParaUe(fechamentosBimestre, fechamento.DreId.Value);
-            }
-            else
+            if (!somenteUE)
             {
                 EnviaNotificacaoParaDre(fechamentosBimestre);
             }
+
+            EnviaNotificacaoParaUe(fechamentosBimestre, fechamento.DreId ?? 0);
         }
 
         private IEnumerable<FechamentoBimestreDto> MapearFechamentoBimestreParaDto(PeriodoFechamento fechamento)
@@ -354,6 +377,8 @@ namespace SME.SGP.Dominio.Servicos
                     }
                     else
                         fechamento.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamento.Id, periodoEscolar, bimestre.InicioDoFechamento, bimestre.FinalDoFechamento));
+
+                    bimestre.PeriodoEscolar.TipoCalendario = tipoCalendario;
                 }
             }
             return fechamento;

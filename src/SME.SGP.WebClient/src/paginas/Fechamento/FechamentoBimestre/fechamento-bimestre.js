@@ -295,6 +295,7 @@ const FechamentoBismestre = () => {
                         ehRegencia={ehRegencia}
                         ehSintese={ehSintese}
                         situacaoFechamento={situacaoFechamento}
+                        codigoComponenteCurricular={disciplinaIdSelecionada}
                       />
                     ) : null}
                   </TabPane>
@@ -306,6 +307,7 @@ const FechamentoBismestre = () => {
                         ehRegencia={ehRegencia}
                         ehSintese={ehSintese}
                         situacaoFechamento={situacaoFechamento}
+                        codigoComponenteCurricular={disciplinaIdSelecionada}
                       />
                     ) : null}
                   </TabPane>
@@ -317,6 +319,7 @@ const FechamentoBismestre = () => {
                           ehRegencia={ehRegencia}
                           ehSintese={ehSintese}
                           situacaoFechamento={situacaoFechamento}
+                          codigoComponenteCurricular={disciplinaIdSelecionada}                          
                         />
                       ) : null}
                     </TabPane>) : null
@@ -329,6 +332,7 @@ const FechamentoBismestre = () => {
                           ehRegencia={ehRegencia}
                           ehSintese={ehSintese}
                           situacaoFechamento={situacaoFechamento}
+                          codigoComponenteCurricular={disciplinaIdSelecionada}
                         />
                       ) : null}
                     </TabPane>) : null

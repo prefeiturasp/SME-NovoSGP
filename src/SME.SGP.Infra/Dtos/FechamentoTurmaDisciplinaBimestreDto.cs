@@ -14,5 +14,6 @@ namespace SME.SGP.Infra
         public Periodo Periodo { get; set; }        
         public SituacaoFechamento Situacao { get; set; }
         public bool PodeProcessarReprocessar { get; set; }
+        public string SituacaoNome { get; set; }
     }
 }
