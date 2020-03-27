@@ -8,6 +8,7 @@ namespace SME.SGP.Infra
         public string Informacao { get; set; }
         public string Nome { get; set; }
         public IEnumerable<NotaConceitoBimestreRetornoDto> Notas { get; set; }
+        public string CodigoAluno { get; set; }
         public int NumeroChamada { get; set; }
         public double PercentualFrequencia { get; set; }
         public double QuantidadeCompensacoes { get; set; }
