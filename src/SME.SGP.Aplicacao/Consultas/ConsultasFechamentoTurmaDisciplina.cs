@@ -28,6 +28,18 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoFechamento consultasFechamento;
 
+        public IEnumerable<Sintese> _sinteses { get; set; }
+        public IEnumerable<Sintese> Sinteses 
+        { 
+            get
+            {
+                if (_sinteses == null)
+                    _sinteses = repositorioSintese.Listar();
+
+                return _sinteses;
+            }
+        }
+
         public ConsultasFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IRepositorioTipoCalendario repositorioTipoCalendario,
             IRepositorioTurma repositorioTurma,
@@ -117,6 +129,7 @@ namespace SME.SGP.Aplicacao
                 if (fechamentoTurma != null)
                 {
                     fechamentoBimestre.Situacao = fechamentoTurma.Situacao;
+                    fechamentoBimestre.SituacaoNome = fechamentoTurma.Situacao.Name();
                     fechamentoBimestre.FechamentoId = fechamentoTurma.Id;
                 }
 
@@ -145,6 +158,13 @@ namespace SME.SGP.Aplicacao
                         alunoDto.QuantidadeCompensacoes = frequenciaAluno.TotalCompensacoes;
                         alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia;
                     }
+                    else
+                    {
+                        // Quando não tem registro de frequencia assume 100%
+                        alunoDto.QuantidadeFaltas = 0;
+                        alunoDto.QuantidadeCompensacoes = 0;
+                        alunoDto.PercentualFrequencia = 100;
+                    }
 
                     // Carrega Frequencia do aluno
                     if (aluno.CodigoAluno != null)
@@ -167,19 +187,29 @@ namespace SME.SGP.Aplicacao
                             if (notasConceitoBimestre.Count() > 0)
                                 alunoDto.Notas = new List<NotaConceitoBimestreRetornoDto>();
 
-                            foreach (var notaConceitoBimestre in notasConceitoBimestre)
+                            if (fechamentoBimestre.EhSintese)
                             {
-                                var disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId) : null;
-                                var nomeDisciplina = disciplinaEOL.Regencia ? disciplina.Nome : disciplinaEOL.Nome;
-                                ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
+                                var notaConceitoBimestre = notasConceitoBimestre.FirstOrDefault();
+                                if (notaConceitoBimestre != null)
                                 {
-                                    DisciplinaId = notaConceitoBimestre.DisciplinaId,
-                                    Disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome : disciplinaEOL.Nome,
-                                    NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota.Value,
-                                    ehConceito = notaConceitoBimestre.ConceitoId.HasValue,
-                                    conceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : ""
-                                });
+                                    alunoDto.SinteseId = (int)notaConceitoBimestre.SinteseId.Value;
+                                    alunoDto.Sintese = ObterSintese(notaConceitoBimestre.SinteseId.Value);
+                                }
                             }
+                            else
+                                foreach (var notaConceitoBimestre in notasConceitoBimestre)
+                                {
+                                    var disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId) : null;
+                                    var nomeDisciplina = disciplinaEOL.Regencia ? disciplina.Nome : disciplinaEOL.Nome;
+                                    ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
+                                    {
+                                        DisciplinaId = notaConceitoBimestre.DisciplinaId,
+                                        Disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome : disciplinaEOL.Nome,
+                                        NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota.Value,
+                                        ehConceito = notaConceitoBimestre.ConceitoId.HasValue,
+                                        conceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : ""
+                                    });
+                                }
                         }
 
                         fechamentoBimestre.Alunos.Add(alunoDto);
@@ -240,7 +270,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterSintese(long id)
         {
-            var sintese = repositorioSintese.ObterPorId(id);
+            var sintese = Sinteses.FirstOrDefault(c => c.Id == id);
             return sintese != null ? sintese.Descricao : "";
         }
     }
