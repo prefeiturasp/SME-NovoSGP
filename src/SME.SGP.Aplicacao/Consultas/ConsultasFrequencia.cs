@@ -121,7 +121,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
             }
 
-            registroFrequenciaDto.TemPeriodoAberto = await consultasTurma.TurmaEmPeriodoAberto(aula.TurmaId, DateTime.Now, bimestre.Bimestre);
+            registroFrequenciaDto.TemPeriodoAberto = await consultasTurma.TurmaEmPeriodoAberto(aula.TurmaId, DateTime.Today, bimestre.Bimestre);
 
             var parametroPercentualCritico = repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.PercentualFrequenciaCritico,
