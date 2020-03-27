@@ -20,7 +20,7 @@ import RotasDto from '~/dtos/rotasDto';
 
 const FechamentoBimestreLista = props => {
 
-  const { dados, ehRegencia, ehSintese, codigoComponenteCurricular } = props;
+  const { dados, ehRegencia, ehSintese, codigoComponenteCurricular, turmaId } = props;
 
   const [dadosLista, setDadosLista] = useState(
     dados ? dados.alunos : undefined
@@ -29,9 +29,8 @@ const FechamentoBimestreLista = props => {
   const [podeProcessarReprocessar] = useState(dados.podeProcessarReprocessar);
   const [situacaosituacaoNomeFechamento, setSituacaosituacaoNomeFechamento] = useState(dados.situacaoNome);
 
-
-  const onClickProcessarReprocessar = async () => {
-    const processando = await ServicoFechamentoBimestre.processarReprocessar(
+  const onClickReprocessarNotasConceitos = async () => {
+    const processando = await ServicoFechamentoBimestre.reprocessarNotasConceitos(
       dados.fechamentoId
     ).catch(e => erros(e));
     if (processando && processando.status == 200) {
@@ -40,9 +39,35 @@ const FechamentoBimestreLista = props => {
     }
   };
 
+  const onClickProcessarReprocessarSintese = async () => {
+    const { alunos, fechamentoId, bimestre } = dados;
+
+    const alunosParaProcessar = alunos.map(aluno => {
+      return {
+        codigoAluno: aluno.codigoAluno,
+        disciplinaId: codigoComponenteCurricular,
+        sinteseId: aluno.sinteseId,
+      };
+    });
+    const params = {
+      id: fechamentoId,
+      turmaId,
+      bimestre,
+      disciplinaId: codigoComponenteCurricular,
+      notaConceitoAlunos: alunosParaProcessar,
+    };
+    const processando = await ServicoFechamentoBimestre.processarReprocessarSintese([
+      params,
+    ]).catch(e => erros(e));
+    if (processando && processando.status == 200) {
+      setSituacaoFechamento(situacaoFechamentoDto.EmProcessamento);
+      setSituacaosituacaoNomeFechamento('Em Processamento');
+    }
+  };
+
   const onClickVerPendecias = async () => {
     const { bimestre } = dados;
-    history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${bimestre}/${codigoComponenteCurricular}`);
+history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${bimestre}/${codigoComponenteCurricular}`);
   };
 
   return (
@@ -59,27 +84,37 @@ const FechamentoBimestreLista = props => {
             }}
             desabilitado={dadosLista ? dadosLista.length <= 0 : true}
           />
-          {situacaoFechamento ==
-            situacaoFechamentoDto.ProcessadoComPendencias ? (
-              <>
-                <Button
-                  label="Reprocessar"
-                  color={Colors.Azul}
-                  border
-                  className="mr-2"
-                  onClick={onClickProcessarReprocessar}
-                />
-                <Button
-                  label="Ver pendências"
-                  color={Colors.Azul}
-                  border
-                  className="mr-2"
-                  onClick={onClickVerPendecias}
-                />
-              </>
-            ) : (
-              ''
-            )}
+          {!ehSintese && podeProcessarReprocessar && situacaoFechamento == situacaoFechamentoDto.ProcessadoComPendencias ? (
+            <>
+              <Button
+                label="Reprocessar"
+                color={Colors.Azul}
+                border
+                className="mr-2"
+                onClick={onClickReprocessarNotasConceitos}
+              />
+              <Button
+                label="Ver pendências"
+                color={Colors.Azul}
+                border
+                className="mr-2"
+                onClick={onClickVerPendecias}
+              />
+            </>
+          ) : (
+            ''
+          )}
+          {ehSintese && podeProcessarReprocessar && situacaoFechamento != situacaoFechamentoDto.EmProcessamento ? (
+            <Button
+              label={dados.fechamentoId ? 'Reprocessar' : 'Processar'}
+              color={Colors.Azul}
+              border
+              className="mr-2"
+              onClick={onClickProcessarReprocessarSintese}
+            />
+          ) : (
+            ''
+          )}
         </div>
         <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
           {situacaoFechamento ? (
@@ -87,8 +122,8 @@ const FechamentoBimestreLista = props => {
               <span>{situacaosituacaoNomeFechamento}</span>
             </SituacaoProcessadoComPendencias>
           ) : (
-              ''
-            )}
+            ''
+          )}
           <MarcadorAulas className="ml-2">
             <span>Aulas previstas </span>
             <span className="numero">
@@ -134,7 +169,7 @@ const FechamentoBimestreLista = props => {
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {item.numeroChamada}
                         {item.informacao ? (
@@ -142,8 +177,8 @@ const FechamentoBimestreLista = props => {
                             <Info className="fas fa-circle" />
                           </Tooltip>
                         ) : (
-                            ''
-                          )}
+                          ''
+                        )}
                       </td>
                       <td className={`${!item.ativo ? 'fundo-cinza' : ''}`}>
                         {item.nome}
@@ -151,7 +186,7 @@ const FechamentoBimestreLista = props => {
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {ehSintese ? (
                           item.sintese
@@ -164,30 +199,30 @@ const FechamentoBimestreLista = props => {
                           item.notas[0].ehConceito ? (
                             item.notas[0].conceitoDescricao
                           ) : (
-                              ServicoFechamentoBimestre.formatarNotaConceito(
-                                item.notas[0].notaConceito
-                              )
+                            ServicoFechamentoBimestre.formatarNotaConceito(
+                              item.notas[0].notaConceito
                             )
+                          )
                         ) : null}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {item.quantidadeFaltas}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {item.quantidadeCompensacoes}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {item.percentualFrequencia
                           ? `${item.percentualFrequencia} %`
@@ -204,12 +239,12 @@ const FechamentoBimestreLista = props => {
                 );
               })
             ) : (
-                <tr>
-                  <td colSpan="6" className="text-center">
-                    Sem dados
+              <tr>
+                <td colSpan="6" className="text-center">
+                  Sem dados
                 </td>
-                </tr>
-              )}
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
