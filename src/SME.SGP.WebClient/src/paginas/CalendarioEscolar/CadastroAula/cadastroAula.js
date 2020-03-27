@@ -161,6 +161,8 @@ const CadastroAula = ({ match }) => {
   const [desabilitaPorGrade, setDesabilitaPorGrade] = useState(false);
   const [carregandoSalvar, setCarregandoSalvar] = useState(false);
 
+  const [desabilitaPorQuantidade, setDesabilitaPorQuantidade] = useState(false);
+
   const onChangeDisciplinas = async (id, listaDisc, isReposicao) => {
     onChangeCampos();
 
@@ -224,9 +226,23 @@ const CadastroAula = ({ match }) => {
 
       if (resultado) {
         if (resultado.status === 200) {
-          setControlaQuantidadeAula(resultado.data.quantidadeAulasRestante < 1);
+          setControlaQuantidadeAula(
+            resultado.data.quantidadeAulasRestante <= 1
+          );
           setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
           setDesabilitaPorGrade(resultado.data.quantidadeAulasRestante < 1);
+          setDesabilitaPorQuantidade(
+            resultado.data.quantidadeAulasRestante <= 1
+          );
+          if (
+            resultado.data.quantidadeAulasRestante > 0 &&
+            resultado.data.quantidadeAulasRestante <= 2
+          ) {
+            refForm.setFieldValue(
+              'quantidadeRadio',
+              resultado.data.quantidadeAulasRestante
+            );
+          }
         } else if (resultado.status === 204) {
           setControlaQuantidadeAula(false);
           setQuantidadeMaximaAulas(0);
@@ -497,8 +513,6 @@ const CadastroAula = ({ match }) => {
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
   ]);
-
-  const [desabilitaPorQuantidade, setDesabilitaPorQuantidade] = useState(false);
 
   useEffect(() => {
     if (quantidadeMaximaAulas && quantidadeMaximaAulas === 1) {
