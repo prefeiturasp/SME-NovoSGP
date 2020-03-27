@@ -98,21 +98,6 @@ namespace SME.SGP.Aplicacao
             if (idsDisciplinasAulas != null && idsDisciplinasAulas.Any())
                 disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
 
-            IEnumerable<DisciplinaResposta> disciplinasRegencia = Enumerable.Empty<DisciplinaResposta>();
-
-            var disciplinaRegencia = disciplinasEol.FirstOrDefault(c => c.Regencia);
-            if (temTurmaInformada && disciplinaRegencia != null)
-            {
-                if (usuario.EhProfessorCj())
-                    disciplinasRegencia = await consultasDisciplina.ObterComponentesCJ(null,
-                                                                                       filtro.TurmaId,
-                                                                                       string.Empty,
-                                                                                       disciplinaRegencia.CodigoComponenteCurricular,
-                                                                                       usuario.CodigoRf);
-                else
-                    disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(filtro.TurmaId), usuario.CodigoRf, usuario.PerfilAtual);
-            }
-
             aulas
             .ToList()
             .ForEach(x =>
@@ -130,13 +115,11 @@ namespace SME.SGP.Aplicacao
                         {
                             var disciplinasRegenciasComAtividades = repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
 
-                            disciplinasRegenciasComAtividades.ToList().ForEach(r => r.DisciplinaContidaRegenciaNome = disciplinasRegencia?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(r.DisciplinaContidaRegenciaId)).Nome);
+                            disciplinasRegenciasComAtividades.ToList().ForEach(r => r.DisciplinaContidaRegenciaNome = servicoEOL.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(r.DisciplinaContidaRegenciaId) }).FirstOrDefault().Nome);
 
                             item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
                             item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
-                            if (temTurmaInformada)
-                                podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
-                            else podeCriarAtividade = false;
+                            podeCriarAtividade = true;
                         }
                         else
                             podeCriarAtividade = false;
