@@ -66,8 +66,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> ObterIdPlanoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
         {
-            var plano = repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, disciplinaId);
-            return plano != null ? plano.Id : 0;
+            var planoId =  await repositorioPlanoAnual.ObterPlanoAnualIdPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, disciplinaId);
+            return planoId;
         }
 
         public async Task<PlanoAnualObjetivosDisciplinaDto> ObterObjetivosEscolaTurmaDisciplina(FiltroPlanoAnualDisciplinaDto filtro)
@@ -78,22 +78,25 @@ namespace SME.SGP.Aplicacao
                                                             filtro.Bimestre,
                                                             filtro.ComponenteCurricularEolId,
                                                             filtro.DisciplinaId);
-            if (planoAnual != null)
+            if (planoAnual == null)
+                return null;
+
+            var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
+
+            if (objetivosAprendizagem is null || !objetivosAprendizagem.Any())
+                throw new NegocioException("Não foi possível carregar os objetivos de aprendizagem por conta de problemas de comunicação com o Currículo da Cidade.");
+
+            if (planoAnual.IdsObjetivosAprendizagem == null)
+                return planoAnual;
+
+            foreach (var idObjetivo in planoAnual.IdsObjetivosAprendizagem)
             {
-                var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
+                var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);
 
-                if (planoAnual.IdsObjetivosAprendizagem == null)
-                    return planoAnual;
-
-                foreach (var idObjetivo in planoAnual.IdsObjetivosAprendizagem)
-                {
-                    var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);
-                    if (objetivo != null)
-                    {
-                        planoAnual.ObjetivosAprendizagem.Add(objetivo);
-                    }
-                }
+                if (objetivo != null)
+                    planoAnual.ObjetivosAprendizagem.Add(objetivo);
             }
+
             return planoAnual;
         }
 
