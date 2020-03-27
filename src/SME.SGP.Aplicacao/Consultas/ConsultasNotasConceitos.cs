@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
         {
             var modalidadeTipoCalendario = ObterModalidadeCalendario(filtro.Modalidade);
 
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(filtro.AnoLetivo, modalidadeTipoCalendario);
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(filtro.AnoLetivo, modalidadeTipoCalendario, filtro.Semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
