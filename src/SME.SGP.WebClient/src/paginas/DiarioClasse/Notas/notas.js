@@ -125,7 +125,7 @@ const Notas = ({ match }) => {
   };
 
   const obterBimestres = useCallback(
-    async (disciplinaId, numeroBimestre) => {
+    async (disciplinaId, numeroBimestre) => {      
       const params = {
         anoLetivo: usuario.turmaSelecionada.anoLetivo,
         bimestre: numeroBimestre,
@@ -133,10 +133,12 @@ const Notas = ({ match }) => {
         modalidade: usuario.turmaSelecionada.modalidade,
         turmaCodigo: usuario.turmaSelecionada.turma,
         turmaHistorico: usuario.turmaSelecionada.consideraHistorico,
+        semestre: usuario.turmaSelecionada.periodo,
       };
       const dados = await api
         .get('v1/avaliacoes/notas/', { params })
         .catch(e => erros(e));
+
       const resultado = dados ? dados.data : [];
       if (
         resultado.percentualAlunosInsuficientes &&
@@ -416,16 +418,13 @@ const Notas = ({ match }) => {
         if (notaFinal.modoEdicao) {
           notaConceitoAlunos.push({
             codigoAluno: aluno.id,
-            disciplinaId:
-              notasConceitos.Notas == notaTipo
-                ? disciplinaSelecionada
-                : notaFinal.disciplinaId,
+            disciplinaId: notaFinal.disciplinaId || disciplinaSelecionada,
             nota:
-              notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : 0,
+              notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : null,
             conceitoId:
               notaTipo === notasConceitos.Conceitos
                 ? notaFinal.notaConceito
-                : 0,
+                : null,
           });
         }
       });
@@ -617,7 +616,7 @@ const Notas = ({ match }) => {
     return ServicoNotas.temQuantidadeMinimaAprovada(
       getDadosBimestreAtual(),
       percentualMinimoAprovados,
-      notaTipo,
+      notaTipo
     );
   };
 
@@ -648,7 +647,7 @@ const Notas = ({ match }) => {
       if (!clicouSalvar) {
         confirmado = await pergutarParaSalvar();
       }
-      
+
       if (confirmado) {
         const bimestre = getDadosBimestreAtual();
         const temPorcentagemAceitavel = verificaPorcentagemAprovados();
@@ -889,7 +888,9 @@ const Notas = ({ match }) => {
                   alerta={{
                     tipo: 'warning',
                     id: 'justificativa-porcentagem',
-                    mensagem: `A maioria dos estudantes está com ${notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos' } abaixo do
+                    mensagem: `A maioria dos estudantes está com ${
+                      notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'
+                    } abaixo do
                                mínimo considerado para aprovação, por isso é necessário que você insira uma justificativa.`,
                     estiloTitulo: { fontSize: '18px' },
                   }}
@@ -906,14 +907,14 @@ const Notas = ({ match }) => {
                 </fieldset>
               </div>
               <div className="d-flex justify-content-end">
-              <Button
+                <Button
                   key="btn-cancelar-justificativa"
                   label="Cancelar"
                   color={Colors.Roxo}
                   bold
                   border
                   className="mr-3 mt-2 padding-btn-confirmacao"
-                  onClick={() => { 
+                  onClick={() => {
                     onChangeJustificativa('');
                     form.resetForm();
                     setExibeModalJustificativa(false);
@@ -928,7 +929,6 @@ const Notas = ({ match }) => {
                   className="mr-3 mt-2 padding-btn-confirmacao"
                   onClick={() => validaAntesDoSubmit(form)}
                 />
-
               </div>
             </Form>
           )}
@@ -1022,6 +1022,7 @@ const Notas = ({ match }) => {
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
                             ehRegencia={ehRegencia}
+                            disciplinaSelecionada={disciplinaSelecionada}
                           />
                         </TabPane>
                       ) : (

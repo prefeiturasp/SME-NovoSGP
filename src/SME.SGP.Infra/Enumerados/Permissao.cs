@@ -368,5 +368,17 @@
 
         [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhAlteracao = true, Url = "/fechamento/fechamento-bimestre")]
         FB_A = 127,
+
+        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhConsulta = true, Url = "/fechamento/pendencias-fechamento")]
+        PF_C = 128,
+
+        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhInclusao = true, Url = "/fechamento/pendencias-fechamento")]
+        PF_I = 129,
+
+        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhExclusao = true, Url = "/fechamento/pendencias-fechamento")]
+        PF_E = 130,
+
+        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhAlteracao = true, Url = "/fechamento/pendencias-fechamento")]
+        PF_A = 131,
     }
 }
