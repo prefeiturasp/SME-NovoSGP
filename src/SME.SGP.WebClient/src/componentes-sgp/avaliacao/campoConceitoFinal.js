@@ -15,6 +15,8 @@ const CampoConceitoFinal = props => {
     podeLancarNotaFinal,
   } = props;
 
+  console.log(podeLancarNotaFinal);
+
   const modoEdicaoGeral = useSelector(
     store => store.notasConceitos.modoEdicaoGeral
   );

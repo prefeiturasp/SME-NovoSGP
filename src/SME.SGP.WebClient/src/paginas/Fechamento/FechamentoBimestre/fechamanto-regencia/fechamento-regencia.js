@@ -10,6 +10,8 @@ import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFech
 const FechamentoRegencia = props => {
   const { idRegencia, dados } = props;
 
+  console.log(dados);
+
   return (
     <TrRegencia id={idRegencia} style={{ display: 'none' }}>
       <td colSpan="2" className="destaque-label">
@@ -19,13 +21,17 @@ const FechamentoRegencia = props => {
         <LinhaNotaRegencia>
           {dados
             ? dados.map(item => (
-              <CampoNotaRegencia>
-                <span className="centro disciplina">{item.disciplina}</span>
-                <span className="centro nota">
-                  {ServicoFechamentoBimestre.formatarNotaConceito(item.notaConceito)}
-                </span>
-              </CampoNotaRegencia>
-            ))
+                <CampoNotaRegencia>
+                  <span className="centro disciplina">{item.disciplina}</span>
+                  <span className="centro nota">
+                    {item.ehConceito
+                      ? item.conceitoDescricao
+                      : ServicoFechamentoBimestre.formatarNotaConceito(
+                          item.notaConceito
+                        )}
+                  </span>
+                </CampoNotaRegencia>
+              ))
             : null}
         </LinhaNotaRegencia>
       </TdRegencia>
