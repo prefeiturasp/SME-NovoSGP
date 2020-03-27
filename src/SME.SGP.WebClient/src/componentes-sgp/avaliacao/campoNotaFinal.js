@@ -23,16 +23,18 @@ const CampoNotaFinal = props => {
   );
 
   const [notaBimestre, setNotaBimestre] = useState();
-  const [notaValorAtual, setNotaValorAtual] = useState();
+  const [notaValorAtual, setNotaValorAtual] = useState(0);
   const [notaAlterada, setNotaAlterada] = useState(false);
   const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
+
+  console.log(notaBimestre);
 
   const validaSeTeveAlteracao = useCallback(
     notaArredondada => {
       if (
         notaBimestre.notaOriginal != undefined &&
         notaBimestre.notaOriginal != null &&
-        notaBimestre.notaOriginal.trim() !== ''
+        notaBimestre.notaOriginal !== ''
       ) {
         const alterada =
           Number(notaArredondada).toFixed(1) !==
@@ -46,7 +48,7 @@ const CampoNotaFinal = props => {
 
   const validaSeEstaAbaixoDaMedia = useCallback(
     valorAtual => {
-      valorAtual = removerCaracteresInvalidos(String(valorAtual));      
+      valorAtual = removerCaracteresInvalidos(String(valorAtual));
       if (valorAtual && valorAtual < mediaAprovacaoBimestre) {
         notaBimestre.abaixoDaMedia = true;
         setAbaixoDaMedia(true);
@@ -65,7 +67,7 @@ const CampoNotaFinal = props => {
   useEffect(() => {
     if (notaBimestre) {
       validaSeEstaAbaixoDaMedia(notaBimestre.notaConceito);
-      validaSeTeveAlteracao(notaBimestre.notaConceito);
+      validaSeTeveAlteracao(String(notaBimestre.notaConceito));
       setNotaValorAtual(notaBimestre.notaConceito);
     }
   }, [notaBimestre, validaSeTeveAlteracao, validaSeEstaAbaixoDaMedia]);

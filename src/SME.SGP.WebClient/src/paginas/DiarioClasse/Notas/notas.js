@@ -135,6 +135,7 @@ const Notas = ({ match }) => {
       const dados = await api
         .get('v1/avaliacoes/notas/', { params })
         .catch(e => erros(e));
+
       const resultado = dados ? dados.data : [];
       if (
         resultado.percentualAlunosInsuficientes &&
@@ -411,7 +412,7 @@ const Notas = ({ match }) => {
         if (notaFinal.modoEdicao) {
           notaConceitoAlunos.push({
             codigoAluno: aluno.id,
-            disciplinaId: notaFinal.disciplinaId,
+            disciplinaId: notaFinal.disciplinaId || disciplinaSelecionada,
             nota:
               notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : null,
             conceitoId:
@@ -596,7 +597,7 @@ const Notas = ({ match }) => {
     return ServicoNotas.temQuantidadeMinimaAprovada(
       getDadosBimestreAtual(),
       percentualMinimoAprovados,
-      notaTipo,
+      notaTipo
     );
   };
 
@@ -843,7 +844,7 @@ const Notas = ({ match }) => {
       <ModalConteudoHtml
         key="inserirJutificativa"
         visivel={exibeModalJustificativa}
-        onClose={() => { }}
+        onClose={() => {}}
         titulo="Inserir justificativa"
         esconderBotaoPrincipal
         esconderBotaoSecundario
@@ -868,7 +869,9 @@ const Notas = ({ match }) => {
                   alerta={{
                     tipo: 'warning',
                     id: 'justificativa-porcentagem',
-                    mensagem: `A maioria dos estudantes está com ${notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'} abaixo do
+                    mensagem: `A maioria dos estudantes está com ${
+                      notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'
+                    } abaixo do
                                mínimo considerado para aprovação, por isso é necessário que você insira uma justificativa.`,
                     estiloTitulo: { fontSize: '18px' },
                   }}
@@ -907,7 +910,6 @@ const Notas = ({ match }) => {
                   className="mr-3 mt-2 padding-btn-confirmacao"
                   onClick={() => validaAntesDoSubmit(form)}
                 />
-
               </div>
             </Form>
           )}
@@ -983,11 +985,12 @@ const Notas = ({ match }) => {
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
                             ehRegencia={ehRegencia}
+                            disciplinaSelecionada={disciplinaSelecionada}
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {segundoBimestre.numero ? (
                         <TabPane
                           tab={segundoBimestre.descricao}
@@ -1003,8 +1006,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {terceiroBimestre.numero ? (
                         <TabPane
                           tab={terceiroBimestre.descricao}
@@ -1020,8 +1023,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {quartoBimestre.numero ? (
                         <TabPane
                           tab={quartoBimestre.descricao}
@@ -1037,8 +1040,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                     </ContainerTabsCard>
                   </div>
                 </div>
@@ -1064,8 +1067,8 @@ const Notas = ({ match }) => {
                 </div>
               </>
             ) : (
-                ''
-              )}
+              ''
+            )}
           </div>
         </Card>
       </Loader>
