@@ -25,6 +25,7 @@ const FechamentoBimestreLista = props => {
   );
 
   const [situacaoFechamento, setSituacaoFechamento] = useState(dados.situacao);
+  const [situacaosituacaoNomeFechamento, setSituacaosituacaoNomeFechamento] = useState(dados.situacaoNome);
 
   const onClickReprocessar = async () => {
     const processando = await ServicoFechamentoBimestre.reprocessar(
@@ -32,6 +33,7 @@ const FechamentoBimestreLista = props => {
     ).catch(e => erros(e));
     if (processando && processando.status == 200) {
       setSituacaoFechamento(situacaoFechamentoDto.EmProcessamento);
+      setSituacaosituacaoNomeFechamento('Em Processamento');
     }
   };
 
@@ -77,10 +79,9 @@ const FechamentoBimestreLista = props => {
             )}
         </div>
         <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
-          {situacaoFechamento ==
-            situacaoFechamentoDto.ProcessadoComPendencias ? (
+          {situacaoFechamento ? (
               <SituacaoProcessadoComPendencias>
-                <span>Processado Com Pendências</span>
+                <span>{ situacaosituacaoNomeFechamento }</span>
               </SituacaoProcessadoComPendencias>
             ) : (
               ''
