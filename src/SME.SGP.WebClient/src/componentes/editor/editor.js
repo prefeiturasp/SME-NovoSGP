@@ -57,8 +57,8 @@ export default function Editor(props) {
         {(form && form.errors[name]) || mensagemErro}
       </span>
     ) : (
-      ''
-    );
+        ''
+      );
   };
 
   const editorComValidacoes = () => {
@@ -118,6 +118,7 @@ export default function Editor(props) {
             'Outdent',
           ],
         }}
+        disabled={desabilitar}
         data={inicial || ''}
         onChange={(event, editor) => {
           const data = editor.getData();
