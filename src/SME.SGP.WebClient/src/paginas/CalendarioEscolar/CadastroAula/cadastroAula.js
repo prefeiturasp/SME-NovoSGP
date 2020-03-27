@@ -228,6 +228,15 @@ const CadastroAula = ({ match }) => {
           setDesabilitaPorQuantidade(
             resultado.data.quantidadeAulasRestante <= 1
           );
+          if (
+            resultado.data.quantidadeAulasRestante > 0 &&
+            resultado.data.quantidadeAulasRestante <= 2
+          ) {
+            refForm.setFieldValue(
+              'quantidadeRadio',
+              resultado.data.quantidadeAulasRestante
+            );
+          }
         } else if (resultado.status === 204) {
           setControlaQuantidadeAula(false);
         }
