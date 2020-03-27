@@ -123,7 +123,7 @@ const Notas = ({ match }) => {
   };
 
   const obterBimestres = useCallback(
-    async (disciplinaId, numeroBimestre) => {
+    async (disciplinaId, numeroBimestre) => {      
       const params = {
         anoLetivo: usuario.turmaSelecionada.anoLetivo,
         bimestre: numeroBimestre,
@@ -131,6 +131,7 @@ const Notas = ({ match }) => {
         modalidade: usuario.turmaSelecionada.modalidade,
         turmaCodigo: usuario.turmaSelecionada.turma,
         turmaHistorico: usuario.turmaSelecionada.consideraHistorico,
+        semestre: usuario.turmaSelecionada.periodo,
       };
       const dados = await api
         .get('v1/avaliacoes/notas/', { params })

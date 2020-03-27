@@ -15,9 +15,11 @@ import Button from '~/componentes/button';
 import situacaoFechamentoDto from '~/dtos/situacaoFechamentoDto';
 import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFechamentoBimestre';
 import { erros } from '~/servicos/alertas';
+import history from '~/servicos/history';
+import RotasDto from '~/dtos/rotasDto';
 
 const FechamentoBimestreLista = props => {
-  const { dados, ehRegencia } = props;
+  const { dados, ehRegencia, codigoComponenteCurricular } = props;
   const [dadosLista, setDadosLista] = useState(
     dados ? dados.alunos : undefined
   );
@@ -31,6 +33,11 @@ const FechamentoBimestreLista = props => {
     if (processando && processando.status == 200) {
       setSituacaoFechamento(situacaoFechamentoDto.EmProcessamento);
     }
+  };
+
+  const onClickVerPendecias = async () => {
+    const { bimestre } = dados;
+    history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${bimestre}/${codigoComponenteCurricular}`);
   };
 
   return (
@@ -48,17 +55,26 @@ const FechamentoBimestreLista = props => {
             desabilitado={dadosLista ? dadosLista.length <= 0 : true}
           />
           {situacaoFechamento ==
-          situacaoFechamentoDto.ProcessadoComPendencias ? (
-            <Button
-              label="Reprocessar"
-              color={Colors.Azul}
-              border
-              className="mr-2"
-              onClick={onClickReprocessar}
-            />
-          ) : (
-            ''
-          )}
+            situacaoFechamentoDto.ProcessadoComPendencias ? (
+              <>
+                <Button
+                  label="Reprocessar"
+                  color={Colors.Azul}
+                  border
+                  className="mr-2"
+                  onClick={onClickReprocessar}
+                />
+                <Button
+                  label="Ver pendências"
+                  color={Colors.Azul}
+                  border
+                  className="mr-2"
+                  onClick={onClickVerPendecias}
+                />
+              </>
+            ) : (
+              ''
+            )}
         </div>
         <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
           {situacaoFechamento ==
