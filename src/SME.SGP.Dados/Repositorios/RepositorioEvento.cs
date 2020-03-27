@@ -716,7 +716,7 @@ namespace SME.SGP.Dados.Repositorios
         #region Tipos de Eventos filtrados por Dia
 
         public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia,
-            Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor, bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
+            Usuario usuario, Guid usuarioPerfil)
         {
             var query = new StringBuilder();
 
@@ -735,13 +735,17 @@ namespace SME.SGP.Dados.Repositorios
             }
             else if (usuario.EhPerfilDRE())
             {
-                MontaQueryEventosPorDiaFromWhereVisualizacaoDre(query, calendarioEventosMesesFiltro.DreId, calendarioEventosMesesFiltro.UeId, calendarioEventosMesesFiltro.EhEventoSme);
+                MontaQueryEventosPorDiaFromWhereVisualizacaoDre(query, calendarioEventosMesesFiltro.UeId, calendarioEventosMesesFiltro.EhEventoSme);
             }
             else if (usuario.EhPerfilUE())
             {
                 if (usuario.TemPerfilGestaoUes())
                 {
                     MontaQueryEventosPorDiaFromWhereVisualizacaoGestaoUe(query, calendarioEventosMesesFiltro.DreId, calendarioEventosMesesFiltro.UeId, calendarioEventosMesesFiltro.EhEventoSme);
+                }
+                else
+                {
+                    MontaQueryEventosPorDiaFromWhereVisualizacaoUe(query, calendarioEventosMesesFiltro.DreId, calendarioEventosMesesFiltro.UeId, calendarioEventosMesesFiltro.EhEventoSme);
                 }
             }
 
@@ -768,7 +772,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("end as TipoEvento");
         }
 
-        private void MontaQueryEventosPorDiaFromWhereVisualizacaoDre(StringBuilder query, string dreId, string ueId, bool ehEventoSme)
+        private void MontaQueryEventosPorDiaFromWhereVisualizacaoDre(StringBuilder query, string ueId, bool ehEventoSme)
         {
             query.AppendLine("from");
             query.AppendLine("evento e");
@@ -811,7 +815,38 @@ namespace SME.SGP.Dados.Repositorios
 
         private void MontaQueryEventosPorDiaFromWhereVisualizacaoGestaoUe(StringBuilder query, string dreId, string ueId, bool ehEventoSme)
         {
-            throw new NotImplementedException();
+            query.AppendLine("from");
+            query.AppendLine("evento e");
+            query.AppendLine("inner");
+            query.AppendLine("join ue u");
+            query.AppendLine("on e.ue_id = u.ue_id");
+            query.AppendLine("inner");
+            query.AppendLine("join v_abrangencia_sintetica a");
+            query.AppendLine("on u.id = a.ue_id");
+            query.AppendLine("inner");
+            query.AppendLine("join dre d");
+            query.AppendLine("on e.dre_id = d.dre_id");
+            query.AppendLine("join evento_tipo et on");
+            query.AppendLine("e.tipo_evento_id = et.id");
+            query.AppendLine("where");
+            query.AppendLine("et.ativo = true");
+            query.AppendLine("and et.excluido = false");
+            query.AppendLine("and e.excluido = false");
+
+            query.AppendLine("and e.ue_id = @ueId");
+            query.AppendLine("and e.status = 1");
+
+            query.AppendLine("and((extract(month from e.data_fim) = @mes) or(extract(month from e.data_inicio) = @mes))");
+            query.AppendLine("and((extract(day from e.data_fim) = @dia) or(extract(day from e.data_inicio) = @dia))");
+            query.AppendLine("and a.usuario_id = (select id from usuario u where u.login = @usuarioRf)");
+            query.AppendLine("and a.perfil = @usuarioPerfil");
+
+            if (ehEventoSme)
+            {
+                query.AppendLine("union");
+                MontaQueryEventosPorDiaCabecalho(query);
+                MontaQueryEventosPorDiaFromWhereVisualizacaoSME(query);
+            }
         }
 
         private void MontaQueryEventosPorDiaFromWhereVisualizacaoSME(StringBuilder query)
@@ -850,13 +885,53 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and e.dre_id = @dreId");
 
-            if (!string.IsNullOrEmpty(ueId))
-                query.AppendLine("and e.ue_id = @ueId");
+            if (string.IsNullOrEmpty(ueId))
+            {
+                query.AppendLine("and e.ue_id is null");
+            }
+            else query.AppendLine("and e.ue_id = @ueId");
 
             query.AppendLine("and e.tipo_calendario_id = @IdTipoCalendario");
 
             if (mostraEventosSme)
-                query.AppendLine("and e.dre_id is null and e.ue_id is null");
+            {
+                query.AppendLine("union");
+                MontaQueryEventosPorDiaCabecalho(query);
+                MontaQueryEventosPorDiaFromWhereVisualizacaoSME(query);
+            }
+        }
+
+        private void MontaQueryEventosPorDiaFromWhereVisualizacaoUe(StringBuilder query, string dreId, string ueId, bool mostraEventosSme)
+        {
+            query.AppendLine("from");
+            query.AppendLine("evento e");
+            query.AppendLine("inner");
+            query.AppendLine("join ue u");
+            query.AppendLine("on e.ue_id = u.ue_id");
+            query.AppendLine("inner");
+            query.AppendLine("join v_abrangencia_sintetica a");
+            query.AppendLine("on u.id = a.ue_id");
+            query.AppendLine("join evento_tipo et on");
+            query.AppendLine("e.tipo_evento_id = et.id");
+            query.AppendLine("where");
+            query.AppendLine("et.ativo = true");
+            query.AppendLine("and et.excluido = false");
+            query.AppendLine("and e.excluido = false");
+
+            query.AppendLine("and e.ue_id = @ueId");
+            query.AppendLine("and e.status = 1");
+
+            query.AppendLine("and((extract(month from e.data_fim) = @mes) or(extract(month from e.data_inicio) = @mes))");
+            query.AppendLine("and((extract(day from e.data_fim) = @dia) or(extract(day from e.data_inicio) = @dia))");
+            query.AppendLine("and a.usuario_id = (select id from usuario u where u.login = @usuarioRf)");
+            query.AppendLine("and a.perfil = @usuarioPerfil");
+
+            if (mostraEventosSme)
+            {
+                query.AppendLine("union");
+                MontaQueryEventosPorDiaCabecalho(query);
+                MontaQueryEventosPorDiaFromWhereVisualizacaoSME(query);
+            }
         }
 
         private void MontaQueryEventosPorDiaVisualizacaoCriador(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, StringBuilder query, bool EhDataInicial)
