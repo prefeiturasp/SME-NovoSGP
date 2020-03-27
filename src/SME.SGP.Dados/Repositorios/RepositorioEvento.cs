@@ -723,7 +723,7 @@ namespace SME.SGP.Dados.Repositorios
         #region Tipos de Eventos filtrados por Dia
 
         public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia,
-            Usuario usuario, Guid usuarioPerfil)
+            Usuario usuario)
         {
             var query = new StringBuilder();
 
@@ -764,7 +764,7 @@ namespace SME.SGP.Dados.Repositorios
                 mes,
                 dia,
                 usuarioId = usuario.Id,
-                usuarioPerfil,
+                usuarioPerfil = usuario.PerfilAtual,
                 usuarioRf = usuario.CodigoRf
             });
         }
@@ -1369,7 +1369,7 @@ namespace SME.SGP.Dados.Repositorios
             MontaQueryFrom(query);
             MontaFiltroTipoCalendario(query);
 
-            if(!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
+            if (!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
                 query.AppendFormat(" and et.codigo not in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
 
             StringBuilder queryDreUe = new StringBuilder();
