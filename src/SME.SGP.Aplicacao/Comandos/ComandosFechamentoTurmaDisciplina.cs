@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task Reprocessar(long fechamentoId)
             => await servicoFechamentoTurmaDisciplina.Reprocessar(fechamentoId);
 
-        public async Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false)
+        public async Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false)
         {
             var listaAuditoria = new List<AuditoriaPersistenciaDto>();
             foreach (var fechamentoTurma in fechamentosTurma)

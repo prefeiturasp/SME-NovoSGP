@@ -167,18 +167,19 @@ namespace SME.SGP.Aplicacao
                             if (notasConceitoBimestre.Count() > 0)
                                 alunoDto.Notas = new List<NotaConceitoBimestreRetornoDto>();
 
-                        foreach (var notaConceitoBimestre in notasConceitoBimestre)
-                        {
-                            var disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId) : null;
-                            var nomeDisciplina = disciplinaEOL.Regencia ? disciplina.Nome : disciplinaEOL.Nome;
-                            ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
+                            foreach (var notaConceitoBimestre in notasConceitoBimestre)
                             {
-                                DisciplinaId = notaConceitoBimestre.DisciplinaId,
-                                Disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :                    disciplinaEOL.Nome,
-                                NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota.Value,
-                                ehConceito = notaConceitoBimestre.ConceitoId.HasValue,
-                                conceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : ""
-                            });
+                                var disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId) : null;
+                                var nomeDisciplina = disciplinaEOL.Regencia ? disciplina.Nome : disciplinaEOL.Nome;
+                                ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
+                                {
+                                    DisciplinaId = notaConceitoBimestre.DisciplinaId,
+                                    Disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome : disciplinaEOL.Nome,
+                                    NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota.Value,
+                                    ehConceito = notaConceitoBimestre.ConceitoId.HasValue,
+                                    conceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : ""
+                                });
+                            }
                         }
 
                         fechamentoBimestre.Alunos.Add(alunoDto);
