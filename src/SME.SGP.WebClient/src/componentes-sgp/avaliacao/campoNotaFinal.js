@@ -27,8 +27,6 @@ const CampoNotaFinal = props => {
   const [notaAlterada, setNotaAlterada] = useState(false);
   const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
 
-  console.log(notaBimestre);
-
   const validaSeTeveAlteracao = useCallback(
     notaArredondada => {
       if (

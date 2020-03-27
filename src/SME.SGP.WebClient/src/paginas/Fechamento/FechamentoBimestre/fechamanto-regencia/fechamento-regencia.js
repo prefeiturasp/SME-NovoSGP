@@ -10,8 +10,6 @@ import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFech
 const FechamentoRegencia = props => {
   const { idRegencia, dados } = props;
 
-  console.log(dados);
-
   return (
     <TrRegencia id={idRegencia} style={{ display: 'none' }}>
       <td colSpan="2" className="destaque-label">
