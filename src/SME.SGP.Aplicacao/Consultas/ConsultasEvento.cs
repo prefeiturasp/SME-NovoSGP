@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
-                               IContextoAplicacao contextoAplicacao, 
+                               IContextoAplicacao contextoAplicacao,
                                IServicoUsuario servicoUsuario,
                                IRepositorioEventoTipo repositorioEventoTipo) : base(contextoAplicacao)
         {
@@ -53,9 +53,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario, usuario.PerfilAtual,
-                usuario.TemPerfilSupervisorOuDiretor(), usuario.PodeVisualizarEventosOcorrenciaDre(),
-                        usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
+            return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario);
         }
 
         public async Task<EventoCompletoDto> ObterPorId(long id)
@@ -67,11 +65,11 @@ namespace SME.SGP.Aplicacao
             //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
             bool podeAlterar = !EhEventoSME(evento) || (EhEventoSME(evento) && usuario.EhPerfilSME());
 
-            if (!EhEventoSME(evento) && 
-                (evento.TipoEventoId == (long)TipoEvento.LiberacaoExcepcional || 
+            if (!EhEventoSME(evento) &&
+                (evento.TipoEventoId == (long)TipoEvento.LiberacaoExcepcional ||
                  evento.TipoEventoId == (long)TipoEvento.ReposicaoNoRecesso))
                 podeAlterar = usuario.TemPerfilGestaoUes();
-           
+
             return MapearParaDto(evento, podeAlterar);
         }
 
