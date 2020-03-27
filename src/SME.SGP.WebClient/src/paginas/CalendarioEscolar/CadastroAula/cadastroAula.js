@@ -851,6 +851,8 @@ const CadastroAula = ({ match }) => {
                     opcoes={opcoesTipoAula}
                     name="tipoAula"
                     onChange={e => {
+                      setDesabilitaPorGrade(e.target.value !== 2);
+                      setDesabilitaPorQuantidade(e.target.value !== 2);
                       setEhReposicao(e.target.value === 2);
                       onChangeCampos();
                       setControlaQuantidadeAula(ehReposicao);
