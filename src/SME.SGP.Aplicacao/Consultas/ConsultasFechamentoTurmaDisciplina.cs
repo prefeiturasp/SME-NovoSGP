@@ -103,6 +103,7 @@ namespace SME.SGP.Aplicacao
                     disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turmaId), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
 
                 fechamentoBimestre.Situacao = fechamentoTurma.Situacao;
+                fechamentoBimestre.SituacaoNome = fechamentoTurma.Situacao.Name();
                 fechamentoBimestre.FechamentoId = fechamentoTurma.Id;
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
 
