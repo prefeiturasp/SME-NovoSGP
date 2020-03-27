@@ -52,7 +52,8 @@ namespace SME.SGP.Aplicacao.Consultas
 
         public PeriodoEscolarDto ObterPeriodoEscolarPorData(long tipoCalendarioId, DateTime dataPeriodo)
         {
-            return MapearParaDto(repositorio.ObterPorTipoCalendarioData(tipoCalendarioId, dataPeriodo));
+            var periodoEscolar = repositorio.ObterPorTipoCalendarioData(tipoCalendarioId, dataPeriodo);
+            return MapearParaDto(periodoEscolar);
         }
 
         private PeriodoEscolarDto MapearParaDto(PeriodoEscolar periodo)
