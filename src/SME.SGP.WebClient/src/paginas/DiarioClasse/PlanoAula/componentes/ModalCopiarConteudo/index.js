@@ -29,7 +29,7 @@ import { erros, erro, sucesso } from '~/servicos/alertas';
 
 function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
   const filtro = useSelector(store => store.usuario.turmaSelecionada);
-  const carregando = useSelector(store => store.loader.loaderModal);
+  const [carregando, setCarregando] = useState(false);
   const dispatch = useDispatch();
   const [confirmado, setConfirmado] = useState(false);
   const [alerta, setAlerta] = useState(false);
@@ -142,7 +142,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
   const onClickSalvar = async () => {
     try {
       if (!confirmado) {
-        dispatch(setLoaderModal(true));
+        setCarregando(true);
         const { data, status } = await PlanoAulaServico.verificarSeExiste({
           planoAulaTurmaDatas: turmas.map(x => ({
             data: x.data,
@@ -150,7 +150,6 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
             disciplinaId: disciplina,
           })),
         });
-
         if (data && status === 200) {
           const temErro = data.filter(x => x.existe === true);
           if (temErro.length > 0) {
@@ -170,7 +169,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
             setAlerta(true);
           }
           setConfirmado(true);
-          dispatch(setLoaderModal(false));
+          setCarregando(false);
         }
       }
 
@@ -205,7 +204,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
   return (
     <ModalConteudoHtml
       titulo="Copiar conteúdo"
-      visivel={show}
+      visivel={show || alerta}
       closable
       onClose={() => onCloseModal()}
       onConfirmacaoSecundaria={() => onCloseModal()}
@@ -245,6 +244,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
             </Grid>
             <Grid cols={2}>
               <Button
+                id={shortid.generate()}
                 label="Excluir"
                 color={Colors.Roxo}
                 border
