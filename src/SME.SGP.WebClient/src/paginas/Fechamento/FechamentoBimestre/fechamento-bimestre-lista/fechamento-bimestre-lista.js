@@ -129,7 +129,7 @@ const FechamentoBimestreLista = props => {
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {item.numeroChamada}
                         {item.informacao ? (
@@ -137,8 +137,8 @@ const FechamentoBimestreLista = props => {
                             <Info className="fas fa-circle" />
                           </Tooltip>
                         ) : (
-                            ''
-                          )}
+                          ''
+                        )}
                       </td>
                       <td className={`${!item.ativo ? 'fundo-cinza' : ''}`}>
                         {item.nome}
@@ -146,7 +146,7 @@ const FechamentoBimestreLista = props => {
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {ehRegencia && item.notas ? (
                           <BotaoExpandir
@@ -154,27 +154,33 @@ const FechamentoBimestreLista = props => {
                             idLinhaRegencia={idLinhaRegencia}
                           />
                         ) : item.notas && item.notas.length > 0 ? (
-                          ServicoFechamentoBimestre.formatarNotaConceito(item.notas[0].notaConceito)
+                          item.notas[0].ehConceito ? (
+                            item.notas[0].conceitoDescricao
+                          ) : (
+                            ServicoFechamentoBimestre.formatarNotaConceito(
+                              item.notas[0].notaConceito
+                            )
+                          )
                         ) : null}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {item.quantidadeFaltas}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {item.quantidadeCompensacoes}
                       </td>
                       <td
                         className={`text-center ${
                           !item.ativo ? 'fundo-cinza' : ''
-                          }`}
+                        }`}
                       >
                         {item.percentualFrequencia
                           ? `${item.percentualFrequencia} %`
@@ -191,12 +197,12 @@ const FechamentoBimestreLista = props => {
                 );
               })
             ) : (
-                <tr>
-                  <td colSpan="6" className="text-center">
-                    Sem dados
+              <tr>
+                <td colSpan="6" className="text-center">
+                  Sem dados
                 </td>
-                </tr>
-              )}
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

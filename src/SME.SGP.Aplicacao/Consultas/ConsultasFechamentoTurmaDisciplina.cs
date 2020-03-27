@@ -128,18 +128,20 @@ namespace SME.SGP.Aplicacao
                         // Carrega notas do bimestre
                         var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
 
-                        if(notasConceitoBimestre.Count() > 0)
+                        if (notasConceitoBimestre.Count() > 0)
                             alunoDto.Notas = new List<NotaConceitoBimestreRetornoDto>();
 
                         foreach (var notaConceitoBimestre in notasConceitoBimestre)
                         {
+                            var disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId) : null;
+                            var nomeDisciplina = disciplinaEOL.Regencia ? disciplina.Nome : disciplinaEOL.Nome;
                             ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
                             {
                                 DisciplinaId = notaConceitoBimestre.DisciplinaId,
-                                Disciplina = disciplinaEOL.Regencia ?
-                                    disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
-                                    disciplinaEOL.Nome,
-                                NotaConceito = notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota.ToString() : ObterConceito(notaConceitoBimestre.ConceitoId.Value)
+                                Disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :                    disciplinaEOL.Nome,
+                                NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota.Value,
+                                ehConceito = notaConceitoBimestre.ConceitoId.HasValue,
+                                conceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : ""
                             });
                         }
 
@@ -192,7 +194,13 @@ namespace SME.SGP.Aplicacao
             else return periodoEscolar.Bimestre;
         }
 
-        private string ObterConceito(long id)
+        private double ObterConceito(long id)
+        {
+            var conceito = repositorioConceito.ObterPorId(id);
+            return conceito != null ? conceito.Id : 0;
+        }
+
+        private string ObterConceitoDescricao(long id)
         {
             var conceito = repositorioConceito.ObterPorId(id);
             return conceito != null ? conceito.Valor : "";
