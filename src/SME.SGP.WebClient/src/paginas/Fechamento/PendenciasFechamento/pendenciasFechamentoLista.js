@@ -208,13 +208,13 @@ const PendenciasFechamentoLista = ({ match }) => {
   }, [turmaSelecionada.turma, turmaSelecionada.modalidade]);
 
   useEffect(() => {
-    if (disciplinaIdSelecionada) {
+    if (bimestreSelecionado) {
       setExibirLista(true);
     } else {
       setExibirLista(false);
     }
     filtrar();
-  }, [disciplinaIdSelecionada, filtrar]);
+  }, [disciplinaIdSelecionada, bimestreSelecionado, filtrar]);
 
   const onChangeDisciplinas = disciplinaId => {
     setDisciplinaIdSelecionada(disciplinaId);
