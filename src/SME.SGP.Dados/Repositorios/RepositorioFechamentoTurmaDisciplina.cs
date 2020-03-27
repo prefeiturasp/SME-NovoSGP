@@ -52,7 +52,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<NotaConceitoBimestreDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaId)
         {
-            var query = @"select n.disciplina_id as DisciplinaId, n.nota as Nota, n.conceito_id as ConceitoId
+            var query = @"select n.disciplina_id as DisciplinaId, n.nota as Nota, n.conceito_id as ConceitoId, n.sintese_id as SinteseId
                          from nota_conceito_bimestre n
                         where not n.excluido
                             and n.fechamento_turma_disciplina_id = @fechamentoTurmaId

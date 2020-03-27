@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAulaPrevista consultasAulaPrevista;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioConceito repositorioConceito;
+        private readonly IRepositorioSintese repositorioSintese;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
@@ -38,6 +39,7 @@ namespace SME.SGP.Aplicacao
             IServicoUsuario servicoUsuario,
             IServicoAluno servicoAluno,
             IRepositorioConceito repositorioConceito,
+            IRepositorioSintese repositorioSintese,
             IRepositorioParametrosSistema repositorioParametrosSistema,
             IConsultasPeriodoFechamento consultasFechamento
             )
@@ -53,6 +55,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
+            this.repositorioSintese = repositorioSintese ?? throw new ArgumentNullException(nameof(repositorioSintese));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
         }
@@ -111,7 +114,7 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestreAtual.Value);
             if (fechamentoTurma != null || fechamentoBimestre.EhSintese)
             {
-                if (!fechamentoBimestre.EhSintese)
+                if (fechamentoTurma != null)
                 {
                     fechamentoBimestre.Situacao = fechamentoTurma.Situacao;
                     fechamentoBimestre.FechamentoId = fechamentoTurma.Id;
@@ -146,7 +149,7 @@ namespace SME.SGP.Aplicacao
                     // Carrega Frequencia do aluno
                     if (aluno.CodigoAluno != null)
                     {
-                        if (fechamentoBimestre.EhSintese)
+                        if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
                         {
                             var mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
 
@@ -172,7 +175,9 @@ namespace SME.SGP.Aplicacao
                                     Disciplina = disciplinaEOL.Regencia ?
                                         disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
                                         disciplinaEOL.Nome,
-                                    NotaConceito = notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota.ToString() : ObterConceito(notaConceitoBimestre.ConceitoId)
+                                    NotaConceito = notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota.ToString() : 
+                                                   notaConceitoBimestre.ConceitoId > 0 ? ObterConceito(notaConceitoBimestre.ConceitoId) : 
+                                                   ObterSintese(notaConceitoBimestre.SinteseId)
                                 });
                             }
                         }
@@ -225,6 +230,12 @@ namespace SME.SGP.Aplicacao
         {
             var conceito = repositorioConceito.ObterPorId(id);
             return conceito != null ? conceito.Valor : "";
+        }
+
+        private string ObterSintese(long id)
+        {
+            var sintese = repositorioSintese.ObterPorId(id);
+            return sintese != null ? sintese.Descricao : "";
         }
     }
 }
