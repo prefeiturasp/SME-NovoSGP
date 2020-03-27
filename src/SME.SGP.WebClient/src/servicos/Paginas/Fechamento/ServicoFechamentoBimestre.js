@@ -7,9 +7,12 @@ const ServicoFechamentoBimestre = {
     );
   },
 
-  // TODO Alteraçõs serao realizadas no back!
-  processarReprocessar(fechamentoId) {
+  reprocessarNotasConceitos(fechamentoId) {
     return api.post(`/v1/fechamentos/turmas/reprocessar/${fechamentoId}`);
+  },
+
+  processarReprocessarSintese(params) {
+    return api.post('/v1/fechamentos/turmas/processar', params);
   },
 
   formatarNotaConceito(valor) {
