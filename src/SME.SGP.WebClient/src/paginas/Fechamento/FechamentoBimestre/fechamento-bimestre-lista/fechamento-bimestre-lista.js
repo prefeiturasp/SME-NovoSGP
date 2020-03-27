@@ -78,14 +78,10 @@ const FechamentoBimestreLista = props => {
               ''
             )}
         </div>
-        <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
-          {situacaoFechamento ? (
-              <SituacaoProcessadoComPendencias>
-                <span>{ situacaosituacaoNomeFechamento }</span>
-              </SituacaoProcessadoComPendencias>
-            ) : (
-              ''
-            )}
+        <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">          
+          <SituacaoProcessadoComPendencias>
+            <span>{ situacaoFechamento ? situacaosituacaoNomeFechamento : 'Não executado' }</span>
+          </SituacaoProcessadoComPendencias> 
           <MarcadorAulas className="ml-2">
             <span>Aulas previstas </span>
             <span className="numero">
