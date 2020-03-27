@@ -37,17 +37,14 @@ function UeDropDown({
           }))
           .sort(FiltroHelper.ordenarLista('desc'));
       }
-      if (lista.length > 1) {
-        if (opcaoTodas) {
-          lista.unshift({ desc: 'Todas', valor: '0' });
-          setForcaDesabilitado(true);
-        }
-      } else if (!lista.length) {
+
+      if (lista.length > 1 || !lista.length) {
         if (opcaoTodas) {
           lista.unshift({ desc: 'Todas', valor: '0' });
           setForcaDesabilitado(true);
         }
       }
+
       setListaUes(lista);
       setCarregando(false);
     }
