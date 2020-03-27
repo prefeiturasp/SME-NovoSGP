@@ -32,6 +32,7 @@ const { Panel } = Collapse;
 
 const PlanoAnual = () => {
   const turmaSelecionada = useSelector(c => c.usuario.turmaSelecionada);
+  const [possuiTurmaSelecionada, setPossuiTurmaSelecionada] = useState(false);
   const [ehEja, setEhEja] = useState(false);
   const [planoAnual, setPlanoAnual] = useState([]);
   const [registroMigrado, setRegistroMigrado] = useState(false);
@@ -345,6 +346,7 @@ const PlanoAnual = () => {
 
   useEffect(() => {
     setEmEdicao(false);
+    setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     if (turmaSelecionada && turmaSelecionada !== [] && turmaSelecionada.turma) {
       setEhEja(
         turmaSelecionada.modalidade.toString() === modalidade.EJA.toString()
