@@ -124,6 +124,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var aluno in alunos)
                 {
                     var alunoDto = new NotaConceitoAlunoBimestreDto();
+                    alunoDto.CodigoAluno = aluno.CodigoAluno;
                     alunoDto.NumeroChamada = aluno.NumeroAlunoChamada;
                     alunoDto.Nome = aluno.NomeAluno;
                     alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
