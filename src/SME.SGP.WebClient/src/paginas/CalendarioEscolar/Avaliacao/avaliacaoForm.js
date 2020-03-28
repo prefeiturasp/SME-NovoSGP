@@ -17,6 +17,7 @@ import RotasDTO from '~/dtos/rotasDto';
 import ServicoAvaliacao from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
 import { erro, sucesso, confirmar } from '~/servicos/alertas';
 import ModalCopiarAvaliacao from './componentes/ModalCopiarAvaliacao';
+import Alert from '~/componentes/alert';
 
 const AvaliacaoForm = ({ match }) => {
   const [
@@ -31,6 +32,7 @@ const AvaliacaoForm = ({ match }) => {
   const [refForm, setRefForm] = useState({});
 
   const [modoEdicao, setModoEdicao] = useState(false);
+  const [dentroPeriodo, setDentroPeriodo] = useState(true);
 
   const clicouBotaoVoltar = async () => {
     if (modoEdicao) {
@@ -351,6 +353,7 @@ const AvaliacaoForm = ({ match }) => {
         criadoEm: avaliacao.data.criadoEm,
         criadoPor: `${avaliacao.data.criadoPor} (${avaliacao.data.criadoRF})`,
       });
+      setDentroPeriodo(avaliacao.data.dentroPeriodo);
       if (
         avaliacao.data.atividadesRegencia &&
         avaliacao.data.atividadesRegencia.length > 0
@@ -404,6 +407,20 @@ const AvaliacaoForm = ({ match }) => {
 
   return (
     <Div className="col-12">
+      <div className="col-md-12">
+        {!dentroPeriodo ? (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'alerta-perido-fechamento',
+              mensagem:
+                'Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-2"
+          />
+        ) : ''}
+      </div>
       {mostrarModalCopiarAvaliacao ? (
         <ModalCopiarAvaliacao
           show={mostrarModalCopiarAvaliacao}
@@ -451,7 +468,7 @@ const AvaliacaoForm = ({ match }) => {
                 border
                 bold
                 className="mr-3"
-                disabled={!modoEdicao}
+                disabled={!dentroPeriodo || !modoEdicao}
               />
               <Button
                 label="Excluir"
@@ -459,7 +476,7 @@ const AvaliacaoForm = ({ match }) => {
                 border
                 className="mr-3"
                 disabled={
-                  !idAvaliacao || (permissaoTela && !permissaoTela.podeAlterar)
+                  !idAvaliacao || (permissaoTela && !permissaoTela.podeAlterar) || !dentroPeriodo
                 }
                 onClick={clicouBotaoExcluir}
               />
@@ -472,6 +489,7 @@ const AvaliacaoForm = ({ match }) => {
                   (permissaoTela &&
                     (!permissaoTela.podeIncluir ||
                       !permissaoTela.podeAlterar)) ||
+                      !dentroPeriodo ||
                   !modoEdicao
                 }
                 border
@@ -493,6 +511,7 @@ const AvaliacaoForm = ({ match }) => {
                       montaValidacoes(e.target.value);
                       validaInterdisciplinar(e.target.value);
                     }}
+                    desabilitado={!dentroPeriodo}
                   />
                 </Grid>
               </Div>
@@ -532,7 +551,7 @@ const AvaliacaoForm = ({ match }) => {
                         lista={listaDisciplinas}
                         valueOption="codigoComponenteCurricular"
                         valueText="nome"
-                        disabled={disciplinaDesabilitada}
+                        disabled={!dentroPeriodo || disciplinaDesabilitada}
                         placeholder="Selecione um componente curricular"
                         valueSelect={listaDisciplinasSelecionadas}
                         form={form}
@@ -547,7 +566,7 @@ const AvaliacaoForm = ({ match }) => {
                         lista={listaDisciplinas}
                         valueOption="codigoComponenteCurricular"
                         valueText="nome"
-                        disabled={disciplinaDesabilitada}
+                        disabled={!dentroPeriodo || disciplinaDesabilitada}
                         placeholder="Selecione um componente curricular"
                         form={form}
                         onChange={valor => {
@@ -570,6 +589,7 @@ const AvaliacaoForm = ({ match }) => {
                     placeholder="Atividade Avaliativa"
                     form={form}
                     onChange={aoTrocarCampos}
+                    disabled={!dentroPeriodo}
                   />
                 </Grid>
                 <Grid cols={!temRegencia ? 4 : 6} className="mb-4">
@@ -586,6 +606,7 @@ const AvaliacaoForm = ({ match }) => {
                       form.setFieldValue('nome', e.target.value);
                       aoTrocarCampos();
                     }}
+                    desabilitado={!dentroPeriodo}
                   />
                 </Grid>
               </Div>
@@ -599,6 +620,7 @@ const AvaliacaoForm = ({ match }) => {
                     onBlur={aoTrocarTextEditor}
                     value={descricao}
                     maxlength={500}
+                    disabled={!dentroPeriodo}
                   />
                 </Grid>
               </Div>
@@ -614,7 +636,7 @@ const AvaliacaoForm = ({ match }) => {
                     border
                     className="btnGroupItem"
                     onClick={() => setMostrarModalCopiarAvaliacao(true)}
-                    disabled={desabilitarCopiarAvaliacao}
+                    disabled={!dentroPeriodo || desabilitarCopiarAvaliacao}
                   />
                   {copias.length > 0 && (
                     <div style={{ marginLeft: '14px' }}>
