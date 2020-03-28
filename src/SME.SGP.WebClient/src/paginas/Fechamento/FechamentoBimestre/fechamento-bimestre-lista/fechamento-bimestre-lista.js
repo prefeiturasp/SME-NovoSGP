@@ -9,14 +9,16 @@ import {
   Marcadores,
   TabelaFechamento,
   SituacaoProcessadoComPendencias,
+  DataFechamentoProcessado,
 } from './fechamento-bimestre-lista.css';
 import { Colors } from '~/componentes';
 import Button from '~/componentes/button';
 import situacaoFechamentoDto from '~/dtos/situacaoFechamentoDto';
 import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFechamentoBimestre';
-import { erros } from '~/servicos/alertas';
+import { erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import RotasDto from '~/dtos/rotasDto';
+import * as moment from 'moment';
 
 const FechamentoBimestreLista = props => {
 
@@ -28,6 +30,9 @@ const FechamentoBimestreLista = props => {
   const [situacaoFechamento, setSituacaoFechamento] = useState(dados.situacao);
   const [podeProcessarReprocessar] = useState(dados.podeProcessarReprocessar);
   const [situacaosituacaoNomeFechamento, setSituacaosituacaoNomeFechamento] = useState(dados.situacaoNome);
+  const [dataFechamento] = useState(dados.dataFechamento);
+
+  const mensagempRrocessamento = 'Solicitação de fechamento realizada com sucesso. Em breve você receberá uma notificação com o resultado do processo.';
 
   const onClickReprocessarNotasConceitos = async () => {
     const processando = await ServicoFechamentoBimestre.reprocessarNotasConceitos(
@@ -36,6 +41,7 @@ const FechamentoBimestreLista = props => {
     if (processando && processando.status == 200) {
       setSituacaoFechamento(situacaoFechamentoDto.EmProcessamento);
       setSituacaosituacaoNomeFechamento('Em Processamento');
+      sucesso(mensagempRrocessamento);
     }
   };
 
@@ -62,6 +68,7 @@ const FechamentoBimestreLista = props => {
     if (processando && processando.status == 200) {
       setSituacaoFechamento(situacaoFechamentoDto.EmProcessamento);
       setSituacaosituacaoNomeFechamento('Em Processamento');
+      sucesso(mensagempRrocessamento);
     }
   };
 
@@ -73,6 +80,15 @@ history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${bimestre}/${codigoComponenteCu
   return (
     <TabelaFechamento>
       <div className="row pb-4">
+       {dados.fechamentoId && dataFechamento ? (
+          <div className="col-md-12 d-flex justify-content-end">
+            <DataFechamentoProcessado>
+              <span>{`Fechamento processado ${moment(dataFechamento).format('LLLL')}`}</span>
+            </DataFechamentoProcessado>
+          </div>
+        ) : (
+          ''
+        )}
         <div className="col-md-6 col-sm-12 d-flex justify-content-start">
           <Ordenacao
             className="botao-ordenacao-avaliacao"
@@ -117,13 +133,9 @@ history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${bimestre}/${codigoComponenteCu
           )}
         </div>
         <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
-          {situacaoFechamento ? (
-            <SituacaoProcessadoComPendencias>
-              <span>{situacaosituacaoNomeFechamento}</span>
-            </SituacaoProcessadoComPendencias>
-          ) : (
-            ''
-          )}
+          <SituacaoProcessadoComPendencias>
+            <span>{ situacaoFechamento ? situacaosituacaoNomeFechamento : 'Não executado' }</span>
+          </SituacaoProcessadoComPendencias>     
           <MarcadorAulas className="ml-2">
             <span>Aulas previstas </span>
             <span className="numero">
@@ -226,7 +238,7 @@ history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${bimestre}/${codigoComponenteCu
                       >
                         {item.percentualFrequencia
                           ? `${item.percentualFrequencia} %`
-                          : ''}
+                          : '0%'}
                       </td>
                     </tr>
                     {!ehSintese && ehRegencia ? (
