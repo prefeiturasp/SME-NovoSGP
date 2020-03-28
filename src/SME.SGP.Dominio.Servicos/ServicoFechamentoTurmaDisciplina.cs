@@ -15,6 +15,7 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoFechamentoTurmaDisciplina : IServicoFechamentoTurmaDisciplina
     {
         private readonly IConsultasDisciplina consultasDisciplina;
+        private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
@@ -49,6 +50,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioParametrosSistema repositorioParametrosSistema,
                                                 IRepositorioConceito repositorioConceito,
                                                 IConsultasDisciplina consultasDisciplina,
+                                                IConsultasFrequencia consultasFrequencia,
                                                 IServicoNotificacao servicoNotificacao,
                                                 IServicoPendenciaFechamento servicoPendenciaFechamento,
                                                 IServicoEOL servicoEOL,
@@ -67,6 +69,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
+            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -103,8 +106,14 @@ namespace SME.SGP.Dominio.Servicos
             if (!componenteSemNota)
                 VerificaPercentualReprovacao(entidadeDto, fechamentoTurma.PeriodoEscolar);
 
-            // Carrega notas alunos
-            var notasConceitosBimestre = await MapearParaEntidade(id, entidadeDto.NotaConceitoAlunos);
+
+            var notasConceitosBimestre = Enumerable.Empty<NotaConceitoBimestre>();
+            // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
+            if (componenteSemNota && id > 0)
+                notasConceitosBimestre = await AtualizaSinteseAlunos(id);
+            else
+                // Carrega notas alunos
+                notasConceitosBimestre = await MapearParaEntidade(id, entidadeDto.NotaConceitoAlunos);
 
             unitOfWork.IniciarTransacao();
             try
@@ -127,6 +136,18 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private async Task<IEnumerable<NotaConceitoBimestre>> AtualizaSinteseAlunos(long fechamentoId)
+        {
+            var notasConceitosBimestre = await repositorioNotaConceitoBimestre.ObterPorFechamentoTurma(fechamentoId);
+            foreach (var notaConceitoBimestre in notasConceitosBimestre)
+            {
+                var sinteseDto = consultasFrequencia.ObterSinteseAluno(notaConceitoBimestre.CodigoAluno, DateTime.Today, notaConceitoBimestre.DisciplinaId.ToString());
+                notaConceitoBimestre.SinteseId = (long)sinteseDto.SinteseId;
+            }
+
+            return notasConceitosBimestre;
         }
 
         private void VerificaPercentualReprovacao(FechamentoTurmaDisciplinaDto fechamentoTurmaDto, PeriodoEscolar periodoEscolar)
