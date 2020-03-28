@@ -14,6 +14,7 @@ namespace SME.SGP.Infra
         public long? DisciplinaId { get; set; }
         public bool EhCompartilhada { get; set; }
         public bool EhRegencia { get; set; }
+        public bool DentroPeriodo { get; set; }
         public string Horario { get; set; }
         public string Modalidade { get; set; }
         public bool PermiteRegistroFrequencia { get; set; }
