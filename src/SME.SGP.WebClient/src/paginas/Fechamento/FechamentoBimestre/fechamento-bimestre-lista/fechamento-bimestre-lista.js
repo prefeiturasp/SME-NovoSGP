@@ -15,14 +15,17 @@ import Button from '~/componentes/button';
 import situacaoFechamentoDto from '~/dtos/situacaoFechamentoDto';
 import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFechamentoBimestre';
 import { erros } from '~/servicos/alertas';
+import history from '~/servicos/history';
+import RotasDto from '~/dtos/rotasDto';
 
 const FechamentoBimestreLista = props => {
-  const { dados, ehRegencia } = props;
+  const { dados, ehRegencia, codigoComponenteCurricular } = props;
   const [dadosLista, setDadosLista] = useState(
     dados ? dados.alunos : undefined
   );
-  
+
   const [situacaoFechamento, setSituacaoFechamento] = useState(dados.situacao);
+  const [situacaosituacaoNomeFechamento, setSituacaosituacaoNomeFechamento] = useState(dados.situacaoNome);
 
   const onClickReprocessar = async () => {
     const processando = await ServicoFechamentoBimestre.reprocessar(
@@ -30,7 +33,13 @@ const FechamentoBimestreLista = props => {
     ).catch(e => erros(e));
     if (processando && processando.status == 200) {
       setSituacaoFechamento(situacaoFechamentoDto.EmProcessamento);
+      setSituacaosituacaoNomeFechamento('Em Processamento');
     }
+  };
+
+  const onClickVerPendecias = async () => {
+    const { bimestre } = dados;
+    history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${bimestre}/${codigoComponenteCurricular}`);
   };
 
   return (
@@ -48,27 +57,31 @@ const FechamentoBimestreLista = props => {
             desabilitado={dadosLista ? dadosLista.length <= 0 : true}
           />
           {situacaoFechamento ==
-          situacaoFechamentoDto.ProcessadoComPendencias ? (
-            <Button
-              label="Reprocessar"
-              color={Colors.Azul}
-              border
-              className="mr-2"
-              onClick={onClickReprocessar}
-            />
-          ) : (
-            ''
-          )}
+            situacaoFechamentoDto.ProcessadoComPendencias ? (
+              <>
+                <Button
+                  label="Reprocessar"
+                  color={Colors.Azul}
+                  border
+                  className="mr-2"
+                  onClick={onClickReprocessar}
+                />
+                <Button
+                  label="Ver pendências"
+                  color={Colors.Azul}
+                  border
+                  className="mr-2"
+                  onClick={onClickVerPendecias}
+                />
+              </>
+            ) : (
+              ''
+            )}
         </div>
-        <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
-          {situacaoFechamento ==
-          situacaoFechamentoDto.ProcessadoComPendencias ? (
-            <SituacaoProcessadoComPendencias>
-              <span>Processado Com Pendências</span>
-            </SituacaoProcessadoComPendencias>
-          ) : (
-            ''
-          )}
+        <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">          
+          <SituacaoProcessadoComPendencias>
+            <span>{ situacaoFechamento ? situacaosituacaoNomeFechamento : 'Não executado' }</span>
+          </SituacaoProcessadoComPendencias> 
           <MarcadorAulas className="ml-2">
             <span>Aulas previstas </span>
             <span className="numero">
@@ -137,7 +150,13 @@ const FechamentoBimestreLista = props => {
                             idLinhaRegencia={idLinhaRegencia}
                           />
                         ) : item.notas && item.notas.length > 0 ? (
-                          item.notas[0].notaConceito
+                          item.notas[0].ehConceito ? (
+                            item.notas[0].conceitoDescricao
+                          ) : (
+                            ServicoFechamentoBimestre.formatarNotaConceito(
+                              item.notas[0].notaConceito
+                            )
+                          )
                         ) : null}
                       </td>
                       <td

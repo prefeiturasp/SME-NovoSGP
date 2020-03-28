@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
         public Periodo Periodo { get; set; }
         public List<NotaConceitoAlunoBimestreDto> Alunos { get; set; }
         public SituacaoFechamento Situacao { get; set; }
+        public string SituacaoNome { get; set; }
     }
 }

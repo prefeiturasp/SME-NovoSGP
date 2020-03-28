@@ -20,6 +20,7 @@ const AulaDadaAulaPrevista = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
+  const periodo = turmaSelecionada ? turmaSelecionada.periodo : 0;
   const { modalidade } = turmaSelecionada;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
@@ -79,7 +80,7 @@ const AulaDadaAulaPrevista = () => {
   const buscarDados = async disciplinaId => {
     setCarregandoDados(true);
     const resposta = await api.get(
-      `v1/aula-prevista/modalidades/${modalidade}/turmas/${turmaId}/disciplinas/${disciplinaId}`
+      `v1/aula-prevista/modalidades/${modalidade}/turmas/${turmaId}/disciplinas/${disciplinaId}/semestres/${periodo}`
     );
     const dadosAula = resposta.data;
     let periodosFechados = '';

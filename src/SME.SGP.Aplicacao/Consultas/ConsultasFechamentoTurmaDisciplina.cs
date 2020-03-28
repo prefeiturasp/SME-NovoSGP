@@ -56,10 +56,10 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<NotaConceitoBimestreDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaId)
             => await repositorioFechamentoTurmaDisciplina.ObterNotasBimestre(codigoAluno, fechamentoTurmaId);
 
-        public async Task<FechamentoTurmaDisciplinaBimestreDto> ObterNotasFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int? bimestre)
+        public async Task<FechamentoTurmaDisciplinaBimestreDto> ObterNotasFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int? bimestre, int semestre)
         {
             var turma = repositorioTurma.ObterPorCodigo(turmaId);
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, ModalidadeParaModalidadeTipoCalendario(turma.ModalidadeCodigo));
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, ModalidadeParaModalidadeTipoCalendario(turma.ModalidadeCodigo), semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
@@ -103,12 +103,13 @@ namespace SME.SGP.Aplicacao
                     disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turmaId), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
 
                 fechamentoBimestre.Situacao = fechamentoTurma.Situacao;
+                fechamentoBimestre.SituacaoNome = fechamentoTurma.Situacao.Name();
                 fechamentoBimestre.FechamentoId = fechamentoTurma.Id;
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
 
                 var bimestreDoPeriodo = consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
 
-                foreach (var aluno in alunos)
+                foreach (var aluno in alunos.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
                 {
                     var alunoDto = new NotaConceitoAlunoBimestreDto();
                     alunoDto.NumeroChamada = aluno.NumeroAlunoChamada;
@@ -127,18 +128,20 @@ namespace SME.SGP.Aplicacao
                         // Carrega notas do bimestre
                         var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
 
-                        if(notasConceitoBimestre.Count() > 0)
+                        if (notasConceitoBimestre.Count() > 0)
                             alunoDto.Notas = new List<NotaConceitoBimestreRetornoDto>();
 
                         foreach (var notaConceitoBimestre in notasConceitoBimestre)
                         {
+                            var disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId) : null;
+                            var nomeDisciplina = disciplinaEOL.Regencia ? disciplina.Nome : disciplinaEOL.Nome;
                             ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
                             {
                                 DisciplinaId = notaConceitoBimestre.DisciplinaId,
-                                Disciplina = disciplinaEOL.Regencia ?
-                                    disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :
-                                    disciplinaEOL.Nome,
-                                NotaConceito = notaConceitoBimestre.Nota > 0 ? notaConceitoBimestre.Nota.ToString() : ObterConceito(notaConceitoBimestre.ConceitoId.Value)
+                                Disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :                    disciplinaEOL.Nome,
+                                NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota.Value,
+                                ehConceito = notaConceitoBimestre.ConceitoId.HasValue,
+                                conceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : ""
                             });
                         }
 
@@ -154,7 +157,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var aulaPrevisa = await consultasAulaPrevista.ObterAulaPrevistaDada(turma.ModalidadeCodigo, turma.CodigoTurma, disciplinaId.ToString());
+            var aulaPrevisa = await consultasAulaPrevista.ObterAulaPrevistaDada(turma.ModalidadeCodigo, turma.CodigoTurma, disciplinaId.ToString(), semestre);
             var aulaPrevistaBimestreAtual = new AulasPrevistasDadasDto();
             if (aulaPrevisa != null)
             {
@@ -191,7 +194,13 @@ namespace SME.SGP.Aplicacao
             else return periodoEscolar.Bimestre;
         }
 
-        private string ObterConceito(long id)
+        private double ObterConceito(long id)
+        {
+            var conceito = repositorioConceito.ObterPorId(id);
+            return conceito != null ? conceito.Id : 0;
+        }
+
+        private string ObterConceitoDescricao(long id)
         {
             var conceito = repositorioConceito.ObterPorId(id);
             return conceito != null ? conceito.Valor : "";

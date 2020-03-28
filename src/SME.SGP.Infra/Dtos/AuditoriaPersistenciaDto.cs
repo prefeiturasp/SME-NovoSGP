@@ -5,9 +5,9 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class AuditoriaFechamentoTurmaDto: AuditoriaDto
+    public class AuditoriaPersistenciaDto: AuditoriaDto
     {
-        public AuditoriaFechamentoTurmaDto(): base()
+        public AuditoriaPersistenciaDto(): base()
         {
             Sucesso = true;
         }
@@ -15,8 +15,8 @@ namespace SME.SGP.Infra
         public bool Sucesso { get; set; }
         public string MensagemConsistencia { get; set; }
 
-        public static explicit operator AuditoriaFechamentoTurmaDto(EntidadeBase entidade)
-            => new AuditoriaFechamentoTurmaDto()
+        public static explicit operator AuditoriaPersistenciaDto(EntidadeBase entidade)
+            => new AuditoriaPersistenciaDto()
             {
                 Id = entidade.Id,
                 CriadoEm = entidade.CriadoEm,
