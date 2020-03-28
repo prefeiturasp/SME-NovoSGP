@@ -261,7 +261,7 @@ namespace SME.SGP.Aplicacao
                                         Disciplina = disciplinaEOL.Nome,
                                         NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ?
                                             notaConceitoBimestre.ConceitoId.Value :
-                                            notaConceitoBimestre.Nota.Value,
+                                            notaConceitoBimestre.Nota,
                                         ehConceito = notaConceitoBimestre.ConceitoId.HasValue
                                     });
                         }
