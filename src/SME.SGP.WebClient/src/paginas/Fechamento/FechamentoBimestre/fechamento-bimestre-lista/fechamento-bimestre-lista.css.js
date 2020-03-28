@@ -75,3 +75,9 @@ export const SituacaoProcessadoComPendencias = styled.div`
     margin: 10px;
   }
 `;
+
+export const  DataFechamentoProcessado = styled.div`  
+  font-size: 12px;
+  font-weight: bold;  
+  color: rgb(33, 37, 41);
+`;
