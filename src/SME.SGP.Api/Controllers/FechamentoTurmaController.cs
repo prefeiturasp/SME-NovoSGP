@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     public class FechamentoTurmaController : ControllerBase
     {
         [HttpPost()]
-        [ProducesResponseType(typeof(AuditoriaFechamentoTurmaDto), 200)]
+        [ProducesResponseType(typeof(AuditoriaPersistenciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
@@ -26,8 +26,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar(string turmaCodigo, long disciplinaCodigo, int? bimestre, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
-            => Ok(await consultas.ObterNotasFechamentoTurmaDisciplina(turmaCodigo, disciplinaCodigo, bimestre));
+        public async Task<IActionResult> Listar(string turmaCodigo, long disciplinaCodigo, int? bimestre, int semestre, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
+            => Ok(await consultas.ObterNotasFechamentoTurmaDisciplina(turmaCodigo, disciplinaCodigo, bimestre, semestre));
 
         [HttpPost("reprocessar/{fechamentoId}")]
         [ProducesResponseType(200)]

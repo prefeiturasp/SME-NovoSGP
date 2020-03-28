@@ -59,5 +59,14 @@ namespace SME.SGP.Api.Controllers
             var dataConsulta = dataReferencia == DateTime.MinValue ? DateTime.Today : dataReferencia;
             return Ok(await consultas.PeriodosEmAbertoTurma(turmaCodigo, dataConsulta));
         }
+
+        [HttpGet("modalidades/{modalidade}/bimestres/atual")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult ObterAtual(int modalidade, [FromServices]IConsultasPeriodoEscolar consultas)
+        {
+            return Ok(consultas.ObterBimestre(DateTime.Today, (Dominio.Modalidade)modalidade));
+        }
     }
 }

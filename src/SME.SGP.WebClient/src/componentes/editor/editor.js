@@ -45,6 +45,7 @@ export default function Editor(props) {
     temErro,
     mensagemErro,
     desabilitar,
+    removerToolbar,
   } = props;
 
   const possuiErro = () => {
@@ -101,9 +102,10 @@ export default function Editor(props) {
   const editorSemValidacoes = () => {
     return (
       <CKEditor
+        disabled={desabilitar || false}
         editor={ClassicEditor}
         config={{
-          toolbar,
+          toolbar: removerToolbar ? [] : toolbar,
           table: { isEnabled: true },
           readOnly: desabilitar || false,
           language: 'pt-br',

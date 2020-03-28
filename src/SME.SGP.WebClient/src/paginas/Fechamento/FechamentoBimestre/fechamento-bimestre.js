@@ -113,7 +113,8 @@ const FechamentoBismestre = () => {
       const fechamento = await ServicoFechamentoBimestre.buscarDados(
         turmaSelecionada.turma,
         disciplinaIdSelecionada,
-        bimestre
+        bimestre,
+        turmaSelecionada.periodo
       ).finally(() => {
         setCarregandoBimestres(false);
       });
@@ -290,6 +291,7 @@ const FechamentoBismestre = () => {
                         dados={dadosBimestre1}
                         ehRegencia={ehRegencia}
                         situacaoFechamento={situacaoFechamento}
+                        codigoComponenteCurricular={disciplinaIdSelecionada}
                       />
                     ) : null}
                   </TabPane>
@@ -300,6 +302,7 @@ const FechamentoBismestre = () => {
                         dados={dadosBimestre2}
                         ehRegencia={ehRegencia}
                         situacaoFechamento={situacaoFechamento}
+                        codigoComponenteCurricular={disciplinaIdSelecionada}
                       />
                     ) : null}
                   </TabPane>
@@ -310,6 +313,7 @@ const FechamentoBismestre = () => {
                           dados={dadosBimestre3}
                           ehRegencia={ehRegencia}
                           situacaoFechamento={situacaoFechamento}
+                          codigoComponenteCurricular={disciplinaIdSelecionada}
                         />
                       ) : null}
                     </TabPane>) : null
@@ -321,6 +325,7 @@ const FechamentoBismestre = () => {
                           dados={dadosBimestre4}
                           ehRegencia={ehRegencia}
                           situacaoFechamento={situacaoFechamento}
+                          codigoComponenteCurricular={disciplinaIdSelecionada}
                         />
                       ) : null}
                     </TabPane>) : null
