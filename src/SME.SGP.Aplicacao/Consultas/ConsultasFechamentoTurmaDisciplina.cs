@@ -131,6 +131,7 @@ namespace SME.SGP.Aplicacao
                     fechamentoBimestre.Situacao = fechamentoTurma.Situacao;
                     fechamentoBimestre.SituacaoNome = fechamentoTurma.Situacao.Name();
                     fechamentoBimestre.FechamentoId = fechamentoTurma.Id;
+                    fechamentoBimestre.DataFechamento = fechamentoTurma.AlteradoEm.HasValue ? fechamentoTurma.AlteradoEm.Value : fechamentoTurma.CriadoEm;
                 }
 
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
