@@ -74,6 +74,7 @@ const CadastroAula = ({ match }) => {
     visualizarFormExcRecorrencia,
     setVisualizarFormExcRecorrencia,
   ] = useState(false);
+  const [dentroPeriodo, setDentroPeriodo] = useState(true);
 
   const [inicial, setInicial] = useState({
     tipoAula: 1,
@@ -374,6 +375,7 @@ const CadastroAula = ({ match }) => {
         alteradoEm: buscaAula.data.alteradoEm,
       });
       setExibirAuditoria(true);
+      setDentroPeriodo(buscaAula.data.dentroPeriodo);
     }
   };
 
@@ -711,6 +713,20 @@ const CadastroAula = ({ match }) => {
           />
         ) : null}
       </div>
+      <div className="col-md-12">
+        {!dentroPeriodo ? (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'alerta-perido-fechamento',
+              mensagem:
+                'Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-2"
+          />
+        ) : ''}
+      </div>
       <Cabecalho pagina={`Cadastro de Aula - ${getDataFormatada()}`} />
       <Card>
         <ModalConteudoHtml
@@ -784,7 +800,7 @@ const CadastroAula = ({ match }) => {
                     placeholder="Data da aula"
                     formatoData="DD/MM/YYYY"
                     label=""
-                    desabilitado={somenteLeitura}
+                    desabilitado={somenteLeitura || !dentroPeriodo}
                     name="dataAulaCompleta"
                     onChange={onChangeCampos}
                   />
@@ -806,7 +822,7 @@ const CadastroAula = ({ match }) => {
                     border
                     className="mr-2"
                     onClick={() => onClickCancelar(form)}
-                    disabled={somenteLeitura || !modoEdicao}
+                    disabled={somenteLeitura || !dentroPeriodo || !modoEdicao}
                   />
                   <Button
                     id={shortid.generate()}
@@ -816,7 +832,7 @@ const CadastroAula = ({ match }) => {
                     className="mr-2"
                     hidden={novoRegistro}
                     onClick={onClickExcluir}
-                    disabled={somenteLeitura}
+                    disabled={somenteLeitura || !dentroPeriodo}
                   />
                   <Button
                     id={shortid.generate()}
@@ -828,7 +844,8 @@ const CadastroAula = ({ match }) => {
                     disabled={
                       somenteLeitura ||
                       (novoRegistro && !permissaoTela.podeIncluir) ||
-                      (!novoRegistro && !permissaoTela.podeAlterar)
+                      (!novoRegistro && !permissaoTela.podeAlterar) ||
+                      !dentroPeriodo
                     }
                     onClick={() => validaAntesDoSubmit(form)}
                   />
@@ -837,7 +854,7 @@ const CadastroAula = ({ match }) => {
               <div className="row">
                 <div className="col-sm-12 col-md-5 col-lg-3 col-xl-3 mb-2 mr-0 pr-0">
                   <RadioGroupButton
-                    desabilitado={somenteLeitura || !novoRegistro}
+                    desabilitado={somenteLeitura || !dentroPeriodo || !novoRegistro}
                     id="tipo-aula"
                     label="Tipo de aula"
                     form={form}
@@ -866,6 +883,7 @@ const CadastroAula = ({ match }) => {
                     placeholder="Selecione um componente curricular"
                     disabled={
                       somenteLeitura ||
+                      !dentroPeriodo ||
                       !!(
                         listaDisciplinas &&
                         listaDisciplinas.length &&
@@ -880,7 +898,7 @@ const CadastroAula = ({ match }) => {
                     <SelectComponent
                       id="disciplinaCompartilhadaId"
                       form={form}
-                      disabled={somenteLeitura}
+                      disabled={somenteLeitura || !dentroPeriodo}
                       name="disciplinaCompartilhadaId"
                       lista={listaDisciplinasCompartilhadas}
                       valueOption="codigoComponenteCurricular"
@@ -895,7 +913,7 @@ const CadastroAula = ({ match }) => {
                     id="quantidadeRadio"
                     label="Quantidade de Aulas"
                     form={form}
-                    desabilitado={somenteLeitura}
+                    desabilitado={somenteLeitura || !dentroPeriodo}
                     opcoes={opcoesQuantidadeAulas}
                     name="quantidadeRadio"
                     onChange={() => {
@@ -915,6 +933,7 @@ const CadastroAula = ({ match }) => {
                     id="quantidadeTexto"
                     desabilitado={
                       somenteLeitura ||
+                      !dentroPeriodo ||
                       !idDisciplina ||
                       (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
                       (ehRegencia && !ehReposicao)
@@ -933,7 +952,7 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={somenteLeitura || ehReposicao || ehAulaUnica}
+                    desabilitado={somenteLeitura || !dentroPeriodo || ehReposicao || ehAulaUnica}
                     onChange={e => {
                       onChangeCampos();
                       setEhRecorrencia(e.target.value !== 1);
