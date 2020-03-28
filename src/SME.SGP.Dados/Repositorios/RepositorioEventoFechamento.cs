@@ -54,17 +54,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> UeEmFechamento(DateTime dataReferencia, string dreCodigo, string ueCodigo, long tipoCalendarioId, int bimestre)
         {
-            var query = @"select count(pf.id) from periodo_fechamento pf 
+            var query = new StringBuilder();
+
+            query.AppendLine(@"select count(pf.id) from periodo_fechamento pf 
                         inner join periodo_fechamento_bimestre pfb on pf.id = pfb.periodo_fechamento_id 
                         inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
                         inner join dre dre on dre.id = pf.dre_id 
                         inner join ue ue on ue.id = pf.ue_id 
                         where pe.tipo_calendario_id = @tipoCalendarioId
-                        and pe.bimestre =@bimestre
                         and ue.ue_id = @ueCodigo
                         and dre.dre_id = @dreCodigo
                         and pfb.inicio_fechamento <= @dataReferencia
-                        and pfb.final_fechamento >= @dataReferencia";
+                        and pfb.final_fechamento >= @dataReferencia");
+
+            if(bimestre > 0)
+                query.AppendLine("and pe.bimestre = @bimestre");
 
             return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new
             {
