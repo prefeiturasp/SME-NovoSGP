@@ -132,10 +132,10 @@ history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${bimestre}/${codigoComponenteCu
             ''
           )}
         </div>
-        <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
+        <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">          
           <SituacaoProcessadoComPendencias>
             <span>{ situacaoFechamento ? situacaosituacaoNomeFechamento : 'Não executado' }</span>
-          </SituacaoProcessadoComPendencias>     
+          </SituacaoProcessadoComPendencias> 
           <MarcadorAulas className="ml-2">
             <span>Aulas previstas </span>
             <span className="numero">
