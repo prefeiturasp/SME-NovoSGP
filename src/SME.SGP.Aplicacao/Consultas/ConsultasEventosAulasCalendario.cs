@@ -163,6 +163,7 @@ namespace SME.SGP.Aplicacao
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
                         Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
                         Turma = x.TurmaNome,
+                        DentroPeriodo = x.DentroPeriodo,
                         UnidadeEscolar = x.UeNome,
                         Atividade = listaAtividades
                     }
