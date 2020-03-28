@@ -173,7 +173,8 @@ namespace SME.SGP.Aplicacao
             return new DiaEventoAula
             {
                 EventosAulas = eventosAulas,
-                Letivo = comandosDiasLetivos.VerificarSeDataLetiva(eventos, data)
+                Letivo = comandosDiasLetivos.VerificarSeDataLetiva(eventos, data),
+                DentroPeriodo = await consultasAula.AulaDentroPeriodo(filtro.TurmaId, filtro.Data)
             };
         }
 
