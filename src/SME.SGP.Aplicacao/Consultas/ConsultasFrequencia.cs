@@ -22,6 +22,18 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
 
+        private double _mediaFrequencia;
+        public double MediaFrequencia
+        {
+            get 
+            { 
+                if (_mediaFrequencia == 0)
+                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
+
+                return _mediaFrequencia; 
+            }
+        }
+
         public ConsultasFrequencia(IServicoFrequencia servicoFrequencia,
                                    IServicoEOL servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
@@ -183,6 +195,20 @@ namespace SME.SGP.Aplicacao
 
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
             => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual);
+
+        public SinteseDto ObterSinteseAluno(string codigoAluno, DateTime dataReferencia, string disciplinaId)
+        {
+            var frequencia = ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataReferencia);
+            var sintese = frequencia == null ? SinteseEnum.Frequente :
+                    frequencia.PercentualFrequencia >= MediaFrequencia ? 
+                        SinteseEnum.Frequente : SinteseEnum.NaoFrequente;
+
+            return new SinteseDto()
+            {
+                SinteseId = sintese,
+                SinteseNome = sintese.Name()
+            };
+        }
 
         private PeriodoEscolarDto BuscaPeriodo(int anoLetivo, Modalidade modalidadeCodigo, int bimestre, int semestre)
         {

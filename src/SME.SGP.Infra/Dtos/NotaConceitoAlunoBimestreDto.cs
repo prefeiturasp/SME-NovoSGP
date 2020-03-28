@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Dominio;
+using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -13,7 +14,7 @@ namespace SME.SGP.Infra
         public double PercentualFrequencia { get; set; }
         public double QuantidadeCompensacoes { get; set; }
         public double QuantidadeFaltas { get; set; }
-        public int SinteseId { get; set; }
+        public SinteseEnum SinteseId { get; set; }
         public string Sintese { get; set; }
     }
 }

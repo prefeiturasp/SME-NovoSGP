@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConceito repositorioConceito;
         private readonly IRepositorioSintese repositorioSintese;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioTipoCalendario repositorioTipoCalendario,
             IRepositorioTurma repositorioTurma,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
+            IConsultasFrequencia consultasFrequencia,
             IConsultasAulaPrevista consultasAulaPrevista,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IServicoEOL servicoEOL,
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
+            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.consultasAulaPrevista = consultasAulaPrevista ?? throw new ArgumentNullException(nameof(consultasAulaPrevista));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -151,7 +151,7 @@ namespace SME.SGP.Aplicacao
                         alunoDto.Informacao = marcador.Descricao;
                     }
 
-                    var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, disciplinaId.ToString());
+                    var frequenciaAluno = consultasFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim);
                     if (frequenciaAluno != null)
                     {
                         alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
@@ -171,13 +171,10 @@ namespace SME.SGP.Aplicacao
                     {
                         if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
                         {
-                            var mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
+                            var sinteseDto = consultasFrequencia.ObterSinteseAluno(aluno.CodigoAluno, periodoAtual.PeriodoFim, disciplinaId.ToString());
 
-                            bool frequente = alunoDto.PercentualFrequencia >= mediaFrequencia;
-
-                            alunoDto.SinteseId = frequente ? (int)SinteseEnum.Frequente : (int)SinteseEnum.NaoFrequente;
-                            alunoDto.Sintese = frequente ? SinteseEnum.Frequente.GetAttribute<DisplayAttribute>().Name :
-                                                           SinteseEnum.NaoFrequente.GetAttribute<DisplayAttribute>().Name;
+                            alunoDto.SinteseId = sinteseDto.SinteseId;
+                            alunoDto.Sintese = sinteseDto.SinteseNome;
                         }
                         else
                         {
@@ -192,7 +189,7 @@ namespace SME.SGP.Aplicacao
                                 var notaConceitoBimestre = notasConceitoBimestre.FirstOrDefault();
                                 if (notaConceitoBimestre != null)
                                 {
-                                    alunoDto.SinteseId = (int)notaConceitoBimestre.SinteseId.Value;
+                                    alunoDto.SinteseId = (SinteseEnum)notaConceitoBimestre.SinteseId.Value;
                                     alunoDto.Sintese = ObterSintese(notaConceitoBimestre.SinteseId.Value);
                                 }
                             }
