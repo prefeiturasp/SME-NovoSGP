@@ -110,7 +110,7 @@ namespace SME.SGP.Dominio.Servicos
             var notasConceitosBimestre = Enumerable.Empty<NotaConceitoBimestre>();
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (componenteSemNota && id > 0)
-                notasConceitosBimestre = await AtualizaSinteseAlunos(id);
+                notasConceitosBimestre = await AtualizaSinteseAlunos(id, fechamentoTurma.PeriodoEscolar.PeriodoFim);
             else
                 // Carrega notas alunos
                 notasConceitosBimestre = await MapearParaEntidade(id, entidadeDto.NotaConceitoAlunos);
@@ -138,12 +138,12 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task<IEnumerable<NotaConceitoBimestre>> AtualizaSinteseAlunos(long fechamentoId)
+        private async Task<IEnumerable<NotaConceitoBimestre>> AtualizaSinteseAlunos(long fechamentoId, DateTime dataReferencia)
         {
             var notasConceitosBimestre = await repositorioNotaConceitoBimestre.ObterPorFechamentoTurma(fechamentoId);
             foreach (var notaConceitoBimestre in notasConceitosBimestre)
             {
-                var sinteseDto = consultasFrequencia.ObterSinteseAluno(notaConceitoBimestre.CodigoAluno, DateTime.Today, notaConceitoBimestre.DisciplinaId.ToString());
+                var sinteseDto = consultasFrequencia.ObterSinteseAluno(notaConceitoBimestre.CodigoAluno, dataReferencia, notaConceitoBimestre.DisciplinaId.ToString());
                 notaConceitoBimestre.SinteseId = (long)sinteseDto.SinteseId;
             }
 
