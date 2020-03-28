@@ -1,9 +1,9 @@
 import api from '~/servicos/api';
 
 const ServicoFechamentoBimestre = {
-  buscarDados(turmaCodigo, disciplinaCodigo, bimestre) {
+  buscarDados(turmaCodigo, disciplinaCodigo, bimestre, periodo) {
     return api.get(
-      `/v1/fechamentos/turmas?turmaCodigo=${turmaCodigo}&disciplinaCodigo=${disciplinaCodigo}&bimestre=${bimestre}`
+      `/v1/fechamentos/turmas?turmaCodigo=${turmaCodigo}&disciplinaCodigo=${disciplinaCodigo}&bimestre=${bimestre}&semestre=${periodo}`
     );
   },
 
