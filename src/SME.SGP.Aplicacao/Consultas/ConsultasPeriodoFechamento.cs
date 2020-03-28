@@ -54,6 +54,13 @@ namespace SME.SGP.Aplicacao
             return await TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia);
         }
 
+        public async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, DateTime dataReferencia, int bimestre = 0)
+        {
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
+
+            return await TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, bimestre);
+        }
+
         public async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0)
         {
             if (turma.Ue == null)
@@ -62,7 +69,7 @@ namespace SME.SGP.Aplicacao
                 turma.Ue.AdicionarDre(repositorioDre.ObterPorId(turma.Ue.DreId));
 
             var ueEmFechamento = await repositorioEventoFechamento.UeEmFechamento(dataReferencia, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, tipoCalendario.Id, bimestre);
-
+            
             return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario.Id, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
         }
 

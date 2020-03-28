@@ -89,7 +89,21 @@ namespace SME.SGP.Aplicacao.Consultas
         }
 
         public int ObterBimestre(DateTime data, Modalidade modalidade)
-            => ((data.Month + 2) / 3) - (modalidade == Modalidade.EJA && data.Month >= 6 ? 2 : 0);
+        {
+            var modalidadeCalendario = modalidade == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
+
+            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(data.Year, modalidadeCalendario);
+            if (tipoCalendario == null)
+                throw new NegocioException("Não encontrado calendario escolar cadastrado");
+
+            var periodosEscolares = repositorio.ObterPorTipoCalendario(tipoCalendario.Id);
+            if (periodosEscolares == null || !periodosEscolares.Any())
+                throw new NegocioException("Não encontrado periodo escolar cadastrado");
+
+            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio <= data && x.PeriodoFim >= data);
+
+            return periodoEscolar?.Bimestre ?? 0;
+        }
 
         public async Task<IEnumerable<PeriodoEscolarDto>> ObterPeriodosEmAberto(long ueId, Modalidade modalidadeCodigo, int anoLetivo)
         {

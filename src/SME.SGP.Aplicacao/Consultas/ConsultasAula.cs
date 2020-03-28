@@ -13,6 +13,8 @@ namespace SME.SGP.Aplicacao
     public class ConsultasAula : IConsultasAula
     {
         private readonly IConsultasDisciplina consultasDisciplina;
+        private readonly IConsultasTurma consultasTurma;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioTurma repositorioTurma;
@@ -28,12 +30,16 @@ namespace SME.SGP.Aplicacao
                              IRepositorioTurma repositorioTurma,
                              IServicoUsuario servicoUsuario,
                              IServicoEOL servicoEol,
-                             IConsultasDisciplina consultasDisciplina)
+                             IConsultasDisciplina consultasDisciplina,
+                             IConsultasTurma consultasTurma,
+                             IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
@@ -47,9 +53,32 @@ namespace SME.SGP.Aplicacao
             if (aula == null)
                 throw new NegocioException($"Aula de id {id} não encontrada");
 
+            var aberto = await AulaPermiteEdicao(aula);
+
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+
             string disciplinaId = await ObterDisciplinaIdAulaEOL(usuarioLogado, aula, usuarioLogado.EhProfessorCj());
-            return MapearParaDto(aula, disciplinaId);
+
+            return MapearParaDto(aula, disciplinaId, aberto);
+        }
+
+        public async Task<bool> AulaPermiteEdicao(Aula aula)
+        {
+            var turma = await consultasTurma.ObterComUeDrePorCodigo(aula.TurmaId);
+
+            if (turma == null)
+                throw new NegocioException($"Não foi possivel obter a turma da aula");
+
+            var bimestreAtual = consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo);
+            var bimestreAula = consultasPeriodoEscolar.ObterBimestre(aula.DataAula, turma.ModalidadeCodigo);
+
+            if (bimestreAtual == 0 || bimestreAula == 0)
+                return false;
+
+            if (bimestreAula >= bimestreAtual)
+                return true;
+
+            return await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTime.Now, bimestreAtual);
         }
 
         public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
@@ -176,7 +205,7 @@ namespace SME.SGP.Aplicacao
             => new string[] { "1214", "1215", "1216", "1217", "1218", "1219", "1220", "1221", "1222", "1223" }
                 .Contains(disciplina);
 
-        private AulaConsultaDto MapearParaDto(Aula aula, string disciplinaId)
+        private AulaConsultaDto MapearParaDto(Aula aula, string disciplinaId, bool aberto)
         {
             AulaConsultaDto dto = new AulaConsultaDto()
             {
@@ -186,6 +215,7 @@ namespace SME.SGP.Aplicacao
                 TurmaId = aula.TurmaId,
                 UeId = aula.UeId,
                 TipoCalendarioId = aula.TipoCalendarioId,
+                DentroPeriodo = aberto,
                 TipoAula = aula.TipoAula,
                 Quantidade = aula.Quantidade,
                 ProfessorRf = aula.ProfessorRf,

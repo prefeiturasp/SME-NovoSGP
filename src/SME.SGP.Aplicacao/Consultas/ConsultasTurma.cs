@@ -15,10 +15,12 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
 
+
         public ConsultasTurma(IRepositorioTurma repositorioTurma,
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IConsultasPeriodoFechamento consultasPeriodoFechamento,
-                                IConsultasPeriodoEscolar consultasPeriodoEscolar)
+                                IConsultasPeriodoEscolar consultasPeriodoEscolar
+            )
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
@@ -32,7 +34,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException($"Turma de código {codigoTurma} não localizada!");
 
-            return await TurmaEmPeriodoAberto(turma, dataReferencia);
+            return await TurmaEmPeriodoAberto(turma, dataReferencia, bimestre);
         }
 
         public async Task<bool> TurmaEmPeriodoAberto(long turmaId, DateTime dataReferencia, int bimestre = 0)
@@ -41,7 +43,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException($"Turma de ID {turmaId} não localizada!");
 
-            return await TurmaEmPeriodoAberto(turma, dataReferencia);
+            return await TurmaEmPeriodoAberto(turma, dataReferencia, bimestre);
         }
 
         public async Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia, int bimestre = 0)
