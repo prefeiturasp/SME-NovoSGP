@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -178,8 +179,8 @@ namespace SME.SGP.Dados.Repositorios
                          inner join ue on ue.id = fr.ue_id
                          where not fr.excluido
                            and frb.bimestre = @bimestre
-                           and TO_DATE(fr.inicio, 'yyyy/mm/dd') = TO_DATE(@dataInicio, 'yyyy/mm/dd')
-                           and TO_DATE(fr.fim, 'yyyy/mm/dd') = TO_DATE(@dataFim, 'yyyy/mm/dd')
+                           and TO_DATE(fr.inicio::TEXT, 'yyyy/mm/dd') = TO_DATE(@dataInicio, 'yyyy/mm/dd')
+                           and TO_DATE(fr.fim::TEXT, 'yyyy/mm/dd') = TO_DATE(@dataFim, 'yyyy/mm/dd')
                            and fr.tipo_calendario_id = @tipoCalendarioId
                            and dre.dre_id = @dreCodigo
                            and ue.ue_id = @ueCodigo";
@@ -187,8 +188,8 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FechamentoReabertura>(query, new
             {
                 bimestre,
-                dataInicio,
-                dataFim,
+                dataInicio = dataInicio.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
+                dataFim = dataFim.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
                 tipoCalendarioId,
                 dreCodigo,
                 ueCodigo
