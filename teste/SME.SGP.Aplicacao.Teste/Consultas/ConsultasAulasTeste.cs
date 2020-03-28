@@ -20,7 +20,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IServicoEOL> servicoEol;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IRepositorioTurma> repositorioTurma;
-        private Mock<IConsultasDisciplina> consultasDisciplinas;
+        private readonly Mock<IConsultasDisciplina> consultasDisciplinas;
+        private readonly Mock<IConsultasTurma> consultasTurma;
+        private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
 
         public ConsultasAulasTeste()
         {
@@ -32,8 +34,10 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             servicoEol = new Mock<IServicoEOL>();
             consultasDisciplinas = new Mock<IConsultasDisciplina>();
             repositorioTurma = new Mock<IRepositorioTurma>();
+            consultasTurma = new Mock<IConsultasTurma>();
+            consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
 
-            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, repositorioPlanoAula.Object, repositorioTurma.Object, servicoUsuario.Object, servicoEol.Object, consultasDisciplinas.Object);
+            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, repositorioPlanoAula.Object, repositorioTurma.Object, servicoUsuario.Object, servicoEol.Object, consultasDisciplinas.Object, consultasTurma.Object, consultasPeriodoFechamento.Object);
 
             Setup();
         }

@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
             if (aula == null)
                 throw new NegocioException($"Aula de id {id} não encontrada");
 
-            var aberto = await AulaPermiteEdicao(aula);
+            var aberto = await AulaDentroPeriodo(aula);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
@@ -62,15 +62,20 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(aula, disciplinaId, aberto);
         }
 
-        public async Task<bool> AulaPermiteEdicao(Aula aula)
+        public async Task<bool> AulaDentroPeriodo(Aula aula)
         {
-            var turma = await consultasTurma.ObterComUeDrePorCodigo(aula.TurmaId);
+            return await AulaDentroPeriodo(aula.TurmaId, aula.DataAula);
+        }
+
+        public async Task<bool> AulaDentroPeriodo(string turmaId, DateTime dataAula)
+        {
+            var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaId);
 
             if (turma == null)
                 throw new NegocioException($"Não foi possivel obter a turma da aula");
 
             var bimestreAtual = consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo);
-            var bimestreAula = consultasPeriodoEscolar.ObterBimestre(aula.DataAula, turma.ModalidadeCodigo);
+            var bimestreAula = consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo);
 
             if (bimestreAtual == 0 || bimestreAula == 0)
                 return false;
@@ -133,7 +138,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolarDto> periodosEscolares, int anoLetivo, string turmaCodigo, string disciplina, Usuario usuarioLogado, string usuarioRF)
         {
-            foreach(var periodoEscolar in periodosEscolares.Distinct())
+            foreach (var periodoEscolar in periodosEscolares.Distinct())
             {
                 foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, disciplina, usuarioRF))
                 {
