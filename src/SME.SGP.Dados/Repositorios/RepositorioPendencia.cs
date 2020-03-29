@@ -31,6 +31,7 @@ namespace SME.SGP.Dados.Repositorios
                              set excluido = true
                          from pendencia_fechamento f
                         where not p.excluido
+                          and p.situacao = 1
                           and p.id = f.pendencia_id
                           and p.tipo = @tipoPendencia
 	                      and f.fechamento_turma_disciplina_id = @fechamentoId";
