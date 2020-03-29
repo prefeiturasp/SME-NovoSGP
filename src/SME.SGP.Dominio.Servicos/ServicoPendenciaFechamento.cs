@@ -183,6 +183,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
+                repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);
+
                 var pendencia = new Pendencia(tipoPendencia.Name(),
                                         mensagem,
                                         tipoPendencia);
