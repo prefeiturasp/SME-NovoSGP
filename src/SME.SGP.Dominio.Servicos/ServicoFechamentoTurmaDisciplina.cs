@@ -116,7 +116,8 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.PersistirTransacao();
 
                 var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-                Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurma.DisciplinaId, fechamentoTurma.Turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurma, usuarioLogado));
+                await GerarPendenciasFechamento(fechamentoTurma.DisciplinaId, fechamentoTurma.Turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurma, usuarioLogado);
+                //Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurma.DisciplinaId, fechamentoTurma.Turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurma, usuarioLogado));
 
                 return (AuditoriaPersistenciaDto)fechamentoTurma;
             }
@@ -160,7 +161,11 @@ namespace SME.SGP.Dominio.Servicos
             var aulasSemFrequencia = servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
             var alunosAbaixoMedia = servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
 
-            var quantidadePendencias = avaliacoesSemnota + aulasReposicaoPendentes + aulasSemPlanoAula + aulasSemFrequencia + alunosAbaixoMedia;
+            var quantidadePendencias = avaliacoesSemnota > 0 ? 1 : 0 
+                                    + aulasReposicaoPendentes > 0 ? 1 : 0
+                                    + aulasSemPlanoAula > 0 ? 1 : 0
+                                    + aulasSemFrequencia > 0 ? 1 : 0
+                                    + alunosAbaixoMedia > 0 ? 1 : 0;
             if (quantidadePendencias > 0)
             {
                 situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;

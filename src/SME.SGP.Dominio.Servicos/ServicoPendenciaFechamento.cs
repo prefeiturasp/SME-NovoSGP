@@ -52,7 +52,7 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Componente curricular não encontrado.");
                 }
                 var mensagem = new StringBuilder($"A aulas de reposição de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão pendentes de aprovação:<br>");
-                foreach (var aula in aulasPendentes)
+                foreach (var aula in aulasPendentes.OrderBy(a => a.DataAula))
                 {
                     var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
                     if (professor == null)
@@ -84,7 +84,7 @@ namespace SME.SGP.Dominio.Servicos
                 // Carrega lista de professores
                 var usuariosProfessores = CarregaListaProfessores(aulasSemFrequencia.Select(a => a.ProfessorRf).Distinct());
 
-                foreach (var aula in aulasSemFrequencia)
+                foreach (var aula in aulasSemFrequencia.OrderBy(x => x.DataAula))
                 {
                     var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == aula.ProfessorRf);
                     mensagem.AppendLine($"Professor { aula.ProfessorRf} - { professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
@@ -126,7 +126,7 @@ namespace SME.SGP.Dominio.Servicos
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:<br>");
 
                 var usuariosProfessores = CarregaListaProfessores(aulasSemPlanoAula.Select(a => a.ProfessorRf).Distinct());
-                foreach (var aula in aulasSemPlanoAula)
+                foreach (var aula in aulasSemPlanoAula.OrderBy(a => a.DataAula))
                 {
                     var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == aula.ProfessorRf);
                     mensagem.AppendLine($"Professor { aula.ProfessorRf} - { professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
@@ -150,7 +150,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var mensagem = new StringBuilder($"As avaliações a seguir não tiveram notas lançadas para nenhum aluno<br>");
                 var usuariosProfessores = CarregaListaProfessores(avaliacoesSemNotaParaNenhumAluno.Select(a => a.ProfessorRf).Distinct());
-                foreach (var avaliacao in avaliacoesSemNotaParaNenhumAluno)
+                foreach (var avaliacao in avaliacoesSemNotaParaNenhumAluno.OrderBy(x => x.DataAvaliacao))
                 {
                     var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == avaliacao.ProfessorRf);
                     mensagem.AppendLine($"Professor { avaliacao.ProfessorRf} - { professor.Nome} - {avaliacao.NomeAvaliacao}.<br>");
