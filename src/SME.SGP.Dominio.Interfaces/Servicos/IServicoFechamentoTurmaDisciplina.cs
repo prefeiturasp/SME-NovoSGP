@@ -13,6 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         void VerificaPendenciasFechamento(long fechamentoId);
 
-        Task<AuditoriaFechamentoTurmaDto> SalvarAnotacaoAluno(AnotacaoAlunoDto anotacaoAluno);
+        Task<AuditoriaPersistenciaDto> SalvarAnotacaoAluno(AnotacaoAlunoDto anotacaoAluno);
     }
 }
