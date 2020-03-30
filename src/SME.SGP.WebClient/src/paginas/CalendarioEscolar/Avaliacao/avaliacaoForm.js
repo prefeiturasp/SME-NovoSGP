@@ -17,6 +17,7 @@ import RotasDTO from '~/dtos/rotasDto';
 import ServicoAvaliacao from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
 import { erro, sucesso, confirmar } from '~/servicos/alertas';
 import ModalCopiarAvaliacao from './componentes/ModalCopiarAvaliacao';
+import Alert from '~/componentes/alert';
 
 const AvaliacaoForm = ({ match }) => {
   const [
@@ -31,6 +32,7 @@ const AvaliacaoForm = ({ match }) => {
   const [refForm, setRefForm] = useState({});
 
   const [modoEdicao, setModoEdicao] = useState(false);
+  const [podeLancaNota, setPodeLancaNota] = useState(true);
 
   const clicouBotaoVoltar = async () => {
     if (modoEdicao) {
@@ -59,6 +61,18 @@ const AvaliacaoForm = ({ match }) => {
   const aoTrocarCampos = () => {
     if (!modoEdicao) {
       setModoEdicao(true);
+    }
+  };
+
+  const onChangeDisciplina = disciplinaId => {
+    aoTrocarCampos();
+    if (disciplinaId) {
+      const componenteSelecionado = listaDisciplinas.find(
+        item => item.codigoComponenteCurricular == disciplinaId
+      );
+      setPodeLancaNota(componenteSelecionado.lancaNota);
+    } else {
+      setPodeLancaNota(true);
     }
   };
 
@@ -97,6 +111,10 @@ const AvaliacaoForm = ({ match }) => {
     listaDisciplinasSelecionadas,
     setListaDisciplinasSelecionadas,
   ] = useState([]);
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
+  const [desabilitarCopiarAvaliacao, setDesabilitarCopiarAvaliacao] = useState(
+    false
+  );
 
   const usuario = useSelector(store => store.usuario);
 
@@ -159,11 +177,21 @@ const AvaliacaoForm = ({ match }) => {
         });
 
         if (salvar && salvar.status === 200) {
-          sucesso(
-            `Avaliação ${
-              idAvaliacao ? 'atualizada' : 'cadastrada'
-            } com sucesso.`
-          );
+          if (salvar.data && salvar.data.length) {
+            salvar.data.forEach(item => {
+              if (item.mensagem.includes('Erro')) {
+                erro(item.mensagem);
+              } else {
+                sucesso(item.mensagem);
+              }
+            });
+          } else {
+            sucesso(
+              `Avaliação ${
+                idAvaliacao ? 'atualizada' : 'cadastrada'
+              } com sucesso.`
+            );
+          }
           history.push(RotasDTO.CALENDARIO_PROFESSOR);
         } else {
           erro(salvar);
@@ -284,6 +312,8 @@ const AvaliacaoForm = ({ match }) => {
         disciplinasId: listaDisciplinas[0].codigoComponenteCurricular.toString(),
       });
       setDisciplinaDesabilitada(true);
+      setPodeLancaNota(listaDisciplinas[0].lancaNota);
+      setDisciplinaSelecionada(listaDisciplinas[0].codigoComponenteCurricular);
     }
   }, [listaDisciplinas]);
 
@@ -312,10 +342,21 @@ const AvaliacaoForm = ({ match }) => {
       setIdAvaliacao(match.params.id);
   }, []);
 
+  const validaInterdisciplinar = categoriaSelecionada => {
+    if (categoriaSelecionada == categorias.INTERDISCIPLINAR) {
+      setCopias([]);
+      setDesabilitarCopiarAvaliacao(true);
+    } else {
+      setDesabilitarCopiarAvaliacao(false);
+    }
+  };
+
   const obterAvaliacao = async () => {
     const avaliacao = await ServicoAvaliacao.buscar(idAvaliacao);
     if (avaliacao && avaliacao.data) {
       setListaDisciplinasSelecionadas(avaliacao.data.disciplinasId);
+      setDisciplinaSelecionada(avaliacao.data.disciplinasId[0]);
+      validaInterdisciplinar(avaliacao.data.categoriaId);
       const tipoAvaliacaoId = avaliacao.data.tipoAvaliacaoId.toString();
       setDadosAvaliacao({ ...avaliacao.data, tipoAvaliacaoId });
       setDescricao(avaliacao.data.descricao);
@@ -377,16 +418,35 @@ const AvaliacaoForm = ({ match }) => {
   };
 
   return (
+    <>
+    <div className="col-md-12">
+      {!podeLancaNota ? (
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'cadastro-aula-nao-lanca-nota',
+            mensagem:
+              'Este componente curricular não permite cadastrar avaliação.',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-2"
+        />
+      ) : null}
+    </div> 
     <Div className="col-12">
-      <ModalCopiarAvaliacao
-        show={mostrarModalCopiarAvaliacao}
-        onClose={() => setMostrarModalCopiarAvaliacao(false)}
-        disciplina={dadosAvaliacao && dadosAvaliacao.disciplinaId}
-        onSalvarCopias={copiasAvaliacoes => {
-          setCopias(copiasAvaliacoes);
-          setModoEdicao(true);
-        }}
-      />
+      {mostrarModalCopiarAvaliacao ? (
+        <ModalCopiarAvaliacao
+          show={mostrarModalCopiarAvaliacao}
+          onClose={() => setMostrarModalCopiarAvaliacao(false)}
+          disciplina={disciplinaSelecionada}
+          onSalvarCopias={copiasAvaliacoes => {
+            setCopias(copiasAvaliacoes);
+            setModoEdicao(true);
+          }}
+        />
+      ) : (
+        ''
+      )}
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">
           {`Cadastro de avaliação - ${
@@ -442,7 +502,8 @@ const AvaliacaoForm = ({ match }) => {
                   (permissaoTela &&
                     (!permissaoTela.podeIncluir ||
                       !permissaoTela.podeAlterar)) ||
-                  !modoEdicao
+                  !modoEdicao ||
+                  !podeLancaNota
                 }
                 border
                 bold
@@ -461,6 +522,7 @@ const AvaliacaoForm = ({ match }) => {
                       aoTrocarCampos();
                       resetDisciplinasSelecionadas(form);
                       montaValidacoes(e.target.value);
+                      validaInterdisciplinar(e.target.value);
                     }}
                   />
                 </Grid>
@@ -506,7 +568,7 @@ const AvaliacaoForm = ({ match }) => {
                         valueSelect={listaDisciplinasSelecionadas}
                         form={form}
                         multiple
-                        onChange={aoTrocarCampos}
+                        onChange={onChangeDisciplina}
                       />
                     ) : (
                       <SelectComponent
@@ -519,7 +581,11 @@ const AvaliacaoForm = ({ match }) => {
                         disabled={disciplinaDesabilitada}
                         placeholder="Selecione um componente curricular"
                         form={form}
-                        onChange={aoTrocarCampos}
+                        onChange={valor => {
+                          setDisciplinaSelecionada(valor);
+                          onChangeDisciplina(valor);
+                        }}
+                        valueSelect={disciplinaSelecionada}
                       />
                     )}
                   </Grid>
@@ -579,6 +645,7 @@ const AvaliacaoForm = ({ match }) => {
                     border
                     className="btnGroupItem"
                     onClick={() => setMostrarModalCopiarAvaliacao(true)}
+                    disabled={desabilitarCopiarAvaliacao}
                   />
                   {copias.length > 0 && (
                     <div style={{ marginLeft: '14px' }}>
@@ -624,6 +691,7 @@ const AvaliacaoForm = ({ match }) => {
         )}
       </Formik>
     </Div>
+    </>
   );
 };
 

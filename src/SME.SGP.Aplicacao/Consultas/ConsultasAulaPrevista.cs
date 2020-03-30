@@ -43,11 +43,11 @@ namespace SME.SGP.Aplicacao
             return aulaPrevistaDto;
         }
 
-        public async Task<AulasPrevistasDadasAuditoriaDto> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId)
+        public async Task<AulasPrevistasDadasAuditoriaDto> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId, int semestre = 0)
         {
             var turma = ObterTurma(turmaId);
 
-            var tipoCalendario = ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo);
+            var tipoCalendario = ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
 
             AulasPrevistasDadasAuditoriaDto aulaPrevistaDto;
 
@@ -161,9 +161,9 @@ namespace SME.SGP.Aplicacao
             return repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
         }
 
-        private TipoCalendario ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade)
+        private TipoCalendario ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade, int semestre)
         {
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade));
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade), semestre);
 
             if (tipoCalendario == null)
                 throw new NegocioException("Tipo calendário não encontrado!");

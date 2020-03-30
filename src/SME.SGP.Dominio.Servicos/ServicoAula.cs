@@ -5,12 +5,12 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Globalization;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -94,10 +94,11 @@ namespace SME.SGP.Dominio.Servicos
         {
             await ExcluirAula(aula, usuario);
 
-            if (recorrencia != RecorrenciaAula.AulaUnica)
-                await ExcluirRecorrencia(aula, recorrencia, usuario);
+            if (recorrencia == RecorrenciaAula.AulaUnica)
+                return "Aula e suas dependencias excluídas com sucesso!";
 
-            return "Aula e suas dependencias excluídas com sucesso!";
+            Cliente.Executar<IServicoAula>(s => s.ExcluirRecorrencia(aula, recorrencia, usuario));
+            return "Aula excluida com sucesso. Serão excluidas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
         }
 
         public async Task GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
@@ -114,6 +115,10 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (!ehRecorrencia)
             {
+                var aulaExistente = await repositorioAula.ObterAulaDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
+                if (aulaExistente != null && !aulaExistente.Id.Equals(aula.Id))
+                    throw new NegocioException("Já existe uma aula criada para essa disciplina");
+
                 var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
 
                 if (tipoCalendario == null)
@@ -170,8 +175,8 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
 
                 // Busca quantidade de aulas semanais da grade de aula
-                //Buscar tudo de uma vez?
-                var semana = (aula.DataAula.DayOfYear / 7) + 1;
+                int semana = UtilData.ObterSemanaDoAno(aula.DataAula);
+
                 var gradeAulas = await consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, Convert.ToInt64(aula.DisciplinaId), semana, aula.DataAula, usuario.CodigoRf);
 
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
@@ -255,31 +260,44 @@ namespace SME.SGP.Dominio.Servicos
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
             List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = new List<(DateTime data, bool existeFrequencia, bool existePlanoAula)>();
 
+            List<DateTime> diasParaAlterarRecorrencia = new List<DateTime>();
+            ObterDiasDaRecorrencia(dataRecorrencia, fimRecorrencia, diasParaAlterarRecorrencia);
+            var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaAlterarRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
+            if (datasComRegistro.Count() > 0)
+                aulasQueDeramErro.AddRange(
+                        datasComRegistro.Select(d =>
+                            (d, $"Erro Interno: Já existe uma aula criada para essa disciplina")
+                        ));
+
             foreach (var aulaRecorrente in aulasRecorrencia)
             {
-                var existeFrequencia = await consultasFrequencia.FrequenciaAulaRegistrada(aulaRecorrente.Id);
-                var existePlanoAula = await consultasPlanoAula.PlanoAulaRegistrado(aulaRecorrente.Id);
-
-                if (existeFrequencia || existePlanoAula)
-                    aulasComFrenciaOuPlano.Add((aulaRecorrente.DataAula, existeFrequencia, existePlanoAula));
-
-                var quantidadeOriginal = aulaRecorrente.Quantidade;
-
-                aulaRecorrente.DataAula = dataRecorrencia;
-                aulaRecorrente.Quantidade = aula.Quantidade;
-
-                try
+                var ehDataComRegistro = datasComRegistro.Select(d => d.Equals(dataRecorrencia)).FirstOrDefault();
+                if (!ehDataComRegistro)
                 {
-                    await Salvar(aulaRecorrente, usuario, aulaRecorrente.RecorrenciaAula, quantidadeOriginal);
-                }
-                catch (NegocioException nex)
-                {
-                    aulasQueDeramErro.Add((dataRecorrencia, nex.Message));
-                }
-                catch (Exception ex)
-                {
-                    servicoLog.Registrar(ex);
-                    aulasQueDeramErro.Add((dataRecorrencia, $"Erro Interno: {ex.Message}"));
+                    var existeFrequencia = await consultasFrequencia.FrequenciaAulaRegistrada(aulaRecorrente.Id);
+                    var existePlanoAula = await consultasPlanoAula.PlanoAulaRegistrado(aulaRecorrente.Id);
+
+                    if (existeFrequencia || existePlanoAula)
+                        aulasComFrenciaOuPlano.Add((aulaRecorrente.DataAula, existeFrequencia, existePlanoAula));
+
+                    var quantidadeOriginal = aulaRecorrente.Quantidade;
+
+                    aulaRecorrente.DataAula = dataRecorrencia;
+                    aulaRecorrente.Quantidade = aula.Quantidade;
+
+                    try
+                    {
+                        await Salvar(aulaRecorrente, usuario, aulaRecorrente.RecorrenciaAula, quantidadeOriginal, true);
+                    }
+                    catch (NegocioException nex)
+                    {
+                        aulasQueDeramErro.Add((dataRecorrencia, nex.Message));
+                    }
+                    catch (Exception ex)
+                    {
+                        servicoLog.Registrar(ex);
+                        aulasQueDeramErro.Add((dataRecorrencia, $"Erro Interno: {ex.Message}"));
+                    }
                 }
 
                 dataRecorrencia = dataRecorrencia.AddDays(7);
@@ -317,7 +335,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
+        public async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
         {
             var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
             var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
@@ -350,9 +368,16 @@ namespace SME.SGP.Dominio.Servicos
             await NotificarUsuario(usuario, aula, Operacao.Exclusao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
         }
 
-        private async Task GerarAulaDeRecorrenciaParaDias(Aula aula, Usuario usuario, IEnumerable<PodePersistirNaDataRetornoEolDto> datasParaPersistencia)
+        private async Task GerarAulaDeRecorrenciaParaDias(Aula aula, Usuario usuario, IEnumerable<PodePersistirNaDataRetornoEolDto> datasParaPersistencia, IEnumerable<DateTime> datasComRegistro)
         {
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
+            List<DateTime> datasParaGeracao = datasParaPersistencia.Select(a => a.Data).ToList();
+
+            if (datasComRegistro.Count() > 0)
+                aulasQueDeramErro.AddRange(
+                        datasComRegistro.Select(d =>
+                            (d, $"Erro Interno: Já existe uma aula criada para essa disciplina")
+                        ));
 
             foreach (var dia in datasParaPersistencia)
             {
@@ -398,6 +423,10 @@ namespace SME.SGP.Dominio.Servicos
             List<DateTime> diasParaIncluirRecorrencia = new List<DateTime>();
             ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia, diasParaIncluirRecorrencia);
 
+            var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
+            if (datasComRegistro.Count() > 0)
+                datasComRegistro.Select(d => diasParaIncluirRecorrencia.Remove(d));
+
             List<PodePersistirNaDataRetornoEolDto> datasPersistencia = new List<PodePersistirNaDataRetornoEolDto>();
 
             if (!usuario.EhProfessorCj())
@@ -419,7 +448,7 @@ namespace SME.SGP.Dominio.Servicos
                     }));
             }
 
-            await GerarAulaDeRecorrenciaParaDias(aula, usuario, datasPersistencia);
+            await GerarAulaDeRecorrenciaParaDias(aula, usuario, datasPersistencia, datasComRegistro);
         }
 
         private async Task NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro, List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = null)

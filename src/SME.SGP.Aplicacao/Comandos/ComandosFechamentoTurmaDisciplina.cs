@@ -10,28 +10,28 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosFechamentoTurmaDisciplina : IComandosFechamentoTurmaDisciplina
     {
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina;
 
-        public ComandosFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
-                                                IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina)
+        public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina)
         {
-            this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));
         }
 
-        public async Task<IEnumerable<AuditoriaFechamentoTurmaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
+        public async Task Reprocessar(long fechamentoId)
+            => await servicoFechamentoTurmaDisciplina.Reprocessar(fechamentoId);
+
+        public async Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false)
         {
-            var listaAuditoria = new List<AuditoriaFechamentoTurmaDto>();
+            var listaAuditoria = new List<AuditoriaPersistenciaDto>();
             foreach (var fechamentoTurma in fechamentosTurma)
             {
                 try
                 {
-                    listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma));
+                    listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma, componenteSemNota));
                 }
                 catch (Exception e)
                 {
-                    listaAuditoria.Add(new AuditoriaFechamentoTurmaDto() { Sucesso = false, MensagemConsistencia = e.Message });
+                    listaAuditoria.Add(new AuditoriaPersistenciaDto() { Sucesso = false, MensagemConsistencia = $"{fechamentoTurma.Bimestre}º Bimestre: {e.Message}" });
                 }
             }
 

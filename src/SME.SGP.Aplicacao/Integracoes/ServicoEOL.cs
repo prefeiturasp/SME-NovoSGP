@@ -240,6 +240,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
+        [Obsolete("não utilizar mais esse método, utilize o ObterAlunosPorTurma")]
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
@@ -817,7 +818,8 @@ namespace SME.SGP.Aplicacao.Integracoes
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
                 RegistraFrequencia = x.RegistraFrequencia,
-                TerritorioSaber = x.Territorio
+                TerritorioSaber = x.Territorio,
+                LancaNota = x.LancaNota,
             });
         }
 

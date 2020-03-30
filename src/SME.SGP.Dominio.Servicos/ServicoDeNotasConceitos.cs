@@ -288,7 +288,7 @@ namespace SME.SGP.Dominio
             var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
             var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
             var periodoEscolarInformado = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
-            var ehBimestreAtual = periodoEscolar.Bimestre.Equals(periodoEscolarInformado.Bimestre);
+            var ehBimestreAtual = periodoEscolar == null ? false : periodoEscolar.Bimestre.Equals(periodoEscolarInformado.Bimestre);
             bimestreInformado = periodoEscolarInformado.Bimestre;
 
             foreach (var notaConceito in notasConceitos)
