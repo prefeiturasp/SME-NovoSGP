@@ -53,7 +53,8 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select count(p.id) 
                       from pendencia_fechamento pf 
                      inner join pendencia p on p.id = pf.pendencia_id 
-                     where pf.fechamento_turma_disciplina_id = @fechamentoId
+                     where not p.excluido 
+                       and pf.fechamento_turma_disciplina_id = @fechamentoId
                        and p.situacao = 1";
 
             return database.Conexao.QueryFirst<int>(query, new { fechamentoId }) > 0;
@@ -68,7 +69,8 @@ namespace SME.SGP.Dados.Repositorios
                                  inner join turma t on t.id = ftd.turma_id 
                                  inner join periodo_escolar pe on pe.id = ftd.periodo_escolar_id 
                                  inner join pendencia p on p.id = pf.pendencia_id 
-                                  where t.turma_id = @turmaCodigo ", fields));
+                                  where not p.excluido
+                                    and t.turma_id = @turmaCodigo ", fields));
             if (bimestre > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre");
             if (componenteCurricularId > 0)

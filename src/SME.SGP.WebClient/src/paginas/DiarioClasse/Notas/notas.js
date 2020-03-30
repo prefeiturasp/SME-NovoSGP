@@ -83,6 +83,8 @@ const Notas = ({ match }) => {
   const [clicouNoBotaoSalvar, setClicouNoBotaoSalvar] = useState(false);
   const [clicouNoBotaoVoltar, setClicouNoBotaoVoltar] = useState(false);
 
+  const [podeLancaNota, setPodeLancaNota] = useState(true);
+
   const [showMsgPeriodoFechamento, setShowMsgPeriodoFechamento] = useState(
     false
   );
@@ -283,10 +285,13 @@ const Notas = ({ match }) => {
     setListaDisciplinas(disciplinas.data);
     if (disciplinas.data && disciplinas.data.length === 1) {
       const disciplina = disciplinas.data[0];
+      setPodeLancaNota(disciplina.lancaNota);
       setEhRegencia(disciplina.regencia);
       setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
-      obterDadosBimestres(disciplina.codigoComponenteCurricular);
+      if (disciplina.lancaNota) {
+        obterDadosBimestres(disciplina.codigoComponenteCurricular);
+      }
     }
     if (
       match &&
@@ -589,6 +594,17 @@ const Notas = ({ match }) => {
   };
 
   const onChangeDisciplinas = async disciplinaId => {
+    let lancaNota = true;
+    if (disciplinaId) {
+      const componenteSelecionado = listaDisciplinas.find(
+        item => item.codigoComponenteCurricular == disciplinaId
+      );
+      if (componenteSelecionado) {
+        lancaNota = componenteSelecionado.lancaNota;
+      }
+    }
+    setPodeLancaNota(lancaNota);
+
     validaSeEhRegencia(disciplinaId);
 
     dispatch(setModoEdicaoGeral(false));
@@ -610,7 +626,9 @@ const Notas = ({ match }) => {
       }
     } else {
       resetarTela();
-      obterDadosBimestres(disciplinaId, 0);
+      if (lancaNota) {
+        obterDadosBimestres(disciplinaId, 0);
+      }
       setDisciplinaSelecionada(disciplinaId);
     }
   };
@@ -895,7 +913,7 @@ const Notas = ({ match }) => {
       <ModalConteudoHtml
         key="inserirJutificativa"
         visivel={exibeModalJustificativa}
-        onClose={() => {}}
+        onClose={() => { }}
         titulo="Inserir justificativa"
         esconderBotaoPrincipal
         esconderBotaoSecundario
@@ -922,7 +940,7 @@ const Notas = ({ match }) => {
                     id: 'justificativa-porcentagem',
                     mensagem: `A maioria dos estudantes está com ${
                       notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'
-                    } abaixo do
+                      } abaixo do
                                mínimo considerado para aprovação, por isso é necessário que você insira uma justificativa.`,
                     estiloTitulo: { fontSize: '18px' },
                   }}
@@ -982,6 +1000,24 @@ const Notas = ({ match }) => {
           </Grid>
         </Row>
       ) : null}
+      {!podeLancaNota ? (
+        <Row className="mb-0 pb-0">
+          <Grid cols={12} className="mb-0 pb-0">
+            <Container>
+              <Alert
+                alerta={{
+                  tipo: 'warning',
+                  id: 'pode-lanca-nota',
+                  mensagem:
+                    'Este componente curricular não permite o lançamento de nota',
+                  estiloTitulo: { fontSize: '18px' },
+                }}
+                className="mb-2"
+              />
+            </Container>
+          </Grid>
+        </Row>
+      ) : null}
       {showMsgPeriodoFechamento ? (
         <Row className="mb-0 pb-0">
           <Grid cols={12} className="mb-0 pb-0">
@@ -1032,7 +1068,7 @@ const Notas = ({ match }) => {
               </div>
             </div>
 
-            {disciplinaSelecionada ? (
+            {disciplinaSelecionada && podeLancaNota ? (
               <>
                 <div className="row">
                   <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
@@ -1057,8 +1093,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {segundoBimestre.numero ? (
                         <TabPane
                           tab={segundoBimestre.descricao}
@@ -1074,8 +1110,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {terceiroBimestre.numero ? (
                         <TabPane
                           tab={terceiroBimestre.descricao}
@@ -1091,8 +1127,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {quartoBimestre.numero ? (
                         <TabPane
                           tab={quartoBimestre.descricao}
@@ -1108,8 +1144,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                     </ContainerTabsCard>
                   </div>
                 </div>
@@ -1135,12 +1171,12 @@ const Notas = ({ match }) => {
                 </div>
               </>
             ) : (
-              ''
-            )}
+                ''
+              )}
           </div>
         </Card>
       </Loader>
-    </Container>
+    </Container >
   );
 };
 
