@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio
         Nota = 1,
         [Display(Name = "Conceito")]
         Conceito = 2,
-        [Display(Name = "Conceito")]
+        [Display(Name = "Sintese")]
         Sintese = 3
     }
 }
