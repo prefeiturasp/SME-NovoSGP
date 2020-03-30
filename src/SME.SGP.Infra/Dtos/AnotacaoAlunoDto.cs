@@ -9,7 +9,6 @@ namespace SME.SGP.Infra
     {
         public long FechamentoId { get; set; }
         public string CodigoAluno { get; set; }
-        [Required(ErrorMessage = "Uma anotação deve ser inserida para salvar")]
         public string Anotacao { get; set; }
     }
 }
