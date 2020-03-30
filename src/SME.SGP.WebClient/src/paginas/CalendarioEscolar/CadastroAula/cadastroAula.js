@@ -160,7 +160,12 @@ const CadastroAula = ({ match }) => {
     };
   }, []);
 
-  const onChangeDisciplinas = async (id, listaDisc) => {
+  const [desabilitaPorGrade, setDesabilitaPorGrade] = useState(false);
+  const [carregandoSalvar, setCarregandoSalvar] = useState(false);
+
+  const [desabilitaPorQuantidade, setDesabilitaPorQuantidade] = useState(false);
+
+  const onChangeDisciplinas = async (id, listaDisc, isReposicao) => {
     onChangeCampos();
 
     setIdDisciplina(id);
@@ -215,10 +220,22 @@ const CadastroAula = ({ match }) => {
 
       if (resultado) {
         if (resultado.status === 200) {
-          setControlaQuantidadeAula(true);
+          setControlaQuantidadeAula(
+            resultado.data.quantidadeAulasRestante <= 1
+          );
           setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
-          if (resultado.data.quantidadeAulasRestante > 0) {
-            setControlaQuantidadeAula(true);
+          setDesabilitaPorGrade(resultado.data.quantidadeAulasRestante < 1);
+          setDesabilitaPorQuantidade(
+            resultado.data.quantidadeAulasRestante <= 1
+          );
+          if (
+            resultado.data.quantidadeAulasRestante > 0 &&
+            resultado.data.quantidadeAulasRestante <= 2
+          ) {
+            refForm.setFieldValue(
+              'quantidadeRadio',
+              resultado.data.quantidadeAulasRestante
+            );
           }
         } else if (resultado.status === 204) {
           setControlaQuantidadeAula(false);
@@ -229,15 +246,11 @@ const CadastroAula = ({ match }) => {
 
   useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
-      const disciplina = listaDisciplinas.filter(
+      const disciplina = listaDisciplinas.find(
         item =>
           item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
-      if (disciplina && disciplina[0])
-        setDisciplinaCompartilhada(disciplina[0].compartilhada);
-    } else {
-      if (refForm && refForm.setFieldValue)
-        refForm.setFieldValue('quantidadeTexto', '');
+      if (disciplina) setDisciplinaCompartilhada(disciplina.compartilhada);
     }
   }, [idDisciplina, listaDisciplinas]);
 
@@ -363,6 +376,7 @@ const CadastroAula = ({ match }) => {
       ) {
         val.quantidadeTexto = buscaAula.data.quantidade;
       }
+      setIdDisciplina(buscaAula.data.disciplinaId.toString());
       setInicial(val);
       setAuditoria({
         criadoPor: buscaAula.data.criadoPor,
@@ -448,9 +462,9 @@ const CadastroAula = ({ match }) => {
         idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2
           ? controlaQuantidadeAula && !ehReposicao
             ? validacaoQuantidade.lessThan(
-              quantidadeMaximaAulas + 1,
-              `Valor não pode ser maior que ${quantidadeMaximaAulas}`
-            )
+                quantidadeMaximaAulas + 1,
+                `Valor não pode ser maior que ${quantidadeMaximaAulas}`
+              )
             : validacaoQuantidade
           : Yup.string().required(false),
     };
@@ -500,6 +514,14 @@ const CadastroAula = ({ match }) => {
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
   ]);
+
+  useEffect(() => {
+    if (quantidadeMaximaAulas && quantidadeMaximaAulas === 1) {
+      refForm.setFieldValue('quantidadeTexto', '');
+      refForm.setFieldValue('quantidadeRadio', quantidadeMaximaAulas);
+      setDesabilitaPorQuantidade(true);
+    }
+  }, [quantidadeMaximaAulas, refForm]);
 
   useEffect(() => {
     montaValidacoes();
@@ -844,6 +866,8 @@ const CadastroAula = ({ match }) => {
                     opcoes={opcoesTipoAula}
                     name="tipoAula"
                     onChange={e => {
+                      setDesabilitaPorGrade(e.target.value !== 2);
+                      setDesabilitaPorQuantidade(e.target.value !== 2);
                       setEhReposicao(e.target.value === 2);
                       onChangeCampos();
                       setControlaQuantidadeAula(ehReposicao);
@@ -895,7 +919,11 @@ const CadastroAula = ({ match }) => {
                     id="quantidadeRadio"
                     label="Quantidade de Aulas"
                     form={form}
-                    desabilitado={somenteLeitura}
+                    desabilitado={
+                      somenteLeitura ||
+                      desabilitaPorGrade ||
+                      desabilitaPorQuantidade
+                    }
                     opcoes={opcoesQuantidadeAulas}
                     name="quantidadeRadio"
                     onChange={() => {
@@ -917,7 +945,9 @@ const CadastroAula = ({ match }) => {
                       somenteLeitura ||
                       !idDisciplina ||
                       (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
-                      (ehRegencia && !ehReposicao)
+                      (ehRegencia && !ehReposicao) ||
+                      desabilitaPorGrade ||
+                      desabilitaPorQuantidade
                     }
                     onChange={() => {
                       refForm.setFieldValue('quantidadeRadio', 0);
