@@ -17,7 +17,9 @@ namespace SME.SGP.Aplicacao
       
         FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual);
 
-        SinteseDto ObterSinteseAluno(string codigoAluno, DateTime dataReferencia, string disciplinaId);
+        SinteseDto ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina);
+
+        double ObterFrequenciaMedia(DisciplinaDto disciplina);
 
     }
 }

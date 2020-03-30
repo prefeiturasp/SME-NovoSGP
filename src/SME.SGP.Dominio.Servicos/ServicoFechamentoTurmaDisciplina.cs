@@ -110,7 +110,10 @@ namespace SME.SGP.Dominio.Servicos
             var notasConceitosBimestre = Enumerable.Empty<NotaConceitoBimestre>();
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (componenteSemNota && id > 0)
-                notasConceitosBimestre = await AtualizaSinteseAlunos(id, fechamentoTurma.PeriodoEscolar.PeriodoFim);
+            {
+                var disciplinaEOL = await consultasDisciplina.ObterDisciplina(fechamentoTurma.DisciplinaId);
+                notasConceitosBimestre = await AtualizaSinteseAlunos(id, fechamentoTurma.PeriodoEscolar.PeriodoFim, disciplinaEOL);
+            }
             else
                 // Carrega notas alunos
                 notasConceitosBimestre = await MapearParaEntidade(id, entidadeDto.NotaConceitoAlunos);
@@ -138,12 +141,13 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task<IEnumerable<NotaConceitoBimestre>> AtualizaSinteseAlunos(long fechamentoId, DateTime dataReferencia)
+        private async Task<IEnumerable<NotaConceitoBimestre>> AtualizaSinteseAlunos(long fechamentoId, DateTime dataReferencia, DisciplinaDto disciplina)
         {
             var notasConceitosBimestre = await repositorioNotaConceitoBimestre.ObterPorFechamentoTurma(fechamentoId);
             foreach (var notaConceitoBimestre in notasConceitosBimestre)
             {
-                var sinteseDto = consultasFrequencia.ObterSinteseAluno(notaConceitoBimestre.CodigoAluno, dataReferencia, notaConceitoBimestre.DisciplinaId.ToString());
+                var frequencia = consultasFrequencia.ObterPorAlunoDisciplinaData(notaConceitoBimestre.CodigoAluno, notaConceitoBimestre.DisciplinaId.ToString(), dataReferencia);
+                var sinteseDto = consultasFrequencia.ObterSinteseAluno(frequencia.PercentualFrequencia, disciplina);
                 notaConceitoBimestre.SinteseId = (long)sinteseDto.SinteseId;
             }
 
