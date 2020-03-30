@@ -199,7 +199,7 @@ namespace SME.SGP.Dominio.Servicos
                 Categoria = NotificacaoCategoria.Aviso,
                 Titulo = $"Pendência no fechamento da turma {turma.Nome}",
                 Tipo = NotificacaoTipo.Fechamento,
-                Mensagem = $"O fechamento do {fechamento.PeriodoEscolar.Bimestre}º bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {quantidadePendencias} pendência(s). Clique <a href='{urlFrontEnd}'>aqui</a> para mais detalhes."
+                Mensagem = $"O fechamento do {fechamento.PeriodoEscolar.Bimestre}º bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {quantidadePendencias} pendência(s). Clique <a href='{urlFrontEnd}fechamento/pendencias-fechamento'>aqui</a> para mais detalhes."
             };
             servicoNotificacao.Salvar(notificacao);
         }
