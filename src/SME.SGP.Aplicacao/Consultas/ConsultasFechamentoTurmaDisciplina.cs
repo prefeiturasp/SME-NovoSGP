@@ -119,8 +119,7 @@ namespace SME.SGP.Aplicacao
             if (disciplinaEOL.Regencia)
                 disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turmaId), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
 
-            if (!disciplinaEOL.LancaNota)
-                fechamentoBimestre.EhSintese = true;
+            fechamentoBimestre.EhSintese = !disciplinaEOL.LancaNota;
 
             // Carrega fechamento da Turma x Disciplina x Bimestre
             var fechamentoTurma = await ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestreAtual.Value);
@@ -172,7 +171,7 @@ namespace SME.SGP.Aplicacao
                     {
                         if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
                         {
-                            var sinteseDto = consultasFrequencia.ObterSinteseAluno(aluno.CodigoAluno, periodoAtual.PeriodoFim, disciplinaId.ToString());
+                            var sinteseDto = consultasFrequencia.ObterSinteseAluno(alunoDto.PercentualFrequencia, disciplinaEOL);
 
                             alunoDto.SinteseId = sinteseDto.SinteseId;
                             alunoDto.Sintese = sinteseDto.SinteseNome;

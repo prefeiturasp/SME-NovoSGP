@@ -23,16 +23,6 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoFrequencia servicoFrequencia;
 
         private double _mediaFrequencia;
-        public double MediaFrequencia
-        {
-            get 
-            { 
-                if (_mediaFrequencia == 0)
-                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
-
-                return _mediaFrequencia; 
-            }
-        }
 
         public ConsultasFrequencia(IServicoFrequencia servicoFrequencia,
                                    IServicoEOL servicoEOL,
@@ -196,11 +186,9 @@ namespace SME.SGP.Aplicacao
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
             => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual);
 
-        public SinteseDto ObterSinteseAluno(string codigoAluno, DateTime dataReferencia, string disciplinaId)
+        public SinteseDto ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina)
         {
-            var frequencia = ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataReferencia);
-            var sintese = frequencia == null ? SinteseEnum.Frequente :
-                    frequencia.PercentualFrequencia >= MediaFrequencia ? 
+            var sintese = percentualFrequencia >= ObterFrequenciaMedia(disciplina) ? 
                         SinteseEnum.Frequente : SinteseEnum.NaoFrequente;
 
             return new SinteseDto()
@@ -269,6 +257,19 @@ namespace SME.SGP.Aplicacao
                 Desabilitado = !aula.PermiteRegistroFrequencia(turma)
             };
             return registroFrequenciaDto;
+        }
+
+        public double ObterFrequenciaMedia(DisciplinaDto disciplina)
+        {
+            if (_mediaFrequencia == 0)
+            {
+                if (disciplina.Regencia || !disciplina.LancaNota)
+                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
+                else
+                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+            }
+
+            return _mediaFrequencia;
         }
     }
 }

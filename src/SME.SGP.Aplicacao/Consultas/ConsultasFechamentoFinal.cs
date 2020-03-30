@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasDisciplina consultasDisciplina;
+        private readonly IConsultasFrequencia consultasFrequencia;
 
         public ConsultasFechamentoFinal(IRepositorioTurma repositorioTurma, IRepositorioTipoCalendario repositorioTipoCalendario,
                             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioFechamentoFinal repositorioFechamentoFinal, IServicoAluno servicoAluno,
             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioNotaTipoValor repositorioNotaTipoValor,
             IServicoUsuario servicoUsuario, IRepositorioParametrosSistema repositorioParametrosSistema,
-            IConsultasDisciplina consultasDisciplina)
+            IConsultasDisciplina consultasDisciplina, IConsultasFrequencia consultasFrequencia)
         {
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
@@ -46,6 +47,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new System.ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasDisciplina = consultasDisciplina ?? throw new System.ArgumentNullException(nameof(consultasDisciplina));
+            this.consultasFrequencia = consultasFrequencia ?? throw new System.ArgumentNullException(nameof(consultasFrequencia));
         }
 
         public async Task<FechamentoFinalConsultaRetornoDto> ObterFechamentos(FechamentoFinalConsultaFiltroDto filtros)
@@ -98,16 +100,6 @@ namespace SME.SGP.Aplicacao
 
             retorno.EhSintese = disciplinaEOL.LancaNota;
 
-            double mediaFrequencia = 0;
-            if (filtros.EhRegencia)
-                mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
-            else
-            {
-                if (retorno.EhSintese)
-                    mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
-                else mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
-            }
-
             var notasFechamentosFinais = await repositorioFechamentoFinal.ObterPorFiltros(turma.CodigoTurma, disciplinas.Select(a => a.CodigoComponenteCurricular.ToString()).ToArray());
             var notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
 
@@ -124,15 +116,12 @@ namespace SME.SGP.Aplicacao
 
                 var marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolarDto() { PeriodoFim = retorno.EventoData });
                 if (marcador != null)
-                {
                     fechamentoFinalAluno.Informacao = marcador.Descricao;
-                }
 
                 if (retorno.EhSintese)
                 {
-                    if (fechamentoFinalAluno.Frequencia >= mediaFrequencia)
-                        fechamentoFinalAluno.Sintese = "Frequente";
-                    else fechamentoFinalAluno.Sintese = "Não frequente";
+                    var sinteseDto = consultasFrequencia.ObterSinteseAluno(fechamentoFinalAluno.Frequencia, disciplinaEOL);
+                    fechamentoFinalAluno.Sintese = sinteseDto.SinteseNome;
                 }
                 else
                 {
@@ -182,7 +171,7 @@ namespace SME.SGP.Aplicacao
             retorno.AuditoriaInclusao = ultimaInclusao == null ? string.Empty : MontaTextoAuditoriaInclusao(ultimaInclusao, retorno.EhNota);
 
             retorno.NotaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
-            retorno.FrequenciaMedia = mediaFrequencia;
+            retorno.FrequenciaMedia = consultasFrequencia.ObterFrequenciaMedia(disciplinaEOL);
 
             return retorno;
         }
