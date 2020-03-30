@@ -19,5 +19,7 @@ namespace SME.SGP.Aplicacao
         Task<List<DisciplinaDto>> ObterDisciplinasAgrupadasPorProfessorETurma(string codigoTurma, bool turmaPrograma);
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login);
+
+        Task<DisciplinaDto> ObterDisciplina(long disciplinaId);
     }
 }
