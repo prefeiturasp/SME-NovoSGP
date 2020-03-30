@@ -73,10 +73,7 @@ namespace SME.SGP.Aplicacao
 
             var tempoExpiracao = int.Parse(configuration.GetSection("ExpiracaoCache").GetSection("ObjetivosAprendizagem").Value);
 
-                await repositorioCache.SalvarAsync("ObjetivosAprendizagem", JsonConvert.SerializeObject(objetivos), tempoExpiracao, true);
-            }
-            else
-                objetivos = JsonConvert.DeserializeObject<List<ObjetivoAprendizagemDto>>(objetivosCacheString);
+            await repositorioCache.SalvarAsync("ObjetivosAprendizagem", JsonConvert.SerializeObject(objetivos), tempoExpiracao, true);
 
             return objetivos;
         }
