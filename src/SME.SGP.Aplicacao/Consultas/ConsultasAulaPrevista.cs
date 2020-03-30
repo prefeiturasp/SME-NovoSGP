@@ -15,18 +15,21 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IConsultasTurma consultasTurma;
 
         public ConsultasAulaPrevista(IRepositorioAulaPrevista repositorio,
                                      IRepositorioAulaPrevistaBimestre repositorioBimestre,
                                      IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                      IRepositorioTurma repositorioTurma,
-                                     IRepositorioTipoCalendario repositorioTipoCalendario)
+                                     IRepositorioTipoCalendario repositorioTipoCalendario,
+                                     IConsultasTurma consultasTurma)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
         }
 
         public async Task<AulasPrevistasDadasAuditoriaDto> BuscarPorId(long id)
@@ -53,6 +56,8 @@ namespace SME.SGP.Aplicacao
 
             var aulaPrevista = await repositorio.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
 
+            var periodosAbertos = await consultasTurma.PeriodosEmAbertoTurma(turmaId, DateTime.Now);
+
             IEnumerable<AulaPrevistaBimestreQuantidade> aulaPrevistaBimestres;
 
             if (aulaPrevista != null)
@@ -65,14 +70,14 @@ namespace SME.SGP.Aplicacao
                 aulaPrevistaBimestres = MapearPeriodoParaBimestreDto(periodosBimestre);
             }
 
-            aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
+            aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres, periodosAbertos);
 
             return aulaPrevistaDto;
         }
 
-        private AulasPrevistasDadasAuditoriaDto MapearDtoRetorno(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> aulasPrevistasBimestre)
+        private AulasPrevistasDadasAuditoriaDto MapearDtoRetorno(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> aulasPrevistasBimestre, IEnumerable<PeriodoEscolarAbertoDto> periodosAbertos = null)
         {
-            AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = MapearParaDto(aulaPrevista, aulasPrevistasBimestre) ?? new AulasPrevistasDadasAuditoriaDto();
+            AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = MapearParaDto(aulaPrevista, aulasPrevistasBimestre, periodosAbertos) ?? new AulasPrevistasDadasAuditoriaDto();
             aulaPrevistaDto = MapearMensagens(aulaPrevistaDto);
 
             return aulaPrevistaDto;
@@ -87,7 +92,7 @@ namespace SME.SGP.Aplicacao
                 if (aula.Previstas.Quantidade != (aula.Criadas.QuantidadeCJ + aula.Criadas.QuantidadeTitular) && aula.Fim.Date >= DateTime.Today)
                     mensagens.Add("Quantidade de aulas previstas diferente da quantidade de aulas criadas.");
 
-                if (aula.Previstas.Quantidade != (aula.Cumpridas + aula.Reposicoes) && aula.Fim.Date< DateTime.Today)
+                if (aula.Previstas.Quantidade != (aula.Cumpridas + aula.Reposicoes) && aula.Fim.Date < DateTime.Today)
                     mensagens.Add("Quantidade de aulas previstas diferente do somatório de aulas dadas + aulas repostas, após o final do bimestre.");
 
                 if (mensagens.Any())
@@ -97,7 +102,7 @@ namespace SME.SGP.Aplicacao
             return aulaPrevistaDto;
         }
 
-        private AulasPrevistasDadasAuditoriaDto MapearParaDto(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> bimestres = null)
+        private AulasPrevistasDadasAuditoriaDto MapearParaDto(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> bimestres = null, IEnumerable<PeriodoEscolarAbertoDto> periodosAbertos = null)
         {
             var bimestre = bimestres.FirstOrDefault();
 
@@ -122,7 +127,8 @@ namespace SME.SGP.Aplicacao
                     Inicio = x.Inicio,
                     Fim = x.Fim,
                     Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas },
-                    Reposicoes = x.Reposicoes
+                    Reposicoes = x.Reposicoes,
+                    PodeEditar = periodosAbertos != null ? periodosAbertos.FirstOrDefault(p => p.Bimestre == x.Bimestre).Aberto : false
                 }).ToList()
             };
         }

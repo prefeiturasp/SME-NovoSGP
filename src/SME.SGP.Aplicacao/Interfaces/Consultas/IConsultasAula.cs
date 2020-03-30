@@ -14,6 +14,10 @@ namespace SME.SGP.Aplicacao
 
         Task<bool> ChecarFrequenciaPlanoNaRecorrencia(long aulaId);
 
+        Task<bool> AulaDentroPeriodo(Aula aula);
+
+        Task<bool> AulaDentroPeriodo(string turmaId, DateTime dataAula);
+
         Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turma, string disciplina);
 
         Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia);

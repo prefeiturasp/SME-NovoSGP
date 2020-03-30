@@ -118,6 +118,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasEventoFechamento, ConsultasEventoFechamento>();
             services.TryAddScoped<IConsultaRecuperacaoParalela, ConsultasRecuperacaoParalela>();
             services.TryAddScoped<IConsultasFechamentoFinal, ConsultasFechamentoFinal>();
+            services.TryAddScoped<IConsultasTurma, ConsultasTurma>();
             services.TryAddScoped<IConsultasPendenciaFechamento, ConsultasPendenciaFechamento>();
         }
 

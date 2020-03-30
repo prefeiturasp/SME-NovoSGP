@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IComandosDiasLetivos comandosDiasLetivos;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IConsultasDisciplina consultasDisciplina;
+        private readonly IConsultasAula consultasAula;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
@@ -38,7 +39,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
-            IConsultasDisciplina consultasDisciplina)
+            IConsultasDisciplina consultasDisciplina,
+            IConsultasAula consultasAula)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.comandosDiasLetivos = comandosDiasLetivos ?? throw new ArgumentNullException(nameof(comandosDiasLetivos));
@@ -51,6 +53,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaRegencia));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
+            this.consultasAula = consultasAula ?? throw new ArgumentNullException(nameof(consultasAula));
         }
 
         public async Task<DiaEventoAula> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
@@ -143,6 +146,7 @@ namespace SME.SGP.Aplicacao
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
                         Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
                         Turma = x.TurmaNome,
+                        DentroPeriodo = x.DentroPeriodo,
                         UnidadeEscolar = x.UeNome,
                         Atividade = listaAtividades
                     }
@@ -152,7 +156,8 @@ namespace SME.SGP.Aplicacao
             return new DiaEventoAula
             {
                 EventosAulas = eventosAulas,
-                Letivo = comandosDiasLetivos.VerificarSeDataLetiva(eventos, data)
+                Letivo = comandosDiasLetivos.VerificarSeDataLetiva(eventos, data),
+                DentroPeriodo = await consultasAula.AulaDentroPeriodo(filtro.TurmaId, filtro.Data)
             };
         }
 
@@ -302,6 +307,9 @@ namespace SME.SGP.Aplicacao
         {
             var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, filtro.TurmaHistorico);
 
+            foreach (var aula in aulas)
+                aula.DentroPeriodo = await consultasAula.AulaDentroPeriodo(aula.TurmaId, aula.DataAula);
+            
             if (disciplinas != null)
                 VerificarAulasSomenteConsulta(disciplinas, aulas);
 

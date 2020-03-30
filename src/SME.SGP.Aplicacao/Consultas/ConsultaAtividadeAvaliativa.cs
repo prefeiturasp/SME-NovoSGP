@@ -21,6 +21,9 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEOL servicoEOL;
+        private readonly IConsultasTurma consultasTurma;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultaAtividadeAvaliativa(
@@ -34,7 +37,10 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IServicoUsuario servicoUsuario,
             IServicoEOL servicoEOL,
-            IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
+            IContextoAplicacao contextoAplicacao,
+            IConsultasTurma consultasTurma,
+            IConsultasPeriodoEscolar consultasPeriodoEscolar,
+            IConsultasPeriodoFechamento consultasPeriodoFechamento) : base(contextoAplicacao)
         {
             this.consultasProfessor = consultasProfessor ?? throw new System.ArgumentNullException(nameof(consultasProfessor));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
@@ -46,6 +52,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new System.ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
 
         public async Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro)
@@ -65,15 +74,46 @@ namespace SME.SGP.Aplicacao
             => await repositorioAtividadeAvaliativa.ListarPorTurmaDisciplinaPeriodo(turmaCodigo, disciplinaId, periodoInicio, periodoFim);
 
         public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
-        {
-            IEnumerable<AtividadeAvaliativaRegencia> atividadeRegencias = null;
-            IEnumerable<AtividadeAvaliativaDisciplina> atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
+        {            
             var atividade = await repositorioAtividadeAvaliativa.ObterPorIdAsync(id);
+
             if (atividade is null)
                 throw new NegocioException("Atividade avaliativa não encontrada");
+
+            IEnumerable<AtividadeAvaliativaRegencia> atividadeRegencias = null;
+
+            IEnumerable<AtividadeAvaliativaDisciplina> atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
+
             if (atividade.EhRegencia)
                 atividadeRegencias = await repositorioAtividadeAvaliativaRegencia.Listar(id);
-            return MapearParaDto(atividade, atividadeRegencias, atividadeDisciplinas);
+
+            var dentroPeriodo = await AtividadeAvaliativaDentroPeriodo(atividade);
+
+            return MapearParaDto(atividade, atividadeRegencias, atividadeDisciplinas, dentroPeriodo);
+        }
+
+        public async Task<bool> AtividadeAvaliativaDentroPeriodo(AtividadeAvaliativa atividadeAvaliativa)
+        {
+            return await AtividadeAvaliativaDentroPeriodo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao);
+        }
+
+        public async Task<bool> AtividadeAvaliativaDentroPeriodo(string turmaId, DateTime dataAula)
+        {
+            var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaId);
+
+            if (turma == null)
+                throw new NegocioException($"Não foi possivel obter a turma da aula");
+
+            var bimestreAtual = consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo);
+            var bimestreAvaliacao = consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo);
+
+            if (bimestreAtual == 0 || bimestreAvaliacao == 0)
+                return false;
+
+            if (bimestreAvaliacao >= bimestreAtual)
+                return true;
+
+            return await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTime.Now, bimestreAtual);
         }
 
         public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasCopia(string turmaId, string disciplinaId)
@@ -191,7 +231,7 @@ namespace SME.SGP.Aplicacao
             return items?.Select(c => MapearParaDto(c));
         }
 
-        private AtividadeAvaliativaCompletaDto MapearParaDto(AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AtividadeAvaliativaRegencia> regencias = null, IEnumerable<AtividadeAvaliativaDisciplina> disciplinas = null)
+        private AtividadeAvaliativaCompletaDto MapearParaDto(AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AtividadeAvaliativaRegencia> regencias = null, IEnumerable<AtividadeAvaliativaDisciplina> disciplinas = null, bool dentroPeriodo = true)
         {
             return atividadeAvaliativa == null ? null : new AtividadeAvaliativaCompletaDto
             {
@@ -204,6 +244,7 @@ namespace SME.SGP.Aplicacao
                 Nome = atividadeAvaliativa.NomeAvaliacao,
                 TipoAvaliacaoId = atividadeAvaliativa.TipoAvaliacaoId,
                 TurmaId = atividadeAvaliativa.TurmaId,
+                DentroPeriodo = dentroPeriodo,
                 AlteradoEm = atividadeAvaliativa.AlteradoEm,
                 AlteradoPor = atividadeAvaliativa.AlteradoPor,
                 AlteradoRF = atividadeAvaliativa.AlteradoRF,
