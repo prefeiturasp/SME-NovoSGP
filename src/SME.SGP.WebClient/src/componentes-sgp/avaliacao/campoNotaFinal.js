@@ -23,18 +23,22 @@ const CampoNotaFinal = props => {
   );
 
   const [notaBimestre, setNotaBimestre] = useState();
-  const [notaValorAtual, setNotaValorAtual] = useState();
+  const [notaValorAtual, setNotaValorAtual] = useState(0);
+  const [notaAlterada, setNotaAlterada] = useState(false);
+  const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
 
   const validaSeTeveAlteracao = useCallback(
     notaArredondada => {
       if (
         notaBimestre.notaOriginal != undefined &&
         notaBimestre.notaOriginal != null &&
-        notaBimestre.notaOriginal.trim() !== ''
+        notaBimestre.notaOriginal !== ''
       ) {
-        notaBimestre.notaAlterada =
+        const alterada =
           Number(notaArredondada).toFixed(1) !==
           Number(notaBimestre.notaOriginal).toFixed(1);
+        notaBimestre.notaAlterada = alterada;
+        setNotaAlterada(alterada);
       }
     },
     [notaBimestre]
@@ -42,10 +46,13 @@ const CampoNotaFinal = props => {
 
   const validaSeEstaAbaixoDaMedia = useCallback(
     valorAtual => {
+      valorAtual = removerCaracteresInvalidos(String(valorAtual));
       if (valorAtual && valorAtual < mediaAprovacaoBimestre) {
         notaBimestre.abaixoDaMedia = true;
+        setAbaixoDaMedia(true);
       } else {
         notaBimestre.abaixoDaMedia = false;
+        setAbaixoDaMedia(false);
       }
     },
     [mediaAprovacaoBimestre, notaBimestre]
@@ -58,10 +65,23 @@ const CampoNotaFinal = props => {
   useEffect(() => {
     if (notaBimestre) {
       validaSeEstaAbaixoDaMedia(notaBimestre.notaConceito);
-      validaSeTeveAlteracao(notaBimestre.notaConceito);
+      validaSeTeveAlteracao(String(notaBimestre.notaConceito));
       setNotaValorAtual(notaBimestre.notaConceito);
     }
   }, [notaBimestre, validaSeTeveAlteracao, validaSeEstaAbaixoDaMedia]);
+
+  const removerCaracteresInvalidos = texto => {
+    return texto.replace(/[^0-9,.]+/g, '');
+  };
+
+  const editouCampo = (notaOriginal, notaNova) => {
+    notaOriginal = removerCaracteresInvalidos(String(notaOriginal));
+    notaNova = removerCaracteresInvalidos(String(notaNova));
+    if (notaOriginal === '' && notaNova === '') {
+      return false;
+    }
+    return notaOriginal !== notaNova;
+  };
 
   const setarValorNovo = async valorNovo => {
     if (!desabilitarCampo && podeEditar) {
@@ -86,17 +106,22 @@ const CampoNotaFinal = props => {
     }
   };
 
+  const valorInvalido = valorNovo => {
+    const regexValorInvalido = /[^0-9,.]+/g;
+    return regexValorInvalido.test(String(valorNovo));
+  };
+
   return (
-    <Tooltip
-      placement="bottom"
-      title={
-        notaBimestre && notaBimestre.abaixoDaMedia ? 'Abaixo da Média' : ''
-      }
-    >
+    <Tooltip placement="bottom" title={abaixoDaMedia ? 'Abaixo da Média' : ''}>
       <div>
         <CampoNumero
           label={label ? label : ''}
-          onBlur={valorNovo => setarValorNovo(valorNovo.target.value)}
+          onChange={valorNovo => {
+            const invalido = valorInvalido(valorNovo);
+            if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
+              setarValorNovo(valorNovo);
+            }
+          }}
           value={notaValorAtual}
           min={0}
           max={10}
@@ -109,9 +134,9 @@ const CampoNotaFinal = props => {
             modoEdicaoGeral
           }
           className={`tamanho-conceito-final ${
-            notaBimestre && notaBimestre.abaixoDaMedia
+            abaixoDaMedia
               ? 'border-abaixo-media'
-              : notaBimestre && notaBimestre.notaAlterada
+              : notaAlterada
               ? 'border-registro-alterado'
               : ''
           } `}

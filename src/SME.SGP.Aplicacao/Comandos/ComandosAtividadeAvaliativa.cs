@@ -56,6 +56,8 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var disciplina = ObterDisciplina(dto.DisciplinasId[0]);
+            ValidaDisciplinaNaAvaliacao(disciplina);
+
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, disciplina.Regencia);
 
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
@@ -116,6 +118,12 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
+        private void ValidaDisciplinaNaAvaliacao(DisciplinaDto disciplina)
+        {
+            if (!disciplina.LancaNota)
+                throw new NegocioException("Não é possível cadastrar avaliações para componente curricular que não lança nota.");
+        }
+
         public async Task Excluir(long idAtividadeAvaliativa)
         {
             var atividadeAvaliativa = repositorioAtividadeAvaliativa.ObterPorId(idAtividadeAvaliativa);
@@ -166,6 +174,8 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var disciplina = ObterDisciplina(dto.DisciplinasId[0]);
+            ValidaDisciplinaNaAvaliacao(disciplina);
+
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia);
             mensagens.AddRange(await Salvar(atividadeAvaliativa, dto));
             mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf));
@@ -241,8 +251,7 @@ namespace SME.SGP.Aplicacao
                     {
                         mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto($"Erro ao copiar para a turma: '{turma.TurmaId}' na data '{turma.DataAtividadeAvaliativa.ToString("dd/MM/yyyy")}'. {nex.Message}"));
                     }
-                }
-                unitOfWork.PersistirTransacao();
+                }               
             }
 
             return mensagens;
@@ -296,7 +305,8 @@ namespace SME.SGP.Aplicacao
                 Nome = atividadeAvaliativaDto.Nome,
                 TipoAvaliacaoId = (int)atividadeAvaliativaDto.TipoAvaliacaoId,
                 TurmaId = atividadeAvaliativaDto.TurmaId,
-                UeID = atividadeAvaliativaDto.UeId
+                UeID = atividadeAvaliativaDto.UeId,
+                DisciplinasId = atividadeAvaliativaDto.DisciplinasId
             };
         }
 

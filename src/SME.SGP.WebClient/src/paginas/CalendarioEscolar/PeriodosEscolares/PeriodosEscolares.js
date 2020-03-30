@@ -52,7 +52,7 @@ const PeriodosEscolares = () => {
     ),
     primeiroBimestreDataFinal: momentSchema
       .required('Data final obrigatória')
-      .dataMenorIgualQue(
+      .dataMenorQue( 
         'primeiroBimestreDataInicial',
         'primeiroBimestreDataFinal',
         'Data inválida'
@@ -69,7 +69,7 @@ const PeriodosEscolares = () => {
       ),
     segundoBimestreDataFinal: momentSchema
       .required('Data final obrigatória')
-      .dataMenorIgualQue(
+      .dataMenorQue(
         'segundoBimestreDataInicial',
         'segundoBimestreDataFinal',
         'Data inválida'
@@ -86,7 +86,7 @@ const PeriodosEscolares = () => {
       ),
     terceiroBimestreDataFinal: momentSchema
       .required('Data final obrigatória')
-      .dataMenorIgualQue(
+      .dataMenorQue(
         'terceiroBimestreDataInicial',
         'terceiroBimestreDataFinal',
         'Data inválida'
@@ -103,7 +103,7 @@ const PeriodosEscolares = () => {
       ),
     quartoBimestreDataFinal: momentSchema
       .required('Data final obrigatória')
-      .dataMenorIgualQue(
+      .dataMenorQue(
         'quartoBimestreDataInicial',
         'quartoBimestreDataFinal',
         'Data inválida'
@@ -321,8 +321,9 @@ const PeriodosEscolares = () => {
     consultarPeriodoPorId(id);
   };
 
-  const onChangeCamposData = () => {
+  const onChangeCamposData = form => {
     if (!modoEdicao) {
+      touchedFields(form);
       setModoEdicao(true);
     }
   };
@@ -343,7 +344,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             label="Início do Bimestre"
             name="primeiroBimestreDataInicial"
-            onChange={onChangeCamposData}
+            onChange={()=> onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -354,7 +355,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             label="Fim do Bimestre"
             name="primeiroBimestreDataFinal"
-            onChange={onChangeCamposData}
+            onChange={()=> onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -376,7 +377,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="segundoBimestreDataInicial"
-            onChange={onChangeCamposData}
+            onChange={()=> onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -386,7 +387,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="segundoBimestreDataFinal"
-            onChange={onChangeCamposData}
+            onChange={()=> onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -408,7 +409,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="terceiroBimestreDataInicial"
-            onChange={onChangeCamposData}
+            onChange={()=> onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -418,7 +419,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="terceiroBimestreDataFinal"
-            onChange={onChangeCamposData}
+            onChange={()=> onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -440,7 +441,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="quartoBimestreDataInicial"
-            onChange={onChangeCamposData}
+            onChange={()=> onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -450,7 +451,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="quartoBimestreDataFinal"
-            onChange={onChangeCamposData}
+            onChange={()=> onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -458,11 +459,15 @@ const PeriodosEscolares = () => {
     );
   };
 
-  const validaAntesDoSubmit = form => {
+  const touchedFields =  form => {
     const arrayCampos = Object.keys(valoresFormInicial);
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
     });
+  }
+
+  const validaAntesDoSubmit = form => {
+    touchedFields(form);
     form.validateForm().then(() => {
       if (
         form.isValid ||

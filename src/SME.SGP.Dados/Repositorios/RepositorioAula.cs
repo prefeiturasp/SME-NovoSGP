@@ -33,6 +33,44 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplinaProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf)
+        {
+            var query = @"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = @data
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId
+                  and professor_rf = @professorRf";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
+            {
+                data = data.Date,
+                turmaId,
+                disciplinaId,
+                professorRf
+            });
+        }
+
+        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf)
+        {
+            var query = @"select DATE(data_aula)
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = ANY(@datas)
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId
+                  and professor_rf = @professorRf";
+
+            return (await database.Conexao.QueryAsync<DateTime>(query.ToString(), new
+            {
+                datas,
+                turmaId,
+                disciplinaId,
+                professorRf
+            }));
+        }
+
         public async Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, long atividadeAvaliativaId)
         {
             var query = @"select *
@@ -153,6 +191,71 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(" order by data_aula");
 
             return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { aulaPaiId, aulaIdInicioRecorrencia, dataFinal });
+        }
+
+        public IEnumerable<Aula> ObterAulasReposicaoPendentes(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var query = @"select
+	                            *
+                            from
+	                            aula
+                            where
+	                            tipo_aula = 2
+	                            and status = 2
+	                            and turma_id = @codigoTurma
+	                            and disciplina_id = @disciplinaId
+	                            and data_aula >= @inicioPeriodo
+	                            and data_aula <= @fimPeriodo";
+            return database.Conexao.Query<Aula>(query, new
+            {
+                codigoTurma,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo
+            });
+        }
+
+        public IEnumerable<Aula> ObterAulasSemFrequenciaRegistrada(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var query = @"select *
+                            from aula a
+                            left join registro_frequencia r on r.aula_id = a.id
+                           where turma_id = @codigoTurma
+	                            and disciplina_id = @disciplinaId
+	                            and data_aula >= @inicioPeriodo
+	                            and data_aula <= @fimPeriodo
+                                and data_aula <= @dataAtual
+	                            and r.id is null";
+            return database.Conexao.Query<Aula>(query, new
+            {
+                codigoTurma,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo,
+                dataAtual = DateTime.Now
+            });
+        }
+
+        public IEnumerable<Aula> ObterAulasSemPlanoAulaNaDataAtual(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var query = @"select *
+                            from aula a
+                            left join plano_aula p on p.aula_id = a.id
+                           where turma_id = @codigoTurma
+                                and disciplina_id = @disciplinaId
+                                and data_aula >= @inicioPeriodo
+                                and data_aula <= @fimPeriodo
+                                and data_aula <= @dataAtual
+                                and p.id is null";
+
+            return database.Conexao.Query<Aula>(query, new
+            {
+                codigoTurma,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo,
+                dataAtual = DateTime.Today
+            });
         }
 
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaDiaProfessor(string turma, string disciplina, DateTime dataAula, string codigoRf)

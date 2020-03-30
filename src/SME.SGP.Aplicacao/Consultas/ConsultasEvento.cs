@@ -13,13 +13,18 @@ namespace SME.SGP.Aplicacao
     public class ConsultasEvento : ConsultasBase, IConsultasEvento
     {
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
-                               IContextoAplicacao contextoAplicacao, IServicoUsuario servicoUsuario) : base(contextoAplicacao)
+                               IContextoAplicacao contextoAplicacao,
+                               IServicoUsuario servicoUsuario,
+                               IRepositorioEventoTipo repositorioEventoTipo) : base(contextoAplicacao)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
         }
 
         public async Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto)
@@ -48,24 +53,23 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario, usuario.PerfilAtual,
-                usuario.TemPerfilSupervisorOuDiretor(), usuario.PodeVisualizarEventosOcorrenciaDre(),
-                        usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
+            return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario);
         }
 
         public async Task<EventoCompletoDto> ObterPorId(long id)
         {
             var evento = repositorioEvento.ObterPorId(id);
+            evento.TipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
             bool podeAlterar = !EhEventoSME(evento) || (EhEventoSME(evento) && usuario.EhPerfilSME());
 
-            if (!EhEventoSME(evento) && 
-                (evento.TipoEventoId == (long)TipoEvento.LiberacaoExcepcional || 
+            if (!EhEventoSME(evento) &&
+                (evento.TipoEventoId == (long)TipoEvento.LiberacaoExcepcional ||
                  evento.TipoEventoId == (long)TipoEvento.ReposicaoNoRecesso))
                 podeAlterar = usuario.TemPerfilGestaoUes();
-           
+
             return MapearParaDto(evento, podeAlterar);
         }
 
@@ -139,7 +143,8 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = evento.CriadoRF,
                 TipoEvento = MapearTipoEvento(evento.TipoEvento),
                 Migrado = evento.Migrado,
-                PodeAlterar = podeAlterar != null ? podeAlterar.Value && !evento.TipoEvento.SomenteLeitura : !evento.TipoEvento.SomenteLeitura
+                PodeAlterar = podeAlterar != null ? podeAlterar.Value && evento.PodeAlterar() : evento.PodeAlterar(),
+                Status = evento.Status
             };
         }
 
