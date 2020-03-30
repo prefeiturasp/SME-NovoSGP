@@ -192,7 +192,6 @@ namespace SME.SGP.Dominio.Servicos
             if (string.IsNullOrWhiteSpace(urlFrontEnd))
                 throw new NegocioException("Url do frontend não encontrada.");
 
-
             var notificacao = new Notificacao()
             {
                 UsuarioId = usuarioLogado.Id,
@@ -208,12 +207,13 @@ namespace SME.SGP.Dominio.Servicos
 
             if (diretores != null)
             {
-                foreach(var diretor in diretores)
+                foreach (var diretor in diretores)
                 {
+                    var notificacaoDiretor = notificacao;
+                    notificacaoDiretor.Id = 0;
                     var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
-                    notificacao.UsuarioId = usuario.Id;
-
-                    servicoNotificacao.Salvar(notificacao);
+                    notificacaoDiretor.UsuarioId = usuario.Id;
+                    servicoNotificacao.Salvar(notificacaoDiretor);
                 }
             }
 
@@ -223,10 +223,11 @@ namespace SME.SGP.Dominio.Servicos
             {
                 foreach (var cp in cps)
                 {
+                    var notificacaoCp = notificacao;
+                    notificacaoCp.Id = 0;
                     var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cp.CodigoRf);
-                    notificacao.UsuarioId = usuario.Id;
-
-                    servicoNotificacao.Salvar(notificacao);
+                    notificacaoCp.UsuarioId = usuario.Id;
+                    servicoNotificacao.Salvar(notificacaoCp);
                 }
             }
         }
