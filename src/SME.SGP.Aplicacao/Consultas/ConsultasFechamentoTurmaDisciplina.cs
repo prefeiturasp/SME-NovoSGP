@@ -139,7 +139,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                 Disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome :                    disciplinaEOL.Nome,
-                                NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota.Value,
+                                NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota ?? 0,
                                 ehConceito = notaConceitoBimestre.ConceitoId.HasValue,
                                 conceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : ""
                             });

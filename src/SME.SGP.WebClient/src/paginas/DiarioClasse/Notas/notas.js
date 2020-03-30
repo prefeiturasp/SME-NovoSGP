@@ -83,7 +83,9 @@ const Notas = ({ match }) => {
   const [clicouNoBotaoSalvar, setClicouNoBotaoSalvar] = useState(false);
   const [clicouNoBotaoVoltar, setClicouNoBotaoVoltar] = useState(false);
 
-  const [showMsgPeriodoFechamento, setShowMsgPeriodoFechamento] = useState(false);
+  const [showMsgPeriodoFechamento, setShowMsgPeriodoFechamento] = useState(
+    false
+  );
 
   const validaSeDesabilitaCampos = async bimestre => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
@@ -156,7 +158,7 @@ const Notas = ({ match }) => {
   };
 
   const obterBimestres = useCallback(
-    async (disciplinaId, numeroBimestre) => {      
+    async (disciplinaId, numeroBimestre) => {
       const params = {
         anoLetivo: usuario.turmaSelecionada.anoLetivo,
         bimestre: numeroBimestre,
@@ -191,7 +193,7 @@ const Notas = ({ match }) => {
     async (disciplinaId, numeroBimestre) => {
       if (disciplinaId > 0) {
         setCarregandoListaBimestres(true);
-        const dados = await obterBimestres(disciplinaId, numeroBimestre);        
+        const dados = await obterBimestres(disciplinaId, numeroBimestre);
         validaPeriodoFechamento(dados);
         if (dados && dados.bimestres && dados.bimestres.length) {
           dados.bimestres.forEach(async item => {
@@ -708,13 +710,17 @@ const Notas = ({ match }) => {
   };
 
   const validaPeriodoFechamento = dados => {
-    const temDados = dados.bimestres.find(bimestre => bimestre.alunos && bimestre.alunos.length);
+    const temDados =
+      dados.bimestres &&
+      dados.bimestres.find(
+        bimestre => bimestre.alunos && bimestre.alunos.length
+      );
     if (temDados) {
       validaSeDesabilitaCampos(dados.bimestreAtual);
     } else {
       setShowMsgPeriodoFechamento(false);
     }
-  }
+  };
 
   const confirmarTrocaTab = async numeroBimestre => {
     if (disciplinaSelecionada) {
@@ -733,7 +739,7 @@ const Notas = ({ match }) => {
       setBimestreCorrente(numeroBimestre);
 
       setCarregandoListaBimestres(true);
-      const dados = await obterBimestres(disciplinaSelecionada, numeroBimestre);      
+      const dados = await obterBimestres(disciplinaSelecionada, numeroBimestre);
       validaPeriodoFechamento(dados);
       if (dados && dados.bimestres && dados.bimestres.length) {
         const bimestrePesquisado = dados.bimestres.find(

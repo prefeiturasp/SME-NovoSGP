@@ -248,10 +248,8 @@ namespace SME.SGP.Dominio.Servicos
                     var notaConceitoBimestre = notasConceitosBimestre.FirstOrDefault(x => x.CodigoAluno == notaConceitoAlunoDto.CodigoAluno && x.DisciplinaId == notaConceitoAlunoDto.DisciplinaId);
                     if (notaConceitoBimestre != null)
                     {
-                        notaConceitoBimestre.Nota = notaConceitoAlunoDto.Nota;
-
-                        if (notaConceitoAlunoDto.ConceitoId > 0)
-                            notaConceitoBimestre.ConceitoId = notaConceitoAlunoDto.ConceitoId;
+                        notaConceitoBimestre.Nota = notaConceitoAlunoDto?.Nota ?? null;
+                        notaConceitoBimestre.ConceitoId = notaConceitoAlunoDto?.ConceitoId ?? null;
                     }
                     else
                         notasConceitosBimestre.Add(MapearParaEntidade(notaConceitoAlunoDto));

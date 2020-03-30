@@ -246,7 +246,7 @@ namespace SME.SGP.Aplicacao
                                     var notaRegencia = notasConceitoBimestre?.FirstOrDefault(c => c.DisciplinaId == disciplinaRegencia.CodigoComponenteCurricular);
                                     if (notaRegencia != null)
                                     {
-                                        nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota.Value);
+                                        nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota ?? 0);
                                         nota.ehConceito = notaRegencia.ConceitoId.HasValue;
                                     }
 
@@ -261,7 +261,7 @@ namespace SME.SGP.Aplicacao
                                         Disciplina = disciplinaEOL.Nome,
                                         NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ?
                                             notaConceitoBimestre.ConceitoId.Value :
-                                            notaConceitoBimestre.Nota,
+                                            notaConceitoBimestre.Nota ?? 0,
                                         ehConceito = notaConceitoBimestre.ConceitoId.HasValue
                                     });
                         }
