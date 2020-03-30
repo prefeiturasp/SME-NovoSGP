@@ -313,5 +313,14 @@ namespace SME.SGP.Aplicacao
 
             return disciplinas.Where(x => x.CodigoComponenteCurricular == filtroDisciplinaPlanejamentoDto.CodigoDisciplina);
         }
+
+        public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
+        {
+            var disciplinaEOL = await servicoEOL.ObterDisciplinasPorIdsAsync(new long[] { disciplinaId });
+            if (disciplinaEOL == null || !disciplinaEOL.Any())
+                throw new NegocioException($"Disciplina não localizada no EOL [{disciplinaId}]");
+
+            return disciplinaEOL.FirstOrDefault();
+        }
     }
 }
