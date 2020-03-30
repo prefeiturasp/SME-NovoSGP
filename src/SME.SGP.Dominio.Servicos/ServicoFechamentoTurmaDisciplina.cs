@@ -99,7 +99,6 @@ namespace SME.SGP.Dominio.Servicos
 
             fechamentoTurma.PeriodoEscolarId = periodoFechamentoBimestre.PeriodoEscolarId;
             fechamentoTurma.PeriodoEscolar = periodoFechamentoBimestre.PeriodoEscolar;
-            VarificaPercentualReprovacao(entidadeDto, fechamentoTurma.PeriodoEscolar);
 
             // Carrega notas alunos
             var notasConceitosBimestre = await MapearParaEntidade(id, entidadeDto.NotaConceitoAlunos);
@@ -125,29 +124,6 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
-        }
-
-        private void VarificaPercentualReprovacao(FechamentoTurmaDisciplinaDto fechamentoTurmaDto, PeriodoEscolar periodoEscolar)
-        {
-            var percentualReprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
-            var qtdReprovados = 0;
-
-            // Verifica se lança nota ou conceito
-            if (fechamentoTurmaDto.NotaConceitoAlunos.Any(a => a.ConceitoId > 0))
-            {
-                var conceitos = repositorioConceito.ObterPorData(periodoEscolar.PeriodoFim);
-                qtdReprovados = fechamentoTurmaDto.NotaConceitoAlunos.Where(n => !conceitos.First(c => c.Id == n.ConceitoId).Aprovado).Count();
-            }
-            else
-            {
-                var mediaBimestre = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
-                qtdReprovados = fechamentoTurmaDto.NotaConceitoAlunos.Where(c => c.Nota < mediaBimestre).Count();
-            }
-
-            // Mais de 50% reprovados
-            if ((qtdReprovados > (fechamentoTurmaDto.NotaConceitoAlunos.Count() * percentualReprovacao / 100))
-                && (string.IsNullOrEmpty(fechamentoTurmaDto.Justificativa)))
-                throw new NegocioException($"Mais de {percentualReprovacao}% das notas/conceitos foi considerada insuficiente. Necessário incluir uma justificativa");
         }
 
         public async Task GerarPendenciasFechamento(long disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, FechamentoTurmaDisciplina fechamento, Usuario usuarioLogado)
