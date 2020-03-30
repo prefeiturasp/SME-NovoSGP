@@ -166,6 +166,9 @@ namespace SME.SGP.Aplicacao
                     alunoDto.Nome = aluno.NomeAluno;
                     alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
 
+                    var anotacao = await consultasNotaConceitoBimestre.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma.Id, aluno.CodigoAluno);
+                    alunoDto.TemAnotacao = !string.IsNullOrEmpty(anotacao.Trim());
+
                     var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
                     if (marcador != null)
                     {
