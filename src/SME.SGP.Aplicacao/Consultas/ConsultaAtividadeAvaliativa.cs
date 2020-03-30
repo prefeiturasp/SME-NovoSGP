@@ -74,15 +74,15 @@ namespace SME.SGP.Aplicacao
             => await repositorioAtividadeAvaliativa.ListarPorTurmaDisciplinaPeriodo(turmaCodigo, disciplinaId, periodoInicio, periodoFim);
 
         public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
-        {
-            IEnumerable<AtividadeAvaliativaRegencia> atividadeRegencias = null;
-
-            IEnumerable<AtividadeAvaliativaDisciplina> atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
-
+        {            
             var atividade = await repositorioAtividadeAvaliativa.ObterPorIdAsync(id);
 
             if (atividade is null)
                 throw new NegocioException("Atividade avaliativa não encontrada");
+
+            IEnumerable<AtividadeAvaliativaRegencia> atividadeRegencias = null;
+
+            IEnumerable<AtividadeAvaliativaDisciplina> atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
 
             if (atividade.EhRegencia)
                 atividadeRegencias = await repositorioAtividadeAvaliativaRegencia.Listar(id);
