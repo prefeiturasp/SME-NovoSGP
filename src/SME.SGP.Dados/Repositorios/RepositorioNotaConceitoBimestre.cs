@@ -14,11 +14,15 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<string> ObterAnotacaoAlunoPorFechamento(long fechamentoId, string codigoAluno)
+        public async Task<AnotacaoAlunoCompletoDto> ObterAnotacaoAlunoPorFechamento(long fechamentoId, string codigoAluno)
         {
-            var query = "select anotacao from nota_conceito_bimestre where fechamento_turma_disciplina_id = @fechamentoId and codigo_aluno = @codigoAluno";
+            var query = @"select criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor,
+                                 alterado_rf as AlteradoRF, criado_rf as CriadoRF, anotacao 
+                            from nota_conceito_bimestre nc
+                           where fechamento_turma_disciplina_id = @fechamentoId 
+                             and codigo_aluno = @codigoAluno";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { fechamentoId, codigoAluno });
+            return await database.Conexao.QueryFirstOrDefaultAsync<AnotacaoAlunoCompletoDto>(query, new { fechamentoId, codigoAluno });
         }
 
         public async Task<NotaConceitoBimestre> ObterPorAlunoEFechamento(long fechamentoId, string codigoAluno)

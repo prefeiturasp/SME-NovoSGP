@@ -87,11 +87,13 @@ namespace SME.SGP.Aplicacao
 
             var dadosAluno = (AlunoDadosBasicosDto)dadosAlunos.FirstOrDefault(c => c.CodigoTurma.ToString() == codigoTurma);
 
-            return new AnotacaoAlunoCompletoDto()
-            {
-                Aluno = dadosAluno,
-                Anotacao = await consultaAnotacaoAluno
-            };
+            var anotacaoAluno = await consultaAnotacaoAluno;
+            if (anotacaoAluno == null)
+                anotacaoAluno = new AnotacaoAlunoCompletoDto() { Aluno = dadosAluno };
+            else
+                anotacaoAluno.Aluno = dadosAluno;
+
+            return anotacaoAluno;
         }
 
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
@@ -166,8 +168,8 @@ namespace SME.SGP.Aplicacao
                     alunoDto.Nome = aluno.NomeAluno;
                     alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
 
-                    var anotacao = await consultasNotaConceitoBimestre.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma.Id, aluno.CodigoAluno);
-                    alunoDto.TemAnotacao = !string.IsNullOrEmpty(anotacao.Trim());
+                    var anotacaoAluno = await consultasNotaConceitoBimestre.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma.Id, aluno.CodigoAluno);
+                    alunoDto.TemAnotacao = !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());
 
                     var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
                     if (marcador != null)

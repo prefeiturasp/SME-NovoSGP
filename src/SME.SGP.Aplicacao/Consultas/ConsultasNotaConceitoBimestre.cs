@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotaConceitoBimestre = repositorioNotaConceitoBimestre ?? throw new ArgumentNullException(nameof(repositorioNotaConceitoBimestre));
         }
 
-        public async Task<string> ObterAnotacaoPorAlunoEFechamento(long fechamentoId, string codigoAluno)
+        public async Task<AnotacaoAlunoCompletoDto> ObterAnotacaoPorAlunoEFechamento(long fechamentoId, string codigoAluno)
             => await repositorioNotaConceitoBimestre.ObterAnotacaoAlunoPorFechamento(fechamentoId, codigoAluno);
     }
 }
