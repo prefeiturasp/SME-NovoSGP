@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -17,6 +18,7 @@ namespace SME.SGP.Aplicacao.Consultas
         private readonly IRepositorioPlanoAula repositorio;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IServicoEOL servicoEOL;
 
         public ConsultasPlanoAula(IRepositorioPlanoAula repositorioPlanoAula,
                                 IConsultasPlanoAnual consultasPlanoAnual,
@@ -24,7 +26,8 @@ namespace SME.SGP.Aplicacao.Consultas
                                 IConsultasAula consultasAula,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                 IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-                                IServicoUsuario servicoUsuario)
+                                IServicoUsuario servicoUsuario,
+                                IServicoEOL servicoEOL)
         {
             this.repositorio = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.consultasObjetivosAula = consultasObjetivosAprendizagemAula ?? throw new ArgumentNullException(nameof(consultasObjetivosAprendizagemAula));
@@ -33,6 +36,7 @@ namespace SME.SGP.Aplicacao.Consultas
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
         public async Task<PlanoAulaRetornoDto> ObterPlanoAulaPorAula(long aulaId)
@@ -42,7 +46,11 @@ namespace SME.SGP.Aplicacao.Consultas
             // Busca plano de aula por data e disciplina da aula
             var plano = await repositorio.ObterPlanoAulaPorAula(aulaId);
             var aulaDto = await consultasAula.BuscarPorId(aulaId);
-            var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterAtividadeAvaliativa(aulaDto.DataAula.Date, aulaDto.DisciplinaId, aulaDto.TurmaId, aulaDto.UeId);
+
+            var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aulaDto.TurmaId, usuario.Login, usuario.PerfilAtual);
+            var disciplina = disciplinas.FirstOrDefault(x => x.CodigoComponenteCurricular.ToString().Equals(aulaDto.DisciplinaId));
+            
+            var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterAtividadeAvaliativa(aulaDto.DataAula.Date, aulaDto.DisciplinaId, aulaDto.TurmaId, aulaDto.UeId, disciplina?.Regencia ?? true);
             if (plano != null)
             {
                 planoAulaDto = MapearParaDto(plano) ?? new PlanoAulaRetornoDto();

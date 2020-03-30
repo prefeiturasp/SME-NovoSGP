@@ -103,7 +103,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinaId });
         }
 
-        public async Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId)
+        public async Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId, bool ehRegencia)
         {
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalhoSimples(query);

@@ -13,7 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AtividadeAvaliativa>> ListarPorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo);
 
-        Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime date, string disciplinaId, string turmaId, string ueId);
+        Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime date, string disciplinaId, string turmaId, string ueId, bool ehRegencia = false);
 
         Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesPorDia(string dreId, string ueId, DateTime data, string rf, string turmaId);
 
