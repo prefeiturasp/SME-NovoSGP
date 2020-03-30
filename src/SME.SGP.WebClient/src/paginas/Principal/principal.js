@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import Card from '../../componentes/card';
 import Grid from '../../componentes/grid';
 import CardLink from '../../componentes/cardlink';
@@ -14,6 +13,7 @@ import {
 import ListaNotificacoes from './listaNotificacoes';
 import modalidade from '~/dtos/modalidade';
 import { Container, Label, Dashboard } from './principal.css';
+import DetalhesAluno from '~/componentes/Alunos/Detalhes';
 
 const Principal = () => {
   const FREQUENCIA_TYPE = 'frequencia';
@@ -71,6 +71,17 @@ const Principal = () => {
 
   return (
     <div className="col-md-12">
+      <DetalhesAluno
+        dados={{
+          nome: 'ALANA FERREIRA DE OLIVEIRA',
+          numero: 1,
+          dataNascimento: '02/02/2020',
+          codigoEOL: 4241513,
+          situacao: 'Matriculado',
+          dataSituacao: '04/02/2019',
+          frequencia: 96,
+        }}
+      />
       {modalidades &&
       !modalidades.length &&
       !usuario.ehProfessorCj &&
