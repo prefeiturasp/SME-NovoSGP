@@ -284,12 +284,8 @@ namespace SME.SGP.Dominio.Servicos
                     if (notaConceitoBimestre != null)
                     {
                         notaConceitoBimestre.Nota = notaConceitoAlunoDto.Nota;
-
-                        if (notaConceitoAlunoDto.ConceitoId > 0)
-                            notaConceitoBimestre.ConceitoId = notaConceitoAlunoDto.ConceitoId;
-
-                        if (notaConceitoAlunoDto.SinteseId > 0)
-                            notaConceitoBimestre.SinteseId = notaConceitoAlunoDto.SinteseId;
+                        notaConceitoBimestre.ConceitoId = notaConceitoAlunoDto.ConceitoId;
+                        notaConceitoBimestre.SinteseId = notaConceitoAlunoDto.SinteseId;
                     }
                     else
                         notasConceitosBimestre.Add(MapearParaEntidade(notaConceitoAlunoDto));
@@ -324,7 +320,7 @@ namespace SME.SGP.Dominio.Servicos
                 fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(id);
 
             fechamento.Situacao = SituacaoFechamento.EmProcessamento;
-            fechamento.Turma = repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoDto.TurmaId);
+            fechamento.Turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(fechamentoDto.TurmaId);
             fechamento.TurmaId = fechamento.Turma.Id;
             fechamento.DisciplinaId = fechamentoDto.DisciplinaId;
             fechamento.Justificativa = fechamentoDto.Justificativa;

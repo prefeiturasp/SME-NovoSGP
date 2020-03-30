@@ -17,6 +17,7 @@ import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
 import RotasDTO from '~/dtos/rotasDto';
 import Loader from '~/componentes/loader';
 import { SelectComponent } from '~/componentes';
+import Alert from '~/componentes/alert';
 
 const SemEvento = () => {
   return (
@@ -26,6 +27,21 @@ const SemEvento = () => {
     >
       Sem eventos neste dia
     </Div>
+  );
+};
+
+const ForaPerido = () => {
+  return (
+    <Alert
+      alerta={{
+        tipo: 'warning',
+        id: 'alerta-perido-fechamento',
+        mensagem:
+          'Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.',
+        estiloTitulo: { fontSize: '18px' },
+      }}
+      className="mb-2"
+    />
   );
 };
 
@@ -58,6 +74,7 @@ const DiaCompleto = props => {
     if (dias[i] === diaSelecionado) estaAberto = true;
 
   const [carregandoDia, setCarregandoDia] = useState(false);
+  const [dentroPeriodo, setDentroPeriodo] = useState(true);
 
   useEffect(() => {
     let estado = true;
@@ -83,8 +100,10 @@ const DiaCompleto = props => {
               turmaHistorico: turmaSelecionadaStore.consideraHistorico,
             })
             .then(resposta => {
-              if (resposta.data) setEventosDia(resposta.data);
-              else setEventosDia([]);
+              if (resposta.data) {
+                setEventosDia(resposta.data);
+                setDentroPeriodo(resposta.data.dentroPeriodo);
+              } else setEventosDia([]);
               setCarregandoDia(false);
             })
             .catch(() => {
@@ -135,7 +154,9 @@ const DiaCompleto = props => {
             onClick={aoClicarBotaoNovaAvaliacao}
             label="Nova Avaliação"
             color={Colors.Roxo}
-            disabled={permissaoTela && !permissaoTela.podeIncluir}
+            disabled={
+              (permissaoTela && !permissaoTela.podeIncluir) || !dentroPeriodo
+            }
             className="mr-3"
           />
         ) : null}
@@ -145,7 +166,9 @@ const DiaCompleto = props => {
           onClick={aoClicarBotaoNovaAula}
           label="Nova Aula"
           color={Colors.Roxo}
-          disabled={permissaoTela && !permissaoTela.podeIncluir}
+          disabled={
+            (permissaoTela && !permissaoTela.podeIncluir) || !dentroPeriodo
+          }
         />
       </BotoesAuxiliaresEstilo>
     );
@@ -189,12 +212,13 @@ const DiaCompleto = props => {
 
   return (
     estaAberto && (
-      <Loader loading={carregandoDia} tip="">
+      <Loader loading={carregandoDia} tip="">      
         <Div className="border-bottom border-top-0 h-100 p-md-1 p-3">
           {eventosDia &&
           eventosDia.eventosAulas &&
           eventosDia.eventosAulas.length > 0 ? (
             <Div className="list-group list-group-flush fade show px-0">
+              {!dentroPeriodo ? <ForaPerido /> : ''}
               {eventosDia.eventosAulas.map(evento => {
                 return (
                   <Div

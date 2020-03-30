@@ -23,6 +23,8 @@ import CopiarCompensacao from './copiarCompensacao';
 import ListaAlunos from './listasAlunos/listaAlunos';
 import ListaAlunosAusenciasCompensadas from './listasAlunos/listaAlunosAusenciasCompensadas';
 import { Badge, BotaoListaAlunos, ColunaBotaoListaAlunos, ListaCopiarCompensacoes } from './styles';
+import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
+import moment from 'moment';
 
 const CompensacaoAusenciaForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -384,6 +386,17 @@ const CompensacaoAusenciaForm = ({ match }) => {
 
   const onChangeBimestre = async (bimestre, form) => {
     let podeEditar = false;
+    const podeAlterarNoPeriodo = await ServicoPeriodoFechamento.verificarSePodeAlterarNoPeriodo(
+      turmaSelecionada.turma, bimestre
+    ).catch(e => {
+      erros(e);
+    });
+    if (!podeAlterarNoPeriodo.data) {
+      erro('Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.');
+      setSomenteConsulta(true);
+    } else {
+      setSomenteConsulta(false);
+    }
     const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
       turmaSelecionada.turma,
       form.values.disciplinaId,
@@ -393,7 +406,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
     });
     if (
       exucutandoCalculoFrequencia &&
-      exucutandoCalculoFrequencia.status == 200
+      exucutandoCalculoFrequencia.status === 200
     ) {
       const temProcessoEmExecucao =
         exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data;
@@ -846,7 +859,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       valueText="descricao"
                       onChange={bi => onChangeBimestre(bi, form)}
                       placeholder="Bimestre"
-                      disabled={desabilitarCampos || !novoRegistro}
+                      disabled={!novoRegistro}
                     />
                   </div>
                   <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">

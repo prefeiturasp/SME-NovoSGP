@@ -12,7 +12,7 @@ import api from '~/servicos/api';
 import Alert from '~/componentes/alert';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import { confirmar, erros, sucesso, erro, exibirAlerta } from '~/servicos/alertas';
 import { URL_HOME } from '~/constantes/url';
 import history from '~/servicos/history';
 
@@ -83,6 +83,7 @@ const AulaDadaAulaPrevista = () => {
       `v1/aula-prevista/modalidades/${modalidade}/turmas/${turmaId}/disciplinas/${disciplinaId}/semestres/${periodo}`
     );
     const dadosAula = resposta.data;
+    let periodosFechados = '';
     if (dadosAula && dadosAula.aulasPrevistasPorBimestre) {
       const dadosBimestre = dadosAula.aulasPrevistasPorBimestre;
       let totalPrevistas = 0;
@@ -101,6 +102,8 @@ const AulaDadaAulaPrevista = () => {
         if (item.previstas.mensagens && item.previstas.mensagens.length > 0) {
           item.previstas.temDivergencia = true;
         }
+        periodosFechados += !item.podeEditar ?
+          (periodosFechados.length > 0 ? `, ${item.bimestre}` : item.bimestre) : '';
       });
       const dados = {
         id: dadosAula.id,
@@ -120,6 +123,12 @@ const AulaDadaAulaPrevista = () => {
         criadoEm: dadosAula.criadoEm,
         criadoPor: dadosAula.criadoPor,
       };
+      if (periodosFechados.length > 0) {
+        periodosFechados = periodosFechados.replace(/,(?=[^,]*$)/, ' e ');
+        const mensagem = `Apenas é possível consultar o(s) registro(s) para o(s) bimestre(s) ${periodosFechados},
+         pois seus períodos de fechamento estão encerrados.`;
+        exibirAlerta('warning', mensagem);
+      }
       setAuditoria(aud);
     }
     setCarregandoDados(false);

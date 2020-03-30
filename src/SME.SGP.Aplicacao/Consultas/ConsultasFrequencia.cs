@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
+        private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
@@ -28,6 +29,7 @@ namespace SME.SGP.Aplicacao
                                    IServicoEOL servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                    IConsultasTipoCalendario consultasTipoCalendario,
+                                   IConsultasTurma consultasTurma,
                                    IRepositorioAula repositorioAula,
                                    IRepositorioFrequencia repositorioFrequencia,
                                    IRepositorioTurma repositorioTurma,
@@ -39,6 +41,7 @@ namespace SME.SGP.Aplicacao
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
@@ -119,6 +122,9 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
             }
+
+            registroFrequenciaDto.TemPeriodoAberto = await consultasTurma.TurmaEmPeriodoAberto(aula.TurmaId, DateTime.Today, bimestre.Bimestre);
+
             var parametroPercentualCritico = repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.PercentualFrequenciaCritico,
                                                     bimestre.PeriodoInicio.Year);
