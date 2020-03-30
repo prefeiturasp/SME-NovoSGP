@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import t from 'prop-types';
 
 // Componentes
@@ -74,7 +74,7 @@ TurmasDropDown.propTypes = {
   ueId: t.string,
   modalidadeId: t.string,
   valor: t.string,
-  dados: t.oneOfType([t.object]),
+  dados: t.oneOfType([t.object, t.array]),
 };
 
 TurmasDropDown.defaultProps = {
