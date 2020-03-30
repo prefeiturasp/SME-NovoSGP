@@ -192,6 +192,7 @@ namespace SME.SGP.Dominio.Servicos
             if (string.IsNullOrWhiteSpace(urlFrontEnd))
                 throw new NegocioException("Url do frontend não encontrada.");
 
+
             var notificacao = new Notificacao()
             {
                 UsuarioId = usuarioLogado.Id,
@@ -202,6 +203,32 @@ namespace SME.SGP.Dominio.Servicos
                 Mensagem = $"O fechamento do {fechamento.PeriodoEscolar.Bimestre}º bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {quantidadePendencias} pendência(s). Clique <a href='{urlFrontEnd}fechamento/pendencias-fechamento'>aqui</a> para mais detalhes."
             };
             servicoNotificacao.Salvar(notificacao);
+
+            var diretores = servicoEOL.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.Diretor);
+
+            if (diretores != null)
+            {
+                foreach(var diretor in diretores)
+                {
+                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
+                    notificacao.UsuarioId = usuario.Id;
+
+                    servicoNotificacao.Salvar(notificacao);
+                }
+            }
+
+            var cps = servicoEOL.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.CP);
+
+            if (cps != null)
+            {
+                foreach (var cp in cps)
+                {
+                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cp.CodigoRf);
+                    notificacao.UsuarioId = usuario.Id;
+
+                    servicoNotificacao.Salvar(notificacao);
+                }
+            }
         }
 
         private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data)
