@@ -261,6 +261,34 @@ namespace SME.SGP.Dominio.Servicos
                 Mensagem = $"O fechamento do {fechamento.PeriodoEscolar.Bimestre}º bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {quantidadePendencias} pendência(s). Clique <a href='{urlFrontEnd}fechamento/pendencias-fechamento'>aqui</a> para mais detalhes."
             };
             servicoNotificacao.Salvar(notificacao);
+
+            var diretores = servicoEOL.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.Diretor);
+
+            if (diretores != null)
+            {
+                foreach (var diretor in diretores)
+                {
+                    var notificacaoDiretor = notificacao;
+                    notificacaoDiretor.Id = 0;
+                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
+                    notificacaoDiretor.UsuarioId = usuario.Id;
+                    servicoNotificacao.Salvar(notificacaoDiretor);
+                }
+            }
+
+            var cps = servicoEOL.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.CP);
+
+            if (cps != null)
+            {
+                foreach (var cp in cps)
+                {
+                    var notificacaoCp = notificacao;
+                    notificacaoCp.Id = 0;
+                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cp.CodigoRf);
+                    notificacaoCp.UsuarioId = usuario.Id;
+                    servicoNotificacao.Salvar(notificacaoCp);
+                }
+            }
         }
 
         private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data)
