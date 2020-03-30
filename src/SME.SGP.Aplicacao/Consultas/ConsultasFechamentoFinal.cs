@@ -23,13 +23,15 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IConsultasDisciplina consultasDisciplina;
 
         public ConsultasFechamentoFinal(IRepositorioTurma repositorioTurma, IRepositorioTipoCalendario repositorioTipoCalendario,
                             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IServicoEOL servicoEOL, IRepositorioNotaConceitoBimestre repositorioNotaConceitoBimestre,
             IRepositorioFechamentoFinal repositorioFechamentoFinal, IServicoAluno servicoAluno,
             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioNotaTipoValor repositorioNotaTipoValor,
-            IServicoUsuario servicoUsuario, IRepositorioParametrosSistema repositorioParametrosSistema)
+            IServicoUsuario servicoUsuario, IRepositorioParametrosSistema repositorioParametrosSistema,
+            IConsultasDisciplina consultasDisciplina)
         {
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
@@ -43,6 +45,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new System.ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new System.ArgumentNullException(nameof(repositorioParametrosSistema));
+            this.consultasDisciplina = consultasDisciplina ?? throw new System.ArgumentNullException(nameof(consultasDisciplina));
         }
 
         public async Task<FechamentoFinalConsultaRetornoDto> ObterFechamentos(FechamentoFinalConsultaFiltroDto filtros)
@@ -79,7 +82,7 @@ namespace SME.SGP.Aplicacao
             var listaAlunosNotas = new List<(string, string, long, int)>();
 
             var disciplinas = new List<DisciplinaResposta>();
-
+            var disciplinaEOL = await consultasDisciplina.ObterDisciplina(filtros.DisciplinaCodigo);
             var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
 
             if (filtros.EhRegencia)
@@ -91,31 +94,16 @@ namespace SME.SGP.Aplicacao
                 disciplinas.AddRange(disciplinasRegencia);
             }
             else
-            {
-                var disciplinaEol = servicoEOL.ObterDisciplinasPorIds(new long[] { filtros.DisciplinaCodigo });
-                if (disciplinaEol == null || !disciplinaEol.Any())
-                    throw new NegocioException("Disciplina não localizada.");
+                disciplinas.Add(new DisciplinaResposta() { Nome = disciplinaEOL.Nome, CodigoComponenteCurricular = disciplinaEOL.CodigoComponenteCurricular });
 
-                var disciplinaParaAdicionar = disciplinaEol.FirstOrDefault();
-                disciplinas.Add(new DisciplinaResposta() { Nome = disciplinaParaAdicionar.Nome, CodigoComponenteCurricular = disciplinaParaAdicionar.CodigoComponenteCurricular });
-            }
-
-            var ehComponenteSemNota = false;
-            // Verifico se é componente sem nota //
-            if (disciplinas.Count == 1)
-            {
-                var disciplinaParaVerificarSemNota = disciplinas.FirstOrDefault();
-                ehComponenteSemNota = !disciplinaParaVerificarSemNota.LancaNota;
-            }
-
-            retorno.EhSintese = ehComponenteSemNota;
+            retorno.EhSintese = disciplinaEOL.LancaNota;
 
             double mediaFrequencia = 0;
             if (filtros.EhRegencia)
                 mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
             else
             {
-                if (ehComponenteSemNota)
+                if (retorno.EhSintese)
                     mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
                 else mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
             }
