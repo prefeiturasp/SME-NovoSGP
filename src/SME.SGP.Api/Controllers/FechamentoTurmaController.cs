@@ -28,5 +28,23 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> Listar(string turmaCodigo, long disciplinaCodigo, int? bimestre, int semestre, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
             => Ok(await consultas.ObterNotasFechamentoTurmaDisciplina(turmaCodigo, disciplinaCodigo, bimestre, semestre));
+
+
+        [HttpPost("anotacoes/alunos/")]
+        [ProducesResponseType(typeof(AuditoriaPersistenciaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> SalvarAnotacao([FromBody] AnotacaoAlunoDto anotacaoAluno, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
+            => Ok(await comandos.SalvarAnotacaoAluno(anotacaoAluno));
+
+        [HttpGet("anotacoes/alunos/{codigoAluno}/fechamentos/{fechamentoId}/turmas/{codigoTurma}/anos/{anoLetivo}")]
+        [ProducesResponseType(typeof(AnotacaoAlunoCompletoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterAnotacaoAluno(string codigoAluno, long fechamentoId, string codigoTurma, int anoLetivo, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
+           => Ok(await consultas.ObterAnotacaoAluno(codigoAluno, fechamentoId, codigoTurma, anoLetivo));
+
     }
 }
