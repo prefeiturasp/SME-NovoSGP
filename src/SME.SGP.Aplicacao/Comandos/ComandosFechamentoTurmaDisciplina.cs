@@ -20,14 +20,14 @@ namespace SME.SGP.Aplicacao
         public async Task Reprocessar(long fechamentoId)
             => await servicoFechamentoTurmaDisciplina.Reprocessar(fechamentoId);
 
-        public async Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma)
+        public async Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false)
         {
             var listaAuditoria = new List<AuditoriaPersistenciaDto>();
             foreach (var fechamentoTurma in fechamentosTurma)
             {
                 try
                 {
-                    listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma));
+                    listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma, componenteSemNota));
                 }
                 catch (Exception e)
                 {

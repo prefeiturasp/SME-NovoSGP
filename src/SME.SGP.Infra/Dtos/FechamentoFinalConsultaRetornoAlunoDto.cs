@@ -19,6 +19,7 @@ namespace SME.SGP.Infra
         public IList<FechamentoFinalConsultaRetornoAlunoNotaConceitoDto> NotasConceitoFinal { get; set; }
         public int NumeroChamada { get; set; }
         public bool PodeEditar { get; set; }
+        public string Sintese { get; set; }
         public double TotalAusenciasCompensadas { get; set; }
         public int TotalFaltas { get; set; }
     }

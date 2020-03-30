@@ -804,7 +804,8 @@ namespace SME.SGP.Aplicacao.Integracoes
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
                 RegistraFrequencia = x.RegistraFrequencia,
-                TerritorioSaber = x.Territorio
+                TerritorioSaber = x.Territorio,
+                LancaNota = x.LancaNota,
             });
         }
 

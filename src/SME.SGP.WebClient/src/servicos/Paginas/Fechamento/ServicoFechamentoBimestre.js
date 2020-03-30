@@ -7,8 +7,12 @@ const ServicoFechamentoBimestre = {
     );
   },
 
-  reprocessar(fechamentoId) {
+  reprocessarNotasConceitos(fechamentoId) {
     return api.post(`/v1/fechamentos/turmas/reprocessar/${fechamentoId}`);
+  },
+
+  processarReprocessarSintese(params) {
+    return api.post('/v1/fechamentos/turmas/processar', params);
   },
 
   formatarNotaConceito(valor) {

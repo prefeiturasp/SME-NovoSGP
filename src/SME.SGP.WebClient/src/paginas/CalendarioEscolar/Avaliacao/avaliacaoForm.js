@@ -17,6 +17,7 @@ import RotasDTO from '~/dtos/rotasDto';
 import ServicoAvaliacao from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
 import { erro, sucesso, confirmar } from '~/servicos/alertas';
 import ModalCopiarAvaliacao from './componentes/ModalCopiarAvaliacao';
+import Alert from '~/componentes/alert';
 
 const AvaliacaoForm = ({ match }) => {
   const [
@@ -31,6 +32,7 @@ const AvaliacaoForm = ({ match }) => {
   const [refForm, setRefForm] = useState({});
 
   const [modoEdicao, setModoEdicao] = useState(false);
+  const [podeLancaNota, setPodeLancaNota] = useState(true);
 
   const clicouBotaoVoltar = async () => {
     if (modoEdicao) {
@@ -59,6 +61,18 @@ const AvaliacaoForm = ({ match }) => {
   const aoTrocarCampos = () => {
     if (!modoEdicao) {
       setModoEdicao(true);
+    }
+  };
+
+  const onChangeDisciplina = disciplinaId => {
+    aoTrocarCampos();
+    if (disciplinaId) {
+      const componenteSelecionado = listaDisciplinas.find(
+        item => item.codigoComponenteCurricular == disciplinaId
+      );
+      setPodeLancaNota(componenteSelecionado.lancaNota);
+    } else {
+      setPodeLancaNota(true);
     }
   };
 
@@ -298,6 +312,7 @@ const AvaliacaoForm = ({ match }) => {
         disciplinasId: listaDisciplinas[0].codigoComponenteCurricular.toString(),
       });
       setDisciplinaDesabilitada(true);
+      setPodeLancaNota(listaDisciplinas[0].lancaNota);
       setDisciplinaSelecionada(listaDisciplinas[0].codigoComponenteCurricular);
     }
   }, [listaDisciplinas]);
@@ -403,6 +418,21 @@ const AvaliacaoForm = ({ match }) => {
   };
 
   return (
+    <>
+    <div className="col-md-12">
+      {!podeLancaNota ? (
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'cadastro-aula-nao-lanca-nota',
+            mensagem:
+              'Este componente curricular não permite cadastrar avaliação.',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-2"
+        />
+      ) : null}
+    </div> 
     <Div className="col-12">
       {mostrarModalCopiarAvaliacao ? (
         <ModalCopiarAvaliacao
@@ -472,7 +502,8 @@ const AvaliacaoForm = ({ match }) => {
                   (permissaoTela &&
                     (!permissaoTela.podeIncluir ||
                       !permissaoTela.podeAlterar)) ||
-                  !modoEdicao
+                  !modoEdicao ||
+                  !podeLancaNota
                 }
                 border
                 bold
@@ -537,7 +568,7 @@ const AvaliacaoForm = ({ match }) => {
                         valueSelect={listaDisciplinasSelecionadas}
                         form={form}
                         multiple
-                        onChange={aoTrocarCampos}
+                        onChange={onChangeDisciplina}
                       />
                     ) : (
                       <SelectComponent
@@ -552,7 +583,7 @@ const AvaliacaoForm = ({ match }) => {
                         form={form}
                         onChange={valor => {
                           setDisciplinaSelecionada(valor);
-                          aoTrocarCampos();
+                          onChangeDisciplina(valor);
                         }}
                         valueSelect={disciplinaSelecionada}
                       />
@@ -660,6 +691,7 @@ const AvaliacaoForm = ({ match }) => {
         )}
       </Formik>
     </Div>
+    </>
   );
 };
 
