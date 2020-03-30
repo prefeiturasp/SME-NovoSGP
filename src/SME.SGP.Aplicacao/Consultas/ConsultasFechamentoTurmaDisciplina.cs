@@ -27,6 +27,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoFechamento consultasFechamento;
+        private readonly IConsultasDisciplina consultasDisciplina;
 
         public IEnumerable<Sintese> _sinteses { get; set; }
         public IEnumerable<Sintese> Sinteses 
@@ -53,7 +54,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioConceito repositorioConceito,
             IRepositorioSintese repositorioSintese,
             IRepositorioParametrosSistema repositorioParametrosSistema,
-            IConsultasPeriodoFechamento consultasFechamento
+            IConsultasPeriodoFechamento consultasFechamento,
+            IConsultasDisciplina consultasDisciplina
             )
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
@@ -70,6 +72,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioSintese = repositorioSintese ?? throw new ArgumentNullException(nameof(repositorioSintese));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
+            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
         }
 
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
@@ -112,8 +115,7 @@ namespace SME.SGP.Aplicacao
                 Alunos = new List<NotaConceitoAlunoBimestreDto>()
             };
 
-            var disciplinasId = new long[] { disciplinaId };
-            var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(disciplinasId).FirstOrDefault();
+            var disciplinaEOL = await consultasDisciplina.ObterDisciplina(disciplinaId);
             IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
 
             if (disciplinaEOL.Regencia)
