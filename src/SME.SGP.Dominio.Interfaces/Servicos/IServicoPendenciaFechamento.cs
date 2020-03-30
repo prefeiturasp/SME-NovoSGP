@@ -19,5 +19,7 @@ namespace SME.SGP.Dominio.Interfaces
         bool VerificaPendenciasFechamento(long fechamentoId);
 
         Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia);
+
+        int ObterQuantidadePendenciasGeradas();
     }
 }

@@ -42,7 +42,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PE_C, Policy = "Bearer")]
         public async Task<IActionResult> PeriodoEmAberto(string turmaCodigo, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices]IConsultasTurma consultas)
         {
             var dataConsulta = dataReferencia == DateTime.MinValue ? DateTime.Today : dataReferencia;
@@ -53,7 +52,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarAbertoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PE_C, Policy = "Bearer")]
         public async Task<IActionResult> PeriodosEmAberto(string turmaCodigo, [FromQuery] DateTime dataReferencia, [FromServices]IConsultasTurma consultas)
         {
             var dataConsulta = dataReferencia == DateTime.MinValue ? DateTime.Today : dataReferencia;

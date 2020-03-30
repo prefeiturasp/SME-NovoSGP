@@ -22,6 +22,12 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
+        private int avaliacoesSemnota;
+        private int aulasReposicaoPendentes;
+        private int aulasSemPlanoAula;
+        private int aulasSemFrequencia;
+        private int alunosAbaixoMedia;
+
         public ServicoPendenciaFechamento(IUnitOfWork unitOfWork,
                                           IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                                           IRepositorioPendencia repositorioPendencia,
@@ -52,7 +58,7 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Componente curricular não encontrado.");
                 }
                 var mensagem = new StringBuilder($"A aulas de reposição de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão pendentes de aprovação:<br>");
-                foreach (var aula in aulasPendentes)
+                foreach (var aula in aulasPendentes.OrderBy(a => a.DataAula))
                 {
                     var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
                     if (professor == null)
@@ -66,13 +72,15 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasReposicaoPendenteAprovacao);
-            return aulasPendentes.Count();
+
+            aulasReposicaoPendentes = aulasPendentes.Count();
+            return aulasReposicaoPendentes;
         }
 
         public int ValidarAulasSemFrequenciaRegistrada(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
-            var aulasSemFrequencia = repositorioAula.ObterAulasSemFrequenciaRegistrada(turma.CodigoTurma, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
-            if (aulasSemFrequencia != null && aulasSemFrequencia.Any())
+            var registrosAulasSemFrequencia = repositorioAula.ObterAulasSemFrequenciaRegistrada(turma.CodigoTurma, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
+            if (registrosAulasSemFrequencia != null && registrosAulasSemFrequencia.Any())
             {
                 var componenteCurricular = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId })?.FirstOrDefault();
                 if (componenteCurricular == null)
@@ -82,9 +90,9 @@ namespace SME.SGP.Dominio.Servicos
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:<br>");
 
                 // Carrega lista de professores
-                var usuariosProfessores = CarregaListaProfessores(aulasSemFrequencia.Select(a => a.ProfessorRf).Distinct());
+                var usuariosProfessores = CarregaListaProfessores(registrosAulasSemFrequencia.Select(a => a.ProfessorRf).Distinct());
 
-                foreach (var aula in aulasSemFrequencia)
+                foreach (var aula in registrosAulasSemFrequencia.OrderBy(x => x.DataAula))
                 {
                     var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == aula.ProfessorRf);
                     mensagem.AppendLine($"Professor { aula.ProfessorRf} - { professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
@@ -94,7 +102,9 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasReposicaoPendenteAprovacao);
-            return aulasSemFrequencia.Count();
+
+            aulasSemFrequencia = registrosAulasSemFrequencia.Count();
+            return aulasSemFrequencia;
         }
 
         private IEnumerable<Usuario> CarregaListaProfessores(IEnumerable<string> listaRFs)
@@ -111,12 +121,12 @@ namespace SME.SGP.Dominio.Servicos
 
         public int ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
-            var aulasSemPlanoAula = repositorioAula.ObterAulasSemPlanoAulaNaDataAtual(turma.CodigoTurma,
+            var registrosAulasSemPlanoAula = repositorioAula.ObterAulasSemPlanoAulaNaDataAtual(turma.CodigoTurma,
                                                                             disciplinaId.ToString(),
                                                                             inicioPeriodo,
                                                                             fimPeriodo);
 
-            if (aulasSemPlanoAula != null && aulasSemPlanoAula.Any())
+            if (registrosAulasSemPlanoAula != null && registrosAulasSemPlanoAula.Any())
             {
                 var componenteCurricular = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId })?.FirstOrDefault();
                 if (componenteCurricular == null)
@@ -125,8 +135,8 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:<br>");
 
-                var usuariosProfessores = CarregaListaProfessores(aulasSemPlanoAula.Select(a => a.ProfessorRf).Distinct());
-                foreach (var aula in aulasSemPlanoAula)
+                var usuariosProfessores = CarregaListaProfessores(registrosAulasSemPlanoAula.Select(a => a.ProfessorRf).Distinct());
+                foreach (var aula in registrosAulasSemPlanoAula.OrderBy(a => a.DataAula))
                 {
                     var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == aula.ProfessorRf);
                     mensagem.AppendLine($"Professor { aula.ProfessorRf} - { professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
@@ -136,21 +146,23 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
-            return aulasSemPlanoAula.Count();
+
+            aulasSemPlanoAula = registrosAulasSemPlanoAula.Count();
+            return aulasSemPlanoAula;
         }
 
         public int ValidarAvaliacoesSemNotasParaNenhumAluno(long fechamentoId, string codigoTurma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
-            var avaliacoesSemNotaParaNenhumAluno = repositorioAtividadeAvaliativa.ObterAtividadesAvaliativasSemNotaParaNenhumAluno(codigoTurma,
+            var registrosAvaliacoesSemNotaParaNenhumAluno = repositorioAtividadeAvaliativa.ObterAtividadesAvaliativasSemNotaParaNenhumAluno(codigoTurma,
                                                                             disciplinaId.ToString(),
                                                                             inicioPeriodo,
                                                                             fimPeriodo);
 
-            if (avaliacoesSemNotaParaNenhumAluno != null && avaliacoesSemNotaParaNenhumAluno.Any())
+            if (registrosAvaliacoesSemNotaParaNenhumAluno != null && registrosAvaliacoesSemNotaParaNenhumAluno.Any())
             {
                 var mensagem = new StringBuilder($"As avaliações a seguir não tiveram notas lançadas para nenhum aluno<br>");
-                var usuariosProfessores = CarregaListaProfessores(avaliacoesSemNotaParaNenhumAluno.Select(a => a.ProfessorRf).Distinct());
-                foreach (var avaliacao in avaliacoesSemNotaParaNenhumAluno)
+                var usuariosProfessores = CarregaListaProfessores(registrosAvaliacoesSemNotaParaNenhumAluno.Select(a => a.ProfessorRf).Distinct());
+                foreach (var avaliacao in registrosAvaliacoesSemNotaParaNenhumAluno.OrderBy(x => x.DataAvaliacao))
                 {
                     var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == avaliacao.ProfessorRf);
                     mensagem.AppendLine($"Professor { avaliacao.ProfessorRf} - { professor.Nome} - {avaliacao.NomeAvaliacao}.<br>");
@@ -160,7 +172,9 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno);
-            return avaliacoesSemNotaParaNenhumAluno.Count();
+
+            avaliacoesSemnota = registrosAvaliacoesSemNotaParaNenhumAluno.Count();
+            return avaliacoesSemnota;
         }
 
         public int ValidarPercentualAlunosAbaixoDaMedia(FechamentoTurmaDisciplina fechamentoTurma)
@@ -171,18 +185,21 @@ namespace SME.SGP.Dominio.Servicos
                 var mensagem = new StringBuilder($"O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes<br>");
 
                 GerarPendencia(fechamentoTurma.Id, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem.ToString());
-                return 1;
+                alunosAbaixoMedia = 1;
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoTurma.Id, SituacaoPendencia.Resolvida, TipoPendencia.ResultadosFinaisAbaixoDaMedia);
 
-            return 0;
+            alunosAbaixoMedia = 0;
+            return alunosAbaixoMedia;
         }
 
         private void GerarPendencia(long fechamentoId, TipoPendencia tipoPendencia, string mensagem)
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
+                repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);
+
                 var pendencia = new Pendencia(tipoPendencia.Name(),
                                         mensagem,
                                         tipoPendencia);
@@ -220,5 +237,12 @@ namespace SME.SGP.Dominio.Servicos
             await repositorioPendencia.SalvarAsync(pendencia);
             return (AuditoriaPersistenciaDto)pendencia;
         }
+
+        public int ObterQuantidadePendenciasGeradas()
+            => avaliacoesSemnota > 0 ? 1 : 0
+            + aulasReposicaoPendentes > 0 ? 1 : 0
+            + aulasSemPlanoAula > 0 ? 1 : 0
+            + aulasSemFrequencia > 0 ? 1 : 0
+            + alunosAbaixoMedia > 0 ? 1 : 0;
     }
 }

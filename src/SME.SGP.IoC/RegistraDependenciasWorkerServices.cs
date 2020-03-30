@@ -196,6 +196,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioFechamentoFinal, RepositorioFechamentoFinal>();
             services.TryAddScopedWorkerService<IRepositorioPendencia, RepositorioPendencia>();
             services.TryAddScopedWorkerService<IRepositorioPendenciaFechamento, RepositorioPendenciaFechamento>();
+            services.TryAddScopedWorkerService<IRepositorioSintese, RepositorioSintese>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

@@ -39,5 +39,13 @@ namespace SME.SGP.Api.Controllers
             await comandos.Reprocessar(fechamentoId);
             return Ok();
         }
+
+        [HttpPost("processar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> Processar([FromBody] IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
+            => Ok(await comandos.Salvar(fechamentoTurma, true));
     }
 }

@@ -217,23 +217,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<Aula> ObterAulasSemFrequenciaRegistrada(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
-            var query = @"select
-	                            *
-                            from
-	                            aula a
-                            where
-	                            turma_id = @codigoTurma
+            var query = @"select *
+                            from aula a
+                            left join registro_frequencia r on r.aula_id = a.id
+                           where turma_id = @codigoTurma
 	                            and disciplina_id = @disciplinaId
 	                            and data_aula >= @inicioPeriodo
 	                            and data_aula <= @fimPeriodo
                                 and data_aula <= @dataAtual
-	                            and not exists (
-	                            select
-		                            1
-	                            from
-		                            registro_frequencia
-	                            where
-		                            aula_pai_id = a.id)";
+	                            and r.id is null";
             return database.Conexao.Query<Aula>(query, new
             {
                 codigoTurma,
@@ -246,31 +238,23 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<Aula> ObterAulasSemPlanoAulaNaDataAtual(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
-            var query = @"select
-                                *
-                            from
-                                aula a
-                            where
-                                turma_id = @codigoTurma
+            var query = @"select *
+                            from aula a
+                            left join plano_aula p on p.aula_id = a.id
+                           where turma_id = @codigoTurma
                                 and disciplina_id = @disciplinaId
                                 and data_aula >= @inicioPeriodo
                                 and data_aula <= @fimPeriodo
                                 and data_aula <= @dataAtual
-                                and not exists(
-                                select
-                                    *
-                                from
-                                    plano_aula
+                                and p.id is null";
 
-                                where
-                                    aula_pai_id = a.id)";
             return database.Conexao.Query<Aula>(query, new
             {
                 codigoTurma,
                 disciplinaId,
                 inicioPeriodo,
                 fimPeriodo,
-                dataAtual = DateTime.Now
+                dataAtual = DateTime.Today
             });
         }
 
