@@ -265,7 +265,8 @@ namespace SME.SGP.Dados.Repositorios
                             va.usuario_id = (select id from usuario where login = @login)
                             and va.usuario_perfil = @perfil
                             and va.modalidade_codigo is not null
-                            and va.turma_ano_letivo = @anoLetivo";
+                            and va.turma_ano_letivo = @anoLetivo
+                            and va.modalidade_codigo > 0";
             var queryHistorica = @"select
                             distinct va.modalidade_codigo
                         from
@@ -274,7 +275,8 @@ namespace SME.SGP.Dados.Repositorios
                             va.usuario_id = (select id from usuario where login = @login)
                             and va.usuario_perfil = @perfil
                             and va.modalidade_codigo is not null
-                            and va.turma_ano_letivo = @anoLetivo";
+                            and va.turma_ano_letivo = @anoLetivo
+                            and va.modalidade_codigo > 0";
 
             return (await database.Conexao.QueryAsync<int>(consideraHistorico ? queryHistorica : query, new { login, perfil, anoLetivo })).AsList();
         }
