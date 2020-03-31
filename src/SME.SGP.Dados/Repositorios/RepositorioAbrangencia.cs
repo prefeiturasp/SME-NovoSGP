@@ -157,7 +157,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("public.v_abrangencia_sintetica where login = @login and perfil = @perfil");
 
             if (consideraHistorico)
-                query.AppendLine("and historico = false");
+                query.AppendLine("and historico = true");
+            else query.AppendLine("and historico = false");
 
             if (!string.IsNullOrEmpty(turmaId))
                 query.AppendLine("and codigo_turma = @turmaId");
