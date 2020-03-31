@@ -126,7 +126,8 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.PersistirTransacao();
 
                 var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-                Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurma.DisciplinaId, fechamentoTurma.Turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurma, usuarioLogado, componenteSemNota));
+                GerarPendenciasFechamento(fechamentoTurma.DisciplinaId, fechamentoTurma.Turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurma, usuarioLogado, componenteSemNota);
+                //Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurma.DisciplinaId, fechamentoTurma.Turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurma, usuarioLogado, componenteSemNota));
 
                 return (AuditoriaPersistenciaDto)fechamentoTurma;
             }
