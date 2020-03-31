@@ -5,6 +5,7 @@ create table public.anotacao_aluno_fechamento (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	fechamento_turma_disciplina_id int8 not null,
 	aluno_codigo varchar(15) not null,
+	anotacao varchar not null,
 
 	excluido bool NOT NULL DEFAULT false,
 	criado_em timestamp NOT NULL,
