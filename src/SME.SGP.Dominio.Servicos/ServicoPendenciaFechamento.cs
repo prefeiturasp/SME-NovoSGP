@@ -101,7 +101,7 @@ namespace SME.SGP.Dominio.Servicos
                 GerarPendencia(fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento, mensagem.ToString());
             }
             else
-                repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasReposicaoPendenteAprovacao);
+                repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
 
             aulasSemFrequencia = registrosAulasSemFrequencia.Count();
             return aulasSemFrequencia;
@@ -188,9 +188,11 @@ namespace SME.SGP.Dominio.Servicos
                 alunosAbaixoMedia = 1;
             }
             else
+            {
+                alunosAbaixoMedia = 0;
                 repositorioPendencia.AtualizarPendencias(fechamentoTurma.Id, SituacaoPendencia.Resolvida, TipoPendencia.ResultadosFinaisAbaixoDaMedia);
+            }
 
-            alunosAbaixoMedia = 0;
             return alunosAbaixoMedia;
         }
 
@@ -239,10 +241,10 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         public int ObterQuantidadePendenciasGeradas()
-            => avaliacoesSemnota > 0 ? 1 : 0
-            + aulasReposicaoPendentes > 0 ? 1 : 0
-            + aulasSemPlanoAula > 0 ? 1 : 0
-            + aulasSemFrequencia > 0 ? 1 : 0
-            + alunosAbaixoMedia > 0 ? 1 : 0;
+            => (avaliacoesSemnota > 0 ? 1 : 0)
+            + (aulasReposicaoPendentes > 0 ? 1 : 0)
+            + (aulasSemPlanoAula > 0 ? 1 : 0)
+            + (aulasSemFrequencia > 0 ? 1 : 0)
+            + (alunosAbaixoMedia > 0 ? 1 : 0);
     }
 }
