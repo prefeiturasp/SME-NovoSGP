@@ -29,23 +29,21 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Listar(string turmaCodigo, long disciplinaCodigo, int? bimestre, int semestre, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
             => Ok(await consultas.ObterNotasFechamentoTurmaDisciplina(turmaCodigo, disciplinaCodigo, bimestre, semestre));
 
-        [HttpPost("reprocessar/{fechamentoId}")]
-        [ProducesResponseType(200)]
+        [HttpPost("anotacoes/alunos/")]
+        [ProducesResponseType(typeof(AuditoriaPersistenciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> Reprocessar(long fechamentoId, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
-        {
-            await comandos.Reprocessar(fechamentoId);
-            return Ok();
-        }
+        public async Task<IActionResult> SalvarAnotacao([FromBody] AnotacaoAlunoDto anotacaoAluno, [FromServices] IComandosAnotacaoAlunoFechamento comandos)
+            => Ok(await comandos.SalvarAnotacaoAluno(anotacaoAluno));
 
-        [HttpPost("processar")]
-        [ProducesResponseType(200)]
+        [HttpGet("anotacoes/alunos/{codigoAluno}/fechamentos/{fechamentoId}/turmas/{codigoTurma}/anos/{anoLetivo}")]
+        [ProducesResponseType(typeof(AnotacaoAlunoCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> Processar([FromBody] IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
-            => Ok(await comandos.Salvar(fechamentoTurma, true));
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterAnotacaoAluno(string codigoAluno, long fechamentoId, string codigoTurma, int anoLetivo, [FromServices] IConsultasAnotacaoAlunoFechamento consultas)
+           => Ok(await consultas.ObterAnotacaoAluno(codigoAluno, fechamentoId, codigoTurma, anoLetivo));
+
     }
 }
