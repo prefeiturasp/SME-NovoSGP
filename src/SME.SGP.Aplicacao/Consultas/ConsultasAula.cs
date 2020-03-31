@@ -77,10 +77,9 @@ namespace SME.SGP.Aplicacao
             var bimestreAtual = consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo);
             var bimestreAula = consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo);
 
-            if (bimestreAtual == 0 || bimestreAula == 0)
-                return false;
+            var bimestreForaPeriodo = bimestreAtual == 0 || bimestreAula == 0;
 
-            if (bimestreAula >= bimestreAtual)
+            if (!bimestreForaPeriodo && bimestreAula >= bimestreAtual)
                 return true;
 
             return await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTime.Now, bimestreAtual);
