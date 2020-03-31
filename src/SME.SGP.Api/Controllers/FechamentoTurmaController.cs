@@ -33,7 +33,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        [Permissao(Permissao.FB_A, Policy = "Bearer")]
         public async Task<IActionResult> Reprocessar(long fechamentoId, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
         {
             await comandos.Reprocessar(fechamentoId);
