@@ -70,7 +70,7 @@ namespace SME.SGP.Dominio.Servicos
 
         #region Metodos Publicos
 
-        public void ExecutaNotificacaoFrequencia()
+        public void ExecutaNotificacaoRegistroFrequencia()
         {
             var cargosNotificados = new List<(string, Cargo?)>();
 
@@ -81,6 +81,13 @@ namespace SME.SGP.Dominio.Servicos
             NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.GestorUe, ref cargosNotificados);
 
             Console.WriteLine($"Rotina finalizada.");
+        }
+
+        public void NotificarAlunosFaltosos()
+        {
+            var quantidadeDias = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
+            NotificaAlunosFaltososCargo(quantidadeDias, Cargo.CP);
+
         }
 
         public void NotificarCompensacaoAusencia(long compensacaoId)
@@ -207,6 +214,67 @@ namespace SME.SGP.Dominio.Servicos
         #endregion Metodos Publicos
 
         #region Metodos Privados
+
+        private void NotificaAlunosFaltososCargo(int quantidadeDias, Cargo cargo)
+        {
+            var alunosFaltosos = repositorioFrequencia.ObterAlunosFaltosos(DateTime.Today.AddDays(-quantidadeDias));
+
+            // Faltou em todas as aulas do dia e tem pelo menos 3 aulas registradas
+            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && c.QuantidadeAulas >= 3);
+            var alunosFaltasTodosOsDias = alunosFaltasTodasAulasDoDia
+                                            .GroupBy(a => a.CodigoAluno)
+                                            .Where(c => c.Count() >= quantidadeDias);
+
+            // Agrupa por turma para notificação
+            foreach (var turmaAgrupamento in alunosFaltasTodasAulasDoDia.GroupBy(a => a.TurmaId))
+            {
+                var alunosTurmaEOL = servicoEOL.ObterAlunosPorTurma(turmaAgrupamento.Key).Result;
+                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(turmaAgrupamento.Key);
+
+                // filtra alunos na turma que possuem faltas em todos os dias
+                var alunosFaltososNaTurma = turmaAgrupamento.Where(c => alunosFaltasTodosOsDias.Any(a => a.Key == c.CodigoAluno));
+                var alunosFaltososEOL = alunosTurmaEOL.Where(c => alunosFaltososNaTurma.Any(a => a.CodigoAluno == c.CodigoAluno));
+                var funcionariosEol = servicoNotificacao.ObterFuncionariosPorNivel(turmaAgrupamento.Key, cargo);
+
+                foreach (var funcionarioEol in funcionariosEol)
+                    NotificacaoAlunosFaltososTurma(funcionarioEol.Id, alunosFaltososEOL, turma, quantidadeDias);
+            }
+        }
+
+        private void NotificacaoAlunosFaltososTurma(string usuarioId, IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, int quantidadeDias)
+        {
+            var titulo = $"Alunos com excesso de ausências na turma {turma.Nome} ({turma.Ue.Nome})";
+            StringBuilder mensagem = new StringBuilder();
+            mensagem.AppendLine($"<p>O(s) seguinte(s) aluno(s) da turma <b>{turma.Nome}</b> da <b>{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome})</b> está(ão) há {quantidadeDias} dias sem comparecer as aulas.</p>");
+
+            mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
+            mensagem.AppendLine("<tr>");
+            mensagem.AppendLine("<td style='padding: 5px;'>Nº</td>");
+            mensagem.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
+            mensagem.AppendLine("</tr>");
+
+            foreach (var aluno in alunos)
+            {
+                mensagem.AppendLine("<tr>");
+                mensagem.Append($"<td style='padding: 5px;'>{aluno.NumeroAlunoChamada}</td>");
+                mensagem.Append($"<td style='padding: 5px;'>{aluno.NomeAluno}</td>");
+                mensagem.AppendLine("<tr>");
+            }
+
+            var notificacao = new Notificacao()
+            {
+                Ano = DateTime.Now.Year,
+                Categoria = NotificacaoCategoria.Aviso,
+                Tipo = NotificacaoTipo.Frequencia,
+                Titulo = titulo,
+                Mensagem = mensagem.ToString(),
+                UsuarioId = long.Parse(usuarioId),
+                TurmaId = turma.CodigoTurma,
+                UeId = turma.Ue.CodigoUe,
+                DreId = turma.Ue.Dre.CodigoDre,
+            };
+            servicoNotificacao.Salvar(notificacao);
+        }
 
         private IEnumerable<(Cargo? Cargo, Usuario Usuario)> BuscaGestoresUe(string codigoUe)
         {
