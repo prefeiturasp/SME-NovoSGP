@@ -19,8 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select f.*
                          from fechamento_turma_disciplina f
-                        inner join periodo_fechamento_bimestre b on b.id = f.periodo_fechamento_bimestre_id
-                        inner join periodo_escolar p on p.id = b.periodo_escolar_id
+                        inner join periodo_escolar p on p.id = f.periodo_escolar_id 
                         inner join turma t on t.id = f.turma_id
                         where not f.excluido
                             and t.id = @turmaId
