@@ -192,7 +192,7 @@ const ModalAnotacaoAluno = props => {
                   border
                   className="mr-3 mt-2 padding-btn-confirmacao"
                   onClick={validaAntesDeExcluir}
-                  hidden={
+                  disabled={
                     dadosAlunoSelecionado && !dadosAlunoSelecionado.temAnotacao
                   }
                 />
