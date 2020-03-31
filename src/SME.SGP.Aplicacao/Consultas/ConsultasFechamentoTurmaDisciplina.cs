@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasAulaPrevista consultasAulaPrevista;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasNotaConceitoBimestre consultasNotaConceitoBimestre;
         private readonly IRepositorioConceito repositorioConceito;
         private readonly IRepositorioSintese repositorioSintese;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
@@ -28,6 +29,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoFechamento consultasFechamento;
         private readonly IConsultasDisciplina consultasDisciplina;
+        private readonly IConsultasAnotacaoAlunoFechamento consultasAnotacaoAlunoFechamento;
 
         public IEnumerable<Sintese> _sinteses { get; set; }
         public IEnumerable<Sintese> Sinteses 
@@ -48,6 +50,7 @@ namespace SME.SGP.Aplicacao
             IConsultasFrequencia consultasFrequencia,
             IConsultasAulaPrevista consultasAulaPrevista,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
+            IConsultasNotaConceitoBimestre consultasNotaConceitoBimestre,
             IServicoEOL servicoEOL,
             IServicoUsuario servicoUsuario,
             IServicoAluno servicoAluno,
@@ -55,7 +58,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioSintese repositorioSintese,
             IRepositorioParametrosSistema repositorioParametrosSistema,
             IConsultasPeriodoFechamento consultasFechamento,
-            IConsultasDisciplina consultasDisciplina
+            IConsultasDisciplina consultasDisciplina,
+            IConsultasAnotacaoAlunoFechamento consultasAnotacaoAlunoFechamento
             )
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
@@ -65,6 +69,7 @@ namespace SME.SGP.Aplicacao
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.consultasAulaPrevista = consultasAulaPrevista ?? throw new ArgumentNullException(nameof(consultasAulaPrevista));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.consultasNotaConceitoBimestre = consultasNotaConceitoBimestre ?? throw new ArgumentNullException(nameof(consultasNotaConceitoBimestre));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
@@ -73,6 +78,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
+            this.consultasAnotacaoAlunoFechamento = consultasAnotacaoAlunoFechamento ?? throw new ArgumentNullException(nameof(consultasAnotacaoAlunoFechamento));
         }
 
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
@@ -146,6 +152,10 @@ namespace SME.SGP.Aplicacao
                     alunoDto.NumeroChamada = aluno.NumeroAlunoChamada;
                     alunoDto.Nome = aluno.NomeAluno;
                     alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
+
+                    var anotacaoAluno = await consultasAnotacaoAlunoFechamento.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma.Id, aluno.CodigoAluno);
+                    alunoDto.TemAnotacao = anotacaoAluno != null && 
+                                        !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());
 
                     var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
                     if (marcador != null)

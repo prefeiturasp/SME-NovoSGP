@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
             else
                 disciplinas.Add(new DisciplinaResposta() { Nome = disciplinaEOL.Nome, CodigoComponenteCurricular = disciplinaEOL.CodigoComponenteCurricular });
 
-            retorno.EhSintese = disciplinaEOL.LancaNota;
+            retorno.EhSintese = !disciplinaEOL.LancaNota;
 
             var notasFechamentosFinais = await repositorioFechamentoFinal.ObterPorFiltros(turma.CodigoTurma, disciplinas.Select(a => a.CodigoComponenteCurricular.ToString()).ToArray());
             var notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
