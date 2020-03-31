@@ -12,7 +12,5 @@ namespace SME.SGP.Dominio.Interfaces
         Task Reprocessar(long fechamentoId);
 
         void VerificaPendenciasFechamento(long fechamentoId);
-
-        Task<AuditoriaPersistenciaDto> SalvarAnotacaoAluno(AnotacaoAlunoDto anotacaoAluno);
     }
 }

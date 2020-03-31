@@ -6,6 +6,5 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasNotaConceitoBimestre
     {
-        Task<AnotacaoAlunoCompletoDto> ObterAnotacaoPorAlunoEFechamento(long fechamentoId, string codigoAluno);
     }
 }

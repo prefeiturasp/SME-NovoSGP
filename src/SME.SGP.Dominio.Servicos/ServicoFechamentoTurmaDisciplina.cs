@@ -263,18 +263,6 @@ namespace SME.SGP.Dominio.Servicos
             servicoNotificacao.Salvar(notificacao);
         }
 
-        public async Task<AuditoriaPersistenciaDto> SalvarAnotacaoAluno(AnotacaoAlunoDto anotacaoAluno)
-        {
-            var notaConceitoAluno = await repositorioNotaConceitoBimestre.ObterPorAlunoEFechamento(anotacaoAluno.FechamentoId, anotacaoAluno.CodigoAluno);
-            if (notaConceitoAluno == null)
-                throw new NegocioException($"Nota/Conceito do aluno {anotacaoAluno.CodigoAluno} não localizado no fechamento");
-
-            notaConceitoAluno.Anotacao = anotacaoAluno.Anotacao;
-            await repositorioNotaConceitoBimestre.SalvarAsync(notaConceitoAluno);
-
-            return (AuditoriaPersistenciaDto)notaConceitoAluno;
-        }
-
         private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data)
         {
             if (!servicoUsuario.PodePersistirTurma(codigoRf, turmaId, data).Result)

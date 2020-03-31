@@ -8,6 +8,5 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false);
         Task Reprocessar(long fechamentoId);
-        Task<AuditoriaPersistenciaDto> SalvarAnotacaoAluno(AnotacaoAlunoDto anotacaoAluno);
     }
 }
