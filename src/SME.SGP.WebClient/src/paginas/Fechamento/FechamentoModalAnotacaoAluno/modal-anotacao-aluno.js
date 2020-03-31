@@ -8,7 +8,7 @@ import Editor from '~/componentes/editor/editor';
 import Button from '~/componentes/button';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
-import { DadosAlunoModal } from './modal-anotacao-aluno.css';
+import { DadosAlunoModal, EditorAnotacao } from './modal-anotacao-aluno.css';
 
 const ModalAnotacaoAluno = props => {
   const {
@@ -165,9 +165,9 @@ const ModalAnotacaoAluno = props => {
               </DadosAlunoModal>
             </div>
             <div className="col-md-12">
-              <fieldset className="mt-3">
+              <EditorAnotacao className="mt-3">
                 <Editor form={form} name="anotacao" onChange={onChangeCampos} />
-              </fieldset>
+              </EditorAnotacao>
             </div>
             <div className="row">
               <div
