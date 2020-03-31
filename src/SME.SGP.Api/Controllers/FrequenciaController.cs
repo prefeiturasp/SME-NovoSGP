@@ -33,7 +33,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("frequencias/notificar")]
         public IActionResult Notificar()
         {
-            Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.ExecutaNotificacaoFrequencia());
+            Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.ExecutaNotificacaoRegistroFrequencia());
             return Ok();
         }
 
