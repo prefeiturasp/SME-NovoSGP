@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
                     alunoDto.Nome = aluno.NomeAluno;
                     alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
 
-                    var anotacaoAluno = await consultasAnotacaoAlunoFechamento.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma.Id, aluno.CodigoAluno);
+                    var anotacaoAluno = await consultasAnotacaoAlunoFechamento.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
                     alunoDto.TemAnotacao = anotacaoAluno != null && 
                                         !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());
 
