@@ -16,4 +16,10 @@ export const DadosAlunoModal = styled.div`
     font-size: 55px;
     color: ${Base.CinzaDesabilitado};
   }
-`
+`;
+
+export const EditorAnotacao = styled.fieldset`
+  .ck-editor__editable_inline {
+    max-height: 180px !important;
+  }
+`;
