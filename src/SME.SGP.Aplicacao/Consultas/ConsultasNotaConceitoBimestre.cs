@@ -13,8 +13,5 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioNotaConceitoBimestre = repositorioNotaConceitoBimestre ?? throw new ArgumentNullException(nameof(repositorioNotaConceitoBimestre));
         }
-
-        public async Task<AnotacaoAlunoCompletoDto> ObterAnotacaoPorAlunoEFechamento(long fechamentoId, string codigoAluno)
-            => await repositorioNotaConceitoBimestre.ObterAnotacaoAlunoPorFechamento(fechamentoId, codigoAluno);
     }
 }

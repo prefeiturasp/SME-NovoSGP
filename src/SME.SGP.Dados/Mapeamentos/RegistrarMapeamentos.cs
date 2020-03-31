@@ -89,6 +89,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PendenciaMap());
                config.AddMap(new PendenciaFechamentoMap());
                config.AddMap(new SinteseValorMap());
+               config.AddMap(new AnotacaoAlunoFechamentoMap());
                config.ForDommel();
            });
         }
