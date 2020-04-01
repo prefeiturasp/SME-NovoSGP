@@ -7,6 +7,12 @@ import {
 import { store } from '~/redux';
 
 class ServicoNotificacao {
+  excluirNot = notificacoesId => {
+    return api.delete('v1/notificacoes/', {
+      data: notificacoesId,
+    });
+  };
+
   excluir = async (notificacoesId, callback) => {
     api
       .delete('v1/notificacoes/', {
@@ -27,6 +33,10 @@ class ServicoNotificacao {
       .catch(listaErros => erros(listaErros));
   };
 
+  marcarComoLidaNot = idsNotificacoes => {
+    return api.put('v1/notificacoes/status/lida', idsNotificacoes);
+  };
+
   marcarComoLida = (idsNotificacoes, callback) => {
     api
       .put('v1/notificacoes/status/lida', idsNotificacoes)
@@ -43,6 +53,13 @@ class ServicoNotificacao {
         if (callback) callback();
       })
       .catch(listaErros => erros(listaErros));
+  };
+
+  enviarAprovacaoNot = (idNotificacao, parametros) => {
+    return api.put(
+      `v1/workflows/aprovacoes/notificacoes/${idNotificacao}/aprova`,
+      parametros
+    );
   };
 
   buscaNotificacoesPorAnoRf = async (ano, rf) => {
