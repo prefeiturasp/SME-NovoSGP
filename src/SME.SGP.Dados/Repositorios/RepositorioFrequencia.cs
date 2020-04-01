@@ -46,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia)
         {
-            var query = @"select a.turma_id as TurmaId, a.data_aula as DataAula, raa.codigo_aluno as CodigoAluno
+            var query = @"select a.turma_id as TurmaCodigo, a.data_aula as DataAula, raa.codigo_aluno as CodigoAluno
                             , sum(a.quantidade) / count(a.id) as QuantidadeAulas, count(raa.id) as QuantidadeFaltas
                           FROM registro_ausencia_aluno raa
                          inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 

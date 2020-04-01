@@ -226,7 +226,7 @@ namespace SME.SGP.Dominio.Servicos
                                             .Where(c => c.Count() >= quantidadeDias);
 
             // Agrupa por turma para notificação
-            foreach (var turmaAgrupamento in alunosFaltasTodasAulasDoDia.GroupBy(a => a.TurmaId))
+            foreach (var turmaAgrupamento in alunosFaltasTodasAulasDoDia.GroupBy(a => a.TurmaCodigo))
             {
                 var alunosTurmaEOL = servicoEOL.ObterAlunosPorTurma(turmaAgrupamento.Key).Result;
                 var turma = repositorioTurma.ObterTurmaComUeEDrePorId(turmaAgrupamento.Key);
