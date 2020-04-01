@@ -116,7 +116,9 @@ const FechamentoBimestreLista = props => {
        {dados.fechamentoId && dataFechamento ? (
           <div className="col-md-12 d-flex justify-content-end">
             <DataFechamentoProcessado>
-              <span>{`Fechamento processado ${moment(dataFechamento).format('LLLL')}`}</span>
+              <span>{`${situacaosituacaoNomeFechamento} em ${moment(
+                dataFechamento
+              ).format('L')} às ${moment(dataFechamento).format('LT')}`}</span>
             </DataFechamentoProcessado>
           </div>
         ) : (
