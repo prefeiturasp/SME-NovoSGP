@@ -7,7 +7,7 @@ import CampoTexto from '~/componentes/campoTexto';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
-import { confirmar } from '~/servicos/alertas';
+import { confirmar, erro, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
@@ -19,6 +19,8 @@ import { URL_HOME } from '~/constantes/url';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
+
+import { Loader } from '~/componentes';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
@@ -84,6 +86,7 @@ export default function NotificacoesLista() {
   const [desabilitarBotaoMarcarLido, setDesabilitarBotaoMarcarLido] = useState(
     true
   );
+  const [carregandoTela, setCarregandoTela] = useState(false);
   const [desabilitarTurma, setDesabilitarTurma] = useState(true);
   const [colunasTabela, setColunasTabela] = useState([]);
 
@@ -237,12 +240,29 @@ export default function NotificacoesLista() {
     return !validaSeObjetoEhNuloOuVazio(filtro);
   };
 
-  function marcarComoLida() {
+  async function marcarComoLida() {
     if (!permissoesTela.podeAlterar) return;
 
-    servicoNotificacao.marcarComoLida(idNotificacoesSelecionadas, () =>
-      onClickFiltrar()
-    );
+    try {
+      setCarregandoTela(true);
+      const { data, status } = await servicoNotificacao.marcarComoLidaNot(
+        idNotificacoesSelecionadas
+      );
+      if (data && status === 200) {
+        data.forEach(resultado => {
+          if (resultado.sucesso) {
+            sucesso(resultado.mensagem);
+          } else {
+            erro(resultado.mensagem);
+          }
+        });
+        onClickFiltrar();
+        setCarregandoTela(false);
+      }
+    } catch (error) {
+      setCarregandoTela(false);
+      erro('Não foi possível marcar como lida.');
+    }
   }
 
   async function excluir() {
@@ -253,11 +273,28 @@ export default function NotificacoesLista() {
       'Você tem certeza que deseja excluir estas notificações?'
     );
     if (confirmado) {
-      servicoNotificacao.excluir(idNotificacoesSelecionadas, () => {
-        onClickFiltrar();
-        setIdNotificacoesSelecionadas([]);
-        setDesabilitarBotaoExcluir(true);
-      });
+      try {
+        setCarregandoTela(true);
+        const { data, status } = await servicoNotificacao.excluirNot(
+          idNotificacoesSelecionadas
+        );
+        if ((data !== null || data !== undefined) && status === 200) {
+          data.forEach(resultado => {
+            if (resultado.sucesso) {
+              sucesso(resultado.mensagem);
+            } else {
+              erro(resultado.mensagem);
+            }
+          });
+          onClickFiltrar();
+          setIdNotificacoesSelecionadas([]);
+          setDesabilitarBotaoExcluir(true);
+          setCarregandoTela(false);
+        }
+      } catch (error) {
+        setCarregandoTela(false);
+        erro('Não foi possível excluir notificação.');
+      }
     }
   }
 
@@ -272,122 +309,126 @@ export default function NotificacoesLista() {
   return (
     <>
       <Cabecalho pagina="Notificações" />
-      <EstiloLista>
-        <div className="col-md-6 pb-3">
-          <CampoTexto
-            placeholder="Título"
-            onChange={onChangeTitulo}
-            value={tituloSelecionado}
-            desabilitado={!permissoesTela.podeConsultar}
-          />
-        </div>
-        <div className="col-md-6 pb-3">
-          <CampoTextoBusca
-            placeholder="Código"
-            onSearch={onSearchCodigo}
-            onChange={onChangeCodigo}
-            value={codigoSelecionado}
-            desabilitado={!permissoesTela.podeConsultar}
-            onKeyDown={quandoTeclaParaBaixoPesquisaCodigo}
-            type="number"
-            minValue="0"
-          />
-        </div>
-        <div className="col-md-3 pb-3">
-          <SelectComponent
-            name="turma-noti"
-            id="turma-noti"
-            lista={listaSelectTurma}
-            valueOption="id"
-            valueText="descricao"
-            onChange={onChangeTurma}
-            valueSelect={dropdownTurmaSelecionada || []}
-            placeholder="Turma"
-            disabled={desabilitarTurma || !permissoesTela.podeConsultar}
-          />
-        </div>
-        <div className="col-md-3 pb-3">
-          <SelectComponent
-            name="status-noti"
-            id="status-noti"
-            lista={listaStatus}
-            valueOption="id"
-            disabled={!permissoesTela.podeConsultar}
-            valueText="descricao"
-            onChange={onChangeStatus}
-            valueSelect={statusSelecionado || []}
-            placeholder="Filtrar por"
-          />
-        </div>
-        <div className="col-md-3 pb-3">
-          <SelectComponent
-            name="categoria-noti"
-            id="categoria-noti"
-            lista={listaCategorias}
-            valueOption="id"
-            disabled={!permissoesTela.podeConsultar}
-            valueText="descricao"
-            onChange={onChangeCategoria}
-            valueSelect={categoriaSelecionada || []}
-            placeholder="Categoria"
-          />
-        </div>
-        <div className="col-md-3 pb-3">
-          <SelectComponent
-            name="tipo-noti"
-            id="tipo-noti"
-            lista={listaTipos}
-            valueOption="id"
-            valueText="descricao"
-            disabled={!permissoesTela.podeConsultar}
-            onChange={onChangeTipo}
-            valueSelect={tipoSelecionado || []}
-            placeholder="Tipo"
-          />
-        </div>
-        <div className="col-md-12 ">
-          <Button
-            label="Excluir"
-            color={Colors.Vermelho}
-            border
-            className="mb-2 ml-2 float-right"
-            onClick={excluir}
-            disabled={
-              (idNotificacoesSelecionadas &&
-                idNotificacoesSelecionadas.length < 1) ||
-              !permissoesTela.podeExcluir ||
-              desabilitarBotaoExcluir
-            }
-          />
-          <Button
-            label="Marcar como lida"
-            color={Colors.Azul}
-            border
-            className="mb-2 ml-2 float-right"
-            onClick={marcarComoLida}
-            disabled={desabilitarBotaoMarcarLido || !permissoesTela.podeAlterar}
-          />
-          <Button
-            label="Voltar"
-            color={Colors.Azul}
-            border
-            className="mb-2 float-right"
-            onClick={quandoClicarVoltar}
-          />
-        </div>
-        <div className="col-md-12 pt-2">
-          <ListaPaginada
-            url="v1/notificacoes/"
-            id="lista-notificacoes"
-            colunas={colunasTabela}
-            filtro={filtro}
-            onClick={permissoesTela.podeAlterar && onClickEditar}
-            multiSelecao
-            selecionarItems={onSelecionarItems}
-            filtroEhValido={validarFiltro()}
-          />
-        </div>
-      </EstiloLista>
+      <Loader loading={carregandoTela} tip="Carregando...">
+        <EstiloLista>
+          <div className="col-md-6 pb-3">
+            <CampoTexto
+              placeholder="Título"
+              onChange={onChangeTitulo}
+              value={tituloSelecionado}
+              desabilitado={!permissoesTela.podeConsultar}
+            />
+          </div>
+          <div className="col-md-6 pb-3">
+            <CampoTextoBusca
+              placeholder="Código"
+              onSearch={onSearchCodigo}
+              onChange={onChangeCodigo}
+              value={codigoSelecionado}
+              desabilitado={!permissoesTela.podeConsultar}
+              onKeyDown={quandoTeclaParaBaixoPesquisaCodigo}
+              type="number"
+              minValue="0"
+            />
+          </div>
+          <div className="col-md-3 pb-3">
+            <SelectComponent
+              name="turma-noti"
+              id="turma-noti"
+              lista={listaSelectTurma}
+              valueOption="id"
+              valueText="descricao"
+              onChange={onChangeTurma}
+              valueSelect={dropdownTurmaSelecionada || []}
+              placeholder="Turma"
+              disabled={desabilitarTurma || !permissoesTela.podeConsultar}
+            />
+          </div>
+          <div className="col-md-3 pb-3">
+            <SelectComponent
+              name="status-noti"
+              id="status-noti"
+              lista={listaStatus}
+              valueOption="id"
+              disabled={!permissoesTela.podeConsultar}
+              valueText="descricao"
+              onChange={onChangeStatus}
+              valueSelect={statusSelecionado || []}
+              placeholder="Filtrar por"
+            />
+          </div>
+          <div className="col-md-3 pb-3">
+            <SelectComponent
+              name="categoria-noti"
+              id="categoria-noti"
+              lista={listaCategorias}
+              valueOption="id"
+              disabled={!permissoesTela.podeConsultar}
+              valueText="descricao"
+              onChange={onChangeCategoria}
+              valueSelect={categoriaSelecionada || []}
+              placeholder="Categoria"
+            />
+          </div>
+          <div className="col-md-3 pb-3">
+            <SelectComponent
+              name="tipo-noti"
+              id="tipo-noti"
+              lista={listaTipos}
+              valueOption="id"
+              valueText="descricao"
+              disabled={!permissoesTela.podeConsultar}
+              onChange={onChangeTipo}
+              valueSelect={tipoSelecionado || []}
+              placeholder="Tipo"
+            />
+          </div>
+          <div className="col-md-12 ">
+            <Button
+              label="Excluir"
+              color={Colors.Vermelho}
+              border
+              className="mb-2 ml-2 float-right"
+              onClick={excluir}
+              disabled={
+                (idNotificacoesSelecionadas &&
+                  idNotificacoesSelecionadas.length < 1) ||
+                !permissoesTela.podeExcluir ||
+                desabilitarBotaoExcluir
+              }
+            />
+            <Button
+              label="Marcar como lida"
+              color={Colors.Azul}
+              border
+              className="mb-2 ml-2 float-right"
+              onClick={marcarComoLida}
+              disabled={
+                desabilitarBotaoMarcarLido || !permissoesTela.podeAlterar
+              }
+            />
+            <Button
+              label="Voltar"
+              color={Colors.Azul}
+              border
+              className="mb-2 float-right"
+              onClick={quandoClicarVoltar}
+            />
+          </div>
+          <div className="col-md-12 pt-2">
+            <ListaPaginada
+              url="v1/notificacoes/"
+              id="lista-notificacoes"
+              colunas={colunasTabela}
+              filtro={filtro}
+              onClick={permissoesTela.podeAlterar && onClickEditar}
+              multiSelecao
+              selecionarItems={onSelecionarItems}
+              filtroEhValido={validarFiltro()}
+            />
+          </div>
+        </EstiloLista>
+      </Loader>
     </>
   );
 }
