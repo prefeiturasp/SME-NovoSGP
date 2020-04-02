@@ -56,10 +56,14 @@ namespace SME.SGP.Api
                 .AllowAnyHeader()
                 .AllowCredentials());
 
+            app.UseMetricServer();
+            //app.UseMiddleware<ResponseMetricMiddleware>();
+            app.UseHttpMetrics();
+
             app.UseAuthentication();
 
             app.UseMvc();
-            app.UseMetricServer();
+
             app.UseStaticFiles();
 
             app.UseHealthChecks("/healthz", new HealthCheckOptions()
@@ -105,6 +109,8 @@ namespace SME.SGP.Api
                 options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
             });
 
+            services.AddApplicationInsightsTelemetry(Configuration);
+
             Orquestrador.Inicializar(services.BuildServiceProvider());
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
@@ -132,7 +138,6 @@ namespace SME.SGP.Api
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
-            services.AddApplicationInsightsTelemetry(Configuration);
         }
     }
 }

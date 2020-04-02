@@ -117,7 +117,7 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
 
             // Envia para workflow apenas na Inclusão ou alteração apos aprovado
-            var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && (devePassarPorWorkflowLiberacaoExcepcional || evento.DataInicio.Date < DateTime.Today && evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional);
+            var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && devePassarPorWorkflowLiberacaoExcepcional;
             if (!ehAlteracao || (evento.Status == EntidadeStatus.Aprovado))
             {
                 if (enviarParaWorkflow)

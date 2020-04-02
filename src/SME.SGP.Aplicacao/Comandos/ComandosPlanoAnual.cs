@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var bimestrePlanoAnual in migrarPlanoAnualDto.BimestresDestino.OrderBy(c => c))
             {
-                var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual);
+                var planoAnualOrigem = await ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual);
 
                 if (planoAnualOrigem == null)
                     throw new NegocioException("Plano anual de origem não encontrado");
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
                 {
                     planoCopia.TurmaId = turmaId;
 
-                    var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual);
+                    var planoAnual = await ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual);
 
                     if (planoAnual == null)
                         planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao);
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.IniciarTransacao();
             foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
             {
-                PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
+                PlanoAnual planoAnual = await ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
                 if (planoAnual != null)
                 {
                     if (!usuarioAtual.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), planoAnualDto.ComponenteCurricularEolId.ToString(), DateTime.Now))
@@ -183,9 +183,9 @@ namespace SME.SGP.Aplicacao
             return objetivosAprendizagem;
         }
 
-        private PlanoAnual ObterPlanoAnualSimplificado(PlanoAnualDto planoAnualDto, int bimestre)
+        private async Task<PlanoAnual> ObterPlanoAnualSimplificado(PlanoAnualDto planoAnualDto, int bimestre)
         {
-            return repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(planoAnualDto.AnoLetivo.Value,
+            return await repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(planoAnualDto.AnoLetivo.Value,
                                                                                                       planoAnualDto.EscolaId,
                                                                                                       planoAnualDto.TurmaId.Value,
                                                                                                       bimestre,
