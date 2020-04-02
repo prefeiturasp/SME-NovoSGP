@@ -490,16 +490,12 @@ const PlanoAnual = () => {
                           bimestre={plano}
                           ano={turmaSelecionada.ano}
                           ehEja={ehEja}
-<<<<<<< HEAD
-                          ehMedio={ehMedio}
-=======
                           ehMedio={
                             turmaSelecionada &&
                             turmaSelecionada.modalidade &&
                             turmaSelecionada.modalidade.toString() ===
-                              modalidade.ENSINO_MEDIO.toString()
+                            modalidade.ENSINO_MEDIO.toString()
                           }
->>>>>>> a8495389aa9bf7e67cb90f1096f5f5765e5c122c
                           disciplinaSemObjetivo={
                             disciplinaSelecionada &&
                             !disciplinaSelecionada.possuiObjetivos
