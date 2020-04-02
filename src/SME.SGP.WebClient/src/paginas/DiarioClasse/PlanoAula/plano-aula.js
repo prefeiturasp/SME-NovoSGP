@@ -3,9 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import PropTypes from 'prop-types';
-
-
-
 import {
   Badge,
   Corpo,
@@ -29,9 +26,6 @@ import CardCollapse from '~/componentes/cardCollapse';
 import Grid from '~/componentes/grid';
 import Editor from '~/componentes/editor/editor';
 import ModalCopiarConteudo from './componentes/ModalCopiarConteudo';
-
-
-
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 
 
@@ -174,7 +168,6 @@ const PlanoAula = props => {
     setCarregandoObjetivos(true);
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
-
     materias.forEach(m => {
       m.selecionada = m.id === id ? !m.selecionada : false;
     });
