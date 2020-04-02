@@ -35,6 +35,7 @@ const { Panel } = Collapse;
 const PlanoAnual = () => {
   const turmaSelecionada = useSelector(c => c.usuario.turmaSelecionada);
   const [ehEja, setEhEja] = useState(false);
+  const [ehMedio, setEhMedio] = useState(false);
   const [planoAnual, setPlanoAnual] = useState([]);
   const [registroMigrado, setRegistroMigrado] = useState(false);
   const [
@@ -120,7 +121,7 @@ const PlanoAnual = () => {
         if (
           disciplinaSelecionada.possuiObjetivos &&
           (!plano.objetivosAprendizagem ||
-            (!plano.objetivosAprendizagem.length > 0 && !ehEja))
+            (!plano.objetivosAprendizagem.length > 0 && !ehEja && !ehMedio))
         ) {
           possuiErro = true;
           err[plano.bimestre - 1].push(
@@ -191,7 +192,7 @@ const PlanoAnual = () => {
       servicoPlanoAnual
         .salvar(plano)
         .then(resp => {
-          setPlanoAnual(resp.data.result);
+          setPlanoAnual(resp.data);
           setCarregandoDados(false);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
@@ -351,6 +352,7 @@ const PlanoAnual = () => {
       setEhEja(
         turmaSelecionada.modalidade.toString() === modalidade.EJA.toString()
       );
+      setEhMedio(turmaSelecionada.modalidade.toString() === modalidade.ENSINO_MEDIO.toString())
     } else {
       setDisciplinaSelecionada(null);
       setCodigoDisciplinaSelecionada(null);
@@ -488,12 +490,7 @@ const PlanoAnual = () => {
                           bimestre={plano}
                           ano={turmaSelecionada.ano}
                           ehEja={ehEja}
-                          ehMedio={
-                            turmaSelecionada &&
-                            turmaSelecionada.modalidade &&
-                            turmaSelecionada.modalidade.toString() ===
-                              modalidade.ENSINO_MEDIO.toString()
-                          }
+                          ehMedio={ehMedio}
                           disciplinaSemObjetivo={
                             disciplinaSelecionada &&
                             !disciplinaSelecionada.possuiObjetivos
@@ -501,6 +498,13 @@ const PlanoAnual = () => {
                           onChange={onChangeBimestre}
                           key={plano.bimestre}
                           erros={listaErros[plano.bimestre - 1]}
+                          onCloseErrosBimestre={() => {
+                            setListaErros(
+                              listaErros.map((item, index) =>
+                                plano.bimestre - 1 === index ? [] : item
+                              )
+                            );
+                          }}
                           selecionarObjetivo={selecionarObjetivo}
                           onChangeDescricaoObjetivo={onChangeDescricaoObjetivo}
                         />
