@@ -33,6 +33,7 @@ const Avaliacao = props => {
     desabilitarCampos,
     ehProfessorCj,
     ehRegencia,
+    disciplinaSelecionada,
   } = props;
 
   const onChangeNotaConceito = (nota, valorNovo) => {
@@ -154,6 +155,10 @@ const Avaliacao = props => {
           desabilitarCampo={ehProfessorCj || desabilitarCampos}
           podeEditar={aluno.podeEditar}
           periodoFim={dados.periodoFim}
+          notaFinal={aluno.notasBimestre.find(
+            x => String(x.disciplinaId) === String(disciplinaSelecionada)
+          )}
+          disciplinaSelecionada={disciplinaSelecionada}
           mediaAprovacaoBimestre={dados.mediaAprovacaoBimestre}
           label={label}
           podeLancarNotaFinal={dados.podeLancarNotaFinal}

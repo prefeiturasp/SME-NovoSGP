@@ -24,8 +24,29 @@ const Campo = styled.div`
   }
 `;
 
+const toolbar = [
+  'heading',
+  'bold',
+  'italic',
+  'bulletedList',
+  'numberedList',
+  'blockQuote',
+  'redo',
+  'undo',
+];
+
 export default function Editor(props) {
-  const { onChange, inicial, form, name, label, temErro, mensagemErro, desabilitar } = props;
+  const {
+    onChange,
+    inicial,
+    form,
+    name,
+    label,
+    temErro,
+    mensagemErro,
+    desabilitar,
+    removerToolbar,
+  } = props;
 
   const possuiErro = () => {
     return (form && form.errors[name] && form.touched[name]) || temErro;
@@ -37,8 +58,8 @@ export default function Editor(props) {
         {(form && form.errors[name]) || mensagemErro}
       </span>
     ) : (
-      ''
-    );
+        ''
+      );
   };
 
   const editorComValidacoes = () => {
@@ -51,6 +72,8 @@ export default function Editor(props) {
             editor={ClassicEditor}
             disabled={desabilitar || false}
             config={{
+              toolbar,
+              table: { isEnabled: true },
               language: 'pt-br',
               removePlugins: [
                 'Image',
@@ -79,8 +102,11 @@ export default function Editor(props) {
   const editorSemValidacoes = () => {
     return (
       <CKEditor
+        disabled={desabilitar || false}
         editor={ClassicEditor}
         config={{
+          toolbar: removerToolbar ? [] : toolbar,
+          table: { isEnabled: true },
           readOnly: desabilitar || false,
           language: 'pt-br',
           removePlugins: [
@@ -94,6 +120,7 @@ export default function Editor(props) {
             'Outdent',
           ],
         }}
+        disabled={desabilitar}
         data={inicial || ''}
         onChange={(event, editor) => {
           const data = editor.getData();

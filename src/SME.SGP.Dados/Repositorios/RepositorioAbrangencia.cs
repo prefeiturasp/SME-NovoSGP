@@ -21,6 +21,20 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
+        public void AtualizaAbrangenciaHistorica(IEnumerable<long> ids)
+        {
+            var dtFimVinculo = DateTime.Today;
+
+            string comando = $"update public.abrangencia set historico = true , dt_fim_vinculo = '{dtFimVinculo.Year}-{dtFimVinculo.Month}-{dtFimVinculo.Day}'  where id in (#ids)";
+
+            for (int i = 0; i < ids.Count(); i = i + 900)
+            {
+                var iteracao = ids.Skip(i).Take(900);
+
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+            }
+        }
+
         public void ExcluirAbrangencias(IEnumerable<long> ids)
         {
             const string comando = @"delete from public.abrangencia where id in (#ids) and historico = false";
@@ -61,7 +75,8 @@ namespace SME.SGP.Dados.Repositorios
 	                            abrangencia
                             where
 	                            usuario_id = (select id from usuario where login = @login)
-	                            and perfil = @perfil";
+	                            and perfil = @perfil
+                                and abrangencia.historico = false";
 
             return (await database.Conexao.QueryAsync<bool>(query, new { login, perfil })).FirstOrDefault();
         }
@@ -123,7 +138,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(consideraHistorico ? queryHistorica : query, new { texto, login, perfil })).AsList();
         }
 
-        public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "")
+        public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "", bool consideraHistorico = false)
         {
             var query = new StringBuilder();
 
@@ -140,6 +155,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("perfil");
             query.AppendLine("from");
             query.AppendLine("public.v_abrangencia_sintetica where login = @login and perfil = @perfil");
+
+            if (consideraHistorico)
+                query.AppendLine("and historico = true");
+            else query.AppendLine("and historico = false");
 
             if (!string.IsNullOrEmpty(turmaId))
                 query.AppendLine("and codigo_turma = @turmaId");
@@ -264,7 +283,8 @@ namespace SME.SGP.Dados.Repositorios
                             va.usuario_id = (select id from usuario where login = @login)
                             and va.usuario_perfil = @perfil
                             and va.modalidade_codigo is not null
-                            and va.turma_ano_letivo = @anoLetivo";
+                            and va.turma_ano_letivo = @anoLetivo
+                            and va.modalidade_codigo > 0";
             var queryHistorica = @"select
                             distinct va.modalidade_codigo
                         from
@@ -273,7 +293,8 @@ namespace SME.SGP.Dados.Repositorios
                             va.usuario_id = (select id from usuario where login = @login)
                             and va.usuario_perfil = @perfil
                             and va.modalidade_codigo is not null
-                            and va.turma_ano_letivo = @anoLetivo";
+                            and va.turma_ano_letivo = @anoLetivo
+                            and va.modalidade_codigo > 0";
 
             return (await database.Conexao.QueryAsync<int>(consideraHistorico ? queryHistorica : query, new { login, perfil, anoLetivo })).AsList();
         }

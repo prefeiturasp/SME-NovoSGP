@@ -8,6 +8,8 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAbrangencia
     {
+        void AtualizaAbrangenciaHistorica(IEnumerable<long> paraAtualizar);
+
         void ExcluirAbrangencias(IEnumerable<long> ids);
 
         void InserirAbrangencias(IEnumerable<Abrangencia> enumerable, string login);
@@ -16,7 +18,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil, bool consideraHistorico);
 
-        Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "");
+        Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "", bool consideraHistorico = false);
 
         Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil, bool consideraHistorico = false);
 

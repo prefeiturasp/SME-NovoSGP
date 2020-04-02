@@ -16,7 +16,6 @@ const TabsComponent = props => {
   const montarTabs = () => {
     return listaTabs.map((tab, index) => {
       const { nome, conteudo: Conteudo } = tab;
-      console.log(typeof Conteudo);
       return (
         <TabPane tab={nome} key={`tab-${index}`}>
           {typeof Conteudo === 'object' || typeof Conteudo === 'function' ? (

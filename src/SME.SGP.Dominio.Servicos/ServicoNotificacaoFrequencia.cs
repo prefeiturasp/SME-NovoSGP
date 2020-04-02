@@ -91,7 +91,7 @@ namespace SME.SGP.Dominio.Servicos
                 return;
 
             // Verifica se possui aluno não notificado na compensação
-            alunos = alunos.Where(a => !a.Notificado);
+            alunos = alunos.Where(a => !a.Notificado && a.QuantidadeFaltasCompensadas > 0);
             if (!alunos.Any())
                 return;
 
@@ -326,33 +326,37 @@ namespace SME.SGP.Dominio.Servicos
             {
                 // Busca parametro do sistema de quantidade de aulas sem frequencia para notificação
                 var qtdAulasNotificacao = QuantidadeAulasParaNotificacao(tipo);
-                foreach (var turma in turmasSemRegistro)
+
+                if (qtdAulasNotificacao.HasValue)
                 {
-                    // Carrega todas as aulas sem registro de frequencia da turma e disciplina para notificação
-                    turma.Aulas = repositorioFrequencia.ObterAulasSemRegistroFrequencia(turma.CodigoTurma, turma.DisciplinaId, tipo);
-                    if (turma.Aulas != null && turma.Aulas.Count() >= qtdAulasNotificacao)
+                    foreach (var turma in turmasSemRegistro)
                     {
-                        // Busca Professor/Gestor/Supervisor da Turma ou Ue
-                        var usuarios = BuscaUsuarioNotificacao(turma, tipo);
-
-                        if (usuarios != null)
+                        // Carrega todas as aulas sem registro de frequencia da turma e disciplina para notificação
+                        turma.Aulas = repositorioFrequencia.ObterAulasSemRegistroFrequencia(turma.CodigoTurma, turma.DisciplinaId, tipo);
+                        if (turma.Aulas != null && turma.Aulas.Count() >= qtdAulasNotificacao)
                         {
-                            var cargosLinq = cargosNotificados;
-                            var cargosNaoNotificados = usuarios.Select(u => u.Item1)
-                                                        .GroupBy(u => u)
-                                                        .Where(w => !cargosLinq.Any(l => l.Item1 == turma.CodigoTurma && l.Item2 == w.Key))
-                                                        .Select(s => new { turma.CodigoTurma, s.Key });
+                            // Busca Professor/Gestor/Supervisor da Turma ou Ue
+                            var usuarios = BuscaUsuarioNotificacao(turma, tipo);
 
-                            foreach (var usuario in usuarios.Where(u => cargosNaoNotificados.Select(c => c.Key).Contains(u.Item1)))
+                            if (usuarios != null)
                             {
-                                NotificaRegistroFrequencia(usuario.Item2, turma, tipo);
-                            }
+                                var cargosLinq = cargosNotificados;
+                                var cargosNaoNotificados = usuarios.Select(u => u.Item1)
+                                                            .GroupBy(u => u)
+                                                            .Where(w => !cargosLinq.Any(l => l.Item1 == turma.CodigoTurma && l.Item2 == w.Key))
+                                                            .Select(s => new { turma.CodigoTurma, s.Key });
 
-                            cargosNotificados.AddRange(cargosNaoNotificados.Select(n => (n.CodigoTurma, n.Key)));
+                                foreach (var usuario in usuarios.Where(u => cargosNaoNotificados.Select(c => c.Key).Contains(u.Item1)))
+                                {
+                                    NotificaRegistroFrequencia(usuario.Item2, turma, tipo);
+                                }
+
+                                cargosNotificados.AddRange(cargosNaoNotificados.Select(n => (n.CodigoTurma, n.Key)));
+                            }
                         }
+                        else
+                            Console.WriteLine($"Notificação não necessária pois quantidade de aulas sem frequência: {turma.Aulas?.Count() ?? 0 } está dentro do limite: {qtdAulasNotificacao}.");
                     }
-                    else
-                        Console.WriteLine($"Notificação não necessária pois quantidade de aulas sem frequência: {turma.Aulas?.Count() ?? 0 } está dentro do limite: {qtdAulasNotificacao}.");
                 }
             }
         }
@@ -405,23 +409,23 @@ namespace SME.SGP.Dominio.Servicos
         private void NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
         {
             var disciplinas = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(turmaSemRegistro.DisciplinaId) });
-            if (disciplinas != null && disciplinas.Any())
+            if (disciplinas != null && disciplinas.Any() && disciplinas.FirstOrDefault().RegistraFrequencia)
             {
                 var disciplina = disciplinas.FirstOrDefault();
 
-                var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
+                var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {disciplina.Nome} ({turmaSemRegistro.NomeUe})";
                 StringBuilder mensagemUsuario = new StringBuilder();
                 mensagemUsuario.Append($"A turma a seguir esta a <b>{turmaSemRegistro.Aulas.Count()} aulas</b> sem registro de frequência da turma");
                 mensagemUsuario.Append("<br />");
-                mensagemUsuario.Append($"<br />Escola: <b>{turmaSemRegistro.NomeUe}</b>");
+                mensagemUsuario.Append($"<br />Unidade de Educação: <b>{turmaSemRegistro.TipoEscola.GetAttribute<DisplayAttribute>().ShortName + " " +  turmaSemRegistro.NomeUe}</b>");
                 mensagemUsuario.Append($"<br />Turma: <b>{turmaSemRegistro.NomeTurma}</b>");
-                mensagemUsuario.Append($"<br />Disciplina: <b>{disciplina.Nome}</b>");
+                mensagemUsuario.Append($"<br />Componente Curricular: <b>{disciplina.Nome}</b>");
                 mensagemUsuario.Append($"<br />Aulas:");
 
                 mensagemUsuario.Append("<ul>");
                 foreach (var aula in turmaSemRegistro.Aulas)
                 {
-                    mensagemUsuario.Append($"<li>Data: {aula.DataAula}</li>");
+                    mensagemUsuario.Append($"<li>Data: {aula.DataAula.ToString("dd/MM/yyyy")}</li>");
                 }
                 mensagemUsuario.Append("</ul>");
 
@@ -507,12 +511,17 @@ namespace SME.SGP.Dominio.Servicos
             return disciplina.FirstOrDefault().Nome;
         }
 
-        private int QuantidadeAulasParaNotificacao(TipoNotificacaoFrequencia tipo)
-                            => int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
+        private int? QuantidadeAulasParaNotificacao(TipoNotificacaoFrequencia tipo)
+        {
+            var qtdDias = repositorioParametrosSistema.ObterValorPorTipoEAno(
                                         tipo == TipoNotificacaoFrequencia.Professor ? TipoParametroSistema.QuantidadeAulasNotificarProfessor
                                             : tipo == TipoNotificacaoFrequencia.GestorUe ? TipoParametroSistema.QuantidadeAulasNotificarGestorUE
                                             : TipoParametroSistema.QuantidadeAulasNotificarSupervisorUE,
-                                        DateTime.Now.Year));
+                                        DateTime.Now.Year);
+
+            return !string.IsNullOrEmpty(qtdDias) ? int.Parse(qtdDias) : (int?)null;
+        }
+
 
         private void VerificaNotificacaoBimestralCalendario(TipoCalendario tipoCalendario, DateTime dataAtual, ModalidadeTipoCalendario modalidade)
         {
@@ -542,7 +551,7 @@ namespace SME.SGP.Dominio.Servicos
                     .ForEach(turmaId =>
                     {
                         if (turmaId != null)
-                            turmas.Add(repositorioTurma.ObterTurmaComUeEDrePorId(turmaId));
+                            turmas.Add(repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId));
                     });
 
                 var percentualFrequenciaFund = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
@@ -570,7 +579,7 @@ namespace SME.SGP.Dominio.Servicos
 
                                     foreach (var alunoDisciplina in alunosDisciplina)
                                     {
-                                        if (alunoDisciplina.PercentualFrequencia < 
+                                        if (alunoDisciplina.PercentualFrequencia <
                                                 (disciplinaEOL.Regencia ? percentualFrequenciaRegencia : percentualFrequenciaFund))
                                         {
                                             alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()

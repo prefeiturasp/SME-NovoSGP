@@ -8,6 +8,8 @@ namespace SME.SGP.Infra
     {
         public long DisciplinaId { get; set; }
         public string Disciplina { get; set; }
-        public string NotaConceito { get; set; }
+        public double? NotaConceito { get; set; }
+        public bool ehConceito { get; set; }
+        public string conceitoDescricao { get; set; }
     }
 }

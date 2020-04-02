@@ -17,6 +17,8 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IComandosDiasLetivos comandosDiasLetivos;
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly IConsultasDisciplina consultasDisciplina;
+        private readonly IConsultasAula consultasAula;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
@@ -36,7 +38,9 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
-            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina)
+            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
+            IConsultasDisciplina consultasDisciplina,
+            IConsultasAula consultasAula)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.comandosDiasLetivos = comandosDiasLetivos ?? throw new ArgumentNullException(nameof(comandosDiasLetivos));
@@ -48,6 +52,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentException(nameof(repositorioPeriodoEscolar));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaRegencia));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaDisciplina));
+            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
+            this.consultasAula = consultasAula ?? throw new ArgumentNullException(nameof(consultasAula));
         }
 
         public async Task<DiaEventoAula> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
@@ -66,9 +72,11 @@ namespace SME.SGP.Aplicacao
 
             string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
-            var disciplinasUsuario = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(filtro.TurmaId, usuario.CodigoRf, usuario.PerfilAtual);
+            var disciplinasUsuario = usuario.EhProfessorCj() ?
+                await consultasDisciplina.ObterDisciplinasPerfilCJ(filtro.TurmaId, usuario.CodigoRf) :
+                await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(filtro.TurmaId, usuario.CodigoRf, usuario.PerfilAtual);
 
-            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme);
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme, usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
             var aulas = await ObterAulasDia(filtro, data, perfil, rf, disciplinasUsuario);
             var atividades = await repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId);
 
@@ -77,11 +85,6 @@ namespace SME.SGP.Aplicacao
             var turmasAulas = aulas.GroupBy(x => x.TurmaId).Select(x => x.Key);
 
             var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas, filtro.TurmaHistorico);
-
-            IEnumerable<DisciplinaResposta> disciplinasRegencia = Enumerable.Empty<DisciplinaResposta>();
-
-            if (temTurmaInformada)
-                disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil);
 
             var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct().ToList();
 
@@ -112,13 +115,11 @@ namespace SME.SGP.Aplicacao
                         {
                             var disciplinasRegenciasComAtividades = repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
 
-                            disciplinasRegenciasComAtividades.ToList().ForEach(r => r.DisciplinaContidaRegenciaNome = disciplinasRegencia?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(r.DisciplinaContidaRegenciaId)).Nome);
+                            disciplinasRegenciasComAtividades.ToList().ForEach(r => r.DisciplinaContidaRegenciaNome = servicoEOL.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(r.DisciplinaContidaRegenciaId) }).FirstOrDefault().Nome);
 
                             item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
                             item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
-                            if (temTurmaInformada)
-                                podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
-                            else podeCriarAtividade = false;
+                            podeCriarAtividade = true;
                         }
                         else
                             podeCriarAtividade = false;
@@ -145,6 +146,7 @@ namespace SME.SGP.Aplicacao
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
                         Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
                         Turma = x.TurmaNome,
+                        DentroPeriodo = x.DentroPeriodo,
                         UnidadeEscolar = x.UeNome,
                         Atividade = listaAtividades
                     }
@@ -154,7 +156,8 @@ namespace SME.SGP.Aplicacao
             return new DiaEventoAula
             {
                 EventosAulas = eventosAulas,
-                Letivo = comandosDiasLetivos.VerificarSeDataLetiva(eventos, data)
+                Letivo = comandosDiasLetivos.VerificarSeDataLetiva(eventos, data),
+                DentroPeriodo = await consultasAula.AulaDentroPeriodo(filtro.TurmaId, filtro.Data)
             };
         }
 
@@ -173,7 +176,7 @@ namespace SME.SGP.Aplicacao
 
             var diasPeriodoEscolares = comandosDiasLetivos.BuscarDiasLetivos(filtro.TipoCalendarioId);
             var diasAulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf);
-            var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.EhEventoSme);
+            var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.EhEventoSme, true, usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
 
             var diasEventosNaoLetivos = comandosDiasLetivos.ObterDias(eventos, diasNaoLetivos, EventoLetivo.Nao);
             var diasEventosLetivos = comandosDiasLetivos.ObterDias(eventos, diasLetivos, EventoLetivo.Sim);
@@ -208,7 +211,7 @@ namespace SME.SGP.Aplicacao
             var ano = periodoEscolar.FirstOrDefault().PeriodoInicio.Year;
 
             var aulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf, filtro.Mes);
-            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeMes(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Mes, filtro.EhEventoSme);
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeMes(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Mes, filtro.EhEventoSme, usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
             var atividadesAvaliativas = await repositorioAtividadeAvaliativa.ObterAtividadesPorMes(filtro.DreId, filtro.UeId, filtro.Mes, ano, rf, filtro.TurmaId);
             var diasAulas = ObterDiasAulas(aulas);
             var diasEventos = ObterDiasEventos(eventos, filtro.Mes);
@@ -304,6 +307,9 @@ namespace SME.SGP.Aplicacao
         {
             var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, filtro.TurmaHistorico);
 
+            foreach (var aula in aulas)
+                aula.DentroPeriodo = await consultasAula.AulaDentroPeriodo(aula.TurmaId, aula.DataAula);
+            
             if (disciplinas != null)
                 VerificarAulasSomenteConsulta(disciplinas, aulas);
 

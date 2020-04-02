@@ -334,7 +334,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotificarAulaReposicaoQueFoiReprovada(Aula aula, long codigoDaNotificacao, string motivo)
         {
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(aula.TurmaId);
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
 
@@ -356,7 +356,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotificarCriadorDaAulaQueFoiAprovada(Aula aula, long codigoDaNotificacao)
         {
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(aula.TurmaId);
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
 

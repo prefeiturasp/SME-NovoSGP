@@ -32,5 +32,7 @@ namespace SME.SGP.Infra
 
         [ListaTemElementos(ErrorMessage = "A lista de frequência é obrigatória")]
         public IList<RegistroFrequenciaAlunoDto> ListaFrequencia { get; set; }
+
+        public bool TemPeriodoAberto { get; set; }
     }
 }
