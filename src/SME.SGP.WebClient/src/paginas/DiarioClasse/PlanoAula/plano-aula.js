@@ -50,7 +50,7 @@ const PlanoAula = props => {
     ehMedio,
     temObjetivos,
     setTemObjetivos,
-    mostrarCardPrincipal,
+    expandido,
     auditoria,
     temAvaliacao,
     ehRegencia,
