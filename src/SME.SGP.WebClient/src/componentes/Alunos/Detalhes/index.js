@@ -1,59 +1,12 @@
-import React from 'react';
+import { Avatar, Card } from 'antd';
 import PropTypes from 'prop-types';
-
-// Componentes
-import { Card, Avatar } from 'antd';
-import Row from '~/componentes/row';
-import Grid from '~/componentes/grid';
+import React from 'react';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
+import { Container, DadosAluno, FrequenciaGlobal } from './styles';
 
-// Styles
-import { Botoes, Container } from './styles';
-
-const DetalhesAluno = ({ dados, onAnterior, onProximo, print, onPrint }) => {
-  const Titulo = () => {
-    return (
-      <Row className="font-weight-bold">
-        <Grid cols={6} className="d-flex align-items-center">
-          Detalhes do estudante
-        </Grid>
-        <Botoes cols={6} className="d-flex justify-content-end">
-          <Button
-            label="Anterior"
-            color={Colors.Roxo}
-            className="ml-auto attached left"
-            height="48px"
-            width="100px"
-            bold
-            border
-            onClick={onAnterior}
-          />
-          <Button
-            label="Próximo"
-            color={Colors.Roxo}
-            className="ml-0 attached border-left-0 right"
-            height="48px"
-            width="100px"
-            bold
-            border
-            onClick={onProximo}
-          />
-        </Botoes>
-      </Row>
-    );
-  };
-
-  // Exemplo de dados do componente
-  // dados={{
-  //   nome: 'ALANA FERREIRA DE OLIVEIRA',
-  //   numero: 1,
-  //   dataNascimento: '02/02/2020',
-  //   codigoEOL: 4241513,
-  //   situacao: 'Matriculado',
-  //   dataSituacao: '04/02/2019',
-  //   frequencia: 96,
-  // }}
+const DetalhesAluno = props => {
+  const { dados, desabilitarImprimir, onClickImprimir } = props;
 
   const {
     avatar,
@@ -73,48 +26,39 @@ const DetalhesAluno = ({ dados, onAnterior, onProximo, print, onPrint }) => {
         className="rounded"
         headStyle={{ borderBottomRightRadius: 0 }}
         bodyStyle={{ borderTopRightRadius: 0 }}
-        title={Titulo()}
       >
-        <Grid cols={12}>
-          <Row className="fonte-14">
-            <Grid cols={6}>
-              <Row className="fonte-12">
-                <Grid cols={2} className="pr-0 mr-0">
-                  <Avatar
-                    size={64}
-                    icon="user"
-                    style={{ verticalAlign: 0 }}
-                    src={avatar}
-                  />
-                </Grid>
-                <Grid cols={10} className="pl-0 ml-0">
-                  <div>
-                    {nome} Nº {numero}
-                  </div>
-                  <div>Data de nascimento: {dataNascimento}</div>
-                  <div>Código EOL: {codigoEOL}</div>
-                  <div>
-                    Situação: {situacao} em {dataSituacao}
-                  </div>
-                </Grid>
-              </Row>
-            </Grid>
-            <Grid cols={6} className="text-right">
-              {print && (
-                <Button
-                  icon="print"
-                  className="ml-auto mb-4"
-                  color={Colors.Azul}
-                  border
-                  onClick={onPrint}
-                />
-              )}
-              <div className="d-block font-weight-bold fonte-12">
+        <DadosAluno className="row">
+          <div className="col-md-8 d-flex justify-content-start">
+            <Avatar className="mr-2" size={80} icon="user" src={avatar} />
+            <div>
+              <p>
+                {nome} Nº {numero}
+              </p>
+              <p>Data de nascimento: {dataNascimento}</p>
+              <p>Código EOL: {codigoEOL}</p>
+              <p>
+                Situação: {situacao} em {dataSituacao}
+              </p>
+            </div>
+          </div>
+          <div className="col-md-4 d-flex justify-content-end display-block">
+            <Button
+              icon="print"
+              className="ml-auto mb-4"
+              color={Colors.Azul}
+              border
+              onClick={onClickImprimir}
+              disabled={desabilitarImprimir}
+            />
+            {frequencia ? (
+              <FrequenciaGlobal>
                 Frequência Global: {frequencia}%
-              </div>
-            </Grid>
-          </Row>
-        </Grid>
+              </FrequenciaGlobal>
+            ) : (
+              ''
+            )}
+          </div>
+        </DadosAluno>
       </Card>
     </Container>
   );
@@ -122,18 +66,14 @@ const DetalhesAluno = ({ dados, onAnterior, onProximo, print, onPrint }) => {
 
 DetalhesAluno.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  onAnterior: PropTypes.oneOfType([PropTypes.func]),
-  onProximo: PropTypes.oneOfType([PropTypes.func]),
-  print: PropTypes.oneOfType([PropTypes.bool]),
-  onPrint: PropTypes.oneOfType([PropTypes.func]),
+  desabilitarImprimir: PropTypes.oneOfType([PropTypes.bool]),
+  onClickImprimir: PropTypes.oneOfType([PropTypes.func]),
 };
 
 DetalhesAluno.defaultProps = {
   dados: [],
-  onAnterior: () => {},
-  onProximo: () => {},
-  print: true,
-  onPrint: () => {},
+  desabilitarImprimir: true,
+  onClickImprimir: () => {},
 };
 
 export default DetalhesAluno;
