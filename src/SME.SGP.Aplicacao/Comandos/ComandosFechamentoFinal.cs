@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
         private Turma ObterTurma(string turmaCodigo)
         {
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(turmaCodigo);
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma.");
             return turma;

@@ -104,10 +104,13 @@ namespace SME.SGP.Dominio
             ExpiracaoRecuperacaoSenha = DateTime.Now.AddHours(6);
         }
 
-        public Guid ObterPerfilPrioritario(bool possuiTurmaAtiva)
+        public Guid ObterPerfilPrioritario(bool possuiTurmaAtiva, bool ehProfCJSemTurmaTitular)
         {
             if (Perfis == null || !Perfis.Any())
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
+
+            if(ehProfCJSemTurmaTitular)
+                return Dominio.Perfis.PERFIL_CJ;
 
             var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR && possuiTurmaAtiva);
 

@@ -83,7 +83,13 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new EixoMap());
                config.AddMap(new ObjetivoaMap());
                config.AddMap(new RespostaMap());
+               config.AddMap(new NotificacaoAulaMap());
                config.AddMap(new FechamentoFinalMap());
+               config.AddMap(new HistoricoEmailUsuarioMap());
+               config.AddMap(new PendenciaMap());
+               config.AddMap(new PendenciaFechamentoMap());
+               config.AddMap(new SinteseValorMap());
+               config.AddMap(new AnotacaoAlunoFechamentoMap());
                config.ForDommel();
            });
         }

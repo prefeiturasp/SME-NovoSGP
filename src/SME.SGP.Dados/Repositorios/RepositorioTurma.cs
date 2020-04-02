@@ -80,7 +80,7 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Turma>("select * from turma where id = @id", new { id });
         }
 
-        public Turma ObterTurmaComUeEDrePorId(string turmaId)
+        public Turma ObterTurmaComUeEDrePorCodigo(string turmaCodigo)
         {
             var query = @"select
 	                        t.id,
@@ -114,13 +114,56 @@ namespace SME.SGP.Dados.Repositorios
                         inner join dre d on
 	                        u.dre_id = d.id
                         where
-	                        turma_id = @turmaId";
+	                        turma_id = @turmaCodigo";
             return contexto.Query<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
              {
                  ue.AdicionarDre(dre);
                  turma.AdicionarUe(ue);
                  return turma;
-             }, new { turmaId }, splitOn: "TurmaId, UeId, DreId").FirstOrDefault();
+             }, new { turmaCodigo }, splitOn: "TurmaId, UeId, DreId").FirstOrDefault();
+        }
+
+        public Turma ObterTurmaComUeEDrePorId(long turmaId)
+        {
+            var query = @"select
+	                        t.id,
+	                        t.turma_id,
+	                        t.ue_id,
+	                        t.nome,
+	                        t.ano,
+	                        t.ano_letivo,
+	                        t.modalidade_codigo,
+	                        t.semestre,
+	                        t.qt_duracao_aula,
+	                        t.tipo_turno,
+	                        t.data_atualizacao,
+	                        u.id as UeId,
+	                        u.id,
+	                        u.ue_id,
+	                        u.nome,
+	                        u.dre_id,
+	                        u.tipo_escola,
+	                        u.data_atualizacao,
+	                        d.id as DreId,
+	                        d.id,
+	                        d.nome,
+	                        d.dre_id,
+	                        d.abreviacao,
+	                        d.data_atualizacao
+                        from
+	                        turma t
+                        inner join ue u on
+	                        t.ue_id = u.id
+                        inner join dre d on
+	                        u.dre_id = d.id
+                        where
+	                        t.id = @turmaId";
+            return contexto.Query<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
+                return turma;
+            }, new { turmaId }, splitOn: "TurmaId, UeId, DreId").FirstOrDefault();
         }
 
         public IEnumerable<Turma> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
