@@ -142,20 +142,23 @@ const FrequenciaPlanoAula = () => {
     setExibirAuditoria(true);
   };
 
-  const setarDisciplina = async disciplinaId => {
-    resetarTelaFrequencia(true);
-    const disciplina = listaDisciplinas.find(
-      disc => String(disc.codigoComponenteCurricular) === disciplinaId
-    );
-    setDisciplinaSelecionada(disciplina);
-    setDisciplinaIdSelecionada(disciplinaId);
-    if (disciplinaId) {
-      await obterDatasDeAulasDisponiveis(disciplinaId);
-    } else {
-      setListaDatasAulas();
-      setDiasParaHabilitar();
-    }
-  };
+  const setarDisciplina = useCallback(
+    async disciplinaId => {
+      resetarTelaFrequencia(true);
+      const disciplina = listaDisciplinas.find(
+        disc => String(disc.codigoComponenteCurricular) === disciplinaId
+      );
+      setDisciplinaSelecionada(disciplina);
+      setDisciplinaIdSelecionada(disciplinaId);
+      if (disciplinaId) {
+        await obterDatasDeAulasDisponiveis(disciplinaId);
+      } else {
+        setListaDatasAulas();
+        setDiasParaHabilitar();
+      }
+    },
+    [listaDisciplinas, obterDatasDeAulasDisponiveis]
+  );
 
   const obterDisciplinas = useCallback(async () => {
     setCarregandoDisciplinas(true);
@@ -462,11 +465,13 @@ const FrequenciaPlanoAula = () => {
 
   const onSalvarPlanoAula = async () => {
     const objetivosId = [];
-    planoAula.objetivosAprendizagemAula.forEach(obj => {
-      if (obj.selected) {
-        objetivosId.push(obj.id);
+
+    planoAula.objetivosAprendizagemAula.forEach(o => {
+      if (o.selected) {
+        objetivosId.push(o.id);
       }
     });
+
     const plano = {
       descricao: planoAula.descricao,
       desenvolvimentoAula: planoAula.desenvolvimentoAula,
@@ -478,6 +483,7 @@ const FrequenciaPlanoAula = () => {
     planoAula.objetivosAprendizagemJurema = [...objetivosId];
 
     await validaPlanoAula();
+
     if (errosValidacaoPlano.length === 0) {
       await api
         .post('v1/planos/aulas', plano)
@@ -553,17 +559,21 @@ const FrequenciaPlanoAula = () => {
 
   const onClickSalvar = click => {
     setCarregandoGeral(true);
-    if (modoEdicaoFrequencia && permiteRegistroFrequencia) {
+    if (modoEdicaoFrequencia && permiteRegistroFrequencia)
       onSalvarFrequencia(click);
-    }
-    if (modoEdicaoPlanoAula) {
-      onSalvarPlanoAula();
-    }
+
+    if (modoEdicaoPlanoAula) onSalvarPlanoAula();
+
     store.dispatch(salvarDadosAulaFrequencia());
-    setTimeout(() => {
-      setDataSelecionada();
+
+    if (!mostrarErros && errosValidacaoPlano.length === 0) {
+      setTimeout(() => {
+        setDataSelecionada();
+        setCarregandoGeral(false);
+      }, 1000);
+    } else {
       setCarregandoGeral(false);
-    }, 1000);
+    }
   };
 
   const onCloseErros = () => {
