@@ -1,25 +1,4 @@
 import styled from 'styled-components';
-import Grid from '~/componentes/grid';
-
-const Botoes = styled(Grid)`
-  align-items: center;
-  position: relative;
-  width: 100%;
-
-  .btn.attached.left {
-    border-top-right-radius: 0;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    position: relative;
-  }
-
-  .btn.attached.right {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    position: relative;
-  }
-`;
 
 const Container = styled.div`
   .ant-card-head {
@@ -36,6 +15,28 @@ const Container = styled.div`
   .fa {
     margin: 0 !important;
   }
+
+  .display-block {
+    display: block !important;
+  }
 `;
 
-export { Botoes, Container };
+const DadosAluno = styled.div`
+  width: 100%;
+  height: 100%;
+  color: #42474a;
+  display: flex;
+  align-items: center;
+
+  p {
+    margin-bottom: 0;
+  }
+`;
+
+const FrequenciaGlobal = styled.div`
+  font-weight: 700 !important;
+  text-align: end;
+  font-size: 12px !important;
+`;
+
+export { Container, DadosAluno, FrequenciaGlobal };
