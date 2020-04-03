@@ -11,7 +11,8 @@ import Cabecalho from './componentes/Cabecalho';
 // Estilos
 import { TabelaEstilo, Tabela, DetalhesAluno, LinhaTabela } from './style';
 
-function TabelaRetratil({ alunos, children }) {
+function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado}) {
+  
   const [retraido, setRetraido] = useState(false);
   const [alunoSelecionado, setAlunoSelecionado] = useState(null);
 
@@ -25,12 +26,16 @@ function TabelaRetratil({ alunos, children }) {
 
   const proximoAlunoHandler = useCallback(() => {
     if (alunos.indexOf(alunoSelecionado) === alunos.length - 1) return;
-    selecionarAluno(alunos[alunos.indexOf(alunoSelecionado) + 1]);
+    const aluno = alunos[alunos.indexOf(alunoSelecionado) + 1];
+    selecionarAluno(aluno);
+    onChangeAlunoSelecionado(aluno);
   }, [alunoSelecionado, alunos]);
 
   const anteriorAlunoHandler = useCallback(() => {
     if (alunos.indexOf(alunoSelecionado) === 0) return;
-    selecionarAluno(alunos[alunos.indexOf(alunoSelecionado) - 1]);
+    const aluno = alunos[alunos.indexOf(alunoSelecionado) - 1];
+    selecionarAluno(aluno);
+    onChangeAlunoSelecionado(aluno);
   }, [alunoSelecionado, alunos]);
 
   const desabilitarAnterior = () => {
@@ -65,7 +70,10 @@ function TabelaRetratil({ alunos, children }) {
                 className={isAlunoSelecionado(item) && `selecionado`}
                 key={shortid.generate()}
                 ativo={item.ativo}
-                onClick={() => selecionarAluno(item)}
+                onClick={() => {
+                  selecionarAluno(item);
+                  onChangeAlunoSelecionado(item);
+                }}
               >
                 <td>
                   {item.numeroChamada}
