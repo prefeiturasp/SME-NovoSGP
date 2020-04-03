@@ -88,6 +88,7 @@ const ListaPaginada = props => {
   };
 
   const filtrar = () => {
+    selecionar([]);
     setCarregando(true);
     api
       .get(urlBusca, { params: filtro })
@@ -128,7 +129,7 @@ const ListaPaginada = props => {
     <Container className="table-responsive">
       <Table
         className={multiSelecao ? '' : 'ocultar-coluna-multi-selecao'}
-        rowKey="id"
+        rowKey={colunaChave}
         rowSelection={selecaoLinha}
         columns={colunas}
         dataSource={linhas}

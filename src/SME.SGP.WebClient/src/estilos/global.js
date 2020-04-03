@@ -256,6 +256,7 @@ export default createGlobalStyle`
   :root{
     --posicao-item-menu-top: 0;
     --posicao-item-menu-left: 110px;
+    --espacamento-conteudo: 250px;
   }
 
   div > div > .ant-menu-submenu-popup{
@@ -330,5 +331,17 @@ export default createGlobalStyle`
     min-height: 180px !important;
     list-style-position: inside;
     color:black;
+  }
+
+  .erro{
+    color: ${Base.Vermelho}
+  }
+
+  .secao-conteudo{
+    margin-left: var(--espacamento-conteudo);
+
+    @media screen and (max-width: 993px) {
+      margin-left: 115px !important;
+    }
   }
 `;

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -23,6 +24,11 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
+        public async Task ExcluirFisicamenteAsync(long[] ids)
+        {
+            await repositorioNotificacao.ExcluirPorIdsAsync(ids);
+        }
+
         public void GeraNovoCodigo(Notificacao notificacao)
         {
             if (notificacao.Codigo == 0)
@@ -37,6 +43,7 @@ namespace SME.SGP.Dominio.Servicos
         public void Salvar(Notificacao notificacao)
         {
             GeraNovoCodigo(notificacao);
+
             repositorioNotificacao.Salvar(notificacao);
         }
 
