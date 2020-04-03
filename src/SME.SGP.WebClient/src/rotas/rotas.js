@@ -47,8 +47,19 @@ import PeriodoFechamentoReaberturaForm from '~/paginas/CalendarioEscolar/Periodo
 import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento';
 import PendenciasFechamentoLista from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoLista';
 import PendenciasFechamentoForm from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoForm';
+import ComunicadosLista from '~/paginas/AcompanhamentoEscolar/Comunicados/Lista';
 
 const rotas = new Map();
+
+rotas.set(RotasDto.ACOMPANHAMENTO_COMUNICADOS, {
+  breadcrumbName: 'Comunicados',
+  menu: ['Gestão'],
+  parent: '/',
+  component: ComunicadosLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+});
 
 rotas.set(`${RotasDto.PAP}`, {
   breadcrumbName: 'Resumos e Gráficos PAP',
@@ -380,7 +391,6 @@ rotas.set(`${RotasDto.EVENTOS}/:tipoCalendarioId`, {
   chavePermissao: RotasDto.EVENTOS,
 });
 
-
 rotas.set('/calendario-escolar/eventos/novo/:tipoCalendarioId', {
   breadcrumbName: 'Cadastro de Eventos no Calendário Escolar',
   parent: '/calendario-escolar/eventos',
@@ -667,16 +677,19 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}`, {
   temPermissionamento: true,
   chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
-rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`, {
-  breadcrumbName: 'Pendências do Fechamento',
-  menu: ['Fechamento'],
-  parent: '/',
-  component: PendenciasFechamentoLista,
-  exact: true,
-  tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: true,
-  chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
-});
+rotas.set(
+  `${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`,
+  {
+    breadcrumbName: 'Pendências do Fechamento',
+    menu: ['Fechamento'],
+    parent: '/',
+    component: PendenciasFechamentoLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
+  }
+);
 
 rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/:id`, {
   breadcrumbName: 'Pendências do Fechamento',
