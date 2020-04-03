@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
         void NotificarCompensacaoAusencia(long compensacaoId);
         void VerificaNotificacaoBimestral();
         void NotificarAlunosFaltosos();
+        void NotificarAlunosFaltososBimestre();
     }
 }
