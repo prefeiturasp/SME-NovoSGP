@@ -228,9 +228,96 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        public void NotificarAlunosFaltososBimestre()
+        {
+            // Notifica apenas no dia seguinte ao fim do bimestre
+            var dataReferencia = DateTime.Today.AddDays(-1);
+            var percentualCritico = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCritico, dataReferencia.Year));
+
+            NotificaALunosTaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, percentualCritico);
+            NotificaALunosTaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, percentualCritico, dataReferencia.Semestre());
+        }
         #endregion Metodos Publicos
 
         #region Metodos Privados
+        private void NotificaALunosTaltososBimestreModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario, double percentualCritico, int semestre = 0)
+        {
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, ModalidadeTipoCalendario.FundamentalMedio, semestre);
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendario.Id, dataReferencia);
+
+            // Notifica apenas no dia seguinte ao fim do bimestre
+            if (dataReferencia == periodoEscolar.PeriodoFim)
+            {
+                var alunosFaltososBimestre = repositorioFrequenciaAluno.ObterAlunosFaltososBimestre(modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA, periodoEscolar.Id, percentualCritico);
+
+                foreach(var uesAgrupadas in alunosFaltososBimestre.GroupBy(a => new { a.DreCodigo, a.DreNome, a.TipoEscola, a.UeCodigo, a.UeNome }))
+                {
+                    NotificarEscolaAlunosFaltososBimestre(uesAgrupadas.Key.DreCodigo,
+                                                          uesAgrupadas.Key.DreNome,
+                                                          (TipoEscola)uesAgrupadas.Key.TipoEscola,
+                                                          uesAgrupadas.Key.UeCodigo,
+                                                          uesAgrupadas.Key.UeNome,
+                                                          percentualCritico,
+                                                          periodoEscolar.Bimestre,
+                                                          dataReferencia.Year,
+                                                          uesAgrupadas.GroupBy(u => u.TurmaCodigo));
+                }
+            }
+        }
+
+        private void NotificarEscolaAlunosFaltososBimestre(string dreCodigo, string dreNome, TipoEscola tipoEscola, string ueCodigo, string ueNome, double percentualCritico, int bimestre, int ano, IEnumerable<IGrouping<string, AlunoFaltosoBimestreDto>> turmasAgrupadas)
+        {
+            var titulo = $"Alunos com baixa frequência da {tipoEscola.ShortName()} {ueNome}";
+            StringBuilder mensagem = new StringBuilder();
+            mensagem.AppendLine($"<p>Abaixo segue a lista de turmas com alunos que tiveram frequência geral abaixo de <b>{percentualCritico}%</b> no <b>{bimestre}º bimestre</b> de <b>{ano}</b> da <b>{tipoEscola.ShortName()} {ueNome} (DRE {dreNome})</b>.</p>");
+
+            foreach(var turmaAgrupada in turmasAgrupadas)
+            {
+                var alunosDaTurma = servicoEOL.ObterAlunosPorTurma(turmaAgrupada.Key).Result;
+                var alunosFaltososTurma = alunosDaTurma.Where(c => turmaAgrupada.Any(a => a.AlunoCodigo == c.CodigoAluno));
+
+                mensagem.AppendLine($"<p>Turma <b>{turmaAgrupada.First().TurmaNome}</b></p>");
+                mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
+                mensagem.AppendLine("<tr>");
+                mensagem.AppendLine("<td style='padding: 5px;'>Nº</td>");
+                mensagem.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
+                mensagem.AppendLine("<td style='padding: 5px;'>Percentual de Frequência</td>");
+                mensagem.AppendLine("</tr>");
+
+                foreach(var aluno in alunosFaltososTurma)
+                {
+                    var percentualFrequenciaAluno = 100 - turmaAgrupada.FirstOrDefault(c => c.AlunoCodigo == aluno.CodigoAluno).PercentualFaltas;
+
+                    mensagem.AppendLine("<tr>");
+                    mensagem.Append($"<td style='padding: 5px;'>{aluno.NumeroAlunoChamada}</td>");
+                    mensagem.Append($"<td style='padding: 5px;'>{aluno.NomeAluno}</td>");
+                    mensagem.Append($"<td style='text-align: center;'>{percentualFrequenciaAluno}</td>");
+                    mensagem.AppendLine("</tr>");
+                }
+            }
+
+            var funcionariosEol = servicoNotificacao.ObterFuncionariosPorNivel(ueCodigo, Cargo.Supervisor);
+            NotficarFuncionariosAlunosFaltososBimestre(funcionariosEol, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
+        }
+
+        private void NotficarFuncionariosAlunosFaltososBimestre(IEnumerable<(Cargo? Cargo, string Id)> funcionariosEol, string titulo, string mensagem, string ueCodigo, string dreCodigo)
+        {
+            foreach(var funcionario in funcionariosEol)
+            {
+                var notificacao = new Notificacao()
+                {
+                    Ano = DateTime.Now.Year,
+                    Categoria = NotificacaoCategoria.Aviso,
+                    Tipo = NotificacaoTipo.Frequencia,
+                    Titulo = titulo,
+                    Mensagem = mensagem,
+                    UsuarioId = long.Parse(funcionario.Id),
+                    UeId = ueCodigo,
+                    DreId = dreCodigo,
+                };
+                servicoNotificacao.Salvar(notificacao);
+            }
+        }
 
         private void NotificaAlunosFaltososCargo(DateTime dataReferencia, int quantidadeDias, Cargo cargo, long tipoCalendarioId)
         {
