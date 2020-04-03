@@ -217,13 +217,13 @@ namespace SME.SGP.Dominio.Servicos
             var dataReferencia = DateTime.Today.AddDays(-1);
             var percentualCritico = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCritico, dataReferencia.Year));
 
-            NotificaALunosTaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, percentualCritico);
-            NotificaALunosTaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, percentualCritico, dataReferencia.Semestre());
+            NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, percentualCritico);
+            NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, percentualCritico, dataReferencia.Semestre());
         }
         #endregion Metodos Publicos
 
         #region Metodos Privados
-        private void NotificaALunosTaltososBimestreModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario, double percentualCritico, int semestre = 0)
+        private void NotificaAlunosFaltososBimestreModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario, double percentualCritico, int semestre = 0)
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, ModalidadeTipoCalendario.FundamentalMedio, semestre);
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendario.Id, dataReferencia);
@@ -274,7 +274,7 @@ namespace SME.SGP.Dominio.Servicos
                     mensagem.AppendLine("<tr>");
                     mensagem.Append($"<td style='padding: 5px;'>{aluno.NumeroAlunoChamada}</td>");
                     mensagem.Append($"<td style='padding: 5px;'>{aluno.NomeAluno}</td>");
-                    mensagem.Append($"<td style='text-align: center;'>{percentualFrequenciaAluno}</td>");
+                    mensagem.Append($"<td style='text-align: center;'>{percentualFrequenciaAluno} %</td>");
                     mensagem.AppendLine("</tr>");
                 }
             }
@@ -287,6 +287,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             foreach(var funcionario in funcionariosEol)
             {
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id);
+
                 var notificacao = new Notificacao()
                 {
                     Ano = DateTime.Now.Year,
@@ -294,7 +296,7 @@ namespace SME.SGP.Dominio.Servicos
                     Tipo = NotificacaoTipo.Frequencia,
                     Titulo = titulo,
                     Mensagem = mensagem,
-                    UsuarioId = long.Parse(funcionario.Id),
+                    UsuarioId = usuario.Id,
                     UeId = ueCodigo,
                     DreId = dreCodigo,
                 };

@@ -54,7 +54,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select dre.dre_id as DreCodigo, dre.Nome as DreNome, ue.tipo_escola as TipoEscola, ue.ue_id as UeCodigo, ue.nome as UeNome
                             , t.turma_id as TurmaCodigo, t.nome as TurmaNome, fa.codigo_aluno as AlunoCodigo
-	                        , ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric) PercentualFaltas
+	                        , ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric)*100 PercentualFaltas
                           from frequencia_aluno fa 
                          inner join periodo_escolar p on p.periodo_fim = fa.periodo_fim and p.periodo_inicio = fa.periodo_inicio
                          inner join turma t on t.turma_id = fa.turma_id 
