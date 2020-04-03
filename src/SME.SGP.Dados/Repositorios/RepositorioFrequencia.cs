@@ -44,18 +44,19 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId });
         }
 
-        public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia)
+        public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)
         {
             var query = @"select a.turma_id as TurmaCodigo, a.data_aula as DataAula, raa.codigo_aluno as CodigoAluno
                             , sum(a.quantidade) / count(a.id) as QuantidadeAulas, count(raa.id) as QuantidadeFaltas
-                          FROM registro_ausencia_aluno raa
+                          from registro_ausencia_aluno raa
                          inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
                          inner join aula a on a.id = rf.aula_id 
                          where not a.excluido and not rf.excluido and not raa.excluido 
                            and a.data_aula >= @dataReferencia
+                           and a.tipo_calendario_id = @tipoCalendarioId
                         group by a.turma_id, a.data_aula, raa.codigo_aluno ";
 
-            return database.Conexao.Query<AlunosFaltososDto>(query, new { dataReferencia });
+            return database.Conexao.Query<AlunosFaltososDto>(query, new { dataReferencia, tipoCalendarioId });
         }
 
         public RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId)

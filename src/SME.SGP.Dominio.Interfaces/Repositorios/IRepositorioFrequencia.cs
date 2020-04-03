@@ -24,6 +24,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId);
 
-        IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia);
+        IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId);
     }
 }
