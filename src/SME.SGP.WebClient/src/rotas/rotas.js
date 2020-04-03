@@ -47,6 +47,7 @@ import PeriodoFechamentoReaberturaForm from '~/paginas/CalendarioEscolar/Periodo
 import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento';
 import PendenciasFechamentoLista from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoLista';
 import PendenciasFechamentoForm from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoForm';
+import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselho-classe';
 
 const rotas = new Map();
 
@@ -706,6 +707,16 @@ rotas.set(RotasDto.RELATORIO_PAP_ACOMPANHAMENTO, {
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false, // chavePermissao: RotasDto.REINICIAR_SENHA,
+});
+
+rotas.set(RotasDto.CONSELHO_CLASSE, {
+  breadcrumbName: 'Conselho de Classe',
+  menu: ['Fechamento'],
+  parent: '/',
+  component: ConselhoClasse,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
 });
 
 const rotasArray = [];
