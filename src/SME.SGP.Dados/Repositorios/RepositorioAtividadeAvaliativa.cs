@@ -108,7 +108,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalhoSimples(query);
             query.AppendLine(fromCompleto);
-            MontaWhere(query, dataAvaliacao, null, ueId, null, null, turmaId);
+            MontaWhere(query, dataAvaliacao, ueId: ueId, turmaId: turmaId, disciplinaId: disciplinaId);
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<AtividadeAvaliativa>(query.ToString(), new
             {
@@ -370,6 +370,11 @@ namespace SME.SGP.Dados.Repositorios
             if (disciplinasId != null && disciplinasId.Length > 0)
             {
                 query.AppendLine("and aad.disciplina_id =  ANY(@disciplinasId)");
+                query.AppendLine("and aad.excluido =  false");
+            }
+            if (!String.IsNullOrEmpty(disciplinaId))
+            {
+                query.AppendLine("and aad.disciplina_id =  @disciplinaId");
                 query.AppendLine("and aad.excluido =  false");
             }
             if (ehRegencia.HasValue)
