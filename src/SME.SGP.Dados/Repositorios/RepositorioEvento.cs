@@ -877,6 +877,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
             query.AppendLine("and e.status = 1");
+            query.AppendLine("and((extract(month from e.data_fim) = @mes) or(extract(month from e.data_inicio) = @mes))");
+            query.AppendLine("and((extract(day from e.data_fim) = @dia) or(extract(day from e.data_inicio) = @dia))");
 
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and e.dre_id = @dreId");
