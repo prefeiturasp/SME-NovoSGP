@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasAulaPrevista consultasAulaPrevista;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-        private readonly IConsultasNotaConceitoBimestre consultasNotaConceitoBimestre;
+        private readonly IConsultasFechamentoNota consultasFechamentoNota;
         private readonly IRepositorioConceito repositorioConceito;
         private readonly IRepositorioSintese repositorioSintese;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoFechamento consultasFechamento;
         private readonly IConsultasDisciplina consultasDisciplina;
-        private readonly IConsultasAnotacaoAlunoFechamento consultasAnotacaoAlunoFechamento;
+        private readonly IConsultasFechamentoAluno consultasFehcamentoAluno;
 
         public IEnumerable<Sintese> _sinteses { get; set; }
         public IEnumerable<Sintese> Sinteses 
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             IConsultasFrequencia consultasFrequencia,
             IConsultasAulaPrevista consultasAulaPrevista,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
-            IConsultasNotaConceitoBimestre consultasNotaConceitoBimestre,
+            IConsultasFechamentoNota consultasFechamentoNota,
             IServicoEOL servicoEOL,
             IServicoUsuario servicoUsuario,
             IServicoAluno servicoAluno,
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioParametrosSistema repositorioParametrosSistema,
             IConsultasPeriodoFechamento consultasFechamento,
             IConsultasDisciplina consultasDisciplina,
-            IConsultasAnotacaoAlunoFechamento consultasAnotacaoAlunoFechamento
+            IConsultasFechamentoAluno consultasFechamentoAluno
             )
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.consultasAulaPrevista = consultasAulaPrevista ?? throw new ArgumentNullException(nameof(consultasAulaPrevista));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
-            this.consultasNotaConceitoBimestre = consultasNotaConceitoBimestre ?? throw new ArgumentNullException(nameof(consultasNotaConceitoBimestre));
+            this.consultasFechamentoNota = consultasFechamentoNota ?? throw new ArgumentNullException(nameof(consultasFechamentoNota));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
@@ -78,13 +78,13 @@ namespace SME.SGP.Aplicacao
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
-            this.consultasAnotacaoAlunoFechamento = consultasAnotacaoAlunoFechamento ?? throw new ArgumentNullException(nameof(consultasAnotacaoAlunoFechamento));
+            this.consultasFehcamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
         }
 
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
             => await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestre);
 
-        public async Task<IEnumerable<NotaConceitoBimestreDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaId)
+        public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaId)
             => await repositorioFechamentoTurmaDisciplina.ObterNotasBimestre(codigoAluno, fechamentoTurmaId);
 
         public async Task<FechamentoTurmaDisciplinaBimestreDto> ObterNotasFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int? bimestre, int semestre)
@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
                     alunoDto.Nome = aluno.NomeAluno;
                     alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
 
-                    var anotacaoAluno = await consultasAnotacaoAlunoFechamento.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
+                    var anotacaoAluno = await consultasFehcamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
                     alunoDto.TemAnotacao = anotacaoAluno != null && 
                                         !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());
 
@@ -194,7 +194,7 @@ namespace SME.SGP.Aplicacao
                             var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
 
                             if (notasConceitoBimestre.Count() > 0)
-                                alunoDto.Notas = new List<NotaConceitoBimestreRetornoDto>();
+                                alunoDto.Notas = new List<FechamentoNotaRetornoDto>();
 
                             if (fechamentoBimestre.EhSintese)
                             {
@@ -210,7 +210,7 @@ namespace SME.SGP.Aplicacao
                                 {
                                     var disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId) : null;
                                     var nomeDisciplina = disciplinaEOL.Regencia ? disciplina.Nome : disciplinaEOL.Nome;
-                                    ((List<NotaConceitoBimestreRetornoDto>)alunoDto.Notas).Add(new NotaConceitoBimestreRetornoDto()
+                                    ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(new FechamentoNotaRetornoDto()
                                     {
                                         DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                         Disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome : disciplinaEOL.Nome,

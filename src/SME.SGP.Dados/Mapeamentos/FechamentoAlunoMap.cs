@@ -5,11 +5,11 @@ using System.Text;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class AnotacaoAlunoFechamentoMap: BaseMap<AnotacaoAlunoFechamento>
+    public class FechamentoAlunoMap: BaseMap<FechamentoAluno>
     {
-        public AnotacaoAlunoFechamentoMap()
+        public FechamentoAlunoMap()
         {
-            ToTable("anotacao_aluno_fechamento");
+            ToTable("fechamento_aluno");
             Map(a => a.FechamentoTurmaDisciplinaId).ToColumn("fechamento_turma_disciplina_id");
             Map(a => a.AlunoCodigo).ToColumn("aluno_codigo");
         }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class NotaConceitoBimestreRetornoDto
+    public class FechamentoNotaRetornoDto
     {
         public long DisciplinaId { get; set; }
         public string Disciplina { get; set; }

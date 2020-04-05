@@ -6,7 +6,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IComandosAnotacaoAlunoFechamento
+    public interface IComandosFechamentoAluno
     {
         Task<AuditoriaPersistenciaDto> SalvarAnotacaoAluno(AnotacaoAlunoDto anotacaoAluno);
     }

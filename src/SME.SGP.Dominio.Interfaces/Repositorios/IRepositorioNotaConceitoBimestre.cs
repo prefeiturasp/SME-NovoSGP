@@ -4,10 +4,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioNotaConceitoBimestre : IRepositorioBase<NotaConceitoBimestre>
+    public interface IRepositorioFechamentoNota : IRepositorioBase<FechamentoNota>
     {
-        Task<IEnumerable<NotaConceitoBimestre>> ObterPorFechamentoTurma(long fechamentoId);
-        Task<NotaConceitoBimestre> ObterPorAlunoEFechamento(long fechamentoId, string codigoAluno);
-        Task<AnotacaoAlunoCompletoDto> ObterAnotacaoAlunoPorFechamento(long fechamentoId, string codigoAluno);
+        Task<IEnumerable<FechamentoNota>> ObterPorFechamentoTurma(long fechamentoId);
+        Task<FechamentoNota> ObterPorAlunoEFechamento(long fechamentoId, string codigoAluno);
     }
 }
