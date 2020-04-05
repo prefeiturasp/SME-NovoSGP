@@ -19,8 +19,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select f.*
                          from fechamento_turma_disciplina f
-                        inner join periodo_escolar p on p.id = f.periodo_escolar_id 
-                        inner join turma t on t.id = f.turma_id
+                        inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
+                        inner join periodo_escolar p on p.id = ft.periodo_escolar_id 
+                        inner join turma t on t.id = ft.turma_id
                         where not f.excluido
                             and t.id = @turmaId
                             and p.bimestre = @bimestre ");
@@ -35,8 +36,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select f.*
                          from fechamento_turma_disciplina f
-                        inner join periodo_escolar p on p.id = f.periodo_escolar_id
-                        inner join turma t on t.id = f.turma_id
+                        inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
+                        inner join periodo_escolar p on p.id = ft.periodo_escolar_id
+                        inner join turma t on t.id = ft.turma_id
                         where not f.excluido
                           and t.turma_id = @turmaId
                           and f.disciplina_id = @disciplinaId
@@ -49,15 +51,33 @@ namespace SME.SGP.Dados.Repositorios
             return fechamentos.First();
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaId)
+        public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaDisciplinaId)
         {
             var query = @"select n.disciplina_id as DisciplinaId, n.nota as Nota, n.conceito_id as ConceitoId, codigo_aluno as CodigoAluno, n.sintese_id as SinteseId
-                         from nota_conceito_bimestre n
+                         from fechamento_nota n
+                        inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
                         where not n.excluido
-                            and n.fechamento_turma_disciplina_id = @fechamentoTurmaId
-                            and n.codigo_aluno = @codigoAluno ";
+                            and fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
+                            and fa.codigo_aluno = @codigoAluno ";
 
-            return await database.Conexao.QueryAsync<NotaConceitoBimestreDto>(query, new { codigoAluno, fechamentoTurmaId });
+            return await database.Conexao.QueryAsync<FechamentoNotaDto>(query, new { codigoAluno, fechamentoTurmaDisciplinaId });
+        }
+
+        public override FechamentoTurmaDisciplina ObterPorId(long id)
+        {
+            var query = @"select ftd.*, ft.* 
+                            from fechamento_turma_disciplina ftd
+                          inner join fechamento_turma ft on ft.id = ftd.fechamento_id
+                          where ftd.id = @id";
+
+            return database.Conexao.Query<FechamentoTurmaDisciplina, FechamentoTurma, FechamentoTurmaDisciplina>(query
+                , (fechamentoTurmaDisciplina, fechamentoTurma) =>
+                {
+                    fechamentoTurmaDisciplina.FechamentoTurma = fechamentoTurma;
+                    return fechamentoTurmaDisciplina;
+                }
+                , new { id }).FirstOrDefault();
+
         }
     }
 }

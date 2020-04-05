@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ComandosAnotacaoAlunoFechamento: IComandosAnotacaoAlunoFechamento
+    public class ComandosFechamentoAluno: IComandosFechamentoAluno
     {
-        private readonly IRepositorioAnotacaoAlunoFechamento repositorio;
+        private readonly IRepositorioFechamentoAluno repositorio;
 
-        public ComandosAnotacaoAlunoFechamento(IRepositorioAnotacaoAlunoFechamento repositorio)
+        public ComandosFechamentoAluno(IRepositorioFechamentoAluno repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
@@ -29,11 +29,11 @@ namespace SME.SGP.Aplicacao
             return (AuditoriaPersistenciaDto)anotacao;
         }
 
-        private async Task<AnotacaoAlunoFechamento> MapearParaEntidade(AnotacaoAlunoDto anotacaoAluno)
+        private async Task<FechamentoAluno> MapearParaEntidade(AnotacaoAlunoDto anotacaoAluno)
         {
-            var anotacao = await repositorio.ObterAnotacaoAlunoPorFechamento(anotacaoAluno.FechamentoId, anotacaoAluno.CodigoAluno);
+            var anotacao = await repositorio.ObterFechamentoAluno(anotacaoAluno.FechamentoId, anotacaoAluno.CodigoAluno);
             if (anotacao == null)
-                anotacao = new AnotacaoAlunoFechamento()
+                anotacao = new FechamentoAluno()
                 {
                     FechamentoTurmaDisciplinaId = anotacaoAluno.FechamentoId,
                     AlunoCodigo = anotacaoAluno.CodigoAluno,

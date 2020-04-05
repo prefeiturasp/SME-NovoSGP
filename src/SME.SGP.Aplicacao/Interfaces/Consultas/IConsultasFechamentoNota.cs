@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IConsultasNotaConceitoBimestre
+    public interface IConsultasFechamentoNota
     {
     }
 }
