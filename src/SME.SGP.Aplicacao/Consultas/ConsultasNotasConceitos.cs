@@ -238,7 +238,7 @@ namespace SME.SGP.Aplicacao
                                 // Regencia carrega disciplinas mesmo sem nota de fechamento
                                 foreach (var disciplinaRegencia in disciplinasRegencia)
                                 {
-                                    var nota = new NotaConceitoBimestreRetornoDto()
+                                    var nota = new FechamentoNotaRetornoDto()
                                     {
                                         DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
                                         Disciplina = disciplinaRegencia.Nome,
@@ -255,7 +255,7 @@ namespace SME.SGP.Aplicacao
                             }
                             else
                                 foreach (var notaConceitoBimestre in notasConceitoBimestre)
-                                    notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
+                                    notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
                                     {
                                         DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                         Disciplina = disciplinaEOL.Nome,
@@ -271,7 +271,7 @@ namespace SME.SGP.Aplicacao
                             // Regencia carrega disciplinas mesmo sem nota de fechamento
                             foreach (var disciplinaRegencia in disciplinasRegencia)
                             {
-                                notaConceitoAluno.NotasBimestre.Add(new NotaConceitoBimestreRetornoDto()
+                                notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
                                 {
                                     DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
                                     Disciplina = disciplinaRegencia.Nome,
