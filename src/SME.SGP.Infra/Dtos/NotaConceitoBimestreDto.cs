@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class NotaConceitoBimestreDto
+    public class FechamentoNotaDto
     {
         [Required(ErrorMessage = "Necessário informar o codigo do aluno")]
         public string CodigoAluno { get; set; }

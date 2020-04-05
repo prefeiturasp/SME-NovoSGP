@@ -1,11 +1,10 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class NotaConceitoBimestre : EntidadeBase
+    public class FechamentoNota : EntidadeBase
     {
-        public long FechamentoTurmaDisciplinaId { get; set; }
-        public FechamentoTurmaDisciplina FechamentoTurmaDisciplina { get; set; }
+        public long FechamentoAlunoId { get; set; }
+        public FechamentoAluno FechamentoAluno { get; set; }
         public long DisciplinaId { get; set; }
-        public string CodigoAluno { get; set; }
         public double? Nota { get; set; }
         public long? ConceitoId { get; set; }
         public Conceito Conceito { get; set; }
