@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio
             TotalAusencias = totalAusencias;
         }
 
-        protected FrequenciaAluno()
+        public FrequenciaAluno()
         {
         }
 
