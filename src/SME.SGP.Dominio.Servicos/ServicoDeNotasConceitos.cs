@@ -283,7 +283,6 @@ namespace SME.SGP.Dominio
         {
             var notasMultidisciplina = new List<NotaConceito>();
             var alunosNotasExtemporaneas = new StringBuilder();
-            var bimestreInformado = 0;
             var nota = notasConceitos.FirstOrDefault();
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
             var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
@@ -291,12 +290,16 @@ namespace SME.SGP.Dominio
             var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(atividadeAvaliativa.TurmaId);
 
             // Verifica Bimestre Atual
-            var dataPesquisa = DateTime.Now;
+            var dataPesquisa = DateTime.Today;
             var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
-            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
-            var periodoEscolarInformado = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
-            bimestreInformado = periodoEscolarInformado.Bimestre;
-            var existePeriodoFechamentoAberto = await repositorioPeriodoFechamento.ExistePeriodoPorUeData(turma.UeId, DateTime.Today); ;
+            var periodoEscolarAtual = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
+            var periodoEscolarAvaliacao = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
+            if(periodoEscolarAvaliacao == null)
+                throw new NegocioException("Período escolar da atividade avaliativa não encontrado");
+
+            var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
+            var existePeriodoEmAberto = periodoEscolarAtual !=null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
+                || await repositorioPeriodoFechamento.ExistePeriodoPorUeDataBimestre(turma.UeId, DateTime.Today, bimestreAvaliacao); 
 
             foreach (var notaConceito in notasConceitos)
             {
@@ -348,7 +351,7 @@ namespace SME.SGP.Dominio
                     }
                 }
 
-                if ((notaConceito.Id > 0) && (!existePeriodoFechamentoAberto))
+                if ((notaConceito.Id > 0) && (!existePeriodoEmAberto))
                 {
                     alunosNotasExtemporaneas.AppendLine($"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>");
                 }
@@ -356,9 +359,9 @@ namespace SME.SGP.Dominio
 
             if (alunosNotasExtemporaneas.ToString().Length > 0)
             {
-                string mensagem = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {bimestreInformado} de {turma.AnoLetivo} foram alterados " +
+                string mensagem = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {bimestreAvaliacao} de {turma.AnoLetivo} foram alterados " +
                     $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para os seguintes alunos:</p><br/>{alunosNotasExtemporaneas.ToString()}" +
-                    $"<a href='{hostAplicacao}diario-classe/notas/{nota.DisciplinaId}/{bimestreInformado}'>Clique aqui para visualizar os detalhes.</a>";
+                    $"<a href='{hostAplicacao}diario-classe/notas/{nota.DisciplinaId}/{bimestreAvaliacao}'>Clique aqui para visualizar os detalhes.</a>";
 
                 foreach (var usuarioCP in usuariosCPs)
                 {
