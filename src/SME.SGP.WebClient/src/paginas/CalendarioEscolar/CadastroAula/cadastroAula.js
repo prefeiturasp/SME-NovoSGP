@@ -637,6 +637,18 @@ const CadastroAula = ({ match }) => {
     setCarregandoSalvar(false);
   };
 
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(aula);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
+        form.handleSubmit(e => e);
+      }
+    });
+  };
+
   const onClickVoltar = async form => {
     if (modoEdicao && !somenteLeitura) {
       const confirmado = await confirmar(
