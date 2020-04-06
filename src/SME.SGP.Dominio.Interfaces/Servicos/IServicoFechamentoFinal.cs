@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoFechamentoFinal
     {
-        Task SalvarAsync(FechamentoFinal fechamentoFinal);
+        Task<List<string>> SalvarAsync(FechamentoTurmaDisciplina fechamentoFinal);
 
         Task VerificaPersistenciaGeral(Turma turma);
     }
