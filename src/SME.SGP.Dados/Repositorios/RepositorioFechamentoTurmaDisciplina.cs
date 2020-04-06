@@ -15,36 +15,43 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId, string[] disciplinasId, int bimestre)
+        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId, string[] disciplinasId, int bimestre = 0)
         {
             var query = new StringBuilder(@"select f.*
                          from fechamento_turma_disciplina f
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
-                        inner join periodo_escolar p on p.id = ft.periodo_escolar_id 
+                         left join periodo_escolar p on p.id = ft.periodo_escolar_id 
                         inner join turma t on t.id = ft.turma_id
                         where not f.excluido
-                            and t.id = @turmaId
-                            and p.bimestre = @bimestre ");
+                            and t.id = @turmaId ");
 
             if (disciplinasId != null && disciplinasId.Length > 0)
                 query.AppendLine("and f.disciplina_id = ANY(@disciplinaId)");
 
+            if (bimestre > 0)
+                query.AppendLine("and p.bimestre = @bimestre ");
+            else
+                query.AppendLine("and ft.periodo_escolar_id is null");
+
             return await database.Conexao.QueryAsync<FechamentoTurmaDisciplina>(query.ToString(), new { turmaId, disciplinasId, bimestre });
         }
 
-        public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
+        public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaCodigo, long disciplinaId, int bimestre = 0)
         {
-            var query = @"select f.*
+            var query = new StringBuilder(@"select f.*
                          from fechamento_turma_disciplina f
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
-                        inner join periodo_escolar p on p.id = ft.periodo_escolar_id
+                         left join periodo_escolar p on p.id = ft.periodo_escolar_id
                         inner join turma t on t.id = ft.turma_id
                         where not f.excluido
-                          and t.turma_id = @turmaId
-                          and f.disciplina_id = @disciplinaId
-                          and p.bimestre = @bimestre ";
+                          and t.turma_id = @turmaCodigo
+                          and f.disciplina_id = @disciplinaId ");
+            if (bimestre > 0)
+                query.AppendLine(" and p.bimestre = @bimestre ");
+            else
+                query.AppendLine(" and ft.periodo_escolar_id is null ");
 
-            var fechamentos = await database.Conexao.QueryAsync<FechamentoTurmaDisciplina>(query, new { turmaId, disciplinaId, bimestre });
+            var fechamentos = await database.Conexao.QueryAsync<FechamentoTurmaDisciplina>(query.ToString(), new { turmaCodigo, disciplinaId, bimestre });
             if (fechamentos == null || !fechamentos.Any())
                 return null;
 

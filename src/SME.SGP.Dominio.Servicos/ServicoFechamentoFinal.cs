@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,24 +10,80 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoFechamentoFinal : IServicoFechamentoFinal
     {
         private readonly IRepositorioEvento repositorioEvento;
-        private readonly IRepositorioFechamentoFinal repositorioFechamentoFinal;
+        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
+        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IUnitOfWork unitOfWork;
 
-        public ServicoFechamentoFinal(IRepositorioFechamentoFinal repositorioFechamentoFinal, IRepositorioTipoCalendario repositorioTipoCalendario,
-            IRepositorioEvento repositorioEvento, IServicoEOL servicoEOL, IServicoUsuario servicoUsuario)
+        public ServicoFechamentoFinal(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
+                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
+                                      IRepositorioFechamentoAluno repositorioFechamentoAluno,
+                                      IRepositorioFechamentoNota repositorioFechamentoNota,
+                                      IRepositorioTipoCalendario repositorioTipoCalendario,
+                                      IRepositorioEvento repositorioEvento,
+                                      IServicoEOL servicoEOL,
+                                      IServicoUsuario servicoUsuario,
+                                      IUnitOfWork unitOfWork)
         {
-            this.repositorioFechamentoFinal = repositorioFechamentoFinal ?? throw new ArgumentNullException(nameof(repositorioFechamentoFinal));
+            this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
+            this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
+            this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioFechamentoAluno));
+            this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task SalvarAsync(FechamentoFinal fechamentoFinal)
+        public async Task<List<string>> SalvarAsync(FechamentoTurmaDisciplina fechamentoFinal)
         {
-            await repositorioFechamentoFinal.SalvarAsync(fechamentoFinal);
+            var mensagens = new List<string>();
+            unitOfWork.IniciarTransacao();
+            try
+            {
+                var fechamentoTurmaId = await repositorioFechamentoTurma.SalvarAsync(fechamentoFinal.FechamentoTurma);
+                fechamentoFinal.FechamentoTurmaId = fechamentoTurmaId;
+                var fechamentoTurmaDisciplinaId = await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoFinal);
+
+                foreach(var fechamentoAluno in fechamentoFinal.FechamentoAlunos)
+                {
+                    try
+                    {
+                        fechamentoAluno.FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId;
+                        var fechamentoAlunoId = await repositorioFechamentoAluno.SalvarAsync(fechamentoAluno);
+
+                        foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
+                        {
+                            try
+                            {
+                                fechamentoNota.FechamentoAlunoId = fechamentoAlunoId;
+                                await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+                            }
+                            catch (Exception e)
+                            {
+                                mensagens.Add($"Não foi possível salvar a nota do componente [{fechamentoNota.DisciplinaId}] aluno [{fechamentoAluno.AlunoCodigo}] : {e.Message}");
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        mensagens.Add($"Não foi possível gravar o fechamento do aluno [{fechamentoAluno.AlunoCodigo}]: {e.Message}");
+                    }                
+                }
+                unitOfWork.PersistirTransacao();
+
+                return mensagens;
+            }
+            catch (Exception e)
+            {
+                unitOfWork.Rollback();
+                throw e;
+            }
         }
 
         public async Task VerificaPersistenciaGeral(Turma turma)
