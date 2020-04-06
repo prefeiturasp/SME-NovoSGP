@@ -219,7 +219,7 @@ namespace SME.SGP.Aplicacao
                                     ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(new FechamentoNotaRetornoDto()
                                     {
                                         DisciplinaId = notaConceitoBimestre.DisciplinaId,
-                                        Disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId).Nome : disciplinaEOL.Nome,
+                                        Disciplina = nomeDisciplina,
                                         NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota.Value,
                                         ehConceito = notaConceitoBimestre.ConceitoId.HasValue,
                                         conceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : ""
