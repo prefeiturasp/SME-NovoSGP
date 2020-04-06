@@ -14,7 +14,7 @@ import { Colors } from '~/componentes/colors';
 import PlanoAula from '../PlanoAula/plano-aula';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import { confirmar, erros, sucesso, erro } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import Alert from '~/componentes/alert';
@@ -100,6 +100,7 @@ const FrequenciaPlanoAula = () => {
   const dadosAulaFrequencia = useSelector(
     state => state.calendarioProfessor.dadosAulaFrequencia
   );
+  const [temPeriodoAberto, setTemPeriodoAberto] = useState(false);
 
   const obterDatasDeAulasDisponiveis = useCallback(
     async disciplinaId => {
@@ -228,12 +229,13 @@ const FrequenciaPlanoAula = () => {
       frequenciaId > 0
         ? somenteConsulta || !permissoesTela.podeAlterar
         : somenteConsulta || !permissoesTela.podeIncluir;
-    setDesabilitarCampos(desabilitar);
+    setDesabilitarCampos(desabilitar || !temPeriodoAberto);
   }, [
     frequenciaId,
     permissoesTela.podeAlterar,
     permissoesTela.podeIncluir,
     somenteConsulta,
+    temPeriodoAberto,
   ]);
 
   const obterListaFrequencia = async id => {
@@ -255,6 +257,11 @@ const FrequenciaPlanoAula = () => {
       setExibirAuditoria(true);
       setFrequencia(frequenciaAlunos.data.listaFrequencia);
       setPermiteRegistroFrequencia(!frequenciaAlunos.data.desabilitado);
+      setTemPeriodoAberto(frequenciaAlunos.data.temPeriodoAberto);
+      if (!frequenciaAlunos.data.temPeriodoAberto) {
+        setSomenteConsulta(false);
+        erro('Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.');
+      }
     }
   };
 
@@ -723,7 +730,7 @@ const FrequenciaPlanoAula = () => {
     async data => {
       setDataSelecionada(data);
       setExibirCardFrequencia(false);
-
+      setTemAvaliacao(undefined);
       setAula();
       resetarPlanoAula();
       if (planoAulaExpandido) onClickPlanoAula();
@@ -993,7 +1000,7 @@ const FrequenciaPlanoAula = () => {
                       setModoEdicao={e => setModoEdicaoPlanoAula(e)}
                       setTemObjetivos={e => setTemObjetivos(e)}
                       permissoesTela={permissoesTela}
-                      somenteConsulta={somenteConsulta}
+                      somenteConsulta={somenteConsulta || !temPeriodoAberto}
                       expandido={planoAulaExpandido}
                       temObjetivos={temObjetivos}
                       temAvaliacao={temAvaliacao}

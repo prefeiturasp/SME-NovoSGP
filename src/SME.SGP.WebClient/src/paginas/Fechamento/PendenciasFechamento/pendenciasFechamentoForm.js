@@ -129,8 +129,8 @@ const PendenciasFechamentoForm = ({ match }) => {
           setdescricao(descricao);
           setDetalhamento(detalhamento);          
 
-          const { criadoPor, criadoRf, criadoEm, alteradoPor, alteradoRf, alteradoEm } = retorno.data;
-          setAuditoria({ criadoPor, criadoRf, criadoEm, alteradoPor, alteradoRf, alteradoEm });
+          const { criadoPor, criadoRF, criadoEm, alteradoPor, alteradoRF, alteradoEm } = retorno.data;
+          setAuditoria({ criadoPor, criadoRf: criadoRF, criadoEm, alteradoPor, alteradoRf: alteradoRF, alteradoEm });
           setExibirAuditoria(true);
         } else {
           resetarTela();
@@ -281,8 +281,10 @@ const PendenciasFechamentoForm = ({ match }) => {
           <Auditoria
             criadoEm={auditoria.criadoEm}
             criadoPor={auditoria.criadoPor}
+            criadoRf={auditoria.criadoRf}
             alteradoPor={auditoria.alteradoPor}
             alteradoEm={auditoria.alteradoEm}
+            alteradoRf={auditoria.alteradoRf}
           />
         ) : (
           ''

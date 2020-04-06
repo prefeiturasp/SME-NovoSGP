@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -19,6 +20,8 @@ namespace SME.SGP.Aplicacao
 
         public void Salvar(PeriodoEscolarListaDto periodosDto)
         {
+            var periodosOrdenados = periodosDto.Periodos.OrderBy(p => p.Bimestre);
+            periodosDto.Periodos = periodosOrdenados.ToList();
             if (periodosDto.TipoCalendario == 0) throw new NegocioException("É necessario informar o tipo de calendario");
 
             var listaPeriodoEscolar = MapearListaPeriodos(periodosDto);

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import Card from '../../componentes/card';
 import Grid from '../../componentes/grid';
 import CardLink from '../../componentes/cardlink';

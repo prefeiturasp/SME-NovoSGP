@@ -103,7 +103,7 @@ const CalendarioProfessor = () => {
     async tiposLista => {
       if (Object.entries(turmaSelecionadaStore).length) {
         const modalidadeSelecionada =
-          turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
+          turmaSelecionadaStore.modalidade == ModalidadeDTO.EJA
             ? 2
             : 1;
 
@@ -191,21 +191,6 @@ const CalendarioProfessor = () => {
     undefined
   );
 
-  const consultarDiasLetivos = () => {
-    api
-      .post('v1/calendarios/dias-letivos', {
-        tipoCalendarioId: tipoCalendarioSelecionado,
-        dreId: dreSelecionada,
-        ueId: unidadeEscolarSelecionada,
-      })
-      .then(resposta => {
-        if (resposta.data) setDiasLetivos(resposta.data);
-      })
-      .catch(() => {
-        setDiasLetivos();
-      });
-  };
-
   const aoSelecionarTipoCalendario = tipo => {
     store.dispatch(zeraCalendario());
     setTipoCalendarioSelecionado(tipo);
@@ -255,7 +240,6 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     if (tipoCalendarioSelecionado) {
-      consultarDiasLetivos();
       obterDres();
     } else {
       setDiasLetivos();
@@ -342,7 +326,6 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     if (dreSelecionada) {
-      consultarDiasLetivos();
       obterUnidadesEscolares();
     } else {
       setUnidadeEscolarSelecionada();
@@ -363,11 +346,7 @@ const CalendarioProfessor = () => {
   const [turmaDesabilitada, setTurmaDesabilitada] = useState(false);
 
   useEffect(() => {
-    if (unidadeEscolarSelecionada) {
-      consultarDiasLetivos();
-    } else {
-      setOpcaoTurma();
-    }
+    if (!unidadeEscolarSelecionada) setOpcaoTurma();
   }, [unidadeEscolarSelecionada]);
 
   useEffect(() => {
@@ -450,16 +429,16 @@ const CalendarioProfessor = () => {
       {turmaSelecionadaStore && turmaSelecionadaStore.turma ? (
         ''
       ) : (
-        <Alert
-          alerta={{
-            tipo: 'warning',
-            id: 'plano-ciclo-selecione-turma',
-            mensagem: 'Você precisa escolher uma turma.',
-            estiloTitulo: { fontSize: '18px' },
-          }}
-          className="mb-0"
-        />
-      )}
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'plano-ciclo-selecione-turma',
+              mensagem: 'Você precisa escolher uma turma.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-0"
+          />
+        )}
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">Calendário do professor</Titulo>
       </Grid>
@@ -497,8 +476,8 @@ const CalendarioProfessor = () => {
                   </Div>
                 </Div>
               ) : (
-                <Div />
-              )}
+                  <Div />
+                )}
               {diasLetivos && diasLetivos.estaAbaixoPermitido && (
                 <Div
                   className="clearfix font-weight-bold pt-2"
@@ -534,7 +513,7 @@ const CalendarioProfessor = () => {
                         eventoSme
                           ? 'Exibindo eventos da SME'
                           : 'Não exibindo eventos da SME'
-                      }`}
+                        }`}
                     >
                       <Switch
                         onChange={aoTrocarEventoSme}

@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
         {
             var modalidadeTipoCalendario = ObterModalidadeCalendario(filtro.Modalidade);
 
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(filtro.AnoLetivo, modalidadeTipoCalendario);
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(filtro.AnoLetivo, modalidadeTipoCalendario, filtro.Semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
             List<AtividadeAvaliativa> atividadesAvaliativaEBimestres = new List<AtividadeAvaliativa>();
             // Carrega disciplinas filhas da disciplina passada como parametro
             var disciplinasProfessor = await consultasDisciplina.ObterDisciplinasPorProfessorETurma(filtro.TurmaCodigo, true);
-            var disciplinasFilha = disciplinasProfessor.Where(d => d.CdComponenteCurricularPai == int.Parse(filtro.DisciplinaCodigo));
+            var disciplinasFilha = disciplinasProfessor.Where(d => d.CdComponenteCurricularPai == long.Parse(filtro.DisciplinaCodigo));
 
             if (disciplinasFilha.Any())
             {
@@ -171,7 +171,9 @@ namespace SME.SGP.Aplicacao
                     professorRfTitularTurmaDisciplina = await ObterRfProfessorTitularDisciplina(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre);
                     var fechamentoTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(filtro.TurmaCodigo, long.Parse(filtro.DisciplinaCodigo), valorBimestreAtual);
 
-                    foreach (var aluno in alunos.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
+                    var alunosForeach = alunos.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido());
+
+                    foreach (var aluno in alunosForeach)
                     {
                         var notaConceitoAluno = new NotasConceitosAlunoRetornoDto() { Id = aluno.CodigoAluno, Nome = aluno.NomeValido(), NumeroChamada = aluno.NumeroAlunoChamada, PodeEditar = true };
                         var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoRetornoDto>();
@@ -243,7 +245,10 @@ namespace SME.SGP.Aplicacao
                                     };
                                     var notaRegencia = notasConceitoBimestre?.FirstOrDefault(c => c.DisciplinaId == disciplinaRegencia.CodigoComponenteCurricular);
                                     if (notaRegencia != null)
-                                        nota.NotaConceito = (notaRegencia.ConceitoId > 0 ? notaRegencia.ConceitoId : notaRegencia.Nota ).ToString();
+                                    {
+                                        nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota ?? 0);
+                                        nota.ehConceito = notaRegencia.ConceitoId.HasValue;
+                                    }
 
                                     notaConceitoAluno.NotasBimestre.Add(nota);
                                 }
@@ -254,9 +259,10 @@ namespace SME.SGP.Aplicacao
                                     {
                                         DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                         Disciplina = disciplinaEOL.Nome,
-                                        NotaConceito = notaConceitoBimestre.ConceitoId > 0 ?
-                                            notaConceitoBimestre.ConceitoId.ToString() :
-                                            notaConceitoBimestre.Nota.ToString()
+                                        NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ?
+                                            notaConceitoBimestre.ConceitoId.Value :
+                                            notaConceitoBimestre.Nota ?? 0,
+                                        ehConceito = notaConceitoBimestre.ConceitoId.HasValue
                                     });
                         }
                         else

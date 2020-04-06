@@ -4,16 +4,23 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultasPeriodoEscolar : IConsultasPeriodoEscolar
     {
         private readonly IRepositorioPeriodoEscolar repositorio;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
+        private readonly IConsultasTipoCalendario consultasTipoCalendario;
 
-        public ConsultasPeriodoEscolar(IRepositorioPeriodoEscolar repositorio)
+        public ConsultasPeriodoEscolar(IRepositorioPeriodoEscolar repositorio,
+                                    IConsultasPeriodoFechamento consultasPeriodoFechamento,
+                                    IConsultasTipoCalendario consultasTipoCalendario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
+            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
         }
 
         public PeriodoEscolarListaDto ObterPorTipoCalendario(long tipoCalendarioId)
@@ -82,6 +89,34 @@ namespace SME.SGP.Aplicacao.Consultas
         }
 
         public int ObterBimestre(DateTime data, Modalidade modalidade)
-            => ((data.Month + 2) / 3) - (modalidade == Modalidade.EJA && data.Month >= 6 ? 2 : 0);
+        {
+            var modalidadeCalendario = modalidade == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
+
+            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(data.Year, modalidadeCalendario);
+            if (tipoCalendario == null)
+                throw new NegocioException("Não encontrado calendario escolar cadastrado");
+
+            var periodosEscolares = repositorio.ObterPorTipoCalendario(tipoCalendario.Id);
+            if (periodosEscolares == null || !periodosEscolares.Any())
+                throw new NegocioException("Não encontrado periodo escolar cadastrado");
+
+            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio <= data && x.PeriodoFim >= data);
+
+            return periodoEscolar?.Bimestre ?? 0;
+        }
+
+        public async Task<IEnumerable<PeriodoEscolarDto>> ObterPeriodosEmAberto(long ueId, Modalidade modalidadeCodigo, int anoLetivo)
+        {
+            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, 
+                                                                modalidadeCodigo == Modalidade.EJA ? 
+                                                                    ModalidadeTipoCalendario.EJA : 
+                                                                    ModalidadeTipoCalendario.FundamentalMedio);
+
+            var periodoAtual = ObterPeriodoEscolarPorData(tipoCalendario.Id, DateTime.Now.Date);
+            var periodos = new List<PeriodoEscolarDto>() { periodoAtual };
+            periodos.AddRange(await consultasPeriodoFechamento.ObterPeriodosEmAberto(ueId));
+
+            return periodos;
+        }
     }
 }

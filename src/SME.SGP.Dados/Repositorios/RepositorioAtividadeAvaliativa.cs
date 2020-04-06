@@ -108,7 +108,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalhoSimples(query);
             query.AppendLine(fromCompleto);
-            MontaWhere(query, dataAvaliacao, null, ueId, null, null, turmaId);
+            MontaWhere(query, dataAvaliacao, ueId: ueId, turmaId: turmaId, disciplinaId: disciplinaId);
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<AtividadeAvaliativa>(query.ToString(), new
             {
@@ -121,20 +121,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasSemNotaParaNenhumAluno(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
-            var sql = @"select
-	                        *
-                        from
-	                        atividade_avaliativa av
-                        where
-	                        turma_id = @turmaCodigo
-	                        and not exists (
-	                        select
-		                        1
-	                        from
-		                        notas_conceito
-	                        where
-		                        atividade_avaliativa = av.id
-		                        and disciplina_id = @disciplinaId)";
+            var sql = @"select av.*
+                        from atividade_avaliativa av
+                       inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = av.id
+                        left join notas_conceito n on n.atividade_avaliativa = av.id
+                       where av.turma_id = @turmaCodigo
+	                     and aad.disciplina_id = @disciplinaId
+                         and n.id is null";
 
             return database.Query<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, disciplinaId, inicioPeriodo, fimPeriodo });
         }
@@ -390,6 +383,11 @@ namespace SME.SGP.Dados.Repositorios
             if (disciplinasId != null && disciplinasId.Length > 0)
             {
                 query.AppendLine("and aad.disciplina_id =  ANY(@disciplinasId)");
+                query.AppendLine("and aad.excluido =  false");
+            }
+            if (!String.IsNullOrEmpty(disciplinaId))
+            {
+                query.AppendLine("and aad.disciplina_id =  @disciplinaId");
                 query.AppendLine("and aad.excluido =  false");
             }
             if (ehRegencia.HasValue)

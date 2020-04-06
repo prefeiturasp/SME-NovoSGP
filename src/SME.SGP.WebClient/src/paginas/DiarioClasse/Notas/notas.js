@@ -28,6 +28,7 @@ import BotoesAcoessNotasConceitos from './botoesAcoes';
 import { Container, ContainerAuditoria } from './notas.css';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
+import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
 
 const { TabPane } = Tabs;
 
@@ -82,14 +83,50 @@ const Notas = ({ match }) => {
   const [clicouNoBotaoSalvar, setClicouNoBotaoSalvar] = useState(false);
   const [clicouNoBotaoVoltar, setClicouNoBotaoVoltar] = useState(false);
 
-  useEffect(() => {
+  const [podeLancaNota, setPodeLancaNota] = useState(true);
+
+  const [showMsgPeriodoFechamento, setShowMsgPeriodoFechamento] = useState(
+    false
+  );
+
+  const validaSeDesabilitaCampos = async bimestre => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
     const desabilitar =
       somenteConsulta ||
       !permissoesTela.podeAlterar ||
       !permissoesTela.podeIncluir;
-    setDesabilitarCampos(desabilitar);
-  }, [permissoesTela]);
+
+    let dentroDoPeriodo = true;
+    if (!desabilitar && bimestre && usuario.turmaSelecionada.turma) {
+      const retorno = await ServicoPeriodoFechamento.verificarSePodeAlterarNoPeriodo(
+        usuario.turmaSelecionada.turma,
+        bimestre
+      ).catch(e => {
+        erros(e);
+      });
+      if (retorno && retorno.status == 200) {
+        dentroDoPeriodo = retorno.data;
+      }
+    }
+
+    if (desabilitar) {
+      setDesabilitarCampos(desabilitar);
+      setShowMsgPeriodoFechamento(false);
+      return;
+    }
+
+    if (!dentroDoPeriodo) {
+      setDesabilitarCampos(true);
+      setShowMsgPeriodoFechamento(true);
+    } else {
+      setDesabilitarCampos(desabilitar);
+      setShowMsgPeriodoFechamento(false);
+    }
+  };
+
+  useEffect(() => {
+    validaSeDesabilitaCampos(bimestreCorrente);
+  }, [permissoesTela, usuario.turmaSelecionada.turma]);
 
   const resetarTela = useCallback(() => {
     setDisciplinaSelecionada(undefined);
@@ -131,10 +168,12 @@ const Notas = ({ match }) => {
         modalidade: usuario.turmaSelecionada.modalidade,
         turmaCodigo: usuario.turmaSelecionada.turma,
         turmaHistorico: usuario.turmaSelecionada.consideraHistorico,
+        semestre: usuario.turmaSelecionada.periodo,
       };
       const dados = await api
         .get('v1/avaliacoes/notas/', { params })
         .catch(e => erros(e));
+
       const resultado = dados ? dados.data : [];
       if (
         resultado.percentualAlunosInsuficientes &&
@@ -157,6 +196,7 @@ const Notas = ({ match }) => {
       if (disciplinaId > 0) {
         setCarregandoListaBimestres(true);
         const dados = await obterBimestres(disciplinaId, numeroBimestre);
+        validaPeriodoFechamento(dados);
         if (dados && dados.bimestres && dados.bimestres.length) {
           dados.bimestres.forEach(async item => {
             item.alunos.forEach(aluno => {
@@ -245,10 +285,13 @@ const Notas = ({ match }) => {
     setListaDisciplinas(disciplinas.data);
     if (disciplinas.data && disciplinas.data.length === 1) {
       const disciplina = disciplinas.data[0];
+      setPodeLancaNota(disciplina.lancaNota);
       setEhRegencia(disciplina.regencia);
       setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
-      obterDadosBimestres(disciplina.codigoComponenteCurricular);
+      if (disciplina.lancaNota) {
+        obterDadosBimestres(disciplina.codigoComponenteCurricular);
+      }
     }
     if (
       match &&
@@ -411,7 +454,7 @@ const Notas = ({ match }) => {
         if (notaFinal.modoEdicao) {
           notaConceitoAlunos.push({
             codigoAluno: aluno.id,
-            disciplinaId: notaFinal.disciplinaId,
+            disciplinaId: notaFinal.disciplinaId || disciplinaSelecionada,
             nota:
               notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : null,
             conceitoId:
@@ -551,6 +594,17 @@ const Notas = ({ match }) => {
   };
 
   const onChangeDisciplinas = async disciplinaId => {
+    let lancaNota = true;
+    if (disciplinaId) {
+      const componenteSelecionado = listaDisciplinas.find(
+        item => item.codigoComponenteCurricular == disciplinaId
+      );
+      if (componenteSelecionado) {
+        lancaNota = componenteSelecionado.lancaNota;
+      }
+    }
+    setPodeLancaNota(lancaNota);
+
     validaSeEhRegencia(disciplinaId);
 
     dispatch(setModoEdicaoGeral(false));
@@ -572,7 +626,9 @@ const Notas = ({ match }) => {
       }
     } else {
       resetarTela();
-      obterDadosBimestres(disciplinaId, 0);
+      if (lancaNota) {
+        obterDadosBimestres(disciplinaId, 0);
+      }
       setDisciplinaSelecionada(disciplinaId);
     }
   };
@@ -596,7 +652,7 @@ const Notas = ({ match }) => {
     return ServicoNotas.temQuantidadeMinimaAprovada(
       getDadosBimestreAtual(),
       percentualMinimoAprovados,
-      notaTipo,
+      notaTipo
     );
   };
 
@@ -671,6 +727,19 @@ const Notas = ({ match }) => {
     }
   };
 
+  const validaPeriodoFechamento = dados => {
+    const temDados =
+      dados.bimestres &&
+      dados.bimestres.find(
+        bimestre => bimestre.alunos && bimestre.alunos.length
+      );
+    if (temDados) {
+      validaSeDesabilitaCampos(dados.bimestreAtual);
+    } else {
+      setShowMsgPeriodoFechamento(false);
+    }
+  };
+
   const confirmarTrocaTab = async numeroBimestre => {
     if (disciplinaSelecionada) {
       resetarBimestres();
@@ -689,6 +758,7 @@ const Notas = ({ match }) => {
 
       setCarregandoListaBimestres(true);
       const dados = await obterBimestres(disciplinaSelecionada, numeroBimestre);
+      validaPeriodoFechamento(dados);
       if (dados && dados.bimestres && dados.bimestres.length) {
         const bimestrePesquisado = dados.bimestres.find(
           item => Number(item.numero) === Number(numeroBimestre)
@@ -868,7 +938,9 @@ const Notas = ({ match }) => {
                   alerta={{
                     tipo: 'warning',
                     id: 'justificativa-porcentagem',
-                    mensagem: `A maioria dos estudantes está com ${notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'} abaixo do
+                    mensagem: `A maioria dos estudantes está com ${
+                      notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'
+                      } abaixo do
                                mínimo considerado para aprovação, por isso é necessário que você insira uma justificativa.`,
                     estiloTitulo: { fontSize: '18px' },
                   }}
@@ -907,7 +979,6 @@ const Notas = ({ match }) => {
                   className="mr-3 mt-2 padding-btn-confirmacao"
                   onClick={() => validaAntesDoSubmit(form)}
                 />
-
               </div>
             </Form>
           )}
@@ -922,6 +993,41 @@ const Notas = ({ match }) => {
                   tipo: 'warning',
                   id: 'AlertaPrincipal',
                   mensagem: 'Você precisa escolher uma turma.',
+                  estiloTitulo: { fontSize: '18px' },
+                }}
+              />
+            </Container>
+          </Grid>
+        </Row>
+      ) : null}
+      {!podeLancaNota ? (
+        <Row className="mb-0 pb-0">
+          <Grid cols={12} className="mb-0 pb-0">
+            <Container>
+              <Alert
+                alerta={{
+                  tipo: 'warning',
+                  id: 'pode-lanca-nota',
+                  mensagem:
+                    'Este componente curricular não permite o lançamento de nota',
+                  estiloTitulo: { fontSize: '18px' },
+                }}
+                className="mb-2"
+              />
+            </Container>
+          </Grid>
+        </Row>
+      ) : null}
+      {showMsgPeriodoFechamento ? (
+        <Row className="mb-0 pb-0">
+          <Grid cols={12} className="mb-0 pb-0">
+            <Container>
+              <Alert
+                alerta={{
+                  tipo: 'warning',
+                  id: 'alerta-perido-fechamento',
+                  mensagem:
+                    'Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.',
                   estiloTitulo: { fontSize: '18px' },
                 }}
               />
@@ -962,7 +1068,7 @@ const Notas = ({ match }) => {
               </div>
             </div>
 
-            {disciplinaSelecionada ? (
+            {disciplinaSelecionada && podeLancaNota ? (
               <>
                 <div className="row">
                   <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
@@ -983,6 +1089,7 @@ const Notas = ({ match }) => {
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
                             ehRegencia={ehRegencia}
+                            disciplinaSelecionada={disciplinaSelecionada}
                           />
                         </TabPane>
                       ) : (
@@ -1069,7 +1176,7 @@ const Notas = ({ match }) => {
           </div>
         </Card>
       </Loader>
-    </Container>
+    </Container >
   );
 };
 

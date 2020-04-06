@@ -10,6 +10,12 @@ namespace SME.SGP.Dominio
         public DateTime DataAtualizacao { get; set; }
         public long Id { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
+        public ModalidadeTipoCalendario ModalidadeTipoCalendario 
+        { 
+            get => ModalidadeCodigo == Modalidade.EJA ? 
+                ModalidadeTipoCalendario.EJA : 
+                ModalidadeTipoCalendario.FundamentalMedio; 
+        }
         public string Nome { get; set; }
         public int QuantidadeDuracaoAula { get; set; }
         public int Semestre { get; set; }

@@ -1,9 +1,11 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -95,5 +97,13 @@ namespace SME.SGP.Aplicacao
             return from t in retorno
                    select EntidadeParaDto(t);
         }
+
+        public async Task<TipoCalendario> ObterPorTurma(Turma turma, DateTime dataReferencia)
+            => repositorio.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo
+                    , turma.ModalidadeTipoCalendario
+                    , dataReferencia.Semestre());
+
+        public Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0)
+            => repositorio.PeriodoEmAberto(tipoCalendario.Id, dataReferencia, bimestre);
     }
 }
