@@ -53,12 +53,12 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaDisciplinaId)
         {
-            var query = @"select n.disciplina_id as DisciplinaId, n.nota as Nota, n.conceito_id as ConceitoId, codigo_aluno as CodigoAluno, n.sintese_id as SinteseId
+            var query = @"select n.disciplina_id as DisciplinaId, n.nota as Nota, n.conceito_id as ConceitoId, aluno_codigo as CodigoAluno, n.sintese_id as SinteseId
                          from fechamento_nota n
                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
                         where not n.excluido
                             and fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
-                            and fa.codigo_aluno = @codigoAluno ";
+                            and fa.aluno_codigo = @codigoAluno ";
 
             return await database.Conexao.QueryAsync<FechamentoNotaDto>(query, new { codigoAluno, fechamentoTurmaDisciplinaId });
         }
@@ -67,7 +67,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select ftd.*, ft.* 
                             from fechamento_turma_disciplina ftd
-                          inner join fechamento_turma ft on ft.id = ftd.fechamento_id
+                          inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
                           where ftd.id = @id";
 
             return database.Conexao.Query<FechamentoTurmaDisciplina, FechamentoTurma, FechamentoTurmaDisciplina>(query
