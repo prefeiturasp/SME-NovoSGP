@@ -142,18 +142,21 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<bool> ExistePeriodoPorUeData(long ueId, DateTime dataReferencia)
+        public async Task<bool> ExistePeriodoPorUeDataBimestre(long ueId, DateTime dataReferencia, int bimestre)
         {
             string query = @"select  1 
                            from periodo_fechamento p
                            left join periodo_fechamento_bimestre pfb ON pfb.periodo_fechamento_id = p.id
+                           left join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
                            where p.ue_id = @ueId
-                           and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento";
+                           and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento
+                           and pe.bimestre = @bimestre";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new
             {
                 ueId,
-                dataReferencia
+                dataReferencia,
+                bimestre
             });
         }
     }
