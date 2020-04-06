@@ -69,6 +69,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosPendenciaFechamento, ComandosPendenciaFechamento>();
             services.TryAddScoped<IComandosFechamentoAluno, ComandosFechamentoAluno>();
             services.TryAddScoped<IComandosFechamentoTurma, ComandosFechamentoTurma>();
+            services.TryAddScoped<IComandosConselhoClasse, ComandosConselhoClasse>();
+            services.TryAddScoped<IComandosConselhoClasseAluno, ComandosConselhoClasseAluno>();
+            services.TryAddScoped<IComandosConselhoClasseNota, ComandosConselhoClasseNota>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -124,6 +127,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasPendenciaFechamento, ConsultasPendenciaFechamento>();
             services.TryAddScoped<IConsultasFechamentoAluno, ConsultasFechamentoAluno >();
             services.TryAddScoped<IConsultasFechamentoTurma, ConsultasFechamentoTurma>();
+            services.TryAddScoped<IConsultasConselhoClasse, ConsultasConselhoClasse>();
+            services.TryAddScoped<IConsultasConselhoClasseAluno, ConsultasConselhoClasseAluno>();
+            services.TryAddScoped<IConsultasConselhoClasseNota, ConsultasConselhoClasseNota>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -213,6 +219,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioSintese, RepositorioSintese>();
             services.TryAddScoped<IRepositorioFechamentoAluno, RepositorioFechamentoAluno>();
             services.TryAddScoped<IRepositorioFechamentoTurma, RepositorioFechamentoTurma>();
+            services.TryAddScoped<IRepositorioConselhoClasse, RepositorioConselhoClasse>();
+            services.TryAddScoped<IRepositorioConselhoClasseAluno, RepositorioConselhoClasseAluno>();
+            services.TryAddScoped<IRepositorioConselhoClasseNota, RepositorioConselhoClasseNota>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
