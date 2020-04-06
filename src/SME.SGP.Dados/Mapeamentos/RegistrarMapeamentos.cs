@@ -90,6 +90,9 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new SinteseValorMap());
                config.AddMap(new FechamentoAlunoMap());
                config.AddMap(new FechamentoTurmaMap());
+               config.AddMap(new ConselhoClasseMap());
+               config.AddMap(new ConselhoClasseAlunoMap());
+               config.AddMap(new ConselhoClasseNotaMap());
                config.ForDommel();
            });
         }
