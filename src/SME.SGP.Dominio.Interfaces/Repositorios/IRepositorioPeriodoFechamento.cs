@@ -13,6 +13,8 @@ namespace SME.SGP.Dominio.Interfaces
         void SalvarBimestres(IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, long fechamentoId);
 
         bool ValidaRegistrosForaDoPeriodo(DateTime inicioDoFechamento, DateTime finalDoFechamento, long fechamentoId, long periodoEscolarId, long? dreId);
+
+        Task<bool> ExistePeriodoPorUeData(long ueId, DateTime dataReferencia);
         Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(long ueId, long dreId, int bimestre);
     }
 }
