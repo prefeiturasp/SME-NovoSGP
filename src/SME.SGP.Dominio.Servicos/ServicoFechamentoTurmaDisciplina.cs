@@ -104,6 +104,8 @@ namespace SME.SGP.Dominio.Servicos
             if (periodoFechamento == null || periodoFechamentoBimestre == null)
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
 
+            await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turma, periodoFechamentoBimestre.PeriodoEscolar);
+
             // Valida Permissão do Professor na Turma/Disciplina
             VerificaSeProfessorPodePersistirTurma(servicoUsuario.ObterRf(), entidadeDto.TurmaId, periodoFechamentoBimestre.PeriodoEscolar.PeriodoFim);
 
@@ -121,7 +123,7 @@ namespace SME.SGP.Dominio.Servicos
             unitOfWork.IniciarTransacao();
             try
             {
-                var fechamentoTurmaId = await repositorioFechamentoTurma.SalvarAsync(new FechamentoTurma(fechamentoTurmaDisciplina.FechamentoTurmaId, turma.Id, periodoFechamentoBimestre.PeriodoEscolar.Id));
+                var fechamentoTurmaId = await repositorioFechamentoTurma.SalvarAsync(fechamentoTurmaDisciplina.FechamentoTurma);
                 fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurmaId;
 
                 await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
@@ -148,6 +150,30 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private async Task CarregaFechamentoTurma(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, Turma turma, PeriodoEscolar periodoEscolar)
+        {
+            if (fechamentoTurmaDisciplina.Id > 0)
+            {
+                // Alterando registro de fechamento
+                fechamentoTurmaDisciplina.FechamentoTurma.Turma = turma;
+                fechamentoTurmaDisciplina.FechamentoTurma.TurmaId = turma.Id;
+                fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar = periodoEscolar;
+                fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId = periodoEscolar.Id;
+            }
+            else
+            {
+                // Incluindo registro de fechamento turma disciplina
+
+                // Busca registro existente de fechamento da turma
+                var fechamentoTurma = await repositorioFechamentoTurma.ObterPorTurmaPeriodo(turma.Id, periodoEscolar.Id);
+                if (fechamentoTurma == null)
+                    fechamentoTurma = new FechamentoTurma(turma, periodoEscolar);
+
+                fechamentoTurmaDisciplina.FechamentoTurma = fechamentoTurma;
+            }
+                    
         }
 
         private async Task<IEnumerable<FechamentoAluno>> AtualizaSinteseAlunos(long fechamentoTurmaDisciplinaId, DateTime dataReferencia, DisciplinaDto disciplina)
@@ -301,7 +327,7 @@ namespace SME.SGP.Dominio.Servicos
                 foreach (var fechamentoNotaDto in agrupamentoNotasAluno)
                 {
                     // busca nota do aluno
-                    var notaFechamento = fechamentoAluno.FechamentoNotas.FirstOrDefault(x => x.FechamentoAluno.AlunoCodigo == fechamentoNotaDto.CodigoAluno && x.DisciplinaId == fechamentoNotaDto.DisciplinaId);
+                    var notaFechamento = fechamentoAluno.FechamentoNotas.FirstOrDefault(x => x.DisciplinaId == fechamentoNotaDto.DisciplinaId);
                     if (notaFechamento != null)
                     {
                         notaFechamento.Nota = fechamentoNotaDto.Nota;
