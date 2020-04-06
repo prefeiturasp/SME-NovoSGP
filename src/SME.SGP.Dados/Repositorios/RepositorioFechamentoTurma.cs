@@ -15,15 +15,16 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<FechamentoTurma> ObterPorTurmaPeriodo(long turmaId, long periodoId)
+        public async Task<FechamentoTurma> ObterPorTurmaPeriodo(long turmaId, long periodoId = 0)
         {
-            var query = @"select * 
+            var query = new StringBuilder(@"select * 
                             from fechamento_turma 
                            where not excluido 
-                            and turma_id = @turmaId 
-                            and periodo_escolar_id = @periodoId";
+                            and turma_id = @turmaId ");
+            if (periodoId > 0)
+                query.AppendLine(" and periodo_escolar_id = @periodoId");
 
-            return await database.Conexao.QueryFirstAsync<FechamentoTurma>(query, new { turmaId, periodoId });
+            return await database.Conexao.QueryFirstAsync<FechamentoTurma>(query.ToString(), new { turmaId, periodoId });
         }
     }
 }

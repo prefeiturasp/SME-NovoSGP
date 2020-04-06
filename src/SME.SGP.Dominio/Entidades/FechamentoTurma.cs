@@ -7,11 +7,12 @@ namespace SME.SGP.Dominio
     public class FechamentoTurma: EntidadeBase
     {
         protected FechamentoTurma() { }
-        public FechamentoTurma(long id, long turmaId, long periodoEscolarId)
+        public FechamentoTurma(long id, long turmaId, long periodoEscolarId = 0)
         {
             Id = id;
             TurmaId = turmaId;
-            PeriodoEscolarId = periodoEscolarId;
+            if (periodoEscolarId > 0)
+                PeriodoEscolarId = periodoEscolarId;
         }
         public FechamentoTurma(Turma turma, PeriodoEscolar periodoEscolar)
         {
