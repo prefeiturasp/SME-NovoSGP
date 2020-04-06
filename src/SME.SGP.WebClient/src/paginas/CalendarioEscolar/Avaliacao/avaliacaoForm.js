@@ -305,7 +305,7 @@ const AvaliacaoForm = ({ match }) => {
       }
     } catch (error) {
       setCarregandoTela(false);
-      erro(`Não foi possível obter as disciplinas!`);
+      erro(`Não foi possível obter o componente curricular do EOL.`);
     }
   };
 
@@ -325,7 +325,7 @@ const AvaliacaoForm = ({ match }) => {
       }
     } catch (error) {
       setCarregandoTela(false);
-      erro(`Não foi possivel obter as disciplinas de regência!`);
+      erro(`Não foi possivel obter os componentes de regência.`);
     }
   };
 
