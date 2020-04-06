@@ -14,6 +14,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool ValidaRegistrosForaDoPeriodo(DateTime inicioDoFechamento, DateTime finalDoFechamento, long fechamentoId, long periodoEscolarId, long? dreId);
 
+        Task<bool> ExistePeriodoPorUeDataBimestre(long ueId, DateTime dataReferencia, int bimestre);
         Task<bool> ExistePeriodoPorUeData(long ueId, DateTime dataReferencia);
         Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(long ueId, long dreId, int bimestre);
     }
