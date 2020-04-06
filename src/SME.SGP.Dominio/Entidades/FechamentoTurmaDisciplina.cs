@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -22,6 +23,15 @@ namespace SME.SGP.Dominio
         public void AtualizarSituacao(SituacaoFechamento situacao)
         {
             Situacao = situacao;
+        }
+
+        public void AdicionarPeriodoEscolar(PeriodoEscolar periodoEscolar)
+        {
+            if (FechamentoTurma == null)
+                throw new NegocioException("Fechamento Turma não carregado para atribuição de período escolar");
+
+            if (periodoEscolar != null)
+                FechamentoTurma.AdicionarPeriodoEscolar(periodoEscolar);
         }
     }
 }
