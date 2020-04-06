@@ -1,15 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import shortid from 'shortid';
 
 import { Cabecalho } from '~/componentes-sgp';
 import { Loader, Card, ButtonGroup, ListaPaginada } from '~/componentes';
+import Filtro from '../Filtro';
+
 import history from '~/servicos/history';
 import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const ComunicadosLista = () => {
   const Badge = styled.button``;
-
   const [loaderSecao] = useState(false);
+
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const [itensSelecionados, setItensSelecionados] = useState([]);
+
+  useCallback(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
+
+  const onSelecionarItems = items => {
+    setItensSelecionados(items);
+  };
+
+  const onClickExcluir = async () => {};
 
   const onClickVoltar = () => {
     history.push('/');
@@ -19,29 +37,14 @@ const ComunicadosLista = () => {
     history.push(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo`);
   };
 
-  const onChangeFiltro = () => {};
-
   const onClickEditar = mensagem => {
     history.push(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo/${mensagem.Id}`);
   };
 
-  const renderizarGrupos = grupos => {
-    const objeto = { children: '' };
+  const [filtro, setFiltro] = useState({});
 
-    if (grupos && grupos.length) {
-      grupos.forEach(grupo => {
-        objeto.children = (
-          <Badge
-            alt={grupo.Nome_Grupo}
-            className="badge badge-pill border text-dark font-weight-light px-2 py-1 mr-2"
-          >
-            {grupo.Nome_Grupo}
-          </Badge>
-        );
-      });
-    }
-
-    return objeto;
+  const onChangeFiltro = valoresFiltro => {
+    setFiltro({ ...valoresFiltro });
   };
 
   const colunas = [
@@ -49,18 +52,15 @@ const ComunicadosLista = () => {
       title: 'Grupo',
       dataIndex: 'Mensagem_Grupo',
       render: grupos => {
-        if (grupos && grupos.length) {
-          grupos.forEach(grupo => {
-            return (
-              <Badge
-                alt={grupo.Nome_Grupo}
-                className="badge badge-pill border text-dark font-weight-light px-2 py-1 mr-2"
-              >
-                {grupo.Nome_Grupo}
-              </Badge>
-            );
-          });
-        }
+        return grupos.map(grupo => (
+          <Badge
+            key={shortid.generate()}
+            alt={grupo.Nome_Grupo}
+            className="badge badge-pill border text-dark font-weight-light px-2 py-1 mr-2"
+          >
+            {grupo.Nome_Grupo}
+          </Badge>
+        ));
       },
     },
     {
@@ -70,10 +70,16 @@ const ComunicadosLista = () => {
     {
       title: 'Data de envio',
       dataIndex: 'Data_Envio',
+      render: data => {
+        return window.moment(data).format('DD/MM/YYYY');
+      },
     },
     {
       title: 'Data de expiração',
       dataIndex: 'Data_Expiracao',
+      render: data => {
+        return window.moment(data).format('DD/MM/YYYY');
+      },
     },
   ];
 
@@ -83,33 +89,29 @@ const ComunicadosLista = () => {
       <Loader loading={loaderSecao}>
         <Card mx="mx-0">
           <ButtonGroup
-            // somenteConsulta={somenteConsulta}
-            // permissoesTela={permissoesTela[RotasDto.REGISTRO_POA]}
-            // temItemSelecionado={
-            //   itensSelecionados && itensSelecionados.length >= 1
-            // }
-            // onClickExcluir={onClickExcluir}
+            somenteConsulta={somenteConsulta}
+            permissoesTela={permissoesTela[RotasDto.ACOMPANHAMENTO_COMUNICADOS]}
+            temItemSelecionado={
+              itensSelecionados && itensSelecionados.length >= 1
+            }
+            onClickExcluir={onClickExcluir}
             onClickVoltar={onClickVoltar}
             onClickBotaoPrincipal={onClickBotaoPrincipal}
             labelBotaoPrincipal="Novo"
-            // desabilitarBotaoPrincipal={
-            //   !!filtro.dreId === false && !!filtro.ueId === false
-            // }
           />
-          {/* <Filtro onFiltrar={onChangeFiltro} /> */}
+          <Filtro onFiltrar={onChangeFiltro} />
           <div className="col-md-12 pt-2 py-0 px-0">
             <ListaPaginada
-              id="lista-atribuicoes-cj"
+              id="lista-comunicados"
               url="https://demo4860311.mockable.io/mensagens"
               idLinha="Id"
               colunaChave="Id"
               colunas={colunas}
               onClick={onClickEditar}
-              // multiSelecao
-              // filtro={filtro}
-              // selecionarItems={onSelecionarItems}
+              multiSelecao
+              filtro={filtro}
+              selecionarItems={onSelecionarItems}
               filtroEhValido
-              // onErro={err => erro(JSON.stringify(err))}
             />
           </div>
         </Card>
