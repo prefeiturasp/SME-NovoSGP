@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿
+using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
@@ -15,6 +16,7 @@ namespace SME.SGP.Dominio
     {
         private readonly IConfiguration configuration;
         private readonly IConsultasAbrangencia consultasAbrangencia;
+
         private readonly string hostAplicacao;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
@@ -27,6 +29,7 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -70,6 +73,7 @@ namespace SME.SGP.Dominio
             IRepositorioConceito repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
             IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
+            IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
             IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IRepositorioAula repositorioAula, IRepositorioTurma repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
             IServicoUsuario servicoUsuario, IConfiguration configuration)
@@ -87,6 +91,7 @@ namespace SME.SGP.Dominio
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
+            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -290,8 +295,8 @@ namespace SME.SGP.Dominio
             var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
             var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
             var periodoEscolarInformado = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
-            var ehBimestreAtual = periodoEscolar == null ? false : periodoEscolar.Bimestre.Equals(periodoEscolarInformado.Bimestre);
             bimestreInformado = periodoEscolarInformado.Bimestre;
+            var existePeriodoFechamentoAberto = await repositorioPeriodoFechamento.ExistePeriodoPorUeData(turma.UeId, DateTime.Today); ;
 
             foreach (var notaConceito in notasConceitos)
             {
@@ -343,7 +348,7 @@ namespace SME.SGP.Dominio
                     }
                 }
 
-                if ((notaConceito.Id > 0) && (!ehBimestreAtual))
+                if ((notaConceito.Id > 0) && (!existePeriodoFechamentoAberto))
                 {
                     alunosNotasExtemporaneas.AppendLine($"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>");
                 }
