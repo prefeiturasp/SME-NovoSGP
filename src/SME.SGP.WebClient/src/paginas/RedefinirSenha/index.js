@@ -197,7 +197,11 @@ const RedefinirSenha = props => {
         );
         history.push(URL_HOME);
       } else {
-        setErroGeral(requisicao.erro);
+        setErroGeral(
+          requisicao.status === 504
+            ? 'Ocorreu um erro de comunicação com o servidor.'
+            : requisicao.erro
+        );
       }
     }
   };
