@@ -107,7 +107,5 @@ namespace SME.SGP.Dados.Repositorios
                 dataAtual,
             });
         }
-
-
     }
 }

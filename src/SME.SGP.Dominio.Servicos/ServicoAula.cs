@@ -133,7 +133,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.ToString() == aula.DisciplinaId))
                     throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
 
-                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
+                var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(aula.TurmaId);
 
                 if (turma == null)
                     throw new NegocioException("Turma não localizada.");

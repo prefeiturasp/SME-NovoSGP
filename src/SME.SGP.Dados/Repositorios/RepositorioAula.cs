@@ -217,23 +217,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<Aula> ObterAulasSemFrequenciaRegistrada(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
-            var query = @"select
-	                            *
-                            from
-	                            aula a
-                            where
-	                            turma_id = @codigoTurma
+            var query = @"select *
+                            from aula a
+                            left join registro_frequencia r on r.aula_id = a.id
+                           where turma_id = @codigoTurma
 	                            and disciplina_id = @disciplinaId
 	                            and data_aula >= @inicioPeriodo
 	                            and data_aula <= @fimPeriodo
                                 and data_aula <= @dataAtual
-	                            and not exists (
-	                            select
-		                            1
-	                            from
-		                            registro_frequencia
-	                            where
-		                            aula_pai_id = a.id)";
+	                            and r.id is null";
             return database.Conexao.Query<Aula>(query, new
             {
                 codigoTurma,
@@ -246,31 +238,23 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<Aula> ObterAulasSemPlanoAulaNaDataAtual(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
-            var query = @"select
-                                *
-                            from
-                                aula a
-                            where
-                                turma_id = @codigoTurma
+            var query = @"select *
+                            from aula a
+                            left join plano_aula p on p.aula_id = a.id
+                           where turma_id = @codigoTurma
                                 and disciplina_id = @disciplinaId
                                 and data_aula >= @inicioPeriodo
                                 and data_aula <= @fimPeriodo
                                 and data_aula <= @dataAtual
-                                and not exists(
-                                select
-                                    *
-                                from
-                                    plano_aula
+                                and p.id is null";
 
-                                where
-                                    aula_pai_id = a.id)";
             return database.Conexao.Query<Aula>(query, new
             {
                 codigoTurma,
                 disciplinaId,
                 inicioPeriodo,
                 fimPeriodo,
-                dataAtual = DateTime.Now
+                dataAtual = DateTime.Today
             });
         }
 
@@ -378,15 +362,18 @@ namespace SME.SGP.Dados.Repositorios
                         }, param: new { id }).FirstOrDefault();
         }
 
-        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(int anoLetivo, string turmaId, string disciplinaId, long usuarioId, string usuarioRF, bool aulaCJ, bool ehDiretorOuSupervisor)
+        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehDiretorOuSupervisor = false)
         {
             var query = new StringBuilder("select distinct a.* ");
             query.AppendLine("from aula a ");
             query.AppendLine("inner join turma t on ");
             query.AppendLine("a.turma_id = t.turma_id ");
+            query.AppendLine("inner join periodo_escolar pe on pe.id = @periodoEscolarId ");
+            query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
+            query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
             query.AppendLine("where");
             query.AppendLine("not a.excluido");
-            query.AppendLine("and a.turma_id = @turmaId ");
+            query.AppendLine("and a.turma_id = @turmaCodigo ");
             query.AppendLine("and a.disciplina_id = @disciplinaId ");
             query.AppendLine("and t.ano_letivo = @anoLetivo");
 
@@ -403,10 +390,10 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.Query<AulaConsultaDto>(query.ToString(), new
             {
+                periodoEscolarId,
                 usuarioRF,
-                usuarioId,
                 anoLetivo,
-                turmaId,
+                turmaCodigo,
                 disciplinaId
             });
         }

@@ -16,5 +16,10 @@ namespace SME.SGP.Aplicacao
         Task<IEnumerable<AlunoAusenteDto>> ObterListaAlunosComAusencia(string turmaId, string disciplinaId, int bimestre);
       
         FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual);
+
+        SinteseDto ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina);
+
+        double ObterFrequenciaMedia(DisciplinaDto disciplina);
+
     }
 }

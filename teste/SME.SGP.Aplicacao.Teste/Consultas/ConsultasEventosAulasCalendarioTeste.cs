@@ -32,6 +32,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendatio;
         private readonly Mock<IServicoEOL> servicoEOL;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IConsultasAula> consultasAula;
 
         public ConsultasEventosAulasCalendarioTeste()
         {
@@ -50,6 +51,10 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioAtividadeAvaliativaDisciplina = new Mock<IRepositorioAtividadeAvaliativaDisciplina>();
             repositorioAtribuicaoCj = new Mock<IRepositorioAtribuicaoCJ>();
             consultasDisciplina = new Mock<IConsultasDisciplina>();
+            consultasAula = new Mock<IConsultasAula>();
+
+
+
             consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object,
                                                                                   comandosDiasLetivosMock.Object,
                                                                                   repositorioAula.Object,
@@ -60,7 +65,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                                                   repositorioPeriodoEscolar.Object,
                                                                                   repositorioAtividadeAvaliativaRegencia.Object,
                                                                                   repositorioAtividadeAvaliativaDisciplina.Object,
-                                                                                  consultasDisciplina.Object);
+                                                                                  consultasDisciplina.Object, 
+                                                                                  consultasAula.Object );
+
             comandosDiasLetivos = new ComandosDiasLetivos(repositorioPeriodoEscolar.Object,
                                                           repositorioEvento.Object,
                                                           repositorioTipoCalendatio.Object,
