@@ -335,7 +335,7 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var turmaAgrupamento in alunosFaltasTodasAulasDoDia.GroupBy(a => a.TurmaCodigo))
             {
                 var alunosTurmaEOL = servicoEOL.ObterAlunosPorTurma(turmaAgrupamento.Key).Result;
-                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(turmaAgrupamento.Key);
+                var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaAgrupamento.Key);
 
                 // filtra alunos na turma que possuem faltas em todos os dias
                 var alunosFaltososNaTurma = turmaAgrupamento.Where(c => alunosFaltasTodosOsDias.Any(a => a.Key == c.CodigoAluno));
