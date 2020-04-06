@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IServicoLog servicoLog;
 
         public ServicoFechamentoFinal(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                       IRepositorioFechamentoTurma repositorioFechamentoTurma,
@@ -27,7 +29,8 @@ namespace SME.SGP.Dominio.Servicos
                                       IRepositorioEvento repositorioEvento,
                                       IServicoEOL servicoEOL,
                                       IServicoUsuario servicoUsuario,
-                                      IUnitOfWork unitOfWork)
+                                      IUnitOfWork unitOfWork,
+                                      IServicoLog servicoLog)
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
@@ -38,6 +41,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
         }
 
         public async Task<List<string>> SalvarAsync(FechamentoTurmaDisciplina fechamentoFinal)
@@ -66,13 +70,15 @@ namespace SME.SGP.Dominio.Servicos
                             }
                             catch (Exception e)
                             {
-                                mensagens.Add($"Não foi possível salvar a nota do componente [{fechamentoNota.DisciplinaId}] aluno [{fechamentoAluno.AlunoCodigo}] : {e.Message}");
+                                servicoLog.Registrar(e);
+                                mensagens.Add($"Não foi possível salvar a nota do componente [{fechamentoNota.DisciplinaId}] aluno [{fechamentoAluno.AlunoCodigo}]");
                             }
                         }
                     }
                     catch (Exception e)
                     {
-                        mensagens.Add($"Não foi possível gravar o fechamento do aluno [{fechamentoAluno.AlunoCodigo}]: {e.Message}");
+                        servicoLog.Registrar(e);
+                        mensagens.Add($"Não foi possível gravar o fechamento do aluno [{fechamentoAluno.AlunoCodigo}]");
                     }                
                 }
                 unitOfWork.PersistirTransacao();
@@ -81,6 +87,8 @@ namespace SME.SGP.Dominio.Servicos
             }
             catch (Exception e)
             {
+                servicoLog.Registrar(e);
+
                 unitOfWork.Rollback();
                 throw e;
             }

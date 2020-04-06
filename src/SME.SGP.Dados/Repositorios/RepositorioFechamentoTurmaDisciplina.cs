@@ -51,11 +51,7 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine(" and ft.periodo_escolar_id is null ");
 
-            var fechamentos = await database.Conexao.QueryAsync<FechamentoTurmaDisciplina>(query.ToString(), new { turmaCodigo, disciplinaId, bimestre });
-            if (fechamentos == null || !fechamentos.Any())
-                return null;
-
-            return fechamentos.First();
+            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaDisciplina>(query.ToString(), new { turmaCodigo, disciplinaId, bimestre });
         }
 
         public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaDisciplinaId)

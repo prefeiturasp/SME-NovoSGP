@@ -133,8 +133,8 @@ namespace SME.SGP.Aplicacao
                         foreach (var disciplinaParaAdicionar in disciplinas)
                         {
                             //BIMESTRE / NOTA / DISCIPLINA ID / ALUNO CODIGO
-                            var nota = notasFechamentosBimestres.FirstOrDefault(a => a.Item1 == periodo.Bimestre && a.Item3 == disciplinaParaAdicionar.CodigoComponenteCurricular && a.Item4 == aluno.CodigoAluno);
-                            var notaParaAdicionar = (nota.GetType() == null ? null : nota.Item2);
+                            var nota = notasFechamentosBimestres.FirstOrDefault(a => a.Bimestre == periodo.Bimestre && a.DisciplinaId == disciplinaParaAdicionar.CodigoComponenteCurricular && a.AlunoCodigo == aluno.CodigoAluno);
+                            var notaParaAdicionar = (nota == null ? null : nota.NotaConceito);
 
                             fechamentoFinalAluno.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                             {
@@ -204,9 +204,9 @@ namespace SME.SGP.Aplicacao
             else return string.Empty;
         }
 
-        private async Task<IEnumerable<(int, string, long, string)>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota)
+        private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota)
         {
-            var listaRetorno = new List<(int, string, long, string)>();
+            var listaRetorno = new List<FechamentoNotaAlunoDto>();
 
             //BIMESTRE / NOTA / DISCIPLINA ID / ALUNO CODIGO
             foreach (var periodo in periodosEscolares)
@@ -221,7 +221,7 @@ namespace SME.SGP.Aplicacao
                         foreach (var nota in notasDoBimestre)
                         {
                             var notaParaAdicionar = ehNota ? nota.Nota.ToString() : nota.ConceitoId.Value.ToString();
-                            listaRetorno.Add((periodo.Bimestre, notaParaAdicionar, nota.DisciplinaId, nota.FechamentoAluno.AlunoCodigo));
+                            listaRetorno.Add(new FechamentoNotaAlunoDto(periodo.Bimestre, notaParaAdicionar, nota.DisciplinaId, nota.FechamentoAluno.AlunoCodigo));
                         }
                     }
                 }

@@ -18,5 +18,11 @@ namespace SME.SGP.Dominio
         public bool Excluido { get; set; }
 
         public List<FechamentoNota> FechamentoNotas { get; set; }
+
+        public void AdicionarNota(FechamentoNota fechamentoNota)
+        {
+            if (fechamentoNota != null)
+                FechamentoNotas.Add(fechamentoNota);
+        }
     }
 }

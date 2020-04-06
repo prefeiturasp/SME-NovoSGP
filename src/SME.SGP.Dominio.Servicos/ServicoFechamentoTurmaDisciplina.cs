@@ -106,8 +106,9 @@ namespace SME.SGP.Dominio.Servicos
 
             await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turma, periodoFechamentoBimestre.PeriodoEscolar);
 
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             // Valida Permissão do Professor na Turma/Disciplina
-            VerificaSeProfessorPodePersistirTurma(servicoUsuario.ObterRf(), entidadeDto.TurmaId, periodoFechamentoBimestre.PeriodoEscolar.PeriodoFim);
+            VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoFechamentoBimestre.PeriodoEscolar.PeriodoFim);
 
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
@@ -140,7 +141,6 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 unitOfWork.PersistirTransacao();
 
-                var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
                 Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota));
 
                 return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
@@ -229,13 +229,13 @@ namespace SME.SGP.Dominio.Servicos
 
             var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId }).FirstOrDefault();
             if (disciplinaEOL == null)
-                throw new NegocioException("Disciplina não encontrada.");
+                throw new NegocioException("Componente Curricular não localizado.");
 
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId.Value);
             if (periodoEscolar == null)
                 throw new NegocioException("Período escolar não encontrado.");
 
-            fechamentoTurmaDisciplina.FechamentoTurma.AdicionarPeriodoEscolar(periodoEscolar);
+            fechamentoTurmaDisciplina.AdicionarPeriodoEscolar(periodoEscolar);
             fechamentoTurmaDisciplina.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
             repositorioFechamentoTurmaDisciplina.Salvar(fechamentoTurmaDisciplina);
 
@@ -335,7 +335,7 @@ namespace SME.SGP.Dominio.Servicos
                         notaFechamento.SinteseId = fechamentoNotaDto.SinteseId;
                     }
                     else
-                        fechamentoAluno.FechamentoNotas.Add(MapearParaEntidade(fechamentoNotaDto));
+                        fechamentoAluno.AdicionarNota(MapearParaEntidade(fechamentoNotaDto));
                 }
                 fechamentoAlunos.Add(fechamentoAluno);
             }
@@ -359,7 +359,7 @@ namespace SME.SGP.Dominio.Servicos
             if (id > 0)
                 fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(id);
 
-            fechamento.Situacao = SituacaoFechamento.EmProcessamento;
+            fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
             fechamento.DisciplinaId = fechamentoDto.DisciplinaId;
             fechamento.Justificativa = fechamentoDto.Justificativa;
 
