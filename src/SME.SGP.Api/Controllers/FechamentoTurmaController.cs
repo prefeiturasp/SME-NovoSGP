@@ -64,5 +64,11 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterAnotacaoAluno(string codigoAluno, long fechamentoId, string codigoTurma, int anoLetivo, [FromServices] IConsultasAnotacaoAlunoFechamento consultas)
            => Ok(await consultas.ObterAnotacaoAluno(codigoAluno, fechamentoId, codigoTurma, anoLetivo));
 
+        [HttpGet("{codigoTurma}/alunos/anos/{anoLetivo}")]
+        [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterAlunos(string codigoTurma, int anoLetivo, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
+           => Ok(await consultas.ObterDadosAlunos(codigoTurma, anoLetivo));
     }
 }
