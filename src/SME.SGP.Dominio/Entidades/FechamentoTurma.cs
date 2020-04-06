@@ -13,6 +13,15 @@ namespace SME.SGP.Dominio
             TurmaId = turmaId;
             PeriodoEscolarId = periodoEscolarId;
         }
+        public FechamentoTurma(Turma turma, PeriodoEscolar periodoEscolar)
+        {
+            Turma = turma;
+            TurmaId = turma.Id;
+
+            PeriodoEscolar = periodoEscolar;
+            PeriodoEscolarId = periodoEscolar.Id;
+        }
+
         public long? PeriodoEscolarId { get; set; }
         public PeriodoEscolar PeriodoEscolar { get; set; }
         public long TurmaId { get; set; }

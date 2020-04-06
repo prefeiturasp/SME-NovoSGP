@@ -60,3 +60,7 @@ CREATE INDEX fechamento_aluno_aluno_idx ON public.fechamento_aluno USING btree (
 alter table nota_conceito_bimestre rename to fechamento_nota;
 alter table fechamento_nota drop column fechamento_turma_disciplina_id;
 alter table fechamento_nota drop column codigo_aluno;
+
+ALTER TABLE fechamento_nota add column fechamento_aluno_id int8 not null;
+ALTER TABLE public.fechamento_nota ADD CONSTRAINT fechamento_nota_aluno_fk FOREIGN KEY (fechamento_aluno_id) REFERENCES fechamento_aluno(id);
+CREATE INDEX fechamento_nota_aluno_idx ON public.fechamento_nota USING btree (fechamento_aluno_id);
