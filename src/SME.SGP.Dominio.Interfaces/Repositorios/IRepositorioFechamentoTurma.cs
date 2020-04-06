@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioFechamentoTurma : IRepositorioBase<FechamentoTurma>
     {
-        Task<FechamentoTurma> ObterPorTurmaPeriodo(long turmaId, long periodoId);
+        Task<FechamentoTurma> ObterPorTurmaPeriodo(long turmaId, long periodoId = 0);
     }
 }

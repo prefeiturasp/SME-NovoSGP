@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,6 +25,24 @@ namespace SME.SGP.Dados.Repositorios
                           and aluno_codigo = @codigoAluno";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoAluno>(query, new { fechamentoTurmaDisciplinaId, alunoCodigo });
+        }
+
+        public async Task<FechamentoAluno> ObterFechamentoAlunoENotas(long fechamentoTurmaDisciplinaId, string alunoCodigo)
+        {
+            var query = @"select a.*, n.*
+                            from fechamento_aluno a
+                           inner join fechamento_nota n on n.fechamento_aluno_id = a.id
+                           where not a.excluido
+                             and a.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
+                             and a.aluno_codigo = @alunoCodigo";
+
+            return (await database.Conexao.QueryAsync<FechamentoAluno, FechamentoNota, FechamentoAluno>(query
+                , (fechamentoAluno, fechamentoNota) =>
+                {
+                    fechamentoAluno.FechamentoNotas.Add(fechamentoNota);
+                    return fechamentoAluno;
+                }
+                , new { fechamentoTurmaDisciplinaId , alunoCodigo })).FirstOrDefault();
         }
 
         public async Task<IEnumerable<FechamentoAluno>> ObterPorFechamentoTurmaDisciplina(long fechamentoTurmaDisciplinaId)
