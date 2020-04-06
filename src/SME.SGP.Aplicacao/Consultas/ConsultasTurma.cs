@@ -17,12 +17,14 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoAluno servicoAluno;
 
         public ConsultasTurma(IRepositorioTurma repositorioTurma,
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                IServicoEOL servicoEOL
+                                IServicoEOL servicoEOL,
+                                IServicoAluno servicoAluno
             )
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -30,6 +32,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
         }
 
         public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia, int bimestre = 0)
@@ -97,7 +100,7 @@ namespace SME.SGP.Aplicacao
             return periodosAbertos;
         }
 
-        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo)
+        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, PeriodoEscolarDto periodoEscolarDto = null)
         {
             var dadosAlunos = await servicoEOL.ObterAlunosPorTurma(turmaCodigo, anoLetivo);
             if (dadosAlunos == null || !dadosAlunos.Any())
@@ -106,7 +109,14 @@ namespace SME.SGP.Aplicacao
             var dadosAlunosDto = new List<AlunoDadosBasicosDto>();
 
             foreach(var dadoAluno in dadosAlunos)
-                dadosAlunosDto.Add((AlunoDadosBasicosDto)dadoAluno);
+            {
+                var dadosBasicos = (AlunoDadosBasicosDto)dadoAluno;
+                // se informado periodo escolar carrega marcadores no periodo
+                if (periodoEscolarDto != null)
+                    dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolarDto);
+
+                dadosAlunosDto.Add(dadosBasicos);
+            }
 
             return dadosAlunosDto;
         }
