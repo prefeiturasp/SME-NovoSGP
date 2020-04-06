@@ -6,6 +6,7 @@ using System;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -48,6 +49,16 @@ namespace SME.SGP.Dados.Repositorios
                           and f.total_ausencias - f.total_compensacoes > 0 ";
 
             return database.Conexao.Query<FrequenciaAluno>(query, new { periodoId });
+        }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAluno(string alunoCodigo)
+        {
+            var query = @"select * 
+                            from frequencia_aluno
+                           where tipo = 2
+	                        and codigo_aluno = @alunoCodigo";
+
+            return await database.Conexao.QueryAsync<FrequenciaAluno>(query, new { alunoCodigo });
         }
 
         public FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
