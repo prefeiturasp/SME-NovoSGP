@@ -128,9 +128,9 @@ namespace SME.SGP.Dominio.Servicos
                 fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurmaId;
 
                 var alunos = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
-                var parametroDiasAlteracao = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turma.AnoLetivo));
+                var parametroDiasAlteracao = repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turma.AnoLetivo);
                 var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.DayOfYear;
-                var acimaDiasPermidosAlteracao = diasAlteracao > parametroDiasAlteracao;
+                var acimaDiasPermidosAlteracao = parametroDiasAlteracao != null && diasAlteracao > int.Parse(parametroDiasAlteracao);
                 var alunosComNotaAlterada = "";
 
                 await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
