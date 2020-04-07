@@ -166,6 +166,13 @@ namespace SME.SGP.Dominio
                     usuario.Nome = nome;
                     repositorioUsuario.Salvar(usuario);
                 }
+
+                if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
+                {
+                    usuario.CodigoRf = codigoRf;
+                    repositorioUsuario.Salvar(usuario);
+                }
+
                 return usuario;
             }
 
