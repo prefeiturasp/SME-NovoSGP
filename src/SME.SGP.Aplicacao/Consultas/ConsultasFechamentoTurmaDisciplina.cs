@@ -30,6 +30,8 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoFechamento consultasFechamento;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFechamentoAluno consultasFehcamentoAluno;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
+        private readonly IConsultasTurma consultasTurma;
 
         public IEnumerable<Sintese> _sinteses { get; set; }
         public IEnumerable<Sintese> Sinteses 
@@ -59,7 +61,9 @@ namespace SME.SGP.Aplicacao
             IRepositorioParametrosSistema repositorioParametrosSistema,
             IConsultasPeriodoFechamento consultasFechamento,
             IConsultasDisciplina consultasDisciplina,
-            IConsultasFechamentoAluno consultasFechamentoAluno
+            IConsultasFechamentoAluno consultasFechamentoAluno,
+            IConsultasPeriodoFechamento consultasPeriodoFechamento,
+            IConsultasTurma consultasTurma
             )
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
@@ -79,6 +83,8 @@ namespace SME.SGP.Aplicacao
             this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasFehcamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
         }
 
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
@@ -281,6 +287,19 @@ namespace SME.SGP.Aplicacao
         {
             var sintese = Sinteses.FirstOrDefault(c => c.Id == id);
             return sintese != null ? sintese.Descricao : "";
+        }
+
+        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo)
+        {
+            var turma = await consultasTurma.ObterPorCodigo(turmaCodigo);
+            var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosEmAberto(turma.UeId);
+            if (periodosAberto == null || !periodosAberto.Any())
+                throw new NegocioException("Não foi possível localizar período de fechamento em aberto para consulta de alunos");
+
+            // caso tenha mais de um periodo em aberto (abertura e reabertura) usa o ultimo bimestre
+            var periodoEscolarDto = periodosAberto.OrderBy(c => c.Bimestre).Last();
+
+            return await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolarDto);
         }
     }
 }

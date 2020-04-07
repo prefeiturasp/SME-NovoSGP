@@ -19,6 +19,9 @@ function Cabecalho({
   onClickAnterior,
   onClickProximo,
 }) {
+
+  const clicouEnter = e => e.keyCode == 13;
+
   return (
     <CabecalhoDetalhes>
       <div className="titulo">
@@ -27,7 +30,7 @@ function Cabecalho({
             className={`botaoCollapse ${retraido && `retraido`}`}
             role="button"
             tabIndex={0}
-            onKeyDown={() => onClickCollapse()}
+            onKeyDown={e => clicouEnter(e) ? onClickCollapse() : ''}
             onClick={() => onClickCollapse()}
           >
             <i className="fas fa-chevron-left" />
