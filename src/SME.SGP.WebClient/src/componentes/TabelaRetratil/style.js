@@ -94,7 +94,6 @@ export const LinhaTabela = styled.tr`
 
 export const DetalhesAluno = styled.div`
   flex: 1;
-  background: ${Base.CinzaBarras};
 `;
 
 export const CabecalhoDetalhes = styled.div`
