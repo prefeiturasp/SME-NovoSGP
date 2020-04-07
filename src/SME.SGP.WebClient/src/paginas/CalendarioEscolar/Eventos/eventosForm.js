@@ -158,7 +158,7 @@ const EventosForm = ({ match }) => {
       }
 
       const tiposEvento = await api.get(
-        'v1/calendarios/eventos/tipos/listar?ehCadastro=true'
+        'v1/calendarios/eventos/tipos/listar?ehCadastro=true&numeroRegistros=100'
       );
       if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
         setListaTipoEvento(tiposEvento.data.items);
