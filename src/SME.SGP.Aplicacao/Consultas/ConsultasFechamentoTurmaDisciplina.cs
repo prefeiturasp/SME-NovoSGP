@@ -63,8 +63,7 @@ namespace SME.SGP.Aplicacao
             IConsultasDisciplina consultasDisciplina,
             IConsultasFechamentoAluno consultasFechamentoAluno,
             IConsultasPeriodoFechamento consultasPeriodoFechamento,
-            IConsultasTurma consultasTurma,
-            IConsultasFechamentoAluno consultasFechamentoAluno
+            IConsultasTurma consultasTurma
             )
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
