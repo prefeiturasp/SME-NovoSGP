@@ -127,47 +127,54 @@ namespace SME.SGP.Dominio.Servicos
                 var fechamentoTurmaId = await repositorioFechamentoTurma.SalvarAsync(fechamentoTurmaDisciplina.FechamentoTurma);
                 fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurmaId;
 
-                var alunos = await servicoEOL.ObterAlunosPorTurma(turma.Id.ToString());
+                var alunos = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
                 var parametroDiasAlteracao = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turma.AnoLetivo));
                 var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.DayOfYear;
                 var acimaDiasPermidosAlteracao = diasAlteracao > parametroDiasAlteracao;
-                var alunosComNotaAlterada = new StringBuilder();
+                var alunosComNotaAlterada = "";
 
                 await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
                 foreach (var fechamentoAluno in fechamentoAlunos)
                 {
                     fechamentoAluno.FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id;
                     await repositorioFechamentoAluno.SalvarAsync(fechamentoAluno);
-
                     foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                     {
-                        if (fechamentoTurmaDisciplina.Id > 0 && acimaDiasPermidosAlteracao)
-                        {
-                            var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == fechamentoNota.FechamentoAluno.AlunoCodigo);
-                            alunosComNotaAlterada.AppendLine($"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>");
-                        }
+
                         fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                         await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+
+                    }
+
+                    if (!componenteSemNota)
+                    {
+                        var notaAlunoAlterada = entidadeDto.NotaConceitoAlunos.FirstOrDefault(n => n.CodigoAluno.Equals(fechamentoAluno.AlunoCodigo));
+                        if (id > 0 && acimaDiasPermidosAlteracao && notaAlunoAlterada != null && !alunosComNotaAlterada.Contains(fechamentoAluno.AlunoCodigo))
+                        {
+                            var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == fechamentoAluno.AlunoCodigo);
+                            alunosComNotaAlterada +=$"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
+                        }
                     }
                 }
 
-                if (alunosComNotaAlterada.ToString().Length > 0)
+                if (alunosComNotaAlterada.Length > 0)
                 {
                     var dataAtual = DateTime.Now;
                     var mensagem = $"<p>A(s) nota(s)/conceito(s) final(is) da turma {turma.Nome} da {ue.Nome} (DRE {ue.Dre.Nome}) no bimestre {entidadeDto.Bimestre} de {turma.AnoLetivo} foram alterados pelo Professor " +
-                        $"{usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) em  {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para o(s) seguinte(s) aluno(s):</p><br/>{alunosComNotaAlterada.ToString()} ";
-                    servicoNotificacao.Salvar(new Notificacao()
-                    {
-                        Ano = fechamentoTurmaDisciplina.CriadoEm.Year,
-                        Categoria = NotificacaoCategoria.Alerta,
-                        DreId = periodoFechamento.DreId,
-                        Mensagem = mensagem,
-                        UsuarioId = usuarioLogado.Id,
-                        Tipo = NotificacaoTipo.Notas,
-                        Titulo = $"Alteração em nota/conceito final - Turma {turma.Nome}",
-                        TurmaId = entidadeDto.TurmaId,
-                        UeId = turma.UeId.ToString(),
-                    });
+                        $"{usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) em  {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para o(s) seguinte(s) aluno(s):</p><br/>{alunosComNotaAlterada} ";
+                    var listaCPs = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.CP);
+                    var listaDiretores = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Diretor);
+                    var listaSupervisores = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Supervisor);
+                    var usuariosNotificacao = new List<UsuarioEolRetornoDto>();
+
+                    if (listaCPs != null)
+                        usuariosNotificacao.AddRange(listaCPs);
+                    if (listaDiretores != null)
+                        usuariosNotificacao.AddRange(listaDiretores);
+                    if (listaSupervisores != null)
+                        usuariosNotificacao.AddRange(listaSupervisores);
+
+                    GerarNotificacaoAlteracaoLimiteDias(mensagem, fechamentoTurmaDisciplina.CriadoEm.Year, periodoFechamento.DreId, turma, usuariosNotificacao);
                 }
                 unitOfWork.PersistirTransacao();
 
@@ -179,6 +186,27 @@ namespace SME.SGP.Dominio.Servicos
             {
                 unitOfWork.Rollback();
                 throw e;
+            }
+        }
+
+        private void GerarNotificacaoAlteracaoLimiteDias(string mensagem, int ano, string dreId, Turma turma, List<UsuarioEolRetornoDto> usuarios)
+        {
+            foreach (var usuarioNotificacaoo in usuarios)
+            {
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioNotificacaoo.CodigoRf);
+                var notificacao = new Notificacao()
+                {
+                    Ano = ano,
+                    Categoria = NotificacaoCategoria.Alerta,
+                    DreId = dreId,
+                    Mensagem = mensagem,
+                    UsuarioId = usuario.Id,
+                    Tipo = NotificacaoTipo.Notas,
+                    Titulo = $"Alteração em nota/conceito final - Turma {turma.Nome}",
+                    TurmaId = turma.Id.ToString(),
+                    UeId = turma.UeId.ToString(),
+                };
+                servicoNotificacao.Salvar(notificacao);
             }
         }
 
