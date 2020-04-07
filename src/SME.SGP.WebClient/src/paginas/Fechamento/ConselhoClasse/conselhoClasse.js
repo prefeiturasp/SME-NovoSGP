@@ -9,9 +9,10 @@ import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import TabelaRetratil from '~/componentes/TabelaRetratil';
-import { Container } from './conselho-classe.css';
+import { Container } from './conselhoClasse.css';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import { erros } from '~/servicos/alertas';
+import DadosConselhoClasse from './DadosConselhoClasse/dadosConselhoClasse';
 
 const ConselhoClasse = () => {
   const usuario = useSelector(store => store.usuario);
@@ -151,6 +152,7 @@ const ConselhoClasse = () => {
                       alunos={alunos}
                     >
                       <DetalhesAluno dados={dadosAluno} />
+                      <DadosConselhoClasse></DadosConselhoClasse>
                     </TabelaRetratil>
                   </div>
                 </>
