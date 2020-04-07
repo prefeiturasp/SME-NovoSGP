@@ -48,6 +48,7 @@ import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento'
 import PendenciasFechamentoLista from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoLista';
 import PendenciasFechamentoForm from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoForm';
 import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselho-classe';
+import DadosConselhoClasse from '~/paginas/Fechamento/DadosConselhoClasse/DadosConselhoClasse';
 
 const rotas = new Map();
 
@@ -714,6 +715,16 @@ rotas.set(RotasDto.CONSELHO_CLASSE, {
   menu: ['Fechamento'],
   parent: '/',
   component: ConselhoClasse,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+
+rotas.set(`/lista-conselho`, {
+  breadcrumbName: 'Lista de Conselho',
+  menu: ['Fechamento'],
+  parent: '/',
+  component: DadosConselhoClasse,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
