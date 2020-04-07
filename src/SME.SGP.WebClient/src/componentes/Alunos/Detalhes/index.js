@@ -4,6 +4,7 @@ import React from 'react';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { Container, DadosAluno, FrequenciaGlobal } from './styles';
+import * as moment from 'moment';
 
 const DetalhesAluno = props => {
   const { dados, desabilitarImprimir, onClickImprimir } = props;
@@ -34,10 +35,15 @@ const DetalhesAluno = props => {
               <p>
                 {nome} Nº {numero}
               </p>
-              <p>Data de nascimento: {dataNascimento}</p>
+              <p>
+                Data de nascimento:{' '}
+                {dataNascimento ? moment(dataNascimento).format('L') : ''}
+              </p>
               <p>Código EOL: {codigoEOL}</p>
               <p>
-                Situação: {situacao} em {dataSituacao}
+                Situação: {situacao} em{' '}
+                {dataSituacao ? moment(dataSituacao).format('L') : ''}{' '}
+                {dataSituacao ? moment(dataSituacao).format('LT') : ''}
               </p>
             </div>
           </div>
@@ -50,13 +56,9 @@ const DetalhesAluno = props => {
               onClick={onClickImprimir}
               disabled={desabilitarImprimir}
             />
-            {frequencia ? (
-              <FrequenciaGlobal>
-                Frequência Global: {frequencia}%
-              </FrequenciaGlobal>
-            ) : (
-              ''
-            )}
+            <FrequenciaGlobal>
+              Frequência Global: {frequencia ? frequencia : 0}%
+            </FrequenciaGlobal>
           </div>
         </DadosAluno>
       </Card>
