@@ -21,7 +21,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         private async Task<bool> VerificarProfCJSemTurmaTitular(string login, bool ehCJ, IEnumerable<Guid> perfis)
         {
-            if (ehCJ && perfis.Contains(Perfis.PERFIL_PROFESSOR) && perfis.Contains(Perfis.PERFIL_CJ))
+            if (ehCJ && perfis.Contains(Perfis.PERFIL_PROFESSOR) && perfis.Contains(Perfis.PERFIL_CJ)
+                     && !perfis.Intersect(new List<Guid>() { Perfis.PERFIL_AD, Perfis.PERFIL_CP, Perfis.PERFIL_DIRETOR }).Any())
             {
                 var lstTurmasAtribuidas = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_PROFESSOR, false);
 
