@@ -10,4 +10,4 @@ where
 	from
 		public.parametros_sistema 
 	where
-		tipo = 17 and ano = '2020');
+		tipo = 19 and ano = '2020');
