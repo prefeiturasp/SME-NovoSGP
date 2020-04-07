@@ -7,5 +7,6 @@
         ReposicaoAula = 3,
         Evento_Data_Passada = 4,
         Fechamento_Reabertura = 5,
+        AlteracaoNotaFechamento = 6
     }
 }
