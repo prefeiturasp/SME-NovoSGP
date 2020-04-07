@@ -224,9 +224,10 @@ namespace SME.SGP.Dominio.Servicos
             foreach(var notaAprovacao in notasEnvioWfAprovacao)
             {
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.CodigoAluno);
+
                 mensagem.AppendLine("<tr>");
                 mensagem.Append($"<td style='padding: 5px;'>{notaAprovacao.CodigoAluno}</td>");
-                mensagem.Append($"<td style='padding: 5px;'>{aluno.NomeAluno}</td>");
+                mensagem.Append($"<td style='padding: 5px;'>{aluno?.NomeAluno}</td>");
                 mensagem.AppendLine("</tr>");
             }
             mensagem.AppendLine("</table>");
