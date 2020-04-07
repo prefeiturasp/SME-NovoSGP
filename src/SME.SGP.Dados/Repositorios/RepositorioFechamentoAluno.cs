@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
                         from fechamento_aluno
                         where not excluido 
                           and fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
-                          and aluno_codigo = @codigoAluno";
+                          and aluno_codigo = @alunoCodigo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoAluno>(query, new { fechamentoTurmaDisciplinaId, alunoCodigo });
         }
