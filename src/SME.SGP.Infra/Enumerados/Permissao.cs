@@ -392,5 +392,17 @@
 
         [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhAlteracao = true, Url = "/fechamento/pendencias-fechamento")]
         PF_A = 131,
+        
+        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhConsulta = true, Url = "/fechamento/conselho-classe")]
+        CC_C = 136,
+
+        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhInclusao = true, Url = "/fechamento/conselho-classe")]
+        CC_I = 137,
+
+        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhExclusao = true, Url = "/fechamento/conselho-classe")]
+        CC_E = 138,
+
+        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhAlteracao = true, Url = "/fechamento/conselho-classe")]
+        CC_A = 139,
     }
 }
