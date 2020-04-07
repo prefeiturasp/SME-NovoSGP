@@ -21,7 +21,7 @@ function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado}) {
   };
 
   const isAlunoSelecionado = aluno => {
-    return alunoSelecionado && aluno.id === alunoSelecionado.id;
+    return alunoSelecionado && aluno.codigoEOL === alunoSelecionado.codigoEOL;
   };
 
   const proximoAlunoHandler = useCallback(() => {
@@ -69,7 +69,7 @@ function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado}) {
               <LinhaTabela
                 className={isAlunoSelecionado(item) && `selecionado`}
                 key={shortid.generate()}
-                ativo={item.ativo}
+                ativo={!item.desabilitado}
                 onClick={() => {
                   selecionarAluno(item);
                   onChangeAlunoSelecionado(item);
@@ -77,10 +77,12 @@ function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado}) {
               >
                 <td>
                   {item.numeroChamada}
-                  {item.situacao !== null && (
-                    <Tooltip title={item.situacao}>
+                  {item.marcador && item.marcador.descricao ? (
+                    <Tooltip title={item.marcador.descricao}>
                       <span className="iconeSituacao" />
                     </Tooltip>
+                  ) : (
+                    ''
                   )}
                 </td>
                 <td>{item.nome}</td>
