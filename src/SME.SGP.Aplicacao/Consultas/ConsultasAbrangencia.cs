@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            var retorno = await repositorioAbrangencia.ObterSemestres(login, perfil, modalidade, consideraHistorico);
+            var retorno = await repositorioAbrangencia.ObterSemestres(login, perfil, modalidade, consideraHistorico, anoLetivo);
 
             return retorno
                     .Where(a => a != 0);
