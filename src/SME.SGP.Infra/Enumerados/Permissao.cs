@@ -66,6 +66,18 @@
         [PermissaoMenu(Menu = "Atribuição de CJ", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 2, EhAlteracao = true, Url = "/gestao/atribuicao-cjs/editar")]
         ACJ_A = 21,
 
+        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhConsulta = true, Url = "/gestao/acompanhamento-escolar/comunicados")]
+        CO_C = 140,
+
+        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhExclusao = true, Url = "/gestao/acompanhamento-escolar/comunicados")]
+        CO_E = 142,
+
+        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhAlteracao = true, Url = "/gestao/acompanhamento-escolar/comunicados/novo")]
+        CO_A = 143,
+
+        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhInclusao = true, Url = "/gestao/acompanhamento-escolar/comunicados/novo")]
+        CO_I = 141,
+
         [PermissaoMenu(Menu = "Notas", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhConsulta = true, Url = "/diario-classe/notas")]
         NC_C = 22,
 
