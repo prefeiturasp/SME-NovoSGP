@@ -16,6 +16,12 @@ class ServicoConselhoClasse {
     const url = `v1/conselhos-classe/anotacoes-aluno/turmas/${codigoTurma}/alunos/${codigoAluno}/bimestres/${numeroBimestre}`;
     return api.get(url);
   };
+
+  // TODO
+  obterRecomendacoesAluno = (codigoTurma, codigoAluno, numeroBimestre = 0) => {
+    const url = `v1/conselhos-classe/recomendacoes/turmas/${codigoTurma}/alunos/${codigoAluno}/bimestres/${numeroBimestre}`;
+    return api.get(url);
+  };
 }
 
 export default new ServicoConselhoClasse();

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import AnotacoesAluno from './AnotacoesAluno/anotacoesAluno';
+import RecomendacaoAlunoFamilia from './RecomendacaoAlunoFamilia/recomendacaoAlunoFamilia';
 // import ListaNotasConselho from './ListaNotasConselho/ListaNotasConselho';
 
 const DadosConselhoClasse = () => {
@@ -14,7 +15,8 @@ const DadosConselhoClasse = () => {
   const montarDados = () => {
     return (
       <>
-        <AnotacoesAluno> </AnotacoesAluno>
+        <RecomendacaoAlunoFamilia />
+        <AnotacoesAluno />
       </>
     );
   };
