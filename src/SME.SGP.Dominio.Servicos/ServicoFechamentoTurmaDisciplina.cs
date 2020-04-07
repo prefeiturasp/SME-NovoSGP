@@ -351,6 +351,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
                 servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
+                servicoPendenciaFechamento.ValidarAlteracaoExtenporanea(fechamento.Id, turma.CodigoTurma, disciplinaId);
             }
             servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
             servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
