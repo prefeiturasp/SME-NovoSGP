@@ -776,7 +776,12 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("when e.dre_id is not null and e.ue_id is null then 'DRE'");
             query.AppendLine("when e.ue_id is not null and e.dre_id is not null then 'UE'");
             query.AppendLine("when e.ue_id is null and e.dre_id is null then 'SME'");
-            query.AppendLine("end as TipoEvento");
+            query.AppendLine("end as TipoEvento,");
+            query.AppendLine("case");
+            query.AppendLine("when(e.data_fim = e.data_inicio) then ''");
+            query.AppendLine("when((extract(month from e.data_inicio) = @mes) and(extract(day from e.data_inicio) = @dia)) then '(início)'");
+            query.AppendLine("when((extract(month from e.data_fim) = @mes) and(extract(day from e.data_fim) = @dia)) then '(fim)'");
+            query.AppendLine("end as InicioFimDesc");
         }
 
         private void MontaQueryEventosPorDiaFromWhereVisualizacaoDre(StringBuilder query, string ueId, bool ehEventoSme)
