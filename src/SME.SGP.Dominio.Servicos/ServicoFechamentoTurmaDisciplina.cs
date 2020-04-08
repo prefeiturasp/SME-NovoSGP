@@ -101,12 +101,12 @@ namespace SME.SGP.Dominio.Servicos
             notasEnvioWfAprovacao = new List<FechamentoNotaDto>();
 
             var fechamentoTurmaDisciplina = MapearParaEntidade(id, entidadeDto);
-            turmaFechamento = repositorioTurma.ObterTurmaComUeEDrePorCodigo(entidadeDto.TurmaId);
+            CarregarTurma(entidadeDto.TurmaId);
             
             // Valida periodo de fechamento
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turmaFechamento.AnoLetivo
                                                                 , turmaFechamento.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio
-                                                                , DateTime.Now.Month > 6 ? 2 : 1);
+                                                                , DateTime.Now.Semestre());
 
             var ue = turmaFechamento.Ue;
             var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioDreEUe(tipoCalendario.Id, ue.Dre, ue);
@@ -164,6 +164,13 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private void CarregarTurma(string turmaCodigo)
+        {
+            turmaFechamento = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
+            if (turmaFechamento == null)
+                throw new NegocioException($"Turma com código [{turmaCodigo}] não localizada!");
         }
 
         private async Task EnviarNotasWfAprovacao(long fechamentoTurmaDisciplinaId, PeriodoEscolar periodoEscolar, Usuario usuarioLogado)
