@@ -1,8 +1,32 @@
+create table if not exists public.ciclo_ensino ( 
+	id int8 not null generated always as identity,
+	cod_etapa_ensino_eol int8 not null,
+	descricao varchar(60) not null,
+	criado_em timestamp not null,
+	criado_por varchar (200) not null,
+	alterado_em timestamp ,
+	alterado_por varchar (200),
+	criado_rf varchar (200) not null,
+	alterado_rf varchar (200),
+constraint ciclo_ensino_pk primary key (id) );
+
+create table if not exists public.tipo_escola ( 
+	id int8 not null generated always as identity,
+	cod_tipo_escola_eol int8 not null,
+	descricao varchar(60) not null,
+	criado_em timestamp not null,
+	criado_por varchar (200) not null,
+	alterado_em timestamp ,
+	alterado_por varchar (200),
+	criado_rf varchar (200) not null,
+	alterado_rf varchar (200),
+constraint tipo_escola_pk primary key (id) );
+
 create table if not exists public.grupo_comunicado ( 
 	id int8 not null generated always as identity,
 	nome varchar(30),
-	tipo_escola int8 null,
-	tipo_ciclo_id int8 null,
+	tipo_escola_id varchar(200) null,
+	tipo_ciclo_id varchar(200) null,
 	criado_em timestamp not null,
 	criado_por varchar (200) not null,
 	alterado_em timestamp ,
@@ -35,15 +59,14 @@ constraint comunicado_pk primary key (id) );
 
 select f_cria_fk_se_nao_existir('comunidado_grupo', 'comunidado_grupo_comunicado_fk', 'FOREIGN KEY (comunicado_id) REFERENCES grupo_comunicado(id)');
 select f_cria_fk_se_nao_existir('comunidado_grupo', 'comunidado_grupo_grupo_comunicado_fk', 'FOREIGN KEY (grupo_comunicado_id) REFERENCES comunicado(id)');
-select f_cria_fk_se_nao_existir('grupo_comunicado', 'grupo_comunicado_tipo_ciclo_fk', 'FOREIGN KEY (tipo_ciclo_id) REFERENCES tipo_ciclo(id)');
 
 
 
 insert 
     into 
-    public.grupo_comunicado (nome,criado_em,criado_por, criado_rf)
+    public.grupo_comunicado (nome,tipo_escola_id,criado_em,criado_por, criado_rf)
 select
-	'EMEBS',now(),'Carga Inicial','Carga Inicial'
+	'EMEBS','4',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -55,9 +78,9 @@ where
 
 insert 
     into 
-    public.grupo_comunicado (nome,criado_em,criado_por, criado_rf)
+    public.grupo_comunicado (nome,tipo_ciclo_id,criado_em,criado_por, criado_rf)
 select
-	'CEI',now(),'Carga Inicial','Carga Inicial'
+	'CEI','1,23',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -69,9 +92,9 @@ where
 
 insert 
     into 
-    public.grupo_comunicado (nome,criado_em,criado_por, criado_rf)
+    public.grupo_comunicado (nome,tipo_ciclo_id,criado_em,criado_por, criado_rf)
 select
-	'EMEI',now(),'Carga Inicial','Carga Inicial'
+	'EMEI','2,14',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -80,4 +103,47 @@ where
 		public.grupo_comunicado
 	where
 		nome = 'EMEI' );
+
+insert 
+    into 
+    public.grupo_comunicado (nome,tipo_ciclo_id,criado_em,criado_por, criado_rf)
+select
+	'Fundamental','1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17',now(),'Carga Inicial','Carga Inicial'
+where
+	not exists(
+	select
+		1
+	from
+		public.grupo_comunicado
+	where
+		nome = 'Fundamental' );
+
+insert 
+    into 
+    public.grupo_comunicado (nome,tipo_ciclo_id,criado_em,criado_por, criado_rf)
+select
+	'Médio','1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17',now(),'Carga Inicial','Carga Inicial'
+where
+	not exists(
+	select
+		1
+	from
+		public.grupo_comunicado
+	where
+		nome = 'Médio' );
+
+insert 
+    into 
+    public.grupo_comunicado (nome,tipo_ciclo_id,criado_em,criado_por, criado_rf)
+select
+	'EJA','2,14',now(),'Carga Inicial','Carga Inicial'
+where
+	not exists(
+	select
+		1
+	from
+		public.grupo_comunicado
+	where
+		nome = 'EJA' );
+
 
