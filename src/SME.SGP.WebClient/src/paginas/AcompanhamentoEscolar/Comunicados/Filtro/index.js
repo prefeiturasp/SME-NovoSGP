@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-// Formulario
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
-// Componentes
 import {
   Grid,
   SelectComponent,
@@ -14,15 +12,18 @@ import {
   Label,
 } from '~/componentes';
 
-// Styles
 import { Linha } from '~/componentes/EstilosGlobais';
 
 function Filtro({ onFiltrar }) {
   const [refForm, setRefForm] = useState({});
 
   const gruposLista = [
-    { Id: 1, Nome: 'Fundamental' },
+    { Id: 1, Nome: 'EJA' },
     { Id: 2, Nome: 'Médio' },
+    { Id: 3, Nome: 'Fundamental' },
+    { Id: 4, Nome: 'EMEBS' },
+    { Id: 5, Nome: 'CEI' },
+    { Id: 6, Nome: 'EMEI' },
   ];
 
   const [valoresIniciais] = useState({
