@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<WfAprovacaoNotaFechamento> ObterNotasEmAprovacaoPorFechamento(long fechamentoTurmaDisciplinaId)
+        public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoPorFechamento(long fechamentoTurmaDisciplinaId)
         {
             var query = @"select w.*
                             from wf_aprovacao_nota_fechamento w
@@ -26,10 +26,10 @@ namespace SME.SGP.Dados.Repositorios
                           inner join fechamento_aluno a on a.id = n.fechamento_aluno_id
                           where a.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId";
 
-            return database.Conexao.Query<WfAprovacaoNotaFechamento>(query, new { fechamentoTurmaDisciplinaId });
+            return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamento>(query, new { fechamentoTurmaDisciplinaId });
         }
 
-        public IEnumerable<WfAprovacaoNotaFechamento> ObterNotasEmAprovacaoWf(long workFlowId)
+        public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoWf(long workFlowId)
         {
             var query = @"select w.*, n.*, a.*, d.*, f.*, e.*
                             from wf_aprovacao_nota_fechamento w
@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
                           inner join periodo_escolar e on e.id = f.periodo_escolar_id
                           where w.wf_aprovacao_id = @workFlowId";
 
-            return database.Conexao.Query<WfAprovacaoNotaFechamento, FechamentoNota, FechamentoAluno, FechamentoTurmaDisciplina
+            return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamento, FechamentoNota, FechamentoAluno, FechamentoTurmaDisciplina
                                     , FechamentoTurma, PeriodoEscolar, WfAprovacaoNotaFechamento>(query
                 , (wfAprovacaoNota, fechamentoNota, fechamentoAluno, fechamentoTurmaDisciplina, fechamentoTurma, periodoEscolar) =>
                 {
