@@ -14,6 +14,9 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoFechamentoTurmaDisciplina : IServicoFechamentoTurmaDisciplina
     {
+        private Turma turmaFechamento;
+        private List<FechamentoNotaDto> notasEnvioWfAprovacao;
+
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
@@ -37,6 +40,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioConceito repositorioConceito;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
+        private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
+        private readonly IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento;
 
         public ServicoFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                                 IRepositorioFechamentoTurma repositorioFechamentoTurma,
@@ -53,12 +58,14 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
                                                 IRepositorioParametrosSistema repositorioParametrosSistema,
                                                 IRepositorioConceito repositorioConceito,
+                                                IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento,
                                                 IConsultasDisciplina consultasDisciplina,
                                                 IConsultasFrequencia consultasFrequencia,
                                                 IServicoNotificacao servicoNotificacao,
                                                 IServicoPendenciaFechamento servicoPendenciaFechamento,
                                                 IServicoEOL servicoEOL,
                                                 IServicoUsuario servicoUsuario,
+                                                IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                                                 IUnitOfWork unitOfWork,
                                                 IConfiguration configuration)
         {
@@ -83,28 +90,32 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
+            this.repositorioWfAprovacaoNotaFechamento = repositorioWfAprovacaoNotaFechamento ?? throw new ArgumentNullException(nameof(repositorioWfAprovacaoNotaFechamento));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
+            this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
         }
 
         public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false)
         {
+            notasEnvioWfAprovacao = new List<FechamentoNotaDto>();
+
             var fechamentoTurmaDisciplina = MapearParaEntidade(id, entidadeDto);
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(entidadeDto.TurmaId);
+            CarregarTurma(entidadeDto.TurmaId);
             
             // Valida periodo de fechamento
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo
-                                                                , turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio
-                                                                , DateTime.Now.Month > 6 ? 2 : 1);
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turmaFechamento.AnoLetivo
+                                                                , turmaFechamento.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio
+                                                                , DateTime.Now.Semestre());
 
-            var ue = turma.Ue;
+            var ue = turmaFechamento.Ue;
             var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioDreEUe(tipoCalendario.Id, ue.Dre, ue);
             var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestres.FirstOrDefault(x => x.Bimestre == entidadeDto.Bimestre);
 
             if (periodoFechamento == null || periodoFechamentoBimestre == null)
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
 
-            await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turma, periodoFechamentoBimestre.PeriodoEscolar);
+            await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turmaFechamento, periodoFechamentoBimestre.PeriodoEscolar);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             // Valida Permissão do Professor na Turma/Disciplina
@@ -121,6 +132,13 @@ namespace SME.SGP.Dominio.Servicos
                 // Carrega notas alunos
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos);
 
+
+            var alunos = await servicoEOL.ObterAlunosPorTurma(turmaFechamento.CodigoTurma);
+            var parametroDiasAlteracao = repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turmaFechamento.AnoLetivo);
+            var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.DayOfYear;
+            var acimaDiasPermidosAlteracao = parametroDiasAlteracao != null && diasAlteracao > int.Parse(parametroDiasAlteracao);
+            var alunosComNotaAlterada = "";
+
             unitOfWork.IniciarTransacao();
             try
             {
@@ -132,16 +150,33 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     fechamentoAluno.FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id;
                     await repositorioFechamentoAluno.SalvarAsync(fechamentoAluno);
-
-                    foreach(var fechamentoNota in fechamentoAluno.FechamentoNotas)
+                    foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                     {
+
                         fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                         await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+
+                    }
+
+                    if (!componenteSemNota)
+                    {
+                        var notaAlunoAlterada = entidadeDto.NotaConceitoAlunos.FirstOrDefault(n => n.CodigoAluno.Equals(fechamentoAluno.AlunoCodigo));
+                        if (id > 0 && acimaDiasPermidosAlteracao && notaAlunoAlterada != null && !alunosComNotaAlterada.Contains(fechamentoAluno.AlunoCodigo))
+                        {
+                            var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == fechamentoAluno.AlunoCodigo);
+                            alunosComNotaAlterada += $"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
+                        }
                     }
                 }
+
+                await EnviarNotasWfAprovacao(fechamentoTurmaDisciplina.Id, fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar, usuarioLogado);
+
                 unitOfWork.PersistirTransacao();
 
-                Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turma, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota));
+                if (alunosComNotaAlterada.Length > 0)
+                    Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turmaFechamento, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
+
+                Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota));
 
                 return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
             }
@@ -149,6 +184,120 @@ namespace SME.SGP.Dominio.Servicos
             {
                 unitOfWork.Rollback();
                 throw e;
+            }
+        }
+
+        private void CarregarTurma(string turmaCodigo)
+        {
+            turmaFechamento = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
+            if (turmaFechamento == null)
+                throw new NegocioException($"Turma com código [{turmaCodigo}] não localizada!");
+        }
+
+        private async Task EnviarNotasWfAprovacao(long fechamentoTurmaDisciplinaId, PeriodoEscolar periodoEscolar, Usuario usuarioLogado)
+        {
+            if (notasEnvioWfAprovacao.Any())
+            {
+                var lancaNota = !notasEnvioWfAprovacao.First().ConceitoId.HasValue;
+                var notaConceitoMensagem = lancaNota ? "nota" : "conceito";
+
+                var mensagem = await MontaMensagemWfAprovacao(notaConceitoMensagem, periodoEscolar, usuarioLogado);
+
+                var wfAprovacaoNota = new WorkflowAprovacaoDto()
+                {
+                    Ano = DateTime.Today.Year,
+                    NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
+                    EntidadeParaAprovarId = fechamentoTurmaDisciplinaId,
+                    Tipo = WorkflowAprovacaoTipo.AlteracaoNotaFechamento,
+                    TurmaId = turmaFechamento.CodigoTurma,
+                    UeId = turmaFechamento.Ue.CodigoUe,
+                    DreId = turmaFechamento.Ue.Dre.CodigoDre,
+                    NotificacaoTitulo = $"Alteração em {notaConceitoMensagem} final - Turma {turmaFechamento.Nome} ({turmaFechamento.AnoLetivo})",
+                    NotificacaoTipo = NotificacaoTipo.Notas,
+                    NotificacaoMensagem = mensagem
+                };
+
+                wfAprovacaoNota.AdicionarNivel(Cargo.CP);
+                wfAprovacaoNota.AdicionarNivel(Cargo.Diretor);
+                wfAprovacaoNota.AdicionarNivel(Cargo.Supervisor);
+
+                var idWorkflow = comandosWorkflowAprovacao.Salvar(wfAprovacaoNota);
+                foreach(var notaFechamento in notasEnvioWfAprovacao)
+                {
+                    await repositorioWfAprovacaoNotaFechamento.SalvarAsync(new WfAprovacaoNotaFechamento()
+                    {
+                        WfAprovacaoId = idWorkflow,
+                        FechamentoNotaId = notaFechamento.Id,
+                        Nota = notaFechamento.Nota,
+                        ConceitoId = notaFechamento.ConceitoId
+                    });
+                }
+            }
+        }
+
+        private async Task<string> MontaMensagemWfAprovacao(string notaConceitoMensagem, PeriodoEscolar periodoEscolar, Usuario usuarioLogado)
+        {
+            var mensagem = new StringBuilder();
+            mensagem.Append($"<p>A(s) {notaConceitoMensagem}(s) final(is) da turma {turmaFechamento.Nome} da ");
+            mensagem.Append($"{turmaFechamento.Ue.TipoEscola.ShortName()} {turmaFechamento.Ue.Nome} (DRE {turmaFechamento.Ue.Dre.Nome}) ");
+            mensagem.Append($"no bimestre {periodoEscolar.Bimestre} de {turmaFechamento.AnoLetivo} foram alterados pelo Professor {usuarioLogado.Nome}");
+            mensagem.Append($"({usuarioLogado.CriadoEm}) em {DateTime.Now.ToString("dd/MM/yyyy")} às {DateTime.Now.ToString("HH:mm")} para o(s) seguinte(s) aluno(s):</p>");
+
+            mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
+            mensagem.AppendLine("<tr>");
+            mensagem.AppendLine("<td style='padding: 5px;'>Código Aluno</td>");
+            mensagem.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
+            mensagem.AppendLine("</tr>");
+
+            var alunosTurma = await servicoEOL.ObterAlunosPorTurma(turmaFechamento.CodigoTurma);
+            foreach(var notaAprovacao in notasEnvioWfAprovacao)
+            {
+                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.CodigoAluno);
+
+                mensagem.AppendLine("<tr>");
+                mensagem.Append($"<td style='padding: 5px;'>{notaAprovacao.CodigoAluno}</td>");
+                mensagem.Append($"<td style='padding: 5px;'>{aluno?.NomeAluno}</td>");
+                mensagem.AppendLine("</tr>");
+            }
+            mensagem.AppendLine("</table>");
+            mensagem.AppendLine("<p>Você precisa aceitar esta notificação para que a alteração seja considerada válida.</p>");
+
+            return mensagem.ToString();
+        }
+
+        public void GerarNotificacaoAlteracaoLimiteDias(Turma turma, Usuario usuarioLogado, Ue ue, int bimestre, string alunosComNotaAlterada)
+        {
+            var dataAtual = DateTime.Now;
+            var mensagem = $"<p>A(s) nota(s)/conceito(s) final(is) da turma {turma.Nome} da {ue.Nome} (DRE {ue.Dre.Nome}) no bimestre {bimestre} de {turma.AnoLetivo} foram alterados pelo Professor " +
+                $"{usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) em  {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para o(s) seguinte(s) aluno(s):</p><br/>{alunosComNotaAlterada} ";
+            var listaCPs = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.CP);
+            var listaDiretores = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Diretor);
+            var listaSupervisores = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Supervisor);
+            var usuariosNotificacao = new List<UsuarioEolRetornoDto>();
+
+            if (listaCPs != null)
+                usuariosNotificacao.AddRange(listaCPs);
+            if (listaDiretores != null)
+                usuariosNotificacao.AddRange(listaDiretores);
+            if (listaSupervisores != null)
+                usuariosNotificacao.AddRange(listaSupervisores);
+
+            foreach (var usuarioNotificacaoo in usuariosNotificacao)
+            {
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioNotificacaoo.CodigoRf);
+                var notificacao = new Notificacao()
+                {
+                    Ano = turma.AnoLetivo,
+                    Categoria = NotificacaoCategoria.Alerta,
+                    DreId = ue.Dre.Id.ToString(),
+                    Mensagem = mensagem,
+                    UsuarioId = usuario.Id,
+                    Tipo = NotificacaoTipo.Notas,
+                    Titulo = $"Alteração em nota/conceito final - Turma {turma.Nome}",
+                    TurmaId = turma.Id.ToString(),
+                    UeId = turma.UeId.ToString(),
+                };
+                servicoNotificacao.Salvar(notificacao);
             }
         }
 
@@ -173,7 +322,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 fechamentoTurmaDisciplina.FechamentoTurma = fechamentoTurma;
             }
-                    
+
         }
 
         private async Task<IEnumerable<FechamentoAluno>> AtualizaSinteseAlunos(long fechamentoTurmaDisciplinaId, DateTime dataReferencia, DisciplinaDto disciplina)
@@ -181,7 +330,7 @@ namespace SME.SGP.Dominio.Servicos
             var fechamentoAlunos = await repositorioFechamentoAluno.ObterPorFechamentoTurmaDisciplina(fechamentoTurmaDisciplinaId);
             foreach (var fechamentoAluno in fechamentoAlunos)
             {
-                foreach(var fechamentoNota in fechamentoAluno.FechamentoNotas)
+                foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                 {
                     var frequencia = consultasFrequencia.ObterPorAlunoDisciplinaData(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia);
                     var sinteseDto = consultasFrequencia.ObterSinteseAluno(frequencia.PercentualFrequencia, disciplina);
@@ -201,6 +350,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
                 servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
+                servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(fechamento.Id, turma.CodigoTurma, disciplinaId);
             }
             servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
             servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
@@ -317,7 +467,7 @@ namespace SME.SGP.Dominio.Servicos
                 fechamentoAlunos = (await repositorioFechamentoAluno.ObterPorFechamentoTurmaDisciplina(fechamentoTurmaDisciplinaId)).ToList();
 
             // Edita as notas existentes
-            foreach(var agrupamentoNotasAluno in fechamentoNotasDto.GroupBy(g => g.CodigoAluno))
+            foreach (var agrupamentoNotasAluno in fechamentoNotasDto.GroupBy(g => g.CodigoAluno))
             {
                 // Busca fechamento do aluno
                 var fechamentoAluno = fechamentoAlunos.FirstOrDefault(c => c.AlunoCodigo == agrupamentoNotasAluno.Key);
@@ -330,9 +480,17 @@ namespace SME.SGP.Dominio.Servicos
                     var notaFechamento = fechamentoAluno.FechamentoNotas.FirstOrDefault(x => x.DisciplinaId == fechamentoNotaDto.DisciplinaId);
                     if (notaFechamento != null)
                     {
-                        notaFechamento.Nota = fechamentoNotaDto.Nota;
-                        notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
-                        notaFechamento.SinteseId = fechamentoNotaDto.SinteseId;
+                        if (!EnviarWfAprovacao())
+                        {
+                            notaFechamento.Nota = fechamentoNotaDto.Nota;
+                            notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
+                            notaFechamento.SinteseId = fechamentoNotaDto.SinteseId;
+                        }
+                        else
+                        {
+                            fechamentoNotaDto.Id = notaFechamento.Id;
+                            notasEnvioWfAprovacao.Add(fechamentoNotaDto);
+                        }
                     }
                     else
                         fechamentoAluno.AdicionarNota(MapearParaEntidade(fechamentoNotaDto));
@@ -342,6 +500,9 @@ namespace SME.SGP.Dominio.Servicos
 
             return fechamentoAlunos;
         }
+
+        private bool EnviarWfAprovacao()
+            => turmaFechamento.AnoLetivo != DateTime.Today.Year;
 
         private FechamentoNota MapearParaEntidade(FechamentoNotaDto fechamentoNotaDto)
             => fechamentoNotaDto == null ? null :
