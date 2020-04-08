@@ -425,27 +425,30 @@ namespace SME.SGP.Dominio.Servicos
 
             var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
             if (datasComRegistro.Count() > 0)
-                datasComRegistro.Select(d => diasParaIncluirRecorrencia.Remove(d));
+                diasParaIncluirRecorrencia.RemoveAll(d => datasComRegistro.Contains(d));
 
             List<PodePersistirNaDataRetornoEolDto> datasPersistencia = new List<PodePersistirNaDataRetornoEolDto>();
 
-            if (!usuario.EhProfessorCj())
+            if (diasParaIncluirRecorrencia.Any())
             {
-                var datasAtribuicao = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
-                if (datasAtribuicao == null || !datasAtribuicao.Any())
-                    throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+                if (!usuario.EhProfessorCj())
+                {
+                    var datasAtribuicao = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, diasParaIncluirRecorrencia.Select(a => a.Date.ToString("s")).ToArray(), aula.ComponenteCurricularEol.Codigo);
+                    if (datasAtribuicao == null || !datasAtribuicao.Any())
+                        throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+                    else
+                        datasPersistencia = datasAtribuicao.ToList();
+                }
                 else
-                    datasPersistencia = datasAtribuicao.ToList();
-            }
-            else
-            {
-                datasPersistencia.AddRange(
-                    diasParaIncluirRecorrencia.Select(d =>
-                    new PodePersistirNaDataRetornoEolDto()
-                    {
-                        Data = d,
-                        PodePersistir = true
-                    }));
+                {
+                    datasPersistencia.AddRange(
+                        diasParaIncluirRecorrencia.Select(d =>
+                        new PodePersistirNaDataRetornoEolDto()
+                        {
+                            Data = d,
+                            PodePersistir = true
+                        }));
+                }
             }
 
             await GerarAulaDeRecorrenciaParaDias(aula, usuario, datasPersistencia, datasComRegistro);
