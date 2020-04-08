@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<ConselhoClasseRecomendacao>> ObterPorFiltro(ConselhoClasseRecomendacaoTipo tipo)
+        public async Task<IEnumerable<ConselhoClasseRecomendacao>> ObterPorFiltroAsync(ConselhoClasseRecomendacaoTipo tipo)
         {
             var query = "select * from conselho_classe_recomendacao where excluido = false and tipo = @tipo";
 
