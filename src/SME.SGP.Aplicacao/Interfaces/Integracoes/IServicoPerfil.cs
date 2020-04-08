@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public interface IServicoPerfil
     {
-        Task<PerfisPorPrioridadeDto> DefinirPerfilPrioritario(IEnumerable<Guid> perfis, Usuario usuario, bool ehCJ);
+        Task<PerfisPorPrioridadeDto> DefinirPerfilPrioritario(IEnumerable<Guid> perfis, Usuario usuario);
     }
 }
