@@ -6,7 +6,13 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
 // Componentes
-import { Grid, SelectComponent, CampoTexto, CampoData } from '~/componentes';
+import {
+  Grid,
+  SelectComponent,
+  CampoTexto,
+  CampoData,
+  Label,
+} from '~/componentes';
 
 // Styles
 import { Linha } from '~/componentes/EstilosGlobais';
@@ -75,11 +81,12 @@ function Filtro({ onFiltrar }) {
       {form => (
         <Form className="col-md-12 mb-4">
           <Linha className="row mb-2">
-            <Grid cols={3}>
+            <Grid cols={4}>
+              <Label control="grupoId" text="Grupo" />
               <SelectComponent
                 form={form}
                 name="grupoId"
-                placeholder="Selecione o(s) grupo(s)"
+                placeholder="Selecione um grupo"
                 value={form.values.gruposId}
                 multiple
                 lista={gruposLista}
@@ -87,15 +94,32 @@ function Filtro({ onFiltrar }) {
                 valueText="Nome"
               />
             </Grid>
-            <Grid cols={5}>
-              <CampoTexto
+            <Grid cols={2}>
+              <Label control="dataEnvioInicio" text="Data de envio" />
+              <CampoData
                 form={form}
-                name="titulo"
-                placeholder="Digite o nome do comunicado"
-                value={form.values.titulo}
+                name="dataEnvioInicio"
+                placeholder="Data início"
+                formatoData="DD/MM/YYYY"
+                onChange={data => validaDataInicio(data)}
               />
             </Grid>
             <Grid cols={2}>
+              <Label
+                control="dataEnvioFim"
+                text="Data de envio"
+                className="text-white"
+              />
+              <CampoData
+                form={form}
+                name="dataEnvioFim"
+                placeholder="Data fim"
+                formatoData="DD/MM/YYYY"
+                onChange={data => validaDataFim(data)}
+              />
+            </Grid>
+            <Grid cols={2}>
+              <Label control="dataExpiracaoInicio" text="Data de expiração" />
               <CampoData
                 form={form}
                 name="dataExpiracaoInicio"
@@ -105,12 +129,28 @@ function Filtro({ onFiltrar }) {
               />
             </Grid>
             <Grid cols={2}>
+              <Label
+                control="dataExpiracaoFim"
+                text="Data de expiração"
+                className="text-white"
+              />
               <CampoData
                 form={form}
                 name="dataExpiracaoFim"
                 placeholder="Data fim"
                 formatoData="DD/MM/YYYY"
                 onChange={data => validaDataFim(data)}
+              />
+            </Grid>
+          </Linha>
+          <Linha className="row">
+            <Grid cols={12}>
+              <Label control="titulo" text="Tíutulo" />
+              <CampoTexto
+                form={form}
+                name="titulo"
+                placeholder="Procure pelo título do comunicado"
+                value={form.values.titulo}
               />
             </Grid>
           </Linha>
