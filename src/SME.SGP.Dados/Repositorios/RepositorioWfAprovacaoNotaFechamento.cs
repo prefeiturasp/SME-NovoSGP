@@ -21,9 +21,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task SalvarAsync(WfAprovacaoNotaFechamento entidade)
         {
             if (entidade.Id > 0)
-                await database.Conexao.InsertAsync(entidade);
-            else
                 await database.Conexao.UpdateAsync(entidade);
+            else
+                await database.Conexao.InsertAsync(entidade);
         }
     }
 }
