@@ -48,6 +48,7 @@ import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento'
 import PendenciasFechamentoLista from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoLista';
 import PendenciasFechamentoForm from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoForm';
 import ComunicadosLista from '~/paginas/AcompanhamentoEscolar/Comunicados/Lista';
+import ComunicadosCadastro from '~/paginas/AcompanhamentoEscolar/Comunicados/Cadastro';
 
 const rotas = new Map();
 
@@ -56,6 +57,24 @@ rotas.set(RotasDto.ACOMPANHAMENTO_COMUNICADOS, {
   menu: ['Gestão'],
   parent: '/',
   component: ComunicadosLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+});
+
+rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo`, {
+  menu: ['Gestão'],
+  parent: RotasDto.ACOMPANHAMENTO_COMUNICADOS,
+  component: ComunicadosCadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+});
+
+rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/:id`, {
+  menu: ['Gestão'],
+  parent: RotasDto.ACOMPANHAMENTO_COMUNICADOS,
+  component: ComunicadosCadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   // temPermissionamento: true,

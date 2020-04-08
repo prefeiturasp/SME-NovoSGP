@@ -85,12 +85,13 @@ const ComunicadosLista = () => {
 
   return (
     <>
-      <Cabecalho pagina="Comunicados" />
+      <Cabecalho pagina="Comunicação com pais ou responsáveis" />
       <Loader loading={loaderSecao}>
         <Card mx="mx-0">
           <ButtonGroup
             somenteConsulta={somenteConsulta}
-            permissoesTela={permissoesTela[RotasDto.ACOMPANHAMENTO_COMUNICADOS]}
+            permissoesTela={{ podeIncluir: true }}
+            // permissoesTela={permissoesTela[RotasDto.ACOMPANHAMENTO_COMUNICADOS]}
             temItemSelecionado={
               itensSelecionados && itensSelecionados.length >= 1
             }
