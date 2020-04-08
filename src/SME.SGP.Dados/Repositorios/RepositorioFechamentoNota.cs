@@ -18,6 +18,17 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public IEnumerable<WfAprovacaoNotaFechamento> ObterNotasEmAprovacaoPorFechamento(long fechamentoTurmaDisciplinaId)
+        {
+            var query = @"select w.*
+                            from wf_aprovacao_nota_fechamento w
+                          inner join fechamento_nota n on n.id = w.fechamento_nota_id 
+                          inner join fechamento_aluno a on a.id = n.fechamento_aluno_id
+                          where a.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId";
+
+            return database.Conexao.Query<WfAprovacaoNotaFechamento>(query, new { fechamentoTurmaDisciplinaId });
+        }
+
         public IEnumerable<WfAprovacaoNotaFechamento> ObterNotasEmAprovacaoWf(long workFlowId)
         {
             var query = @"select w.*, n.*, a.*, d.*, f.*, e.*

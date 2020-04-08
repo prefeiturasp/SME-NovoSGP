@@ -17,6 +17,9 @@ namespace SME.SGP.Dominio
         AulasSemFrequenciaNaDataDoFechamento = 4,
 
         [Display(Name = "Resultados Finais Insuficientes")]
-        ResultadosFinaisAbaixoDaMedia = 5
+        ResultadosFinaisAbaixoDaMedia = 5,
+
+        [Display(Name = "Alteração de nota de fechamento")]
+        AlteracaoNotaFechamento = 6
     }
 }
