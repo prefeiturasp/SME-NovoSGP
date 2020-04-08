@@ -28,9 +28,11 @@ function Filtro({ onFiltrar }) {
 
   const [valoresIniciais] = useState({
     grupoId: [],
-    titulo: '',
+    dataEnvioInicio: '',
+    dataEnvioFim: '',
     dataExpiracaoInicio: '',
     dataExpiracaoFim: '',
+    titulo: '',
   });
 
   const validacoes = () => {
@@ -39,7 +41,7 @@ function Filtro({ onFiltrar }) {
 
   const validarFiltro = valores => {
     const formContext = refForm && refForm.getFormikContext();
-    if (formContext.isValid && Object.keys(formContext.errors).length === 0) {
+    if (formContext.isValid) {
       onFiltrar(valores);
     }
   };
@@ -72,10 +74,9 @@ function Filtro({ onFiltrar }) {
     <Formik
       enableReinitialize
       initialValues={valoresIniciais}
-      validationSchema={validacoes()}
+      validationSchema={validacoes}
       onSubmit={valores => onFiltrar(valores)}
       ref={refFormik => setRefForm(refFormik)}
-      validate={valores => validarFiltro(valores)}
       validateOnChange
       validateOnBlur
     >
