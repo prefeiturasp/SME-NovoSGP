@@ -30,6 +30,10 @@ namespace SME.SGP.Aplicacao
         {
             var evento = repositorioEvento.ObterPorId(id);
             evento.TipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
+
+            if (evento.TipoEvento == null)
+                throw new NegocioException("Não foi possível obter o tipo do evento");
+
             if (!evento.PodeAlterar())
                 throw new NegocioException("Não é possível editar um evento em aprovação");
 
