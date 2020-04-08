@@ -222,9 +222,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
                           notaMedia={dadosFechamentoFinal.notaMedia}
                           frequenciaMedia={dadosFechamentoFinal.frequenciaMedia}
                           indexAluno={i}
-                          desabilitarCampo={
-                            desabilitarCampo && aluno.podeEditar
-                          }
+                          desabilitarCampo={desabilitarCampo}
                           ehSintese={ehSintese}
                         />
                       </>
