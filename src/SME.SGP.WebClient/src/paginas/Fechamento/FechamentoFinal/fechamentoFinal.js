@@ -77,7 +77,6 @@ const FechamentoFinal = forwardRef((props, ref) => {
     ServicoFechamentoFinal.obter(turmaCodigo, disciplinaCodigo, ehRegencia)
       .then(resposta => {
         if (resposta && resposta.data) {
-
           resposta.data.alunos.forEach(item => {
             item.notasConceitoFinal.forEach(aluno => {
               aluno.notaConceitoAtual = aluno.notaConceito;
@@ -223,7 +222,9 @@ const FechamentoFinal = forwardRef((props, ref) => {
                           notaMedia={dadosFechamentoFinal.notaMedia}
                           frequenciaMedia={dadosFechamentoFinal.frequenciaMedia}
                           indexAluno={i}
-                          desabilitarCampo={desabilitarCampo}
+                          desabilitarCampo={
+                            desabilitarCampo && aluno.podeEditar
+                          }
                           ehSintese={ehSintese}
                         />
                       </>
@@ -267,7 +268,7 @@ FechamentoFinal.defaultProps = {
   disciplinaCodigo: '1',
   ehRegencia: false,
   turmaPrograma: false,
-  onChange: () => { },
+  onChange: () => {},
   desabilitarCampo: false,
 };
 
