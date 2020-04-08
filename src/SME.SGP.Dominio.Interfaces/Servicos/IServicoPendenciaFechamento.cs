@@ -21,6 +21,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia);
 
         int ObterQuantidadePendenciasGeradas();
-        int ValidarAlteracaoExtenporanea(long fechamentoId, string turmaCodigo, long disciplinaId);
+        int ValidarAlteracaoExtemporanea(long fechamentoId, string turmaCodigo, long disciplinaId);
     }
 }
