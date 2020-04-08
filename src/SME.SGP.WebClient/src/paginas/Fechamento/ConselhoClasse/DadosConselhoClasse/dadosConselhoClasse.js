@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
+import ListaNotasConselho from './ListaNotasConselho/listaNotasConselho';
 // import ListaNotasConselho from './ListaNotasConselho/ListaNotasConselho';
 
 const DadosConselhoClasse = () => {
@@ -18,7 +19,7 @@ const DadosConselhoClasse = () => {
         className="ant-tab-nav-20"
       >
         <TabPane tab="1º Bimestre" key="1">
-          1
+          <ListaNotasConselho />
         </TabPane>
         <TabPane tab="2º Bimestre" key="2">
           2
