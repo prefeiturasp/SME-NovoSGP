@@ -1,6 +1,6 @@
 create table if not exists public.ciclo_ensino ( 
 	id int8 not null generated always as identity,
-	cod_etapa_ensino_eol int8 not null,
+	cod_ciclo_ensino_eol int8 not null,
 	descricao varchar(60) not null,
 	criado_em timestamp not null,
 	criado_por varchar (200) not null,
