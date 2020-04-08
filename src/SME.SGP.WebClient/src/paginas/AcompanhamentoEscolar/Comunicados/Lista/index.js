@@ -56,7 +56,7 @@ const ComunicadosLista = () => {
           <Badge
             key={shortid.generate()}
             alt={grupo.Nome_Grupo}
-            className="badge badge-pill border text-dark font-weight-light px-2 py-1 mr-2"
+            className="badge badge-pill bg-white border text-dark font-weight-light px-2 py-1 mr-2"
           >
             {grupo.Nome_Grupo}
           </Badge>
