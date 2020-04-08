@@ -252,9 +252,9 @@ namespace SME.SGP.Dominio.Servicos
             + (alunosAbaixoMedia > 0 ? 1 : 0)
             + (notasExtemporaneasAlteradas > 0 ? 1 : 0);
 
-        public int ValidarAlteracaoExtenporanea(long fechamentoId, string turmaCodigo, long disciplinaId)
+        public int ValidarAlteracaoExtemporanea(long fechamentoId, string turmaCodigo, long disciplinaId)
         {
-            var registrosNotasAlteradas = repositorioFechamentoNota.ObterNotasEmAprovacaoPorFechamento(fechamentoId);
+            var registrosNotasAlteradas = repositorioFechamentoNota.ObterNotasEmAprovacaoPorFechamento(fechamentoId).Result;
 
             if (registrosNotasAlteradas != null && registrosNotasAlteradas.Any())
             {

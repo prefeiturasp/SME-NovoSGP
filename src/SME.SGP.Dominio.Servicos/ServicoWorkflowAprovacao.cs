@@ -157,10 +157,13 @@ namespace SME.SGP.Dominio.Servicos
 
         private void AprovarAlteracaoNotaFechamento(long codigoDaNotificacao, long workFlowId, string turmaCodigo)
         {
-            var notasEmAprovacao = repositorioFechamentoNota.ObterNotasEmAprovacaoWf(workFlowId);
-            AtualizarNotasFechamento(notasEmAprovacao);
+            var notasEmAprovacao = ObterNotasEmAprovacao(workFlowId);
+            if (notasEmAprovacao != null && notasEmAprovacao.Any())
+            {
+                AtualizarNotasFechamento(notasEmAprovacao);
 
-            NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, turmaCodigo);
+                NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, turmaCodigo);
+            }
         }
 
         private void AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao)
@@ -686,10 +689,13 @@ namespace SME.SGP.Dominio.Servicos
 
         private void TrataReprovacaoAlteracaoNotaFechamento(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
-            var notasEmAprovacao = repositorioFechamentoNota.ObterNotasEmAprovacaoWf(workflow.Id);
+            var notasEmAprovacao = ObterNotasEmAprovacao(workflow.Id);
             
             NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, workflow.TurmaId, false, motivo);
         }
+
+        private IEnumerable<WfAprovacaoNotaFechamento> ObterNotasEmAprovacao(long workflowId)
+            => repositorioFechamentoNota.ObterNotasEmAprovacaoWf(workflowId).Result;
 
         private void TrataReprovacaoEventoDataPassada(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
