@@ -19,7 +19,7 @@ import {
   CampoData,
   Label,
   TextEditor,
-  // momentSchema,
+  momentSchema,
   Base,
 } from '~/componentes';
 
@@ -105,13 +105,70 @@ const ComunicadosCadastro = ({ match }) => {
   const [validacoes] = useState(
     Yup.object({
       grupoId: Yup.string().required('Campo obrigatório'),
-      dataEnvioInicio: Yup.string().required('Campo obrigatório'),
+      dataEnvioInicio: momentSchema
+        .required('Campo obrigatório')
+        .test(
+          'validaDataEnvio',
+          'Data início não deve ser maior que a data fim',
+          function validar() {
+            const { dataEnvioInicio } = this.parent;
+            const { dataEnvioFim } = this.parent;
+
+            if (
+              dataEnvioInicio &&
+              dataEnvioFim &&
+              window.moment(dataEnvioInicio) > window.moment(dataEnvioFim)
+            ) {
+              return false;
+            }
+
+            return true;
+          }
+        ),
       dataEnvioFim: Yup.string().required('Campo obrigatório'),
-      dataExpiracaoInicio: Yup.string().required('Campo obrigatório'),
-      dataExpiracaoFim: Yup.string().required('Campo obrigatório'),
+      dataExpiracaoInicio: momentSchema
+        .test(
+          'validaDataMaiorQueEnvio',
+          'Data de expiração deve ser maior que a data de envio',
+          function validar() {
+            const { dataEnvioFim } = this.parent;
+            const { dataExpiracaoInicio } = this.parent;
+
+            if (
+              dataEnvioFim &&
+              dataExpiracaoInicio &&
+              window.moment(dataExpiracaoInicio) < window.moment(dataEnvioFim)
+            ) {
+              return false;
+            }
+
+            return true;
+          }
+        )
+        .test(
+          'validaDataExpiracao',
+          'Data início não deve ser maior que a data fim',
+          function validar() {
+            const { dataExpiracaoInicio } = this.parent;
+            const { dataExpiracaoFim } = this.parent;
+
+            if (
+              dataExpiracaoInicio &&
+              dataExpiracaoFim &&
+              window.moment(dataExpiracaoInicio) >
+                window.moment(dataExpiracaoFim)
+            ) {
+              return false;
+            }
+
+            return true;
+          }
+        ),
+      dataExpiracaoFim: Yup.string(),
       titulo: Yup.string()
         .required('Campo obrigatório')
-        .min(10, 'Deve conter no mínimo 10 caracteres'),
+        .min(10, 'Deve conter no mínimo 10 caracteres')
+        .max(50, 'Deve conter no máximo 50 caracteres'),
     })
   );
 
@@ -154,7 +211,7 @@ const ComunicadosCadastro = ({ match }) => {
       ...valores,
       descricao: textEditorRef.current.state.value,
     };
-    console.log(dadosSalvar);
+    return dadosSalvar;
   };
 
   return (
@@ -206,7 +263,6 @@ const ComunicadosCadastro = ({ match }) => {
                       name="dataEnvioInicio"
                       placeholder="Data início"
                       formatoData="DD/MM/YYYY"
-                      // onChange={data => validaDataInicio(data)}
                     />
                   </Grid>
                   <Grid cols={2}>
@@ -220,7 +276,6 @@ const ComunicadosCadastro = ({ match }) => {
                       name="dataEnvioFim"
                       placeholder="Data fim"
                       formatoData="DD/MM/YYYY"
-                      // onChange={data => validaDataFim(data)}
                     />
                   </Grid>
                   <Grid cols={2}>
@@ -233,7 +288,6 @@ const ComunicadosCadastro = ({ match }) => {
                       name="dataExpiracaoInicio"
                       placeholder="Data início"
                       formatoData="DD/MM/YYYY"
-                      // onChange={data => validaDataInicio(data)}
                     />
                   </Grid>
                   <Grid cols={2}>
@@ -247,7 +301,6 @@ const ComunicadosCadastro = ({ match }) => {
                       name="dataExpiracaoFim"
                       placeholder="Data fim"
                       formatoData="DD/MM/YYYY"
-                      // onChange={data => validaDataFim(data)}
                     />
                   </Grid>
                 </Linha>
