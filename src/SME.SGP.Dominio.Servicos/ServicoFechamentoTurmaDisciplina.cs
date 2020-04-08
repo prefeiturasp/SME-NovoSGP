@@ -133,8 +133,8 @@ namespace SME.SGP.Dominio.Servicos
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos);
 
 
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
-            var parametroDiasAlteracao = repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turma.AnoLetivo);
+            var alunos = await servicoEOL.ObterAlunosPorTurma(turmaFechamento.CodigoTurma);
+            var parametroDiasAlteracao = repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turmaFechamento.AnoLetivo);
             var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.DayOfYear;
             var acimaDiasPermidosAlteracao = parametroDiasAlteracao != null && diasAlteracao > int.Parse(parametroDiasAlteracao);
             var alunosComNotaAlterada = "";
@@ -169,14 +169,12 @@ namespace SME.SGP.Dominio.Servicos
                     }
                 }
 
-                if (alunosComNotaAlterada.Length > 0)
-                {
-                    Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turma, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
-                }
-
                 await EnviarNotasWfAprovacao(fechamentoTurmaDisciplina.Id, fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar, usuarioLogado);
 
                 unitOfWork.PersistirTransacao();
+
+                if (alunosComNotaAlterada.Length > 0)
+                    Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turmaFechamento, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
 
                 Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota));
 
@@ -211,6 +209,7 @@ namespace SME.SGP.Dominio.Servicos
                     NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
                     EntidadeParaAprovarId = fechamentoTurmaDisciplinaId,
                     Tipo = WorkflowAprovacaoTipo.AlteracaoNotaFechamento,
+                    TurmaId = turmaFechamento.CodigoTurma,
                     UeId = turmaFechamento.Ue.CodigoUe,
                     DreId = turmaFechamento.Ue.Dre.CodigoDre,
                     NotificacaoTitulo = $"Alteração em {notaConceitoMensagem} final - Turma {turmaFechamento.Nome} ({turmaFechamento.AnoLetivo})",
