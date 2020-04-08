@@ -25,6 +25,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -47,7 +48,8 @@ namespace SME.SGP.Dominio.Servicos
                                         IUnitOfWork unitOfWork,
                                         IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                         IRepositorioFechamentoNota repositorioFechamentoNota,
-                                        IRepositorioUsuario repositorioUsuario)
+                                        IRepositorioUsuario repositorioUsuario,
+                                        IRepositorioPendencia repositorioPendencia)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioWorkflowAprovacaoNivelNotificacao = repositorioWorkflowAprovacaoNivelNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivelNotificacao));
@@ -66,6 +68,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
+            this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
         }
 
         public void Aprovar(WorkflowAprovacao workflow, bool aprovar, string observacao, long notificacaoId)
@@ -162,9 +165,14 @@ namespace SME.SGP.Dominio.Servicos
 
         private void AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao)
         {
+            var fechamentoTurmaDisciplinaId = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplinaId;
+
             unitOfWork.IniciarTransacao();
             try
             {
+                // Resolve a pendencia de fechamento
+                repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
+
                 foreach (var notaEmAprovacao in notasEmAprovacao)
                 {
                     var fechamentoNota = notaEmAprovacao.FechamentoNota;
