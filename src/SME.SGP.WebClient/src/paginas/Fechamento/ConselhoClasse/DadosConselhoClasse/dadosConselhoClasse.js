@@ -3,6 +3,7 @@ import { Tabs } from 'antd';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import AnotacoesAluno from './AnotacoesAluno/anotacoesAluno';
 import RecomendacaoAlunoFamilia from './RecomendacaoAlunoFamilia/recomendacaoAlunoFamilia';
+import AnotacoesPedagogicas from './AnotacoesPedagogicas/anotacoesPedagogicas';
 // import ListaNotasConselho from './ListaNotasConselho/ListaNotasConselho';
 
 const DadosConselhoClasse = () => {
@@ -16,6 +17,7 @@ const DadosConselhoClasse = () => {
     return (
       <>
         <RecomendacaoAlunoFamilia />
+        <AnotacoesPedagogicas />
         <AnotacoesAluno />
       </>
     );
