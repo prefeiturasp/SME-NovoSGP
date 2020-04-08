@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
-            //sentryDSN = configuration.GetSection("Sentry:DSN").Value;
+            sentryDSN = configuration.GetSection("Sentry:DSN").Value;
             this.insightsClient = insightsClient ?? throw new ArgumentNullException(nameof(insightsClient));
         }
 
