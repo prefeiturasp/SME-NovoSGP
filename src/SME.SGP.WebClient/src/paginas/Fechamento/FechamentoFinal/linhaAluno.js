@@ -73,7 +73,7 @@ const LinhaAluno = ({
           onChangeNotaConceitoFinal={(nota, valor) =>
             onChangeNotaConceitoFinal(nota, valor)
           }
-          desabilitarCampo={false}
+          desabilitarCampo={desabilitarCampo}
           podeEditar={aluno.podeEditar}
           listaTiposConceitos={listaConceitos}
           label={label}
