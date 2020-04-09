@@ -13,10 +13,18 @@ namespace SME.SGP.Dados.Repositorios
 						SELECT
 							gc.id,
 							gc.nome,
-							c.cod_ciclo_ensino_eol as CodCicloEnino,
+							gc.criado_em as CriadoEm,
+							gc.criado_por as CriadoPor,
+							gc.alterado_em as AlteradoEm,
+							gc.alterado_por as AlteradoPor,
+							gc.criado_rf as CriadoRf,
+							gc.alterado_rf as AlteradoRf,
+							c.id as IdCicloEnsino,
+							c.cod_ciclo_ensino_eol as CodCicloEnsino,
 							c.descricao as CicloEnsino,
+							null as IdTipoEscola,
 							null as CodTipoEscola,
-							null as TipoeEscola
+							null as TipoEscola
 						FROM   grupo_comunicado gc,
 							unnest(string_to_array(gc.tipo_ciclo_id, ',')) ciclo(cod_ciclo)
 							left join ciclo_ensino c on cast(cod_ciclo as int8) = c.cod_ciclo_ensino_eol
@@ -26,10 +34,18 @@ namespace SME.SGP.Dados.Repositorios
 						SELECT
 							gc.id,
 							gc.nome,
+							gc.criado_em as CriadoEm,
+							gc.criado_por as CriadoPor,
+							gc.alterado_em as AlteradoEm,
+							gc.alterado_por as AlteradoPor,
+							gc.criado_rf as CriadoRf,
+							gc.alterado_rf as AlteradoRf,
+							null as IdCicloEnsino,
 							null as CodCicloEnino,
 							null as CicloEnsino,
+							t.id as IdTipoEscola,
 							t.cod_tipo_escola_eol as CodTipoEscola,
-							t.descricao as TipoeEscola
+							t.descricao as TipoEscola
 						FROM   grupo_comunicado gc,
 							unnest(string_to_array(gc.tipo_escola_id, ',')) te(tipo_escola)
 							left join tipo_escola t on cast(te.tipo_escola as int) = t.cod_tipo_escola_eol

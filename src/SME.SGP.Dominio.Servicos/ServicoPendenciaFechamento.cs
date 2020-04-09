@@ -19,6 +19,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
@@ -27,6 +28,7 @@ namespace SME.SGP.Dominio.Servicos
         private int aulasSemPlanoAula;
         private int aulasSemFrequencia;
         private int alunosAbaixoMedia;
+        private int notasExtemporaneasAlteradas;
 
         public ServicoPendenciaFechamento(IUnitOfWork unitOfWork,
                                           IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
@@ -34,6 +36,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
                                           IRepositorioAula repositorioAula,
                                           IRepositorioParametrosSistema repositorioParametrosSistema,
+                                          IRepositorioFechamentoNota repositorioFechamentoNota,
                                           IServicoEOL servicoEOL,
                                           IServicoUsuario servicoUsuario)
         {
@@ -43,6 +46,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioPendenciaFechamento = repositorioPendenciaFechamento ?? throw new ArgumentNullException(nameof(repositorioPendenciaFechamento));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
+            this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.servicoEOL = servicoEOL;
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
@@ -245,6 +249,23 @@ namespace SME.SGP.Dominio.Servicos
             + (aulasReposicaoPendentes > 0 ? 1 : 0)
             + (aulasSemPlanoAula > 0 ? 1 : 0)
             + (aulasSemFrequencia > 0 ? 1 : 0)
-            + (alunosAbaixoMedia > 0 ? 1 : 0);
+            + (alunosAbaixoMedia > 0 ? 1 : 0)
+            + (notasExtemporaneasAlteradas > 0 ? 1 : 0);
+
+        public int ValidarAlteracaoExtemporanea(long fechamentoId, string turmaCodigo, long disciplinaId)
+        {
+            var registrosNotasAlteradas = repositorioFechamentoNota.ObterNotasEmAprovacaoPorFechamento(fechamentoId).Result;
+
+            if (registrosNotasAlteradas != null && registrosNotasAlteradas.Any())
+            {
+                var mensagem = new StringBuilder($"Notas de fechamento alteradas fora do ano de vigência da turma {turmaCodigo}. Necessário aprovação do workflow");
+                GerarPendencia(fechamentoId, TipoPendencia.AlteracaoNotaFechamento, mensagem.ToString());
+            }
+            else
+                repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
+
+            notasExtemporaneasAlteradas = registrosNotasAlteradas.Count();
+            return notasExtemporaneasAlteradas;
+        }
     }
 }
