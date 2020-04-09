@@ -104,7 +104,12 @@ namespace SME.SGP.Aplicacao
             {
                 notasFechamentosFinais = await repositorioFechamentoNota.ObterPorFechamentoTurma(fechamentoTurmaDisciplina.Id);
             }
-            var notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
+
+            var notasFechamentosBimestres = Enumerable.Empty<FechamentoNotaAlunoDto>();
+            if (!retorno.EhSintese)
+            {
+               notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
+            }             
 
             var professorTitular = await ObterRfProfessorTitularDisciplina(turma.CodigoTurma, filtros.DisciplinaCodigo);
             if (string.IsNullOrEmpty(professorTitular))
