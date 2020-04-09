@@ -19,9 +19,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
         }
 
-        private async Task<bool> VerificarProfCJSemTurmaTitular(string login, bool ehCJ, IEnumerable<Guid> perfis)
+        private async Task<bool> VerificarProfCJSemTurmaTitular(string login, bool usuarioPerfilCJPrioritario)
         {
-            if (ehCJ && perfis.Contains(Perfis.PERFIL_PROFESSOR) && perfis.Contains(Perfis.PERFIL_CJ))
+            if (usuarioPerfilCJPrioritario)
             {
                 var lstTurmasAtribuidas = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_PROFESSOR, false);
 
@@ -32,13 +32,14 @@ namespace SME.SGP.Aplicacao.Integracoes
             return false;
         }
 
-        public async Task<PerfisPorPrioridadeDto> DefinirPerfilPrioritario(IEnumerable<Guid> perfis, Usuario usuario, bool ehCJ)
+        public async Task<PerfisPorPrioridadeDto> DefinirPerfilPrioritario(IEnumerable<Guid> perfis, Usuario usuario)
         {
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfis);
             var possuiTurmaAtiva = repositorioAbrangencia.PossuiAbrangenciaTurmaAtivaPorLogin(usuario.Login);
-            var ehProfCJSemTurmaTitular = await VerificarProfCJSemTurmaTitular(usuario.Login, ehCJ, perfis);
 
             usuario.DefinirPerfis(perfisUsuario);
+
+            var ehProfCJSemTurmaTitular = await VerificarProfCJSemTurmaTitular(usuario.Login, usuario.PossuiPerfilCJPrioritario());
             usuario.DefinirPerfilAtual(usuario.ObterPerfilPrioritario(possuiTurmaAtiva, ehProfCJSemTurmaTitular));
 
             var perfisPorPrioridade = new PerfisPorPrioridadeDto
