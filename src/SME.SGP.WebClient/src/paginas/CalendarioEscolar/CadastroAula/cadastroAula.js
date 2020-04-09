@@ -641,7 +641,7 @@ const CadastroAula = ({ match }) => {
   };
 
   const onClickVoltar = async form => {
-    if (modoEdicao && !somenteLeitura) {
+    if (dentroPeriodo && modoEdicao && !somenteLeitura) {
       const confirmado = await confirmar(
         'Atenção',
         '',
@@ -972,6 +972,7 @@ const CadastroAula = ({ match }) => {
                     id="quantidadeTexto"
                     desabilitado={
                       somenteLeitura ||
+                      !dentroPeriodo ||
                       !idDisciplina ||
                       (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
                       (ehRegencia && !ehReposicao) ||
