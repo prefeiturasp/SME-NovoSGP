@@ -36,7 +36,7 @@ const AvaliacaoForm = ({ match }) => {
   const [podeLancaNota, setPodeLancaNota] = useState(true);
 
   const clicouBotaoVoltar = async () => {
-    if (modoEdicao) {
+    if (dentroPeriodo && modoEdicao) {
       const confirmado = await confirmar(
         'Atenção',
         'Suas alterações não foram salvas, deseja salvar agora?'
@@ -621,7 +621,7 @@ const AvaliacaoForm = ({ match }) => {
                             lista={listaDisciplinas}
                             valueOption="codigoComponenteCurricular"
                             valueText="nome"
-                            disabled={disciplinaDesabilitada}
+                            disabled={!dentroPeriodo || disciplinaDesabilitada}
                             placeholder="Selecione um componente curricular"
                             valueSelect={listaDisciplinasSelecionadas}
                             form={form}
@@ -636,7 +636,7 @@ const AvaliacaoForm = ({ match }) => {
                             lista={listaDisciplinas}
                             valueOption="codigoComponenteCurricular"
                             valueText="nome"
-                            disabled={disciplinaDesabilitada}
+                            disabled={!dentroPeriodo || disciplinaDesabilitada}
                             placeholder="Selecione um componente curricular"
                             form={form}
                             onChange={valor => {
@@ -659,6 +659,7 @@ const AvaliacaoForm = ({ match }) => {
                         placeholder="Atividade Avaliativa"
                         form={form}
                         onChange={aoTrocarCampos}
+                        disabled={!dentroPeriodo}
                       />
                     </Grid>
                     <Grid cols={!temRegencia ? 4 : 6} className="mb-4">
@@ -675,6 +676,7 @@ const AvaliacaoForm = ({ match }) => {
                           form.setFieldValue('nome', e.target.value);
                           aoTrocarCampos();
                         }}
+                        desabilitado={!dentroPeriodo}
                       />
                     </Grid>
                   </Div>
