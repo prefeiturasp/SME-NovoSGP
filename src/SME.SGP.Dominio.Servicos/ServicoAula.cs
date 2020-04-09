@@ -117,7 +117,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var aulaExistente = await repositorioAula.ObterAulaDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
                 if (aulaExistente != null && !aulaExistente.Id.Equals(aula.Id))
-                    throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
+                    throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular.");
 
                 var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
 
@@ -266,7 +266,7 @@ namespace SME.SGP.Dominio.Servicos
             if (datasComRegistro.Count() > 0)
                 aulasQueDeramErro.AddRange(
                         datasComRegistro.Select(d =>
-                            (d, $"Já existe uma aula criada neste dia para este componente curricular")
+                            (d, $"Já existe uma aula criada neste dia para este componente curricular.")
                         ));
 
             foreach (var aulaRecorrente in aulasRecorrencia)
@@ -376,7 +376,7 @@ namespace SME.SGP.Dominio.Servicos
             if (datasComRegistro.Count() > 0)
                 aulasQueDeramErro.AddRange(
                         datasComRegistro.Select(d =>
-                            (d, $"Já existe uma aula criada neste dia para este componente curricular")
+                            (d, $"Já existe uma aula criada neste dia para este componente curricular.")
                         ));
 
             foreach (var dia in datasParaPersistencia)
