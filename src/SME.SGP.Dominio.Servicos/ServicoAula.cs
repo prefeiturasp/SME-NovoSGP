@@ -234,10 +234,20 @@ namespace SME.SGP.Dominio.Servicos
             // Verifica recorrencia da gravação
             if (recorrencia != RecorrenciaAula.AulaUnica)
             {
-                Cliente.Executar<IServicoAula>(s => s.GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
+                var sucessoRecorrencia = false;
+
+                try
+                {
+                    Cliente.Executar<IServicoAula>(s => s.GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
+                    sucessoRecorrencia = true;
+                }
+                catch (Exception)
+                {
+                    sucessoRecorrencia = false;
+                }
 
                 var mensagem = ehInclusao ? "cadastrada" : "alterada";
-                return $"Aula {mensagem} com sucesso. Serão {mensagem}s aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
+                return $"Aula {mensagem} com sucesso. {(sucessoRecorrencia ? $"Serão {mensagem}s aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento." : "Não foi possível cadastrar as aulas recorrentes, tente novamente.")} ";
             }
 
             return "Aula cadastrada com sucesso.";
