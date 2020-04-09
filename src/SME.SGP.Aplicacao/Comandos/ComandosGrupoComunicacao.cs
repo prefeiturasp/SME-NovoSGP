@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -8,10 +7,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosGrupoComunicacao : IComandosGrupoComunicacao
     {
-        private readonly IRepositorioAulaPrevista repositorio;
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IRepositorioGrupoComunicacao repositorio;
 
-        public ComandosGrupoComunicacao(IRepositorioAulaPrevista repositorio)
+        public ComandosGrupoComunicacao(IRepositorioGrupoComunicacao repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
