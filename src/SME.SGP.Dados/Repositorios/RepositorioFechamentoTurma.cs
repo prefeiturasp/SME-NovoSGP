@@ -23,6 +23,8 @@ namespace SME.SGP.Dados.Repositorios
                             and turma_id = @turmaId ");
             if (periodoId > 0)
                 query.AppendLine(" and periodo_escolar_id = @periodoId");
+            else
+                query.AppendLine(" and periodo_escolar_id is null");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, periodoId });
         }
