@@ -26,6 +26,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
     turmaPrograma,
     onChange,
     desabilitarCampo,
+    carregandoFechamentoFinal,
   } = props;
 
   const dispatch = useDispatch();
@@ -74,6 +75,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
 
   const obterFechamentoFinal = useCallback(() => {
     dispatch(setExpandirLinha([]));
+    carregandoFechamentoFinal(true);
     ServicoFechamentoFinal.obter(turmaCodigo, disciplinaCodigo, ehRegencia)
       .then(resposta => {
         if (resposta && resposta.data) {
@@ -95,8 +97,12 @@ const FechamentoFinal = forwardRef((props, ref) => {
             obterListaConceitos(resposta.data.eventoData);
           }
         }
+        carregandoFechamentoFinal(false);
       })
-      .catch(e => erros(e));
+      .catch(e => {
+        erros(e);
+        carregandoFechamentoFinal(false);
+      });
   }, [disciplinaCodigo, ehRegencia, turmaCodigo]);
 
   useImperativeHandle(ref, () => ({
@@ -259,6 +265,7 @@ FechamentoFinal.propTypes = {
   turmaPrograma: PropTypes.bool,
   onChange: PropTypes.func,
   desabilitarCampo: PropTypes.bool,
+  carregandoFechamentoFinal: PropTypes.func,
 };
 
 FechamentoFinal.defaultProps = {
@@ -268,6 +275,7 @@ FechamentoFinal.defaultProps = {
   turmaPrograma: false,
   onChange: () => {},
   desabilitarCampo: false,
+  carregandoFechamentoFinal: () => {},
 };
 
 export default FechamentoFinal;
