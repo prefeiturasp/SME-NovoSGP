@@ -29,10 +29,16 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
         {
             var evento = repositorioEvento.ObterPorId(id);
-            evento.TipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
 
-            if (evento.TipoEvento == null)
+            if (evento == null)
+                throw new NegocioException("Não foi possível obter o evento");
+
+            var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
+
+            if (tipoEvento == null)
                 throw new NegocioException("Não foi possível obter o tipo do evento");
+
+            evento.AdicionarTipoEvento(tipoEvento);
 
             if (!evento.PodeAlterar())
                 throw new NegocioException("Não é possível editar um evento em aprovação");
