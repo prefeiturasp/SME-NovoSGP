@@ -45,9 +45,6 @@ namespace SME.SGP.Aplicacao
             
             var mensagensDeErro = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina);
 
-            if (!mensagensDeErro.Any())
-                mensagensDeErro.Add("Fechamento(s) salvo(s) com sucesso!");
-
             return mensagensDeErro.ToArray();
         }
 
@@ -72,15 +69,13 @@ namespace SME.SGP.Aplicacao
                 fechamentoTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(fechamentoFinalSalvarDto.TurmaCodigo, disciplinaId);
 
             if (fechamentoTurmaDisciplina == null)
-                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina() { DisciplinaId = disciplinaId };
-
-            fechamentoTurmaDisciplina.FechamentoTurma = fechamentoFinalTurma;
+                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina() { DisciplinaId = disciplinaId, FechamentoTurma = fechamentoFinalTurma, Situacao = SituacaoFechamento.ProcessadoComSucesso };
 
             foreach (var agrupamentoAluno in fechamentoFinalSalvarDto.Itens.GroupBy(a => a.AlunoRf))
             {
                 var fechamentoAluno = await repositorioFechamentoAluno.ObterFechamentoAlunoENotas(fechamentoTurmaDisciplina.Id, agrupamentoAluno.Key);
                 if (fechamentoAluno == null)
-                    fechamentoAluno = new FechamentoAluno();
+                    fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoAluno.Key };
 
                 foreach(var fechamentoItemDto in agrupamentoAluno)
                 {
