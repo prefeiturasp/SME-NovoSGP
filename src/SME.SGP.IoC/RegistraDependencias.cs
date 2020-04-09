@@ -130,6 +130,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasConselhoClasse, ConsultasConselhoClasse>();
             services.TryAddScoped<IConsultasConselhoClasseAluno, ConsultasConselhoClasseAluno>();
             services.TryAddScoped<IConsultasConselhoClasseNota, ConsultasConselhoClasseNota>();
+            services.TryAddScoped<IConsultaGrupoComunicacao, ConsultaGrupoComunicacao>();
             services.TryAddScoped<IConsultasConselhoClasseRecomendacao, ConsultasConselhoClasseRecomendacao>();
         }
 
@@ -223,6 +224,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConselhoClasse, RepositorioConselhoClasse>();
             services.TryAddScoped<IRepositorioConselhoClasseAluno, RepositorioConselhoClasseAluno>();
             services.TryAddScoped<IRepositorioConselhoClasseNota, RepositorioConselhoClasseNota>();
+            services.TryAddScoped<IRepositorioGrupoComunicacao, RepositorioGrupoComunicacao>();
             services.TryAddScoped<IRepositorioWfAprovacaoNotaFechamento, RepositorioWfAprovacaoNotaFechamento>();
             services.TryAddScoped<IRepositorioConselhoClasseRecomendacao, RepositorioConselhoClasseRecomendacao>();
         }
