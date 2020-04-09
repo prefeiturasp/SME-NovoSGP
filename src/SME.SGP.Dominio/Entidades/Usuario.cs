@@ -212,6 +212,10 @@ namespace SME.SGP.Dominio
             => Perfis != null &&
                 Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ);
 
+        public bool PossuiPerfilProfessor()
+           => Perfis != null &&
+               Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);
+
         public bool PossuiPerfilDre()
         {
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.DRE);
@@ -224,6 +228,14 @@ namespace SME.SGP.Dominio
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
             }
             return PossuiPerfilDre() || PossuiPerfilUe();
+        }
+
+        public bool PossuiPerfilCJPrioritario()
+        {
+            return Perfis != null && PossuiPerfilCJ() && PossuiPerfilProfessor() &&
+                   !Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR ||
+                                                     c.CodigoPerfil == Dominio.Perfis.PERFIL_CP ||
+                                                     c.CodigoPerfil == Dominio.Perfis.PERFIL_AD);
         }
 
         public bool PossuiPerfilSme()
