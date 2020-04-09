@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -29,7 +30,11 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromBody]FechamentoFinalSalvarDto fechamentoFinalSalvarDto, [FromServices]IComandosFechamentoFinal comandosFechamentoFinal)
         {
-            return Ok(await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto));
+            var mensagens = await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto);
+            if (mensagens != null && mensagens.Any())
+                return StatusCode(601, new RetornoBaseDto() { Mensagens = mensagens.ToList() });
+
+            return Ok();
         }
     }
 }
