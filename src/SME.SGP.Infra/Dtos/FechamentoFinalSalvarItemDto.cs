@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
 
         public long? ConceitoId { get; set; }
         public double? Nota { get; set; }
+        public long? SinteseId { get; set; }
 
         public bool EhNota()
         {
