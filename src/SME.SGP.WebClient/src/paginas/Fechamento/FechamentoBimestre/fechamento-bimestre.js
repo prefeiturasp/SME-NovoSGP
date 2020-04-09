@@ -324,7 +324,7 @@ const FechamentoBismestre = () => {
                           ehRegencia={ehRegencia}
                           ehSintese={ehSintese}
                           situacaoFechamento={situacaoFechamento}
-                          codigoComponenteCurricular={disciplinaIdSelecionada}                                    
+                          codigoComponenteCurricular={disciplinaIdSelecionada}
                           turmaId={turmaSelecionada.turma}
                           anoLetivo={turmaSelecionada.anoLetivo}
                         />
@@ -356,6 +356,9 @@ const FechamentoBismestre = () => {
                       ref={refFechamentoFinal}
                       desabilitarCampo={!podeIncluir || !podeAlterar || somenteConsulta}
                       somenteConsulta={somenteConsulta}
+                      carregandoFechamentoFinal={carregando =>
+                        setCarregandoBimestres(carregando)
+                      }
                     />
                   </TabPane>
                 </ContainerTabsCard>
