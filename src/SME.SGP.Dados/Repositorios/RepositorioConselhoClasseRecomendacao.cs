@@ -13,11 +13,11 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<ConselhoClasseRecomendacao>> ObterPorFiltroAsync(ConselhoClasseRecomendacaoTipo tipo)
+        public async Task<IEnumerable<ConselhoClasseRecomendacao>> ObterTodosAsync()
         {
-            var query = "select * from conselho_classe_recomendacao where excluido = false and tipo = @tipo";
+            var query = "select * from conselho_classe_recomendacao where excluido = false";
 
-            return await database.Conexao.QueryAsync<ConselhoClasseRecomendacao>(query, new { tipo });
+            return await database.Conexao.QueryAsync<ConselhoClasseRecomendacao>(query);
         }
     }
 }
