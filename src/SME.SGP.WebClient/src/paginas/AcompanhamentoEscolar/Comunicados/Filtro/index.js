@@ -1,3 +1,4 @@
+/* eslint-disable react/no-this-in-sfc */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
@@ -10,6 +11,7 @@ import {
   CampoTexto,
   CampoData,
   Label,
+  momentSchema,
 } from '~/componentes';
 
 import { Linha } from '~/componentes/EstilosGlobais';
@@ -35,39 +37,88 @@ function Filtro({ onFiltrar }) {
     titulo: '',
   });
 
-  const validacoes = () => {
-    return Yup.object({});
+  const [validacoes] = useState(
+    Yup.object({
+      dataEnvioInicio: momentSchema.test(
+        'validaDataEnvio',
+        'Data início não deve ser maior que a data fim',
+        function validar() {
+          const { dataEnvioInicio } = this.parent;
+          const { dataEnvioFim } = this.parent;
+
+          if (
+            dataEnvioInicio &&
+            dataEnvioFim &&
+            window.moment(dataEnvioInicio) > window.moment(dataEnvioFim)
+          ) {
+            return false;
+          }
+
+          return true;
+        }
+      ),
+      dataExpiracaoInicio: momentSchema
+        .test(
+          'validaDataMaiorQueEnvio',
+          'Data de expiração deve ser maior que a data de envio',
+          function validar() {
+            const { dataEnvioFim } = this.parent;
+            const { dataExpiracaoInicio } = this.parent;
+
+            if (
+              dataEnvioFim &&
+              dataExpiracaoInicio &&
+              window.moment(dataExpiracaoInicio) < window.moment(dataEnvioFim)
+            ) {
+              return false;
+            }
+
+            return true;
+          }
+        )
+        .test(
+          'validaDataExpiracao',
+          'Data início não deve ser maior que a data fim',
+          function validar() {
+            const { dataExpiracaoInicio } = this.parent;
+            const { dataExpiracaoFim } = this.parent;
+
+            if (
+              dataExpiracaoInicio &&
+              dataExpiracaoFim &&
+              window.moment(dataExpiracaoInicio) >
+                window.moment(dataExpiracaoFim)
+            ) {
+              return false;
+            }
+
+            return true;
+          }
+        ),
+    })
+  );
+
+  const onSubmitFiltro = valores => {
+    onFiltrar(valores);
   };
 
-  const validarFiltro = valores => {
-    const formContext = refForm && refForm.getFormikContext();
-    if (formContext.isValid) {
-      onFiltrar(valores);
-    }
-  };
+  const validarFiltro = () => {
+    const arrayCampos = Object.keys(valoresIniciais);
 
-  const [filtro, setFiltro] = useState({});
+    arrayCampos.forEach(campo => {
+      refForm.setFieldTouched(campo, true, true);
+    });
 
-  const validaDataInicio = dataExpiracaoInicio => {
-    const filtroAtual = filtro;
-
-    filtroAtual.dataExpiracaoInicio =
-      dataExpiracaoInicio && dataExpiracaoInicio.toDate();
-    setFiltro({ ...filtroAtual });
-
-    if (filtroAtual.dataExpiracaoInicio && filtroAtual.dataExpiracaoFim)
-      validarFiltro();
-  };
-
-  const validaDataFim = dataExpiracaoFim => {
-    const filtroAtual = filtro;
-    filtroAtual.dataExpiracaoFim =
-      dataExpiracaoFim && dataExpiracaoFim.toDate();
-
-    setFiltro({ ...filtroAtual });
-
-    if (filtroAtual.dataExpiracaoInicio && filtroAtual.dataExpiracaoFim)
-      validarFiltro();
+    refForm.validateForm().then(() => {
+      if (
+        refForm &&
+        refForm.state &&
+        refForm.state.errors &&
+        Object.entries(refForm.state.errors).length === 0
+      ) {
+        onSubmitFiltro(refForm.state.values);
+      }
+    });
   };
 
   return (
@@ -75,10 +126,10 @@ function Filtro({ onFiltrar }) {
       enableReinitialize
       initialValues={valoresIniciais}
       validationSchema={validacoes}
-      onSubmit={valores => onFiltrar(valores)}
+      onSubmit={valores => onSubmitFiltro(valores)}
       ref={refFormik => setRefForm(refFormik)}
-      validateOnChange
       validateOnBlur
+      validateOnChange
     >
       {form => (
         <Form className="col-md-12 mb-4">
@@ -94,6 +145,7 @@ function Filtro({ onFiltrar }) {
                 lista={gruposLista}
                 valueOption="Id"
                 valueText="Nome"
+                onChange={() => validarFiltro()}
               />
             </Grid>
             <Grid cols={2}>
@@ -103,7 +155,7 @@ function Filtro({ onFiltrar }) {
                 name="dataEnvioInicio"
                 placeholder="Data início"
                 formatoData="DD/MM/YYYY"
-                onChange={data => validaDataInicio(data)}
+                onChange={() => validarFiltro()}
               />
             </Grid>
             <Grid cols={2}>
@@ -117,7 +169,7 @@ function Filtro({ onFiltrar }) {
                 name="dataEnvioFim"
                 placeholder="Data fim"
                 formatoData="DD/MM/YYYY"
-                onChange={data => validaDataFim(data)}
+                onChange={() => validarFiltro()}
               />
             </Grid>
             <Grid cols={2}>
@@ -127,7 +179,7 @@ function Filtro({ onFiltrar }) {
                 name="dataExpiracaoInicio"
                 placeholder="Data início"
                 formatoData="DD/MM/YYYY"
-                onChange={data => validaDataInicio(data)}
+                onChange={() => validarFiltro()}
               />
             </Grid>
             <Grid cols={2}>
@@ -141,7 +193,7 @@ function Filtro({ onFiltrar }) {
                 name="dataExpiracaoFim"
                 placeholder="Data fim"
                 formatoData="DD/MM/YYYY"
-                onChange={data => validaDataFim(data)}
+                onChange={() => validarFiltro()}
               />
             </Grid>
           </Linha>
@@ -153,6 +205,7 @@ function Filtro({ onFiltrar }) {
                 name="titulo"
                 placeholder="Procure pelo título do comunicado"
                 value={form.values.titulo}
+                onChange={() => validarFiltro()}
               />
             </Grid>
           </Linha>
