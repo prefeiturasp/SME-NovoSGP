@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-	public class RepositorioComunicado : RepositorioBase<Comunicado>, IRepositorioComunicado
+    public class RepositorioComunicado : RepositorioBase<Comunicado>, IRepositorioComunicado
     {
         private readonly string queryComunicado = @"
 						SELECT
@@ -26,12 +26,29 @@ namespace SME.SGP.Dados.Repositorios
 							g.nome as Grupo
 						FROM comunicado c
 						INNER JOIN comunidado_grupo cg
-							on cg.comunicado_id = c.id
-						inner join grupo_comunicado g on cg.grupo_comunicado_id = g.id
+								on cg.comunicado_id = c.id
+							inner join grupo_comunicado g
+								on cg.grupo_comunicado_id = g.id
+						WHERE (c.excluido = false)
 						{0}";
 
         public RepositorioComunicado(ISgpContext conexao) : base(conexao)
         {
+        }
+
+        public async Task<IEnumerable<ComunicadoResultadoDto>> Listar(FiltroComunicadoDto filtro)
+        {
+            var where = "";
+            if (!string.IsNullOrEmpty(filtro.Titulo))
+                where += " AND (upper(f_unaccent(c.titulo)) LIKE @titulo";
+            if (filtro.DataEnvio.HasValue)
+                where += " AND (date(c.data_envio) = @DataEnvio)";
+            if (filtro.DataExpiracao.HasValue)
+                where += " AND (date(c.data_expiracao) = @DataExpiracao)";
+
+            var query = string.Format(queryComunicado, where);
+
+            return await database.Conexao.QueryAsync<ComunicadoResultadoDto>(query, new { filtro.DataEnvio, filtro.DataExpiracao, filtro.Titulo });
         }
 
         public async Task<IEnumerable<ComunicadoResultadoDto>> ObterPorIdAsync(long id)
