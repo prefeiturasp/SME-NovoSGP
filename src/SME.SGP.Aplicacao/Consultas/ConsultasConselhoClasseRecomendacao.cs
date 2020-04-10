@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             return consultasPeriodoEscolar.ObterBimestre(DateTime.Today, turma.ModalidadeCodigo);
         }
 
-        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesPedagogicas)
+        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno)
         {
             var recomendacoes = await repositorioConselhoClasseRecomendacao.ObterTodosAsync();
 
@@ -79,17 +79,18 @@ namespace SME.SGP.Aplicacao
             {
                 RecomendacaoAluno = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
                 RecomendacaoFamilia = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
-                AnotacoesPedagogicas = anotacoesPedagogicas
+                AnotacoesAluno = anotacoesAluno
             };
         }
 
-        private ConsultasConselhoClasseRecomendacaoConsultaDto TransformaEntidadeEmConsultaDto(ConselhoClasseAluno conselhoClasseAluno, IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesPedagogicas)
+        private ConsultasConselhoClasseRecomendacaoConsultaDto TransformaEntidadeEmConsultaDto(ConselhoClasseAluno conselhoClasseAluno, IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno)
         {
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
                 RecomendacaoAluno = conselhoClasseAluno.RecomendacoesAluno,
                 RecomendacaoFamilia = conselhoClasseAluno.RecomendacoesFamilia,
-                AnotacoesPedagogicas = anotacoesPedagogicas
+                AnotacoesAluno = anotacoesAluno,
+                AnotacoesPedagocias = conselhoClasseAluno.AnotacoesPedagogicas
             };
         }
     }
