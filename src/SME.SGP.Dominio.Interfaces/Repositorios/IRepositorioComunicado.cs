@@ -6,6 +6,8 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioComunicado : IRepositorioBase<Comunicado>
     {
+        Task<IEnumerable<ComunicadoResultadoDto>> Listar(FiltroComunicadoDto filtro);
+
         Task<IEnumerable<ComunicadoResultadoDto>> ObterPorIdAsync(long id);
     }
 }
