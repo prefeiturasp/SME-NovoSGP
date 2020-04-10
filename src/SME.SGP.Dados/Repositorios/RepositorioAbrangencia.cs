@@ -71,43 +71,30 @@ namespace SME.SGP.Dados.Repositorios
         {
             texto = $"%{texto.ToUpper()}%";
 
-            var query = $@"select lista.modalidade,
-	                              lista.anoLetivo,
-	                              lista.ano,
-	                              lista.codigoDre,
-	                              lista.codigoTurma,
-	                              lista.codigoUe,
-	                              lista.tipoEscola,
-	                              lista.nomeDre,
-	                              lista.nomeTurma,
-	                              lista.nomeUe,
-	                              lista.semestre,
-	                              lista.qtDuracaoAula,
-	                              lista.tipoTurno
-                           from (select va.modalidade_codigo as modalidade,
-                                        va.turma_ano_letivo as anoLetivo,
-                                        va.turma_ano as  ano,
-                                        va.dre_codigo as codigoDre,
-                                        va.turma_id as codigoTurma,
-                                        va.ue_codigo as codigoUe,
-                                        u.tipo_escola as tipoEscola,
-                                        va.dre_nome as nomeDre,
-                                        va.turma_nome as nomeTurma,
-                                        va.ue_nome as nomeUe,
-                                        va.turma_semestre as semestre,
-                                        va.qt_duracao_aula as qtDuracaoAula,
-                                        va.tipo_turno as tipoTurno,
-                                        rank() over (order by va.ue_nome) as col_rank
-                                 from
-                                     { (consideraHistorico ? "v_abrangencia_historica" : "v_abrangencia") } va
-                                 inner join ue u
-                                     on u.ue_id = va.ue_codigo and (upper(va.turma_nome) like @texto OR upper(f_unaccent(va.ue_nome)) LIKE @texto)
-                                 inner join usuario us
-    	                             on va.usuario_id = us.id    	
-                                 where
-                                     us.login = @login
-                                     and va.usuario_perfil = @perfil) as lista    
-                           where lista.col_rank < 11";                      
+            var query = $@"select distinct va.modalidade_codigo as modalidade,
+                                           va.turma_ano_letivo as anoLetivo,
+                                           va.turma_ano as  ano,
+                                           va.dre_codigo as codigoDre,
+                                           va.turma_id as codigoTurma,
+                                           va.ue_codigo as codigoUe,
+                                           u.tipo_escola as tipoEscola,
+                                           va.dre_nome as nomeDre,
+                                           va.turma_nome as nomeTurma,
+                                           va.ue_nome as nomeUe,
+                                           va.turma_semestre as semestre,
+                                           va.qt_duracao_aula as qtDuracaoAula,
+                                           va.tipo_turno as tipoTurno
+                           from
+                               { (consideraHistorico ? "v_abrangencia_historica" : "v_abrangencia") } va
+                           inner join ue u
+                               on u.ue_id = va.ue_codigo and (upper(va.turma_nome) like @texto OR upper(f_unaccent(va.ue_nome)) LIKE @texto)
+                           inner join usuario us
+    	                       on va.usuario_id = us.id    	
+                           where
+                                us.login = @login
+                                and va.usuario_perfil = @perfil
+                           order by va.ue_nome
+                           limit 10";                      
 
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { texto, login, perfil })).AsList();
         }
@@ -194,17 +181,17 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("va.dre_abreviacao as abreviacao");
             query.AppendLine("from");
             query.AppendLine("v_abrangencia va");
-            query.AppendLine("where 1=1 ");
+            query.AppendLine("inner join usuario u");
+            query.AppendLine("on va.usuario_id = u.id");
+            query.AppendLine("where u.login = @login");
+            query.AppendLine("and va.usuario_perfil = @perfil");
+            query.AppendLine("and va.dre_codigo is not null");
 
             if (!string.IsNullOrEmpty(dreCodigo))
                 query.AppendLine("and va.dre_codigo = @dreCodigo");
 
             if (!string.IsNullOrEmpty(ueCodigo))
                 query.AppendLine("and va.ue_codigo = @ueCodigo");
-
-            query.AppendLine("and va.usuario_id = (select id from usuario where login = @login)");
-            query.AppendLine("and va.usuario_perfil = @perfil");
-            query.AppendLine("and va.dre_codigo is not null");
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetorno>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
         }
@@ -251,7 +238,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = $@"select
                                 distinct va.modalidade_codigo
                            from
-                                { (consideraHistorico ? "v_abrangencia" : "v_abrangencia_historica") } va
+                                { (consideraHistorico ? "v_abrangencia_historica" : "v_abrangencia") } va
                                     inner join usuario u
                                         on va.usuario_id = u.id
                            where
