@@ -29,6 +29,14 @@ namespace SME.SGP.Aplicacao
             return MapearPorIdParaDto(comunicado);
         }
 
+        public async Task<IEnumerable<ComunicadoDto>> Listar(FiltroComunicadoDto filtro)
+        {
+            var comunicados = await repositorio.Listar(filtro);
+            if (comunicados is null || !comunicados.Any())
+                throw new NegocioException("Nenhum comunicado encontrado");
+            return MapearParaDto(comunicados);
+        }
+
         private static IEnumerable<ComunicadoCompletoDto> ConverterParaDto(IEnumerable<ComunicadoResultadoDto> comunicados)
         {
             var comunicadosDistintos = comunicados
@@ -63,6 +71,11 @@ namespace SME.SGP.Aplicacao
                 DataExpiracao = c.DataExpiracao,
                 Grupos = comunicados.Where(w => w.Id == c.Id).Select(s => new GrupoComunicacaoDto { Id = s.GrupoId, Nome = s.Grupo })
             }); ;
+        }
+
+        private IEnumerable<ComunicadoCompletoDto> MapearParaDto(IEnumerable<ComunicadoResultadoDto> comunicado)
+        {
+            return ConverterParaDto(comunicado);
         }
 
         private ComunicadoCompletoDto MapearPorIdParaDto(IEnumerable<ComunicadoResultadoDto> comunicado)
