@@ -9,7 +9,6 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("comunicado");
             Map(c => c.Id).ToColumn("Id");
-            Map(c => c.ComunicadoGrupoId).ToColumn("comunicado_grupo_id");
             Map(c => c.AlteradoEm).ToColumn("alterado_em");
             Map(c => c.AlteradoPor).ToColumn("alterado_por");
             Map(c => c.AlteradoRF).ToColumn("alterado_rf");
@@ -18,6 +17,8 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.CriadoRF).ToColumn("criado_rF");
             Map(c => c.Descricao).ToColumn("descricao");
             Map(c => c.Titulo).ToColumn("Titulo");
+            Map(c => c.DataEnvio).ToColumn("data_envio");
+            Map(c => c.DataExpiracao).ToColumn("data_expiracao");
         }
     }
 }

@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<GrupoComunicacaoDto>> Listar(FiltroGrupoComunicacaoDto filtro)
         {
             var grupos = await repositorioGrupoComunicacao.Listar(filtro);
-            if (grupos is null)
+            if (grupos is null || !grupos.Any())
                 throw new NegocioException("Nenhum grupo encontrado");
             return MapearParaDto(grupos);
         }
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
         {
             var grupo = await repositorioGrupoComunicacao.ObterPorIdAsync(id);
 
-            if (grupo is null)
+            if (grupo is null || !grupo.Any())
                 throw new NegocioException("Grupo de comunicação não encontrado");
             return MapearPorIdParaDto(grupo);
         }
