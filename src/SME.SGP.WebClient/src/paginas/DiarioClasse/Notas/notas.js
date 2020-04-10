@@ -39,6 +39,7 @@ const Notas = ({ match }) => {
 
   const [tituloNotasConceitos, setTituloNotasConceitos] = useState('');
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
+  const [carregandoDisciplina, setCarregandoDisciplina] = useState(false);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [notaTipo, setNotaTipo] = useState();
@@ -117,6 +118,7 @@ const Notas = ({ match }) => {
     },
     [
       usuario.turmaSelecionada.anoLetivo,
+      usuario.turmaSelecionada.consideraHistorico,
       usuario.turmaSelecionada.modalidade,
       usuario.turmaSelecionada.turma,
     ]
@@ -212,6 +214,7 @@ const Notas = ({ match }) => {
   );
 
   const obterDisciplinas = useCallback(async () => {
+    setCarregandoDisciplina(true);
     const url = `v1/professores/turmas/${usuario.turmaSelecionada.turma}/disciplinas`;
     const disciplinas = await api.get(url);
 
@@ -232,6 +235,7 @@ const Notas = ({ match }) => {
       setDisciplinaSelecionada(String(match.params.disciplinaId));
       obterDadosBimestres(match.params.disciplinaId, match.params.bimestre);
     }
+    setCarregandoDisciplina(false);
   }, [obterDadosBimestres, usuario.turmaSelecionada.turma]);
 
   const obterTituloTela = useCallback(async () => {
@@ -732,20 +736,22 @@ const Notas = ({ match }) => {
             </div>
             <div className="row">
               <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
-                <SelectComponent
-                  id="disciplina"
-                  name="disciplinaId"
-                  lista={listaDisciplinas}
-                  valueOption="codigoComponenteCurricular"
-                  valueText="nome"
-                  valueSelect={disciplinaSelecionada}
-                  onChange={onChangeDisciplinas}
-                  placeholder="Selecione um componente curricular"
-                  disabled={
-                    desabilitarDisciplina || !usuario.turmaSelecionada.turma
-                  }
-                  allowClear={false}
-                />
+                <Loader loading={carregandoDisciplina} tip="">
+                  <SelectComponent
+                    id="disciplina"
+                    name="disciplinaId"
+                    lista={listaDisciplinas}
+                    valueOption="codigoComponenteCurricular"
+                    valueText="nome"
+                    valueSelect={disciplinaSelecionada}
+                    onChange={onChangeDisciplinas}
+                    placeholder="Selecione um componente curricular"
+                    disabled={
+                      desabilitarDisciplina || !usuario.turmaSelecionada.turma
+                    }
+                    allowClear={false}
+                  />
+                </Loader>
               </div>
             </div>
 
