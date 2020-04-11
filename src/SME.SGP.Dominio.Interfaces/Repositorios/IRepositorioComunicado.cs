@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioComunicado : IRepositorioBase<Comunicado>
     {
-        Task<IEnumerable<ComunicadoResultadoDto>> Listar(FiltroComunicadoDto filtro);
+        Task<PaginacaoResultadoDto<Comunicado>> ListarPaginado(FiltroComunicadoDto filtro, Paginacao paginacao);
 
         Task<IEnumerable<ComunicadoResultadoDto>> ObterPorIdAsync(long id);
     }
