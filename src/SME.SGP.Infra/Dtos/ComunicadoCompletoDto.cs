@@ -1,6 +1,4 @@
-﻿using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
+﻿using System;
 
 namespace SME.SGP.Dto
 {
@@ -12,6 +10,5 @@ namespace SME.SGP.Dto
         public DateTime CriadoEm { get; set; }
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }
-        public IEnumerable<GrupoComunicacaoDto> Grupos { get; set; }
     }
 }

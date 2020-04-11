@@ -35,10 +35,10 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("listar")]
         [ProducesResponseType(typeof(IEnumerable<ComunicadoCompletoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous] //ainda nao existe perfil pra essa função
+        [Permissao(Permissao.CO_C, Policy = "Bearer")]
         public async Task<IActionResult> BuscarTodosAsync([FromQuery]FiltroComunicadoDto filtro)
         {
-            return Ok(await consultas.Listar(filtro));
+            return Ok(await consultas.ListarPaginado(filtro));
         }
     }
 }
