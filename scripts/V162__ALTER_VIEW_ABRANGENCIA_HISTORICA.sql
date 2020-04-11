@@ -1,3 +1,4 @@
+DROP VIEW IF EXISTS public.v_abrangencia_historica;
 CREATE OR REPLACE VIEW public.v_abrangencia_historica
 AS SELECT act.dre_codigo,
     act.dre_abreviacao,
@@ -24,4 +25,3 @@ AS SELECT act.dre_codigo,
 
 ALTER TABLE public.v_abrangencia_historica OWNER TO postgres;
 GRANT ALL ON TABLE public.v_abrangencia_historica TO postgres;
-GRANT ALL ON TABLE public.v_abrangencia_historica TO usr_sgp;
