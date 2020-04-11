@@ -813,11 +813,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and e.status IN (1,2)");
             }
 
-            if (!string.IsNullOrEmpty(dreId))
-            {
-                query.AppendLine("and e.dre_id = @dreId");
-                query.AppendLine("and e.status IN (1,2)");
-            }
+            query.AppendLine("and e.dre_id = @dreId");
 
             query.AppendLine("and((extract(month from e.data_fim) = @mes) or(extract(month from e.data_inicio) = @mes))");
             query.AppendLine("and((extract(day from e.data_fim) = @dia) or(extract(day from e.data_inicio) = @dia))");
