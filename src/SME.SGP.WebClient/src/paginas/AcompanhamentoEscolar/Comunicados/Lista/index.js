@@ -38,7 +38,9 @@ const ComunicadosLista = () => {
   };
 
   const onClickEditar = mensagem => {
-    history.push(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo/${mensagem.Id}`);
+    history.push(
+      `${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/${mensagem.Id}`
+    );
   };
 
   const [filtro, setFiltro] = useState({});
@@ -90,8 +92,7 @@ const ComunicadosLista = () => {
         <Card mx="mx-0">
           <ButtonGroup
             somenteConsulta={somenteConsulta}
-            permissoesTela={{ podeIncluir: true }}
-            // permissoesTela={permissoesTela[RotasDto.ACOMPANHAMENTO_COMUNICADOS]}
+            permissoesTela={permissoesTela[RotasDto.ACOMPANHAMENTO_COMUNICADOS]}
             temItemSelecionado={
               itensSelecionados && itensSelecionados.length >= 1
             }

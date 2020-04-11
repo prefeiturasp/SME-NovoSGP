@@ -1,9 +1,7 @@
-/* eslint-disable react/no-this-in-sfc */
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-// import shortid from 'shortid';
 
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
@@ -28,6 +26,7 @@ import { Linha } from '~/componentes/EstilosGlobais';
 import history from '~/servicos/history';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 
 const ComunicadosCadastro = ({ match }) => {
   const ErroValidacao = styled.span`
@@ -74,7 +73,12 @@ const ComunicadosCadastro = ({ match }) => {
   const [descricaoComunicado, setDescricaoComunicado] = useState('');
 
   useEffect(() => {
+    async function obterPorId() {
+      await ServicoComunicados.consultarPorId();
+    }
+
     if (idComunicado) {
+      obterPorId(idComunicado);
       setInseridoAlterado({});
       setDescricaoComunicado('');
       setNovoRegistro(false);
@@ -84,14 +88,15 @@ const ComunicadosCadastro = ({ match }) => {
   const textEditorRef = useRef();
   const [refForm, setRefForm] = useState({});
 
-  const gruposLista = [
-    { Id: 1, Nome: 'EJA' },
-    { Id: 2, Nome: 'Médio' },
-    { Id: 3, Nome: 'Fundamental' },
-    { Id: 4, Nome: 'EMEBS' },
-    { Id: 5, Nome: 'CEI' },
-    { Id: 6, Nome: 'EMEI' },
-  ];
+  const [gruposLista, setGruposLista] = useState([]);
+
+  useEffect(() => {
+    async function obterListaGrupos() {
+      const lista = await ServicoComunicados.listarGrupos();
+      setGruposLista(lista);
+    }
+    obterListaGrupos();
+  }, []);
 
   const [valoresIniciais] = useState({
     grupoId: [],
@@ -235,8 +240,9 @@ const ComunicadosCadastro = ({ match }) => {
                   novoRegistro={novoRegistro}
                   modoEdicao={modoEdicao}
                   somenteConsulta={somenteConsulta}
-                  // permissoesTela={permissoesTela[RotasDto.ACOMPANHAMENTO_COMUNICADOS]}
-                  permissoesTela={{ podeIncluir: true, podeAlterar: true }}
+                  permissoesTela={
+                    permissoesTela[RotasDto.ACOMPANHAMENTO_COMUNICADOS]
+                  }
                   onClickExcluir={onClickExcluir}
                   onClickVoltar={onClickVoltar}
                   onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}

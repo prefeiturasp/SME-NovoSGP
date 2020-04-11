@@ -1,5 +1,4 @@
-/* eslint-disable react/no-this-in-sfc */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { Form, Formik } from 'formik';
@@ -15,18 +14,20 @@ import {
 } from '~/componentes';
 
 import { Linha } from '~/componentes/EstilosGlobais';
+import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 
 function Filtro({ onFiltrar }) {
   const [refForm, setRefForm] = useState({});
 
-  const gruposLista = [
-    { Id: 1, Nome: 'EJA' },
-    { Id: 2, Nome: 'Médio' },
-    { Id: 3, Nome: 'Fundamental' },
-    { Id: 4, Nome: 'EMEBS' },
-    { Id: 5, Nome: 'CEI' },
-    { Id: 6, Nome: 'EMEI' },
-  ];
+  const [gruposLista, setGruposLista] = useState([]);
+
+  useEffect(() => {
+    async function obterListaGrupos() {
+      const lista = await ServicoComunicados.listarGrupos();
+      setGruposLista(lista);
+    }
+    obterListaGrupos();
+  }, []);
 
   const [valoresIniciais] = useState({
     grupoId: [],
