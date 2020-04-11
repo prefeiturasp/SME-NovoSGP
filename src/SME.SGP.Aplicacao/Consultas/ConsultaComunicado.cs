@@ -29,6 +29,14 @@ namespace SME.SGP.Aplicacao
             return MapearPorIdParaDto(comunicado);
         }
 
+        public async Task<PaginacaoResultadoDto<ComunicadoDto>> ListarPaginado(FiltroComunicadoDto filtro)
+        {
+            var comunicados = await repositorio.ListarPaginado(filtro, Paginacao);
+            if (comunicados is null || comunicados.Items is null || !comunicados.Items.Any())
+                throw new NegocioException("Nenhum comunicado encontrado");
+            return MapearParaDtoPaginado(comunicados);
+        }
+
         private static IEnumerable<ComunicadoCompletoDto> ConverterParaDto(IEnumerable<ComunicadoResultadoDto> comunicados)
         {
             var comunicadosDistintos = comunicados
@@ -61,8 +69,43 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = c.CriadoRF,
                 DataEnvio = c.DataEnvio,
                 DataExpiracao = c.DataExpiracao,
-                Grupos = comunicados.Where(w => w.Id == c.Id).Select(s => new GrupoComunicacaoDto { Id = s.GrupoId, Nome = s.Grupo })
+                Grupos = comunicados.Where(w => w.Id == c.Id).Select(s => new GrupoComunicacaoDto { Id = s.GrupoId, Nome = s.Grupo }).ToList()
             }); ;
+        }
+
+        private IEnumerable<ComunicadoDto> MapearParaDto(IEnumerable<Comunicado> items)
+        {
+            var comunicadosDistintos = items.Select(s => new { s.Id, s.Titulo, s.Descricao, s.DataEnvio, s.DataExpiracao }).Distinct();
+
+            return comunicadosDistintos.Select(s => new ComunicadoDto
+            {
+                Id = s.Id,
+                Titulo = s.Titulo,
+                DataEnvio = s.DataEnvio,
+                DataExpiracao = s.DataExpiracao,
+                Descricao = s.Descricao,
+                Grupos = items.Where(w => w.Id == s.Id)
+                        .Select(x => x.Grupos
+                                      .Select(g =>
+                                        new GrupoComunicacaoDto
+                                        {
+                                            Id = g.Id,
+                                            Nome = g.Nome
+                                        })
+                                      .FirstOrDefault()
+                                )
+                        .ToList()
+            });
+        }
+
+        private PaginacaoResultadoDto<ComunicadoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<Comunicado> comunicado)
+        {
+            return new PaginacaoResultadoDto<ComunicadoDto>
+            {
+                Items = MapearParaDto(comunicado.Items),
+                TotalPaginas = comunicado.TotalPaginas,
+                TotalRegistros = comunicado.TotalRegistros
+            };
         }
 
         private ComunicadoCompletoDto MapearPorIdParaDto(IEnumerable<ComunicadoResultadoDto> comunicado)
