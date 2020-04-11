@@ -24,7 +24,15 @@ export const Lista = styled.div`
     tr td {
       border-right: solid 1px ${Base.CinzaDesabilitado};
       border-bottom: 1px solid ${Base.CinzaDesabilitado};
+      vertical-align: middle;
     }
+  }
+  .coluna-disciplina {
+    text-align: left;
+  }
+
+  .sombra-direita {
+    box-shadow: 7px 1px 15px 0px rgba(0, 0, 0, 0.095);
   }
 `;
 
@@ -41,12 +49,23 @@ export const CampoDesabilitado = styled.div`
     border-radius: 4px;
     border: 1px solid ${Base.CinzaDesabilitado};
     color: ${Base.CinzaDesabilitado} !important;
-    width: 65px;
-    height: 32px;
+    width: 88px;
+    height: 38px;
   }
 `;
 
-export const BarraLateral = styled.td`
+export const BarraLateralVerde = styled.td`
   background-color: ${Base.VerdeBorda};
   border: 1px solid ${Base.VerdeBorda} !important;
+  width: 7px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+`;
+
+export const BarraLateralBordo = styled.td`
+  background-color: ${Base.Bordo};
+  border: 1px solid ${Base.Bordo} !important;
+  width: 7px !important;
+  margin: 0 !important;
+  padding: 0 !important;
 `;
