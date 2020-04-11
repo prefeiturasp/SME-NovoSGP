@@ -86,7 +86,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             var where = "";
             if (!string.IsNullOrEmpty(filtro.Titulo))
-                where += " AND (upper(f_unaccent(c.titulo)) LIKE @titulo";
+            {
+                filtro.Titulo = $"%{filtro.Titulo.ToUpperInvariant()}%";
+                where += " AND (upper(f_unaccent(c.titulo)) LIKE @titulo)";
+            }
             if (filtro.DataEnvio.HasValue)
                 where += " AND (date(c.data_envio) = @DataEnvio)";
             if (filtro.DataExpiracao.HasValue)
