@@ -10,7 +10,6 @@ namespace SME.SGP.Dominio
             Grupos = new List<GrupoComunicacao>();
         }
 
-        public string ComunicadoGrupoId { get; set; }
         public DateTime DataEnvio { get; set; }
         public DateTime? DataExpiracao { get; set; }
         public string Descricao { get; set; }
@@ -21,6 +20,11 @@ namespace SME.SGP.Dominio
         public void AdicionarGrupo(GrupoComunicacao grupo)
         {
             Grupos.Add(grupo);
+        }
+
+        public void MarcarExcluido()
+        {
+            Excluido = true;
         }
     }
 }

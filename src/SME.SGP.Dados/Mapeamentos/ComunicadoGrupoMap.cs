@@ -1,8 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper.FluentMap.Dommel.Mapping;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ComunicadoGrupoMap : BaseMap<ComunicadoGrupo>
+    public class ComunicadoGrupoMap : DommelEntityMap<ComunicadoGrupo>
     {
         public ComunicadoGrupoMap()
         {
