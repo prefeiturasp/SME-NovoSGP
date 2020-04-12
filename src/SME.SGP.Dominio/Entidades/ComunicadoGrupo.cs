@@ -1,8 +1,9 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class ComunicadoGrupo : EntidadeBase
+    public class ComunicadoGrupo
     {
-        public int ComunicadoId { get; set; }
+        public long ComunicadoId { get; set; }
         public int GrupoComunicadoId { get; set; }
+        public long Id { get; set; }
     }
 }
