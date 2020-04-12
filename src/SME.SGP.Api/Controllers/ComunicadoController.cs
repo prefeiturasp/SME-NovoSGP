@@ -23,6 +23,15 @@ namespace SME.SGP.Api.Controllers
             this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
         }
 
+        [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CO_A, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar(long id, [FromBody]ComunicadoInserirDto comunicadoDto)
+        {
+            return Ok(await comandos.Alterar(id, comunicadoDto));
+        }
+
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ComunicadoCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -39,6 +48,26 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> BuscarTodosAsync([FromQuery]FiltroComunicadoDto filtro)
         {
             return Ok(await consultas.ListarPaginado(filtro));
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CO_E, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir(long id)
+        {
+            await comandos.Excluir(id);
+            return Ok();
+        }
+
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CO_I, Policy = "Bearer")]
+        public async Task<IActionResult> PostAsync([FromBody]ComunicadoInserirDto comunicadoDto)
+        {
+            return Ok(await comandos.Inserir(comunicadoDto));
         }
     }
 }
