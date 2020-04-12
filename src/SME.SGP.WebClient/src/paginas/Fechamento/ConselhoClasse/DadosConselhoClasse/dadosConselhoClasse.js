@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import ListaNotasConselho from './ListaNotasConselho/listaNotasConselho';
+import ComponenteSemNota from './ComponenteSemNota/ComponenteSemNota';
+import {
+  EnriquecimentoCurricular,
+  AtendimentoEducacional,
+} from './ComponenteSemNota/mock-componente-sem-nota';
+import { Base } from '~/componentes';
 // import ListaNotasConselho from './ListaNotasConselho/ListaNotasConselho';
 
 const DadosConselhoClasse = () => {
@@ -20,6 +26,16 @@ const DadosConselhoClasse = () => {
       >
         <TabPane tab="1º Bimestre" key="1">
           <ListaNotasConselho />
+          <ComponenteSemNota
+            dados={EnriquecimentoCurricular}
+            nomeColunaComponente="Enriquecimento curricular"
+            corBorda={Base.Azul}
+          />
+          <ComponenteSemNota
+            dados={AtendimentoEducacional}
+            nomeColunaComponente="Atendimento educacional especializado"
+            corBorda={Base.RoxoEventoCalendario}
+          />
         </TabPane>
         <TabPane tab="2º Bimestre" key="2">
           2
