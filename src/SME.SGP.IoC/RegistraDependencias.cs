@@ -228,6 +228,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioGrupoComunicacao, RepositorioGrupoComunicacao>();
             services.TryAddScoped<IRepositorioComunicado, RepositorioComunicado>();
             services.TryAddScoped<IRepositorioWfAprovacaoNotaFechamento, RepositorioWfAprovacaoNotaFechamento>();
+            services.TryAddScoped<IRepositorioComunicadoGrupo, RepositorioComunicacaoGrupo>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
