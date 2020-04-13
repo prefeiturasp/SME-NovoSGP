@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<ConselhoClasseAluno> ObterPorFiltrosAsync(string codigoTurma, string codigoAluno, int bimestre)
+        public async Task<ConselhoClasseAluno> ObterPorFiltrosAsync(string codigoTurma, string codigoAluno, int bimestre, bool EhFinal)
         {
             StringBuilder query = new StringBuilder();
 
@@ -27,11 +27,20 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner");
             query.AppendLine("join turma t");
             query.AppendLine("on t.id = ft.turma_id");
-            query.AppendLine("inner join periodo_escolar p");
-            query.AppendLine("on ft.periodo_escolar_id = p.id");
+
+            if (!EhFinal)
+            {
+                query.AppendLine("inner join periodo_escolar p");
+                query.AppendLine("on ft.periodo_escolar_id = p.id");
+            }
+
             query.AppendLine("where t.turma_id = @codigoTurma");
             query.AppendLine("and cca.aluno_codigo = @codigoAluno");
-            query.AppendLine("and p.bimestre = @bimestre");
+
+            if (EhFinal)
+                query.AppendLine("and ft.periodo_escolar_id is null");
+            else
+                query.AppendLine("and p.bimestre = @bimestre");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseAluno>(query.ToString(), new { codigoTurma, codigoAluno, bimestre });
         }

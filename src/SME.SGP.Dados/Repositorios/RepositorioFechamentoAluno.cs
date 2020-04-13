@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacoesTurmaAlunoBimestre(string alunoCodigo, string turmaCodigo, int bimestre)
+        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacoesTurmaAlunoBimestreAsync(string alunoCodigo, string turmaCodigo, int bimestre, bool EhFinal)
         {
             var query = new StringBuilder();
 
@@ -44,7 +44,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where");
             query.AppendLine("fa.aluno_codigo = @alunoCodigo");
             query.AppendLine("and t.turma_id = @turmaCodigo");
-            query.AppendLine("and pe.bimestre = @bimestre");
+
+            if (EhFinal)
+                query.AppendLine("and ft.periodo_escolar_id is null");
+            else
+                query.AppendLine("and pe.bimestre = @bimestre");
 
             return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, turmaCodigo, bimestre });
         }

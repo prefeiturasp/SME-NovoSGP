@@ -41,34 +41,30 @@ namespace SME.SGP.Aplicacao
             return str.ToString().Trim();
         }
 
-        public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(string turmaCodigo, string alunoCodigo, int bimestre)
+        public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(string turmaCodigo, string alunoCodigo, int bimestre, Modalidade turmaModalidade, bool EhFinal = false)
         {
-            if (bimestre == 0)
-                bimestre = ObterBimestreAtual(turmaCodigo);
+            if (bimestre == 0 && !EhFinal)
+                bimestre = ObterBimestreAtual(turmaModalidade);
 
-            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFiltrosAsync(turmaCodigo, alunoCodigo, bimestre);
+            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFiltrosAsync(turmaCodigo, alunoCodigo, bimestre, EhFinal);
 
-            var anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, turmaCodigo, bimestre);
+            var anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, turmaCodigo, bimestre, EhFinal);
             if (anotacoesDoAluno == null)
                 anotacoesDoAluno = new List<FechamentoAlunoAnotacaoConselhoDto>();
 
             if (conselhoClasseAluno == null)
             {
-                return await ObterRecomendacoesIniciais(anotacoesDoAluno);
+                return await ObterRecomendacoesIniciais(anotacoesDoAluno, bimestre);
             }
-            else return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno);
+            else return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre);
         }
 
-        private int ObterBimestreAtual(string codigoTurma)
+        private int ObterBimestreAtual(Modalidade turmaModalidade)
         {
-            var turma = repositorioTurma.ObterPorCodigo(codigoTurma);
-            if (turma == null)
-                throw new NegocioException("Não foi possível localizar a turma.");
-
-            return consultasPeriodoEscolar.ObterBimestre(DateTime.Today, turma.ModalidadeCodigo);
+            return consultasPeriodoEscolar.ObterBimestre(DateTime.Today, turmaModalidade);
         }
 
-        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno)
+        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre)
         {
             var recomendacoes = await repositorioConselhoClasseRecomendacao.ObterTodosAsync();
 
@@ -79,18 +75,21 @@ namespace SME.SGP.Aplicacao
             {
                 RecomendacaoAluno = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
                 RecomendacaoFamilia = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
-                AnotacoesAluno = anotacoesAluno
+                AnotacoesAluno = anotacoesAluno,
+                Bimestre = bimestre
             };
         }
 
-        private ConsultasConselhoClasseRecomendacaoConsultaDto TransformaEntidadeEmConsultaDto(ConselhoClasseAluno conselhoClasseAluno, IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno)
+        private ConsultasConselhoClasseRecomendacaoConsultaDto TransformaEntidadeEmConsultaDto(ConselhoClasseAluno conselhoClasseAluno,
+            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre)
         {
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
                 RecomendacaoAluno = conselhoClasseAluno.RecomendacoesAluno,
                 RecomendacaoFamilia = conselhoClasseAluno.RecomendacoesFamilia,
                 AnotacoesAluno = anotacoesAluno,
-                AnotacoesPedagocias = conselhoClasseAluno.AnotacoesPedagogicas
+                AnotacoesPedagocias = conselhoClasseAluno.AnotacoesPedagogicas,
+                Bimestre = bimestre
             };
         }
     }
