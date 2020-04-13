@@ -149,7 +149,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
         nota: ehNota ? nota : '',
       });
 
-    notas = notas.filter(item => !(item.conceitoId === '' && item.nota === ''));
+    // notas = notas.filter(item => !(item.conceitoId === '' && item.nota === ''));
     setNotasEmEdicao([...notas]);
     onChange(notas);
   };
@@ -178,7 +178,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
                       key={shortid.generate()}
                       className={`btn-disciplina ${
                         disciplina.ativa ? 'ativa' : ''
-                      }`}
+                        }`}
                       onClick={() => setDisciplinaAtiva(disciplina)}
                     >
                       {disciplina.nome}
@@ -189,8 +189,8 @@ const FechamentoFinal = forwardRef((props, ref) => {
             </div>
           </div>
         ) : (
-          ''
-        )}
+            ''
+          )}
         {exibirLista && (
           <>
             <div className="table-responsive">
@@ -208,10 +208,10 @@ const FechamentoFinal = forwardRef((props, ref) => {
                     {ehSintese ? (
                       ''
                     ) : (
-                      <th className="head-conceito">
-                        {ehNota ? 'Nota Final' : 'Conceito Final'}
-                      </th>
-                    )}
+                        <th className="head-conceito">
+                          {ehNota ? 'Nota Final' : 'Conceito Final'}
+                        </th>
+                      )}
                     <th>%Freq.</th>
                   </tr>
                 </thead>
@@ -238,12 +238,12 @@ const FechamentoFinal = forwardRef((props, ref) => {
                       );
                     })
                   ) : (
-                    <tr>
-                      <td colSpan="10" className="text-center">
-                        Sem dados
+                      <tr>
+                        <td colSpan="10" className="text-center">
+                          Sem dados
                       </td>
-                    </tr>
-                  )}
+                      </tr>
+                    )}
                 </tbody>
               </table>
             </div>
@@ -259,8 +259,8 @@ const FechamentoFinal = forwardRef((props, ref) => {
                 </div>
               </div>
             ) : (
-              ''
-            )}
+                ''
+              )}
           </>
         )}
       </Lista>
@@ -284,9 +284,9 @@ FechamentoFinal.defaultProps = {
   disciplinaCodigo: '1',
   ehRegencia: false,
   turmaPrograma: false,
-  onChange: () => {},
+  onChange: () => { },
   desabilitarCampo: false,
-  carregandoFechamentoFinal: () => {},
+  carregandoFechamentoFinal: () => { },
   bimestreCorrente: '',
 };
 
