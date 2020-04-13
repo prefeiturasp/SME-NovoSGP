@@ -9,8 +9,8 @@ class ServicoComunicados {
       if (requisicao.data) {
         requisicao.data.forEach(grupo => {
           lista.push({
-            Id: grupo.id,
-            Nome: grupo.nome.replace('�', 'é'),
+            id: grupo.id,
+            nome: grupo.nome,
           });
         });
       }
@@ -22,7 +22,16 @@ class ServicoComunicados {
   };
 
   consultarPorId = async id => {
-    return id;
+    let comunicado = {};
+
+    try {
+      const requisicao = await api.get(`v1/comunicado/${id}`);
+      if (requisicao.data) comunicado = requisicao.data;
+    } catch {
+      return comunicado;
+    }
+
+    return comunicado;
   };
 }
 

@@ -144,8 +144,8 @@ function Filtro({ onFiltrar }) {
                 value={form.values.gruposId}
                 multiple
                 lista={gruposLista}
-                valueOption="Id"
-                valueText="Nome"
+                valueOption="id"
+                valueText="nome"
                 onChange={() => validarFiltro()}
               />
             </Grid>
