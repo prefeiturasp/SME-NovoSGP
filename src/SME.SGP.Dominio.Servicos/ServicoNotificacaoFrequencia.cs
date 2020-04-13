@@ -409,48 +409,51 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var disciplina = disciplinas.FirstOrDefault();
 
-                var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
-                StringBuilder mensagemUsuario = new StringBuilder();
-                mensagemUsuario.Append($"A turma a seguir esta a <b>{turmaSemRegistro.Aulas.Count()} aulas</b> sem registro de frequência da turma");
-                mensagemUsuario.Append("<br />");
-                mensagemUsuario.Append($"<br />Escola: <b>{turmaSemRegistro.NomeUe}</b>");
-                mensagemUsuario.Append($"<br />Turma: <b>{turmaSemRegistro.NomeTurma}</b>");
-                mensagemUsuario.Append($"<br />Disciplina: <b>{disciplina.Nome}</b>");
-                mensagemUsuario.Append($"<br />Aulas:");
-
-                mensagemUsuario.Append("<ul>");
-                foreach (var aula in turmaSemRegistro.Aulas)
+                if (disciplina.RegistraFrequencia)
                 {
-                    mensagemUsuario.Append($"<li>Data: {aula.DataAula}</li>");
-                }
-                mensagemUsuario.Append("</ul>");
+                    var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
+                    StringBuilder mensagemUsuario = new StringBuilder();
+                    mensagemUsuario.Append($"A turma a seguir esta a <b>{turmaSemRegistro.Aulas.Count()} aulas</b> sem registro de frequência da turma");
+                    mensagemUsuario.Append("<br />");
+                    mensagemUsuario.Append($"<br />Escola: <b>{turmaSemRegistro.NomeUe}</b>");
+                    mensagemUsuario.Append($"<br />Turma: <b>{turmaSemRegistro.NomeTurma}</b>");
+                    mensagemUsuario.Append($"<br />Disciplina: <b>{disciplina.Nome}</b>");
+                    mensagemUsuario.Append($"<br />Aulas:");
 
-                var hostAplicacao = configuration["UrlFrontEnd"];
-                var parametros = $"turma={turmaSemRegistro.CodigoTurma}&DataAula={turmaSemRegistro.Aulas.FirstOrDefault().DataAula.ToShortDateString()}&disciplina={turmaSemRegistro.DisciplinaId}";
-                mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/frequencia-plano-aula?{parametros}'>Clique aqui para regularizar.</a>");
-
-                var notificacao = new Notificacao()
-                {
-                    Ano = DateTime.Now.Year,
-                    Categoria = NotificacaoCategoria.Alerta,
-                    Tipo = NotificacaoTipo.Frequencia,
-                    Titulo = tituloMensagem,
-                    Mensagem = mensagemUsuario.ToString(),
-                    UsuarioId = usuario.Id,
-                    TurmaId = turmaSemRegistro.CodigoTurma,
-                    UeId = turmaSemRegistro.CodigoUe,
-                    DreId = turmaSemRegistro.CodigoDre,
-                };
-                servicoNotificacao.Salvar(notificacao);
-                foreach (var aula in turmaSemRegistro.Aulas)
-                {
-                    repositorioNotificacaoFrequencia.Salvar(new NotificacaoFrequencia()
+                    mensagemUsuario.Append("<ul>");
+                    foreach (var aula in turmaSemRegistro.Aulas)
                     {
-                        Tipo = tipo,
-                        NotificacaoCodigo = notificacao.Codigo,
-                        AulaId = aula.Id,
-                        DisciplinaCodigo = turmaSemRegistro.DisciplinaId
-                    });
+                        mensagemUsuario.Append($"<li>Data: {aula.DataAula}</li>");
+                    }
+                    mensagemUsuario.Append("</ul>");
+
+                    var hostAplicacao = configuration["UrlFrontEnd"];
+                    var parametros = $"turma={turmaSemRegistro.CodigoTurma}&DataAula={turmaSemRegistro.Aulas.FirstOrDefault().DataAula.ToShortDateString()}&disciplina={turmaSemRegistro.DisciplinaId}";
+                    mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/frequencia-plano-aula?{parametros}'>Clique aqui para regularizar.</a>");
+
+                    var notificacao = new Notificacao()
+                    {
+                        Ano = DateTime.Now.Year,
+                        Categoria = NotificacaoCategoria.Alerta,
+                        Tipo = NotificacaoTipo.Frequencia,
+                        Titulo = tituloMensagem,
+                        Mensagem = mensagemUsuario.ToString(),
+                        UsuarioId = usuario.Id,
+                        TurmaId = turmaSemRegistro.CodigoTurma,
+                        UeId = turmaSemRegistro.CodigoUe,
+                        DreId = turmaSemRegistro.CodigoDre,
+                    };
+                    servicoNotificacao.Salvar(notificacao);
+                    foreach (var aula in turmaSemRegistro.Aulas)
+                    {
+                        repositorioNotificacaoFrequencia.Salvar(new NotificacaoFrequencia()
+                        {
+                            Tipo = tipo,
+                            NotificacaoCodigo = notificacao.Codigo,
+                            AulaId = aula.Id,
+                            DisciplinaCodigo = turmaSemRegistro.DisciplinaId
+                        });
+                    }
                 }
             }
             else
@@ -570,7 +573,7 @@ namespace SME.SGP.Dominio.Servicos
 
                                     foreach (var alunoDisciplina in alunosDisciplina)
                                     {
-                                        if (alunoDisciplina.PercentualFrequencia < 
+                                        if (alunoDisciplina.PercentualFrequencia <
                                                 (disciplinaEOL.Regencia ? percentualFrequenciaRegencia : percentualFrequenciaFund))
                                         {
                                             alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
