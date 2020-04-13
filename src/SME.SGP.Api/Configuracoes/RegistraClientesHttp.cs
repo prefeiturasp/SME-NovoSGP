@@ -21,7 +21,6 @@ namespace SME.SGP.Api
             });
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
             {
-                c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
         }
