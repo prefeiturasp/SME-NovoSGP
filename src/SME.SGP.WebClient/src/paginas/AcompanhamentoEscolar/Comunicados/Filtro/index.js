@@ -30,27 +30,25 @@ function Filtro({ onFiltrar }) {
   }, []);
 
   const [valoresIniciais] = useState({
-    grupoId: [],
-    dataEnvioInicio: '',
-    dataEnvioFim: '',
-    dataExpiracaoInicio: '',
-    dataExpiracaoFim: '',
+    gruposId: [],
+    dataEnvio: '',
+    dataExpiracao: '',
     titulo: '',
   });
 
   const [validacoes] = useState(
     Yup.object({
-      dataEnvioInicio: momentSchema.test(
-        'validaDataEnvio',
-        'Data início não deve ser maior que a data fim',
+      dataExpiracao: momentSchema.test(
+        'validaDataMaiorQueEnvio',
+        'Data de expiração deve ser maior que a data de envio',
         function validar() {
-          const { dataEnvioInicio } = this.parent;
-          const { dataEnvioFim } = this.parent;
+          const { dataEnvio } = this.parent;
+          const { dataExpiracao } = this.parent;
 
           if (
-            dataEnvioInicio &&
-            dataEnvioFim &&
-            window.moment(dataEnvioInicio) > window.moment(dataEnvioFim)
+            dataEnvio &&
+            dataExpiracao &&
+            window.moment(dataExpiracao) < window.moment(dataEnvio)
           ) {
             return false;
           }
@@ -58,44 +56,6 @@ function Filtro({ onFiltrar }) {
           return true;
         }
       ),
-      dataExpiracaoInicio: momentSchema
-        .test(
-          'validaDataMaiorQueEnvio',
-          'Data de expiração deve ser maior que a data de envio',
-          function validar() {
-            const { dataEnvioFim } = this.parent;
-            const { dataExpiracaoInicio } = this.parent;
-
-            if (
-              dataEnvioFim &&
-              dataExpiracaoInicio &&
-              window.moment(dataExpiracaoInicio) < window.moment(dataEnvioFim)
-            ) {
-              return false;
-            }
-
-            return true;
-          }
-        )
-        .test(
-          'validaDataExpiracao',
-          'Data início não deve ser maior que a data fim',
-          function validar() {
-            const { dataExpiracaoInicio } = this.parent;
-            const { dataExpiracaoFim } = this.parent;
-
-            if (
-              dataExpiracaoInicio &&
-              dataExpiracaoFim &&
-              window.moment(dataExpiracaoInicio) >
-                window.moment(dataExpiracaoFim)
-            ) {
-              return false;
-            }
-
-            return true;
-          }
-        ),
     })
   );
 
@@ -136,10 +96,10 @@ function Filtro({ onFiltrar }) {
         <Form className="col-md-12 mb-4">
           <Linha className="row mb-2">
             <Grid cols={4}>
-              <Label control="grupoId" text="Grupo" />
+              <Label control="gruposId" text="Grupo" />
               <SelectComponent
                 form={form}
-                name="grupoId"
+                name="gruposId"
                 placeholder="Selecione um grupo"
                 value={form.values.gruposId}
                 multiple
@@ -149,50 +109,22 @@ function Filtro({ onFiltrar }) {
                 onChange={() => validarFiltro()}
               />
             </Grid>
-            <Grid cols={2}>
-              <Label control="dataEnvioInicio" text="Data de envio" />
+            <Grid cols={4}>
+              <Label control="dataEnvio" text="Data de envio" />
               <CampoData
                 form={form}
-                name="dataEnvioInicio"
+                name="dataEnvio"
                 placeholder="Data início"
                 formatoData="DD/MM/YYYY"
                 onChange={() => validarFiltro()}
               />
             </Grid>
-            <Grid cols={2}>
-              <Label
-                control="dataEnvioFim"
-                text="Data de envio"
-                className="text-white"
-              />
+            <Grid cols={4}>
+              <Label control="dataExpiracao" text="Data de expiração" />
               <CampoData
                 form={form}
-                name="dataEnvioFim"
-                placeholder="Data fim"
-                formatoData="DD/MM/YYYY"
-                onChange={() => validarFiltro()}
-              />
-            </Grid>
-            <Grid cols={2}>
-              <Label control="dataExpiracaoInicio" text="Data de expiração" />
-              <CampoData
-                form={form}
-                name="dataExpiracaoInicio"
+                name="dataExpiracao"
                 placeholder="Data início"
-                formatoData="DD/MM/YYYY"
-                onChange={() => validarFiltro()}
-              />
-            </Grid>
-            <Grid cols={2}>
-              <Label
-                control="dataExpiracaoFim"
-                text="Data de expiração"
-                className="text-white"
-              />
-              <CampoData
-                form={form}
-                name="dataExpiracaoFim"
-                placeholder="Data fim"
                 formatoData="DD/MM/YYYY"
                 onChange={() => validarFiltro()}
               />

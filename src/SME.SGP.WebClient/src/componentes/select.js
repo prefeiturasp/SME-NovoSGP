@@ -31,6 +31,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
     border,
     color,
     allowClear,
+    defaultValue,
   } = props;
 
   const Container = styled.div`
@@ -162,6 +163,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
         if (onChange) onChange(e || '');
       }}
       innerRef={ref}
+      defaultValue={defaultValue}
     >
       {opcoesLista()}
     </Field>
@@ -189,6 +191,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       ref={ref}
       showSearch={showSearch}
       size={size || 'default'}
+      defaultValue={defaultValue}
     >
       {opcoesLista()}
     </Select>

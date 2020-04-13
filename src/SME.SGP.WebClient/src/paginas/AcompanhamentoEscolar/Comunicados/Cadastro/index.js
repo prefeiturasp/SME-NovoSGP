@@ -67,10 +67,8 @@ const ComunicadosCadastro = ({ match }) => {
   const [valoresIniciais, setValoresIniciais] = useState({
     id: '',
     gruposId: [],
-    dataEnvioInicio: '',
-    dataEnvioFim: '',
-    dataExpiracaoInicio: '',
-    dataExpiracaoFim: '',
+    dataEnvio: '',
+    dataExpiracao: '',
     titulo: '',
     descricao: '',
   });
@@ -92,11 +90,13 @@ const ComunicadosCadastro = ({ match }) => {
       if (comunicado && Object.entries(comunicado).length) {
         setValoresIniciais({
           id: comunicado.id,
-          gruposId: [...comunicado.grupos.map(grupo => grupo.id)],
-          // dataEnvioInicio: '',
-          // dataEnvioFim: '',
-          // dataExpiracaoInicio: '',
-          // dataExpiracaoFim: '',
+          gruposId: [...comunicado.grupos.map(grupo => String(grupo.id))],
+          dataEnvio: comunicado.dataEnvio
+            ? window.moment(comunicado.dataEnvio)
+            : '',
+          dataExpiracao: comunicado.dataExpiracao
+            ? window.moment(comunicado.dataExpiracao)
+            : '',
           titulo: comunicado.titulo,
           descricao: comunicado.descricao,
         });
@@ -138,66 +138,25 @@ const ComunicadosCadastro = ({ match }) => {
   const [validacoes] = useState(
     Yup.object({
       grupoId: Yup.string().required('Campo obrigatório'),
-      dataEnvioInicio: momentSchema
-        .required('Campo obrigatório')
-        .test(
-          'validaDataEnvio',
-          'Data início não deve ser maior que a data fim',
-          function validar() {
-            const { dataEnvioInicio } = this.parent;
-            const { dataEnvioFim } = this.parent;
+      dataEnvio: momentSchema.required('Campo obrigatório'),
+      dataExpiracao: momentSchema.test(
+        'validaDataMaiorQueEnvio',
+        'Data de expiração deve ser maior que a data de envio',
+        function validar() {
+          const { dataEnvio } = this.parent;
+          const { dataExpiracao } = this.parent;
 
-            if (
-              dataEnvioInicio &&
-              dataEnvioFim &&
-              window.moment(dataEnvioInicio) > window.moment(dataEnvioFim)
-            ) {
-              return false;
-            }
-
-            return true;
+          if (
+            dataEnvio &&
+            dataExpiracao &&
+            window.moment(dataExpiracao) < window.moment(dataEnvio)
+          ) {
+            return false;
           }
-        ),
-      dataEnvioFim: Yup.string().required('Campo obrigatório'),
-      dataExpiracaoInicio: momentSchema
-        .test(
-          'validaDataMaiorQueEnvio',
-          'Data de expiração deve ser maior que a data de envio',
-          function validar() {
-            const { dataEnvioFim } = this.parent;
-            const { dataExpiracaoInicio } = this.parent;
 
-            if (
-              dataEnvioFim &&
-              dataExpiracaoInicio &&
-              window.moment(dataExpiracaoInicio) < window.moment(dataEnvioFim)
-            ) {
-              return false;
-            }
-
-            return true;
-          }
-        )
-        .test(
-          'validaDataExpiracao',
-          'Data início não deve ser maior que a data fim',
-          function validar() {
-            const { dataExpiracaoInicio } = this.parent;
-            const { dataExpiracaoFim } = this.parent;
-
-            if (
-              dataExpiracaoInicio &&
-              dataExpiracaoFim &&
-              window.moment(dataExpiracaoInicio) >
-                window.moment(dataExpiracaoFim)
-            ) {
-              return false;
-            }
-
-            return true;
-          }
-        ),
-      dataExpiracaoFim: Yup.string(),
+          return true;
+        }
+      ),
       titulo: Yup.string()
         .required('Campo obrigatório')
         .min(10, 'Deve conter no mínimo 10 caracteres')
@@ -247,8 +206,8 @@ const ComunicadosCadastro = ({ match }) => {
     return dadosSalvar;
   };
 
-  const onChangeGruposId = grupoId => {
-    setValoresIniciais({ ...refForm.state.values, gruposId: grupoId });
+  const onChangeGruposId = gruposId => {
+    setValoresIniciais({ ...refForm.state.values, gruposId });
   };
 
   return (
@@ -295,50 +254,21 @@ const ComunicadosCadastro = ({ match }) => {
                       valueText="nome"
                     />
                   </Grid>
-                  <Grid cols={2}>
-                    <Label control="dataEnvioInicio" text="Data de envio" />
+                  <Grid cols={4}>
+                    <Label control="dataEnvio" text="Data de envio" />
                     <CampoData
                       form={form}
-                      name="dataEnvioInicio"
+                      name="dataEnvio"
                       placeholder="Data início"
                       formatoData="DD/MM/YYYY"
                     />
                   </Grid>
-                  <Grid cols={2}>
-                    <Label
-                      control="dataEnvioFim"
-                      text="Data de envio"
-                      className="text-white"
-                    />
+                  <Grid cols={4}>
+                    <Label control="dataExpiracao" text="Data de expiração" />
                     <CampoData
                       form={form}
-                      name="dataEnvioFim"
-                      placeholder="Data fim"
-                      formatoData="DD/MM/YYYY"
-                    />
-                  </Grid>
-                  <Grid cols={2}>
-                    <Label
-                      control="dataExpiracaoInicio"
-                      text="Data de expiração"
-                    />
-                    <CampoData
-                      form={form}
-                      name="dataExpiracaoInicio"
+                      name="dataExpiracao"
                       placeholder="Data início"
-                      formatoData="DD/MM/YYYY"
-                    />
-                  </Grid>
-                  <Grid cols={2}>
-                    <Label
-                      control="dataExpiracaoFim"
-                      text="Data de expiração"
-                      className="text-white"
-                    />
-                    <CampoData
-                      form={form}
-                      name="dataExpiracaoFim"
-                      placeholder="Data fim"
                       formatoData="DD/MM/YYYY"
                     />
                   </Grid>
@@ -376,7 +306,9 @@ const ComunicadosCadastro = ({ match }) => {
                         <p className="pt-2">
                           INSERIDO por {inseridoAlterado.criadoPor} (
                           {inseridoAlterado.criadoRF}) em{' '}
-                          {inseridoAlterado.criadoEm}
+                          {window
+                            .moment(inseridoAlterado.criadoEm)
+                            .format('DD/MM/YYYY HH:mm:ss')}
                         </p>
                       ) : (
                         ''
@@ -387,7 +319,9 @@ const ComunicadosCadastro = ({ match }) => {
                         <p>
                           ALTERADO por {inseridoAlterado.alteradoPor} (
                           {inseridoAlterado.alteradoRF}) em{' '}
-                          {inseridoAlterado.alteradoEm}
+                          {window
+                            .moment(inseridoAlterado.alteradoEm)
+                            .format('DD/MM/YYYY HH:mm:ss')}
                         </p>
                       ) : (
                         ''
