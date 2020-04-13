@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
+        private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
@@ -22,10 +23,13 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
 
+        private double _mediaFrequencia;
+
         public ConsultasFrequencia(IServicoFrequencia servicoFrequencia,
                                    IServicoEOL servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                    IConsultasTipoCalendario consultasTipoCalendario,
+                                   IConsultasTurma consultasTurma,
                                    IRepositorioAula repositorioAula,
                                    IRepositorioFrequencia repositorioFrequencia,
                                    IRepositorioTurma repositorioTurma,
@@ -37,6 +41,7 @@ namespace SME.SGP.Aplicacao
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
@@ -117,6 +122,9 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
             }
+
+            registroFrequenciaDto.TemPeriodoAberto = await consultasTurma.TurmaEmPeriodoAberto(aula.TurmaId, DateTime.Today, bimestre.Bimestre);
+
             var parametroPercentualCritico = repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.PercentualFrequenciaCritico,
                                                     bimestre.PeriodoInicio.Year);
@@ -184,6 +192,18 @@ namespace SME.SGP.Aplicacao
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
             => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual);
 
+        public SinteseDto ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina)
+        {
+            var sintese = percentualFrequencia >= ObterFrequenciaMedia(disciplina) ? 
+                        SinteseEnum.Frequente : SinteseEnum.NaoFrequente;
+
+            return new SinteseDto()
+            {
+                SinteseId = sintese,
+                SinteseNome = sintese.Name()
+            };
+        }
+
         private PeriodoEscolarDto BuscaPeriodo(int anoLetivo, Modalidade modalidadeCodigo, int bimestre, int semestre)
         {
             var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio);
@@ -243,6 +263,33 @@ namespace SME.SGP.Aplicacao
                 Desabilitado = !aula.PermiteRegistroFrequencia(turma)
             };
             return registroFrequenciaDto;
+        }
+
+        public double ObterFrequenciaMedia(DisciplinaDto disciplina)
+        {
+            if (_mediaFrequencia == 0)
+            {
+                if (disciplina.Regencia || !disciplina.LancaNota)
+                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
+                else
+                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+            }
+
+            return _mediaFrequencia;
+        }
+
+        public async Task<double> ObterFrequenciaGeralAluno(string alunoCodigo)
+        {
+            var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo);
+
+            var frequenciaAluno = new FrequenciaAluno()
+            {
+                TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
+                TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
+                TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
+            };
+
+            return frequenciaAluno.PercentualFrequencia;
         }
     }
 }

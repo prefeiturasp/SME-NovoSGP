@@ -31,6 +31,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<string[]> ObterAdministradoresSGPParaNotificar(string codigoDreOuUe);
 
+        Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo);
+
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(long turmaId);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId);
@@ -106,6 +108,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data);
 
         Task ReiniciarSenha(string login);
+
+        Task<UsuarioEolAutenticacaoRetornoDto> RelecionarUsuarioPerfis(string login);
 
         Task RemoverCJSeNecessario(Guid usuarioId);
 

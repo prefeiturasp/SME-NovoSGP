@@ -189,7 +189,8 @@ const PlanoAnual = () => {
       setCarregandoDados(true);
       servicoPlanoAnual
         .salvar(plano)
-        .then(() => {
+        .then(resp => {
+          setPlanoAnual(resp.data);
           setCarregandoDados(false);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
@@ -277,7 +278,13 @@ const PlanoAnual = () => {
    *carrega a lista de planos
    */
   useEffect(() => {
-    if (codigoDisciplinaSelecionada) {
+    setPlanoAnual([]);
+
+    if (
+      codigoDisciplinaSelecionada &&
+      turmaSelecionada &&
+      turmaSelecionada.turma
+    ) {
       setCarregandoDados(true);
       servicoPlanoAnual
         .obter(
@@ -338,10 +345,15 @@ const PlanoAnual = () => {
   }, [codigoDisciplinaSelecionada, disciplinaSelecionada, turmaSelecionada]);
 
   useEffect(() => {
-    setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     setEmEdicao(false);
-    if (turmaSelecionada && turmaSelecionada.turma) {
-      setEhEja(turmaSelecionada.modalidade.toString() === modalidade.EJA.toString());
+    setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
+    if (turmaSelecionada && turmaSelecionada !== [] && turmaSelecionada.turma) {
+      setEhEja(
+        turmaSelecionada.modalidade.toString() === modalidade.EJA.toString()
+      );
+    } else {
+      setDisciplinaSelecionada(null);
+      setCodigoDisciplinaSelecionada(null);
     }
   }, [turmaSelecionada]);
 
@@ -408,10 +420,8 @@ const PlanoAnual = () => {
           ) : null}
         </div>
         <Grid cols={12} className="p-0">
-          <Planejamento> PLANEJAMENTO </Planejamento>
           <Titulo>
             {ehEja ? 'Plano Semestral' : 'Plano Anual'}
-            <TituloAno>{` / ${turmaSelecionada.anoLetivo}`}</TituloAno>
             {registroMigrado && (
               <RegistroMigrado className="float-right">
                 Registro Migrado
@@ -495,10 +505,13 @@ const PlanoAnual = () => {
                           ano={turmaSelecionada.ano}
                           ehEja={ehEja}
                           ehMedio={
+                            turmaSelecionada &&
+                            turmaSelecionada.modalidade &&
                             turmaSelecionada.modalidade.toString() ===
-                            modalidade.ENSINO_MEDIO.toString()
+                              modalidade.ENSINO_MEDIO.toString()
                           }
                           disciplinaSemObjetivo={
+                            disciplinaSelecionada &&
                             !disciplinaSelecionada.possuiObjetivos
                           }
                           onChange={onChangeBimestre}

@@ -76,7 +76,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new NotificacaoCompensacaoAusenciaMap());
                config.AddMap(new EventoFechamentoMap());
                config.AddMap(new FechamentoTurmaDisciplinaMap());
-               config.AddMap(new NotaConceitoBimestreMap());
+               config.AddMap(new FechamentoNotaMap());
                config.AddMap(new RecuperacaoParalelaMap());
                config.AddMap(new RecuperacaoParalelaPeriodoMap());
                config.AddMap(new RecuperacaoParalelaPeriodoObjetivoRespostaMap());
@@ -84,7 +84,19 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ObjetivoaMap());
                config.AddMap(new RespostaMap());
                config.AddMap(new NotificacaoAulaMap());
-               config.AddMap(new FechamentoFinalMap());
+               config.AddMap(new HistoricoEmailUsuarioMap());
+               config.AddMap(new PendenciaMap());
+               config.AddMap(new PendenciaFechamentoMap());
+               config.AddMap(new SinteseValorMap());
+               config.AddMap(new FechamentoAlunoMap());
+               config.AddMap(new FechamentoTurmaMap());
+               config.AddMap(new ConselhoClasseMap());
+               config.AddMap(new ConselhoClasseAlunoMap());
+               config.AddMap(new ConselhoClasseNotaMap());
+               config.AddMap(new WfAprovacaoNotaFechamentoMap());
+               config.AddMap(new GrupoComunicacaoMap());
+               config.AddMap(new ComunicadoMap());
+               config.AddMap(new ComunicadoGrupoMap());
                config.ForDommel();
            });
         }

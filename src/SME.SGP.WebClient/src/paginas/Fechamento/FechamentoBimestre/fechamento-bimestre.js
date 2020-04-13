@@ -50,8 +50,10 @@ const FechamentoBismestre = () => {
   const [dadosBimestre3, setDadosBimestre3] = useState(undefined);
   const [dadosBimestre4, setDadosBimestre4] = useState(undefined);
   const [ehRegencia, setEhRegencia] = useState(false);
+  const [ehSintese, setEhSintese] = useState(false);
   const [periodoFechamento, setPeriodoFechamento] = useState(periodo.Anual);
   const [desabilitaAbaFinal, setDesabilitaAbaFinal] = useState(false);
+  const [situacaoFechamento, setSituacaoFechamento] = useState(0);
 
   const onChangeDisciplinas = id => {
     const disciplina = listaDisciplinas.find(
@@ -112,20 +114,18 @@ const FechamentoBismestre = () => {
       const fechamento = await ServicoFechamentoBimestre.buscarDados(
         turmaSelecionada.turma,
         disciplinaIdSelecionada,
-        bimestre
+        bimestre,
+        turmaSelecionada.periodo
       ).finally(() => {
         setCarregandoBimestres(false);
       });
       if (fechamento && fechamento.data) {
         const dadosFechamento = fechamento.data;
+        setEhSintese(dadosFechamento.ehSintese);
+        setSituacaoFechamento(dadosFechamento.situacao);
         setPeriodoFechamento(dadosFechamento.periodo);
         setBimestreCorrente(`${dadosFechamento.bimestre}`);
         setDadosBimestre(dadosFechamento.bimestre, dadosFechamento);
-        if (dadosFechamento.periodo === periodo.Anual) {
-          setDesabilitaAbaFinal(dadosFechamento.bimestre !== 4);
-        } else {
-          setDesabilitaAbaFinal(dadosFechamento.bimestre !== 2);
-        }
       }
     }
   };
@@ -157,10 +157,33 @@ const FechamentoBismestre = () => {
     if (disciplinaIdSelecionada) obterDados();
   }, [disciplinaIdSelecionada]);
 
-  const onChangeTab = async numeroBimestre => {
+  const onConfirmouTrocarTab = numeroBimestre => {
     setBimestreCorrente(numeroBimestre);
     if (numeroBimestre !== 'final') {
       obterDados(numeroBimestre);
+    }
+  };
+
+  const onChangeTab = async numeroBimestre => {
+    if (modoEdicao) {
+      const confirmado = await confirmar(
+        'Atenção',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmado) {
+        const salvou = await salvarFechamentoFinal();
+        if (salvou) {
+          onConfirmouTrocarTab(numeroBimestre);
+          setModoEdicao(false);
+          dispatch(setExpandirLinha([]));
+        }
+      } else {
+        onConfirmouTrocarTab(numeroBimestre);
+        setModoEdicao(false);
+        dispatch(setExpandirLinha([]));
+      }
+    } else {
+      onConfirmouTrocarTab(numeroBimestre);
     }
   };
 
@@ -197,7 +220,7 @@ const FechamentoBismestre = () => {
   const salvarFechamentoFinal = () => {
     fechamentoFinal.turmaCodigo = turmaSelecionada.turma;
     fechamentoFinal.ehRegencia = ehRegencia;
-    ServicoFechamentoFinal.salvar(fechamentoFinal)
+    return ServicoFechamentoFinal.salvar(fechamentoFinal)
       .then(() => {
         sucesso('Fechamento final salvo com sucesso.');
         setModoEdicao(false);
@@ -244,6 +267,7 @@ const FechamentoBismestre = () => {
                   className="mr-2"
                   onClick={onClickCancelar}
                   disabled={!modoEdicao || somenteConsulta}
+                  hidden={ehSintese}
                 />
                 <Button
                   label="Salvar"
@@ -253,6 +277,7 @@ const FechamentoBismestre = () => {
                   className="mr-2"
                   onClick={salvarFechamentoFinal}
                   disabled={!modoEdicao || somenteConsulta}
+                  hidden={ehSintese}
                 />
               </div>
             </div>
@@ -287,6 +312,11 @@ const FechamentoBismestre = () => {
                       <FechamentoBimestreLista
                         dados={dadosBimestre1}
                         ehRegencia={ehRegencia}
+                        ehSintese={ehSintese}
+                        situacaoFechamento={situacaoFechamento}
+                        codigoComponenteCurricular={disciplinaIdSelecionada}
+                        turmaId={turmaSelecionada.turma}
+                        anoLetivo={turmaSelecionada.anoLetivo}
                       />
                     ) : null}
                   </TabPane>
@@ -296,6 +326,11 @@ const FechamentoBismestre = () => {
                       <FechamentoBimestreLista
                         dados={dadosBimestre2}
                         ehRegencia={ehRegencia}
+                        ehSintese={ehSintese}
+                        situacaoFechamento={situacaoFechamento}
+                        codigoComponenteCurricular={disciplinaIdSelecionada}
+                        turmaId={turmaSelecionada.turma}
+                        anoLetivo={turmaSelecionada.anoLetivo}
                       />
                     ) : null}
                   </TabPane>
@@ -305,6 +340,11 @@ const FechamentoBismestre = () => {
                         <FechamentoBimestreLista
                           dados={dadosBimestre3}
                           ehRegencia={ehRegencia}
+                          ehSintese={ehSintese}
+                          situacaoFechamento={situacaoFechamento}
+                          codigoComponenteCurricular={disciplinaIdSelecionada}
+                          turmaId={turmaSelecionada.turma}
+                          anoLetivo={turmaSelecionada.anoLetivo}
                         />
                       ) : null}
                     </TabPane>) : null
@@ -315,6 +355,11 @@ const FechamentoBismestre = () => {
                         <FechamentoBimestreLista
                           dados={dadosBimestre4}
                           ehRegencia={ehRegencia}
+                          ehSintese={ehSintese}
+                          situacaoFechamento={situacaoFechamento}
+                          codigoComponenteCurricular={disciplinaIdSelecionada}
+                          turmaId={turmaSelecionada.turma}
+                          anoLetivo={turmaSelecionada.anoLetivo}
                         />
                       ) : null}
                     </TabPane>) : null
@@ -329,6 +374,10 @@ const FechamentoBismestre = () => {
                       ref={refFechamentoFinal}
                       desabilitarCampo={!podeIncluir || !podeAlterar || somenteConsulta}
                       somenteConsulta={somenteConsulta}
+                      carregandoFechamentoFinal={carregando =>
+                        setCarregandoBimestres(carregando)
+                      }
+                      bimestreCorrente={bimestreCorrente}
                     />
                   </TabPane>
                 </ContainerTabsCard>

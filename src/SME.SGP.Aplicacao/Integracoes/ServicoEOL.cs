@@ -226,6 +226,21 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo)
+        {
+            var alunos = new List<AlunoPorTurmaResposta>();
+
+            var resposta = await httpClient.GetAsync($"alunos/{codidoAluno}/turmas/anosLetivos/{anoLetivo}");
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+            }
+
+            return alunos;
+        }
+
+        [Obsolete("não utilizar mais esse método, utilize o ObterAlunosPorTurma")]
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
@@ -751,6 +766,23 @@ namespace SME.SGP.Aplicacao.Integracoes
                 throw new NegocioException("Não foi possível reiniciar a senha deste usuário");
         }
 
+        public async Task<UsuarioEolAutenticacaoRetornoDto> RelecionarUsuarioPerfis(string login)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", login) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/RelacionarUsuarioPerfis", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+            }
+            else return null;
+        }
+
         public async Task RemoverCJSeNecessario(Guid usuarioId)
         {
             var parametros = JsonConvert.SerializeObject(usuarioId.ToString());
@@ -786,7 +818,8 @@ namespace SME.SGP.Aplicacao.Integracoes
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
                 RegistraFrequencia = x.RegistraFrequencia,
-                TerritorioSaber = x.Territorio
+                TerritorioSaber = x.Territorio,
+                LancaNota = x.LancaNota,
             });
         }
 

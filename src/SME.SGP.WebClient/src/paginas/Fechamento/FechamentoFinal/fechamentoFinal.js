@@ -26,11 +26,14 @@ const FechamentoFinal = forwardRef((props, ref) => {
     turmaPrograma,
     onChange,
     desabilitarCampo,
+    carregandoFechamentoFinal,
+    bimestreCorrente,
   } = props;
 
   const dispatch = useDispatch();
 
   const [ehNota, setEhNota] = useState(true);
+  const [ehSintese, setEhSintese] = useState(false);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState();
   const [listaConceitos, setListaConceitos] = useState([]);
   const [exibirLista, setExibirLista] = useState(
@@ -72,11 +75,12 @@ const FechamentoFinal = forwardRef((props, ref) => {
   };
 
   const obterFechamentoFinal = useCallback(() => {
+    setNotasEmEdicao([]);
     dispatch(setExpandirLinha([]));
+    carregandoFechamentoFinal(true);
     ServicoFechamentoFinal.obter(turmaCodigo, disciplinaCodigo, ehRegencia)
       .then(resposta => {
         if (resposta && resposta.data) {
-
           resposta.data.alunos.forEach(item => {
             item.notasConceitoFinal.forEach(aluno => {
               aluno.notaConceitoAtual = aluno.notaConceito;
@@ -85,6 +89,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
           setDadosFechamentoFinal(resposta.data);
           setAlunos(resposta.data.alunos);
           setEhNota(resposta.data.ehNota);
+          setEhSintese(resposta.data.ehSintese);
           setAuditoria({
             auditoriaAlteracao: resposta.data.auditoriaAlteracao,
             auditoriaInclusao: resposta.data.auditoriaInclusao,
@@ -94,24 +99,28 @@ const FechamentoFinal = forwardRef((props, ref) => {
             obterListaConceitos(resposta.data.eventoData);
           }
         }
+        carregandoFechamentoFinal(false);
       })
-      .catch(e => erros(e));
+      .catch(e => {
+        erros(e);
+        carregandoFechamentoFinal(false);
+      });
   }, [disciplinaCodigo, ehRegencia, turmaCodigo]);
 
   useImperativeHandle(ref, () => ({
     cancelar() {
       obterFechamentoFinal();
-      setNotasEmEdicao([]);
     },
     salvarFechamentoFinal() {
       obterFechamentoFinal();
-      setNotasEmEdicao([]);
     },
   }));
 
   useEffect(() => {
-    obterFechamentoFinal();
-  }, [obterFechamentoFinal]);
+    if (bimestreCorrente == 'final') {
+      obterFechamentoFinal();
+    }
+  }, [obterFechamentoFinal, bimestreCorrente]);
 
   const setDisciplinaAtiva = disciplina => {
     const disciplinas = disciplinasRegencia.map(c => {
@@ -162,14 +171,14 @@ const FechamentoFinal = forwardRef((props, ref) => {
               />
             </div>
             <div className="col-sm-12 col-md-12 col-lg-10 col-xl-9 d-flex justify-content-end">
-              {ehRegencia && (
+              {!ehSintese && ehRegencia && (
                 <div className="lista-disciplinas">
                   {disciplinasRegencia.map(disciplina => (
                     <span
                       key={shortid.generate()}
                       className={`btn-disciplina ${
                         disciplina.ativa ? 'ativa' : ''
-                        }`}
+                      }`}
                       onClick={() => setDisciplinaAtiva(disciplina)}
                     >
                       {disciplina.nome}
@@ -180,8 +189,8 @@ const FechamentoFinal = forwardRef((props, ref) => {
             </div>
           </div>
         ) : (
-            ''
-          )}
+          ''
+        )}
         {exibirLista && (
           <>
             <div className="table-responsive">
@@ -191,35 +200,50 @@ const FechamentoFinal = forwardRef((props, ref) => {
                     <th className="col-nome-aluno" colSpan="2">
                       Nome
                     </th>
-                    <th>{ehNota ? 'Nota' : 'Conceito'}</th>
+                    <th>
+                      {ehSintese ? 'Síntese' : ehNota ? 'Nota' : 'Conceito'}
+                    </th>
                     <th className="width-120">Total de Faltas</th>
                     <th>Total de Ausências Compensadas</th>
-                    <th className="head-conceito">
-                      {ehNota ? 'Nota Final' : 'Conceito Final'}
-                    </th>
+                    {ehSintese ? (
+                      ''
+                    ) : (
+                      <th className="head-conceito">
+                        {ehNota ? 'Nota Final' : 'Conceito Final'}
+                      </th>
+                    )}
                     <th>%Freq.</th>
                   </tr>
                 </thead>
                 <tbody className="tabela-fechamento-final-tbody">
-                  {alunos.map((aluno, i) => {
-                    return (
-                      <>
-                        <LinhaAluno
-                          aluno={aluno}
-                          ehRegencia={ehRegencia}
-                          ehNota={ehNota}
-                          disciplinaSelecionada={disciplinaSelecionada}
-                          listaConceitos={listaConceitos}
-                          onChange={onChangeNotaAluno}
-                          eventoData={dadosFechamentoFinal.eventoData}
-                          notaMedia={dadosFechamentoFinal.notaMedia}
-                          frequenciaMedia={dadosFechamentoFinal.frequenciaMedia}
-                          indexAluno={i}
-                          desabilitarCampo={desabilitarCampo}
-                        />
-                      </>
-                    );
-                  })}
+                  {alunos && alunos.length ? (
+                    alunos.map((aluno, i) => {
+                      return (
+                        <>
+                          <LinhaAluno
+                            aluno={aluno}
+                            ehRegencia={ehRegencia}
+                            ehNota={ehNota}
+                            disciplinaSelecionada={disciplinaSelecionada}
+                            listaConceitos={listaConceitos}
+                            onChange={onChangeNotaAluno}
+                            eventoData={dadosFechamentoFinal.eventoData}
+                            notaMedia={dadosFechamentoFinal.notaMedia}
+                            frequenciaMedia={dadosFechamentoFinal.frequenciaMedia}
+                            indexAluno={i}
+                            desabilitarCampo={desabilitarCampo}
+                            ehSintese={ehSintese}
+                          />
+                        </>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="10" className="text-center">
+                        Sem dados
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -235,8 +259,8 @@ const FechamentoFinal = forwardRef((props, ref) => {
                 </div>
               </div>
             ) : (
-                ''
-              )}
+              ''
+            )}
           </>
         )}
       </Lista>
@@ -251,6 +275,8 @@ FechamentoFinal.propTypes = {
   turmaPrograma: PropTypes.bool,
   onChange: PropTypes.func,
   desabilitarCampo: PropTypes.bool,
+  carregandoFechamentoFinal: PropTypes.func,
+  bimestreCorrente: PropTypes.string,
 };
 
 FechamentoFinal.defaultProps = {
@@ -258,8 +284,10 @@ FechamentoFinal.defaultProps = {
   disciplinaCodigo: '1',
   ehRegencia: false,
   turmaPrograma: false,
-  onChange: () => { },
+  onChange: () => {},
   desabilitarCampo: false,
+  carregandoFechamentoFinal: () => {},
+  bimestreCorrente: '',
 };
 
 export default FechamentoFinal;

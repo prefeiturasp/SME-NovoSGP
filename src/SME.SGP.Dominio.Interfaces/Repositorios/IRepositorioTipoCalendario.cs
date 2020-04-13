@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -14,5 +15,6 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<TipoCalendario> ObterTiposCalendario();
 
         Task<bool> VerificarRegistroExistente(long id, string nome);
+        Task<bool> PeriodoEmAberto(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0);
     }
 }

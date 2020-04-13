@@ -296,6 +296,8 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
         validaAntesDoSubmit(form);
+      } else {
+        history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
       }
     } else {
       history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);

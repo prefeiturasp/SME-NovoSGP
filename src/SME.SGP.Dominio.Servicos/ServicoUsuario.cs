@@ -154,6 +154,10 @@ namespace SME.SGP.Dominio
 
         public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "")
         {
+            var eNumero = int.TryParse(codigoRf, out int n);
+
+            codigoRf = eNumero ? codigoRf : null;
+
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, login);
             if (usuario != null)
             {
@@ -162,11 +166,19 @@ namespace SME.SGP.Dominio
                     usuario.Nome = nome;
                     repositorioUsuario.Salvar(usuario);
                 }
+
+                if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
+                {
+                    usuario.CodigoRf = codigoRf;
+                    repositorioUsuario.Salvar(usuario);
+                }
+
                 return usuario;
             }
 
             if (string.IsNullOrEmpty(login))
                 login = codigoRf;
+                      
 
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
 
@@ -197,7 +209,7 @@ namespace SME.SGP.Dominio
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
 
-        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
+        public async Task<bool> PodePersistirTurmaNasDatas(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
         {
             if (usuario == null)
                 usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, string.Empty);
@@ -211,6 +223,19 @@ namespace SME.SGP.Dominio
 
                 return validacaoData.FirstOrDefault().PodePersistir;
             }
+            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
+
+            return atribuicaoCj != null && atribuicaoCj.Any();
+        }
+
+        public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
+        {
+            if (usuario == null)
+                usuario = await ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj())
+                return await servicoEOL.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, data);
+            
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
@@ -250,7 +275,10 @@ namespace SME.SGP.Dominio
 
             if (retornoEol.Perfis == null || !retornoEol.Perfis.Any())
             {
-                throw new NegocioException("Não é possível alterar o e-mail deste usuário pois o mesmo está sem perfis de acesso.");
+                //pode ser que esse usuário não tenha se logado ainda no sistema, realizar chamada para o serviço de relacionar grupos
+                retornoEol = await servicoEOL.RelecionarUsuarioPerfis(usuario.Login);
+                if (retornoEol == null || !retornoEol.Perfis.Any())
+                    throw new NegocioException("Não é possível alterar o e-mail deste usuário pois o mesmo está sem perfis de acesso.");
             }
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(retornoEol.Perfis);
             usuario.DefinirPerfis(perfisUsuario);

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,13 +23,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterGradeAulasTurma([FromQuery] DateTime data, string codigoTurma, long codigoDisciplina, [FromServices] IConsultasGrade consultasGrade, [FromQuery]bool ehRegencia = false)
         {
-            var semana = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(data, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-            var horasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor(codigoTurma, codigoDisciplina, semana, data, ehRegencia: ehRegencia);
+            var horasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor(codigoTurma, codigoDisciplina, UtilData.ObterSemanaDoAno(data), data, ehRegencia: ehRegencia);
 
-            if (horasGrade != null)
-                return Ok(horasGrade);
-            else
-                return StatusCode(204);
+            if (horasGrade == null)
+                return NoContent();
+
+            return Ok(horasGrade);
         }
     }
 }

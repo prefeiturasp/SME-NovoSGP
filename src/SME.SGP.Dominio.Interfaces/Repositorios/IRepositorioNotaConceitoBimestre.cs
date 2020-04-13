@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioNotaConceitoBimestre : IRepositorioBase<NotaConceitoBimestre>
+    public interface IRepositorioFechamentoNota : IRepositorioBase<FechamentoNota>
     {
-        Task<IEnumerable<NotaConceitoBimestre>> ObterPorFechamentoTurma(long fechamentoId);
+        Task<IEnumerable<FechamentoNota>> ObterPorFechamentoTurma(long fechamentoTurmaDisciplinaId);
+        Task<FechamentoNota> ObterPorAlunoEFechamento(long fechamentoTurmaDisciplinaId, string codigoAluno);
+        Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoWf(long workFlowId);
+        Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoPorFechamento(long fechamentoTurmaDisciplinaId);
     }
 }

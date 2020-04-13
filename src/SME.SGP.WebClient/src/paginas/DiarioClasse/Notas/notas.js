@@ -1,29 +1,34 @@
 import { Tabs } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Loader, Grid } from '~/componentes';
+import { Grid, Loader, ModalConteudoHtml, Colors } from '~/componentes';
+import Button from '~/componentes/button';
 import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
 import Cabecalho from '~/componentes-sgp/cabecalho';
+import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
+import Editor from '~/componentes/editor/editor';
+import Row from '~/componentes/row';
 import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { URL_HOME } from '~/constantes/url';
 import notasConceitos from '~/dtos/notasConceitos';
+import RotasDto from '~/dtos/rotasDto';
 import {
+  setExpandirLinha,
   setModoEdicaoGeral,
   setModoEdicaoGeralNotaFinal,
-  setExpandirLinha,
 } from '~/redux/modulos/notasConceitos/actions';
-import { erros, sucesso, confirmar } from '~/servicos/alertas';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
-
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import ServicoNotas from '~/servicos/ServicoNotas';
 import BotoesAcoessNotasConceitos from './botoesAcoes';
 import { Container, ContainerAuditoria } from './notas.css';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import Row from '~/componentes/row';
-import Alert from '~/componentes/alert';
+import * as Yup from 'yup';
+import { Formik, Form } from 'formik';
+import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
 
 const { TabPane } = Tabs;
 
@@ -32,6 +37,9 @@ const Notas = ({ match }) => {
   const dispatch = useDispatch();
   const modoEdicaoGeral = useSelector(
     store => store.notasConceitos.modoEdicaoGeral
+  );
+  const modoEdicaoGeralNotaFinal = useSelector(
+    store => store.notasConceitos.modoEdicaoGeralNotaFinal
   );
   const { ehProfessorCj } = usuario;
 
@@ -59,15 +67,66 @@ const Notas = ({ match }) => {
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
+  const [percentualMinimoAprovados, setPercentualMinimoAprovados] = useState(0);
+  const [exibeModalJustificativa, setExibeModalJustificativa] = useState(false);
+  const [valoresIniciais] = useState({ descricao: undefined });
+  const [refForm, setRefForm] = useState({});
 
-  useEffect(() => {
+  const [validacoes] = useState(
+    Yup.object({
+      descricao: Yup.string().required('Justificativa obrigatória'),
+    })
+  );
+
+  // Usado somente no Modal de Justificativa!
+  const [proximoBimestre, setProximoBimestre] = useState(bimestreCorrente);
+  const [clicouNoBotaoSalvar, setClicouNoBotaoSalvar] = useState(false);
+  const [clicouNoBotaoVoltar, setClicouNoBotaoVoltar] = useState(false);
+
+  const [podeLancaNota, setPodeLancaNota] = useState(true);
+
+  const [showMsgPeriodoFechamento, setShowMsgPeriodoFechamento] = useState(
+    false
+  );
+
+  const validaSeDesabilitaCampos = async bimestre => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
     const desabilitar =
       somenteConsulta ||
       !permissoesTela.podeAlterar ||
       !permissoesTela.podeIncluir;
-    setDesabilitarCampos(desabilitar);
-  }, [permissoesTela]);
+
+    let dentroDoPeriodo = true;
+    if (!desabilitar && bimestre && usuario.turmaSelecionada.turma) {
+      const retorno = await ServicoPeriodoFechamento.verificarSePodeAlterarNoPeriodo(
+        usuario.turmaSelecionada.turma,
+        bimestre
+      ).catch(e => {
+        erros(e);
+      });
+      if (retorno && retorno.status == 200) {
+        dentroDoPeriodo = retorno.data;
+      }
+    }
+
+    if (desabilitar) {
+      setDesabilitarCampos(desabilitar);
+      setShowMsgPeriodoFechamento(false);
+      return;
+    }
+
+    if (!dentroDoPeriodo) {
+      setDesabilitarCampos(true);
+      setShowMsgPeriodoFechamento(true);
+    } else {
+      setDesabilitarCampos(desabilitar);
+      setShowMsgPeriodoFechamento(false);
+    }
+  };
+
+  useEffect(() => {
+    validaSeDesabilitaCampos(bimestreCorrente);
+  }, [permissoesTela, usuario.turmaSelecionada.turma]);
 
   const resetarTela = useCallback(() => {
     setDisciplinaSelecionada(undefined);
@@ -79,6 +138,7 @@ const Notas = ({ match }) => {
       auditoriaBimestreInserido: '',
       auditoriaBimestreAlterado: '',
     });
+    resetarBimestres();
     dispatch(setModoEdicaoGeral(false));
     dispatch(setModoEdicaoGeralNotaFinal(false));
     dispatch(setExpandirLinha([]));
@@ -108,12 +168,20 @@ const Notas = ({ match }) => {
         modalidade: usuario.turmaSelecionada.modalidade,
         turmaCodigo: usuario.turmaSelecionada.turma,
         turmaHistorico: usuario.turmaSelecionada.consideraHistorico,
+        semestre: usuario.turmaSelecionada.periodo,
       };
       const dados = await api
         .get('v1/avaliacoes/notas/', { params })
         .catch(e => erros(e));
 
-      return dados ? dados.data : [];
+      const resultado = dados ? dados.data : [];
+      if (
+        resultado.percentualAlunosInsuficientes &&
+        resultado.percentualAlunosInsuficientes > 0
+      ) {
+        setPercentualMinimoAprovados(resultado.percentualAlunosInsuficientes);
+      }
+      return resultado;
     },
     [
       usuario.turmaSelecionada.anoLetivo,
@@ -128,6 +196,7 @@ const Notas = ({ match }) => {
       if (disciplinaId > 0) {
         setCarregandoListaBimestres(true);
         const dados = await obterBimestres(disciplinaId, numeroBimestre);
+        validaPeriodoFechamento(dados);
         if (dados && dados.bimestres && dados.bimestres.length) {
           dados.bimestres.forEach(async item => {
             item.alunos.forEach(aluno => {
@@ -216,10 +285,13 @@ const Notas = ({ match }) => {
     setListaDisciplinas(disciplinas.data);
     if (disciplinas.data && disciplinas.data.length === 1) {
       const disciplina = disciplinas.data[0];
+      setPodeLancaNota(disciplina.lancaNota);
       setEhRegencia(disciplina.regencia);
       setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
-      obterDadosBimestres(disciplina.codigoComponenteCurricular);
+      if (disciplina.lancaNota) {
+        obterDadosBimestres(disciplina.codigoComponenteCurricular);
+      }
     }
     if (
       match &&
@@ -276,16 +348,18 @@ const Notas = ({ match }) => {
 
   // TODO - Verificar se realmente é necessário usar o resetarBimestres!
   const resetarBimestres = () => {
-    // const bimestreVazio = {
-    //   descricao: '',
-    //   numero: undefined,
-    //   alunos: [],
-    //   avaliacoes: [],
-    // };
-    // setPrimeiroBimestre(bimestreVazio);
-    // setSegundoBimestre(bimestreVazio);
-    // setTerceiroBimestre(bimestreVazio);
-    // setQuartoBimestre(bimestreVazio);
+    primeiroBimestre.alunos = [];
+    primeiroBimestre.avaliacoes = [];
+    setPrimeiroBimestre(primeiroBimestre);
+    segundoBimestre.alunos = [];
+    segundoBimestre.avaliacoes = [];
+    setSegundoBimestre(segundoBimestre);
+    terceiroBimestre.alunos = [];
+    terceiroBimestre.avaliacoes = [];
+    setTerceiroBimestre(terceiroBimestre);
+    quartoBimestre.alunos = [];
+    quartoBimestre.avaliacoes = [];
+    setQuartoBimestre(quartoBimestre);
   };
 
   const aposSalvarNotas = () => {
@@ -380,16 +454,13 @@ const Notas = ({ match }) => {
         if (notaFinal.modoEdicao) {
           notaConceitoAlunos.push({
             codigoAluno: aluno.id,
-            disciplinaId:
-              notasConceitos.Notas == notaTipo
-                ? disciplinaSelecionada
-                : notaFinal.disciplinaId,
+            disciplinaId: notaFinal.disciplinaId || disciplinaSelecionada,
             nota:
-              notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : 0,
+              notaTipo === notasConceitos.Notas ? notaFinal.notaConceito : null,
             conceitoId:
               notaTipo === notasConceitos.Conceitos
                 ? notaFinal.notaConceito
-                : 0,
+                : null,
           });
         }
       });
@@ -401,6 +472,7 @@ const Notas = ({ match }) => {
       bimestre: bimestreParaMontar.numero,
       disciplinaId: disciplinaSelecionada,
       notaConceitoAlunos,
+      justificativa: bimestreParaMontar.justificativa,
     };
   };
 
@@ -497,21 +569,15 @@ const Notas = ({ match }) => {
   };
 
   const onClickVoltar = async () => {
-    if (modoEdicaoGeral) {
-      const confirmado = await pergutarParaSalvar();
-      if (confirmado) {
-        await onSalvarNotas(false);
-        irParaHome();
-      } else {
-        irParaHome();
-      }
+    if (modoEdicaoGeral || modoEdicaoGeralNotaFinal) {
+      validarJustificativaAntesDeSalvar(bimestreCorrente, false, true);
     } else {
       irParaHome();
     }
   };
 
-  const onClickSalvar = salvarNotaFinal => {
-    onSalvarNotas(true, salvarNotaFinal);
+  const onClickSalvar = () => {
+    validarJustificativaAntesDeSalvar(bimestreCorrente, true, false);
   };
 
   const validaSeEhRegencia = disciplinaId => {
@@ -528,6 +594,17 @@ const Notas = ({ match }) => {
   };
 
   const onChangeDisciplinas = async disciplinaId => {
+    let lancaNota = true;
+    if (disciplinaId) {
+      const componenteSelecionado = listaDisciplinas.find(
+        item => item.codigoComponenteCurricular == disciplinaId
+      );
+      if (componenteSelecionado) {
+        lancaNota = componenteSelecionado.lancaNota;
+      }
+    }
+    setPodeLancaNota(lancaNota);
+
     validaSeEhRegencia(disciplinaId);
 
     dispatch(setModoEdicaoGeral(false));
@@ -549,35 +626,139 @@ const Notas = ({ match }) => {
       }
     } else {
       resetarTela();
-      obterDadosBimestres(disciplinaId, 0);
+      if (lancaNota) {
+        obterDadosBimestres(disciplinaId, 0);
+      }
       setDisciplinaSelecionada(disciplinaId);
     }
   };
 
-  const onChangeTab = async numeroBimestre => {
-    dispatch(setExpandirLinha([]));
-    setBimestreCorrente(numeroBimestre);
-    let bimestre = {};
-    switch (Number(numeroBimestre)) {
+  const getDadosBimestreAtual = () => {
+    switch (Number(bimestreCorrente)) {
       case 1:
-        bimestre = primeiroBimestre;
-        break;
+        return primeiroBimestre;
       case 2:
-        bimestre = segundoBimestre;
-        break;
+        return segundoBimestre;
       case 3:
-        bimestre = terceiroBimestre;
-        break;
+        return terceiroBimestre;
       case 4:
-        bimestre = quartoBimestre;
-        break;
+        return quartoBimestre;
       default:
         break;
     }
+  };
 
-    if (bimestre && !bimestre.modoEdicao && disciplinaSelecionada) {
+  const verificaPorcentagemAprovados = () => {
+    return ServicoNotas.temQuantidadeMinimaAprovada(
+      getDadosBimestreAtual(),
+      percentualMinimoAprovados,
+      notaTipo
+    );
+  };
+
+  const aposValidarJustificativaAntesDeSalvar = (
+    numeroBimestre,
+    clicouSalvar,
+    clicouVoltar
+  ) => {
+    if (!clicouSalvar && !clicouVoltar) {
+      confirmarTrocaTab(numeroBimestre);
+    }
+    if (clicouVoltar) {
+      irParaHome();
+    }
+  };
+
+  const validarJustificativaAntesDeSalvar = async (
+    numeroBimestre,
+    clicouSalvar = false,
+    clicouVoltar = false
+  ) => {
+    setClicouNoBotaoSalvar(clicouSalvar);
+    setClicouNoBotaoVoltar(clicouVoltar);
+
+    if (modoEdicaoGeral || modoEdicaoGeralNotaFinal) {
+      let confirmado = true;
+
+      if (!clicouSalvar) {
+        confirmado = await pergutarParaSalvar();
+      }
+
+      if (confirmado) {
+        const bimestre = getDadosBimestreAtual();
+        const temPorcentagemAceitavel = verificaPorcentagemAprovados();
+        if (
+          modoEdicaoGeralNotaFinal &&
+          !temPorcentagemAceitavel &&
+          bimestre.modoEdicao
+        ) {
+          setProximoBimestre(numeroBimestre);
+          setExibeModalJustificativa(true);
+        } else {
+          bimestre.justificativa = temPorcentagemAceitavel
+            ? null
+            : bimestre.justificativa;
+          await onSalvarNotas(clicouSalvar, modoEdicaoGeralNotaFinal);
+          aposValidarJustificativaAntesDeSalvar(
+            numeroBimestre,
+            clicouSalvar,
+            clicouVoltar
+          );
+        }
+      } else {
+        aposValidarJustificativaAntesDeSalvar(
+          numeroBimestre,
+          clicouSalvar,
+          clicouVoltar
+        );
+      }
+    } else {
+      aposValidarJustificativaAntesDeSalvar(
+        numeroBimestre,
+        clicouSalvar,
+        clicouVoltar
+      );
+    }
+  };
+
+  const onChangeTab = async numeroBimestre => {
+    if (disciplinaSelecionada) {
+      validarJustificativaAntesDeSalvar(numeroBimestre, false, false);
+    }
+  };
+
+  const validaPeriodoFechamento = dados => {
+    const temDados =
+      dados.bimestres &&
+      dados.bimestres.find(
+        bimestre => bimestre.alunos && bimestre.alunos.length
+      );
+    if (temDados) {
+      validaSeDesabilitaCampos(dados.bimestreAtual);
+    } else {
+      setShowMsgPeriodoFechamento(false);
+    }
+  };
+
+  const confirmarTrocaTab = async numeroBimestre => {
+    if (disciplinaSelecionada) {
+      resetarBimestres();
+      setNotaTipo(0);
+      setAuditoriaInfo({
+        auditoriaAlterado: '',
+        auditoriaInserido: '',
+        auditoriaBimestreInserido: '',
+        auditoriaBimestreAlterado: '',
+      });
+      dispatch(setModoEdicaoGeral(false));
+      dispatch(setModoEdicaoGeralNotaFinal(false));
+      dispatch(setExpandirLinha([]));
+
+      setBimestreCorrente(numeroBimestre);
+
       setCarregandoListaBimestres(true);
       const dados = await obterBimestres(disciplinaSelecionada, numeroBimestre);
+      validaPeriodoFechamento(dados);
       if (dados && dados.bimestres && dados.bimestres.length) {
         const bimestrePesquisado = dados.bimestres.find(
           item => Number(item.numero) === Number(numeroBimestre)
@@ -606,6 +787,8 @@ const Notas = ({ match }) => {
         }
         setNotaTipo(dados.notaTipo);
 
+        setNotaTipo(dados.notaTipo);
+
         const bimestreAtualizado = {
           fechamentoTurmaId: bimestrePesquisado.fechamentoTurmaId,
           descricao: bimestrePesquisado.descricao,
@@ -618,6 +801,7 @@ const Notas = ({ match }) => {
           listaTiposConceitos,
           observacoes: bimestrePesquisado.observacoes,
           podeLancarNotaFinal: bimestrePesquisado.podeLancarNotaFinal,
+          justificativa: bimestrePesquisado.justificativa,
         };
 
         switch (Number(numeroBimestre)) {
@@ -697,8 +881,109 @@ const Notas = ({ match }) => {
     }
   };
 
+  const onChangeJustificativa = valor => {
+    getDadosBimestreAtual().justificativa = valor;
+  };
+
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(valoresIniciais);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
+        form.handleSubmit(e => e);
+      }
+    });
+  };
+
+  const onConfirmarJustificativa = async () => {
+    setExibeModalJustificativa(false);
+    await onSalvarNotas(clicouNoBotaoSalvar, modoEdicaoGeralNotaFinal);
+    refForm.resetForm();
+    aposValidarJustificativaAntesDeSalvar(
+      proximoBimestre,
+      clicouNoBotaoSalvar,
+      clicouNoBotaoVoltar
+    );
+  };
+
   return (
     <Container>
+      <ModalConteudoHtml
+        key="inserirJutificativa"
+        visivel={exibeModalJustificativa}
+        onClose={() => { }}
+        titulo="Inserir justificativa"
+        esconderBotaoPrincipal
+        esconderBotaoSecundario
+        closable={false}
+        fecharAoClicarFora={false}
+        fecharAoClicarEsc={false}
+        width="650px"
+      >
+        <Formik
+          enableReinitialize
+          initialValues={valoresIniciais}
+          validationSchema={validacoes}
+          onSubmit={onConfirmarJustificativa}
+          ref={refF => setRefForm(refF)}
+          validateOnChange
+          validateOnBlur
+        >
+          {form => (
+            <Form>
+              <div className="col-md-12">
+                <Alert
+                  alerta={{
+                    tipo: 'warning',
+                    id: 'justificativa-porcentagem',
+                    mensagem: `A maioria dos estudantes está com ${
+                      notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'
+                      } abaixo do
+                               mínimo considerado para aprovação, por isso é necessário que você insira uma justificativa.`,
+                    estiloTitulo: { fontSize: '18px' },
+                  }}
+                  className="mb-2"
+                />
+              </div>
+              <div className="col-md-12">
+                <fieldset className="mt-3">
+                  <Editor
+                    form={form}
+                    onChange={onChangeJustificativa}
+                    name="descricao"
+                  />
+                </fieldset>
+              </div>
+              <div className="d-flex justify-content-end">
+                <Button
+                  key="btn-cancelar-justificativa"
+                  label="Cancelar"
+                  color={Colors.Roxo}
+                  bold
+                  border
+                  className="mr-3 mt-2 padding-btn-confirmacao"
+                  onClick={() => {
+                    onChangeJustificativa('');
+                    form.resetForm();
+                    setExibeModalJustificativa(false);
+                  }}
+                />
+                <Button
+                  key="btn-sim-confirmacao-justificativa"
+                  label="Confirmar"
+                  color={Colors.Roxo}
+                  bold
+                  border
+                  className="mr-3 mt-2 padding-btn-confirmacao"
+                  onClick={() => validaAntesDoSubmit(form)}
+                />
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </ModalConteudoHtml>
       {!usuario.turmaSelecionada.turma ? (
         <Row className="mb-0 pb-0">
           <Grid cols={12} className="mb-0 pb-0">
@@ -708,6 +993,41 @@ const Notas = ({ match }) => {
                   tipo: 'warning',
                   id: 'AlertaPrincipal',
                   mensagem: 'Você precisa escolher uma turma.',
+                  estiloTitulo: { fontSize: '18px' },
+                }}
+              />
+            </Container>
+          </Grid>
+        </Row>
+      ) : null}
+      {!podeLancaNota ? (
+        <Row className="mb-0 pb-0">
+          <Grid cols={12} className="mb-0 pb-0">
+            <Container>
+              <Alert
+                alerta={{
+                  tipo: 'warning',
+                  id: 'pode-lanca-nota',
+                  mensagem:
+                    'Este componente curricular não permite o lançamento de nota',
+                  estiloTitulo: { fontSize: '18px' },
+                }}
+                className="mb-2"
+              />
+            </Container>
+          </Grid>
+        </Row>
+      ) : null}
+      {showMsgPeriodoFechamento ? (
+        <Row className="mb-0 pb-0">
+          <Grid cols={12} className="mb-0 pb-0">
+            <Container>
+              <Alert
+                alerta={{
+                  tipo: 'warning',
+                  id: 'alerta-perido-fechamento',
+                  mensagem:
+                    'Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.',
                   estiloTitulo: { fontSize: '18px' },
                 }}
               />
@@ -748,7 +1068,7 @@ const Notas = ({ match }) => {
               </div>
             </div>
 
-            {disciplinaSelecionada ? (
+            {disciplinaSelecionada && podeLancaNota ? (
               <>
                 <div className="row">
                   <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
@@ -769,11 +1089,12 @@ const Notas = ({ match }) => {
                             desabilitarCampos={desabilitarCampos}
                             ehProfessorCj={ehProfessorCj}
                             ehRegencia={ehRegencia}
+                            disciplinaSelecionada={disciplinaSelecionada}
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {segundoBimestre.numero ? (
                         <TabPane
                           tab={segundoBimestre.descricao}
@@ -789,8 +1110,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {terceiroBimestre.numero ? (
                         <TabPane
                           tab={terceiroBimestre.descricao}
@@ -806,8 +1127,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {quartoBimestre.numero ? (
                         <TabPane
                           tab={quartoBimestre.descricao}
@@ -823,8 +1144,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                     </ContainerTabsCard>
                   </div>
                 </div>
@@ -850,12 +1171,12 @@ const Notas = ({ match }) => {
                 </div>
               </>
             ) : (
-              ''
-            )}
+                ''
+              )}
           </div>
         </Card>
       </Loader>
-    </Container>
+    </Container >
   );
 };
 

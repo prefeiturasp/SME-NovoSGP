@@ -33,6 +33,44 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplinaProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf)
+        {
+            var query = @"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = @data
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId
+                  and professor_rf = @professorRf";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
+            {
+                data = data.Date,
+                turmaId,
+                disciplinaId,
+                professorRf
+            });
+        }
+
+        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf)
+        {
+            var query = @"select DATE(data_aula)
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = ANY(@datas)
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId
+                  and professor_rf = @professorRf";
+
+            return (await database.Conexao.QueryAsync<DateTime>(query.ToString(), new
+            {
+                datas,
+                turmaId,
+                disciplinaId,
+                professorRf
+            }));
+        }
+
         public async Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, long atividadeAvaliativaId)
         {
             var query = @"select *
@@ -155,6 +193,71 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { aulaPaiId, aulaIdInicioRecorrencia, dataFinal });
         }
 
+        public IEnumerable<Aula> ObterAulasReposicaoPendentes(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var query = @"select
+	                            *
+                            from
+	                            aula
+                            where
+	                            tipo_aula = 2
+	                            and status = 2
+	                            and turma_id = @codigoTurma
+	                            and disciplina_id = @disciplinaId
+	                            and data_aula >= @inicioPeriodo
+	                            and data_aula <= @fimPeriodo";
+            return database.Conexao.Query<Aula>(query, new
+            {
+                codigoTurma,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo
+            });
+        }
+
+        public IEnumerable<Aula> ObterAulasSemFrequenciaRegistrada(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var query = @"select *
+                            from aula a
+                            left join registro_frequencia r on r.aula_id = a.id
+                           where turma_id = @codigoTurma
+	                            and disciplina_id = @disciplinaId
+	                            and data_aula >= @inicioPeriodo
+	                            and data_aula <= @fimPeriodo
+                                and data_aula <= @dataAtual
+	                            and r.id is null";
+            return database.Conexao.Query<Aula>(query, new
+            {
+                codigoTurma,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo,
+                dataAtual = DateTime.Now
+            });
+        }
+
+        public IEnumerable<Aula> ObterAulasSemPlanoAulaNaDataAtual(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var query = @"select *
+                            from aula a
+                            left join plano_aula p on p.aula_id = a.id
+                           where turma_id = @codigoTurma
+                                and disciplina_id = @disciplinaId
+                                and data_aula >= @inicioPeriodo
+                                and data_aula <= @fimPeriodo
+                                and data_aula <= @dataAtual
+                                and p.id is null";
+
+            return database.Conexao.Query<Aula>(query, new
+            {
+                codigoTurma,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo,
+                dataAtual = DateTime.Today
+            });
+        }
+
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaDiaProfessor(string turma, string disciplina, DateTime dataAula, string codigoRf)
         {
             StringBuilder query = new StringBuilder();
@@ -259,15 +362,18 @@ namespace SME.SGP.Dados.Repositorios
                         }, param: new { id }).FirstOrDefault();
         }
 
-        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(int anoLetivo, string turmaId, string disciplinaId, long usuarioId, string usuarioRF, bool aulaCJ, bool ehDiretorOuSupervisor)
+        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehDiretorOuSupervisor = false)
         {
             var query = new StringBuilder("select distinct a.* ");
             query.AppendLine("from aula a ");
             query.AppendLine("inner join turma t on ");
             query.AppendLine("a.turma_id = t.turma_id ");
+            query.AppendLine("inner join periodo_escolar pe on pe.id = @periodoEscolarId ");
+            query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
+            query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
             query.AppendLine("where");
             query.AppendLine("not a.excluido");
-            query.AppendLine("and a.turma_id = @turmaId ");
+            query.AppendLine("and a.turma_id = @turmaCodigo ");
             query.AppendLine("and a.disciplina_id = @disciplinaId ");
             query.AppendLine("and t.ano_letivo = @anoLetivo");
 
@@ -284,10 +390,10 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.Query<AulaConsultaDto>(query.ToString(), new
             {
+                periodoEscolarId,
                 usuarioRF,
-                usuarioId,
                 anoLetivo,
-                turmaId,
+                turmaCodigo,
                 disciplinaId
             });
         }
@@ -421,6 +527,19 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("AND a.disciplina_id = @disciplinaId");
             if (disciplinasId != null && disciplinasId.Length > 0)
                 query.AppendLine("AND a.disciplina_id = ANY(@disciplinasId)");
+        }
+
+        public IEnumerable<DateTime> ObterUltimosDiasLetivos(DateTime dataReferencia, int quantidadeDias, long tipoCalendarioId)
+        {
+            var query = @"select distinct a.data_aula::date  
+                          from aula a
+                         where not a.excluido 
+                           and a.data_aula <= @dataReferencia
+                           and a.tipo_calendario_id = @tipoCalendarioId
+                         order by a.data_aula::date  desc
+                        limit @quantidadeDias";
+
+            return database.Conexao.Query<DateTime>(query, new { dataReferencia, tipoCalendarioId, quantidadeDias });
         }
     }
 }

@@ -33,7 +33,15 @@
 
         PercentualAlunosInsuficientes = 15,
 
+        // Notificação alunos ausentes
+        QuantidadeDiasNotificaoCPAlunosAusentes = 16,
+        QuantidadeDiasNotificaoDiretorAlunosAusentes = 17,
+
+        //Nota Fechamento
+        QuantidadeDiasAlteracaoNotaFinal = 19,
+
         //Sistema
         HabilitarServicosEmBackground = 100
+
     }
 }

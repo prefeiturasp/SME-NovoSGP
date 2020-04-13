@@ -1,7 +1,6 @@
 ﻿using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
@@ -87,7 +86,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 if (consultaEol != null)
                 {
                     // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
-                    var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil);
+                    var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil, string.Empty);
 
                     var abrangenciaEol = await consultaEol;
                     var abrangenciaSintetica = await consultaAbrangenciaSintetica;
@@ -103,7 +102,11 @@ namespace SME.SGP.Aplicacao.Servicos
                     MaterializarEstruturaInstitucional(abrangenciaEol, ref dres, ref ues, ref turmas);
 
                     // sincronizamos a abrangencia do login + perfil
+                    unitOfWork.IniciarTransacao();
+
                     SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
+
+                    unitOfWork.PersistirTransacao();
                 }
             }
             catch (Exception ex)
@@ -163,15 +166,13 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private void SincronizarAbragenciaPorTurmas(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Turma> turmas, string login, Guid perfil)
         {
-            repositorioAbrangencia.RemoverAbrangenciasForaEscopo(login, perfil, TipoAbrangencia.PorTurma);
-
             var novas = turmas.Where(x => !abrangenciaSintetica.Select(y => y.TurmaId).Contains(x.Id));
+
+            var paraAtualizar = abrangenciaSintetica.Where(x => !turmas.Select(y => y.Id).Contains(x.TurmaId)).Select(x => x.Id);
 
             repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, TurmaId = x.Id }), login);
 
-            var paraExcluir = abrangenciaSintetica.Where(x => !turmas.Select(y => y.Id).Contains(x.TurmaId)).Select(x => x.Id);
-
-            repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
+            repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar);
         }
 
         private void SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil)
@@ -202,28 +203,24 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private void SincronizarAbrangenciaPorUes(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Ue> ues, string login, Guid perfil)
         {
-            repositorioAbrangencia.RemoverAbrangenciasForaEscopo(login, perfil, TipoAbrangencia.PorUe);
-
             var novas = ues.Where(x => !abrangenciaSintetica.Select(y => y.UeId).Contains(x.Id));
 
             repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, UeId = x.Id }), login);
 
-            var paraExcluir = abrangenciaSintetica.Where(x => !ues.Select(y => y.Id).Contains(x.UeId)).Select(x => x.Id);
+            var paraAtualizar = abrangenciaSintetica.Where(x => !ues.Select(y => y.Id).Contains(x.UeId)).Select(x => x.Id);
 
-            repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
+            repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar);
         }
 
         private void SincronizarAbrangenciPorDres(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Dre> dres, string login, Guid perfil)
         {
-            repositorioAbrangencia.RemoverAbrangenciasForaEscopo(login, perfil, TipoAbrangencia.PorDre);
-
             var novas = dres.Where(x => !abrangenciaSintetica.Select(y => y.DreId).Contains(x.Id));
 
             repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, DreId = x.Id }), login);
 
-            var paraExcluir = abrangenciaSintetica.Where(x => !dres.Select(y => y.Id).Contains(x.DreId)).Select(x => x.Id);
+            var paraAtualizar = abrangenciaSintetica.Where(x => !dres.Select(y => y.Id).Contains(x.DreId)).Select(x => x.Id);
 
-            repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
+            repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar);
         }
 
         private void SincronizarEstruturaInstitucional(EstruturaInstitucionalRetornoEolDTO estrutura)
@@ -255,18 +252,14 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task TrataAbrangenciaLogin(string login, Guid perfil)
         {
-            unitOfWork.IniciarTransacao();
             await BuscaAbrangenciaEPersiste(login, perfil);
-            unitOfWork.PersistirTransacao();
         }
 
         private async Task TrataAbrangenciaModificaoPerfil(string login, Guid perfil)
         {
             if (!(await repositorioAbrangencia.JaExisteAbrangencia(login, perfil)))
             {
-                unitOfWork.IniciarTransacao();
                 await BuscaAbrangenciaEPersiste(login, perfil);
-                unitOfWork.PersistirTransacao();
             }
         }
 

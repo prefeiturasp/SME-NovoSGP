@@ -17,5 +17,9 @@ namespace SME.SGP.Aplicacao
         Task<IEnumerable<TurmaRetornoDto>> ObterTurmasCopia(string turmaId, string disciplinaId);
 
         Task<IEnumerable<AtividadeAvaliativaExistenteRetornoDto>> ValidarAtividadeAvaliativaExistente(FiltroAtividadeAvaliativaExistenteDto filtroAtividadeAvaliativaExistenteDto);
+
+        Task<bool> AtividadeAvaliativaDentroPeriodo(AtividadeAvaliativa atividadeAvaliativa);
+
+        Task<bool> AtividadeAvaliativaDentroPeriodo(string turmaId, DateTime dataAula);
     }
 }

@@ -45,6 +45,9 @@ import PaginaComErro from '~/paginas/Erro/pagina-com-erro';
 import PeriodoFechamentoReaberturaLista from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaLista';
 import PeriodoFechamentoReaberturaForm from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaForm';
 import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento';
+import PendenciasFechamentoLista from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoLista';
+import PendenciasFechamentoForm from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoForm';
+import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselhoClasse';
 
 const rotas = new Map();
 
@@ -655,6 +658,38 @@ rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/editar/:id`, {
   chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
 });
 
+rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}`, {
+  breadcrumbName: 'Pendências do Fechamento',
+  menu: ['Fechamento'],
+  parent: '/',
+  component: PendenciasFechamentoLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
+});
+rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`, {
+  breadcrumbName: 'Pendências do Fechamento',
+  menu: ['Fechamento'],
+  parent: '/',
+  component: PendenciasFechamentoLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
+});
+
+rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}/:id`, {
+  breadcrumbName: 'Pendências do Fechamento',
+  menu: ['Fechamento'],
+  parent: RotasDto.PENDENCIAS_FECHAMENTO,
+  component: PendenciasFechamentoForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
+});
+
 rotas.set('/erro', {
   breadcrumbName: 'Erro',
   parent: '/',
@@ -672,6 +707,16 @@ rotas.set(RotasDto.RELATORIO_PAP_ACOMPANHAMENTO, {
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false, // chavePermissao: RotasDto.REINICIAR_SENHA,
+});
+
+rotas.set(RotasDto.CONSELHO_CLASSE, {
+  breadcrumbName: 'Conselho de Classe',
+  menu: ['Fechamento'],
+  parent: '/',
+  component: ConselhoClasse,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
 });
 
 const rotasArray = [];
