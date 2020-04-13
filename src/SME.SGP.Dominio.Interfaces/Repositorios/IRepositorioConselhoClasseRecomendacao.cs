@@ -5,6 +5,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioConselhoClasseRecomendacao : IRepositorioBase<ConselhoClasseRecomendacao>
     {
-        Task<IEnumerable<ConselhoClasseRecomendacao>> ObterPorFiltroAsync(ConselhoClasseRecomendacaoTipo tipo);
+        Task<IEnumerable<ConselhoClasseRecomendacao>> ObterTodosAsync();
     }
 }
