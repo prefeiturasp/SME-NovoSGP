@@ -69,7 +69,9 @@ namespace SME.SGP.Aplicacao
                 fechamentoTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(fechamentoFinalSalvarDto.TurmaCodigo, disciplinaId);
 
             if (fechamentoTurmaDisciplina == null)
-                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina() { DisciplinaId = disciplinaId, FechamentoTurma = fechamentoFinalTurma, Situacao = SituacaoFechamento.ProcessadoComSucesso };
+                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina() { DisciplinaId = disciplinaId, Situacao = SituacaoFechamento.ProcessadoComSucesso };
+
+            fechamentoTurmaDisciplina.FechamentoTurma = fechamentoFinalTurma;
 
             foreach (var agrupamentoAluno in fechamentoFinalSalvarDto.Itens.GroupBy(a => a.AlunoRf))
             {
