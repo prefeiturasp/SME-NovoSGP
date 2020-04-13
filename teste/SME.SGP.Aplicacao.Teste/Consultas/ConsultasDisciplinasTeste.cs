@@ -2,7 +2,6 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +16,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasObjetivoAprendizagem> consultasObjetivoAprendizagem;
         private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCJ;
         private readonly Mock<IRepositorioCache> repositorioCache;
+        private readonly Mock<IRepositorioComponenteCurricular> repositorioComponenteCurricular;
         private readonly Mock<IServicoEOL> servicoEol;
         private readonly Mock<IServicoUsuario> servicoUsuario;
 
@@ -26,7 +26,13 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioCache = new Mock<IRepositorioCache>();
             consultasObjetivoAprendizagem = new Mock<IConsultasObjetivoAprendizagem>();
             servicoUsuario = new Mock<IServicoUsuario>();
-            consultasDisciplinas = new ConsultasDisciplina(servicoEol.Object, repositorioCache.Object, consultasObjetivoAprendizagem.Object, servicoUsuario.Object, repositorioAtribuicaoCJ.Object);
+            repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+            consultasDisciplinas = new ConsultasDisciplina(servicoEol.Object,
+                                                           repositorioCache.Object,
+                                                           consultasObjetivoAprendizagem.Object,
+                                                           servicoUsuario.Object,
+                                                           repositorioAtribuicaoCJ.Object,
+                                                           repositorioComponenteCurricular.Object);
         }
 
         [Fact(DisplayName = "DeveObterDisciplinasParaPlanejamento")]
@@ -53,13 +59,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             servicoUsuario.Setup(c => c.ObterRf())
                 .Returns("123");
 
-            var filtro = new FiltroDisciplinaPlanejamentoDto
-            {
-                CodigoTurma = 10,
-                Regencia = false
-            };
-
-            var retorno = await consultasDisciplinas.ObterDisciplinasParaPlanejamento(filtro);
+            var retorno = await consultasDisciplinas.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(0, "10", false, false);
             Assert.True(retorno != null);
             Assert.True(retorno.Any());
             Assert.Contains(retorno, c => c.Regencia);
