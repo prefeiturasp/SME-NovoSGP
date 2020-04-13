@@ -46,7 +46,15 @@ const ComunicadosLista = () => {
   const [filtro, setFiltro] = useState({});
 
   const onChangeFiltro = valoresFiltro => {
-    setFiltro({ ...valoresFiltro });
+    setFiltro({
+      ...valoresFiltro,
+      dataEnvio: valoresFiltro.dataEnvio
+        ? valoresFiltro.dataEnvio.format('YYYY-MM-DD')
+        : '',
+      dataExpiracao: valoresFiltro.dataExpiracao
+        ? valoresFiltro.dataExpiracao.format('YYYY-MM-DD')
+        : '',
+    });
   };
 
   const colunas = [
