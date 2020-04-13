@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
+import AnotacoesAluno from './AnotacoesAluno/anotacoesAluno';
+import RecomendacaoAlunoFamilia from './RecomendacaoAlunoFamilia/recomendacaoAlunoFamilia';
+import AnotacoesPedagogicas from './AnotacoesPedagogicas/anotacoesPedagogicas';
 // import ListaNotasConselho from './ListaNotasConselho/ListaNotasConselho';
 
 const DadosConselhoClasse = () => {
@@ -9,6 +12,17 @@ const DadosConselhoClasse = () => {
     setAbaAtiva(chaveAba);
   };
   const { TabPane } = Tabs;
+
+  const montarDados = () => {
+    return (
+      <>
+        <RecomendacaoAlunoFamilia />
+        <AnotacoesPedagogicas />
+        <AnotacoesAluno />
+      </>
+    );
+  };
+
   return (
     <>
       <ContainerTabsCard
@@ -18,7 +32,7 @@ const DadosConselhoClasse = () => {
         className="ant-tab-nav-20"
       >
         <TabPane tab="1º Bimestre" key="1">
-          1
+          {montarDados()}
         </TabPane>
         <TabPane tab="2º Bimestre" key="2">
           2
