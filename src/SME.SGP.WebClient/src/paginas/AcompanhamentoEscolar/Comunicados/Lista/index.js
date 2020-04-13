@@ -37,9 +37,9 @@ const ComunicadosLista = () => {
     history.push(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo`);
   };
 
-  const onClickEditar = mensagem => {
+  const onClickEditar = comunicado => {
     history.push(
-      `${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/${mensagem.Id}`
+      `${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/${comunicado.id}`
     );
   };
 
@@ -52,35 +52,38 @@ const ComunicadosLista = () => {
   const colunas = [
     {
       title: 'Grupo',
-      dataIndex: 'Mensagem_Grupo',
+      dataIndex: 'grupos',
       render: grupos => {
-        return grupos.map(grupo => (
-          <Badge
-            key={shortid.generate()}
-            alt={grupo.Nome_Grupo}
-            className="badge badge-pill bg-white border text-dark font-weight-light px-2 py-1 mr-2"
-          >
-            {grupo.Nome_Grupo}
-          </Badge>
-        ));
+        return (
+          grupos &&
+          grupos.map(grupo => (
+            <Badge
+              key={shortid.generate()}
+              alt={grupo.nome}
+              className="badge badge-pill bg-white border text-dark font-weight-light px-2 py-1 mr-2"
+            >
+              {grupo.nome}
+            </Badge>
+          ))
+        );
       },
     },
     {
       title: 'Título',
-      dataIndex: 'Titulo',
+      dataIndex: 'titulo',
     },
     {
       title: 'Data de envio',
-      dataIndex: 'Data_Envio',
+      dataIndex: 'dataEnvio',
       render: data => {
-        return window.moment(data).format('DD/MM/YYYY');
+        return data && window.moment(data).format('DD/MM/YYYY');
       },
     },
     {
       title: 'Data de expiração',
-      dataIndex: 'Data_Expiracao',
+      dataIndex: 'dataExpiracao',
       render: data => {
-        return window.moment(data).format('DD/MM/YYYY');
+        return data && window.moment(data).format('DD/MM/YYYY');
       },
     },
   ];
@@ -105,9 +108,9 @@ const ComunicadosLista = () => {
           <div className="col-md-12 pt-2 py-0 px-0">
             <ListaPaginada
               id="lista-comunicados"
-              url="https://demo4860311.mockable.io/mensagens"
-              idLinha="Id"
-              colunaChave="Id"
+              url="v1/comunicado/listar"
+              idLinha="id"
+              colunaChave="id"
               colunas={colunas}
               onClick={onClickEditar}
               multiSelecao
