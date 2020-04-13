@@ -27,6 +27,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
     onChange,
     desabilitarCampo,
     carregandoFechamentoFinal,
+    bimestreCorrente,
   } = props;
 
   const dispatch = useDispatch();
@@ -74,6 +75,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
   };
 
   const obterFechamentoFinal = useCallback(() => {
+    setNotasEmEdicao([]);
     dispatch(setExpandirLinha([]));
     carregandoFechamentoFinal(true);
     ServicoFechamentoFinal.obter(turmaCodigo, disciplinaCodigo, ehRegencia)
@@ -108,17 +110,17 @@ const FechamentoFinal = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     cancelar() {
       obterFechamentoFinal();
-      setNotasEmEdicao([]);
     },
     salvarFechamentoFinal() {
       obterFechamentoFinal();
-      setNotasEmEdicao([]);
     },
   }));
 
   useEffect(() => {
-    obterFechamentoFinal();
-  }, [obterFechamentoFinal]);
+    if (bimestreCorrente == 'final') {
+      obterFechamentoFinal();
+    }
+  }, [obterFechamentoFinal, bimestreCorrente]);
 
   const setDisciplinaAtiva = disciplina => {
     const disciplinas = disciplinasRegencia.map(c => {
@@ -214,26 +216,34 @@ const FechamentoFinal = forwardRef((props, ref) => {
                   </tr>
                 </thead>
                 <tbody className="tabela-fechamento-final-tbody">
-                  {alunos.map((aluno, i) => {
-                    return (
-                      <>
-                        <LinhaAluno
-                          aluno={aluno}
-                          ehRegencia={ehRegencia}
-                          ehNota={ehNota}
-                          disciplinaSelecionada={disciplinaSelecionada}
-                          listaConceitos={listaConceitos}
-                          onChange={onChangeNotaAluno}
-                          eventoData={dadosFechamentoFinal.eventoData}
-                          notaMedia={dadosFechamentoFinal.notaMedia}
-                          frequenciaMedia={dadosFechamentoFinal.frequenciaMedia}
-                          indexAluno={i}
-                          desabilitarCampo={desabilitarCampo}
-                          ehSintese={ehSintese}
-                        />
-                      </>
-                    );
-                  })}
+                  {alunos && alunos.length ? (
+                    alunos.map((aluno, i) => {
+                      return (
+                        <>
+                          <LinhaAluno
+                            aluno={aluno}
+                            ehRegencia={ehRegencia}
+                            ehNota={ehNota}
+                            disciplinaSelecionada={disciplinaSelecionada}
+                            listaConceitos={listaConceitos}
+                            onChange={onChangeNotaAluno}
+                            eventoData={dadosFechamentoFinal.eventoData}
+                            notaMedia={dadosFechamentoFinal.notaMedia}
+                            frequenciaMedia={dadosFechamentoFinal.frequenciaMedia}
+                            indexAluno={i}
+                            desabilitarCampo={desabilitarCampo}
+                            ehSintese={ehSintese}
+                          />
+                        </>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="10" className="text-center">
+                        Sem dados
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -266,6 +276,7 @@ FechamentoFinal.propTypes = {
   onChange: PropTypes.func,
   desabilitarCampo: PropTypes.bool,
   carregandoFechamentoFinal: PropTypes.func,
+  bimestreCorrente: PropTypes.string,
 };
 
 FechamentoFinal.defaultProps = {
@@ -276,6 +287,7 @@ FechamentoFinal.defaultProps = {
   onChange: () => {},
   desabilitarCampo: false,
   carregandoFechamentoFinal: () => {},
+  bimestreCorrente: '',
 };
 
 export default FechamentoFinal;
