@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import ListaNotasConselho from './ListaNotasConselho/listaNotasConselho';
-// import ListaNotasConselho from './ListaNotasConselho/ListaNotasConselho';
+import { useSelector } from 'react-redux';
+import modalidade from '~/dtos/modalidade';
 
 const DadosConselhoClasse = () => {
   const [abaAtiva, setAbaAtiva] = useState('1');
+  const usuario = useSelector(state => state.usuario);
+  const { turmaSelecionada } = usuario;
   const onChangeTab = chaveAba => {
     setAbaAtiva(chaveAba);
   };
@@ -22,14 +25,22 @@ const DadosConselhoClasse = () => {
           <ListaNotasConselho />
         </TabPane>
         <TabPane tab="2º Bimestre" key="2">
-          2
+          <ListaNotasConselho />
         </TabPane>
-        <TabPane tab="3º Bimestre" key="3">
-          3
-        </TabPane>
-        <TabPane tab="4º Bimestre" key="4">
-          4
-        </TabPane>
+        {turmaSelecionada.modalidade !== modalidade.EJA ? (
+          <TabPane tab="3º Bimestre" key="3">
+            <ListaNotasConselho />
+          </TabPane>
+        ) : (
+          ''
+        )}
+        {turmaSelecionada.modalidade !== modalidade.EJA ? (
+          <TabPane tab="4º Bimestre" key="4">
+            4
+          </TabPane>
+        ) : (
+          ''
+        )}
         <TabPane tab="Final" key="final">
           Final
         </TabPane>

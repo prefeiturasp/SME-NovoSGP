@@ -41,6 +41,7 @@ const Base = {
   Vermelho: '#B40C02',
   LaranjaAlerta: '#D06D12',
   VerdeBorda: '#20AA73',
+  Bordo: '#864241',
 };
 
 const Active = {
