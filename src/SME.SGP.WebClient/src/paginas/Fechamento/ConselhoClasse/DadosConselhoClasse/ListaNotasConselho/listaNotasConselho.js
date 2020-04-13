@@ -66,7 +66,11 @@ const ListaNotasConselho = props => {
                   <BarraLateralVerde />
                   <td
                     className="coluna-disciplina sombra-direita"
-                    style={{ textAlign: 'left', paddingLeft: '20px' }}
+                    style={{
+                      width: '250px',
+                      textAlign: 'left',
+                      paddingLeft: '20px',
+                    }}
                   >
                     {item.nome}
                   </td>
