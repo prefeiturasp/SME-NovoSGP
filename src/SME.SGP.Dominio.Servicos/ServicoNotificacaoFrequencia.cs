@@ -414,14 +414,16 @@ namespace SME.SGP.Dominio.Servicos
                 var disciplina = disciplinas.FirstOrDefault();
                 var nomeUeCompleto = $"{turmaSemRegistro.TipoEscola.GetAttribute<DisplayAttribute>().ShortName} {turmaSemRegistro.NomeUe}";
 
-                var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {disciplina.Nome} ({nomeUeCompleto})";
-                StringBuilder mensagemUsuario = new StringBuilder();
-                mensagemUsuario.Append($"A turma a seguir esta a <b>{turmaSemRegistro.Aulas.Count()} aulas</b> sem registro de frequência da turma");
-                mensagemUsuario.Append("<br />");
-                mensagemUsuario.Append($"<br />Unidade de Educação: <b>{nomeUeCompleto}</b>");
-                mensagemUsuario.Append($"<br />Turma: <b>{turmaSemRegistro.NomeTurma}</b>");
-                mensagemUsuario.Append($"<br />Componente Curricular: <b>{disciplina.Nome}</b>");
-                mensagemUsuario.Append($"<br />Aulas:");
+                if (disciplina.RegistraFrequencia)
+                {
+                    var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
+                    StringBuilder mensagemUsuario = new StringBuilder();
+                    mensagemUsuario.Append($"A turma a seguir esta a <b>{turmaSemRegistro.Aulas.Count()} aulas</b> sem registro de frequência da turma");
+                    mensagemUsuario.Append("<br />");
+                    mensagemUsuario.Append($"<br />Escola: <b>{turmaSemRegistro.NomeUe}</b>");
+                    mensagemUsuario.Append($"<br />Turma: <b>{turmaSemRegistro.NomeTurma}</b>");
+                    mensagemUsuario.Append($"<br />Disciplina: <b>{disciplina.Nome}</b>");
+                    mensagemUsuario.Append($"<br />Aulas:");
 
                 mensagemUsuario.Append("<ul>");
                 foreach (var aula in turmaSemRegistro.Aulas)
@@ -430,32 +432,33 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 mensagemUsuario.Append("</ul>");
 
-                var hostAplicacao = configuration["UrlFrontEnd"];
-                var parametros = $"turma={turmaSemRegistro.CodigoTurma}&DataAula={turmaSemRegistro.Aulas.FirstOrDefault().DataAula.ToShortDateString()}&disciplina={turmaSemRegistro.DisciplinaId}";
-                mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/frequencia-plano-aula?{parametros}'>Clique aqui para regularizar.</a>");
+                    var hostAplicacao = configuration["UrlFrontEnd"];
+                    var parametros = $"turma={turmaSemRegistro.CodigoTurma}&DataAula={turmaSemRegistro.Aulas.FirstOrDefault().DataAula.ToShortDateString()}&disciplina={turmaSemRegistro.DisciplinaId}";
+                    mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/frequencia-plano-aula?{parametros}'>Clique aqui para regularizar.</a>");
 
-                var notificacao = new Notificacao()
-                {
-                    Ano = DateTime.Now.Year,
-                    Categoria = NotificacaoCategoria.Alerta,
-                    Tipo = NotificacaoTipo.Frequencia,
-                    Titulo = tituloMensagem,
-                    Mensagem = mensagemUsuario.ToString(),
-                    UsuarioId = usuario.Id,
-                    TurmaId = turmaSemRegistro.CodigoTurma,
-                    UeId = turmaSemRegistro.CodigoUe,
-                    DreId = turmaSemRegistro.CodigoDre,
-                };
-                servicoNotificacao.Salvar(notificacao);
-                foreach (var aula in turmaSemRegistro.Aulas)
-                {
-                    repositorioNotificacaoFrequencia.Salvar(new NotificacaoFrequencia()
+                    var notificacao = new Notificacao()
                     {
-                        Tipo = tipo,
-                        NotificacaoCodigo = notificacao.Codigo,
-                        AulaId = aula.Id,
-                        DisciplinaCodigo = turmaSemRegistro.DisciplinaId
-                    });
+                        Ano = DateTime.Now.Year,
+                        Categoria = NotificacaoCategoria.Alerta,
+                        Tipo = NotificacaoTipo.Frequencia,
+                        Titulo = tituloMensagem,
+                        Mensagem = mensagemUsuario.ToString(),
+                        UsuarioId = usuario.Id,
+                        TurmaId = turmaSemRegistro.CodigoTurma,
+                        UeId = turmaSemRegistro.CodigoUe,
+                        DreId = turmaSemRegistro.CodigoDre,
+                    };
+                    servicoNotificacao.Salvar(notificacao);
+                    foreach (var aula in turmaSemRegistro.Aulas)
+                    {
+                        repositorioNotificacaoFrequencia.Salvar(new NotificacaoFrequencia()
+                        {
+                            Tipo = tipo,
+                            NotificacaoCodigo = notificacao.Codigo,
+                            AulaId = aula.Id,
+                            DisciplinaCodigo = turmaSemRegistro.DisciplinaId
+                        });
+                    }
                 }
             }
             else
