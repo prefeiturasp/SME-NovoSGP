@@ -162,6 +162,15 @@ namespace SME.SGP.Aplicacao
             return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia);
         }
 
+        public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
+        {
+            var disciplinaEOL = await servicoEOL.ObterDisciplinasPorIdsAsync(new long[] { disciplinaId });
+            if (disciplinaEOL == null || !disciplinaEOL.Any())
+                throw new NegocioException($"Disciplina nÃ£o localizada no EOL [{disciplinaId}]");
+
+            return disciplinaEOL.FirstOrDefault();
+        }
+
         public async Task<List<DisciplinaDto>> ObterDisciplinasAgrupadasPorProfessorETurma(string codigoTurma, bool turmaPrograma)
         {
             var disciplinasDto = new List<DisciplinaDto>();
