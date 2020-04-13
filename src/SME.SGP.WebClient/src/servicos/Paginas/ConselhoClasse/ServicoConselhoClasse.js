@@ -10,6 +10,24 @@ class ServicoConselhoClasse {
     const url = `v1/calendarios/frequencias/alunos/${alunoCodigo}/geral`;
     return api.get(url);
   };
+
+  // TODO
+  obterAnotacaoAluno = (codigoTurma, codigoAluno, numeroBimestre = 0) => {
+    const url = `v1/conselhos-classe/anotacoes-aluno/turmas/${codigoTurma}/alunos/${codigoAluno}/bimestres/${numeroBimestre}`;
+    return api.get(url);
+  };
+
+  // TODO
+  obterRecomendacoesAluno = (codigoTurma, codigoAluno, numeroBimestre = 0) => {
+    const url = `v1/conselhos-classe/recomendacoes/turmas/${codigoTurma}/alunos/${codigoAluno}/bimestres/${numeroBimestre}`;
+    return api.get(url);
+  };
+
+  // TODO
+  obterAnotacaoPedagogica = (codigoTurma, codigoAluno, numeroBimestre = 0) => {
+    const url = `v1/conselhos-classe/anotacoes-pedagogicas/turmas/${codigoTurma}/alunos/${codigoAluno}/bimestres/${numeroBimestre}`;
+    return api.get(url);
+  };
 }
 
 export default new ServicoConselhoClasse();
