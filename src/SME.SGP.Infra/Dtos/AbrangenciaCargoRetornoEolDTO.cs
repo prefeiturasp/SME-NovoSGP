@@ -6,7 +6,7 @@ namespace SME.SGP.Dto
     public class AbrangenciaCargoRetornoEolDTO
     {
         public Abrangencia Abrangencia { get; set; }
-        public string CargosId { get; set; }
+        public string[] CargosId { get; set; }
         public int CdTipoFuncaoAtividade { get; set; }
         public GruposSGP Grupo { get; set; }
         public Guid GrupoID { get; set; }
