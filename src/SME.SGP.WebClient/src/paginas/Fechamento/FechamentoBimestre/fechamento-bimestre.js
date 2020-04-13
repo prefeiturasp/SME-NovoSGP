@@ -126,11 +126,6 @@ const FechamentoBismestre = () => {
         setPeriodoFechamento(dadosFechamento.periodo);
         setBimestreCorrente(`${dadosFechamento.bimestre}`);
         setDadosBimestre(dadosFechamento.bimestre, dadosFechamento);
-        if (dadosFechamento.periodo === periodo.Anual) {
-          setDesabilitaAbaFinal(dadosFechamento.bimestre !== 4);
-        } else {
-          setDesabilitaAbaFinal(dadosFechamento.bimestre !== 2);
-        }
       }
     }
   };
@@ -162,10 +157,33 @@ const FechamentoBismestre = () => {
     if (disciplinaIdSelecionada) obterDados();
   }, [disciplinaIdSelecionada]);
 
-  const onChangeTab = async numeroBimestre => {
+  const onConfirmouTrocarTab = numeroBimestre => {
     setBimestreCorrente(numeroBimestre);
     if (numeroBimestre !== 'final') {
       obterDados(numeroBimestre);
+    }
+  };
+
+  const onChangeTab = async numeroBimestre => {
+    if (modoEdicao) {
+      const confirmado = await confirmar(
+        'Atenção',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmado) {
+        const salvou = await salvarFechamentoFinal();
+        if (salvou) {
+          onConfirmouTrocarTab(numeroBimestre);
+          setModoEdicao(false);
+          dispatch(setExpandirLinha([]));
+        }
+      } else {
+        onConfirmouTrocarTab(numeroBimestre);
+        setModoEdicao(false);
+        dispatch(setExpandirLinha([]));
+      }
+    } else {
+      onConfirmouTrocarTab(numeroBimestre);
     }
   };
 
@@ -202,7 +220,7 @@ const FechamentoBismestre = () => {
   const salvarFechamentoFinal = () => {
     fechamentoFinal.turmaCodigo = turmaSelecionada.turma;
     fechamentoFinal.ehRegencia = ehRegencia;
-    ServicoFechamentoFinal.salvar(fechamentoFinal)
+    return ServicoFechamentoFinal.salvar(fechamentoFinal)
       .then(() => {
         sucesso('Fechamento final salvo com sucesso.');
         setModoEdicao(false);
@@ -359,6 +377,7 @@ const FechamentoBismestre = () => {
                       carregandoFechamentoFinal={carregando =>
                         setCarregandoBimestres(carregando)
                       }
+                      bimestreCorrente={bimestreCorrente}
                     />
                   </TabPane>
                 </ContainerTabsCard>
