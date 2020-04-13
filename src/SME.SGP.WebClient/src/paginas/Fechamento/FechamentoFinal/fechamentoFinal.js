@@ -149,7 +149,6 @@ const FechamentoFinal = forwardRef((props, ref) => {
         nota: ehNota ? nota : '',
       });
 
-    // notas = notas.filter(item => !(item.conceitoId === '' && item.nota === ''));
     setNotasEmEdicao([...notas]);
     onChange(notas);
   };
