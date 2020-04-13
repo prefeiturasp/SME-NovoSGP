@@ -334,11 +334,14 @@ namespace SME.SGP.Dominio.Servicos
             // Agrupa por turma para notificação
             foreach (var turmaAgrupamento in alunosFaltasTodasAulasDoDia.GroupBy(a => a.TurmaCodigo))
             {
+                // filtra alunos na turma que possuem faltas em todos os dias
+                var alunosFaltososNaTurma = turmaAgrupamento.Where(c => alunosFaltasTodosOsDias.Any(a => a.Key == c.CodigoAluno));
+                if (!alunosFaltososNaTurma.Any())
+                    continue;
+
                 var alunosTurmaEOL = servicoEOL.ObterAlunosPorTurma(turmaAgrupamento.Key).Result;
                 var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaAgrupamento.Key);
 
-                // filtra alunos na turma que possuem faltas em todos os dias
-                var alunosFaltososNaTurma = turmaAgrupamento.Where(c => alunosFaltasTodosOsDias.Any(a => a.Key == c.CodigoAluno));
                 var alunosFaltososEOL = alunosTurmaEOL.Where(c => alunosFaltososNaTurma.Any(a => a.CodigoAluno == c.CodigoAluno));
                 var funcionariosEol = servicoNotificacao.ObterFuncionariosPorNivel(turmaAgrupamento.Key, cargo);
 
