@@ -37,8 +37,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("on ftd.fechamento_turma_id = ft.id");
             query.AppendLine("inner join fechamento_aluno fa");
             query.AppendLine("on fa.fechamento_turma_disciplina_id = ftd.id");
-            query.AppendLine("inner join periodo_escolar pe");
-            query.AppendLine("on ft.periodo_escolar_id = pe.id");
+            if (!EhFinal)
+            {
+                query.AppendLine("inner join periodo_escolar pe");
+                query.AppendLine("on ft.periodo_escolar_id = pe.id");
+            }
             query.AppendLine("inner join turma t");
             query.AppendLine("on ft.turma_id = t.id");
             query.AppendLine("where");
