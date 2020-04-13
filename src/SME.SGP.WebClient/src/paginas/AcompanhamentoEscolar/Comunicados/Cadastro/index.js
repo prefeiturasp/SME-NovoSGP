@@ -59,22 +59,59 @@ const ComunicadosCadastro = ({ match }) => {
   const [idComunicado, setIdComunicado] = useState();
 
   useEffect(() => {
-    if (match && match.params && match.params.id)
+    if (match && match.params && match.params.id) {
       setIdComunicado(match.params.id);
+    }
   }, [match]);
 
-  const [inseridoAlterado, setInseridoAlterado] = useState({
-    alteradoEm: '',
-    alteradoPor: '',
-    criadoEm: '',
-    criadoPor: '',
+  const [valoresIniciais, setValoresIniciais] = useState({
+    id: '',
+    gruposId: [],
+    dataEnvioInicio: '',
+    dataEnvioFim: '',
+    dataExpiracaoInicio: '',
+    dataExpiracaoFim: '',
+    titulo: '',
+    descricao: '',
   });
 
   const [descricaoComunicado, setDescricaoComunicado] = useState('');
 
+  const [inseridoAlterado, setInseridoAlterado] = useState({
+    alteradoEm: '',
+    alteradoPor: '',
+    alteradoRF: '',
+    criadoEm: '',
+    criadoPor: '',
+    criadoRF: '',
+  });
+
   useEffect(() => {
-    async function obterPorId() {
-      await ServicoComunicados.consultarPorId();
+    async function obterPorId(id) {
+      const comunicado = await ServicoComunicados.consultarPorId(id);
+      if (comunicado && Object.entries(comunicado).length) {
+        setValoresIniciais({
+          id: comunicado.id,
+          gruposId: [...comunicado.grupos.map(grupo => grupo.id)],
+          // dataEnvioInicio: '',
+          // dataEnvioFim: '',
+          // dataExpiracaoInicio: '',
+          // dataExpiracaoFim: '',
+          titulo: comunicado.titulo,
+          descricao: comunicado.descricao,
+        });
+
+        setDescricaoComunicado(comunicado.descricao);
+
+        setInseridoAlterado({
+          alteradoEm: comunicado.alteradoEm,
+          alteradoPor: comunicado.alteradoPor,
+          alteradoRF: comunicado.alteradoRF,
+          criadoEm: comunicado.criadoEm,
+          criadoPor: comunicado.criadoPor,
+          criadoRF: comunicado.criadoRF,
+        });
+      }
     }
 
     if (idComunicado) {
@@ -85,8 +122,8 @@ const ComunicadosCadastro = ({ match }) => {
     }
   }, [idComunicado]);
 
-  const textEditorRef = useRef();
   const [refForm, setRefForm] = useState({});
+  const textEditorRef = useRef();
 
   const [gruposLista, setGruposLista] = useState([]);
 
@@ -97,15 +134,6 @@ const ComunicadosCadastro = ({ match }) => {
     }
     obterListaGrupos();
   }, []);
-
-  const [valoresIniciais] = useState({
-    grupoId: [],
-    dataEnvioInicio: '',
-    dataEnvioFim: '',
-    dataExpiracaoInicio: '',
-    dataExpiracaoFim: '',
-    titulo: '',
-  });
 
   const [validacoes] = useState(
     Yup.object({
@@ -219,6 +247,10 @@ const ComunicadosCadastro = ({ match }) => {
     return dadosSalvar;
   };
 
+  const onChangeGruposId = grupoId => {
+    setValoresIniciais({ ...refForm.state.values, gruposId: grupoId });
+  };
+
   return (
     <>
       <Cabecalho pagina="Comunicação com pais ou responsáveis" />
@@ -253,13 +285,14 @@ const ComunicadosCadastro = ({ match }) => {
                     <Label control="grupoId" text="Grupo" />
                     <SelectComponent
                       form={form}
-                      name="grupoId"
+                      name="gruposId"
                       placeholder="Selecione um grupo"
-                      value={form.values.gruposId}
+                      valueSelect={form.values.gruposId}
                       multiple
+                      onChange={onChangeGruposId}
                       lista={gruposLista}
-                      valueOption="Id"
-                      valueText="Nome"
+                      valueOption="id"
+                      valueText="nome"
                     />
                   </Grid>
                   <Grid cols={2}>
@@ -337,20 +370,23 @@ const ComunicadosCadastro = ({ match }) => {
                       <ErroValidacao>Campo obrigatório</ErroValidacao>
                     )}
                     <InseridoAlterado>
-                      {inseridoAlterado.criadoPor &&
-                      inseridoAlterado.criadoEm ? (
+                      {inseridoAlterado &&
+                      inseridoAlterado.criadoPor &&
+                      inseridoAlterado.criadoPor.length ? (
                         <p className="pt-2">
-                          INSERIDO por {inseridoAlterado.criadoPor} em{' '}
+                          INSERIDO por {inseridoAlterado.criadoPor} (
+                          {inseridoAlterado.criadoRF}) em{' '}
                           {inseridoAlterado.criadoEm}
                         </p>
                       ) : (
                         ''
                       )}
-
-                      {inseridoAlterado.alteradoPor &&
-                      inseridoAlterado.alteradoEm ? (
+                      {inseridoAlterado &&
+                      inseridoAlterado.alteradoPor &&
+                      inseridoAlterado.alteradoPor.length ? (
                         <p>
-                          ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
+                          ALTERADO por {inseridoAlterado.alteradoPor} (
+                          {inseridoAlterado.alteradoRF}) em{' '}
                           {inseridoAlterado.alteradoEm}
                         </p>
                       ) : (
