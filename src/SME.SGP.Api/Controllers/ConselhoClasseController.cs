@@ -24,5 +24,15 @@ namespace SME.SGP.Api.Controllers
             var retorno = await consultasConselhoClasseRecomendacao.ObterRecomendacoesAlunoFamilia(codigoTurma, codigoAluno, numeroBimestre, modalidade, EhFinal);
             return Ok(retorno);
         }
+
+        [HttpPost("pos-conselhos/notas")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(200)]
+        [Permissao(Permissao.CC_I, Policy = "Bearer")]
+        public async Task<IActionResult> PersistirNotas([FromServices]IConsultasConselhoClasseRecomendacao consultasConselhoClasseRecomendacao,
+           [FromBody]PosConselhosNotasPersistirDto posConselhosNotasPersistirDto)
+        {
+            return Ok();
+        }
     }
 }
