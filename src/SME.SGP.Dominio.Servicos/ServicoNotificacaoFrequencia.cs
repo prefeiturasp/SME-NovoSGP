@@ -94,6 +94,7 @@ namespace SME.SGP.Dominio.Servicos
             var quantidadeDiasDiretor = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes));
 
             NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);
+            NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, quantidadeDiasCP, quantidadeDiasDiretor);
         }
 
         private void NotificarAlunosFaltososModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidade, int quantidadeDiasCP, int quantidadeDiasDiretor)
@@ -103,7 +104,7 @@ namespace SME.SGP.Dominio.Servicos
             var datasAulas = repositorioAula.ObterUltimosDiasLetivos(dataReferencia, quantidadeDiasCP, tipoCalendario.Id);
             NotificaAlunosFaltososCargo(datasAulas.Min(), quantidadeDiasCP, Cargo.CP, tipoCalendario.Id);
 
-            datasAulas = repositorioAula.ObterUltimosDiasLetivos(dataReferencia, quantidadeDiasCP, tipoCalendario.Id);
+            datasAulas = repositorioAula.ObterUltimosDiasLetivos(dataReferencia, quantidadeDiasDiretor, tipoCalendario.Id);
             NotificaAlunosFaltososCargo(datasAulas.Min(), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario.Id);
         }
 
@@ -343,10 +344,11 @@ namespace SME.SGP.Dominio.Servicos
                 var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaAgrupamento.Key);
 
                 var alunosFaltososEOL = alunosTurmaEOL.Where(c => alunosFaltososNaTurma.Any(a => a.CodigoAluno == c.CodigoAluno));
-                var funcionariosEol = servicoNotificacao.ObterFuncionariosPorNivel(turmaAgrupamento.Key, cargo);
+                var funcionariosEol = servicoNotificacao.ObterFuncionariosPorNivel(turma.Ue.CodigoUe, cargo);
 
-                foreach (var funcionarioEol in funcionariosEol)
-                    NotificacaoAlunosFaltososTurma(funcionarioEol.Id, alunosFaltososEOL, turma, quantidadeDias);
+                if (funcionariosEol != null)
+                    foreach (var funcionarioEol in funcionariosEol)
+                        NotificacaoAlunosFaltososTurma(funcionarioEol.Id, alunosFaltososEOL, turma, quantidadeDias);
             }
         }
 
