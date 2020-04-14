@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import queryString from 'query-string';
 
 // Componentes
 import { Table } from 'antd';
@@ -20,6 +21,7 @@ const ListaPaginada = props => {
     selecionarItems,
     filtroEhValido,
     onErro,
+    paramArrayFormat,
   } = props;
 
   const [carregando, setCarregando] = useState(false);
@@ -41,7 +43,7 @@ const ListaPaginada = props => {
   const [urlBusca, setUrlBusca] = useState(url);
 
   const selecionaItems = selecionadas => {
-    if (selecionarItems) {
+    if (selecionarItems && linhas) {
       const items = linhas.filter(
         item => selecionadas.indexOf(item[colunaChave]) >= 0
       );
@@ -91,7 +93,14 @@ const ListaPaginada = props => {
     selecionar([]);
     setCarregando(true);
     api
-      .get(urlBusca, { params: filtro })
+      .get(urlBusca, {
+        params: filtro,
+        paramsSerializer(params) {
+          return queryString.stringify(params, {
+            arrayFormat: paramArrayFormat,
+          });
+        },
+      })
       .then(resposta => {
         setTotal(resposta.data.totalRegistros);
         setLinhas(resposta.data.items);
@@ -195,6 +204,7 @@ ListaPaginada.propTypes = {
   filtro: PropTypes.oneOfType([PropTypes.object]),
   filtroEhValido: PropTypes.bool,
   onErro: PropTypes.oneOfType([PropTypes.func]),
+  paramArrayFormat: PropTypes.oneOfType([PropTypes.func]),
 };
 
 ListaPaginada.defaultProps = {
@@ -208,6 +218,7 @@ ListaPaginada.defaultProps = {
   filtro: null,
   filtroEhValido: true,
   onErro: () => {},
+  paramArrayFormat: 'brackets',
 };
 
 export default ListaPaginada;

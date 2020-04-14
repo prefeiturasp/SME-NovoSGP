@@ -141,6 +141,7 @@ const ComunicadosLista = () => {
               onClick={onClickEditar}
               multiSelecao
               filtro={filtro}
+              paramArrayFormat="repeat"
               selecionarItems={onSelecionarItems}
               filtroEhValido
             />
