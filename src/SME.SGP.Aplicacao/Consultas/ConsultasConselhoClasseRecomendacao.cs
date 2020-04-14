@@ -16,18 +16,20 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IConsultasTurma consultasTurma;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
         public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao,
-            IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno, IConsultasPeriodoEscolar consultasPeriodoEscolar, IRepositorioTurma repositorioTurma,
-            IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasFechamentoTurma consultasFechamentoTurma)
+            IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno, IConsultasPeriodoEscolar consultasPeriodoEscolar, IConsultasTurma consultasTurma,
+            IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasFechamentoTurma consultasFechamentoTurma, IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasFechamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
             this.repositorioConselhoClasseRecomendacao = repositorioConselhoClasseRecomendacao ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseRecomendacao));
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
 
         public string MontaTextUlLis(IEnumerable<string> textos)
@@ -48,6 +50,16 @@ namespace SME.SGP.Aplicacao
             if (bimestre == 0 && !EhFinal)
                 bimestre = ObterBimestreAtual(turmaModalidade);
 
+            PeriodoFechamentoBimestre periodoFechamentoBimestre = null;
+            if (!EhFinal)
+            {
+                var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaCodigo);
+                if (turma == null)
+                    throw new NegocioException("Turma não localizada");
+
+                periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestre);
+            }
+
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turmaCodigo, bimestre);
             if (fechamentoTurma == null)
                 throw new NegocioException("Fechamento da turma não localizado " + (!EhFinal ? $"para o bimestre {bimestre}" : ""));
@@ -58,9 +70,9 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFechamentoAsync(fechamentoTurma.Id, alunoCodigo);
             if (conselhoClasseAluno == null)
-                return await ObterRecomendacoesIniciais(anotacoesDoAluno, bimestre, fechamentoTurma.Id);
+                return await ObterRecomendacoesIniciais(anotacoesDoAluno, bimestre, fechamentoTurma.Id, periodoFechamentoBimestre);
 
-            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre);
+            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre, periodoFechamentoBimestre);
         }
 
         private int ObterBimestreAtual(Modalidade turmaModalidade)
@@ -68,7 +80,7 @@ namespace SME.SGP.Aplicacao
             return consultasPeriodoEscolar.ObterBimestre(DateTime.Today, turmaModalidade);
         }
 
-        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, long fechamentoTurmaId)
+        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, long fechamentoTurmaId, PeriodoFechamentoBimestre periodoFechamentoBimestre)
         {
             var recomendacoes = await repositorioConselhoClasseRecomendacao.ObterTodosAsync();
 
@@ -81,12 +93,14 @@ namespace SME.SGP.Aplicacao
                 RecomendacaoAluno = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
                 RecomendacaoFamilia = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
                 AnotacoesAluno = anotacoesAluno,
-                Bimestre = bimestre
+                Bimestre = bimestre,
+                PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
+                PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
             };
         }
 
         private ConsultasConselhoClasseRecomendacaoConsultaDto TransformaEntidadeEmConsultaDto(ConselhoClasseAluno conselhoClasseAluno,
-            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre)
+            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, PeriodoFechamentoBimestre periodoFechamentoBimestre)
         {
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
@@ -97,6 +111,8 @@ namespace SME.SGP.Aplicacao
                 AnotacoesAluno = anotacoesAluno,
                 AnotacoesPedagogicas = conselhoClasseAluno.AnotacoesPedagogicas,
                 Bimestre = bimestre,
+                PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
+                PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
                 Auditoria = (AuditoriaDto)conselhoClasseAluno
             };
         }
