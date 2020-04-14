@@ -18,7 +18,6 @@ import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunic
 
 function Filtro({ onFiltrar }) {
   const [refForm, setRefForm] = useState({});
-
   const [gruposLista, setGruposLista] = useState([]);
 
   useEffect(() => {
@@ -30,7 +29,7 @@ function Filtro({ onFiltrar }) {
   }, []);
 
   const [valoresIniciais] = useState({
-    gruposId: [],
+    gruposId: '',
     dataEnvio: '',
     dataExpiracao: '',
     titulo: '',
