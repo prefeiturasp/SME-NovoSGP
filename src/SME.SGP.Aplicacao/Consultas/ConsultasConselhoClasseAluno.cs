@@ -1,5 +1,7 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -11,5 +13,8 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
         }
+
+        public async Task<ConselhoClasseAluno> ObterPorConselhoClasseAsync(long conselhoClasseId, string alunoCodigo)
+            => await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
     }
 }

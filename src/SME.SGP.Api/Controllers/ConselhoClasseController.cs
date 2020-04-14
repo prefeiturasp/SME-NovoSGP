@@ -24,5 +24,15 @@ namespace SME.SGP.Api.Controllers
             var retorno = await consultasConselhoClasseRecomendacao.ObterRecomendacoesAlunoFamilia(codigoTurma, codigoAluno, numeroBimestre, modalidade, EhFinal);
             return Ok(retorno);
         }
+
+        [HttpPost("recomendacoes")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(AuditoriaConselhoClasseAlunoDto), 200)]
+        //[Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> SalvarRecomendacoesAlunoFamilia(ConselhoClasseAlunoDto conselhoClasseAlunoDto, [FromServices]IComandosConselhoClasseAluno comandosConselhoClasseAluno)
+        {
+            return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto));
+        }
     }
 }
