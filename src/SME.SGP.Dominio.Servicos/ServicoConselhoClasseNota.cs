@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
-    public class ServicoConselhoClasseNota
+    public class ServicoConselhoClasseNota : IServicoConselhoClasse
     {
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
 
@@ -13,9 +13,12 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasse));
         }
 
-        public async Task SalvarNovaNotaPosConselhoAsync(PosConselhosNotasPersistirDto posConselhosNotasPersistirDto)
+        public Task<AuditoriaConselhoClasseAlunoDto> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
         {
-            //var conselhoClasse = await repositorioConselhoClasse.ObterPorTurmaBimestreAsync(posConselhosNotasPersistirDto.TurmaCodigo, posConselhosNotasPersistirDto.Bimestre);
+            if (conselhoClasseAluno.Id == 0)
+            {
+            }
+            return default;
         }
     }
 }

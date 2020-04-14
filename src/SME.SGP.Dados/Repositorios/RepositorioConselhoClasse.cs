@@ -2,6 +2,8 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -13,8 +15,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<ConselhoClasse> ObterPorTurmaEPeriodoAsync(long turmaId, long? periodoEscolarId = null)
         {
-            var query = new StringBuilder(@"select c.* 
-                            from conselho_classe c 
+            var query = new StringBuilder(@"select c.*
+                            from conselho_classe c
                            where c.turma_id = @turmaId ");
 
             if (periodoEscolarId.HasValue)

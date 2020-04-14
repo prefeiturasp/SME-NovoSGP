@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
 
-        public ComandosConselhoClasseNota(IRepositorioConselhoClasseNota repositorioConselhoClasseNota)
+        public ComandosConselhoClasseNota(IRepositorioConselhoClasseNota repositorioConselhoClasseNota, IServicoConselhoClasseNota)
         {
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
         }
