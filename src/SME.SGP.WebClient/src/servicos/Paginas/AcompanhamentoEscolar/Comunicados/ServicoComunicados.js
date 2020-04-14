@@ -33,6 +33,41 @@ class ServicoComunicados {
 
     return comunicado;
   };
+
+  salvar = async dados => {
+    let salvou = {};
+
+    let metodo = 'post';
+    let url = 'v1/comunicado';
+
+    if (dados.id && dados.id > 0) {
+      metodo = 'put';
+      url = `${url}/${dados.id}`;
+    }
+
+    try {
+      const requisicao = await api[metodo](url, dados);
+      if (requisicao.data) salvou = requisicao;
+    } catch (erro) {
+      salvou = [...erro.response.data.mensagens];
+    }
+
+    return salvou;
+  };
+
+  excluir = async ids => {
+    let exclusao = {};
+    const parametros = { data: ids };
+
+    try {
+      const requisicao = await api.delete('v1/comunicado', parametros);
+      if (requisicao && requisicao.status === 200) exclusao = requisicao;
+    } catch (erro) {
+      exclusao = [...erro.response.data.mensagens];
+    }
+
+    return exclusao;
+  };
 }
 
 export default new ServicoComunicados();

@@ -10,11 +10,13 @@ import Filtro from '../Filtro';
 import history from '~/servicos/history';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
+import { erro, confirmar, sucesso } from '~/servicos/alertas';
 
 const ComunicadosLista = () => {
   const Badge = styled.button``;
-  const [loaderSecao] = useState(false);
 
+  const [loaderSecao] = useState(false);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
   const [itensSelecionados, setItensSelecionados] = useState([]);
@@ -24,10 +26,28 @@ const ComunicadosLista = () => {
   }, [permissoesTela]);
 
   const onSelecionarItems = items => {
-    setItensSelecionados(items);
+    setItensSelecionados([...items.map(item => String(item.id))]);
   };
 
-  const onClickExcluir = async () => {};
+  const [filtro, setFiltro] = useState({});
+
+  const onClickExcluir = async () => {
+    if (itensSelecionados && itensSelecionados.length >= 1) {
+      const confirmado = await confirmar(
+        'Atenção',
+        'Você tem certeza que deseja excluir este(s) registro(s)?'
+      );
+      if (confirmado) {
+        const exclusao = await ServicoComunicados.excluir(itensSelecionados);
+        if (exclusao && exclusao.status === 200) {
+          sucesso('Registro(s) excluído(s) com sucesso');
+          setFiltro({ ...filtro });
+        } else {
+          erro(exclusao);
+        }
+      }
+    }
+  };
 
   const onClickVoltar = () => {
     history.push('/');
@@ -42,8 +62,6 @@ const ComunicadosLista = () => {
       `${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/${comunicado.id}`
     );
   };
-
-  const [filtro, setFiltro] = useState({});
 
   const onChangeFiltro = valoresFiltro => {
     setFiltro({
