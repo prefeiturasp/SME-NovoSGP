@@ -55,7 +55,8 @@ namespace SME.SGP.Dados.Repositorios
                    {
                        filtro.DataEnvio,
                        filtro.DataExpiracao,
-                       filtro.Titulo
+                       filtro.Titulo,
+                       filtro.GruposId
                    },
             splitOn: "id,ComunicadoGrupoId,GrupoId")
             };
@@ -66,7 +67,8 @@ namespace SME.SGP.Dados.Repositorios
             {
                 filtro.DataEnvio,
                 filtro.DataExpiracao,
-                filtro.Titulo
+                filtro.Titulo,
+                filtro.GruposId
             })).Sum();
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
@@ -94,6 +96,8 @@ namespace SME.SGP.Dados.Repositorios
                 where += " AND (date(c.data_envio) = @DataEnvio)";
             if (filtro.DataExpiracao.HasValue)
                 where += " AND (date(c.data_expiracao) = @DataExpiracao)";
+            if (filtro.GruposId?.Length > 0)
+                where += " AND (g.id = ANY(@gruposId))";
             return where;
         }
 
