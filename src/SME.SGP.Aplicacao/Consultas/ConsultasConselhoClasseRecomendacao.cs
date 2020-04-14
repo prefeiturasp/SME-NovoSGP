@@ -85,6 +85,8 @@ namespace SME.SGP.Aplicacao
         {
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
+                FechamentoTurmaId = conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId,
+                ConselhoClasseId = conselhoClasseAluno.ConselhoClasseId,
                 RecomendacaoAluno = conselhoClasseAluno.RecomendacoesAluno,
                 RecomendacaoFamilia = conselhoClasseAluno.RecomendacoesFamilia,
                 AnotacoesAluno = anotacoesAluno,
