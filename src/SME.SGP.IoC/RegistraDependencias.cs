@@ -266,6 +266,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoRecuperacaoParalela, ServicoRecuperacaoParalela>();
             services.TryAddScoped<IServicoPendenciaFechamento, ServicoPendenciaFechamento>();
             services.TryAddScoped<IServicoFechamentoFinal, ServicoFechamentoFinal>();
+            services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
         }
     }
 }
