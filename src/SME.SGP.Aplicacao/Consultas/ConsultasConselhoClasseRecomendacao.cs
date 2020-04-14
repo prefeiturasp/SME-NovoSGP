@@ -12,6 +12,7 @@ namespace SME.SGP.Aplicacao
     public class ConsultasConselhoClasseRecomendacao : IConsultasConselhoClasseRecomendacao
     {
         private readonly IConsultasFechamentoAluno consultasFechamentoAluno;
+        private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao;
@@ -19,13 +20,14 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao,
             IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno, IConsultasPeriodoEscolar consultasPeriodoEscolar, IRepositorioTurma repositorioTurma,
-            IConsultasFechamentoAluno consultasFechamentoAluno)
+            IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasFechamentoTurma consultasFechamentoTurma)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.consultasFechamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
             this.repositorioConselhoClasseRecomendacao = repositorioConselhoClasseRecomendacao ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseRecomendacao));
+            this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
         }
 
         public string MontaTextUlLis(IEnumerable<string> textos)
@@ -73,6 +75,7 @@ namespace SME.SGP.Aplicacao
 
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
+                FechamentoTurmaId = anotacoesAluno.First().FechamentoTurmaId,
                 RecomendacaoAluno = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
                 RecomendacaoFamilia = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
                 AnotacoesAluno = anotacoesAluno,
@@ -90,8 +93,9 @@ namespace SME.SGP.Aplicacao
                 RecomendacaoAluno = conselhoClasseAluno.RecomendacoesAluno,
                 RecomendacaoFamilia = conselhoClasseAluno.RecomendacoesFamilia,
                 AnotacoesAluno = anotacoesAluno,
-                AnotacoesPedagocias = conselhoClasseAluno.AnotacoesPedagogicas,
-                Bimestre = bimestre
+                AnotacoesPedagogicas = conselhoClasseAluno.AnotacoesPedagogicas,
+                Bimestre = bimestre,
+                Auditoria = (AuditoriaDto)conselhoClasseAluno
             };
         }
     }
