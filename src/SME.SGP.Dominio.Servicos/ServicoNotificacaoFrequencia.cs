@@ -341,10 +341,11 @@ namespace SME.SGP.Dominio.Servicos
                 var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaAgrupamento.Key);
 
                 var alunosFaltososEOL = alunosTurmaEOL.Where(c => alunosFaltososNaTurma.Any(a => a.CodigoAluno == c.CodigoAluno));
-                var funcionariosEol = servicoNotificacao.ObterFuncionariosPorNivel(turmaAgrupamento.Key, cargo);
+                var funcionariosEol = servicoNotificacao.ObterFuncionariosPorNivel(turma.Ue.CodigoUe, cargo);
 
-                foreach (var funcionarioEol in funcionariosEol)
-                    NotificacaoAlunosFaltososTurma(funcionarioEol.Id, alunosFaltososEOL, turma, quantidadeDias);
+                if (funcionariosEol != null)
+                    foreach (var funcionarioEol in funcionariosEol)
+                        NotificacaoAlunosFaltososTurma(funcionarioEol.Id, alunosFaltososEOL, turma, quantidadeDias);
             }
         }
 
