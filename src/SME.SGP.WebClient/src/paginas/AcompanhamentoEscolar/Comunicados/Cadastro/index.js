@@ -27,6 +27,7 @@ import history from '~/servicos/history';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
+import { confirmar, erro, sucesso } from '~/servicos/alertas';
 
 const ComunicadosCadastro = ({ match }) => {
   const ErroValidacao = styled.span`
@@ -65,7 +66,7 @@ const ComunicadosCadastro = ({ match }) => {
   }, [match]);
 
   const [valoresIniciais, setValoresIniciais] = useState({
-    id: '',
+    id: 0,
     gruposId: [],
     dataEnvio: '',
     dataExpiracao: '',
@@ -137,7 +138,7 @@ const ComunicadosCadastro = ({ match }) => {
 
   const [validacoes] = useState(
     Yup.object({
-      grupoId: Yup.string().required('Campo obrigatório'),
+      gruposId: Yup.string().required('Campo obrigatório'),
       dataEnvio: momentSchema.required('Campo obrigatório'),
       dataExpiracao: momentSchema.test(
         'validaDataMaiorQueEnvio',
@@ -181,14 +182,34 @@ const ComunicadosCadastro = ({ match }) => {
     form.validateForm().then(() => {
       setDescricaoValida(descricao.length);
 
-      if (refForm && form.isValid && descricao.length) {
+      if (
+        refForm &&
+        (!Object.entries(refForm.state.errors).length || form.isValid) &&
+        descricao.length
+      ) {
         setDescricaoComunicado(descricao);
         form.handleSubmit(form);
       }
     });
   };
 
-  const onClickExcluir = async () => {};
+  const onClickExcluir = async () => {
+    if (idComunicado) {
+      const confirmado = await confirmar(
+        'Atenção',
+        'Você tem certeza que deseja excluir este registro?'
+      );
+      if (confirmado) {
+        const exclusao = await ServicoComunicados.excluir([idComunicado]);
+        if (exclusao && exclusao.status === 200) {
+          history.push(RotasDto.ACOMPANHAMENTO_COMUNICADOS);
+          sucesso('Registro excluído com sucesso');
+        } else {
+          erro(exclusao);
+        }
+      }
+    }
+  };
 
   const onClickVoltar = () => {
     history.push(RotasDto.ACOMPANHAMENTO_COMUNICADOS);
@@ -198,12 +219,18 @@ const ComunicadosCadastro = ({ match }) => {
     validarAntesDeSalvar(form);
   };
 
-  const onClickSalvar = valores => {
+  const onClickSalvar = async valores => {
     const dadosSalvar = {
       ...valores,
       descricao: textEditorRef.current.state.value,
     };
-    return dadosSalvar;
+    const salvou = await ServicoComunicados.salvar(dadosSalvar);
+    if (salvou && salvou.data) {
+      history.push(RotasDto.ACOMPANHAMENTO_COMUNICADOS);
+      sucesso('Registro salvo com sucesso');
+    } else {
+      erro(salvou);
+    }
   };
 
   const onChangeGruposId = gruposId => {
@@ -241,7 +268,7 @@ const ComunicadosCadastro = ({ match }) => {
                 />
                 <Linha className="row mb-2">
                   <Grid cols={4}>
-                    <Label control="grupoId" text="Grupo" />
+                    <Label control="gruposId" text="Grupo" />
                     <SelectComponent
                       form={form}
                       name="gruposId"
@@ -252,6 +279,7 @@ const ComunicadosCadastro = ({ match }) => {
                       lista={gruposLista}
                       valueOption="id"
                       valueText="nome"
+                      disabled={somenteConsulta}
                     />
                   </Grid>
                   <Grid cols={4}>
@@ -261,6 +289,7 @@ const ComunicadosCadastro = ({ match }) => {
                       name="dataEnvio"
                       placeholder="Data início"
                       formatoData="DD/MM/YYYY"
+                      disabled={somenteConsulta}
                     />
                   </Grid>
                   <Grid cols={4}>
@@ -270,6 +299,7 @@ const ComunicadosCadastro = ({ match }) => {
                       name="dataExpiracao"
                       placeholder="Data início"
                       formatoData="DD/MM/YYYY"
+                      disabled={somenteConsulta}
                     />
                   </Grid>
                 </Linha>
@@ -279,8 +309,9 @@ const ComunicadosCadastro = ({ match }) => {
                     <CampoTexto
                       form={form}
                       name="titulo"
-                      placeholder="Procure pelo título do comunicado"
+                      placeholder="Título do comunicado"
                       value={form.values.titulo}
+                      disabled={somenteConsulta}
                     />
                   </Grid>
                 </Linha>
