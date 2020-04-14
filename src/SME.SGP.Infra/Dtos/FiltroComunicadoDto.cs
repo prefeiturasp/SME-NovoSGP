@@ -6,6 +6,7 @@ namespace SME.SGP.Infra
     {
         public DateTime? DataEnvio { get; set; }
         public DateTime? DataExpiracao { get; set; }
+        public int[] GruposId { get; set; }
         public string Titulo { get; set; }
     }
 }

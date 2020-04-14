@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
     {
         Task<string> Alterar(long id, ComunicadoInserirDto comunicadoDto);
 
-        Task<string> Excluir(long id);
+        Task Excluir(long[] ids);
 
         Task<string> Inserir(ComunicadoInserirDto comunicadoDto);
     }
