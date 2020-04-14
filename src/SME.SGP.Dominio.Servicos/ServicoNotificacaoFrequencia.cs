@@ -352,8 +352,10 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void NotificacaoAlunosFaltososTurma(string usuarioId, IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, int quantidadeDias)
+        private void NotificacaoAlunosFaltososTurma(string funcionarioId, IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, int quantidadeDias)
         {
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionarioId);
+
             var titulo = $"Alunos com excesso de ausências na turma {turma.Nome} ({turma.Ue.Nome})";
             StringBuilder mensagem = new StringBuilder();
             mensagem.AppendLine($"<p>O(s) seguinte(s) aluno(s) da turma <b>{turma.Nome}</b> da <b>{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome})</b> está(ão) há {quantidadeDias} dias sem comparecer as aulas.</p>");
@@ -379,7 +381,7 @@ namespace SME.SGP.Dominio.Servicos
                 Tipo = NotificacaoTipo.Frequencia,
                 Titulo = titulo,
                 Mensagem = mensagem.ToString(),
-                UsuarioId = long.Parse(usuarioId),
+                UsuarioId = usuario.Id,
                 TurmaId = turma.CodigoTurma,
                 UeId = turma.Ue.CodigoUe,
                 DreId = turma.Ue.Dre.CodigoDre,
