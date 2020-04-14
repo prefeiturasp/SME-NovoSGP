@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,11 +14,28 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<ConselhoClasseAluno> ObterPorConselhoClasseAsync(long conselhoClasseId, string alunoCodigo)
+        {
+            var query = @"select cca.*, cc.*
+                            from conselho_classe_aluno cca
+                          inner join conselho_classe cc on cc.id = cca.conselho_classe_id
+                          where cca.conselho_classe_id = @conselhoClasseId
+                            and cca.aluno_codigo = @alunoCodigo";
+
+            return (await database.Conexao.QueryAsync<ConselhoClasseAluno, ConselhoClasse, ConselhoClasseAluno>(query
+                , (conselhoClasseAluno, conselhoClasse) =>
+                {
+                    conselhoClasseAluno.ConselhoClasse = conselhoClasse;
+                    return conselhoClasseAluno;
+                }
+                , new { conselhoClasseId, alunoCodigo })).FirstOrDefault();
+        }
+
         public async Task<ConselhoClasseAluno> ObterPorFiltrosAsync(string codigoTurma, string codigoAluno, int bimestre, bool EhFinal)
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select cca.* from fechamento_turma ft");
+            query.AppendLine("select cca.*, cc.* from fechamento_turma ft");
             query.AppendLine("inner");
             query.AppendLine("join conselho_classe cc");
             query.AppendLine("on cc.fechamento_turma_id = ft.id");
@@ -42,7 +60,13 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine("and p.bimestre = @bimestre");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseAluno>(query.ToString(), new { codigoTurma, codigoAluno, bimestre });
+            return (await database.Conexao.QueryAsync<ConselhoClasseAluno, ConselhoClasse, ConselhoClasseAluno>(query.ToString()
+                , (conselhoClasseAluno, conselhoClasse) =>
+                {
+                    conselhoClasseAluno.ConselhoClasse = conselhoClasse;
+                    return conselhoClasseAluno;
+                }
+                , new { codigoTurma, codigoAluno, bimestre })).FirstOrDefault();
         }
     }
 }

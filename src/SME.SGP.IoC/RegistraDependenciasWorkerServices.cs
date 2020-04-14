@@ -246,6 +246,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoPeriodoFechamento, ServicoPeriodoFechamento>();
             services.TryAddScopedWorkerService<IServicoFechamentoTurmaDisciplina, ServicoFechamentoTurmaDisciplina>();
             services.TryAddScopedWorkerService<IServicoPendenciaFechamento, ServicoPendenciaFechamento>();
+            services.TryAddScopedWorkerService<IServicoConselhoClasse, ServicoConselhoClasse>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
