@@ -49,14 +49,15 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select a.turma_id as TurmaCodigo, a.data_aula as DataAula, fa.codigo_aluno as CodigoAluno
 	                        , sum(a.quantidade) as QuantidadeAulas , fa.qtd_faltas as QuantidadeFaltas
                           from aula a
-                         left join (select aa.turma_id, aa.data_aula, raa.codigo_aluno, count(raa.id) qtd_faltas
+                         inner join registro_frequencia rf on a.id = rf.aula_id  
+                          left join (select aa.turma_id, aa.data_aula, raa.codigo_aluno, count(raa.id) qtd_faltas
 		                         from aula aa 
-		                        inner join registro_frequencia rf on aa.id = rf.aula_id  
-	  	                        inner join registro_ausencia_aluno raa on rf.id = raa.registro_frequencia_id
-	                            where not rf.excluido and not raa.excluido 
-	                                and aa.data_aula >= @dataReferencia
+		                        inner join registro_frequencia rfa on aa.id = rfa.aula_id  
+	  	                        inner join registro_ausencia_aluno raa on rfa.id = raa.registro_frequencia_id
+	                           where not rfa.excluido and not raa.excluido 
+	                            and aa.data_aula >= @dataReferencia
 	                            group by aa.turma_id, aa.data_aula, raa.codigo_aluno) fa on fa.turma_id = a.turma_id  and fa.data_aula = a.data_aula 
-                         where not a.excluido 
+                         where not a.excluido and not rf.excluido 
                            and a.data_aula >= @dataReferencia
                            and a.tipo_calendario_id = @tipoCalendarioId
                         group by a.turma_id, a.data_aula, fa.codigo_aluno, fa.qtd_faltas ";
