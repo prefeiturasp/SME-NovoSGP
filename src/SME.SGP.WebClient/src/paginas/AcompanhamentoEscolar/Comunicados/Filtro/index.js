@@ -66,7 +66,8 @@ function Filtro({ onFiltrar }) {
     const arrayCampos = Object.keys(valoresIniciais);
 
     arrayCampos.forEach(campo => {
-      refForm.setFieldTouched(campo, true, true);
+      if (!valoresIniciais[campo].length) delete refForm.state.values[campo];
+      else refForm.setFieldTouched(campo, true, true);
     });
 
     refForm.validateForm().then(() => {
