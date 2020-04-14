@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
+        private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
 
         public ConsultasPeriodoFechamento(IServicoPeriodoFechamento servicoPeriodoFechamento,
@@ -26,7 +27,8 @@ namespace SME.SGP.Aplicacao
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IRepositorioEvento repositorioEvento,
                                 IRepositorioEventoFechamento repositorioEventoFechamento,
-                                IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
+                                IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
+                                IRepositorioPeriodoFechamento repositorioPeriodoFechamento)
         {
             this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new System.ArgumentNullException(nameof(servicoPeriodoFechamento));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
@@ -36,7 +38,11 @@ namespace SME.SGP.Aplicacao
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new System.ArgumentNullException(nameof(repositorioEventoFechamento));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
+            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoFechamento));
         }
+
+        public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(Turma turma, int bimestre)
+            => await repositorioPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma.Ue.Id, turma.Ue.DreId, bimestre);
 
         public async Task<IEnumerable<PeriodoEscolarDto>> ObterPeriodosEmAberto(long ueId)
             => await repositorioEventoFechamento.ObterPeriodosEmAberto(ueId, DateTime.Now.Date);

@@ -40,6 +40,19 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(long ueId, long dreId, int bimestre)
+        {
+            var query = @"select pfb.* 
+                          from periodo_fechamento pf 
+                         inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
+                         inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
+                         where pf.ue_id = @ueId
+                           and pf.dre_id = @dreId
+                           and pe.bimestre = @bimestre ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { ueId, dreId, bimestre });
+        }
+
         public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? dreId, long? ueId, long? turmaId)
         {
             var query = new StringBuilder("select f.*,fb.*,p.*, t.*, d.*,u.*");
