@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio.Interfaces
+﻿namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioConselhoClasse: IRepositorioBase<ConselhoClasse>
+    public interface IRepositorioConselhoClasse : IRepositorioBase<ConselhoClasse>
     {
+        //Task ObterPorTurmaBimestreAsync(string turmaCodigo, int bimestre);
     }
 }
