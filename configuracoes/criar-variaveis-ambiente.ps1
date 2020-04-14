@@ -8,6 +8,7 @@
 [Environment]::SetEnvironmentVariable("Logging__LogLevel__Microsoft", "Information", "Machine")
 [Environment]::SetEnvironmentVariable("UrlApiJurema", "https://curriculo.sme.prefeitura.sp.gov.br/api/", "Machine")
 [Environment]::SetEnvironmentVariable("UrlApiEOL", "http://dev.smeintegracaoapi.sme.prefeitura.sp.gov.br/api/", "Machine")
+[Environment]::SetEnvironmentVariable("UrlApiAE", " https://dev-appaluno.sme.prefeitura.sp.gov.br/api/", "Machine")
 [Environment]::SetEnvironmentVariable("UrlFrontEnd", "http://localhost:3000/", "Machine")
 [Environment]::SetEnvironmentVariable("JwtTokenSettings__Audience", "Prefeitura de Sao Paulo", "Machine")
 [Environment]::SetEnvironmentVariable("JwtTokenSettings__Issuer", "Novo SGP", "Machine")

@@ -11,14 +11,17 @@ namespace SME.SGP.Aplicacao
     public class ComandosEvento : IComandosEvento
     {
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoWorkflowAprovacao servicoWorkflowAprovacao;
 
         public ComandosEvento(IRepositorioEvento repositorioEvento,
+                              IRepositorioEventoTipo repositorioEventoTipo,
                               IServicoEvento servicoEvento,
                               IServicoWorkflowAprovacao servicoWorkflowAprovacao)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
         }
@@ -26,6 +29,17 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
         {
             var evento = repositorioEvento.ObterPorId(id);
+
+            if (evento == null)
+                throw new NegocioException("Não foi possível obter o evento");
+
+            var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
+
+            if (tipoEvento == null)
+                throw new NegocioException("Não foi possível obter o tipo do evento");
+
+            evento.AdicionarTipoEvento(tipoEvento);
+
             if (!evento.PodeAlterar())
                 throw new NegocioException("Não é possível editar um evento em aprovação");
 

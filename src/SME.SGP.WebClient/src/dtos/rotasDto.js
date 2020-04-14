@@ -34,6 +34,7 @@ const RotasDto = {
   RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/acompanhamento',
   PENDENCIAS_FECHAMENTO: '/fechamento/pendencias-fechamento',
   ACOMPANHAMENTO_COMUNICADOS: '/gestao/acompanhamento-escolar/comunicados',
+  CONSELHO_CLASSE: '/fechamento/conselho-classe',
 };
 
 export default RotasDto;

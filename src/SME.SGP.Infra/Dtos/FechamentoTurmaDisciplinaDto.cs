@@ -19,6 +19,6 @@ namespace SME.SGP.Infra
         public string Justificativa { get; set; }
 
         [ListaTemElementos(ErrorMessage = "Necessário informar a lista de alunos e notas/conceitos para o fechamento")]
-        public IEnumerable<NotaConceitoBimestreDto> NotaConceitoAlunos { get; set; }
+        public IEnumerable<FechamentoNotaDto> NotaConceitoAlunos { get; set; }
     }
 }

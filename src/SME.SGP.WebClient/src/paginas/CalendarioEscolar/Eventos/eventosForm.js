@@ -24,6 +24,7 @@ import {
   ModalConteudoHtml,
   RadioGroupButton,
   SelectComponent,
+  Loader,
 } from '~/componentes';
 
 // Components locais
@@ -157,7 +158,7 @@ const EventosForm = ({ match }) => {
       }
 
       const tiposEvento = await api.get(
-        'v1/calendarios/eventos/tipos/listar?ehCadastro=true'
+        'v1/calendarios/eventos/tipos/listar?ehCadastro=true&numeroRegistros=100'
       );
       if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
         setListaTipoEvento(tiposEvento.data.items);
@@ -506,7 +507,11 @@ const EventosForm = ({ match }) => {
     return confirmar('Confirmar data', '', response.mensagens[0], 'Sim', 'Não');
   };
 
+  const [carregandoSalvar, setCarregandoSalvar] = useState(false);
+
   const onClickCadastrar = async valoresForm => {
+    setCarregandoSalvar(true);
+
     if (tipoDataUnico) valoresForm.dataFim = valoresForm.dataInicio;
 
     const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map(id => {
@@ -575,6 +580,8 @@ const EventosForm = ({ match }) => {
       }
       erros(e);
     }
+
+    setCarregandoSalvar(false);
   };
 
   const onChangeCampos = () => {
@@ -787,27 +794,8 @@ const EventosForm = ({ match }) => {
   };
 
   return (
-     <>
-      <div className="row">
-        <div
-          className={`${
-            aguardandoAprovacao
-              ? 'col-sm-12 col-md-7 col-lg-7 col-xl-9'
-              : 'col-md-12'
-          }`}
-        >
-          <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
-        </div>
-        {aguardandoAprovacao ? (
-          <div className="col-sm-12 col-md-5 col-lg-5 col-xl-3 pb-2 d-flex justify-content-end">
-            <StatusAguardandoAprovacao>
-              Aguardando Aprovação
-            </StatusAguardandoAprovacao>
-          </div>
-        ) : (
-          ''
-        )}
-      </div>
+    <Loader loading={carregandoSalvar} tip="">
+      <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
       <ModalRecorrencia
         onCloseRecorrencia={onCloseRecorrencia}
         onSaveRecorrencia={onSaveRecorrencia}
@@ -1146,7 +1134,7 @@ const EventosForm = ({ match }) => {
           ))}
         </ModalConteudoHtml>
       </Card>
-    </>
+    </Loader>
   );
 };
 

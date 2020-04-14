@@ -18,6 +18,7 @@ export { default as ListaPaginada } from './listaPaginada/listaPaginada';
 export { default as CheckboxComponent } from './checkbox';
 export { default as CampoTextoBusca } from './campoTextoBusca';
 export { default as TextEditor } from './textEditor';
+export { default as Editor } from './editor/editor';
 export { default as LabelSemDados } from './labelSemDados';
 export { default as Alert } from './alert';
 export { default as TabComponent } from './tabs/tabs';
