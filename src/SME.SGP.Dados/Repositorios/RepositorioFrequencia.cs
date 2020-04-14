@@ -46,15 +46,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)
         {
-            var query = @"select a.turma_id as TurmaCodigo, a.data_aula as DataAula, raa.codigo_aluno as CodigoAluno
-                            , sum(a.quantidade) / count(a.id) as QuantidadeAulas, count(raa.id) as QuantidadeFaltas
-                          from registro_ausencia_aluno raa
-                         inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
-                         inner join aula a on a.id = rf.aula_id 
-                         where not a.excluido and not rf.excluido and not raa.excluido 
+            var query = @"select a.turma_id as TurmaCodigo, a.data_aula as DataAula, fa.codigo_aluno as CodigoAluno
+	                        , sum(a.quantidade) as QuantidadeAulas , fa.qtd_faltas as QuantidadeFaltas
+                          from aula a
+                         left join (select aa.turma_id, aa.data_aula, raa.codigo_aluno, count(raa.id) qtd_faltas
+		                         from aula aa 
+		                        inner join registro_frequencia rf on aa.id = rf.aula_id  
+	  	                        inner join registro_ausencia_aluno raa on rf.id = raa.registro_frequencia_id
+	                            where not rf.excluido and not raa.excluido 
+	                                and aa.data_aula >= @dataReferencia
+	                            group by aa.turma_id, aa.data_aula, raa.codigo_aluno) fa on fa.turma_id = a.turma_id  and fa.data_aula = a.data_aula 
+                         where not a.excluido 
                            and a.data_aula >= @dataReferencia
                            and a.tipo_calendario_id = @tipoCalendarioId
-                        group by a.turma_id, a.data_aula, raa.codigo_aluno ";
+                        group by a.turma_id, a.data_aula, fa.codigo_aluno, fa.qtd_faltas ";
 
             return database.Conexao.Query<AlunosFaltososDto>(query, new { dataReferencia, tipoCalendarioId });
         }
