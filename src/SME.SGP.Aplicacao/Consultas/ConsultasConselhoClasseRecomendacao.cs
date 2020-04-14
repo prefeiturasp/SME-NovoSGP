@@ -48,17 +48,19 @@ namespace SME.SGP.Aplicacao
             if (bimestre == 0 && !EhFinal)
                 bimestre = ObterBimestreAtual(turmaModalidade);
 
-            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFiltrosAsync(turmaCodigo, alunoCodigo, bimestre, EhFinal);
+            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turmaCodigo, bimestre);
+            if (fechamentoTurma == null)
+                throw new NegocioException("Fechamento da turma não localizado " + (!EhFinal ? $"para o bimestre {bimestre}" : ""));
 
             var anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, turmaCodigo, bimestre, EhFinal);
             if (anotacoesDoAluno == null)
                 anotacoesDoAluno = new List<FechamentoAlunoAnotacaoConselhoDto>();
 
+            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFechamentoAsync(fechamentoTurma.Id, alunoCodigo);
             if (conselhoClasseAluno == null)
-            {
-                return await ObterRecomendacoesIniciais(anotacoesDoAluno, bimestre);
-            }
-            else return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre);
+                return await ObterRecomendacoesIniciais(anotacoesDoAluno, bimestre, fechamentoTurma.Id);
+
+            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre);
         }
 
         private int ObterBimestreAtual(Modalidade turmaModalidade)
@@ -66,7 +68,7 @@ namespace SME.SGP.Aplicacao
             return consultasPeriodoEscolar.ObterBimestre(DateTime.Today, turmaModalidade);
         }
 
-        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre)
+        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, long fechamentoTurmaId)
         {
             var recomendacoes = await repositorioConselhoClasseRecomendacao.ObterTodosAsync();
 
@@ -75,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
-                FechamentoTurmaId = anotacoesAluno.First().FechamentoTurmaId,
+                FechamentoTurmaId = fechamentoTurmaId,
                 RecomendacaoAluno = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
                 RecomendacaoFamilia = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
                 AnotacoesAluno = anotacoesAluno,

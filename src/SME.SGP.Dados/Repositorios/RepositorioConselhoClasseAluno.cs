@@ -31,6 +31,17 @@ namespace SME.SGP.Dados.Repositorios
                 , new { conselhoClasseId, alunoCodigo })).FirstOrDefault();
         }
 
+        public async Task<ConselhoClasseAluno> ObterPorFechamentoAsync(long fechamentoTurmaId, string alunoCodigo)
+        {
+            var query = @"select cca.* 
+                          from conselho_classe cc
+                         inner join conselho_classe_aluno cca on cca.conselho_classe_id = cc.id
+                         where cc.fechamento_turma_id = @fechamentoTurmaId
+                           and cca.aluno_codigo = @alunoCodigo";
+
+            return await database.QueryFirstOrDefaultAsync<ConselhoClasseAluno>(query, new { fechamentoTurmaId, alunoCodigo });
+        }
+
         public async Task<ConselhoClasseAluno> ObterPorFiltrosAsync(string codigoTurma, string codigoAluno, int bimestre, bool EhFinal)
         {
             StringBuilder query = new StringBuilder();
