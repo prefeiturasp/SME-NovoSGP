@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -46,25 +47,30 @@ namespace SME.SGP.Aplicacao
             return "Comunicado alterado com sucesso";
         }
 
-        public async Task<string> Excluir(long id)
+        public async Task Excluir(long[] ids)
         {
-            var comunicado = BuscarComunicado(id);
-
-            try
+            var erros = new StringBuilder();
+            foreach (var id in ids)
             {
-                unitOfWork.IniciarTransacao();
-                await repositorioComunicadoGrupo.ExcluirPorIdComunicado(id);
-                comunicado.MarcarExcluido();
-                await repositorio.SalvarAsync(comunicado);
-                unitOfWork.PersistirTransacao();
+                var comunicado = repositorio.ObterPorId(id);
+                if (comunicado == null)
+                    erros.Append($"<li>{id} - comunicado não encontrado</li>");
+                else
+                {
+                    try
+                    {
+                        await repositorioComunicadoGrupo.ExcluirPorIdComunicado(id);
+                        comunicado.MarcarExcluido();
+                        await repositorio.SalvarAsync(comunicado);
+                    }
+                    catch
+                    {
+                        erros.Append($"<li>{id} - {comunicado.Titulo}</li>");
+                    }
+                }
             }
-            catch
-            {
-                unitOfWork.Rollback();
-                throw;
-            }
-
-            return "Comunicado excluído com sucesso";
+            if (!string.IsNullOrEmpty(erros.ToString()))
+                throw new NegocioException($"<p>Os seguintes comunicados não puderam ser excluídos:</p><br/>{erros.ToString()} por favor, tente novamente");
         }
 
         public async Task<string> Inserir(ComunicadoInserirDto comunicadoDto)
