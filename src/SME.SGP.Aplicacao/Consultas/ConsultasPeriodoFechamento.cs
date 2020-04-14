@@ -60,14 +60,14 @@ namespace SME.SGP.Aplicacao
             return await TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, bimestre);
         }
 
-        public async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, DateTime dataReferencia, int bimestre = 0)
+        public async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, DateTime dataReferencia, int bimestre = 0, int bimestreAlteracao = 0)
         {
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
 
-            return await TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, bimestre);
+            return await TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, bimestre, bimestreAlteracao);
         }
 
-        public async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0)
+        public async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0, int bimestreAlteracao = 0)
         {
             if (turma.Ue == null)
                 turma.AdicionarUe(repositorioUe.ObterPorId(turma.UeId));
@@ -75,8 +75,10 @@ namespace SME.SGP.Aplicacao
                 turma.Ue.AdicionarDre(repositorioDre.ObterPorId(turma.Ue.DreId));
 
             var ueEmFechamento = await repositorioEventoFechamento.UeEmFechamento(dataReferencia, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, tipoCalendario.Id, bimestre);
-            
-            return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
+
+            var bimestreReabertura = bimestreAlteracao == 0 ? bimestre : bimestreAlteracao;
+
+            return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestreReabertura, dataReferencia);
         }
 
         private async Task<bool> UeEmReaberturaDeFechamento(TipoCalendario tipoCalendario, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
