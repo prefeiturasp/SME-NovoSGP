@@ -25,7 +25,7 @@ import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import RotasDTO from '~/dtos/rotasDto';
-import { ModalConteudoHtml } from '~/componentes';
+import { ModalConteudoHtml, Loader } from '~/componentes';
 import Alert from '~/componentes/alert';
 import modalidade from '~/dtos/modalidade';
 import ServicoAula from '~/servicos/Paginas/ServicoAula';
@@ -251,9 +251,11 @@ const CadastroAula = ({ match }) => {
         item =>
           item.codigoComponenteCurricular.toString() === idDisciplina.toString()
       );
-      if (disciplina) setDisciplinaCompartilhada(disciplina.compartilhada);
-    }
-  }, [idDisciplina, listaDisciplinas]);
+      if (disciplina && disciplina[0])
+        setDisciplinaCompartilhada(disciplina[0].compartilhada);
+    } else if (refForm && refForm.setFieldValue)
+      refForm.setFieldValue('quantidadeTexto', '');
+  }, [idDisciplina, listaDisciplinas, refForm]);
 
   const buscarDisciplinasCompartilhadas = async () => {
     const disciplinas = await api.get(
@@ -461,12 +463,12 @@ const CadastroAula = ({ match }) => {
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
       quantidadeTexto:
-        idDisciplina && idDisciplina !== '' && quantidadeMaximaAulas > 2
-          ? controlaQuantidadeAula && !ehReposicao
+        idDisciplina || idDisciplina !== ''
+          ? controlaQuantidadeAula
             ? validacaoQuantidade.lessThan(
-              quantidadeMaximaAulas + 1,
-              `Valor não pode ser maior que ${quantidadeMaximaAulas}`
-            )
+                quantidadeMaximaAulas + 1,
+                `Valor não pode ser maior que ${quantidadeMaximaAulas}`
+              )
             : validacaoQuantidade
           : Yup.string().required(false),
     };
@@ -515,6 +517,7 @@ const CadastroAula = ({ match }) => {
     idDisciplina,
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
+    idDisciplina,
   ]);
 
   useEffect(() => {
@@ -598,10 +601,11 @@ const CadastroAula = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
+    setCarregandoSalvar(true);
     const observacao = existeFrequenciaPlanoAula
       ? `Esta aula${
-      ehAulaUnica ? '' : ', ou sua recorrencia'
-      }, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência`
+          ehAulaUnica ? '' : ', ou sua recorrencia'
+        }, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência`
       : '';
     if (
       quantidadeRecorrencia > 1 &&
@@ -633,10 +637,11 @@ const CadastroAula = ({ match }) => {
 
       await salvar(valoresForm);
     }
+    setCarregandoSalvar(false);
   };
 
   const onClickVoltar = async form => {
-    if (modoEdicao && !somenteLeitura) {
+    if (dentroPeriodo && modoEdicao && !somenteLeitura) {
       const confirmado = await confirmar(
         'Atenção',
         '',
@@ -715,12 +720,12 @@ const CadastroAula = ({ match }) => {
   const getDataFormatada = () => {
     const titulo = `${dataAula ? dataAula.format('dddd') : ''}, ${
       dataAula ? dataAula.format('DD/MM/YYYY') : ''
-      } `;
+    } `;
     return titulo;
   };
 
   return (
-    <>
+    <Loader loading={carregandoSalvar} tip="">
       <div className="col-md-12">
         {quantidadeMaximaAulas <= 0 ? (
           <Alert
@@ -747,7 +752,9 @@ const CadastroAula = ({ match }) => {
             }}
             className="mb-2"
           />
-        ) : ''}
+        ) : (
+          ''
+        )}
       </div>
       <Cabecalho pagina={`Cadastro de Aula - ${getDataFormatada()}`} />
       <Card>
@@ -758,7 +765,7 @@ const CadastroAula = ({ match }) => {
             excluir(refFormRecorrencia.state.values.tipoRecorrenciaExclusao)
           }
           onConfirmacaoSecundaria={() => setVisualizarFormExcRecorrencia(false)}
-          onClose={() => { }}
+          onClose={() => {}}
           labelBotaoPrincipal="Confirmar"
           labelBotaoSecundario="Cancelar"
           titulo={`Excluir aula - ${getDataFormatada()}`}
@@ -769,7 +776,7 @@ const CadastroAula = ({ match }) => {
             initialValues={valoresIniciaisExclusao}
             validationSchema={validacoes}
             ref={refFormik => setRefFormRecorrencia(refFormik)}
-            onSubmit={() => { }}
+            onSubmit={() => {}}
             validateOnChange
             validateOnBlur
           >
@@ -782,11 +789,11 @@ const CadastroAula = ({ match }) => {
                   >
                     <p>{`Essa aula se repete por ${quantidadeRecorrencia}${
                       quantidadeRecorrencia > 1 ? ' vezes' : ' vez'
-                      } em seu planejamento.${
+                    } em seu planejamento.${
                       existeFrequenciaPlanoAula
                         ? ' Obs: Esta aula ou sua recorrência possui frequência ou plano de aula registrado, ao excluí-la estará excluindo esse registro também'
                         : ''
-                      }`}</p>
+                    }`}</p>
                     <p>Qual opção de exclusão você deseja realizar?</p>
                   </div>
                   <div className="col-sm-12 col-md-12 d-block">
@@ -796,7 +803,7 @@ const CadastroAula = ({ match }) => {
                       label="Realizar exclusão"
                       opcoes={opcoesExcluirRecorrencia}
                       name="tipoRecorrenciaExclusao"
-                      onChange={() => { }}
+                      onChange={() => {}}
                     />
                   </div>
                 </div>
@@ -856,6 +863,7 @@ const CadastroAula = ({ match }) => {
                     onClick={onClickExcluir}
                     disabled={somenteLeitura || !dentroPeriodo}
                   />
+
                   <Button
                     id={shortid.generate()}
                     label={novoRegistro ? 'Cadastrar' : 'Alterar'}
@@ -876,7 +884,9 @@ const CadastroAula = ({ match }) => {
               <div className="row">
                 <div className="col-sm-12 col-md-5 col-lg-3 col-xl-3 mb-2 mr-0 pr-0">
                   <RadioGroupButton
-                    desabilitado={somenteLeitura || !dentroPeriodo || !novoRegistro}
+                    desabilitado={
+                      somenteLeitura || !dentroPeriodo || !novoRegistro
+                    }
                     id="tipo-aula"
                     label="Tipo de aula"
                     form={form}
@@ -983,7 +993,12 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={somenteLeitura || !dentroPeriodo || ehReposicao || ehAulaUnica}
+                    desabilitado={
+                      somenteLeitura ||
+                      !dentroPeriodo ||
+                      ehReposicao ||
+                      ehAulaUnica
+                    }
                     onChange={e => {
                       onChangeCampos();
                       setEhRecorrencia(e.target.value !== 1);
@@ -1004,10 +1019,10 @@ const CadastroAula = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-            ''
-          )}
+          ''
+        )}
       </Card>
-    </>
+    </Loader>
   );
 };
 

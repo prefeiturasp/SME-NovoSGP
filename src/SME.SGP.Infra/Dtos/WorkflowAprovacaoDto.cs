@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -52,6 +53,15 @@ namespace SME.SGP.Infra
             {
                 yield return new ValidationResult("Para este tipo de workflow, é necessário informar um Id de entidade para aprovar.");
             }
+        }
+
+        public void AdicionarNivel(Cargo cargo)
+        {
+            Niveis.Add(new WorkflowAprovacaoNivelDto()
+            {
+                Cargo = cargo,
+                Nivel = Niveis.Count() + 1
+            });
         }
     }
 }

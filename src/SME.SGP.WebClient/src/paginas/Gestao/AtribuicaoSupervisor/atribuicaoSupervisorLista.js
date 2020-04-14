@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import history from '../../../servicos/history';
 
@@ -51,7 +51,6 @@ export default function AtribuicaoSupervisorLista() {
       const dres = await api.get('v1/abrangencias/false/dres');
       setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
     }
-
     carregarDres();
     verificaSomenteConsulta(permissoesTela);
   }, []);
@@ -171,7 +170,7 @@ export default function AtribuicaoSupervisorLista() {
     }
   }
 
-  async function onChangeDre(dre) {
+  const onChangeDre = useCallback(dre => {
     setListaSupervisores([]);
     setSupervisoresSelecionados([]);
     setListaUes([]);
@@ -180,7 +179,7 @@ export default function AtribuicaoSupervisorLista() {
       if (uesSemSupervisorCheck) {
         montaListaUesSemSup(dre);
       } else {
-        const vinculoEscolasDre = await api.get(
+        const vinculoEscolasDre = api.get(
           `v1/supervisores/dre/${dre}/vinculo-escolas`
         );
         montarListaAtribuicao(vinculoEscolasDre.data, dre, true);
@@ -195,7 +194,7 @@ export default function AtribuicaoSupervisorLista() {
       carregarSupervisores(dre);
       carregarUes(dre);
     }
-  }
+  }, []);
 
   function montarListaAtribuicao(lista, dre, isArray) {
     if (lista) {
@@ -279,6 +278,12 @@ export default function AtribuicaoSupervisorLista() {
     }
   }
 
+  useEffect(() => {
+    if (listaDres && listaDres.length === 1) {
+      onChangeDre(listaDres[0].codigo);
+    }
+  }, [listaDres, onChangeDre]);
+
   return (
     <>
       <Cabecalho pagina="Atribuição de Supervisor - Listagem" />
@@ -333,7 +338,7 @@ export default function AtribuicaoSupervisorLista() {
             valueOption="codigo"
             valueText="nome"
             onChange={onChangeDre}
-            valueSelect={dresSelecionadas || []}
+            valueSelect={dresSelecionadas}
             placeholder="SELECIONE A DRE"
             disabled={desabilitarDre || !permissoesTela.podeConsultar}
           />

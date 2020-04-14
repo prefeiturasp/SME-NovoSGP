@@ -47,5 +47,6 @@ namespace SME.SGP.Dominio.Interfaces
         Aula ObterPorWorkflowId(long workflowId);
 
         bool UsuarioPodeCriarAulaNaUeTurmaEModalidade(Aula aula, ModalidadeTipoCalendario modalidade);
+        IEnumerable<DateTime> ObterUltimosDiasLetivos(DateTime dataReferencia, int quantidadeDias, long tipoCalendarioId);
     }
 }

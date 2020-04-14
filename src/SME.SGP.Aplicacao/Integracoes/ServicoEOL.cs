@@ -254,6 +254,19 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil)
+        {
+            var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}";
+            return await ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(url);
+        }
+
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)
+        {
+            var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}/planejamento";
+            return await ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(url);
+        }
+
+        [Obsolete("Utilizar: ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento")]
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas/planejamento";
@@ -266,6 +279,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return await ObterDisciplinas(url, "ObterDisciplinasPorCodigoTurma");
         }
 
+        [Obsolete("Utilizar: ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", true)]
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas";
@@ -844,6 +858,20 @@ namespace SME.SGP.Aplicacao.Integracoes
                 SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
                 return null;
             }
+        }
+
+        private async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string url)
+        {
+            var resposta = await httpClient.GetAsync(url);
+
+            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent && resposta.StatusCode != HttpStatusCode.BadRequest)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
+            }
+
+            await RegistrarLogSentryAsync(resposta, "ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", url);
+            throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
         }
 
         private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url, string rotina)

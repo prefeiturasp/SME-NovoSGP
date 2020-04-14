@@ -19,6 +19,10 @@ namespace SME.SGP.Api
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
+            services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
+            {
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
         }
     }
 }

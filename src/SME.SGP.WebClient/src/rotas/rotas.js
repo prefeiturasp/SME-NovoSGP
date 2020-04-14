@@ -49,6 +49,7 @@ import PendenciasFechamentoLista from '~/paginas/Fechamento/PendenciasFechamento
 import PendenciasFechamentoForm from '~/paginas/Fechamento/PendenciasFechamento/pendenciasFechamentoForm';
 import ComunicadosLista from '~/paginas/AcompanhamentoEscolar/Comunicados/Lista';
 import ComunicadosCadastro from '~/paginas/AcompanhamentoEscolar/Comunicados/Cadastro';
+import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselhoClasse';
 
 const rotas = new Map();
 
@@ -59,7 +60,7 @@ rotas.set(RotasDto.ACOMPANHAMENTO_COMUNICADOS, {
   component: ComunicadosLista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
+  temPermissionamento: true,
 });
 
 rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo`, {
@@ -68,7 +69,7 @@ rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo`, {
   component: ComunicadosCadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
+  temPermissionamento: true,
 });
 
 rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/:id`, {
@@ -77,7 +78,7 @@ rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/:id`, {
   component: ComunicadosCadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
+  temPermissionamento: true,
 });
 
 rotas.set(`${RotasDto.PAP}`, {
@@ -738,6 +739,16 @@ rotas.set(RotasDto.RELATORIO_PAP_ACOMPANHAMENTO, {
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false, // chavePermissao: RotasDto.REINICIAR_SENHA,
+});
+
+rotas.set(RotasDto.CONSELHO_CLASSE, {
+  breadcrumbName: 'Conselho de Classe',
+  menu: ['Fechamento'],
+  parent: '/',
+  component: ConselhoClasse,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
 });
 
 const rotasArray = [];

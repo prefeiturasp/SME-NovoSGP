@@ -35,6 +35,6 @@ namespace SME.SGP.Dominio
             => data.DayOfWeek == DayOfWeek.Saturday || data.DayOfWeek == DayOfWeek.Sunday;
 
         public static int Semestre(this DateTime data)
-            => data.Month <= 6 ? 1 : 2;
+            => data.Month > 6 ? 2 : 1;
     }
 }

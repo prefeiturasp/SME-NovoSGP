@@ -528,5 +528,18 @@ namespace SME.SGP.Dados.Repositorios
             if (disciplinasId != null && disciplinasId.Length > 0)
                 query.AppendLine("AND a.disciplina_id = ANY(@disciplinasId)");
         }
+
+        public IEnumerable<DateTime> ObterUltimosDiasLetivos(DateTime dataReferencia, int quantidadeDias, long tipoCalendarioId)
+        {
+            var query = @"select distinct a.data_aula::date  
+                          from aula a
+                         where not a.excluido 
+                           and a.data_aula <= @dataReferencia
+                           and a.tipo_calendario_id = @tipoCalendarioId
+                         order by a.data_aula::date  desc
+                        limit @quantidadeDias";
+
+            return database.Conexao.Query<DateTime>(query, new { dataReferencia, tipoCalendarioId, quantidadeDias });
+        }
     }
 }

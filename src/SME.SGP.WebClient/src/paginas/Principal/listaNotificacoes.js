@@ -67,7 +67,7 @@ const ListaNotificacoes = () => {
       dataIndex: 'data',
       key: 'data',
       className: 'text-center px-4 py-0 data-hora',
-      width: 125,
+      width: 300,
       render: data => {
         const dataFormatada = moment(data).format('DD/MM/YYYY HH:mm:ss');
         return <span>{dataFormatada}</span>;
@@ -85,8 +85,8 @@ const ListaNotificacoes = () => {
 
   const Container = styled.span`
     .data-hora {
-      line-height: 1rem;
-      white-space: normal !important;
+      // line-height: 1rem;
+      // white-space: normal !important;
     }
   `;
 
