@@ -240,7 +240,7 @@ namespace SME.SGP.Dominio.Servicos
         #region Metodos Privados
         private void NotificaAlunosFaltososBimestreModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario, double percentualCritico, int semestre = 0)
         {
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, ModalidadeTipoCalendario.FundamentalMedio, semestre);
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidadeTipoCalendario, semestre);
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendario.Id, dataReferencia);
 
             // Notifica apenas no dia seguinte ao fim do bimestre
