@@ -38,7 +38,7 @@ namespace SME.SGP.Dominio.Servicos
             if (fechamentoTurma == null)
                 throw new NegocioException("Não foi possível localizar o fechamento da turma informado!");
 
-            var conselhoClasseExistente = repositorioConselhoClasse.ObterPorTurmaEPeriodoAsync(fechamentoTurma.Id, fechamentoTurma.PeriodoEscolarId);
+            var conselhoClasseExistente = repositorioConselhoClasse.ObterPorTurmaEPeriodoAsync(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId);
             if (conselhoClasseExistente != null)
                 throw new NegocioException($"Já existe um conselho de classe gerado para a turma {fechamentoTurma.Turma.Nome}!");
 
