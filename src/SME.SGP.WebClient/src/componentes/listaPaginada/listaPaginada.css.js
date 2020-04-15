@@ -110,6 +110,10 @@ export const Container = styled.div`
     font-size: 12px;
   }
 
+  .ant-pagination-item-active a {
+    color: ${Base.Branco} !important;
+  }
+
   .ant-pagination-item-active:focus,
   .ant-pagination-item-active:hover {
     border-color: ${Base.Roxo} !important;
