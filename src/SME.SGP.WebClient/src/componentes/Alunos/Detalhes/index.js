@@ -1,10 +1,10 @@
 import { Avatar, Card } from 'antd';
+import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { Container, DadosAluno, FrequenciaGlobal } from './styles';
-import * as moment from 'moment';
 
 const DetalhesAluno = props => {
   const { dados, desabilitarImprimir, onClickImprimir } = props;
@@ -55,9 +55,10 @@ const DetalhesAluno = props => {
               border
               onClick={onClickImprimir}
               disabled={desabilitarImprimir}
+              id="btn-imprimir-dados-aluno"
             />
             <FrequenciaGlobal>
-              Frequência Global: {frequencia ? frequencia : 0}%
+              Frequência Global: {frequencia || 0}%
             </FrequenciaGlobal>
           </div>
         </DadosAluno>
