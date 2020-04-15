@@ -1,19 +1,38 @@
-import { Form, Formik } from 'formik';
 import React, { useEffect, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import * as Yup from 'yup';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import Cabecalho from '~/componentes-sgp/cabecalho';
-import Auditoria from '~/componentes/auditoria';
-import Button from '~/componentes/button';
-import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
-import CampoTexto from '~/componentes/campoTexto';
-import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
-import RadioGroupButton from '~/componentes/radioGroupButton';
-import SelectComponent from '~/componentes/select';
+import _ from 'lodash';
+
+// Formulário
+import { Form, Formik } from 'formik';
+import * as Yup from 'yup';
+
+// Redux
+import { useSelector } from 'react-redux';
+import { store } from '~/redux';
+import { removerAlerta } from '~/redux/modulos/alertas/actions';
+
+// Componentes
+import {
+  Auditoria,
+  CampoData,
+  momentSchema,
+  Button,
+  CampoTexto,
+  Card,
+  Colors,
+  SelectComponent,
+  RadioGroupButton,
+  Alert,
+  ModalConteudoHtml,
+  Loader,
+} from '~/componentes';
+
+// Componentes SGP
+import { Cabecalho } from '~/componentes-sgp';
+
+// Serviços
 import {
   confirmar,
   erros,
@@ -24,13 +43,12 @@ import {
 import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
-import RotasDTO from '~/dtos/rotasDto';
-import { ModalConteudoHtml, Loader } from '~/componentes';
-import Alert from '~/componentes/alert';
-import modalidade from '~/dtos/modalidade';
 import ServicoAula from '~/servicos/Paginas/ServicoAula';
-import { removerAlerta } from '~/redux/modulos/alertas/actions';
-import { store } from '~/redux';
+import ServicoCadastroAula from '~/servicos/Paginas/Calendario/ServicoCadastroAula';
+
+// DTOs
+import RotasDTO from '~/dtos/rotasDto';
+import modalidade from '~/dtos/modalidade';
 
 const CadastroAula = ({ match }) => {
   const usuario = useSelector(state => state.usuario);
@@ -48,7 +66,7 @@ const CadastroAula = ({ match }) => {
   const [idAula, setIdAula] = useState(0);
   const [auditoria, setAuditoria] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [novoRegistro, setNovoRegistro] = useState(!match.params.id);
+  const [novoRegistro, setNovoRegistro] = useState(true);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [validacoes, setValidacoes] = useState({});
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
@@ -74,6 +92,20 @@ const CadastroAula = ({ match }) => {
     setVisualizarFormExcRecorrencia,
   ] = useState(false);
   const [inicial, setInicial] = useState({
+    tipoAula: 1,
+    disciplinaId: undefined,
+    disciplinaCompartilhadaId: undefined,
+    quantidadeTexto: '',
+    quantidadeRadio: 0,
+    dataAula: '',
+    recorrenciaAula: '',
+    quantidade: 0,
+    tipoCalendarioId: '',
+    ueId: '',
+    turmaId: '',
+    dataAulaCompleta: window.moment(diaAula),
+  });
+  const [statusInicial, setStatusInicial] = useState({
     tipoAula: 1,
     disciplinaId: undefined,
     disciplinaCompartilhadaId: undefined,
@@ -146,11 +178,11 @@ const CadastroAula = ({ match }) => {
     tipoRecorrenciaExclusao: recorrencia.AULA_UNICA,
   };
 
-  const onChangeCampos = () => {
+  const onChangeCampos = useCallback(() => {
     if (!modoEdicao) {
       setModoEdicao(true);
     }
-  };
+  }, [modoEdicao]);
 
   useEffect(() => {
     return () => {
@@ -163,95 +195,93 @@ const CadastroAula = ({ match }) => {
 
   const [desabilitaPorQuantidade, setDesabilitaPorQuantidade] = useState(false);
 
-  const onChangeDisciplinas = async (id, listaDisc, isReposicao) => {
-    onChangeCampos();
-
-    setIdDisciplina(id);
-
-    const lista =
-      (listaDisciplinas && listaDisciplinas.length > 0 && listaDisciplinas) ||
-      listaDisc ||
-      [];
-
-    if (!lista || lista.length === 0) return;
-
-    if (id) {
-      const disciplina = lista.find(
-        d => String(d.codigoComponenteCurricular) === String(id)
-      );
-
-      if (!disciplina) return;
-
-      const regencia = !!disciplina.regencia;
-      setEhRegencia(regencia);
-
-      if (disciplina.territorioSaber || isReposicao) {
-        setControlaQuantidadeAula(false);
-        setQuantidadeMaximaAulas(0);
-        setDesabilitaPorGrade(false);
-        return;
-      }
-
-      refForm.setFieldValue('recorrenciaAula', '');
-
-      setCarregandoSalvar(true);
-
-      const resultado = await api
-        .get(
-          `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}?ehRegencia=${regencia}`,
+  const buscaGrades = useCallback(
+    async (turma, disciplinaId, regencia) => {
+      try {
+        setCarregandoSalvar(true);
+        const { data, status } = await ServicoCadastroAula.BuscarGrades(
+          turma,
+          disciplinaId,
+          regencia,
           {
             params: {
-              data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
+              data: dataAula && dataAula.format('YYYY-MM-DD'),
             },
           }
-        )
-        .then(res => res)
-        .catch(err => {
-          const mensagemErro =
-            err &&
-            err.response &&
-            err.response.data &&
-            err.response.data.mensagens;
+        );
 
-          setCarregandoSalvar(false);
-
-          if (mensagemErro) {
-            erro(mensagemErro.join(','));
-            return null;
-          }
-          erro('Ocorreu um erro, por favor contate o suporte');
-
-          return null;
-        });
-
-      if (resultado) {
-        if (resultado.status === 200) {
-          setControlaQuantidadeAula(
-            resultado.data.quantidadeAulasRestante <= 1
-          );
-          setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
-          setDesabilitaPorGrade(resultado.data.quantidadeAulasRestante < 1);
-          setDesabilitaPorQuantidade(
-            resultado.data.quantidadeAulasRestante <= 1
-          );
+        if (data && status === 200) {
+          setControlaQuantidadeAula(data.quantidadeAulasRestante <= 1);
+          setQuantidadeMaximaAulas(data.quantidadeAulasRestante);
+          setDesabilitaPorGrade(data.quantidadeAulasRestante < 1);
+          setDesabilitaPorQuantidade(data.quantidadeAulasRestante <= 1);
           if (
-            resultado.data.quantidadeAulasRestante > 0 &&
-            resultado.data.quantidadeAulasRestante <= 2
+            data.quantidadeAulasRestante > 0 &&
+            data.quantidadeAulasRestante <= 2
           ) {
             refForm.setFieldValue(
               'quantidadeRadio',
-              resultado.data.quantidadeAulasRestante
+              data.quantidadeAulasRestante
             );
           }
-        } else if (resultado.status === 204) {
+          setCarregandoSalvar(false);
+        } else if (status === 204) {
+          setControlaQuantidadeAula(false);
+          setQuantidadeMaximaAulas(0);
+          setDesabilitaPorGrade(false);
+          setCarregandoSalvar(false);
+        }
+      } catch (err) {
+        setCarregandoSalvar(false);
+        const mensagemErro =
+          err &&
+          err.response &&
+          err.response.data &&
+          err.response.data.mensagens;
+
+        if (mensagemErro) {
+          erro(mensagemErro.join(','));
+        }
+
+        erro('Ocorreu um erro, por favor contate o suporte');
+      }
+    },
+    [dataAula, refForm]
+  );
+
+  const onChangeDisciplinas = useCallback(
+    async (id, listaDisc, isReposicao) => {
+      onChangeCampos();
+      setIdDisciplina(id);
+
+      const lista =
+        (listaDisciplinas && listaDisciplinas.length > 0 && listaDisciplinas) ||
+        listaDisc ||
+        [];
+
+      if (lista.length === 0) return;
+
+      if (id) {
+        const disciplina = lista.find(
+          d => String(d.codigoComponenteCurricular) === String(id)
+        );
+
+        if (!disciplina) return;
+
+        const regencia = !!disciplina.regencia;
+        setEhRegencia(regencia);
+
+        if (disciplina.territorioSaber || isReposicao) {
           setControlaQuantidadeAula(false);
           setQuantidadeMaximaAulas(0);
           setDesabilitaPorGrade(false);
         }
-        setCarregandoSalvar(false);
+
+        if (novoRegistro) buscaGrades(turmaId, id, regencia);
       }
-    }
-  };
+    },
+    [buscaGrades, listaDisciplinas, novoRegistro, onChangeCampos, turmaId]
+  );
 
   useEffect(() => {
     if (idDisciplina && listaDisciplinas.length) {
@@ -310,93 +340,103 @@ const CadastroAula = ({ match }) => {
   };
 
   const consultaPorId = async id => {
-    const buscaAula = await api
-      .get(`v1/calendarios/professores/aulas/${id}`)
-      .catch(e => {
-        if (
-          e &&
-          e.response &&
-          e.response.data &&
-          Array.isArray(e.response.data)
-        ) {
-          erros(e);
+    try {
+      setCarregandoSalvar(true);
+      setNovoRegistro(false);
+      setModoEdicao(false);
+      const {
+        data: dataRespAula,
+        status: statusRespAula,
+      } = await ServicoCadastroAula.BuscarAula(id);
+
+      if (dataRespAula && statusRespAula === 200) {
+        setDataAula(moment(dataRespAula.dataAula));
+
+        const {
+          data: dataRespRecorrencia,
+          status: statusRespRecorrencia,
+        } = await ServicoCadastroAula.BuscarRecorrencias(id);
+
+        if (dataRespRecorrencia && statusRespRecorrencia === 200) {
+          setEhAulaUnica(
+            dataRespRecorrencia.recorrenciaAula === recorrencia.AULA_UNICA
+          );
+          setExisteFrequenciaPlanoAula(
+            dataRespRecorrencia.existeFrequenciaOuPlanoAula
+          );
         }
-      });
-    setNovoRegistro(false);
-    if (buscaAula && buscaAula.data) {
-      setDataAula(moment(buscaAula.data.dataAula));
-      const respRecorrencia = await api.get(
-        `v1/calendarios/professores/aulas/${id}/recorrencias/serie`
-      );
-      const dadosRecorrencia = respRecorrencia.data;
 
-      if (respRecorrencia && dadosRecorrencia) {
-        setEhAulaUnica(
-          dadosRecorrencia.recorrenciaAula === recorrencia.AULA_UNICA
-        );
+        if (
+          dataRespRecorrencia &&
+          dataRespRecorrencia.recorrenciaAula !== recorrencia.AULA_UNICA
+        ) {
+          setQuantidadeRecorrencia(
+            dataRespRecorrencia.quantidadeAulasRecorrentes
+          );
+          setOpcoesRecorrencia([
+            ...getRecorrenciasHabilitadas(
+              opcoesRecorrencia,
+              dataRespRecorrencia
+            ),
+          ]);
+          setOpcoesExcluirRecorrencia([
+            ...getRecorrenciasHabilitadas(
+              opcoesExcluirRecorrencia,
+              dataRespRecorrencia
+            ),
+          ]);
+        }
 
-        setExisteFrequenciaPlanoAula(
-          dadosRecorrencia.existeFrequenciaOuPlanoAula
-        );
+        setSomenteLeitura(dataRespAula.somenteLeitura);
+
+        const val = {
+          tipoAula: dataRespAula.tipoAula,
+          disciplinaId: dataRespAula.disciplinaId.toString(),
+          disciplinaCompartilhadaId:
+            dataRespAula.disciplinaCompartilhadaId &&
+            dataRespAula.disciplinaCompartilhadaId.toString(),
+          dataAula: dataRespAula.dataAula
+            ? window.moment(dataRespAula.dataAula)
+            : window.moment(),
+          recorrenciaAula: recorrencia.AULA_UNICA,
+          id: dataRespAula.id,
+          tipoCalendarioId: dataRespAula.tipoCalendarioId,
+          ueId: dataRespAula.ueId,
+          turmaId: dataRespAula.turmaId,
+          dataAulaCompleta: window.moment(dataRespAula.dataAula),
+        };
+        if (dataRespAula.quantidade > 0 && dataRespAula.quantidade < 3) {
+          val.quantidadeRadio = dataRespAula.quantidade;
+          val.quantidadeTexto = '';
+        } else if (dataRespAula.quantidade > 0 && dataRespAula.quantidade > 2) {
+          val.quantidadeTexto = dataRespAula.quantidade;
+        }
+        setIdDisciplina(dataRespAula.disciplinaId.toString());
+        setInicial(val);
+        setStatusInicial(val);
+        setAuditoria({
+          criadoPor: dataRespAula.criadoPor,
+          criadoRf: dataRespAula.criadoRF > 0 ? dataRespAula.criadoRF : '',
+          criadoEm: dataRespAula.criadoEm,
+          alteradoPor: dataRespAula.alteradoPor,
+          alteradoRf:
+            dataRespAula.alteradoRF > 0 ? dataRespAula.alteradoRF : '',
+          alteradoEm: dataRespAula.alteradoEm,
+        });
+        setExibirAuditoria(true);
+        setCarregandoSalvar(false);
       }
-
+      setCarregandoSalvar(false);
+    } catch (e) {
+      setCarregandoSalvar(false);
       if (
-        respRecorrencia &&
-        dadosRecorrencia &&
-        dadosRecorrencia.recorrenciaAula !== recorrencia.AULA_UNICA
+        e &&
+        e.response &&
+        e.response.data &&
+        Array.isArray(e.response.data)
       ) {
-        setQuantidadeRecorrencia(dadosRecorrencia.quantidadeAulasRecorrentes);
-
-        setOpcoesRecorrencia([
-          ...getRecorrenciasHabilitadas(opcoesRecorrencia, dadosRecorrencia),
-        ]);
-        setOpcoesExcluirRecorrencia([
-          ...getRecorrenciasHabilitadas(
-            opcoesExcluirRecorrencia,
-            dadosRecorrencia
-          ),
-        ]);
+        erros(e);
       }
-
-      setSomenteLeitura(buscaAula.data.somenteLeitura);
-
-      const val = {
-        tipoAula: buscaAula.data.tipoAula,
-        disciplinaId: buscaAula.data.disciplinaId.toString(),
-        disciplinaCompartilhadaId:
-          buscaAula.data.disciplinaCompartilhadaId &&
-          buscaAula.data.disciplinaCompartilhadaId.toString(),
-        dataAula: buscaAula.data.dataAula
-          ? window.moment(buscaAula.data.dataAula)
-          : window.moment(),
-        recorrenciaAula: recorrencia.AULA_UNICA,
-        id: buscaAula.data.id,
-        tipoCalendarioId: buscaAula.data.tipoCalendarioId,
-        ueId: buscaAula.data.ueId,
-        turmaId: buscaAula.data.turmaId,
-        dataAulaCompleta: window.moment(buscaAula.data.dataAula),
-      };
-      if (buscaAula.data.quantidade > 0 && buscaAula.data.quantidade < 3) {
-        val.quantidadeRadio = buscaAula.data.quantidade;
-        val.quantidadeTexto = '';
-      } else if (
-        buscaAula.data.quantidade > 0 &&
-        buscaAula.data.quantidade > 2
-      ) {
-        val.quantidadeTexto = buscaAula.data.quantidade;
-      }
-      setIdDisciplina(buscaAula.data.disciplinaId.toString());
-      setInicial(val);
-      setAuditoria({
-        criadoPor: buscaAula.data.criadoPor,
-        criadoRf: buscaAula.data.criadoRF > 0 ? buscaAula.data.criadoRF : '',
-        criadoEm: buscaAula.data.criadoEm,
-        alteradoPor: buscaAula.data.alteradoPor,
-        alteradoRf:
-          buscaAula.data.alteradoRF > 0 ? buscaAula.data.alteradoRF : '',
-        alteradoEm: buscaAula.data.alteradoEm,
-      });
-      setExibirAuditoria(true);
     }
   };
 
@@ -647,7 +687,11 @@ const CadastroAula = ({ match }) => {
   };
 
   const onClickVoltar = async form => {
-    if (modoEdicao && !somenteLeitura) {
+    if (
+      modoEdicao &&
+      !somenteLeitura &&
+      !_.isEqual(form.values, statusInicial)
+    ) {
       const confirmado = await confirmar(
         'Atenção',
         '',
@@ -721,7 +765,7 @@ const CadastroAula = ({ match }) => {
   };
 
   return (
-    <Loader loading={carregandoSalvar} tip="">
+    <Loader loading={carregandoSalvar} tip="Carregando...">
       <div className="col-md-12">
         {controlaQuantidadeAula && quantidadeMaximaAulas <= 0 ? (
           <Alert
@@ -928,6 +972,7 @@ const CadastroAula = ({ match }) => {
                     label="Quantidade de Aulas"
                     form={form}
                     desabilitado={
+                      !form.values.disciplinaId ||
                       somenteLeitura ||
                       desabilitaPorGrade ||
                       desabilitaPorQuantidade
@@ -936,6 +981,7 @@ const CadastroAula = ({ match }) => {
                     name="quantidadeRadio"
                     onChange={() => {
                       onChangeCampos();
+                      console.log('Changed');
                       refForm.setFieldValue('quantidadeTexto', '');
                     }}
                     className="text-nowrap"
