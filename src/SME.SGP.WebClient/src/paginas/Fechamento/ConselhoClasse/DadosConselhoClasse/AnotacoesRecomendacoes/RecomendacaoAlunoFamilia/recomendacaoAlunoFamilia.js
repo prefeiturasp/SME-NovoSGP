@@ -8,6 +8,7 @@ const RecomendacaoAlunoFamilia = props => {
     onChangeRecomendacaoAluno,
     onChangeRecomendacaoFamilia,
     dadosIniciais,
+    alunoDesabilitado,
   } = props;
 
   const [exibirCardRecomendacao, setExibirCardRecomendacao] = useState(false);
@@ -37,6 +38,7 @@ const RecomendacaoAlunoFamilia = props => {
                 id="recomendacao-aluno"
                 inicial={dadosIniciais.recomendacaoAluno}
                 onChange={onChangeAluno}
+                desabilitar={alunoDesabilitado}
               />
             </div>
             <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6">
@@ -45,6 +47,7 @@ const RecomendacaoAlunoFamilia = props => {
                 id="recomendacao-familia"
                 inicial={dadosIniciais.recomendacaoFamilia}
                 onChange={onChangeFamilia}
+                desabilitar={alunoDesabilitado}
               />
             </div>
           </div>
@@ -60,12 +63,14 @@ RecomendacaoAlunoFamilia.propTypes = {
   onChangeRecomendacaoAluno: PropTypes.func,
   onChangeRecomendacaoFamilia: PropTypes.func,
   dadosIniciais: PropTypes.oneOfType([PropTypes.object]),
+  alunoDesabilitado: PropTypes.bool,
 };
 
 RecomendacaoAlunoFamilia.defaultProps = {
   onChangeRecomendacaoAluno: () => {},
   onChangeRecomendacaoFamilia: () => {},
   dadosIniciais: {},
+  alunoDesabilitado: false,
 };
 
 export default RecomendacaoAlunoFamilia;

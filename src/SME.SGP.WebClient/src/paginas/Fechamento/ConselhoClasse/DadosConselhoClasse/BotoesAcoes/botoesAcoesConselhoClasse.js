@@ -27,7 +27,9 @@ const BotoesAcoesConselhoClasse = () => {
   );
 
   const onClickSalvar = () => {
-    servicoSalvarConselhoClasse.salvarRecomendacoesAlunoFamilia();
+    return servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia(
+      true
+    );
   };
 
   const perguntaAoSalvar = async () => {
@@ -42,8 +44,10 @@ const BotoesAcoesConselhoClasse = () => {
     if (conselhoClasseEmEdicao) {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
-        // TODO FAZER ASYNC!
-        onClickSalvar();
+        const salvou = await onClickSalvar();
+        if (salvou) {
+          history.push(URL_HOME);
+        }
       } else {
         history.push(URL_HOME);
       }
