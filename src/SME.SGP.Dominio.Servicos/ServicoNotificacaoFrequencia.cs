@@ -101,11 +101,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidade, dataReferencia.Semestre());
 
-            var datasAulas = repositorioAula.ObterUltimosDiasLetivos(dataReferencia, quantidadeDiasCP, tipoCalendario.Id);
-            NotificaAlunosFaltososCargo(datasAulas.Min(), quantidadeDiasCP, Cargo.CP, tipoCalendario.Id);
-
-            datasAulas = repositorioAula.ObterUltimosDiasLetivos(dataReferencia, quantidadeDiasDiretor, tipoCalendario.Id);
-            NotificaAlunosFaltososCargo(datasAulas.Min(), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario.Id);
+            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario.Id);
+            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario.Id);
         }
 
         public void NotificarCompensacaoAusencia(long compensacaoId)
