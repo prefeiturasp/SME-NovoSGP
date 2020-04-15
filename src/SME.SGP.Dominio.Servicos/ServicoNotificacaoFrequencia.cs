@@ -327,7 +327,9 @@ namespace SME.SGP.Dominio.Servicos
             var alunosFaltosos = repositorioFrequencia.ObterAlunosFaltosos(dataReferencia, tipoCalendarioId);
 
             // Faltou em todas as aulas do dia e tem pelo menos 3 aulas registradas
-            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && c.QuantidadeAulas >= 3);
+            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && (( c.modalidadeCodigo == Modalidade.Fundamental && c.Ano <= 5) ||  c.QuantidadeAulas >= 3 ));
+
+
             var alunosFaltasTodosOsDias = alunosFaltasTodasAulasDoDia
                                             .GroupBy(a => a.CodigoAluno)
                                             .Where(c => c.Count() >= quantidadeDias);
