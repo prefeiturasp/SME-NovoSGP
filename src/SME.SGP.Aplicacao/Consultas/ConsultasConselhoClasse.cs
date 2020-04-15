@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> ValidaConselhoClasseUltimoBimestre(Turma turma)
         {
-            var periodoEscolar = repositorioPeriodoEscolar.ObterUltimoBimestreAsync(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), DateTime.Today.Semestre());
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterUltimoBimestreAsync(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), DateTime.Today.Semestre());
             if (periodoEscolar == null)
                 throw new NegocioException($"Não foi encontrado o ultimo periodo escolar para a turma {turma.Nome}");
 
