@@ -75,6 +75,7 @@ rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo`, {
 });
 
 rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/:id`, {
+  breadcrumbName: 'Comunicados',
   menu: ['Gestão'],
   parent: RotasDto.ACOMPANHAMENTO_COMUNICADOS,
   component: ComunicadosCadastro,

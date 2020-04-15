@@ -28,6 +28,7 @@ import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 import { confirmar, erro, sucesso } from '~/servicos/alertas';
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 
 const ComunicadosCadastro = ({ match }) => {
   const ErroValidacao = styled.span`
@@ -51,6 +52,8 @@ const ComunicadosCadastro = ({ match }) => {
   const permissoesTela = useSelector(store => store.usuario.permissoes);
 
   useCallback(() => {
+    console.log(permissoesTela);
+    console.log(verificaSomenteConsulta(permissoesTela));
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [permissoesTela]);
 
@@ -62,6 +65,7 @@ const ComunicadosCadastro = ({ match }) => {
   useEffect(() => {
     if (match && match.params && match.params.id) {
       setIdComunicado(match.params.id);
+      setBreadcrumbManual(match.url, '', RotasDto.ACOMPANHAMENTO_COMUNICADOS);
     }
   }, [match]);
 
@@ -239,7 +243,7 @@ const ComunicadosCadastro = ({ match }) => {
 
   return (
     <>
-      <Cabecalho pagina="Comunicação com pais ou responsáveis" />
+      <Cabecalho pagina="Cadastro de comunicados" />
       <Loader loading={loaderSecao}>
         <Card mx="mx-0">
           <Formik
@@ -287,7 +291,7 @@ const ComunicadosCadastro = ({ match }) => {
                     <CampoData
                       form={form}
                       name="dataEnvio"
-                      placeholder="Data início"
+                      placeholder="Selecione a data de envio"
                       formatoData="DD/MM/YYYY"
                       disabled={somenteConsulta}
                     />
@@ -297,7 +301,7 @@ const ComunicadosCadastro = ({ match }) => {
                     <CampoData
                       form={form}
                       name="dataExpiracao"
-                      placeholder="Data início"
+                      placeholder="Selecione a data de expiração"
                       formatoData="DD/MM/YYYY"
                       disabled={somenteConsulta}
                     />
@@ -305,7 +309,7 @@ const ComunicadosCadastro = ({ match }) => {
                 </Linha>
                 <Linha className="row">
                   <Grid cols={12}>
-                    <Label control="titulo" text="Tíutulo" />
+                    <Label control="titulo" text="Título" />
                     <CampoTexto
                       form={form}
                       name="titulo"
