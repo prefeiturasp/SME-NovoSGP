@@ -36,5 +36,21 @@ namespace SME.SGP.Dominio
 
         public static int Semestre(this DateTime data)
             => data.Month > 6 ? 2 : 1;
+
+        public static DateTime DiaRetroativo(this DateTime data, int nrDias)
+        {
+            int contadorDias = nrDias;
+            DateTime dataRetorno = data;
+
+            while (contadorDias > 0)
+            {
+                if (!dataRetorno.FimDeSemana())
+                    contadorDias--;
+
+                dataRetorno = dataRetorno.AddDays(-1);
+            }
+
+            return dataRetorno;
+        }
     }
 }
