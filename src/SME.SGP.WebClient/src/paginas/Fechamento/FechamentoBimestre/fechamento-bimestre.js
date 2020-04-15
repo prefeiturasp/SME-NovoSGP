@@ -220,6 +220,7 @@ const FechamentoBismestre = () => {
   const salvarFechamentoFinal = () => {
     fechamentoFinal.turmaCodigo = turmaSelecionada.turma;
     fechamentoFinal.ehRegencia = ehRegencia;
+    fechamentoFinal.disciplinaId = disciplinaIdSelecionada;
     return ServicoFechamentoFinal.salvar(fechamentoFinal)
       .then(() => {
         sucesso('Fechamento final salvo com sucesso.');
@@ -347,8 +348,8 @@ const FechamentoBismestre = () => {
                           anoLetivo={turmaSelecionada.anoLetivo}
                         />
                       ) : null}
-                    </TabPane>) : null
-                  }
+                    </TabPane>
+                  ) : null}
                   {periodoFechamento === periodo.Anual ? (
                     <TabPane tab="4º Bimestre" key="4">
                       {dadosBimestre4 ? (
@@ -362,9 +363,13 @@ const FechamentoBismestre = () => {
                           anoLetivo={turmaSelecionada.anoLetivo}
                         />
                       ) : null}
-                    </TabPane>) : null
-                  }
-                  <TabPane tab="Final" key="final" disabled={desabilitaAbaFinal}>
+                    </TabPane>
+                  ) : null}
+                  <TabPane
+                    tab="Final"
+                    key="final"
+                    disabled={desabilitaAbaFinal}
+                  >
                     <FechamentoFinal
                       turmaCodigo={turmaSelecionada.turma}
                       disciplinaCodigo={disciplinaIdSelecionada}
@@ -372,7 +377,9 @@ const FechamentoBismestre = () => {
                       turmaPrograma={turmaPrograma}
                       onChange={onChangeFechamentoFinal}
                       ref={refFechamentoFinal}
-                      desabilitarCampo={!podeIncluir || !podeAlterar || somenteConsulta}
+                      desabilitarCampo={
+                        !podeIncluir || !podeAlterar || somenteConsulta
+                      }
                       somenteConsulta={somenteConsulta}
                       carregandoFechamentoFinal={carregando =>
                         setCarregandoBimestres(carregando)
