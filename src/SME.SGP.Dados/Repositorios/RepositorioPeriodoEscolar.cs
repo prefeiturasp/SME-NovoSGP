@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -58,6 +59,30 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("criado_rf,");
             query.AppendLine("criado_em");
             query.AppendLine("from periodo_escolar");
+        }
+
+        public async Task<PeriodoEscolarDto> ObterUltimoBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
+        {
+            var query = new StringBuilder(@"select p.* 
+                            from tipo_calendario t
+                         inner join periodo_escolar p on p.tipo_calendario_id = t.id
+                          where t.excluido = false and t.situacao
+                            and t.ano_letivo = @anoLetivo
+                            and t.modalidade = @modalidade ");
+
+            DateTime dataReferencia = DateTime.MinValue;
+            if (modalidade == ModalidadeTipoCalendario.EJA)
+            {
+                var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
+                query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and {periodoReferencia})");
+
+                // 1/6/ano ou 1/7/ano dependendo do semestre
+                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
+            }
+            query.AppendLine("order by bimestre desc ");
+            query.AppendLine("limit 1");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarDto>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
         }
     }
 }
