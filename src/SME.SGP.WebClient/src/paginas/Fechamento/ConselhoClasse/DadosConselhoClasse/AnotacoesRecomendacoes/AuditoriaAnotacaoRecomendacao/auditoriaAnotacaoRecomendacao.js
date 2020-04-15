@@ -34,7 +34,7 @@ const AuditoriaAnotacaoRecomendacao = () => {
     <>
       {auditoriaAnotacaoRecomendacao ? (
         <Container>
-          {criado ? (
+          {criadoPor && criado ? (
             <div className="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-start mt-2">
               INSERIDO por {criadoPor} {criadoRF && `(rf: ${criadoRF})`} em{' '}
               {`${criado.format('DD/MM/YYYY')} às ${criado.format('HH:mm')}`}
@@ -42,7 +42,7 @@ const AuditoriaAnotacaoRecomendacao = () => {
           ) : (
             ''
           )}
-          {alterado ? (
+          {alteradoPor && alterado ? (
             <div className="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-start mt-2">
               ALTERADO por {alteradoPor} {alteradoRF && `(rf: ${alteradoRF})`}{' '}
               em{' '}

@@ -4,7 +4,7 @@ import CardCollapse from '~/componentes/cardCollapse';
 import Editor from '~/componentes/editor/editor';
 
 const AnotacoesPedagogicas = props => {
-  const { onChange, dadosIniciais } = props;
+  const { onChange, dadosIniciais, alunoDesabilitado } = props;
 
   const [exibirCardAnotacao, setExibirCardAnotacao] = useState(false);
 
@@ -26,6 +26,7 @@ const AnotacoesPedagogicas = props => {
             id="anotacoes-pedagogicas-editor"
             inicial={dadosIniciais.anotacoesPedagogicas}
             onChange={onChange}
+            desabilitar={alunoDesabilitado}
           />
         ) : (
           ''
@@ -38,11 +39,13 @@ const AnotacoesPedagogicas = props => {
 AnotacoesPedagogicas.propTypes = {
   onChange: PropTypes.func,
   dadosIniciais: PropTypes.oneOfType([PropTypes.object]),
+  alunoDesabilitado: PropTypes.bool,
 };
 
 AnotacoesPedagogicas.defaultProps = {
   onChange: () => {},
   dadosIniciais: {},
+  alunoDesabilitado: false,
 };
 
 export default AnotacoesPedagogicas;

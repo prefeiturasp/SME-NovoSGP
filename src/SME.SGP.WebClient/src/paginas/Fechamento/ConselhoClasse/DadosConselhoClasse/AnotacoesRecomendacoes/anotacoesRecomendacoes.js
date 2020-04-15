@@ -19,7 +19,13 @@ import { Loader } from '~/componentes';
 import AuditoriaAnotacaoRecomendacao from './AuditoriaAnotacaoRecomendacao/auditoriaAnotacaoRecomendacao';
 
 const AnotacoesRecomendacoes = props => {
-  const { bimestreSelecionado, codigoTurma, modalidade, codigoEOL } = props;
+  const {
+    bimestreSelecionado,
+    codigoTurma,
+    modalidade,
+    codigoEOL,
+    alunoDesabilitado,
+  } = props;
 
   const dispatch = useDispatch();
 
@@ -145,7 +151,7 @@ const AnotacoesRecomendacoes = props => {
     if (codigoTurma && codigoEOL) {
       const ehFinal = bimestreSelecionado.valor === 'final';
       obterAnotacoesRecomendacoes(
-        bimestreSelecionado.valor,
+        ehFinal ? '0' : bimestreSelecionado.valor,
         codigoEOL,
         codigoTurma,
         ehFinal
@@ -164,13 +170,14 @@ const AnotacoesRecomendacoes = props => {
 
   return (
     <Loader
-      className="text-center"
+      className={carregando ? 'text-center' : ''}
       loading={carregando}
       tip="Carregando recomendações e anotações"
     >
       {exibir ? (
         <>
           <RecomendacaoAlunoFamilia
+            alunoDesabilitado={alunoDesabilitado}
             onChangeRecomendacaoAluno={valor => {
               onChangeRecomendacaoAluno(valor);
               setarConselhoClasseEmEdicao(true);
@@ -182,6 +189,7 @@ const AnotacoesRecomendacoes = props => {
             dadosIniciais={dadosIniciais}
           />
           <AnotacoesPedagogicas
+            alunoDesabilitado={alunoDesabilitado}
             onChange={valor => {
               onChangeAnotacoesPedagogicas(valor);
               setarConselhoClasseEmEdicao(true);
@@ -203,6 +211,7 @@ AnotacoesRecomendacoes.propTypes = {
   codigoTurma: PropTypes.string,
   modalidade: PropTypes.oneOfType([PropTypes.any]),
   codigoEOL: PropTypes.string,
+  alunoDesabilitado: PropTypes.bool,
 };
 
 AnotacoesRecomendacoes.defaultProps = {
@@ -210,6 +219,7 @@ AnotacoesRecomendacoes.defaultProps = {
   codigoTurma: '',
   modalidade: '',
   codigoEOL: '',
+  alunoDesabilitado: false,
 };
 
 export default AnotacoesRecomendacoes;

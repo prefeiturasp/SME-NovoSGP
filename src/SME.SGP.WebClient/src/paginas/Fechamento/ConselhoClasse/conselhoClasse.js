@@ -19,6 +19,7 @@ import BotoesAcoesConselhoClasse from './DadosConselhoClasse/BotoesAcoes/botoesA
 import DadosConselhoClasse from './DadosConselhoClasse/dadosConselhoClasse';
 import ObjectCardConselhoClasse from './DadosConselhoClasse/ObjectCardConselhoClasse/objectCardConselhoClasse';
 import TabelaRetratilConselhoClasse from './DadosConselhoClasse/TabelaRetratilConselhoClasse/tabelaRetratilConselhoClasse';
+import servicoSalvarConselhoClasse from './servicoSalvarConselhoClasse';
 
 const ConselhoClasse = () => {
   const dispatch = useDispatch();
@@ -48,10 +49,9 @@ const ConselhoClasse = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    resetarInfomacoes();
     if (turma) {
       obterListaAlunos();
-    } else {
-      resetarInfomacoes();
     }
   }, [obterListaAlunos, turma, resetarInfomacoes]);
 
@@ -69,8 +69,16 @@ const ConselhoClasse = () => {
     resetarInfomacoes();
     const frequenciaGeralAluno = await obterFrequenciaAluno(aluno.codigoEOL);
     const novoAluno = aluno;
-    novoAluno.frequencia = frequenciaGeralAluno;
+    novoAluno.frequencia = frequenciaGeralAluno;    
     dispatch(setDadosAlunoObjectCard(aluno));
+  };
+
+  const permiteOnChangeAluno = async () => {
+    const continuar = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia();
+    if (continuar) {
+      return true;
+    }
+    return false;
   };
 
   return (
@@ -120,6 +128,7 @@ const ConselhoClasse = () => {
                   <div className="col-md-12 mb-2">
                     <TabelaRetratilConselhoClasse
                       onChangeAlunoSelecionado={onChangeAlunoSelecionado}
+                      permiteOnChangeAluno={permiteOnChangeAluno}
                     >
                       <>
                         <ObjectCardConselhoClasse />

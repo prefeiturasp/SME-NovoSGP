@@ -8,7 +8,14 @@ const AnotacoesAlunoLista = props => {
   const { anotacoes } = props;
 
   // TODO VER COM UX!
-  const cores = ['#20aa73', '#b40c02', '#086397'];
+  const cores = [
+    '#20aa73',
+    '#b40c02',
+    '#086397',
+    '#20aa73',
+    '#b40c02',
+    '#086397',
+  ];
 
   return (
     <ListaAnotacao>
