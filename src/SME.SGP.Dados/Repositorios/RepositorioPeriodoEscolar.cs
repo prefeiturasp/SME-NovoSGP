@@ -66,9 +66,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select p.* 
                             from tipo_calendario t
                          inner join periodo_escolar p on p.tipo_calendario_id = t.id
-                          where t.excluido = false
+                          where t.excluido = false and t.situacao
                             and t.ano_letivo = @anoLetivo
-                            and t.modalidade = @modalidade");
+                            and t.modalidade = @modalidade ");
 
             DateTime dataReferencia = DateTime.MinValue;
             if (modalidade == ModalidadeTipoCalendario.EJA)

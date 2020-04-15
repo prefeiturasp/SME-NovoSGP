@@ -11,8 +11,7 @@ import Cabecalho from './componentes/Cabecalho';
 // Estilos
 import { TabelaEstilo, Tabela, DetalhesAluno, LinhaTabela } from './style';
 
-function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado}) {
-  
+function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado }) {
   const [retraido, setRetraido] = useState(false);
   const [alunoSelecionado, setAlunoSelecionado] = useState(null);
 
@@ -29,14 +28,14 @@ function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado}) {
     const aluno = alunos[alunos.indexOf(alunoSelecionado) + 1];
     selecionarAluno(aluno);
     onChangeAlunoSelecionado(aluno);
-  }, [alunoSelecionado, alunos]);
+  }, [alunoSelecionado, alunos, onChangeAlunoSelecionado]);
 
   const anteriorAlunoHandler = useCallback(() => {
     if (alunos.indexOf(alunoSelecionado) === 0) return;
     const aluno = alunos[alunos.indexOf(alunoSelecionado) - 1];
     selecionarAluno(aluno);
     onChangeAlunoSelecionado(aluno);
-  }, [alunoSelecionado, alunos]);
+  }, [alunoSelecionado, alunos, onChangeAlunoSelecionado]);
 
   const desabilitarAnterior = () => {
     return (
@@ -110,11 +109,13 @@ function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado}) {
 TabelaRetratil.propTypes = {
   alunos: t.oneOfType([t.array]),
   children: t.oneOfType([t.element, t.func]),
+  onChangeAlunoSelecionado: t.func,
 };
 
 TabelaRetratil.defaultProps = {
   alunos: [],
   children: () => {},
+  onChangeAlunoSelecionado: () => {},
 };
 
 export default TabelaRetratil;
