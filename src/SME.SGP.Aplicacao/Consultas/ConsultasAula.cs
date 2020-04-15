@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
             if (!bimestreForaPeriodo && bimestreAula >= bimestreAtual)
                 return true;
 
-            return await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTime.Now, bimestreAtual);
+            return await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoAula(turma, DateTime.Now, bimestreAtual, bimestreAula);
         }
 
         public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
