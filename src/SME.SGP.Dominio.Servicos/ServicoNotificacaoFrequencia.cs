@@ -94,6 +94,7 @@ namespace SME.SGP.Dominio.Servicos
             var quantidadeDiasDiretor = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes));
 
             NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);
+            NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, quantidadeDiasCP, quantidadeDiasDiretor);
         }
 
         private void NotificarAlunosFaltososModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidade, int quantidadeDiasCP, int quantidadeDiasDiretor)
@@ -103,7 +104,7 @@ namespace SME.SGP.Dominio.Servicos
             var datasAulas = repositorioAula.ObterUltimosDiasLetivos(dataReferencia, quantidadeDiasCP, tipoCalendario.Id);
             NotificaAlunosFaltososCargo(datasAulas.Min(), quantidadeDiasCP, Cargo.CP, tipoCalendario.Id);
 
-            datasAulas = repositorioAula.ObterUltimosDiasLetivos(dataReferencia, quantidadeDiasCP, tipoCalendario.Id);
+            datasAulas = repositorioAula.ObterUltimosDiasLetivos(dataReferencia, quantidadeDiasDiretor, tipoCalendario.Id);
             NotificaAlunosFaltososCargo(datasAulas.Min(), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario.Id);
         }
 
@@ -242,7 +243,7 @@ namespace SME.SGP.Dominio.Servicos
         #region Metodos Privados
         private void NotificaAlunosFaltososBimestreModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario, double percentualCritico, int semestre = 0)
         {
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, ModalidadeTipoCalendario.FundamentalMedio, semestre);
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidadeTipoCalendario, semestre);
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendario.Id, dataReferencia);
 
             // Notifica apenas no dia seguinte ao fim do bimestre
@@ -343,15 +344,18 @@ namespace SME.SGP.Dominio.Servicos
                 var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaAgrupamento.Key);
 
                 var alunosFaltososEOL = alunosTurmaEOL.Where(c => alunosFaltososNaTurma.Any(a => a.CodigoAluno == c.CodigoAluno));
-                var funcionariosEol = servicoNotificacao.ObterFuncionariosPorNivel(turmaAgrupamento.Key, cargo);
+                var funcionariosEol = servicoNotificacao.ObterFuncionariosPorNivel(turma.Ue.CodigoUe, cargo);
 
-                foreach (var funcionarioEol in funcionariosEol)
-                    NotificacaoAlunosFaltososTurma(funcionarioEol.Id, alunosFaltososEOL, turma, quantidadeDias);
+                if (funcionariosEol != null)
+                    foreach (var funcionarioEol in funcionariosEol)
+                        NotificacaoAlunosFaltososTurma(funcionarioEol.Id, alunosFaltososEOL, turma, quantidadeDias);
             }
         }
 
-        private void NotificacaoAlunosFaltososTurma(string usuarioId, IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, int quantidadeDias)
+        private void NotificacaoAlunosFaltososTurma(string funcionarioId, IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, int quantidadeDias)
         {
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionarioId);
+
             var titulo = $"Alunos com excesso de ausências na turma {turma.Nome} ({turma.Ue.Nome})";
             StringBuilder mensagem = new StringBuilder();
             mensagem.AppendLine($"<p>O(s) seguinte(s) aluno(s) da turma <b>{turma.Nome}</b> da <b>{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome})</b> está(ão) há {quantidadeDias} dias sem comparecer as aulas.</p>");
@@ -377,7 +381,7 @@ namespace SME.SGP.Dominio.Servicos
                 Tipo = NotificacaoTipo.Frequencia,
                 Titulo = titulo,
                 Mensagem = mensagem.ToString(),
-                UsuarioId = long.Parse(usuarioId),
+                UsuarioId = usuario.Id,
                 TurmaId = turma.CodigoTurma,
                 UeId = turma.Ue.CodigoUe,
                 DreId = turma.Ue.Dre.CodigoDre,
