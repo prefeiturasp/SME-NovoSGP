@@ -119,6 +119,9 @@ namespace SME.SGP.Aplicacao
                 Bimestre = bimestre,
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
+                SomenteLeitura = periodoFechamentoBimestre == null ? false :
+                                 DateTime.Today < periodoFechamentoBimestre.InicioDoFechamento.Date ||
+                                 DateTime.Today > periodoFechamentoBimestre.FinalDoFechamento.Date,
                 Auditoria = (AuditoriaDto)conselhoClasseAluno
             };
         }
