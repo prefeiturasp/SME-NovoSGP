@@ -248,7 +248,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var alunosFaltososBimestre = repositorioFrequenciaAluno.ObterAlunosFaltososBimestre(modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA, percentualCritico, periodoEscolar.Bimestre, tipoCalendario.AnoLetivo);
 
-                foreach(var uesAgrupadas in alunosFaltososBimestre.Where( a => a.PercentualFaltas > percentualCritico).GroupBy(a => new { a.DreCodigo, a.DreNome, a.TipoEscola, a.UeCodigo, a.UeNome }))
+                foreach(var uesAgrupadas in alunosFaltososBimestre.GroupBy(a => new { a.DreCodigo, a.DreNome, a.TipoEscola, a.UeCodigo, a.UeNome }))
                 {
                     NotificarEscolaAlunosFaltososBimestre(uesAgrupadas.Key.DreCodigo,
                                                           uesAgrupadas.Key.DreNome,
