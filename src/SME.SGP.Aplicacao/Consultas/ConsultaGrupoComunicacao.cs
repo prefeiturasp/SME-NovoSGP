@@ -37,9 +37,23 @@ namespace SME.SGP.Aplicacao
             return MapearPorIdParaDto(grupo);
         }
 
-        private IEnumerable<GrupoComunicacaoDto> MapearParaDto(IEnumerable<GrupoComunicacaoCompletoRespostaDto> grupos)
+        private static IEnumerable<GrupoComunicacaoCompletoDto> ConverterParaDto(IEnumerable<GrupoComunicacaoCompletoRespostaDto> grupos)
         {
-            return grupos.Select(g => new GrupoComunicacaoCompletoDto
+            var gruposDistintos = grupos
+                        .Select(s => new
+                        {
+                            s.Nome,
+                            s.Id,
+                            s.AlteradoEm,
+                            s.AlteradoPor,
+                            s.AlteradoRF,
+                            s.CriadoEm,
+                            s.CriadoPor,
+                            s.CriadoRF
+                        })
+                        .Distinct();
+
+            return gruposDistintos.Select(g => new GrupoComunicacaoCompletoDto
             {
                 Id = g.Id,
                 Nome = g.Nome,
@@ -49,26 +63,19 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = g.CriadoEm,
                 CriadoPor = g.CriadoPor,
                 CriadoRF = g.CriadoRF,
-                CiclosEnsino = grupos.Where(w => w.CicloEnsinoId == g.CicloEnsinoId).Select(s => new CicloEnsinoDto { CodCicloEnsino = s.CicloEnsinoId, Descricao = s.CicloEnsino }),
-                TiposEscola = grupos.Where(w => w.TipoEscolaId == g.TipoEscolaId).Select(s => new TipoEscolaDto { CodTipoEscola = s.TipoEscolaId, Descricao = s.TipoEscola })
+                CiclosEnsino = grupos.Where(w => w.Id == g.Id && w.CodCicloEnsino.HasValue && w.IdCicloEnsino.HasValue).Select(s => new CicloEnsinoDto { Id = s.IdCicloEnsino.Value, CodCicloEnsino = s.CodCicloEnsino.Value, Descricao = s.CicloEnsino }),
+                TiposEscola = grupos.Where(w => w.Id == g.Id && w.CodTipoEscola.HasValue && w.IdTipoEscola.HasValue).Select(s => new TipoEscolaDto { Id = s.IdTipoEscola.Value, CodTipoEscola = s.CodTipoEscola.Value, Descricao = s.TipoEscola })
             });
         }
 
-        private GrupoComunicacaoCompletoDto MapearPorIdParaDto(IEnumerable<GrupoComunicacaoCompletoRespostaDto> grupo)
+        private IEnumerable<GrupoComunicacaoDto> MapearParaDto(IEnumerable<GrupoComunicacaoCompletoRespostaDto> grupos)
         {
-            return grupo.Select(g => new GrupoComunicacaoCompletoDto
-            {
-                Id = g.Id,
-                Nome = g.Nome,
-                AlteradoEm = g.AlteradoEm,
-                AlteradoPor = g.AlteradoPor,
-                AlteradoRF = g.AlteradoRF,
-                CriadoEm = g.CriadoEm,
-                CriadoPor = g.CriadoPor,
-                CriadoRF = g.CriadoRF,
-                CiclosEnsino = grupo.Where(w => w.CicloEnsinoId == g.CicloEnsinoId).Select(s => new CicloEnsinoDto { CodCicloEnsino = s.CicloEnsinoId, Descricao = s.CicloEnsino }),
-                TiposEscola = grupo.Where(w => w.TipoEscolaId == g.TipoEscolaId).Select(s => new TipoEscolaDto { CodTipoEscola = s.TipoEscolaId, Descricao = s.TipoEscola })
-            }).FirstOrDefault();
+            return ConverterParaDto(grupos);
+        }
+
+        private GrupoComunicacaoCompletoDto MapearPorIdParaDto(IEnumerable<GrupoComunicacaoCompletoRespostaDto> grupos)
+        {
+            return ConverterParaDto(grupos).FirstOrDefault();
         }
     }
 }
