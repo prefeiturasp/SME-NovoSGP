@@ -60,7 +60,8 @@ rotas.set(RotasDto.ACOMPANHAMENTO_COMUNICADOS, {
   component: ComunicadosLista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_COMUNICADOS,
 });
 
 rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo`, {
@@ -69,7 +70,8 @@ rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo`, {
   component: ComunicadosCadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_COMUNICADOS,
 });
 
 rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/:id`, {
@@ -78,7 +80,8 @@ rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/:id`, {
   component: ComunicadosCadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_COMUNICADOS,
 });
 
 rotas.set(`${RotasDto.PAP}`, {
