@@ -58,8 +58,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<FechamentoTurmaDisciplina> TransformarDtoSalvarEmEntidade(FechamentoFinalSalvarDto fechamentoFinalSalvarDto, Turma turma)
         {
-            // TODO : Passar no DTO a DisciplinaId que é a disciplina principal do fechamento (para o caso de regencia) assim não precisa fixar no codigo
-            var disciplinaId = fechamentoFinalSalvarDto.EhRegencia ? 1105 : fechamentoFinalSalvarDto.Itens.First().ComponenteCurricularCodigo;
+            var disciplinaId = fechamentoFinalSalvarDto.EhRegencia ? long.Parse(fechamentoFinalSalvarDto.DisciplinaId) : fechamentoFinalSalvarDto.Itens.First().ComponenteCurricularCodigo;
 
             FechamentoTurmaDisciplina fechamentoTurmaDisciplina = null;
             var fechamentoFinalTurma = await repositorioFechamentoTurma.ObterPorTurmaPeriodo(turma.Id);
