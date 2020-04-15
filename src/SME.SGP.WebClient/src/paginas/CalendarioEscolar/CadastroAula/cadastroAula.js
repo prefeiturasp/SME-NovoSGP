@@ -577,25 +577,36 @@ const CadastroAula = ({ match }) => {
         dados.disciplinaNome = componenteCurricular.nome;
     }
 
-    const cadastrado = await ServicoAula.salvar(idAula, dados).catch(e =>
-      erros(e)
-    );
-    if (cadastrado) {
-      if (cadastrado.status === 200) {
-        if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
+    try {
+      setCarregandoSalvar(true);
+      const {
+        data: dataRespSalvar,
+        status,
+        response,
+      } = await ServicoAula.salvar(idAula, dados);
+      if (dataRespSalvar && status === 200) {
+        setCarregandoSalvar(false);
+        sucesso(dataRespSalvar.mensagens[0]);
         history.push('/calendario-escolar/calendario-professor');
-      } else if (cadastrado.response) {
+      } else if (response) {
+        setCarregandoSalvar(false);
         erro(
-          cadastrado.response.status === 601
-            ? cadastrado.response.data.mensagens
+          response.status === 601
+            ? response.data.mensagens[0]
             : 'Houve uma falha ao salvar a aula, por favor contate o suporte'
         );
       }
+    } catch (error) {
+      setCarregandoSalvar(false);
+      erro(
+        error.response.status === 601
+          ? error.response.data.mensagens[0]
+          : 'Houve uma falha ao salvar a aula, por favor contate o suporte'
+      );
     }
   };
 
   const onClickCadastrar = async valoresForm => {
-    setCarregandoSalvar(true);
     const observacao = existeFrequenciaPlanoAula
       ? `Esta aula${
           ehAulaUnica ? '' : ', ou sua recorrencia'
@@ -631,7 +642,6 @@ const CadastroAula = ({ match }) => {
 
       await salvar(valoresForm);
     }
-    setCarregandoSalvar(false);
   };
 
   const validaAntesDoSubmit = form => {
