@@ -61,6 +61,7 @@ rotas.set(RotasDto.ACOMPANHAMENTO_COMUNICADOS, {
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_COMUNICADOS,
 });
 
 rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo`, {
@@ -70,6 +71,7 @@ rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/novo`, {
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_COMUNICADOS,
 });
 
 rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/:id`, {
@@ -79,6 +81,7 @@ rotas.set(`${RotasDto.ACOMPANHAMENTO_COMUNICADOS}/editar/:id`, {
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_COMUNICADOS,
 });
 
 rotas.set(`${RotasDto.PAP}`, {
