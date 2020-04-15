@@ -18,10 +18,12 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
+        private readonly IConsultasConselhoClasse consultasConselhoClasse;
 
         public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao,
             IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno, IConsultasPeriodoEscolar consultasPeriodoEscolar, IConsultasTurma consultasTurma,
-            IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasFechamentoTurma consultasFechamentoTurma, IConsultasPeriodoFechamento consultasPeriodoFechamento)
+            IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasFechamentoTurma consultasFechamentoTurma, IConsultasPeriodoFechamento consultasPeriodoFechamento,
+            IConsultasConselhoClasse consultasConselhoClasse)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
@@ -30,6 +32,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioConselhoClasseRecomendacao = repositorioConselhoClasseRecomendacao ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseRecomendacao));
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
+            this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
         }
 
         public string MontaTextUlLis(IEnumerable<string> textos)
@@ -51,14 +54,17 @@ namespace SME.SGP.Aplicacao
                 bimestre = ObterBimestreAtual(turmaModalidade);
 
             PeriodoFechamentoBimestre periodoFechamentoBimestre = null;
-            if (!EhFinal)
-            {
-                var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaCodigo);
-                if (turma == null)
-                    throw new NegocioException("Turma não localizada");
+            var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaCodigo);
+            if (turma == null)
+                throw new NegocioException("Turma não localizada");
 
-                periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestre);
+            if (EhFinal)
+            {
+                if (!await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(turma))
+                    throw new NegocioException($"Turma {turma.Nome} não possui o conselho de classe do último bimestre");
             }
+            else
+                periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestre);
 
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turmaCodigo, bimestre);
             if (fechamentoTurma == null)
@@ -113,6 +119,9 @@ namespace SME.SGP.Aplicacao
                 Bimestre = bimestre,
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
+                SomenteLeitura = periodoFechamentoBimestre == null ? false :
+                                 DateTime.Today < periodoFechamentoBimestre.InicioDoFechamento.Date ||
+                                 DateTime.Today > periodoFechamentoBimestre.FinalDoFechamento.Date,
                 Auditoria = (AuditoriaDto)conselhoClasseAluno
             };
         }

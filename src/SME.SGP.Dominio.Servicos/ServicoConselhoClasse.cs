@@ -15,21 +15,21 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IConsultasTurma consultasTurma;
+        private readonly IConsultasConselhoClasse consultasConselhoClasse;
 
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                      IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                      IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                     IConsultasTurma consultasTurma)
+                                     IConsultasConselhoClasse consultasConselhoClasse)
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
+            this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
         }
 
         public async Task<AuditoriaDto> GerarConselhoClasse(ConselhoClasse conselhoClasse)
@@ -51,22 +51,12 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 // Fechamento Final
-                if (!await ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma))
+                if (!await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma))
                     throw new NegocioException($"Turma {fechamentoTurma.Turma.Nome} não possui o conselho de classe do último bimestre");
             }
 
             await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
             return (AuditoriaDto)conselhoClasse;
-        }
-
-        private async Task<bool> ValidaConselhoClasseUltimoBimestre(Turma turma)
-        {
-            var periodoEscolar = repositorioPeriodoEscolar.ObterUltimoBimestreAsync(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), DateTime.Today.Semestre());
-            if (periodoEscolar == null)
-                throw new NegocioException($"Não foi encontrado o ultimo periodo escolar para a turma {turma.Nome}");
-
-            var conselhoClasseUltimoBimestre = await repositorioConselhoClasse.ObterPorTurmaEPeriodoAsync(turma.Id, periodoEscolar.Id);
-            return conselhoClasseUltimoBimestre != null;
         }
 
         public async Task<AuditoriaConselhoClasseAlunoDto> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
