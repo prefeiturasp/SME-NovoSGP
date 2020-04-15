@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
         public long ConselhoClasseId { get; set; }
         public long FechamentoTurmaId { get; set; }
         public string AlunoCodigo { get; set; }
-        public string AnotacoesPedagocias { get; set; }
+        public string AnotacoesPedagogicas { get; set; }
         public string RecomendacaoAluno { get; set; }
         public string RecomendacaoFamilia { get; set; }
     }

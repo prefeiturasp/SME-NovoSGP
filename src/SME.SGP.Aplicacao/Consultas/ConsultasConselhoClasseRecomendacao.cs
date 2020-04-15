@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             if (conselhoClasseAluno == null)
                 return await ObterRecomendacoesIniciais(anotacoesDoAluno, bimestre, fechamentoTurma.Id, periodoFechamentoBimestre);
 
-            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre, periodoFechamentoBimestre);
+            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre, periodoFechamentoBimestre, fechamentoTurma.Id);
         }
 
         private int ObterBimestreAtual(Modalidade turmaModalidade)
@@ -106,11 +106,11 @@ namespace SME.SGP.Aplicacao
         }
 
         private ConsultasConselhoClasseRecomendacaoConsultaDto TransformaEntidadeEmConsultaDto(ConselhoClasseAluno conselhoClasseAluno,
-            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, PeriodoFechamentoBimestre periodoFechamentoBimestre)
+            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, PeriodoFechamentoBimestre periodoFechamentoBimestre, long fechamentoTurmaId)
         {
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
-                FechamentoTurmaId = conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId,
+                FechamentoTurmaId = fechamentoTurmaId,
                 ConselhoClasseId = conselhoClasseAluno.ConselhoClasseId,
                 RecomendacaoAluno = conselhoClasseAluno.RecomendacoesAluno,
                 RecomendacaoFamilia = conselhoClasseAluno.RecomendacoesFamilia,
