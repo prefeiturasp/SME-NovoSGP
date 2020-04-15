@@ -58,6 +58,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma não localizada");
 
+            var emFechamento = true;
             if (EhFinal)
             {
                 var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(turma);
@@ -65,7 +66,10 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
             }
             else
+            {
                 periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestre);
+                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestre);
+            }
 
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turmaCodigo, bimestre);
             if (fechamentoTurma == null)
@@ -77,9 +81,9 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFechamentoAsync(fechamentoTurma.Id, alunoCodigo);
             if (conselhoClasseAluno == null)
-                return await ObterRecomendacoesIniciais(anotacoesDoAluno, bimestre, fechamentoTurma.Id, periodoFechamentoBimestre);
+                return await ObterRecomendacoesIniciais(anotacoesDoAluno, bimestre, fechamentoTurma.Id, periodoFechamentoBimestre, emFechamento);
 
-            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre, periodoFechamentoBimestre, fechamentoTurma.Id);
+            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre, periodoFechamentoBimestre, fechamentoTurma.Id, emFechamento);
         }
 
         private int ObterBimestreAtual(Modalidade turmaModalidade)
@@ -87,7 +91,7 @@ namespace SME.SGP.Aplicacao
             return consultasPeriodoEscolar.ObterBimestre(DateTime.Today, turmaModalidade);
         }
 
-        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, long fechamentoTurmaId, PeriodoFechamentoBimestre periodoFechamentoBimestre)
+        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, long fechamentoTurmaId, PeriodoFechamentoBimestre periodoFechamentoBimestre, bool emFechamento)
         {
             var recomendacoes = await repositorioConselhoClasseRecomendacao.ObterTodosAsync();
 
@@ -103,11 +107,12 @@ namespace SME.SGP.Aplicacao
                 Bimestre = bimestre,
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
+                SomenteLeitura = !emFechamento
             };
         }
 
         private ConsultasConselhoClasseRecomendacaoConsultaDto TransformaEntidadeEmConsultaDto(ConselhoClasseAluno conselhoClasseAluno,
-            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, PeriodoFechamentoBimestre periodoFechamentoBimestre, long fechamentoTurmaId)
+            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, PeriodoFechamentoBimestre periodoFechamentoBimestre, long fechamentoTurmaId, bool emFechamento)
         {
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
@@ -120,9 +125,7 @@ namespace SME.SGP.Aplicacao
                 Bimestre = bimestre,
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
-                SomenteLeitura = periodoFechamentoBimestre == null ? false :
-                                 DateTime.Today < periodoFechamentoBimestre.InicioDoFechamento.Date ||
-                                 DateTime.Today > periodoFechamentoBimestre.FinalDoFechamento.Date,
+                SomenteLeitura = !emFechamento,
                 Auditoria = (AuditoriaDto)conselhoClasseAluno
             };
         }
