@@ -20,14 +20,14 @@ namespace SME.SGP.Aplicacao
         public ConselhoClasse ObterPorId(long conselhoClasseId)
             => repositorioConselhoClasse.ObterPorId(conselhoClasseId);
 
-        public async Task<bool> ValidaConselhoClasseUltimoBimestre(Turma turma)
+        public async Task<(int, bool)> ValidaConselhoClasseUltimoBimestre(Turma turma)
         {
             var periodoEscolar = await repositorioPeriodoEscolar.ObterUltimoBimestreAsync(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), DateTime.Today.Semestre());
             if (periodoEscolar == null)
                 throw new NegocioException($"Não foi encontrado o ultimo periodo escolar para a turma {turma.Nome}");
 
             var conselhoClasseUltimoBimestre = await repositorioConselhoClasse.ObterPorTurmaEPeriodoAsync(turma.Id, periodoEscolar.Id);
-            return conselhoClasseUltimoBimestre != null;
+            return (periodoEscolar.Bimestre, conselhoClasseUltimoBimestre != null);
         }
 
     }
