@@ -60,8 +60,9 @@ namespace SME.SGP.Aplicacao
 
             if (EhFinal)
             {
-                if (!await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(turma))
-                    throw new NegocioException($"Turma {turma.Nome} não possui o conselho de classe do último bimestre");
+                var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(turma);
+                if (!validacaoConselhoFinal.Item2)
+                    throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
             }
             else
                 periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestre);

@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao
     public interface IConsultasConselhoClasse
     {
         ConselhoClasse ObterPorId(long conselhoClasseId);
-        Task<bool> ValidaConselhoClasseUltimoBimestre(Turma turma);
+        Task<(int, bool)> ValidaConselhoClasseUltimoBimestre(Turma turma);
     }
 }

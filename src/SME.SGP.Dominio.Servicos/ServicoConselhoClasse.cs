@@ -51,8 +51,9 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 // Fechamento Final
-                if (!await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma))
-                    throw new NegocioException($"Turma {fechamentoTurma.Turma.Nome} não possui o conselho de classe do último bimestre");
+                var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
+                if (!validacaoConselhoFinal.Item2)
+                    throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
             }
 
             await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
