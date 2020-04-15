@@ -73,7 +73,7 @@ namespace SME.SGP.Dados.Repositorios
             else query.AppendLine("and t.modalidade_codigo in (5,6)");
 
 
-            return database.Conexao.Query<AlunoFaltosoBimestreDto>(query.ToString(), new { modalidadeEJA, bimestre, anoLetivo, percentualFrequenciaMinimo });
+            return database.Conexao.Query<AlunoFaltosoBimestreDto>(query.ToString(), new { bimestre, anoLetivo, percentualFrequenciaMinimo });
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAluno(string alunoCodigo)
