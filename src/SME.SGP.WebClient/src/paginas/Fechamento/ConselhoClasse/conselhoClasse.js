@@ -1,51 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
-import { Ordenacao } from '~/componentes-sgp';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
-import DetalhesAluno from '~/componentes/Alunos/Detalhes';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
-import TabelaRetratil from '~/componentes/TabelaRetratil';
-import { Container } from './conselhoClasse.css';
-import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
+import {
+  setAlunosConselhoClasse,
+  setDadosAlunoObjectCard,
+  limparDadosConselhoClasse,
+} from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
+import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
+import { Container } from './conselhoClasse.css';
+import BotaoOrdenarListaAlunos from './DadosConselhoClasse/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
+import BotoesAcoesConselhoClasse from './DadosConselhoClasse/BotoesAcoes/botoesAcoesConselhoClasse';
 import DadosConselhoClasse from './DadosConselhoClasse/dadosConselhoClasse';
+import ObjectCardConselhoClasse from './DadosConselhoClasse/ObjectCardConselhoClasse/objectCardConselhoClasse';
+import TabelaRetratilConselhoClasse from './DadosConselhoClasse/TabelaRetratilConselhoClasse/tabelaRetratilConselhoClasse';
+import servicoSalvarConselhoClasse from './servicoSalvarConselhoClasse';
 
 const ConselhoClasse = () => {
+  const dispatch = useDispatch();
+
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
+  const { turma, anoLetivo } = turmaSelecionada;
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
-  const [alunos, setAlunos] = useState([]);
-  const [dadosAluno, setDadosAluno] = useState({});
+  const [exibirListas, setExibirListas] = useState(false);
 
-  const resetarTela = () => {
-    setDadosAluno({});
-    setAlunos([]);
-  };
-
-  const obterListaAlunos = async () => {
-    const turmaCodigo = turmaSelecionada.turma;
-    const anoLetivo = turmaSelecionada.anoLetivo;
+  const obterListaAlunos = useCallback(async () => {
+    setCarregandoGeral(true);
     const retorno = await ServicoConselhoClasse.obterListaAlunos(
-      turmaCodigo,
+      turma,
       anoLetivo
     ).catch(e => erros(e));
     if (retorno && retorno.data) {
-      setAlunos(retorno.data);
+      dispatch(setAlunosConselhoClasse(retorno.data));
+      setExibirListas(true);
     }
-  };
+    setCarregandoGeral(false);
+  }, [anoLetivo, dispatch, turma]);
+
+  const resetarInfomacoes = useCallback(() => {
+    dispatch(limparDadosConselhoClasse());
+  }, [dispatch]);
 
   useEffect(() => {
-    if (turmaSelecionada.turma) {
+    resetarInfomacoes();
+    if (turma) {
       obterListaAlunos();
-    } else {
-      // TODO - Reseta tela
     }
-  }, []);
+  }, [obterListaAlunos, turma, resetarInfomacoes]);
 
   const obterFrequenciaAluno = async codigoAluno => {
     const retorno = await ServicoConselhoClasse.obterFrequenciaAluno(
@@ -58,21 +66,19 @@ const ConselhoClasse = () => {
   };
 
   const onChangeAlunoSelecionado = async aluno => {
+    resetarInfomacoes();
     const frequenciaGeralAluno = await obterFrequenciaAluno(aluno.codigoEOL);
-    aluno.frequencia = frequenciaGeralAluno;
-    setDadosAluno(aluno);
+    const novoAluno = aluno;
+    novoAluno.frequencia = frequenciaGeralAluno;    
+    dispatch(setDadosAlunoObjectCard(aluno));
   };
 
-  const onClickVoltar = () => {
-    console.log('onClickVoltar');
-  };
-
-  const onClickCancelar = () => {
-    console.log('onClickCancelar');
-  };
-
-  const onClickSalvar = () => {
-    console.log('onClickSalvar');
+  const permiteOnChangeAluno = async () => {
+    const continuar = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia();
+    if (continuar) {
+      return true;
+    }
+    return false;
   };
 
   return (
@@ -100,43 +106,15 @@ const ConselhoClasse = () => {
               <div className="col-md-12">
                 <div className="row">
                   <div className="col-md-12 d-flex justify-content-end pb-4">
-                    <Button
-                      label="Voltar"
-                      icon="arrow-left"
-                      color={Colors.Azul}
-                      border
-                      className="mr-2"
-                      onClick={onClickVoltar}
-                    />
-                    <Button
-                      label="Cancelar"
-                      color={Colors.Roxo}
-                      border
-                      className="mr-2"
-                      onClick={onClickCancelar}
-                      disabled={!alunos || alunos.length < 1}
-                    />
-                    <Button
-                      label="Salvar"
-                      color={Colors.Roxo}
-                      border
-                      bold
-                      className="mr-2"
-                      onClick={onClickSalvar}
-                      disabled={!alunos || alunos.length < 1}
-                    />
+                    <BotoesAcoesConselhoClasse />
                   </div>
                 </div>
               </div>
-              {alunos && alunos.length ? (
+              {exibirListas ? (
                 <>
                   <div className="col-md-12 mb-2 d-flex">
-                    <Ordenacao
-                      conteudoParaOrdenar={alunos}
-                      ordenarColunaNumero="id"
-                      ordenarColunaTexto="nome"
-                      retornoOrdenado={retorno => setAlunos(retorno)}
-                    />
+                    <BotaoOrdenarListaAlunos />
+
                     <Button
                       className="btn-imprimir"
                       icon="print"
@@ -144,16 +122,22 @@ const ConselhoClasse = () => {
                       border
                       onClick={() => {}}
                       disabled
+                      id="btn-imprimir-conselho-classe"
                     />
                   </div>
                   <div className="col-md-12 mb-2">
-                    <TabelaRetratil
+                    <TabelaRetratilConselhoClasse
                       onChangeAlunoSelecionado={onChangeAlunoSelecionado}
-                      alunos={alunos}
+                      permiteOnChangeAluno={permiteOnChangeAluno}
                     >
-                      <DetalhesAluno dados={dadosAluno} />
-                      <DadosConselhoClasse></DadosConselhoClasse>
-                    </TabelaRetratil>
+                      <>
+                        <ObjectCardConselhoClasse />
+                        <DadosConselhoClasse
+                          codigoTurma={turmaSelecionada.turma}
+                          modalidade={turmaSelecionada.modalidade}
+                        />
+                      </>
+                    </TabelaRetratilConselhoClasse>
                   </div>
                 </>
               ) : (
