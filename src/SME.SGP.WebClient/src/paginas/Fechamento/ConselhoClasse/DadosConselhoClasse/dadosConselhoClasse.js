@@ -8,6 +8,7 @@ import { setBimestreAtual } from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import AnotacoesRecomendacoes from './AnotacoesRecomendacoes/anotacoesRecomendacoes';
+import servicoSalvarConselhoClasse from '../servicoSalvarConselhoClasse';
 
 const { TabPane } = Tabs;
 
@@ -24,7 +25,7 @@ const DadosConselhoClasse = props => {
     store => store.conselhoClasse.dadosAlunoObjectCard
   );
 
-  const { codigoEOL } = dadosAlunoObjectCard;
+  const { codigoEOL, desabilitado } = dadosAlunoObjectCard;
 
   const setarBimestreAtual = useCallback(async () => {
     const retorno = await ServicoConselhoClasse.obterBimestreAtual(
@@ -32,6 +33,8 @@ const DadosConselhoClasse = props => {
     ).catch(e => erros(e));
     if (retorno && retorno.data) {
       dispatch(setBimestreAtual(String(retorno.data)));
+    } else {
+      dispatch(setBimestreAtual('1'));
     }
   }, [dispatch, modalidade]);
 
@@ -41,11 +44,14 @@ const DadosConselhoClasse = props => {
     }
   }, [codigoEOL, bimestreAtual, setarBimestreAtual]);
 
-  const onChangeTab = numeroBimestre => {
-    dispatch(setBimestreAtual(numeroBimestre));
+  const onChangeTab = async numeroBimestre => {
+    const continuar = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia();
+    if (continuar) {
+      dispatch(setBimestreAtual(numeroBimestre));
+    }
   };
 
-  const montarDados = () => {
+  const montarDadosAnotacoesRecomendacoes = () => {
     return (
       <>
         <AnotacoesRecomendacoes
@@ -53,6 +59,7 @@ const DadosConselhoClasse = props => {
           codigoTurma={codigoTurma}
           modalidade={modalidade}
           codigoEOL={codigoEOL}
+          alunoDesabilitado={desabilitado}
         />
       </>
     );
@@ -72,19 +79,29 @@ const DadosConselhoClasse = props => {
           }
         >
           <TabPane tab="1º Bimestre" key="1">
-            {bimestreAtual.valor === '1' ? montarDados() : ''}
+            {bimestreAtual.valor === '1'
+              ? montarDadosAnotacoesRecomendacoes()
+              : ''}
           </TabPane>
           <TabPane tab="2º Bimestre" key="2">
-            {bimestreAtual.valor === '2' ? montarDados() : ''}
+            {bimestreAtual.valor === '2'
+              ? montarDadosAnotacoesRecomendacoes()
+              : ''}
           </TabPane>
           <TabPane tab="3º Bimestre" key="3">
-            {bimestreAtual.valor === '3' ? montarDados() : ''}
+            {bimestreAtual.valor === '3'
+              ? montarDadosAnotacoesRecomendacoes()
+              : ''}
           </TabPane>
           <TabPane tab="4º Bimestre" key="4">
-            {bimestreAtual.valor === '4' ? montarDados() : ''}
+            {bimestreAtual.valor === '4'
+              ? montarDadosAnotacoesRecomendacoes()
+              : ''}
           </TabPane>
           <TabPane tab="Final" key="final">
-            final
+            {bimestreAtual.valor === 'final'
+              ? montarDadosAnotacoesRecomendacoes()
+              : ''}
           </TabPane>
         </ContainerTabsCard>
       ) : (

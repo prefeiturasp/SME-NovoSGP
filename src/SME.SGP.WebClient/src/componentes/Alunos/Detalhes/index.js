@@ -12,7 +12,7 @@ const DetalhesAluno = props => {
   const {
     avatar,
     nome,
-    numero,
+    numeroChamada,
     dataNascimento,
     codigoEOL,
     situacao,
@@ -33,7 +33,7 @@ const DetalhesAluno = props => {
             <Avatar className="mr-2" size={80} icon="user" src={avatar} />
             <div>
               <p>
-                {nome} Nº {numero}
+                {nome} Nº {numeroChamada}
               </p>
               <p>
                 Data de nascimento:{' '}
