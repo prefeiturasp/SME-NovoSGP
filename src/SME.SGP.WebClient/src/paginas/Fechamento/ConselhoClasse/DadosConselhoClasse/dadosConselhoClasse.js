@@ -9,6 +9,7 @@ import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import AnotacoesRecomendacoes from './AnotacoesRecomendacoes/anotacoesRecomendacoes';
 import servicoSalvarConselhoClasse from '../servicoSalvarConselhoClasse';
+import AletaDentroPeriodo from './AletaDentroPeriodo/aletaDentroPeriodo';
 
 const { TabPane } = Tabs;
 
@@ -54,6 +55,7 @@ const DadosConselhoClasse = props => {
   const montarDadosAnotacoesRecomendacoes = () => {
     return (
       <>
+        <AletaDentroPeriodo />
         <AnotacoesRecomendacoes
           bimestreSelecionado={bimestreAtual}
           codigoTurma={codigoTurma}
@@ -88,16 +90,22 @@ const DadosConselhoClasse = props => {
               ? montarDadosAnotacoesRecomendacoes()
               : ''}
           </TabPane>
-          <TabPane tab="3º Bimestre" key="3">
-            {bimestreAtual.valor === '3'
-              ? montarDadosAnotacoesRecomendacoes()
-              : ''}
-          </TabPane>
-          <TabPane tab="4º Bimestre" key="4">
-            {bimestreAtual.valor === '4'
-              ? montarDadosAnotacoesRecomendacoes()
-              : ''}
-          </TabPane>
+          {modalidade !== modalidadeDto.EJA ? (
+            <>
+              <TabPane tab="3º Bimestre" key="3">
+                {bimestreAtual.valor === '3'
+                  ? montarDadosAnotacoesRecomendacoes()
+                  : ''}
+              </TabPane>
+              <TabPane tab="4º Bimestre" key="4">
+                {bimestreAtual.valor === '4'
+                  ? montarDadosAnotacoesRecomendacoes()
+                  : ''}
+              </TabPane>
+            </>
+          ) : (
+            ''
+          )}
           <TabPane tab="Final" key="final">
             {bimestreAtual.valor === 'final'
               ? montarDadosAnotacoesRecomendacoes()
