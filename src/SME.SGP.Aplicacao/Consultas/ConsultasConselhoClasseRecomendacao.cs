@@ -19,11 +19,12 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
+        private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
 
         public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao,
             IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno, IConsultasPeriodoEscolar consultasPeriodoEscolar, IConsultasTurma consultasTurma,
             IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasFechamentoTurma consultasFechamentoTurma, IConsultasPeriodoFechamento consultasPeriodoFechamento,
-            IConsultasConselhoClasse consultasConselhoClasse)
+            IConsultasConselhoClasse consultasConselhoClasse, IRepositorioConselhoClasse repositorioConselhoClasse)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
@@ -33,6 +34,7 @@ namespace SME.SGP.Aplicacao
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
+            this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
         }
 
         public string MontaTextUlLis(IEnumerable<string> textos)
@@ -78,10 +80,14 @@ namespace SME.SGP.Aplicacao
             var anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, turmaCodigo, bimestre, EhFinal);
             if (anotacoesDoAluno == null)
                 anotacoesDoAluno = new List<FechamentoAlunoAnotacaoConselhoDto>();
-
+            
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFechamentoAsync(fechamentoTurma.Id, alunoCodigo);
             if (conselhoClasseAluno == null)
-                return await ObterRecomendacoesIniciais(anotacoesDoAluno, bimestre, fechamentoTurma.Id, periodoFechamentoBimestre, emFechamento);
+            {
+                var conselhoClasseExistente = await repositorioConselhoClasse.ObterPorTurmaEPeriodoAsync(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId);         
+
+                return await ObterRecomendacoesIniciais(anotacoesDoAluno, bimestre, fechamentoTurma.Id, periodoFechamentoBimestre, emFechamento, conselhoClasseExistente);
+            }
 
             return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre, periodoFechamentoBimestre, fechamentoTurma.Id, emFechamento);
         }
@@ -91,9 +97,11 @@ namespace SME.SGP.Aplicacao
             return consultasPeriodoEscolar.ObterBimestre(DateTime.Today, turmaModalidade);
         }
 
-        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, long fechamentoTurmaId, PeriodoFechamentoBimestre periodoFechamentoBimestre, bool emFechamento)
+        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, long fechamentoTurmaId, PeriodoFechamentoBimestre periodoFechamentoBimestre, bool emFechamento, ConselhoClasse conselhoClasseExistente)
         {
             var recomendacoes = await repositorioConselhoClasseRecomendacao.ObterTodosAsync();
+
+            long conselhoClasseId = conselhoClasseExistente?.Id ?? 0;          
 
             if (!recomendacoes.Any())
                 throw new NegocioException("Não foi possível localizar as recomendações da família e aluno.");
@@ -101,6 +109,7 @@ namespace SME.SGP.Aplicacao
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
                 FechamentoTurmaId = fechamentoTurmaId,
+                ConselhoClasseId = conselhoClasseId,
                 RecomendacaoAluno = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
                 RecomendacaoFamilia = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
                 AnotacoesAluno = anotacoesAluno,

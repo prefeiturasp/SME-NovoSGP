@@ -10,6 +10,7 @@ import {
   setDadosAnotacoesRecomendacoes,
   setAuditoriaAnotacaoRecomendacao,
   setDentroPeriodo,
+  setFechamentoPeriodoInicioFim,
 } from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
@@ -119,6 +120,22 @@ const AnotacoesRecomendacoes = props => {
     [dispatch]
   );
 
+  const setarFechamentoPeriodoInicioFim = useCallback(
+    dados => {
+      if (dados) {
+        const { periodoFechamentoInicio, periodoFechamentoFim } = dados;
+        const datas = {
+          periodoFechamentoInicio,
+          periodoFechamentoFim,
+        };
+        dispatch(setFechamentoPeriodoInicioFim(datas));
+      } else {
+        dispatch(setFechamentoPeriodoInicioFim({}));
+      }
+    },
+    [dispatch]
+  );
+
   const obterAnotacoesRecomendacoes = useCallback(
     async (bimestre, codigoAluno, turma, ehFinal) => {
       setCarregando(true);
@@ -139,9 +156,11 @@ const AnotacoesRecomendacoes = props => {
         setarAnotacaoAluno(resposta.data.anotacoesAluno);
         setarDados(resposta.data);
         setarAuditoria(resposta.data);
+        setarFechamentoPeriodoInicioFim(resposta.data);
         setExibir(true);
       } else {
         setExibir(false);
+        setarFechamentoPeriodoInicioFim(null);
       }
       setCarregando(false);
     },
@@ -154,6 +173,7 @@ const AnotacoesRecomendacoes = props => {
       setarAnotacaoAluno,
       setarDados,
       setarAuditoria,
+      setarFechamentoPeriodoInicioFim,
     ]
   );
 

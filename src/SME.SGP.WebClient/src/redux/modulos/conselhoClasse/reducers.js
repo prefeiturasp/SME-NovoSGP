@@ -11,7 +11,7 @@ const inicial = {
   conselhoClasseEmEdicao: false,
   dadosAnotacoesRecomendacoes: {},
   auditoriaAnotacaoRecomendacao: null,
-  dentroPeriodo: true,
+  fechamentoPeriodoInicioFim: {},
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -72,6 +72,7 @@ export default function ConselhoClasse(state = inicial, action) {
           dadosAnotacoesRecomendacoes: {},
           auditoriaAnotacaoRecomendacao: null,
           dentroPeriodo: true,
+          fechamentoPeriodoInicioFim: {},
         };
       }
       case '@conselhoClasse/setConselhoClasseEmEdicao': {
@@ -96,6 +97,12 @@ export default function ConselhoClasse(state = inicial, action) {
         return {
           ...draft,
           dentroPeriodo: action.payload,
+        };
+      }
+      case '@conselhoClasse/setFechamentoPeriodoInicioFim': {
+        return {
+          ...draft,
+          fechamentoPeriodoInicioFim: action.payload,
         };
       }
 

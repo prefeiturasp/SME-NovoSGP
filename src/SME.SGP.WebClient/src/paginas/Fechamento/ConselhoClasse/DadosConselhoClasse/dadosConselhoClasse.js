@@ -9,7 +9,8 @@ import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import AnotacoesRecomendacoes from './AnotacoesRecomendacoes/anotacoesRecomendacoes';
 import servicoSalvarConselhoClasse from '../servicoSalvarConselhoClasse';
-import AletaDentroPeriodo from './AletaDentroPeriodo/aletaDentroPeriodo';
+import AlertaDentroPeriodo from './AlertaDentroPeriodo/alertaDentroPeriodo';
+import MarcadorPeriodoInicioFim from './MarcadorPeriodoInicioFim/marcadorPeriodoInicioFim';
 
 const { TabPane } = Tabs;
 
@@ -55,7 +56,8 @@ const DadosConselhoClasse = props => {
   const montarDadosAnotacoesRecomendacoes = () => {
     return (
       <>
-        <AletaDentroPeriodo />
+        <AlertaDentroPeriodo />
+        <MarcadorPeriodoInicioFim />
         <AnotacoesRecomendacoes
           bimestreSelecionado={bimestreAtual}
           codigoTurma={codigoTurma}
