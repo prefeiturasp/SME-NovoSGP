@@ -1,9 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-
 import Alert from '~/componentes/alert';
 
-const AletaDentroPeriodo = () => {
+const AlertaDentroPeriodo = () => {
   const dentroPeriodo = useSelector(
     store => store.conselhoClasse.dentroPeriodo
   );
@@ -28,4 +27,4 @@ const AletaDentroPeriodo = () => {
   );
 };
 
-export default AletaDentroPeriodo;
+export default AlertaDentroPeriodo;

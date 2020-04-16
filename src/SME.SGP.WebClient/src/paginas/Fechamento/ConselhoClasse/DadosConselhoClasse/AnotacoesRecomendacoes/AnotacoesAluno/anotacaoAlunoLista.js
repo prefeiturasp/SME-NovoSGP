@@ -1,20 +1,50 @@
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Base } from '~/componentes';
 import Editor from '~/componentes/editor/editor';
 import { ListaAnotacao, Tabela } from './anotacaoAluno.css';
 
 const AnotacoesAlunoLista = props => {
   const { anotacoes } = props;
 
-  // TODO VER COM UX!
   const cores = [
-    '#20aa73',
-    '#b40c02',
-    '#086397',
-    '#20aa73',
-    '#b40c02',
-    '#086397',
+    Base.AzulCalendario,
+    Base.LaranjaAlerta,
+    Base.Laranja,
+    Base.RosaCalendario,
+    Base.Roxo,
+    Base.Verde,
+    Base.Vermelho,
+    '#A7CDE0',
+    '#2279AF',
+    '#B1DF94',
+    '#31A041',
+    '#FC999C',
+    '#E31426',
+    '#FDBE7B',
+    '#CAB2D4',
+    '#6B3E93',
+    '#FEFEA6',
+    '#B15732',
+    Base.AzulCalendario,
+    Base.LaranjaAlerta,
+    Base.Laranja,
+    Base.RosaCalendario,
+    Base.Roxo,
+    Base.Verde,
+    Base.Vermelho,
+    '#A7CDE0',
+    '#2279AF',
+    '#B1DF94',
+    '#31A041',
+    '#FC999C',
+    '#E31426',
+    '#FDBE7B',
+    '#CAB2D4',
+    '#6B3E93',
+    '#FEFEA6',
+    '#B15732',
   ];
 
   return (
