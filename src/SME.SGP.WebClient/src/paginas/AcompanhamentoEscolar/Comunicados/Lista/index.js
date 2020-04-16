@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import shortid from 'shortid';
@@ -21,8 +21,12 @@ const ComunicadosLista = () => {
   const permissoesTela = useSelector(store => store.usuario.permissoes);
   const [itensSelecionados, setItensSelecionados] = useState([]);
 
-  useCallback(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  useEffect(() => {
+    setSomenteConsulta(
+      verificaSomenteConsulta(
+        permissoesTela[RotasDto.ACOMPANHAMENTO_COMUNICADOS]
+      )
+    );
   }, [permissoesTela]);
 
   const onSelecionarItems = items => {
