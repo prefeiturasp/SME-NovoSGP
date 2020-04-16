@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -49,10 +49,14 @@ const ComunicadosCadastro = ({ match }) => {
   const [loaderSecao] = useState(false);
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
-  const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const permissoesTela = useSelector(state => state.usuario.permissoes);
 
-  useCallback(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  useEffect(() => {
+    setSomenteConsulta(
+      verificaSomenteConsulta(
+        permissoesTela[RotasDto.ACOMPANHAMENTO_COMUNICADOS]
+      )
+    );
   }, [permissoesTela]);
 
   const [novoRegistro, setNovoRegistro] = useState(true);
@@ -290,7 +294,7 @@ const ComunicadosCadastro = ({ match }) => {
                       name="dataEnvio"
                       placeholder="Selecione a data de envio"
                       formatoData="DD/MM/YYYY"
-                      disabled={somenteConsulta}
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                   <Grid cols={4}>
@@ -300,7 +304,7 @@ const ComunicadosCadastro = ({ match }) => {
                       name="dataExpiracao"
                       placeholder="Selecione a data de expiração"
                       formatoData="DD/MM/YYYY"
-                      disabled={somenteConsulta}
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                 </Linha>
@@ -312,7 +316,7 @@ const ComunicadosCadastro = ({ match }) => {
                       name="titulo"
                       placeholder="Título do comunicado"
                       value={form.values.titulo}
-                      disabled={somenteConsulta}
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                 </Linha>
