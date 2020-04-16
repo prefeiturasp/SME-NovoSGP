@@ -53,13 +53,13 @@ namespace SME.SGP.Aplicacao
             return await TurmaEmPeriodoAberto(turma, dataReferencia, bimestre);
         }
 
-        public async Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia, int bimestre = 0)
+        public async Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia, int bimestre = 0, bool ehAnoLteivo = false)
         {
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
             if (tipoCalendario == null)
                 throw new NegocioException($"Tipo de calendário para turma {turma.CodigoTurma} não localizado!");
 
-            var periodoEmAberto = await consultasTipoCalendario.PeriodoEmAberto(tipoCalendario, dataReferencia, bimestre);
+            var periodoEmAberto = await consultasTipoCalendario.PeriodoEmAberto(tipoCalendario, dataReferencia, bimestre, ehAnoLteivo);
 
             return periodoEmAberto || await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, bimestre);
         }
@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
         public async Task<Turma> ObterComUeDrePorId(long turmaId)
             => repositorioTurma.ObterTurmaComUeEDrePorId(turmaId);
 
-        public async Task<IEnumerable<PeriodoEscolarAbertoDto>> PeriodosEmAbertoTurma(string turmaCodigo, DateTime dataReferencia)
+        public async Task<IEnumerable<PeriodoEscolarAbertoDto>> PeriodosEmAbertoTurma(string turmaCodigo, DateTime dataReferencia, bool ehAnoLetivo = false)
         {
             var turma = await ObterComUeDrePorCodigo(turmaCodigo);
             if (turma == null)
@@ -82,10 +82,10 @@ namespace SME.SGP.Aplicacao
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
             var listaPeriodos = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
-            return await ObterPeriodosEmAberto(turma, dataReferencia, listaPeriodos.Periodos);
+            return await ObterPeriodosEmAberto(turma, dataReferencia, listaPeriodos.Periodos, ehAnoLetivo);
         }
 
-        private async Task<IEnumerable<PeriodoEscolarAbertoDto>> ObterPeriodosEmAberto(Turma turma, DateTime dataReferencia, List<PeriodoEscolarDto> periodos)
+        private async Task<IEnumerable<PeriodoEscolarAbertoDto>> ObterPeriodosEmAberto(Turma turma, DateTime dataReferencia, List<PeriodoEscolarDto> periodos, bool ehAnoLetivo = false)
         {
             var periodosAbertos = new List<PeriodoEscolarAbertoDto>();
             foreach (var periodo in periodos)
@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
                 periodosAbertos.Add(new PeriodoEscolarAbertoDto()
                 {
                     Bimestre = periodo.Bimestre,
-                    Aberto = await TurmaEmPeriodoAberto(turma, dataReferencia, periodo.Bimestre)
+                    Aberto = await TurmaEmPeriodoAberto(turma, dataReferencia, periodo.Bimestre, ehAnoLetivo)
                 });
             }
 
