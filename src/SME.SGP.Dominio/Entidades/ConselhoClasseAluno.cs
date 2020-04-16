@@ -5,7 +5,7 @@ using System.Text;
 namespace SME.SGP.Dominio
 {
     public class ConselhoClasseAluno: EntidadeBase
-    {
+    {        
         public long ConselhoClasseId { get; set; }
         public ConselhoClasse ConselhoClasse { get; set; }
         public string AlunoCodigo { get; set; }
