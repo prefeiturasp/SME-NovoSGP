@@ -33,6 +33,16 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataPeriodo = data.Date });
         }
 
+        public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEmAbertoPorTipoCalendarioData(long tipoCalendarioId, DateTime data)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaQuery(query);
+            query.AppendLine("where tipo_calendario_id = @tipoCalendarioId");
+            query.AppendLine("and periodo_fim::date >= date(@dataPeriodo)");
+
+            return await database.Conexao.QueryAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataPeriodo = data.Date });
+        }
+
         public PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim)
         {
             StringBuilder query = new StringBuilder();
