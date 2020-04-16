@@ -56,7 +56,8 @@ namespace SME.SGP.Aplicacao
 
             var aulaPrevista = await repositorio.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
 
-            var periodosAbertos = await consultasTurma.PeriodosEmAbertoTurma(turmaId, DateTime.Now);
+            var ehAnoLetivo = turma.AnoLetivo == DateTime.Today.Year;
+            var periodosAbertos = await consultasTurma.PeriodosEmAbertoTurma(turmaId, DateTime.Now, ehAnoLetivo);
 
             IEnumerable<AulaPrevistaBimestreQuantidade> aulaPrevistaBimestres;
 
