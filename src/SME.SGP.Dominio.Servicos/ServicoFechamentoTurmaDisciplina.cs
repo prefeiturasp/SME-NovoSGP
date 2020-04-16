@@ -16,6 +16,7 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
         private readonly IConfiguration configuration;
+        private readonly IConsultasSupervisor consultasSupervisor;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
@@ -66,7 +67,8 @@ namespace SME.SGP.Dominio.Servicos
                                                 IServicoUsuario servicoUsuario,
                                                 IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                                                 IUnitOfWork unitOfWork,
-                                                IConfiguration configuration)
+                                                IConfiguration configuration,
+                                                IConsultasSupervisor consultasSupervisor)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
@@ -86,6 +88,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.consultasSupervisor = consultasSupervisor ?? throw new ArgumentNullException(nameof(consultasSupervisor));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
@@ -102,7 +105,9 @@ namespace SME.SGP.Dominio.Servicos
                 $"{usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) em  {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para o(s) seguinte(s) aluno(s):</p><br/>{alunosComNotaAlterada} ";
             var listaCPs = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.CP);
             var listaDiretores = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Diretor);
-            var listaSupervisores = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Supervisor);
+            
+            var listaSupervisores = consultasSupervisor.ObterPorUe(turma.Ue.CodigoUe);
+
             var usuariosNotificacao = new List<UsuarioEolRetornoDto>();
 
             if (listaCPs != null)
@@ -110,7 +115,9 @@ namespace SME.SGP.Dominio.Servicos
             if (listaDiretores != null)
                 usuariosNotificacao.AddRange(listaDiretores);
             if (listaSupervisores != null)
-                usuariosNotificacao.AddRange(listaSupervisores);
+                usuariosNotificacao.Add(new UsuarioEolRetornoDto() {  CodigoRf = listaSupervisores.SupervisorId, NomeServidor = listaSupervisores.SupervisorNome } );
+            
+                
 
             foreach (var usuarioNotificacaoo in usuariosNotificacao)
             {
