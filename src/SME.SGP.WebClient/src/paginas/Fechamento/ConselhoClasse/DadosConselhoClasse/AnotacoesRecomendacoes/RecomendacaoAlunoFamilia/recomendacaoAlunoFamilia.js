@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import Editor from '~/componentes/editor/editor';
 
@@ -10,6 +11,10 @@ const RecomendacaoAlunoFamilia = props => {
     dadosIniciais,
     alunoDesabilitado,
   } = props;
+
+  const dentroPeriodo = useSelector(
+    store => store.conselhoClasse.dentroPeriodo
+  );
 
   const [exibirCardRecomendacao, setExibirCardRecomendacao] = useState(false);
 
@@ -38,7 +43,7 @@ const RecomendacaoAlunoFamilia = props => {
                 id="recomendacao-aluno"
                 inicial={dadosIniciais.recomendacaoAluno}
                 onChange={onChangeAluno}
-                desabilitar={alunoDesabilitado}
+                desabilitar={alunoDesabilitado || !dentroPeriodo}
               />
             </div>
             <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6">
@@ -47,7 +52,7 @@ const RecomendacaoAlunoFamilia = props => {
                 id="recomendacao-familia"
                 inicial={dadosIniciais.recomendacaoFamilia}
                 onChange={onChangeFamilia}
-                desabilitar={alunoDesabilitado}
+                desabilitar={alunoDesabilitado || !dentroPeriodo}
               />
             </div>
           </div>

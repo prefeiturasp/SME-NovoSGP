@@ -9,6 +9,7 @@ import {
   setConselhoClasseEmEdicao,
   setDadosAnotacoesRecomendacoes,
   setAuditoriaAnotacaoRecomendacao,
+  setDentroPeriodo,
 } from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
@@ -79,6 +80,13 @@ const AnotacoesRecomendacoes = props => {
     [dispatch]
   );
 
+  const setarDentroDoPeriodo = useCallback(
+    valor => {
+      dispatch(setDentroPeriodo(valor));
+    },
+    [dispatch]
+  );
+
   const setarDados = useCallback(
     dados => {
       const valores = {
@@ -124,6 +132,7 @@ const AnotacoesRecomendacoes = props => {
       ).catch(e => erros(e));
 
       if (resposta && resposta.data) {
+        setarDentroDoPeriodo(!resposta.data.somenteLeitura);
         onChangeAnotacoesPedagogicas(resposta.data.anotacoesPedagogicas);
         onChangeRecomendacaoAluno(resposta.data.recomendacaoAluno);
         onChangeRecomendacaoFamilia(resposta.data.recomendacaoFamilia);
@@ -138,6 +147,7 @@ const AnotacoesRecomendacoes = props => {
     },
     [
       modalidade,
+      setarDentroDoPeriodo,
       onChangeAnotacoesPedagogicas,
       onChangeRecomendacaoAluno,
       onChangeRecomendacaoFamilia,
