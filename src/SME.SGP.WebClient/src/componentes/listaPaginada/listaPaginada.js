@@ -204,7 +204,7 @@ ListaPaginada.propTypes = {
   filtro: PropTypes.oneOfType([PropTypes.object]),
   filtroEhValido: PropTypes.bool,
   onErro: PropTypes.oneOfType([PropTypes.func]),
-  paramArrayFormat: PropTypes.oneOfType([PropTypes.func]),
+  paramArrayFormat: PropTypes.oneOfType([PropTypes.string]),
 };
 
 ListaPaginada.defaultProps = {
