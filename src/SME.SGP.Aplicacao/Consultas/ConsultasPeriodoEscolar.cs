@@ -118,5 +118,8 @@ namespace SME.SGP.Aplicacao.Consultas
 
             return periodos;
         }
+
+        public async Task<PeriodoEscolarDto> ObterUltimoBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre)
+            => await repositorio.ObterUltimoBimestreAsync(anoLetivo, modalidade, semestre);
     }
 }

@@ -47,9 +47,10 @@ namespace SME.SGP.Dados.Repositorios
         public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)
         {
             var query = @"select a.turma_id as TurmaCodigo, a.data_aula as DataAula, fa.codigo_aluno as CodigoAluno
-	                        , sum(a.quantidade) as QuantidadeAulas , fa.qtd_faltas as QuantidadeFaltas
+	                        , sum(a.quantidade) as QuantidadeAulas , fa.qtd_faltas as QuantidadeFaltas, t.modalidade_codigo as modalidadeCodigo, t.ano 
                           from aula a
                          inner join registro_frequencia rf on a.id = rf.aula_id  
+                         inner join turma t on t.turma_id = a.turma_id
                           left join (select aa.turma_id, aa.data_aula, raa.codigo_aluno, count(raa.id) qtd_faltas
 		                         from aula aa 
 		                        inner join registro_frequencia rfa on aa.id = rfa.aula_id  
@@ -60,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
                          where not a.excluido and not rf.excluido 
                            and a.data_aula >= @dataReferencia
                            and a.tipo_calendario_id = @tipoCalendarioId
-                        group by a.turma_id, a.data_aula, fa.codigo_aluno, fa.qtd_faltas ";
+                        group by a.turma_id, a.data_aula, fa.codigo_aluno, fa.qtd_faltas,  t.modalidade_codigo, t.ano";
 
             return database.Conexao.Query<AlunosFaltososDto>(query, new { dataReferencia, tipoCalendarioId });
         }

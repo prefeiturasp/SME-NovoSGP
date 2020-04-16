@@ -101,11 +101,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidade, dataReferencia.Semestre());
 
-            var datasAulas = repositorioAula.ObterUltimosDiasLetivos(dataReferencia, quantidadeDiasCP, tipoCalendario.Id);
-            NotificaAlunosFaltososCargo(datasAulas.Min(), quantidadeDiasCP, Cargo.CP, tipoCalendario.Id);
-
-            datasAulas = repositorioAula.ObterUltimosDiasLetivos(dataReferencia, quantidadeDiasDiretor, tipoCalendario.Id);
-            NotificaAlunosFaltososCargo(datasAulas.Min(), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario.Id);
+            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario.Id);
+            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario.Id);
         }
 
         public void NotificarCompensacaoAusencia(long compensacaoId)
@@ -249,7 +246,7 @@ namespace SME.SGP.Dominio.Servicos
             // Notifica apenas no dia seguinte ao fim do bimestre
             if (dataReferencia == periodoEscolar.PeriodoFim)
             {
-                var alunosFaltososBimestre = repositorioFrequenciaAluno.ObterAlunosFaltososBimestre(modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA, periodoEscolar.Id, percentualCritico);
+                var alunosFaltososBimestre = repositorioFrequenciaAluno.ObterAlunosFaltososBimestre(modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA, percentualCritico, periodoEscolar.Bimestre, tipoCalendario.AnoLetivo);
 
                 foreach(var uesAgrupadas in alunosFaltososBimestre.GroupBy(a => new { a.DreCodigo, a.DreNome, a.TipoEscola, a.UeCodigo, a.UeNome }))
                 {
@@ -327,7 +324,9 @@ namespace SME.SGP.Dominio.Servicos
             var alunosFaltosos = repositorioFrequencia.ObterAlunosFaltosos(dataReferencia, tipoCalendarioId);
 
             // Faltou em todas as aulas do dia e tem pelo menos 3 aulas registradas
-            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && c.QuantidadeAulas >= 3);
+            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && (( c.modalidadeCodigo == Modalidade.Fundamental && c.Ano <= 5) ||  c.QuantidadeAulas >= 3 ));
+
+
             var alunosFaltasTodosOsDias = alunosFaltasTodasAulasDoDia
                                             .GroupBy(a => a.CodigoAluno)
                                             .Where(c => c.Count() >= quantidadeDias);
