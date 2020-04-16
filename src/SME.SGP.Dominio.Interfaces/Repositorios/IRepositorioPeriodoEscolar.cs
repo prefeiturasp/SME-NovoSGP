@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -10,5 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime data);
 
         PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim);
+
+        Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEmAbertoPorTipoCalendarioData(long tipoCalendarioId, DateTime data);
     }
 }
