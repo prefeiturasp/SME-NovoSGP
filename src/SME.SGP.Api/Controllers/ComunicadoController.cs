@@ -27,7 +27,8 @@ namespace SME.SGP.Api.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CO_A, Policy = "Bearer")]
+        //[Permissao(Permissao.CO_A, Policy = "Bearer")]
+        [AllowAnonymous]
         public async Task<IActionResult> Alterar(long id, [FromBody]ComunicadoInserirDto comunicadoDto)
         {
             return Ok(await comandos.Alterar(id, comunicadoDto));
@@ -70,7 +71,8 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CO_I, Policy = "Bearer")]
+        //[Permissao(Permissao.CO_I, Policy = "Bearer")]
+        [AllowAnonymous]
         public async Task<IActionResult> PostAsync([FromBody]ComunicadoInserirDto comunicadoDto)
         {
             return Ok(await comandos.Inserir(comunicadoDto));
