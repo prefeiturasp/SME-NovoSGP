@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -16,9 +16,9 @@ import {
   CampoTexto,
   CampoData,
   Label,
-  TextEditor,
   momentSchema,
   Base,
+  Editor,
 } from '~/componentes';
 
 import { Linha } from '~/componentes/EstilosGlobais';
@@ -52,8 +52,6 @@ const ComunicadosCadastro = ({ match }) => {
   const permissoesTela = useSelector(store => store.usuario.permissoes);
 
   useCallback(() => {
-    console.log(permissoesTela);
-    console.log(verificaSomenteConsulta(permissoesTela));
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [permissoesTela]);
 
@@ -79,6 +77,10 @@ const ComunicadosCadastro = ({ match }) => {
   });
 
   const [descricaoComunicado, setDescricaoComunicado] = useState('');
+
+  const onChangeDescricaoComunicado = descricao => {
+    setDescricaoComunicado(descricao);
+  };
 
   const [inseridoAlterado, setInseridoAlterado] = useState({
     alteradoEm: '',
@@ -128,7 +130,6 @@ const ComunicadosCadastro = ({ match }) => {
   }, [idComunicado]);
 
   const [refForm, setRefForm] = useState({});
-  const textEditorRef = useRef();
 
   const [gruposLista, setGruposLista] = useState([]);
 
@@ -169,7 +170,7 @@ const ComunicadosCadastro = ({ match }) => {
     })
   );
 
-  const [descricaoValida, setDescricaoValida] = useState(true);
+  const [temErroDescricao, setTemErroDescricao] = useState(false);
 
   const validarAntesDeSalvar = form => {
     const arrayCampos = Object.keys(valoresIniciais);
@@ -178,20 +179,16 @@ const ComunicadosCadastro = ({ match }) => {
       form.setFieldTouched(campo, true, true);
     });
 
-    const descricao = textEditorRef.current.state.value.replace(
-      '<p><br></p>',
-      ''
-    );
+    const descricao = descricaoComunicado.replace('<p><br></p>', '');
 
     form.validateForm().then(() => {
-      setDescricaoValida(descricao.length);
+      setTemErroDescricao(!descricao.length);
 
       if (
         refForm &&
         (!Object.entries(refForm.state.errors).length || form.isValid) &&
         descricao.length
       ) {
-        setDescricaoComunicado(descricao);
         form.handleSubmit(form);
       }
     });
@@ -226,7 +223,7 @@ const ComunicadosCadastro = ({ match }) => {
   const onClickSalvar = async valores => {
     const dadosSalvar = {
       ...valores,
-      descricao: textEditorRef.current.state.value,
+      descricao: descricaoComunicado,
     };
     const salvou = await ServicoComunicados.salvar(dadosSalvar);
     if (salvou && salvou.data) {
@@ -322,16 +319,13 @@ const ComunicadosCadastro = ({ match }) => {
                 <Linha className="row">
                   <Grid cols={12}>
                     <Label control="textEditor" text="Descrição" />
-                    <TextEditor
-                      ref={textEditorRef}
-                      id="textEditor"
-                      height="120px"
-                      maxHeight="calc(100vh)"
-                      className={`${!descricaoValida && 'is-invalid'}`}
-                      value={descricaoComunicado}
-                      disabled={somenteConsulta}
+                    <Editor
+                      inicial={descricaoComunicado}
+                      onChange={onChangeDescricaoComunicado}
+                      desabilitar={somenteConsulta}
+                      temErro={temErroDescricao}
                     />
-                    {!descricaoValida && (
+                    {temErroDescricao && (
                       <ErroValidacao>Campo obrigatório</ErroValidacao>
                     )}
                     <InseridoAlterado>
