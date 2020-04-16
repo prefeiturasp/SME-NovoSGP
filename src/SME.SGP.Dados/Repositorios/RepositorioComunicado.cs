@@ -31,6 +31,7 @@ namespace SME.SGP.Dados.Repositorios
                                                 from comunicado co inner join comunidado_grupo cgr
                                                     on cgr.comunicado_id = co.id
                                                 {0}
+                                                where co.excluido = false
                                                 group by
                                                     co.id,
                                                     co.titulo,
@@ -43,7 +44,9 @@ namespace SME.SGP.Dados.Repositorios
                                                     co.alterado_por,
                                                     co.criado_rf,
                                                     co.alterado_rf,
-                                                    co.excluido)";
+                                                    co.excluido
+                                                order by co.id
+                                                {1})";
 
         private readonly string queryComunicado = @"
 						SELECT
@@ -65,10 +68,10 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             string where = MontaWhereListar(filtro);
             string from = "";
-            var whereGrupo = " WHERE (cgr.grupo_comunicado_id = ANY(@gruposId))";
+            var whereGrupo = " AND ({0}.grupo_comunicado_id = ANY(@gruposId))";
             if (paginacao.QuantidadeRegistros != 0)
-                from = string.Format(fromComunicadoGrupo, filtro.GruposId?.Length > 0 ? whereGrupo : "", string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros));
-            else from = string.Format(fromComunicadoGrupo, filtro.GruposId?.Length > 0 ? whereGrupo : "", "");
+                from = string.Format(fromComunicadoGrupo, filtro.GruposId?.Length > 0 ? string.Format(whereGrupo, "cgr") : "", string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros));
+            else from = string.Format(fromComunicadoGrupo, filtro.GruposId?.Length > 0 ? string.Format(whereGrupo, "cgr") : "", "");
 
             query.AppendFormat(queryComunicado, Montarcampos(), from, where);
 
@@ -91,7 +94,7 @@ namespace SME.SGP.Dados.Repositorios
             splitOn: "id,ComunicadoGrupoId,GrupoId")
             };
 
-            var queryCount = new StringBuilder(string.Format(queryComunicado, "count(distinct c.id)", fromComunicado, where));
+            var queryCount = new StringBuilder(string.Format(queryComunicado, "count(distinct c.id)", fromComunicado, $"{where}{(filtro.GruposId?.Length > 0 ? string.Format(whereGrupo, "cg") : "")}"));
 
             retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), new
             {
