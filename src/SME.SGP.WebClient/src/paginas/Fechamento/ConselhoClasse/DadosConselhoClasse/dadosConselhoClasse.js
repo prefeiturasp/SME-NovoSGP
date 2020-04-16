@@ -90,16 +90,22 @@ const DadosConselhoClasse = props => {
               ? montarDadosAnotacoesRecomendacoes()
               : ''}
           </TabPane>
-          <TabPane tab="3º Bimestre" key="3">
-            {bimestreAtual.valor === '3'
-              ? montarDadosAnotacoesRecomendacoes()
-              : ''}
-          </TabPane>
-          <TabPane tab="4º Bimestre" key="4">
-            {bimestreAtual.valor === '4'
-              ? montarDadosAnotacoesRecomendacoes()
-              : ''}
-          </TabPane>
+          {modalidade !== modalidadeDto.EJA ? (
+            <>
+              <TabPane tab="3º Bimestre" key="3">
+                {bimestreAtual.valor === '3'
+                  ? montarDadosAnotacoesRecomendacoes()
+                  : ''}
+              </TabPane>
+              <TabPane tab="4º Bimestre" key="4">
+                {bimestreAtual.valor === '4'
+                  ? montarDadosAnotacoesRecomendacoes()
+                  : ''}
+              </TabPane>
+            </>
+          ) : (
+            ''
+          )}
           <TabPane tab="Final" key="final">
             {bimestreAtual.valor === 'final'
               ? montarDadosAnotacoesRecomendacoes()
