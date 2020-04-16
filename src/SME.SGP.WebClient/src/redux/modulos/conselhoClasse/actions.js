@@ -57,3 +57,8 @@ export const setDentroPeriodo = payload => ({
   type: '@conselhoClasse/setDentroPeriodo',
   payload,
 });
+
+export const setFechamentoPeriodoInicioFim = payload => ({
+  type: '@conselhoClasse/setFechamentoPeriodoInicioFim',
+  payload,
+});
