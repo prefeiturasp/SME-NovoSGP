@@ -11,6 +11,7 @@ const inicial = {
   conselhoClasseEmEdicao: false,
   dadosAnotacoesRecomendacoes: {},
   auditoriaAnotacaoRecomendacao: null,
+  dentroPeriodo: true,
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -70,6 +71,7 @@ export default function ConselhoClasse(state = inicial, action) {
           conselhoClasseEmEdicao: false,
           dadosAnotacoesRecomendacoes: {},
           auditoriaAnotacaoRecomendacao: null,
+          dentroPeriodo: true,
         };
       }
       case '@conselhoClasse/setConselhoClasseEmEdicao': {
@@ -88,6 +90,12 @@ export default function ConselhoClasse(state = inicial, action) {
         return {
           ...draft,
           auditoriaAnotacaoRecomendacao: action.payload,
+        };
+      }
+      case '@conselhoClasse/setDentroPeriodo': {
+        return {
+          ...draft,
+          dentroPeriodo: action.payload,
         };
       }
 
