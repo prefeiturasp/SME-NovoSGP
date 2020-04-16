@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -13,5 +14,6 @@ namespace SME.SGP.Dominio.Interfaces
         PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim);
 
         Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEmAbertoPorTipoCalendarioData(long tipoCalendarioId, DateTime data);
+        Task<PeriodoEscolarDto> ObterUltimoBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0);
     }
 }

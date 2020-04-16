@@ -114,7 +114,7 @@ function Filtro({ onFiltrar }) {
               <CampoData
                 form={form}
                 name="dataEnvio"
-                placeholder="Data início"
+                placeholder="Selecione a data de envio"
                 formatoData="DD/MM/YYYY"
                 onChange={() => validarFiltro()}
               />
@@ -124,7 +124,7 @@ function Filtro({ onFiltrar }) {
               <CampoData
                 form={form}
                 name="dataExpiracao"
-                placeholder="Data início"
+                placeholder="Selecione a data de expiração"
                 formatoData="DD/MM/YYYY"
                 onChange={() => validarFiltro()}
               />
@@ -132,7 +132,7 @@ function Filtro({ onFiltrar }) {
           </Linha>
           <Linha className="row">
             <Grid cols={12}>
-              <Label control="titulo" text="Tíutulo" />
+              <Label control="titulo" text="Título" />
               <CampoTexto
                 form={form}
                 name="titulo"
