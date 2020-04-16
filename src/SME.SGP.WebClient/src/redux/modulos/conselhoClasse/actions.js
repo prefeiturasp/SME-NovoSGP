@@ -52,3 +52,8 @@ export const setAuditoriaAnotacaoRecomendacao = payload => ({
   type: '@conselhoClasse/setAuditoriaAnotacaoRecomendacao',
   payload,
 });
+
+export const setDentroPeriodo = payload => ({
+  type: '@conselhoClasse/setDentroPeriodo',
+  payload,
+});
