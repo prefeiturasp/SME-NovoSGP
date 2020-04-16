@@ -60,7 +60,7 @@ const ComunicadosCadastro = ({ match }) => {
   }, [permissoesTela]);
 
   const [novoRegistro, setNovoRegistro] = useState(true);
-  const [modoEdicao] = useState(false);
+  const [modoEdicao, setModoEdicao] = useState(false);
 
   const [idComunicado, setIdComunicado] = useState();
 
@@ -80,10 +80,15 @@ const ComunicadosCadastro = ({ match }) => {
     descricao: '',
   });
 
+  const handleModoEdicao = () => {
+    if (!modoEdicao) setModoEdicao(true);
+  };
+
   const [descricaoComunicado, setDescricaoComunicado] = useState('');
 
   const onChangeDescricaoComunicado = descricao => {
     setDescricaoComunicado(descricao);
+    handleModoEdicao();
   };
 
   const [inseridoAlterado, setInseridoAlterado] = useState({
@@ -216,8 +221,17 @@ const ComunicadosCadastro = ({ match }) => {
     }
   };
 
-  const onClickVoltar = () => {
-    history.push(RotasDto.ACOMPANHAMENTO_COMUNICADOS);
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) history.push(RotasDto.ACOMPANHAMENTO_COMUNICADOS);
+    } else {
+      history.push(RotasDto.ACOMPANHAMENTO_COMUNICADOS);
+    }
   };
 
   const onClickBotaoPrincipal = form => {
@@ -238,8 +252,25 @@ const ComunicadosCadastro = ({ match }) => {
     }
   };
 
+  const resetarTela = form => {
+    form.resetForm();
+    setModoEdicao(false);
+  };
+
+  const onClickCancelar = async form => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) resetarTela(form);
+    }
+  };
+
   const onChangeGruposId = gruposId => {
     setValoresIniciais({ ...refForm.state.values, gruposId });
+    handleModoEdicao();
   };
 
   return (
@@ -268,8 +299,10 @@ const ComunicadosCadastro = ({ match }) => {
                   }
                   onClickExcluir={onClickExcluir}
                   onClickVoltar={onClickVoltar}
+                  onClickCancelar={onClickCancelar}
                   onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
-                  labelBotaoPrincipal={idComunicado ? 'Salvar' : 'Cadastrar'}
+                  desabilitarBotaoPrincipal={!modoEdicao}
+                  labelBotaoPrincipal={idComunicado ? 'Alterar' : 'Cadastrar'}
                 />
                 <Linha className="row mb-2">
                   <Grid cols={4}>
@@ -295,6 +328,7 @@ const ComunicadosCadastro = ({ match }) => {
                       placeholder="Selecione a data de envio"
                       formatoData="DD/MM/YYYY"
                       desabilitado={somenteConsulta}
+                      onChange={handleModoEdicao}
                     />
                   </Grid>
                   <Grid cols={4}>
@@ -305,6 +339,7 @@ const ComunicadosCadastro = ({ match }) => {
                       placeholder="Selecione a data de expiração"
                       formatoData="DD/MM/YYYY"
                       desabilitado={somenteConsulta}
+                      onChange={handleModoEdicao}
                     />
                   </Grid>
                 </Linha>
@@ -317,6 +352,7 @@ const ComunicadosCadastro = ({ match }) => {
                       placeholder="Título do comunicado"
                       value={form.values.titulo}
                       desabilitado={somenteConsulta}
+                      onChange={handleModoEdicao}
                     />
                   </Grid>
                 </Linha>
@@ -324,6 +360,8 @@ const ComunicadosCadastro = ({ match }) => {
                   <Grid cols={12}>
                     <Label control="textEditor" text="Descrição" />
                     <Editor
+                      form={form}
+                      name="descricao"
                       inicial={descricaoComunicado}
                       onChange={onChangeDescricaoComunicado}
                       desabilitar={somenteConsulta}
