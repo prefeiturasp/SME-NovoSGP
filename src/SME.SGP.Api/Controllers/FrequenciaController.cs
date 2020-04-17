@@ -38,16 +38,16 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("frequencias/notificar/alunos/faltosos")]
-        public IActionResult NotificarAlunosFaltosos()
+        public IActionResult NotificarAlunosFaltosos([FromServices]IServicoNotificacaoFrequencia servico)
         {
-            Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarAlunosFaltosos());
+            servico.NotificarAlunosFaltosos();
             return Ok();
         }
 
         [HttpPost("frequencias/notificar/alunos/faltosos/bimestre")]
-        public IActionResult NotificarAlunosFaltososBimestre()
+        public IActionResult NotificarAlunosFaltososBimestre([FromServices]IServicoNotificacaoFrequencia servico)
         {
-            Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarAlunosFaltososBimestre());
+            servico.NotificarAlunosFaltososBimestre();
             return Ok();
         }
 
