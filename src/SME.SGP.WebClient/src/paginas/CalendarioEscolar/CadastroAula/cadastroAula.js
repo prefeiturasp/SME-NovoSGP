@@ -586,8 +586,8 @@ const CadastroAula = ({ match }) => {
       } = await ServicoAula.salvar(idAula, dados);
       if (dataRespSalvar && status === 200) {
         setCarregandoSalvar(false);
-        sucesso(dataRespSalvar.mensagens[0]);
         history.push('/calendario-escolar/calendario-professor');
+        sucesso(dataRespSalvar.mensagens[0]);
       } else if (response) {
         setCarregandoSalvar(false);
         erro(
