@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,7 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoAluno repositorio;
         private readonly IServicoEOL servicoEOL;
 
-        public ConsultasFechamentoAluno (IRepositorioFechamentoAluno repositorio
+        public ConsultasFechamentoAluno(IRepositorioFechamentoAluno repositorio
                                             , IServicoEOL servicoEOL)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
@@ -32,11 +31,31 @@ namespace SME.SGP.Aplicacao
             var dadosAluno = (AlunoDadosBasicosDto)dadosAlunos.FirstOrDefault(c => c.CodigoTurma.ToString() == codigoTurma);
 
             var anotacaoAluno = await consultaFechamentoAluno;
-            var anotacaoDto = anotacaoAluno == null ? 
+            var anotacaoDto = anotacaoAluno == null ?
                             new FechamentoAlunoCompletoDto() { Aluno = dadosAluno } :
                             MapearParaDto(anotacaoAluno, dadosAluno);
 
             return anotacaoDto;
+        }
+
+        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacaoAlunoParaConselhoAsync(string alunoCodigo, string turmaCodigo, int bimestre, bool EhFinal)
+        {
+            var anotacoesDto = await repositorio.ObterAnotacoesTurmaAlunoBimestreAsync(alunoCodigo, turmaCodigo, bimestre, EhFinal);
+            if (anotacoesDto == null || !anotacoesDto.Any())
+                return default;
+
+            var disciplinasIds = anotacoesDto.Select(a => long.Parse(a.DisciplinaId)).ToArray();
+
+            var disciplinas = await servicoEOL.ObterDisciplinasPorIdsAsync(disciplinasIds);
+
+            foreach (var anotacao in anotacoesDto)
+            {
+                var disciplina = disciplinas.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(anotacao.DisciplinaId));
+                if (disciplina != null)
+                    anotacao.Disciplina = disciplina.Nome;
+            }
+
+            return anotacoesDto;
         }
 
         public async Task<FechamentoAluno> ObterAnotacaoPorAlunoEFechamento(long fechamentoId, string codigoAluno)

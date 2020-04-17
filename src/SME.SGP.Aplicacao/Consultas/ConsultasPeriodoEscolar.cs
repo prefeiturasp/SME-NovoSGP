@@ -107,16 +107,32 @@ namespace SME.SGP.Aplicacao.Consultas
 
         public async Task<IEnumerable<PeriodoEscolarDto>> ObterPeriodosEmAberto(long ueId, Modalidade modalidadeCodigo, int anoLetivo)
         {
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, 
-                                                                modalidadeCodigo == Modalidade.EJA ? 
-                                                                    ModalidadeTipoCalendario.EJA : 
+            var dataAtual = DateTime.Today;
+            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo,
+                                                                modalidadeCodigo == Modalidade.EJA ?
+                                                                    ModalidadeTipoCalendario.EJA :
                                                                     ModalidadeTipoCalendario.FundamentalMedio);
 
-            var periodoAtual = ObterPeriodoEscolarPorData(tipoCalendario.Id, DateTime.Now.Date);
-            var periodos = new List<PeriodoEscolarDto>() { periodoAtual };
+            var periodos = new List<PeriodoEscolarDto>();
+            if (anoLetivo == dataAtual.Year)
+            {
+                var periodosEscolaresAbertos = await repositorio.ObterPeriodosEmAbertoPorTipoCalendarioData(tipoCalendario.Id, dataAtual);
+                foreach (var periodoEscolar in periodosEscolaresAbertos)
+                {
+                    periodos.Add(MapearParaDto(periodoEscolar));
+                }
+            }
+            else
+            {
+                var periodoAtual = ObterPeriodoEscolarPorData(tipoCalendario.Id, dataAtual);
+                periodos.Add(periodoAtual);
+            }
             periodos.AddRange(await consultasPeriodoFechamento.ObterPeriodosEmAberto(ueId));
 
             return periodos;
         }
+
+        public async Task<PeriodoEscolarDto> ObterUltimoBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre)
+            => await repositorio.ObterUltimoBimestreAsync(anoLetivo, modalidade, semestre);
     }
 }

@@ -1306,8 +1306,13 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 queryDreUe.AppendLine("and e.ue_id = @UeId");
 
+            bool temFiltroDreUe = false;
+
             if (!String.IsNullOrEmpty(queryDreUe.ToString()))
+            {
+                temFiltroDreUe = true;
                 queryDreUe.AppendLine(")");
+            }
 
             if (podeVisualizarEventosLocalOcorrenciaDre)
             {
@@ -1321,7 +1326,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!String.IsNullOrEmpty(queryDreUe.ToString()))
             {
-                queryDreUe.Insert(queryDreUe.ToString().IndexOf("and") + 4, "((").Insert(queryDreUe.ToString().Length - 1, ")");
+                queryDreUe.Insert(queryDreUe.ToString().IndexOf("and") + 4, temFiltroDreUe ? "((" : "(").Insert(queryDreUe.ToString().Length - 1, ")");
                 query.AppendLine(queryDreUe.ToString());
             }
 

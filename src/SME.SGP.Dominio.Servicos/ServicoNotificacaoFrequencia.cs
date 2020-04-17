@@ -259,14 +259,15 @@ namespace SME.SGP.Dominio.Servicos
                                                           percentualCritico,
                                                           periodoEscolar.Bimestre,
                                                           dataReferencia.Year,
-                                                          uesAgrupadas.GroupBy(u => u.TurmaCodigo));
+                                                          uesAgrupadas.GroupBy(u => u.TurmaCodigo),
+                                                          modalidadeTipoCalendario);
                 }
             }
         }
 
-        private void NotificarEscolaAlunosFaltososBimestre(string dreCodigo, string dreNome, string dreAbreviacao, TipoEscola tipoEscola, string ueCodigo, string ueNome, double percentualCritico, int bimestre, int ano, IEnumerable<IGrouping<string, AlunoFaltosoBimestreDto>> turmasAgrupadas)
+        private void NotificarEscolaAlunosFaltososBimestre(string dreCodigo, string dreNome, TipoEscola tipoEscola, string dreAbreviacao, TipoEscola tipoEscola, string ueCodigo, string ueNome, double percentualCritico, int bimestre, int ano, IEnumerable<IGrouping<string, AlunoFaltosoBimestreDto>> turmasAgrupadas, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
-            var titulo = $"Alunos com baixa frequência da {tipoEscola.ShortName()} {ueNome}";
+            var titulo = $"Alunos com baixa frequência da {tipoEscola.ShortName()} {ueNome} - {modalidadeTipoCalendario.Name()}";
             StringBuilder mensagem = new StringBuilder();
             mensagem.AppendLine($"<p>Abaixo segue a lista de turmas com alunos que tiveram frequência geral abaixo de <b>{percentualCritico}%</b> no <b>{bimestre}º bimestre</b> de <b>{ano}</b> da <b>{tipoEscola.ShortName()} {ueNome} (DRE {dreAbreviacao})</b>.</p>");
 
