@@ -282,6 +282,9 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo);
 
+            if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
+                return 100;
+
             var frequenciaAluno = new FrequenciaAluno()
             {
                 TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),

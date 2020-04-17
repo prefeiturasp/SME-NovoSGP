@@ -14,5 +14,6 @@ namespace SME.SGP.Aplicacao
 
         int ObterBimestre(DateTime data, Modalidade modalidade);
         Task<IEnumerable<PeriodoEscolarDto>> ObterPeriodosEmAberto(long ueId, Modalidade modalidadeCodigo, int anoLetivo);
+        Task<PeriodoEscolarDto> ObterUltimoBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre);
     }
 }
