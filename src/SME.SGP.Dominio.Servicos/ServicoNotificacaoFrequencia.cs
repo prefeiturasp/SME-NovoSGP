@@ -248,10 +248,11 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var alunosFaltososBimestre = repositorioFrequenciaAluno.ObterAlunosFaltososBimestre(modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA, percentualCritico, periodoEscolar.Bimestre, tipoCalendario.AnoLetivo);
 
-                foreach(var uesAgrupadas in alunosFaltososBimestre.GroupBy(a => new { a.DreCodigo, a.DreNome, a.TipoEscola, a.UeCodigo, a.UeNome }))
+                foreach (var uesAgrupadas in alunosFaltososBimestre.GroupBy(a => new { a.DreCodigo, a.DreNome, a.DreAbreviacao, a.TipoEscola, a.UeCodigo, a.UeNome }))
                 {
                     NotificarEscolaAlunosFaltososBimestre(uesAgrupadas.Key.DreCodigo,
                                                           uesAgrupadas.Key.DreNome,
+                                                          uesAgrupadas.Key.DreAbreviacao,
                                                           (TipoEscola)uesAgrupadas.Key.TipoEscola,
                                                           uesAgrupadas.Key.UeCodigo,
                                                           uesAgrupadas.Key.UeNome,
@@ -263,18 +264,18 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void NotificarEscolaAlunosFaltososBimestre(string dreCodigo, string dreNome, TipoEscola tipoEscola, string ueCodigo, string ueNome, double percentualCritico, int bimestre, int ano, IEnumerable<IGrouping<string, AlunoFaltosoBimestreDto>> turmasAgrupadas)
+        private void NotificarEscolaAlunosFaltososBimestre(string dreCodigo, string dreNome, string dreAbreviacao, TipoEscola tipoEscola, string ueCodigo, string ueNome, double percentualCritico, int bimestre, int ano, IEnumerable<IGrouping<string, AlunoFaltosoBimestreDto>> turmasAgrupadas)
         {
             var titulo = $"Alunos com baixa frequência da {tipoEscola.ShortName()} {ueNome}";
             StringBuilder mensagem = new StringBuilder();
-            mensagem.AppendLine($"<p>Abaixo segue a lista de turmas com alunos que tiveram frequência geral abaixo de <b>{percentualCritico}%</b> no <b>{bimestre}º bimestre</b> de <b>{ano}</b> da <b>{tipoEscola.ShortName()} {ueNome} (DRE {dreNome})</b>.</p>");
+            mensagem.AppendLine($"<p>Abaixo segue a lista de turmas com alunos que tiveram frequência geral abaixo de <b>{percentualCritico}%</b> no <b>{bimestre}º bimestre</b> de <b>{ano}</b> da <b>{tipoEscola.ShortName()} {ueNome} (DRE {dreAbreviacao})</b>.</p>");
 
             foreach(var turmaAgrupada in turmasAgrupadas)
             {
                 var alunosDaTurma = servicoEOL.ObterAlunosPorTurma(turmaAgrupada.Key).Result;
                 var alunosFaltososTurma = alunosDaTurma.Where(c => turmaAgrupada.Any(a => a.AlunoCodigo == c.CodigoAluno));
 
-                mensagem.AppendLine($"<p>Turma <b>{turmaAgrupada.First().TurmaNome}</b></p>");
+                mensagem.AppendLine($"<p>Turma <b>{turmaAgrupada.First().TurmaModalidade.ShortName()} - {turmaAgrupada.First().TurmaNome}</b></p>");
                 mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
                 mensagem.AppendLine("<tr>");
                 mensagem.AppendLine("<td style='padding: 5px;'>Nº</td>");
@@ -282,7 +283,7 @@ namespace SME.SGP.Dominio.Servicos
                 mensagem.AppendLine("<td style='padding: 5px;'>Percentual de Frequência</td>");
                 mensagem.AppendLine("</tr>");
 
-                foreach(var aluno in alunosFaltososTurma)
+                foreach(var aluno in alunosFaltososTurma.OrderBy(a => a.NomeAluno))
                 {
                     var percentualFrequenciaAluno = 100 - turmaAgrupada.FirstOrDefault(c => c.AlunoCodigo == aluno.CodigoAluno).PercentualFaltas;
 
@@ -357,7 +358,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var titulo = $"Alunos com excesso de ausências na turma {turma.Nome} ({turma.Ue.Nome})";
             StringBuilder mensagem = new StringBuilder();
-            mensagem.AppendLine($"<p>O(s) seguinte(s) aluno(s) da turma <b>{turma.Nome}</b> da <b>{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome})</b> está(ão) há {quantidadeDias} dias sem comparecer as aulas.</p>");
+            mensagem.AppendLine($"<p>O(s) seguinte(s) aluno(s) da turma <b>{turma.ModalidadeCodigo.ShortName()}-{turma.Nome}</b> da <b>{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})</b> está(ão) há {quantidadeDias} dias sem comparecer as aulas.</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagem.AppendLine("<tr>");
@@ -365,7 +366,7 @@ namespace SME.SGP.Dominio.Servicos
             mensagem.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
             mensagem.AppendLine("</tr>");
 
-            foreach (var aluno in alunos)
+            foreach (var aluno in alunos.OrderBy(a=> a.NomeAluno))
             {
                 mensagem.AppendLine("<tr>");
                 mensagem.Append($"<td style='padding: 5px;'>{aluno.NumeroAlunoChamada}</td>");

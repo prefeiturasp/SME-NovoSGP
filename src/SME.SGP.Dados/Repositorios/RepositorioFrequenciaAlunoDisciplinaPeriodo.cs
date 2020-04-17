@@ -55,8 +55,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
 
-            query.AppendLine("select dre.dre_id as DreCodigo, dre.Nome as DreNome, ue.tipo_escola as TipoEscola, ue.ue_id as UeCodigo, ue.nome as UeNome");
-            query.AppendLine(", t.turma_id as TurmaCodigo, t.nome as TurmaNome, fa.codigo_aluno as AlunoCodigo");
+            query.AppendLine("select dre.dre_id as DreCodigo, dre.Abreviacao as DreAbreviacao, dre.Nome as DreNome, ue.tipo_escola as TipoEscola, ue.ue_id as UeCodigo, ue.nome as UeNome");
+            query.AppendLine(", t.turma_id as TurmaCodigo, t.nome as TurmaNome, t.modalidade_codigo as TurmaModalidade, fa.codigo_aluno as AlunoCodigo");
             query.AppendLine(", ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric)*100 PercentualFaltas");
             query.AppendLine("from frequencia_aluno fa");
             query.AppendLine("inner join turma t on t.turma_id = fa.turma_id");
