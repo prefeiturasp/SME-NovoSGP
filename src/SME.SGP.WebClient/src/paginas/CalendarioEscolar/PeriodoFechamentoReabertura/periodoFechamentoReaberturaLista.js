@@ -25,6 +25,12 @@ const PeriodoFechamentoReaberturaLista = () => {
 
   const permissoesTela =
     usuario.permissoes[RotasDto.PERIODO_FECHAMENTO_REABERTURA];
+  let { anoLetivo } = usuario.turmaSelecionada;
+
+  if (!anoLetivo) {
+    anoLetivo = new Date().getFullYear();
+  }
+
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
@@ -139,12 +145,6 @@ const PeriodoFechamentoReaberturaLista = () => {
 
   const obterListaTiposCalAnoLetivo = useCallback(
     lista => {
-      let { anoLetivo } = usuario.turmaSelecionada;
-
-      if (!anoLetivo) {
-        anoLetivo = new Date().getFullYear();
-      }
-
       if (usuario.turmaSelecionada && usuario.turmaSelecionada.modalidade) {
         const ehEja = usuario.turmaSelecionada.modalidade == modalidade.EJA;
         const listaPorAnoLetivoModalidade = lista.filter(item => {
@@ -164,7 +164,10 @@ const PeriodoFechamentoReaberturaLista = () => {
   useEffect(() => {
     async function consultaTipos() {
       setCarregandoTipos(true);
-      const listaTipo = await ServicoCalendarios.obterTiposCalendario();
+
+      const listaTipo = await ServicoCalendarios.obterTiposCalendario(
+        anoLetivo
+      );
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         const listaTipoPorAnoLetivo = obterListaTiposCalAnoLetivo(
           listaTipo.data
