@@ -26,6 +26,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IRepositorioPendencia repositorioPendencia;
+        private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -49,7 +50,8 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                         IRepositorioFechamentoNota repositorioFechamentoNota,
                                         IRepositorioUsuario repositorioUsuario,
-                                        IRepositorioPendencia repositorioPendencia)
+                                        IRepositorioPendencia repositorioPendencia,
+                                        IRepositorioEventoTipo repositorioEventoTipo)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioWorkflowAprovacaoNivelNotificacao = repositorioWorkflowAprovacaoNivelNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivelNotificacao));
@@ -69,6 +71,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
         }
 
         public void Aprovar(WorkflowAprovacao workflow, bool aprovar, string observacao, long notificacaoId)
@@ -226,12 +229,37 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não foi possível localizar a reabertura do fechamento do fluxo de aprovação.");
 
             fechamentoReabertura.AprovarWorkFlow();
-            //TODO: CRIAR EVENTOS;
+            
 
+            CriarEventoFechamentoReabertura(fechamentoReabertura);
+            
             repositorioFechamentoReabertura.Salvar(fechamentoReabertura);
 
             NotificarAdminSgpUeFechamentoReaberturaAprovado(fechamentoReabertura, codigoDaNotificacao, nivelId);
             NotificarDiretorUeFechamentoReaberturaAprovado(fechamentoReabertura, codigoDaNotificacao, nivelId);
+        }
+
+        private void CriarEventoFechamentoReabertura(FechamentoReabertura fechamentoReabertura)
+        {
+            var tipoEvento = repositorioEventoTipo.ObterTipoEventoPorTipo(TipoEvento.FechamentoBimestre);
+            if (tipoEvento == null)
+                throw new NegocioException($"Não foi possível localizar o tipo de evento {TipoEvento.FechamentoBimestre.GetAttribute<DisplayAttribute>().Name}.");
+
+            var evento = new Evento()
+            {
+                DataFim = fechamentoReabertura.Fim,
+                DataInicio = fechamentoReabertura.Inicio,
+                Descricao = fechamentoReabertura.Descricao,
+                Nome = $"Reabertura de fechamento de bimestre - {fechamentoReabertura.TipoCalendario.Nome} - {fechamentoReabertura.TipoCalendario.AnoLetivo}.",
+                TipoCalendarioId = fechamentoReabertura.TipoCalendario.Id,
+                DreId = fechamentoReabertura.Dre.CodigoDre,
+                UeId = fechamentoReabertura.Ue.CodigoUe,
+                Status = EntidadeStatus.Aprovado,
+                TipoEventoId = tipoEvento.Id,
+                Migrado = false,
+                Letivo = EventoLetivo.Sim,
+            };
+            repositorioEvento.Salvar(evento);
         }
 
         private void AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
