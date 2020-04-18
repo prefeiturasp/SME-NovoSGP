@@ -36,6 +36,11 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const [desabilitarTipoCalendario, setDesabilitarTipoCalendario] = useState(
     false
   );
+  let { anoLetivo } = usuarioStore.turmaSelecionada;
+
+  if (!anoLetivo) {
+    anoLetivo = new Date().getFullYear();
+  }
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [idFechamentoReabertura, setIdFechamentoReabertura] = useState(0);
   const [validacoes, setValidacoes] = useState({});
@@ -113,12 +118,6 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
 
   const obterListaTiposCalAnoLetivo = useCallback(
     lista => {
-      let { anoLetivo } = usuarioStore.turmaSelecionada;
-
-      if (!anoLetivo) {
-        anoLetivo = new Date().getFullYear();
-      }
-
       if (
         usuarioStore.turmaSelecionada &&
         usuarioStore.turmaSelecionada.modalidade
@@ -142,7 +141,9 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   useEffect(() => {
     async function consultaTipos() {
       setCarregandoTipos(true);
-      const listaTipo = await ServicoCalendarios.obterTiposCalendario();
+      const listaTipo = await ServicoCalendarios.obterTiposCalendario(
+        anoLetivo
+      );
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         const listaTipoPorAnoLetivo = obterListaTiposCalAnoLetivo(
           listaTipo.data
