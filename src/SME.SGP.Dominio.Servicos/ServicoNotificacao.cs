@@ -57,8 +57,9 @@ namespace SME.SGP.Dominio.Servicos
             else
                 funcionarios = servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)cargo);
 
-            if ((cargo == Cargo.Supervisor && (supervisoresEscola == null || !supervisoresEscola.Any())) ||
-                (funcionarios == null || !funcionarios.Any()))
+            if (cargo == Cargo.Supervisor ? 
+                supervisoresEscola == null || !supervisoresEscola.Any() :
+                funcionarios == null || !funcionarios.Any())
             {
                 Cargo? cargoProximoNivel = ObterProximoNivel(cargo, primeiroNivel);
 
