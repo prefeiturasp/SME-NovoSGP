@@ -212,7 +212,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             // Valida Permissão do Professor na Turma/Disciplina
-            VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoFechamentoBimestre.PeriodoEscolar.PeriodoFim);
+            await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoFechamentoBimestre.PeriodoEscolar.PeriodoFim);
 
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
