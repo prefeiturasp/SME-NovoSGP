@@ -395,6 +395,17 @@ const CadastroAula = ({ match }) => {
     }
   };
 
+  const validaF5 = () => {
+    // TODO
+    // Manter enquanto não é realizado o refactor da tela e do calendário!
+    // Somente quando for novo registro, ao dar F5 a página perde a data selecionada no calendário do professor!
+    setCarregandoSalvar(true);
+    setTimeout(() => {
+      history.push(RotasDTO.CALENDARIO_PROFESSOR);
+      setCarregandoSalvar(false);
+    }, 2000);
+  };
+
   const validarConsultaModoEdicaoENovo = async () => {
     setBreadcrumbManual(
       match.url,
@@ -406,9 +417,11 @@ const CadastroAula = ({ match }) => {
       setNovoRegistro(false);
       setIdAula(match.params.id);
       consultaPorId(match.params.id);
-    } else {
+    } else if (diaAula) {
       setNovoRegistro(true);
       setDataAula(window.moment(diaAula));
+    } else {
+      validaF5();
     }
   };
 
