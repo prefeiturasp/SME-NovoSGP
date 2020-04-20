@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,14 +15,17 @@ namespace SME.SGP.Aplicacao.Servicos
     {
         private readonly IConsultasSupervisor consultasSupervisor;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
+        private readonly IRepositorioCiclo repositorioCiclo;
+        private readonly IRepositorioCicloEnsino repositorioCicloEnsino;
         private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioTipoEscola repositorioTipoEscola;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoEOL servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
         public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEOL servicoEOL, IConsultasSupervisor consultasSupervisor,
-            IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma)
+            IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma, IRepositorioCicloEnsino repositorioCicloEnsino, IRepositorioTipoEscola repositorioTipoEscola)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -30,6 +34,8 @@ namespace SME.SGP.Aplicacao.Servicos
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTipoEscola = repositorioTipoEscola ?? throw new ArgumentNullException(nameof(repositorioTipoEscola));
+            this.repositorioCicloEnsino = repositorioCicloEnsino ?? throw new ArgumentNullException(nameof(repositorioCicloEnsino));
         }
 
         public void RemoverAbrangencias(long[] ids)
@@ -58,6 +64,29 @@ namespace SME.SGP.Aplicacao.Servicos
             else
             {
                 var erro = new NegocioException("Não foi possível obter dados de estrutura institucional do EOL");
+                SentrySdk.CaptureException(erro);
+                throw erro;
+            }
+
+            var tiposEscolas = servicoEOL.BuscarTiposEscola();
+            if (tiposEscolas.Any())
+            {
+                SincronizarTiposEscola(tiposEscolas);
+            }
+            else
+            {
+                var erro = new NegocioException("Não foi possível obter dados de tipos de escolas do EOL");
+                SentrySdk.CaptureException(erro);
+                throw erro;
+            }
+            var ciclos = servicoEOL.BuscarCiclos();
+            if (ciclos.Any())
+            {
+                SincronizarCiclos(ciclos);
+            }
+            else
+            {
+                var erro = new NegocioException("Não foi possível obter dados de ciclos de ensino do EOL");
                 SentrySdk.CaptureException(erro);
                 throw erro;
             }
@@ -223,6 +252,19 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar);
         }
 
+        private void SincronizarCiclos(IEnumerable<CicloRetornoDto> ciclos)
+        {
+            IEnumerable<CicloEnsino> ciclosEnsino = ciclos.Select(x =>
+            new CicloEnsino
+            {
+                Descricao = x.Descricao,
+                DtAtualizacao = x.DtAtualizacao,
+                CodEol = x.Codigo
+            });
+
+            repositorioCicloEnsino.Sincronizar(ciclosEnsino);
+        }
+
         private void SincronizarEstruturaInstitucional(EstruturaInstitucionalRetornoEolDTO estrutura)
         {
             IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
@@ -248,6 +290,19 @@ namespace SME.SGP.Aplicacao.Servicos
             dres = repositorioDre.Sincronizar(dres);
             ues = repositorioUe.Sincronizar(ues, dres);
             repositorioTurma.Sincronizar(turmas, ues);
+        }
+
+        private void SincronizarTiposEscola(IEnumerable<TipoEscolaRetornoDto> tiposEscolasDto)
+        {
+            IEnumerable<TipoEscolaEol> tiposEscolas = tiposEscolasDto.Select(x =>
+            new TipoEscolaEol
+            {
+                Descricao = x.DescricaoSigla,
+                DtAtualizacao = x.DtAtualizacao,
+                CodEol = x.Codigo
+            });
+
+            repositorioTipoEscola.Sincronizar(tiposEscolas);
         }
 
         private async Task TrataAbrangenciaLogin(string login, Guid perfil)
