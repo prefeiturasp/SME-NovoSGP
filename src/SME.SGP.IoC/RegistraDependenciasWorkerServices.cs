@@ -217,6 +217,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioGrupoComunicacao, RepositorioGrupoComunicacao>();
             services.TryAddScopedWorkerService<IRepositorioWfAprovacaoNotaFechamento, RepositorioWfAprovacaoNotaFechamento>();
             services.TryAddScopedWorkerService<IRepositorioConselhoClasseRecomendacao, RepositorioConselhoClasseRecomendacao>();
+            services.TryAddScopedWorkerService<IRepositorioCicloEnsino, RepositorioCicloEnsino>();
+            services.TryAddScopedWorkerService<IRepositorioTipoEscola, RepositorioTipoEscola>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
