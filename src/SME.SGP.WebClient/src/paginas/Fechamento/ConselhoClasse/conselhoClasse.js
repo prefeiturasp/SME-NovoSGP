@@ -26,7 +26,7 @@ const ConselhoClasse = () => {
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
-  const { turma, anoLetivo } = turmaSelecionada;
+  const { turma, anoLetivo, periodo } = turmaSelecionada;
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [exibirListas, setExibirListas] = useState(false);
@@ -35,14 +35,15 @@ const ConselhoClasse = () => {
     setCarregandoGeral(true);
     const retorno = await ServicoConselhoClasse.obterListaAlunos(
       turma,
-      anoLetivo
+      anoLetivo,
+      periodo
     ).catch(e => erros(e));
     if (retorno && retorno.data) {
       dispatch(setAlunosConselhoClasse(retorno.data));
       setExibirListas(true);
     }
     setCarregandoGeral(false);
-  }, [anoLetivo, dispatch, turma]);
+  }, [anoLetivo, dispatch, turma, periodo]);
 
   const resetarInfomacoes = useCallback(() => {
     dispatch(limparDadosConselhoClasse());
