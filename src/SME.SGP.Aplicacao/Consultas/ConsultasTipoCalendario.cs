@@ -98,10 +98,10 @@ namespace SME.SGP.Aplicacao
                    select EntidadeParaDto(t);
         }
 
-        public async Task<TipoCalendario> ObterPorTurma(Turma turma, DateTime dataReferencia)
+        public async Task<TipoCalendario> ObterPorTurma(Turma turma)
             => repositorio.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo
                     , turma.ModalidadeTipoCalendario
-                    , dataReferencia.Semestre());
+                    , turma.Semestre);
 
         public Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
             => repositorio.PeriodoEmAberto(tipoCalendario.Id, dataReferencia, bimestre, ehAnoLetivo);
