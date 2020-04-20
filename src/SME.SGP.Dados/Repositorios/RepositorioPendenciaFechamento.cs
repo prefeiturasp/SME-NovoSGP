@@ -66,8 +66,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(string.Format(@"select {0}
                                   from pendencia_fechamento pf 
                                  inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id 
-                                 inner join turma t on t.id = ftd.turma_id 
-                                 inner join periodo_escolar pe on pe.id = ftd.periodo_escolar_id 
+                                 inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
+                                 inner join turma t on t.id = ft.turma_id 
+                                 inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                                  inner join pendencia p on p.id = pf.pendencia_id 
                                   where not p.excluido
                                     and t.turma_id = @turmaCodigo ", fields));
