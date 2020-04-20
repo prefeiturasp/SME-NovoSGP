@@ -481,10 +481,19 @@ const CompensacaoAusenciaForm = ({ match }) => {
     listaDisciplinas,
   ]);
 
+  const limparListas = () => {
+    setAlunosAusenciaCompensada([]);
+    setIdsAlunosAusenciaCompensadas([]);
+    setIdsAlunos([]);
+    setAlunosAusenciaTurma([]);
+    setAlunosAusenciaTurmaOriginal([]);
+  };
+
   const onChangeBimestre = async (bimestre, form) => {
+    limparListas();
     const dentroPeriodo = await podeAlterarNoPeriodo(String(bimestre));
     setForaDoPeriodo(!dentroPeriodo);
-
+    
     if (dentroPeriodo) {
       let podeEditar = false;
       const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
