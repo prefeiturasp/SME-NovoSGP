@@ -2,7 +2,7 @@ import api from '~/servicos/api';
 
 class ServicoConselhoClasse {
   obterListaAlunos = (turmaCodigo, anoLetivo, periodo) => {
-    const url = `v1/fechamentos/turmas/${turmaCodigo}/alunos/anos/${anoLetivo}&semestres=${periodo}`;
+    const url = `v1/fechamentos/turmas/${turmaCodigo}/alunos/anos/${anoLetivo}/semestres/${periodo}`;
     return api.get(url);
   };
 
