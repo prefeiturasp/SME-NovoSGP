@@ -102,19 +102,9 @@ namespace SME.SGP.Aplicacao.Consultas
                                                                     ModalidadeTipoCalendario.FundamentalMedio);
 
             var periodos = new List<PeriodoEscolar>();
-            if (anoLetivo == dataAtual.Year)
-            {
-                var periodosEscolaresAbertos = await repositorio.ObterPeriodosEmAbertoPorTipoCalendarioData(tipoCalendario.Id, dataAtual);
-                foreach (var periodoEscolar in periodosEscolaresAbertos)
-                {
-                    periodos.Add(periodoEscolar);
-                }
-            }
-            else
-            {
-                var periodoAtual = ObterPeriodoEscolarPorData(tipoCalendario.Id, dataAtual);
+            var periodoAtual = ObterPeriodoEscolarPorData(tipoCalendario.Id, dataAtual);
+            if (periodoAtual != null)
                 periodos.Add(periodoAtual);
-            }
             periodos.AddRange(await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(ueId));
 
             return periodos;
