@@ -98,6 +98,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ComunicadoMap());
                config.AddMap(new ComunicadoGrupoMap());
                config.AddMap(new ConselhoClasseRecomendacaoMap());
+               config.AddMap(new TipoEscolaMap());
+               config.AddMap(new CicloEnsinoMap());
                config.ForDommel();
            });
         }
