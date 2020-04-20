@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<PeriodoEscolarDto>> ObterPeriodosEmAberto(long ueId, DateTime dataReferencia)
+        public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosFechamentoEmAberto(long ueId, DateTime dataReferencia)
         {
             var query = @"select pe.*
                           from evento e
@@ -41,7 +41,7 @@ namespace SME.SGP.Dados.Repositorios
                            and e.data_fim >= @dataReferencia
                            and ue.id = @ueId";
 
-            return await database.Conexao.QueryAsync<PeriodoEscolarDto>(query, new { ueId, dataReferencia });
+            return await database.Conexao.QueryAsync<PeriodoEscolar>(query, new { ueId, dataReferencia });
         }
 
         public EventoFechamento ObterPorIdFechamento(long fechamentoId)

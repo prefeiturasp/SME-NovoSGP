@@ -209,7 +209,7 @@ namespace SME.SGP.Aplicacao
                             notasAvaliacoes.Add(notaAvaliacao);
                         }
 
-                        notaConceitoAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolarDto()
+                        notaConceitoAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar()
                         {
                             Bimestre = valorBimestreAtual,
                             PeriodoInicio = periodoAtual.PeriodoInicio,
@@ -243,7 +243,7 @@ namespace SME.SGP.Aplicacao
                                     var notaRegencia = notasConceitoBimestre?.FirstOrDefault(c => c.DisciplinaId == disciplinaRegencia.CodigoComponenteCurricular);
                                     if (notaRegencia != null)
                                     {
-                                        nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota ?? 0);
+                                        nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota);
                                         nota.ehConceito = notaRegencia.ConceitoId.HasValue;
                                     }
 
@@ -258,7 +258,7 @@ namespace SME.SGP.Aplicacao
                                         Disciplina = disciplinaEOL.Nome,
                                         NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ?
                                             notaConceitoBimestre.ConceitoId.Value :
-                                            notaConceitoBimestre.Nota ?? 0,
+                                            notaConceitoBimestre.Nota,
                                         ehConceito = notaConceitoBimestre.ConceitoId.HasValue
                                     });
                         }
