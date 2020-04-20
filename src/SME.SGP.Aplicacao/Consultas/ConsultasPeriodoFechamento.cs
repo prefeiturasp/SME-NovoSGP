@@ -55,21 +55,21 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> TurmaEmPeriodoDeFechamento(string turmaCodigo, DateTime dataReferencia, int bimestre = 0)
         {
             var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
-            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
 
             return await TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, bimestre);
         }
 
         public async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, DateTime dataReferencia, int bimestre = 0)
         {
-            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
 
             return await TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, bimestre);
         }
 
         public async Task<bool> TurmaEmPeriodoDeFechamentoAula(Turma turma, DateTime dataReferencia, int bimestre = 0, int bimestreAlteracao = 0)
         {
-            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var ueEmFechamento = await UeEmFechamento(turma, tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
             return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestreAlteracao, dataReferencia);
         }
