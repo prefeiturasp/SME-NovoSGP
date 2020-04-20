@@ -14,4 +14,5 @@
 [Environment]::SetEnvironmentVariable("JwtTokenSettings__Issuer", "Novo SGP", "Machine")
 [Environment]::SetEnvironmentVariable("JwtTokenSettings__ExpiresInMinutes", "720", "Machine")
 [Environment]::SetEnvironmentVariable("FF_BackgroundEnabled", "true", "Machine")
+[Environment]::SetEnvironmentVariable("AE_ChaveIntegracao", "78e9f4e7b848afb642ce50270174dddf18bcaabb66db112b9198fee6529f0e9d", "Machine")
 
