@@ -209,7 +209,7 @@ namespace SME.SGP.Aplicacao
                             notasAvaliacoes.Add(notaAvaliacao);
                         }
 
-                        notaConceitoAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolarDto()
+                        notaConceitoAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar()
                         {
                             Bimestre = valorBimestreAtual,
                             PeriodoInicio = periodoAtual.PeriodoInicio,
