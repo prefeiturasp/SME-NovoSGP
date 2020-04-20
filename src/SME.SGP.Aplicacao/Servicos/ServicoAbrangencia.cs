@@ -259,7 +259,9 @@ namespace SME.SGP.Aplicacao.Servicos
             {
                 Descricao = x.Descricao,
                 DtAtualizacao = x.DtAtualizacao,
-                CodEol = x.Codigo
+                CodEol = x.Codigo,
+                CodigoEtapaEnsino = x.CodigoEtapaEnsino,
+                CodigoModalidadeEnsino = x.CodigoModalidadeEnsino
             });
 
             repositorioCicloEnsino.Sincronizar(ciclosEnsino);
