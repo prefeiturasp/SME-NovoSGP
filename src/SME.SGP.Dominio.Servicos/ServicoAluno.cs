@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAluno : IServicoAluno
     {
-        public MarcadorFrequenciaDto ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolarDto bimestre)
+        public MarcadorFrequenciaDto ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolar bimestre)
         {
             MarcadorFrequenciaDto marcador = null;
 
