@@ -128,7 +128,7 @@ namespace SME.SGP.Dominio
             {
                 var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
 
-                entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf, disciplinaId, usuario));
+                entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf, disciplinaId, usuario, turma));
             }
 
             SalvarNoBanco(entidadesSalvar);
@@ -159,7 +159,7 @@ namespace SME.SGP.Dominio
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
                 var valoresConceito = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
-                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
+                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, dataAtual.Year != atividadeAvaliativa.DataAvaliacao.Year);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
                 var quantidadeAlunos = notasPorAvaliacao.Count();
@@ -279,15 +279,16 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Somente o professor que criou a avaliação, pode atribuir e/ou editar notas/conceitos");
         }
 
-        private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId, Usuario usuario)
+        private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId, 
+            Usuario usuario, Turma turma)
         {
             var notasMultidisciplina = new List<NotaConceito>();
             var alunosNotasExtemporaneas = new StringBuilder();
             var nota = notasConceitos.FirstOrDefault();
-            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa);
+            
+            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, atividadeAvaliativa.DataAvaliacao.Year != DateTime.Now.Year);
             var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
-            var dataAtual = DateTime.Now;
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(atividadeAvaliativa.TurmaId);
+            var dataAtual = DateTime.Now;            
 
             // Verifica Bimestre Atual
             var dataPesquisa = DateTime.Today;
