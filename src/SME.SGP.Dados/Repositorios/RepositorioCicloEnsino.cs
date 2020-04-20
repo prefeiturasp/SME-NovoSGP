@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCicloEnsino : RepositorioBase<CicloEnsino>, IRepositorioCicloEnsino
     {
-        private const string QuerySincronizacao = @"SELECT id, cod_ciclo_ensino_eol,  descricao, data_atualizacao FROM public.ciclo_ensino where cod_ciclo_ensino_eol in (#ids);";
+        private const string QuerySincronizacao = @"SELECT id, cod_ciclo_ensino_eol,codigo_modalidade_ensino,codigo_etapa_ensino,descricao, data_atualizacao FROM public.ciclo_ensino where cod_ciclo_ensino_eol in (#ids);";
 
         public RepositorioCicloEnsino(ISgpContext database) : base(database)
         {
@@ -29,7 +29,9 @@ namespace SME.SGP.Dados.Repositorios
             var modificados = from c in ciclosEnsino
                               join l in armazenados on c.CodEol equals l.CodEol
                               where l.DtAtualizacao != DateTime.Today &&
-                                    (c.Descricao != l.Descricao)
+                                    (c.Descricao != l.Descricao) &&
+                                    (c.CodigoModalidadeEnsino != l.CodigoModalidadeEnsino) &&
+                                    (c.CodigoEtapaEnsino != l.CodigoEtapaEnsino)
                               select new CicloEnsino()
                               {
                                   Id = l.Id,
