@@ -125,7 +125,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
           tipo: 'warning',
           id: 'alerta-perido-fechamento',
           mensagem:
-            'Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.',
+            'Apenas é possível consultar este registro pois o período não está em aberto.',
           estiloTitulo: { fontSize: '18px' },
         }}
         className="mb-2"
@@ -141,13 +141,12 @@ const CompensacaoAusenciaForm = ({ match }) => {
       ).catch(e => {
         erros(e);
       });
-      if (podeAlterar && !podeAlterar.data) {
-        setForaDoPeriodo(true);
-        setDesabilitarCampos(true);
-      } else {
+      if (podeAlterar && podeAlterar.data) {
         setDesabilitarCampos(false);
-        setForaDoPeriodo(false);
+        return true;
       }
+      setDesabilitarCampos(true);
+      return false;
     },
     [turmaSelecionada.turma]
   );
@@ -290,7 +289,10 @@ const CompensacaoAusenciaForm = ({ match }) => {
             resultado.data.disciplinasRegencia
           );
 
-          podeAlterarNoPeriodo(String(resultado.data.bimestre));
+          const dentroPeriodo = await podeAlterarNoPeriodo(
+            String(resultado.data.bimestre)
+          );
+          setForaDoPeriodo(!dentroPeriodo);
 
           const disciplinasRegencia =
             resultado.data.disciplinasRegencia &&
@@ -312,11 +314,13 @@ const CompensacaoAusenciaForm = ({ match }) => {
             setAlunosAusenciaCompensada(resultado.data.alunos);
           }
 
-          obterAlunosComAusencia(
-            resultado.data.disciplinaId,
-            resultado.data.bimestre,
-            resultado.data.alunos
-          );
+          if (dentroPeriodo) {
+            obterAlunosComAusencia(
+              resultado.data.disciplinaId,
+              resultado.data.bimestre,
+              resultado.data.alunos
+            );
+          }
 
           setAuditoria({
             criadoPor: resultado.data.criadoPor,
@@ -478,43 +482,47 @@ const CompensacaoAusenciaForm = ({ match }) => {
   ]);
 
   const onChangeBimestre = async (bimestre, form) => {
-    podeAlterarNoPeriodo(bimestre);
-    let podeEditar = false;
-    const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
-      turmaSelecionada.turma,
-      form.values.disciplinaId,
-      bimestre
-    ).catch(e => {
-      erros(e);
-    });
-    if (
-      exucutandoCalculoFrequencia &&
-      exucutandoCalculoFrequencia.status === 200
-    ) {
-      const temProcessoEmExecucao =
-        exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data;
+    const dentroPeriodo = await podeAlterarNoPeriodo(String(bimestre));
+    setForaDoPeriodo(!dentroPeriodo);
 
-      if (temProcessoEmExecucao) {
-        podeEditar = false;
-      } else {
-        podeEditar = true;
-      }
+    if (dentroPeriodo) {
+      let podeEditar = false;
+      const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
+        turmaSelecionada.turma,
+        form.values.disciplinaId,
+        bimestre
+      ).catch(e => {
+        erros(e);
+      });
+      if (
+        exucutandoCalculoFrequencia &&
+        exucutandoCalculoFrequencia.status === 200
+      ) {
+        const temProcessoEmExecucao =
+          exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data;
 
-      if (podeEditar) {
-        setAlunosAusenciaCompensada([]);
-        setIdsAlunosAusenciaCompensadas([]);
-        setIdsAlunos([]);
-        if (bimestre && form && form.values.disciplinaId) {
-          obterAlunosComAusencia(form.values.disciplinaId, bimestre);
+        if (temProcessoEmExecucao) {
+          podeEditar = false;
         } else {
-          setAlunosAusenciaTurma([]);
-          setAlunosAusenciaTurmaOriginal([]);
+          podeEditar = true;
         }
-        onChangeCampos();
-      } else {
-        erro(
-          'No momento não é possível realizar a edição pois tem cálculo(s) em processo, tente mais tarde!'
-        );
+
+        if (podeEditar) {
+          setAlunosAusenciaCompensada([]);
+          setIdsAlunosAusenciaCompensadas([]);
+          setIdsAlunos([]);
+          if (bimestre && form && form.values.disciplinaId) {
+            obterAlunosComAusencia(form.values.disciplinaId, bimestre);
+          } else {
+            setAlunosAusenciaTurma([]);
+            setAlunosAusenciaTurmaOriginal([]);
+          }
+          onChangeCampos();
+        } else {
+          erro(
+            'No momento não é possível realizar a edição pois tem cálculo(s) em processo, tente mais tarde!'
+          );
+        }
       }
     }
   };
@@ -567,11 +575,19 @@ const CompensacaoAusenciaForm = ({ match }) => {
       } else {
         setAlunosAusenciaCompensada([]);
       }
-      obterAlunosComAusencia(
-        form.values.disciplinaId,
-        form.values.bimestre,
-        dadosEdicao.data.alunos
+
+      const dentroPeriodo = await podeAlterarNoPeriodo(
+        String(form.values.bimestre)
       );
+      setForaDoPeriodo(!dentroPeriodo);
+
+      if (dentroPeriodo) {
+        obterAlunosComAusencia(
+          form.values.disciplinaId,
+          form.values.bimestre,
+          dadosEdicao.data.alunos
+        );
+      }
       obterDisciplinasRegencia(
         form.values.disciplinaId,
         listaDisciplinas,
