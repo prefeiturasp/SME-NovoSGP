@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
             return periodosAbertos;
         }
 
-        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, PeriodoEscolarDto periodoEscolarDto = null)
+        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, PeriodoEscolar periodoEscolar = null)
         {
             var dadosAlunos = await servicoEOL.ObterAlunosPorTurma(turmaCodigo, anoLetivo);
             if (dadosAlunos == null || !dadosAlunos.Any())
@@ -112,8 +112,8 @@ namespace SME.SGP.Aplicacao
             {
                 var dadosBasicos = (AlunoDadosBasicosDto)dadoAluno;
                 // se informado periodo escolar carrega marcadores no periodo
-                if (periodoEscolarDto != null)
-                    dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolarDto);
+                if (periodoEscolar != null)
+                    dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolar);
 
                 dadosAlunosDto.Add(dadosBasicos);
             }
