@@ -46,7 +46,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/parecer")]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(ConselhoClasseAlunoResumoDto), 200)]
+        [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices]IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
             => Ok(await consultasConselhoClasseAluno.ObterParecerConclusivo(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
