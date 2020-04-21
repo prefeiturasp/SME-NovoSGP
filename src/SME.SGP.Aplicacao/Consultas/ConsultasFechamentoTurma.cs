@@ -16,6 +16,9 @@ namespace SME.SGP.Aplicacao.Consultas
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
         }
 
+        public async Task<FechamentoTurma> ObterCompletoPorIdAsync(long fechamentoTurmaId)
+            => await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
+
         public async Task<FechamentoTurma> ObterPorTurmaCodigoBimestreAsync(string turmaCodigo, int bimestre = 0)
             => await repositorioFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turmaCodigo, bimestre);
     }

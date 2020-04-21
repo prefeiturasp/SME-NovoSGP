@@ -9,5 +9,6 @@ namespace SME.SGP.Aplicacao
     public interface IConsultasConselhoClasseAluno
     {
         Task<ConselhoClasseAluno> ObterPorConselhoClasseAsync(long conselhoClasseId, string alunoCodigo);
+        Task<bool> ExisteConselhoClasseUltimoBimestreAsync(Turma turma, string alunoCodigo);
     }
 }

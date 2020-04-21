@@ -79,5 +79,18 @@ namespace SME.SGP.Dados.Repositorios
                 }
                 , new { codigoTurma, codigoAluno, bimestre })).FirstOrDefault();
         }
+
+        public async Task<ConselhoClasseAluno> ObterPorPeriodo(string alunoCodigo, long turmaId, long periodoEscolarId)
+        {
+            var query = @"select cca.* 
+                          from fechamento_turma ft
+                         inner join conselho_classe cc on cc.fechamento_turma_id = ft.id 
+                         inner join conselho_classe_aluno cca on cca.conselho_classe_id = cc.id
+                         where ft.periodo_escolar_id = @periodoEscolarId
+                           and ft.turma_id = @turmaId
+                           and cca.aluno_codigo = @alunoCodigo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseAluno>(query, new { alunoCodigo, turmaId, periodoEscolarId });
+        }
     }
 }
