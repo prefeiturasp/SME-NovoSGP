@@ -50,8 +50,7 @@ namespace SME.SGP.Aplicacao
             {
                 FechamentoTurmaId = fechamentoTurma.Id,
                 ConselhoClasseTurmaId = conselhoClasse?.Id,
-                Bimestre = bimestre,
-                PodeAcessarAbaFinal = await consultasConselhoClasseAluno.ExisteConselhoClasseUltimoBimestreAsync(turma, alunoCodigo)
+                Bimestre = bimestre
             };
         }
 
