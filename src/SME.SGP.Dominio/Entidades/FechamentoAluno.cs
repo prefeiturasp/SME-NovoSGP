@@ -12,6 +12,7 @@ namespace SME.SGP.Dominio
         }
 
         public long FechamentoTurmaDisciplinaId { get; set; }
+        public FechamentoTurmaDisciplina FechamentoTurmaDisciplina { get; set; }   
         public string AlunoCodigo { get; set; }
         public string Anotacao { get; set; }
 

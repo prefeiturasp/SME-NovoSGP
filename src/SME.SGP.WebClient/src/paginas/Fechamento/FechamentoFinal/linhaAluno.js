@@ -22,15 +22,39 @@ const LinhaAluno = ({
   desabilitarCampo,
   ehSintese,
 }) => {
+  
+  const obterValorConceito = valor => {
+    if (listaConceitos && listaConceitos.length) {
+      const conceito = listaConceitos.find(item => item.id == valor);
+      return conceito ? conceito.valor : '';
+    }
+    return '';
+  };
+
   const montaLinhaNotasConceitos = () => {
-    if (ehNota) {
+    if (ehNota && ehRegencia) {
+      return aluno.notasConceitoBimestre
+        .filter(n => n.disciplinaCodigo == disciplinaSelecionada)
+        .map(c => <div className="input-notas">{c.notaConceito}</div>);
+    }
+
+    if (ehNota && !ehRegencia) {
       return aluno.notasConceitoBimestre.map(c => (
         <div className="input-notas">{c.notaConceito}</div>
       ));
     }
+
+    if (!ehNota && !ehRegencia) {
+      return aluno.notasConceitoBimestre.map(c => (
+        <div className="input-notas">{obterValorConceito(c.notaConceito)}</div>
+      ));
+    }
+
     return aluno.notasConceitoBimestre
       .filter(n => n.disciplinaCodigo == disciplinaSelecionada)
-      .map(c => <div className="input-notas">{c.notaConceito}</div>);
+      .map(c => (
+        <div className="input-notas">{obterValorConceito(c.notaConceito)}</div>
+      ));
   };
 
   const montaNotaFinal = (aluno, indexNotaConceito) => {
@@ -73,7 +97,7 @@ const LinhaAluno = ({
           onChangeNotaConceitoFinal={(nota, valor) =>
             onChangeNotaConceitoFinal(nota, valor)
           }
-          desabilitarCampo={false}
+          desabilitarCampo={desabilitarCampo}
           podeEditar={aluno.podeEditar}
           listaTiposConceitos={listaConceitos}
           label={label}

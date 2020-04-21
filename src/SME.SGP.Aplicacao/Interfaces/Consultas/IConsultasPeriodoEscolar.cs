@@ -8,11 +8,17 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasPeriodoEscolar
     {
-        PeriodoEscolarDto ObterPeriodoEscolarPorData(long tipoCalendarioId, DateTime dataPeriodo);
+        PeriodoEscolar ObterPeriodoEscolarPorData(long tipoCalendarioId, DateTime dataPeriodo);
         PeriodoEscolarListaDto ObterPorTipoCalendario(long tipoCalendarioId);
         DateTime ObterFimPeriodoRecorrencia(long tipoCalendarioId, DateTime inicioRecorrencia, RecorrenciaAula recorrencia);
 
         int ObterBimestre(DateTime data, Modalidade modalidade);
-        Task<IEnumerable<PeriodoEscolarDto>> ObterPeriodosEmAberto(long ueId, Modalidade modalidadeCodigo, int anoLetivo);
+        Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEmAberto(long ueId, Modalidade modalidadeCodigo, int anoLetivo);
+        Task<PeriodoEscolarDto> ObterUltimoPeriodoAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre);
+        PeriodoEscolar ObterPeriodoPorModalidade(Modalidade modalidade, DateTime data);
+        PeriodoEscolar ObterPeriodoAtualPorModalidade(Modalidade modalidade);
+        PeriodoEscolar ObterPeriodoPorData(IEnumerable<PeriodoEscolar> periodosEscolares, DateTime data);
+        PeriodoEscolar ObterUltimoPeriodoPorData(IEnumerable<PeriodoEscolar> periodosEscolares, DateTime data);
+        IEnumerable<PeriodoEscolar> ObterPeriodosEscolares(long tipoCalendarioId);
     }
 }

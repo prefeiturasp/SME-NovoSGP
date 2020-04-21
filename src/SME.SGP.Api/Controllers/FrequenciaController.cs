@@ -37,6 +37,20 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpPost("frequencias/notificar/alunos/faltosos")]
+        public IActionResult NotificarAlunosFaltosos([FromServices]IServicoNotificacaoFrequencia servico)
+        {
+            servico.NotificarAlunosFaltosos();
+            return Ok();
+        }
+
+        [HttpPost("frequencias/notificar/alunos/faltosos/bimestre")]
+        public IActionResult NotificarAlunosFaltososBimestre([FromServices]IServicoNotificacaoFrequencia servico)
+        {
+            servico.NotificarAlunosFaltososBimestre();
+            return Ok();
+        }
+
         [HttpGet("frequencias/aulas/datas/{anoLetivo}/turmas/{turmaId}/disciplinas/{disciplinaId}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
