@@ -43,5 +43,12 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterConselhoClasseTurma(string turmaCodigo, int bimestre, string alunoCodigo, bool ehFinal, [FromServices]IConsultasConselhoClasse consultasConselhoClasse)
             => Ok(await consultasConselhoClasse.ObterConselhoClasseTurma(turmaCodigo, alunoCodigo, bimestre, ehFinal));
 
+        [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/parecer")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(ConselhoClasseAlunoResumoDto), 200)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices]IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
+            => Ok(await consultasConselhoClasseAluno.ObterParecerConclusivo(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
     }
 }
