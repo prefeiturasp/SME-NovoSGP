@@ -43,5 +43,10 @@ namespace SME.SGP.Dominio
             if (finalDoFechamento.HasValue)
                 FinalDoFechamento = finalDoFechamento.Value;
         }
+
+        public bool DataDentroPeriodo(DateTime data)
+        {
+            return InicioDoFechamento.Date <= data.Date && FinalDoFechamento >= data.Date;
+        }
     }
 }

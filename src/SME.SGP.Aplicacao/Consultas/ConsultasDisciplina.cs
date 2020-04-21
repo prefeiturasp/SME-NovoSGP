@@ -4,7 +4,6 @@ using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,32 +16,41 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasDisciplina(IServicoEOL servicoEOL,
-                                   IRepositorioCache repositorioCache,
-                                   IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
-                                   IServicoUsuario servicoUsuario,
-                                   IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
+            IRepositorioCache repositorioCache,
+            IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
+            IServicoUsuario servicoUsuario,
+            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
+            IRepositorioComponenteCurricular repositorioComponenteCurricular)
         {
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
-            this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
-            this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
-            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new System.ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.servicoEOL = servicoEOL ??
+                throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.repositorioCache = repositorioCache ??
+                throw new System.ArgumentNullException(nameof(repositorioCache));
+            this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ??
+                throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
+            this.servicoUsuario = servicoUsuario ??
+                throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ??
+                throw new System.ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ??
+                throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesCJ(Modalidade? modalidade, string codigoTurma, string ueId, long codigoDisciplina, string rf)
         {
             IEnumerable<DisciplinaResposta> componentes = null;
             var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidade,
-                                                                                           codigoTurma,
-                                                                                           ueId,
-                                                                                           codigoDisciplina,
-                                                                                           rf,
-                                                                                           string.Empty,
-                                                                                           true);
+                codigoTurma,
+                ueId,
+                codigoDisciplina,
+                rf,
+                string.Empty,
+                true);
 
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
@@ -61,64 +69,112 @@ namespace SME.SGP.Aplicacao
             return componentes;
         }
 
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasParaPlanejamento(FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
+        public async Task<List<DisciplinaDto>> ObterComponentesCurricularesPorProfessorETurma(string codigoTurma, bool turmaPrograma)
+        {
+            List<DisciplinaDto> disciplinasDto;
+
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+
+            var chaveCache = $"Disciplinas-{codigoTurma}-{usuarioLogado.PerfilAtual}";
+
+            if (!usuarioLogado.EhProfessor())
+            {
+                var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
+
+                if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
+                    return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+            }
+
+            var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricular.Listar()));
+            if (componentesCurricularesJurema == null)
+            {
+                throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
+            }
+
+            if (usuarioLogado.EhProfessorCj())
+            {
+                var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
+                disciplinasDto = await MapearParaDto(disciplinas, turmaPrograma);
+            }
+            else
+            {
+                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
+                disciplinasDto = componentesCurriculares?.Select(disciplina => new DisciplinaDto()
+                {
+                    CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
+                    CodigoComponenteCurricular = disciplina.Codigo,
+                    Nome = disciplina.Descricao,
+                    Regencia = disciplina.Regencia,
+                    TerritorioSaber = disciplina.TerritorioSaber,
+                    Compartilhada = disciplina.Compartilhada,
+                    LancaNota = disciplina.LancaNota,
+                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma)
+                })?.ToList();
+
+                if (!usuarioLogado.EhProfessor())
+                    await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
+            }
+
+            return disciplinasDto;
+        }
+
+        public async Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(long codigoDisciplina, string codigoTurma, bool turmaPrograma, bool regencia)
         {
             IEnumerable<DisciplinaDto> disciplinasDto = null;
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            var chaveCache = $"Disciplinas-planejamento-{filtroDisciplinaPlanejamentoDto.CodigoTurma}-{usuario.Login}-{filtroDisciplinaPlanejamentoDto.CodigoDisciplina}";
-            var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
+            var chaveCache = $"Disciplinas-planejamento-{codigoTurma}-{codigoDisciplina}-{usuario.PerfilAtual}";
+            if (!usuario.EhProfessor())
+            {
+                var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
 
-            if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-                return TratarRetornoDisciplinasPlanejamento(JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(disciplinasCacheString), filtroDisciplinaPlanejamentoDto);
+                if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
+                    return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+            }
 
-            IEnumerable<DisciplinaResposta> disciplinas;
+            var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricular.Listar()));
+            if (componentesCurricularesJurema == null)
+            {
+                throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
+            }
+
             if (usuario.EhProfessorCj())
             {
-                disciplinas = await ObterComponentesCJ(null, filtroDisciplinaPlanejamentoDto.CodigoTurma.ToString(),
-                                                                                    string.Empty,
-                                                                                    filtroDisciplinaPlanejamentoDto.CodigoDisciplina,
-                                                                                    usuario.Login);
+                var componentesCJ = await ObterComponentesCJ(null, codigoTurma,
+                    string.Empty,
+                    codigoDisciplina,
+                    usuario.Login);
+                disciplinasDto = await MapearParaDto(componentesCJ, turmaPrograma);
             }
             else
             {
-                disciplinas = await servicoEOL.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto.CodigoTurma, usuario.Login, servicoUsuario.ObterPerfilAtual());
+                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(codigoTurma, usuario.Login, usuario.PerfilAtual);
+                disciplinasDto = componentesCurriculares?.Select(disciplina => new DisciplinaDto()
+                {
+                    CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
+                    CodigoComponenteCurricular = disciplina.Codigo,
+                    Nome = disciplina.Descricao,
+                    Regencia = disciplina.Regencia,
+                    TerritorioSaber = disciplina.TerritorioSaber,
+                    Compartilhada = disciplina.Compartilhada,
+                    LancaNota = disciplina.LancaNota,
+                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma)
+                })?.ToList();
             }
 
-            if (disciplinas == null || !disciplinas.Any())
-                return disciplinasDto;
-            disciplinasDto = await MapearParaDto(disciplinas, filtroDisciplinaPlanejamentoDto.TurmaPrograma);
+            if (!usuario.EhProfessor())
+                await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
 
-            await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
-
-            return TratarRetornoDisciplinasPlanejamento(disciplinasDto, filtroDisciplinaPlanejamentoDto);
+            return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia);
         }
 
-        public async Task<List<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma, bool turmaPrograma)
+        public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
         {
-            var disciplinasDto = new List<DisciplinaDto>();
-            string chaveCache;
+            var disciplinaEOL = await servicoEOL.ObterDisciplinasPorIdsAsync(new long[] { disciplinaId });
+            if (disciplinaEOL == null || !disciplinaEOL.Any())
+                throw new NegocioException($"Disciplina nÃ£o localizada no EOL [{disciplinaId}]");
 
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfilAtual = servicoUsuario.ObterPerfilAtual();
-            var ehPefilCJ = perfilAtual == Perfis.PERFIL_CJ;
-
-            var disciplinasCacheString = ObterDisciplinasRedis(codigoTurma, login, perfilAtual, out chaveCache);
-
-            if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-                return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
-
-            var disciplinas = ehPefilCJ ? await ObterDisciplinasPerfilCJ(codigoTurma, login) :
-                await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
-
-            if (disciplinas == null || !disciplinas.Any())
-                return disciplinasDto;
-
-            disciplinasDto = await MapearParaDto(disciplinas, turmaPrograma);
-
-            await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
-
-            return disciplinasDto;
+            return disciplinaEOL.FirstOrDefault();
         }
 
         public async Task<List<DisciplinaDto>> ObterDisciplinasAgrupadasPorProfessorETurma(string codigoTurma, bool turmaPrograma)
@@ -191,7 +247,46 @@ namespace SME.SGP.Aplicacao
             }
 
             return disciplinasDto;
+        }
 
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login)
+        {
+            var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
+
+            if (atribuicoes == null || !atribuicoes.Any())
+                return null;
+
+            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+
+            return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
+        }
+
+        public async Task<List<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma, bool turmaPrograma)
+        {
+            var disciplinasDto = new List<DisciplinaDto>();
+
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+            var ehPefilCJ = perfilAtual == Perfis.PERFIL_CJ;
+
+            var chaveCache = $"Disciplinas-{codigoTurma}-{login}--{perfilAtual}";
+
+            var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
+
+            if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
+                return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+
+            var disciplinas = ehPefilCJ ? await ObterDisciplinasPerfilCJ(codigoTurma, login) :
+                await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
+
+            if (disciplinas == null || !disciplinas.Any())
+                return disciplinasDto;
+
+            disciplinasDto = await MapearParaDto(disciplinas, turmaPrograma);
+
+            await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
+
+            return disciplinasDto;
         }
 
         public async Task<List<DisciplinaDto>> ObterDisciplinasPorTurma(string codigoTurma, bool turmaPrograma)
@@ -236,6 +331,16 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
+        private DisciplinaResposta MapearDisciplinaResposta(DisciplinaDto disciplinaEol) => new DisciplinaResposta()
+        {
+            CodigoComponenteCurricular = disciplinaEol.CodigoComponenteCurricular,
+            CodigoComponenteCurricularPai = disciplinaEol.CdComponenteCurricularPai,
+            Nome = disciplinaEol.Nome,
+            Regencia = disciplinaEol.Regencia,
+            Compartilhada = disciplinaEol.Compartilhada,
+            RegistroFrequencia = disciplinaEol.RegistraFrequencia
+        };
+
         private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false)
         {
             var retorno = new List<DisciplinaDto>();
@@ -250,39 +355,19 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login)
+        private async Task<DisciplinaDto> MapearParaDto(DisciplinaResposta disciplina, bool turmaPrograma = false) => new DisciplinaDto()
         {
-            var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
-
-            if (atribuicoes == null || !atribuicoes.Any())
-                return null;
-
-            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
-
-            return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
-        }
-
-        private string ObterDisciplinasRedis(string codigoTurma, string login, Guid perfilAtual, out string chaveCache)
-        {
-            chaveCache = $"Disciplinas-{codigoTurma}-{login}--{perfilAtual}";
-
-            return repositorioCache.Obter(chaveCache);
-        }
-
-        private async Task<DisciplinaDto> MapearParaDto(DisciplinaResposta disciplina, bool turmaPrograma = false)
-            => new DisciplinaDto()
-            {
-                CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
-                CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
-                Nome = disciplina.Nome,
-                Regencia = disciplina.Regencia,
-                TerritorioSaber = disciplina.TerritorioSaber,
-                Compartilhada = disciplina.Compartilhada,
-                RegistraFrequencia = disciplina.RegistroFrequencia,
-                LancaNota = disciplina.LancaNota,
-                PossuiObjetivos = !turmaPrograma && consultasObjetivoAprendizagem
-                                    .DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
-            };
+            CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
+            CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
+            Nome = disciplina.Nome,
+            Regencia = disciplina.Regencia,
+            TerritorioSaber = disciplina.TerritorioSaber,
+            Compartilhada = disciplina.Compartilhada,
+            RegistraFrequencia = disciplina.RegistroFrequencia,
+            LancaNota = disciplina.LancaNota,
+            PossuiObjetivos = !turmaPrograma && consultasObjetivoAprendizagem
+            .DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
+        };
 
         private IEnumerable<DisciplinaResposta> TransformarListaDisciplinaEolParaRetornoDto(IEnumerable<DisciplinaDto> disciplinasEol)
         {
@@ -292,35 +377,15 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private DisciplinaResposta MapearDisciplinaResposta(DisciplinaDto disciplinaEol)
-            => new DisciplinaResposta()
-            {
-                CodigoComponenteCurricular = disciplinaEol.CodigoComponenteCurricular,
-                CodigoComponenteCurricularPai = disciplinaEol.CdComponenteCurricularPai,
-                Nome = disciplinaEol.Nome,
-                Regencia = disciplinaEol.Regencia,
-                Compartilhada = disciplinaEol.Compartilhada,
-                RegistroFrequencia = disciplinaEol.RegistraFrequencia
-            };
-
-        private IEnumerable<DisciplinaDto> TratarRetornoDisciplinasPlanejamento(IEnumerable<DisciplinaDto> disciplinas, FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
+        private IEnumerable<DisciplinaDto> TratarRetornoDisciplinasPlanejamento(IEnumerable<DisciplinaDto> disciplinas, long codigoDisciplina, bool regencia)
         {
-            if (filtroDisciplinaPlanejamentoDto.CodigoDisciplina == 0)
+            if (codigoDisciplina == 0)
                 return disciplinas;
 
-            if (filtroDisciplinaPlanejamentoDto.Regencia)
+            if (regencia)
                 return disciplinas.Where(x => !x.Regencia);
 
-            return disciplinas.Where(x => x.CodigoComponenteCurricular == filtroDisciplinaPlanejamentoDto.CodigoDisciplina);
-        }
-
-        public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
-        {
-            var disciplinaEOL = await servicoEOL.ObterDisciplinasPorIdsAsync(new long[] { disciplinaId });
-            if (disciplinaEOL == null || !disciplinaEOL.Any())
-                throw new NegocioException($"Disciplina não localizada no EOL [{disciplinaId}]");
-
-            return disciplinaEOL.FirstOrDefault();
+            return disciplinas.Where(x => x.CodigoComponenteCurricular == codigoDisciplina);
         }
     }
 }

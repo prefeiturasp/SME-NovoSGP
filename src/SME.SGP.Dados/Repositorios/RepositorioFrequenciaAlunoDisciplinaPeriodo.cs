@@ -51,22 +51,29 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<FrequenciaAluno>(query, new { periodoId });
         }
 
-        public IEnumerable<AlunoFaltosoBimestreDto> ObterAlunosFaltososBimestre(bool modalidadeEJA, long periodoEscolarId, double percentualFrequenciaMinimo)
+        public IEnumerable<AlunoFaltosoBimestreDto> ObterAlunosFaltososBimestre(bool modalidadeEJA, double percentualFrequenciaMinimo, int bimestre, int anoLetivo)
         {
-            var query = @"select dre.dre_id as DreCodigo, dre.Nome as DreNome, ue.tipo_escola as TipoEscola, ue.ue_id as UeCodigo, ue.nome as UeNome
-                            , t.turma_id as TurmaCodigo, t.nome as TurmaNome, fa.codigo_aluno as AlunoCodigo
-	                        , ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric)*100 PercentualFaltas
-                          from frequencia_aluno fa 
-                         inner join periodo_escolar p on p.periodo_fim = fa.periodo_fim and p.periodo_inicio = fa.periodo_inicio
-                         inner join turma t on t.turma_id = fa.turma_id 
-                         inner join ue on ue.id = t.ue_id 
-                         inner join dre on dre.id = ue.dre_id
-                         where fa.tipo = 2
-                           and p.id = @periodoEscolarId
-                           and ((@modalidadeEJA and (t.modalidade_codigo = 3)) or (t.modalidade_codigo <> 3))
-                           and ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric) > (1 -(@percentualFrequenciaMinimo::numeric / 100::numeric)) ";
+            var query = new StringBuilder();
 
-            return database.Conexao.Query<AlunoFaltosoBimestreDto>(query, new { modalidadeEJA, periodoEscolarId, percentualFrequenciaMinimo });
+            query.AppendLine("select dre.dre_id as DreCodigo, dre.Abreviacao as DreAbreviacao, dre.Nome as DreNome, ue.tipo_escola as TipoEscola, ue.ue_id as UeCodigo, ue.nome as UeNome");
+            query.AppendLine(", t.turma_id as TurmaCodigo, t.nome as TurmaNome, t.modalidade_codigo as TurmaModalidade, fa.codigo_aluno as AlunoCodigo");
+            query.AppendLine(", ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric)*100 PercentualFaltas");
+            query.AppendLine("from frequencia_aluno fa");
+            query.AppendLine("inner join turma t on t.turma_id = fa.turma_id");
+            query.AppendLine("inner join ue on ue.id = t.ue_id ");
+            query.AppendLine("inner join dre on dre.id = ue.dre_id");
+            query.AppendLine("inner join (select codigo_aluno, max(id) as maiorId from frequencia_aluno where not excluido group by codigo_aluno ) m on m.codigo_aluno = fa.codigo_aluno and m.maiorId = fa.id");
+            query.AppendLine("where fa.tipo = 2");
+            query.AppendLine("and fa.bimestre = @bimestre");
+            query.AppendLine("and extract(year from fa.periodo_inicio) = @anoLetivo");
+            query.AppendLine("and ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric) > (1 -(@percentualFrequenciaMinimo::numeric / 100::numeric)) ");
+
+            if (modalidadeEJA)
+                query.AppendLine("and t.modalidade_codigo = 3");
+            else query.AppendLine("and t.modalidade_codigo in (5,6)");
+
+
+            return database.Conexao.Query<AlunoFaltosoBimestreDto>(query.ToString(), new { bimestre, anoLetivo, percentualFrequenciaMinimo });
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAluno(string alunoCodigo)

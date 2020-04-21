@@ -1027,7 +1027,7 @@ const Notas = ({ match }) => {
                   tipo: 'warning',
                   id: 'alerta-perido-fechamento',
                   mensagem:
-                    'Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.',
+                    'Apenas é possível consultar este registro pois o período não está em aberto.',
                   estiloTitulo: { fontSize: '18px' },
                 }}
               />
