@@ -33,6 +33,16 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataPeriodo = data.Date });
         }
 
+        public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEmAbertoPorTipoCalendarioData(long tipoCalendarioId, DateTime data)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaQuery(query);
+            query.AppendLine("where tipo_calendario_id = @tipoCalendarioId");
+            query.AppendLine("and periodo_fim::date >= date(@dataPeriodo)");
+
+            return await database.Conexao.QueryAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataPeriodo = data.Date });
+        }
+
         public PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim)
         {
             StringBuilder query = new StringBuilder();
@@ -66,9 +76,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select p.* 
                             from tipo_calendario t
                          inner join periodo_escolar p on p.tipo_calendario_id = t.id
-                          where t.excluido = false
+                          where t.excluido = false and t.situacao
                             and t.ano_letivo = @anoLetivo
-                            and t.modalidade = @modalidade");
+                            and t.modalidade = @modalidade ");
 
             DateTime dataReferencia = DateTime.MinValue;
             if (modalidade == ModalidadeTipoCalendario.EJA)

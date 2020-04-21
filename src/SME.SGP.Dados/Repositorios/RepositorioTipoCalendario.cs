@@ -114,13 +114,15 @@ namespace SME.SGP.Dados.Repositorios
             return query;
         }
 
-        public async Task<bool> PeriodoEmAberto(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0)
+        public async Task<bool> PeriodoEmAberto(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
         {
             var query = new StringBuilder(@"select count(pe.Id)
                           from periodo_escolar pe 
                          where pe.tipo_calendario_id = @tipoCalendarioId
-                           and periodo_inicio <= @dataReferencia
                            and periodo_fim >= @dataReferencia ");
+
+            if (!ehAnoLetivo)
+                query.AppendLine("and periodo_inicio <= @dataReferencia");
 
             if (bimestre > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre");

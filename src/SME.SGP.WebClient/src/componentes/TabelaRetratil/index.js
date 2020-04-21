@@ -11,32 +11,63 @@ import Cabecalho from './componentes/Cabecalho';
 // Estilos
 import { TabelaEstilo, Tabela, DetalhesAluno, LinhaTabela } from './style';
 
-function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado}) {
-  
+function TabelaRetratil({
+  alunos,
+  children,
+  onChangeAlunoSelecionado,
+  permiteOnChangeAluno,
+}) {
   const [retraido, setRetraido] = useState(false);
   const [alunoSelecionado, setAlunoSelecionado] = useState(null);
 
-  const selecionarAluno = aluno => {
-    setAlunoSelecionado(aluno);
+  const permiteSelecionarAluno = useCallback(async () => {
+    if (permiteOnChangeAluno) {
+      const permite = await permiteOnChangeAluno();
+      return permite;
+    }
+    return true;
+  }, [permiteOnChangeAluno]);
+
+  const selecionarAluno = async aluno => {
+    const permite = await permiteSelecionarAluno();
+    if (permite) {
+      setAlunoSelecionado(aluno);
+    }
   };
 
   const isAlunoSelecionado = aluno => {
     return alunoSelecionado && aluno.codigoEOL === alunoSelecionado.codigoEOL;
   };
 
-  const proximoAlunoHandler = useCallback(() => {
-    if (alunos.indexOf(alunoSelecionado) === alunos.length - 1) return;
-    const aluno = alunos[alunos.indexOf(alunoSelecionado) + 1];
-    selecionarAluno(aluno);
-    onChangeAlunoSelecionado(aluno);
-  }, [alunoSelecionado, alunos]);
+  const proximoAlunoHandler = useCallback(async () => {
+    const permite = await permiteSelecionarAluno();
+    if (permite) {
+      if (alunos.indexOf(alunoSelecionado) === alunos.length - 1) return;
+      const aluno = alunos[alunos.indexOf(alunoSelecionado) + 1];
+      setAlunoSelecionado(aluno);
+      onChangeAlunoSelecionado(aluno);
+    }
+  }, [
+    alunoSelecionado,
+    alunos,
+    onChangeAlunoSelecionado,
+    permiteSelecionarAluno,
+  ]);
 
-  const anteriorAlunoHandler = useCallback(() => {
-    if (alunos.indexOf(alunoSelecionado) === 0) return;
-    const aluno = alunos[alunos.indexOf(alunoSelecionado) - 1];
-    selecionarAluno(aluno);
-    onChangeAlunoSelecionado(aluno);
-  }, [alunoSelecionado, alunos]);
+  const anteriorAlunoHandler = useCallback(async () => {
+    const permite = await permiteSelecionarAluno();
+    if (permite) {
+      if (alunos.indexOf(alunoSelecionado) === 0) return;
+      const aluno = alunos[alunos.indexOf(alunoSelecionado) - 1];
+      setAlunoSelecionado(aluno);
+      onChangeAlunoSelecionado(aluno);
+    }
+  }, [
+    alunoSelecionado,
+    alunos,
+    onChangeAlunoSelecionado,
+    permiteSelecionarAluno,
+  ]);
 
   const desabilitarAnterior = () => {
     return (
@@ -52,6 +83,14 @@ function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado}) {
       alunos.indexOf(alunoSelecionado) === alunos.length - 1 ||
       !alunoSelecionado
     );
+  };
+
+  const onClickLinhaAluno = async aluno => {
+    const permite = await permiteSelecionarAluno();
+    if (permite) {
+      selecionarAluno(aluno);
+      onChangeAlunoSelecionado(aluno);
+    }
   };
 
   return (
@@ -70,10 +109,7 @@ function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado}) {
                 className={isAlunoSelecionado(item) && `selecionado`}
                 key={shortid.generate()}
                 ativo={!item.desabilitado}
-                onClick={() => {
-                  selecionarAluno(item);
-                  onChangeAlunoSelecionado(item);
-                }}
+                onClick={() => onClickLinhaAluno(item)}
               >
                 <td>
                   {item.numeroChamada}
@@ -110,11 +146,15 @@ function TabelaRetratil({ alunos, children, onChangeAlunoSelecionado}) {
 TabelaRetratil.propTypes = {
   alunos: t.oneOfType([t.array]),
   children: t.oneOfType([t.element, t.func]),
+  onChangeAlunoSelecionado: t.func,
+  permiteOnChangeAluno: t.func,
 };
 
 TabelaRetratil.defaultProps = {
   alunos: [],
   children: () => {},
+  onChangeAlunoSelecionado: () => {},
+  permiteOnChangeAluno: () => true,
 };
 
 export default TabelaRetratil;

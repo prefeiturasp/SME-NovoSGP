@@ -160,8 +160,8 @@ namespace SME.SGP.Aplicacao
                     alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
 
                     var anotacaoAluno = await consultasFehcamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
-                    alunoDto.TemAnotacao = anotacaoAluno != null && 
-                                        !string.IsNullOrEmpty(anotacaoAluno.Anotacao?.Trim());
+                    alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&
+                                        !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());
 
                     var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
                     if (marcador != null)
@@ -289,17 +289,33 @@ namespace SME.SGP.Aplicacao
             return sintese != null ? sintese.Descricao : "";
         }
 
-        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo)
+        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, int semestre)
         {
             var turma = await consultasTurma.ObterPorCodigo(turmaCodigo);
-            var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosEmAberto(turma.UeId);
-            if (periodosAberto == null || !periodosAberto.Any())
-                throw new NegocioException("Não foi possível localizar período de fechamento em aberto para consulta de alunos");
+            var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(turma.UeId);
 
-            // caso tenha mais de um periodo em aberto (abertura e reabertura) usa o ultimo bimestre
-            var periodoEscolarDto = periodosAberto.OrderBy(c => c.Bimestre).Last();
+            PeriodoEscolar periodoEscolar;
+            if (periodosAberto != null && periodosAberto.Any())
+            {
+                // caso tenha mais de um periodo em aberto (abertura e reabertura) usa o ultimo bimestre
+                periodoEscolar = periodosAberto.OrderBy(c => c.Bimestre).Last();
+            }
+            else
+            {
+                // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
+                var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, semestre);
+                if (tipoCalendario == null)
+                    throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
+                var periodosEscolares = consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
+                if (periodosEscolares == null)
+                    throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
 
-            return await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolarDto);
+                periodoEscolar = consultasPeriodoEscolar.ObterPeriodoPorData(periodosEscolares, DateTime.Today);
+                if (periodoEscolar == null)
+                    periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
+            }
+
+            return await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar);
         }
     }
 }

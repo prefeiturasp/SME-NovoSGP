@@ -5,10 +5,10 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public interface IServicoAcompanhamentoEscolar
     {
-        Task AlterarComunicado(ComunicadoInserirDto comunicado);
+        Task AlterarComunicado(ComunicadoInserirAeDto comunicado, long id);
 
-        Task CriarComunicado(ComunicadoInserirDto comunicado);
+        Task CriarComunicado(ComunicadoInserirAeDto comunicado);
 
-        Task ExcluirComunicado(long id);
+        Task ExcluirComunicado(long[] ids);
     }
 }

@@ -17,6 +17,11 @@ namespace SME.SGP.Dominio
             TipoCalendarioId = tipoCalendario.Id;
         }
 
+        public bool DataDentroPeriodo(DateTime data)
+        {
+            return PeriodoInicio.Date <= data.Date && PeriodoFim.Date >= data.Date;
+        }
+
         public void Validar(int anoBase, bool eja)
         {
             ValidarCamposObrigatorios();
