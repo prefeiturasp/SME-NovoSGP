@@ -12,12 +12,7 @@ import servicoSalvarConselhoClasse from '../servicoSalvarConselhoClasse';
 import AlertaDentroPeriodo from './AlertaDentroPeriodo/alertaDentroPeriodo';
 import MarcadorPeriodoInicioFim from './MarcadorPeriodoInicioFim/marcadorPeriodoInicioFim';
 import ListaNotasConselho from './ListaNotasConselho/listaNotasConselho';
-import ComponenteSemNota from './ComponenteSemNota/ComponenteSemNota';
-import {
-  EnriquecimentoCurricular,
-  AtendimentoEducacional,
-} from './ComponenteSemNota/mock-componente-sem-nota';
-import { Base } from '~/componentes';
+import Sintese from './Sintese/Sintese';
 
 const { TabPane } = Tabs;
 
@@ -66,15 +61,9 @@ const DadosConselhoClasse = props => {
         <AlertaDentroPeriodo />
         <MarcadorPeriodoInicioFim />
         <ListaNotasConselho />
-        <ComponenteSemNota
-          dados={EnriquecimentoCurricular}
-          nomeColunaComponente="Enriquecimento curricular"
-          corBorda={Base.Azul}
-        />
-        <ComponenteSemNota
-          dados={AtendimentoEducacional}
-          nomeColunaComponente="Atendimento educacional especializado"
-          corBorda={Base.RoxoEventoCalendario}
+        <Sintese
+          ehFinal={bimestreAtual.valor === 'final'}
+          bimestreSelecionado={bimestreAtual}
         />
         <AnotacoesRecomendacoes
           bimestreSelecionado={bimestreAtual}

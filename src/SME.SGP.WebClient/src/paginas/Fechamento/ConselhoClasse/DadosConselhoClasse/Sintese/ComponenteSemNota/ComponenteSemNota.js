@@ -3,7 +3,7 @@ import { Tabela, BarraLateralAzul } from './ComponenteSemNota.css';
 import shortid from 'shortid';
 
 const ComponenteSemNota = props => {
-  const { dados, nomeColunaComponente, corBorda } = props;
+  const { dados, nomeColunaComponente, corBorda, ehFinal } = props;
   return (
     <Tabela>
       <div className="table-responsive pl-2 pr-2">
@@ -17,8 +17,9 @@ const ComponenteSemNota = props => {
               >
                 {nomeColunaComponente}
               </th>
-              <th>Faltas</th>
-              <th>%Freq.</th>
+              <th>{ehFinal ? 'Total de faltas' : 'Faltas'}</th>
+              <th>{ehFinal ? '%Total de freq.' : '%Freq.'}</th>
+              {ehFinal ? <th>Parecer final</th> : null}
             </tr>
           </thead>
           <tbody className="tabela-componente-sem-nota-tbody">
@@ -41,9 +42,10 @@ const ComponenteSemNota = props => {
                       width: '250px',
                     }}
                   >
-                    {item.faltas}
+                    {item.faltas || '--'}
                   </td>
-                  <td>{item.frequencia}%</td>
+                  <td>{`${item.frequencia}%` || '--'}</td>
+                  {ehFinal ? <td>{item.parecerFinal || '--'}</td> : null}
                 </tr>
               );
             })}
