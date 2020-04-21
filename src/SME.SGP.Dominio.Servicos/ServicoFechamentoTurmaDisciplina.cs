@@ -2,10 +2,12 @@
 using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +19,10 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
         private readonly IConfiguration configuration;
         private readonly IConsultasSupervisor consultasSupervisor;
+        private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioEventoTipo repositorioEventoTipo;
+        private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
+        private readonly IServicoFechamentoReabertura servicoFechamentoReabertura;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
@@ -68,7 +74,10 @@ namespace SME.SGP.Dominio.Servicos
                                                 IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                                                 IUnitOfWork unitOfWork,
                                                 IConfiguration configuration,
-                                                IConsultasSupervisor consultasSupervisor)
+                                                IConsultasSupervisor consultasSupervisor,
+                                                IRepositorioEvento repositorioEvento,
+                                                IRepositorioEventoTipo repositorioEventoTipo,
+                                                IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
@@ -89,6 +98,9 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.consultasSupervisor = consultasSupervisor ?? throw new ArgumentNullException(nameof(consultasSupervisor));
+            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
+            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
@@ -202,24 +214,23 @@ namespace SME.SGP.Dominio.Servicos
                                                                 , DateTime.Now.Semestre());
 
             var ue = turmaFechamento.Ue;
-            var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioDreEUe(tipoCalendario.Id, ue.Dre, ue);
-            var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestres.FirstOrDefault(x => x.Bimestre == entidadeDto.Bimestre);
 
-            if (periodoFechamento == null || periodoFechamentoBimestre == null)
+            PeriodoEscolar periodoEscolar = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario.Id, ue, entidadeDto.Bimestre);            
+            if (periodoEscolar == null)
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
 
-            await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turmaFechamento, periodoFechamentoBimestre.PeriodoEscolar);
+            await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turmaFechamento, periodoEscolar);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             // Valida Permissão do Professor na Turma/Disciplina
-            await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoFechamentoBimestre.PeriodoEscolar.PeriodoFim);
+            await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim);
 
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (componenteSemNota && id > 0)
             {
                 var disciplinaEOL = await consultasDisciplina.ObterDisciplina(fechamentoTurmaDisciplina.DisciplinaId);
-                fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoFechamentoBimestre.PeriodoEscolar.PeriodoFim, disciplinaEOL);
+                fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoEscolar.PeriodoFim, disciplinaEOL);
             }
             else
                 // Carrega notas alunos
@@ -266,7 +277,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (alunosComNotaAlterada.Length > 0)
                     Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turmaFechamento, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
 
-                Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoFechamentoBimestre.PeriodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota));
+                Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota));
 
                 return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
             }
@@ -275,6 +286,35 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+        private EventoTipo ObterTipoEventoFechamentoBimestre()
+        {
+            EventoTipo tipoEvento = repositorioEventoTipo.ObterPorCodigo((int)TipoEvento.FechamentoBimestre);
+            if (tipoEvento == null)
+                throw new NegocioException($"Não foi possível localizar o tipo de evento {TipoEvento.FechamentoBimestre.GetAttribute<DisplayAttribute>().Name}.");
+            return tipoEvento;
+        }
+        private async Task<PeriodoEscolar> ObterPeriodoEscolarFechamentoReabertura(long tipoCalendarioId, Ue ue, int bimestre)
+        {
+            var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioDreEUe(tipoCalendarioId, ue.Dre, ue);
+            var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestres.FirstOrDefault(x => x.Bimestre == bimestre);
+
+            if (periodoFechamento == null || periodoFechamentoBimestre == null)
+            {
+                var hoje = DateTime.Today;
+                var tipodeEventoReabertura = ObterTipoEventoFechamentoBimestre();
+
+                if(await repositorioEvento.TemEventoNosDiasETipo(hoje, hoje, (TipoEvento)tipodeEventoReabertura.Codigo, tipoCalendarioId, ue.CodigoUe, ue.Dre.CodigoDre))
+                {
+                    var fechamentoReabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(bimestre, hoje, tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe);
+                    if (fechamentoReabertura == null)
+                        throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {bimestre}º Bimestre");
+
+                    return repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId).FirstOrDefault( a => a.Bimestre == bimestre);
+                }              
+
+            }
+            return periodoFechamentoBimestre.PeriodoEscolar;
         }
 
         public void VerificaPendenciasFechamento(long fechamentoId)

@@ -339,6 +339,8 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), parametros)) > 0;
         }
 
+        
+
         private static void MontaFiltroTipoCalendario(StringBuilder query)
         {
             query.AppendLine("where");
