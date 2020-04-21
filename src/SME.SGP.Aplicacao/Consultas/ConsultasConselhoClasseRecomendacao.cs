@@ -55,16 +55,16 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
             var bimestre = fechamentoTurma.PeriodoEscolar?.Bimestre;
 
-            PeriodoFechamentoBimestre periodoFechamentoBimestre;
+            PeriodoFechamentoBimestre periodoFechamentoBimestre = null;
             var emFechamento = true;
-            // esse bloco mudou em dev e será conciliada na branch
-            if (false)
+
+            if (!bimestre.HasValue)
             {
                 var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
                 if (!validacaoConselhoFinal.Item2)
                     throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
                 
-                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today,bimestre);
+                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma.CodigoTurma, DateTime.Today);
             }
             else
             {
