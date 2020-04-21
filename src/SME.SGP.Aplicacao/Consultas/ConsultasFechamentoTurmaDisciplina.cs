@@ -292,28 +292,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, int semestre)
         {
             var turma = await consultasTurma.ObterPorCodigo(turmaCodigo);
-            var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(turma.UeId);
-
-            PeriodoEscolar periodoEscolar;
-            if (periodosAberto != null && periodosAberto.Any())
-            {
-                // caso tenha mais de um periodo em aberto (abertura e reabertura) usa o ultimo bimestre
-                periodoEscolar = periodosAberto.OrderBy(c => c.Bimestre).Last();
-            }
-            else
-            {
-                // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
-                var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, semestre);
-                if (tipoCalendario == null)
-                    throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
-                var periodosEscolares = consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
-                if (periodosEscolares == null)
-                    throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
-
-                periodoEscolar = consultasPeriodoEscolar.ObterPeriodoPorData(periodosEscolares, DateTime.Today);
-                if (periodoEscolar == null)
-                    periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
-            }
+            var periodoEscolar = await consultasPeriodoEscolar.ObterUltimoPeriodoAbertoAsync(turma);
 
             return await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar);
         }

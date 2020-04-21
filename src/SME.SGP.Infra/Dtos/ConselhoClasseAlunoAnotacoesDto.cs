@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class ConselhoClasseAlunoDto
+    public class ConselhoClasseAlunoAnotacoesDto
     {
         public long ConselhoClasseId { get; set; }
         public long FechamentoTurmaId { get; set; }

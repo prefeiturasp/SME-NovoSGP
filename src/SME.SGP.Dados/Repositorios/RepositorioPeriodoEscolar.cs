@@ -71,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from periodo_escolar");
         }
 
-        public async Task<PeriodoEscolarDto> ObterUltimoBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
+        public async Task<PeriodoEscolar> ObterUltimoBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
         {
             var query = new StringBuilder(@"select p.* 
                             from tipo_calendario t
@@ -92,7 +92,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by bimestre desc ");
             query.AppendLine("limit 1");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarDto>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
         }
     }
 }

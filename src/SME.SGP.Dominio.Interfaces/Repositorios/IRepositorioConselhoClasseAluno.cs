@@ -7,5 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<ConselhoClasseAluno> ObterPorFechamentoAsync(long fechamentoTurmaId, string alunoCodigo);
         Task<ConselhoClasseAluno> ObterPorFiltrosAsync(string codigoTurma, string codigoAluno, int bimestre, bool EhFinal);
         Task<ConselhoClasseAluno> ObterPorConselhoClasseAsync(long conselhoClasseId, string alunoCodigo);
+        Task<ConselhoClasseAluno> ObterPorPeriodo(string alunoCodigo, long turmaId, long periodoEscolarId);
     }
 }
