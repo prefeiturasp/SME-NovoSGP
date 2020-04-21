@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,5 +11,6 @@ namespace SME.SGP.Aplicacao
     {
         Task<ConselhoClasseAluno> ObterPorConselhoClasseAsync(long conselhoClasseId, string alunoCodigo);
         Task<bool> ExisteConselhoClasseUltimoBimestreAsync(Turma turma, string alunoCodigo);
+        Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo);
     }
 }
