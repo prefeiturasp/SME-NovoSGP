@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
@@ -19,6 +20,10 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
+        IEnumerable<CicloRetornoDto> BuscarCiclos();
+
+        IEnumerable<TipoEscolaRetornoDto> BuscarTiposEscola();
+
         Task<bool> ExisteUsuarioComMesmoEmail(string login, string email);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
@@ -31,13 +36,17 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<string[]> ObterAdministradoresSGPParaNotificar(string codigoDreOuUe);
 
-        Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo);
-
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(long turmaId);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo);
+
+        Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil);
+
+        Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil);
+
+        Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo);
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil);
 

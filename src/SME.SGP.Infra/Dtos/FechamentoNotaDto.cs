@@ -7,6 +7,7 @@ namespace SME.SGP.Infra
 {
     public class FechamentoNotaDto
     {
+        public long Id { get; set; }
         [Required(ErrorMessage = "Necessário informar o codigo do aluno")]
         public string CodigoAluno { get; set; }
         [Required(ErrorMessage = "Necessário informar a disciplina para atribuição da nota/conceito ao aluno")]

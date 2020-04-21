@@ -72,6 +72,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosConselhoClasse, ComandosConselhoClasse>();
             services.TryAddScoped<IComandosConselhoClasseAluno, ComandosConselhoClasseAluno>();
             services.TryAddScoped<IComandosConselhoClasseNota, ComandosConselhoClasseNota>();
+            services.TryAddScoped<IComandoComunicado, ComandoComunicado>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -125,11 +126,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasFechamentoFinal, ConsultasFechamentoFinal>();
             services.TryAddScoped<IConsultasTurma, ConsultasTurma>();
             services.TryAddScoped<IConsultasPendenciaFechamento, ConsultasPendenciaFechamento>();
-            services.TryAddScoped<IConsultasFechamentoAluno, ConsultasFechamentoAluno >();
+            services.TryAddScoped<IConsultasFechamentoAluno, ConsultasFechamentoAluno>();
             services.TryAddScoped<IConsultasFechamentoTurma, ConsultasFechamentoTurma>();
             services.TryAddScoped<IConsultasConselhoClasse, ConsultasConselhoClasse>();
             services.TryAddScoped<IConsultasConselhoClasseAluno, ConsultasConselhoClasseAluno>();
             services.TryAddScoped<IConsultasConselhoClasseNota, ConsultasConselhoClasseNota>();
+            services.TryAddScoped<IConsultaGrupoComunicacao, ConsultaGrupoComunicacao>();
+            services.TryAddScoped<IConsultaComunicado, ConsultaComunicado>();
+            services.TryAddScoped<IConsultasConselhoClasseRecomendacao, ConsultasConselhoClasseRecomendacao>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -222,6 +226,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConselhoClasse, RepositorioConselhoClasse>();
             services.TryAddScoped<IRepositorioConselhoClasseAluno, RepositorioConselhoClasseAluno>();
             services.TryAddScoped<IRepositorioConselhoClasseNota, RepositorioConselhoClasseNota>();
+            services.TryAddScoped<IRepositorioGrupoComunicacao, RepositorioGrupoComunicacao>();
+            services.TryAddScoped<IRepositorioComunicado, RepositorioComunicado>();
+            services.TryAddScoped<IRepositorioWfAprovacaoNotaFechamento, RepositorioWfAprovacaoNotaFechamento>();
+            services.TryAddScoped<IRepositorioComunicadoGrupo, RepositorioComunicacaoGrupo>();
+            services.TryAddScoped<IRepositorioConselhoClasseRecomendacao, RepositorioConselhoClasseRecomendacao>();
+            services.TryAddScoped<IRepositorioCicloEnsino, RepositorioCicloEnsino>();
+            services.TryAddScoped<IRepositorioTipoEscola, RepositorioTipoEscola>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -257,6 +268,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoRecuperacaoParalela, ServicoRecuperacaoParalela>();
             services.TryAddScoped<IServicoPendenciaFechamento, ServicoPendenciaFechamento>();
             services.TryAddScoped<IServicoFechamentoFinal, ServicoFechamentoFinal>();
+            services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
         }
     }
 }

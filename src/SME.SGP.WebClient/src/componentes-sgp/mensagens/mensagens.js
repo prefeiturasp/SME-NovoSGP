@@ -7,7 +7,7 @@ import Grid from '~/componentes/grid';
 
 const Mensagens = () => {
 
-  const menuRetraido = useSelector(store => store.navegacao.retraido);
+  const somenteConsulta = useSelector(store => store.navegacao.somenteConsulta);
   const alertas = useSelector(state => state.alertas);
   return (
     <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
@@ -18,7 +18,7 @@ const Mensagens = () => {
           </Grid>
         </Row>
       ))}
-      <Row key={shortid.generate()} hidden={!menuRetraido.somenteConsulta}>
+      <Row key={shortid.generate()} hidden={!somenteConsulta}>
         <Grid cols={12}>
           <Alert
             alerta={{

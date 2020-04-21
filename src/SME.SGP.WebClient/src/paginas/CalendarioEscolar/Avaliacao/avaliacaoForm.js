@@ -36,7 +36,7 @@ const AvaliacaoForm = ({ match }) => {
   const [podeLancaNota, setPodeLancaNota] = useState(true);
 
   const clicouBotaoVoltar = async () => {
-    if (modoEdicao) {
+    if (dentroPeriodo && modoEdicao) {
       const confirmado = await confirmar(
         'Atenção',
         'Suas alterações não foram salvas, deseja salvar agora?'
@@ -127,6 +127,8 @@ const AvaliacaoForm = ({ match }) => {
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
 
+  const [dataAvaliacao, setdataAvaliacao] = useState();
+
   const cadastrarAvaliacao = async dados => {
     const avaliacao = {};
     setCarregandoTela(true);
@@ -150,7 +152,7 @@ const AvaliacaoForm = ({ match }) => {
     });
     avaliacao.disciplinaContidaRegenciaId = disciplinas;
 
-    avaliacao.dataAvaliacao = window.moment(diaAvaliacao).format();
+    avaliacao.dataAvaliacao = window.moment(dataAvaliacao).format();
     avaliacao.descricao = descricao;
 
     dados.disciplinasId = Array.isArray(dados.disciplinasId)
@@ -245,8 +247,6 @@ const AvaliacaoForm = ({ match }) => {
   };
 
   const [validacoes, setValidacoes] = useState(undefined);
-
-  const [dataAvaliacao, setdataAvaliacao] = useState();
 
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
 
@@ -358,16 +358,31 @@ const AvaliacaoForm = ({ match }) => {
     }
   };
 
+  const validaF5 = () => {
+    // TODO
+    // Manter enquanto não é realizado o refactor da tela e do calendário!
+    // Somente quando for novo registro, ao dar F5 a página perde a data selecionada no calendário do professor!
+    setCarregandoTela(true);
+    setTimeout(() => {
+      setCarregandoTela(false);
+      history.push(RotasDTO.CALENDARIO_PROFESSOR);
+    }, 2000);
+  };
+
   useEffect(() => {
-    setdataAvaliacao(window.moment(diaAvaliacao));
     montaValidacoes(categorias.NORMAL);
     obterDisciplinas();
     obterlistaTiposAvaliacao();
 
     if (!idAvaliacao) setDadosAvaliacao(inicial);
 
-    if (match && match.params && match.params.id)
+    if (match && match.params && match.params.id) {
       setIdAvaliacao(match.params.id);
+    } else if (diaAvaliacao) {
+      setdataAvaliacao(window.moment(diaAvaliacao));
+    } else {
+      validaF5();
+    }
   }, []);
 
   const validaInterdisciplinar = categoriaSelecionada => {
@@ -384,6 +399,7 @@ const AvaliacaoForm = ({ match }) => {
       setCarregandoTela(true);
       const avaliacao = await ServicoAvaliacao.buscar(idAvaliacao);
       if (avaliacao && avaliacao.data) {
+        setdataAvaliacao(window.moment(avaliacao.data.dataAvaliacao));
         setListaDisciplinasSelecionadas(avaliacao.data.disciplinasId);
         setDisciplinaSelecionada(avaliacao.data.disciplinasId[0]);
         validaInterdisciplinar(avaliacao.data.categoriaId);
@@ -477,7 +493,7 @@ const AvaliacaoForm = ({ match }) => {
                 tipo: 'warning',
                 id: 'alerta-perido-fechamento',
                 mensagem:
-                  'Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.',
+                  'Apenas é possível consultar este registro pois o período não está em aberto.',
                 estiloTitulo: { fontSize: '18px' },
               }}
               className="mb-2"
@@ -621,12 +637,12 @@ const AvaliacaoForm = ({ match }) => {
                             lista={listaDisciplinas}
                             valueOption="codigoComponenteCurricular"
                             valueText="nome"
-                            disabled={disciplinaDesabilitada}
+                            disabled={!dentroPeriodo || disciplinaDesabilitada}
                             placeholder="Selecione um componente curricular"
                             valueSelect={listaDisciplinasSelecionadas}
                             form={form}
                             multiple
-                            onChange={aoTrocarCampos}
+                            onChange={onChangeDisciplina}
                           />
                         ) : (
                           <SelectComponent
@@ -636,12 +652,12 @@ const AvaliacaoForm = ({ match }) => {
                             lista={listaDisciplinas}
                             valueOption="codigoComponenteCurricular"
                             valueText="nome"
-                            disabled={disciplinaDesabilitada}
+                            disabled={!dentroPeriodo || disciplinaDesabilitada}
                             placeholder="Selecione um componente curricular"
                             form={form}
                             onChange={valor => {
                               setDisciplinaSelecionada(valor);
-                              aoTrocarCampos();
+                              onChangeDisciplina(valor);
                             }}
                             valueSelect={disciplinaSelecionada}
                           />
@@ -659,6 +675,7 @@ const AvaliacaoForm = ({ match }) => {
                         placeholder="Atividade Avaliativa"
                         form={form}
                         onChange={aoTrocarCampos}
+                        disabled={!dentroPeriodo}
                       />
                     </Grid>
                     <Grid cols={!temRegencia ? 4 : 6} className="mb-4">
@@ -675,6 +692,7 @@ const AvaliacaoForm = ({ match }) => {
                           form.setFieldValue('nome', e.target.value);
                           aoTrocarCampos();
                         }}
+                        desabilitado={!dentroPeriodo}
                       />
                     </Grid>
                   </Div>

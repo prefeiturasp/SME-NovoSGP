@@ -289,14 +289,14 @@ namespace SME.SGP.Dados.Repositorios
                 and e.wf_aprovacao_id = @workflowId ";
 
             return database.Conexao.Query<Evento, EventoTipo, TipoCalendario, Evento>(query.ToString(), (evento, tipoEvento, tipoCalendario) =>
-           {
-               evento.AdicionarTipoEvento(tipoEvento);
-               evento.TipoCalendario = tipoCalendario;
-               return evento;
-           }, new
-           {
-               workflowId
-           },
+            {
+                evento.AdicionarTipoEvento(tipoEvento);
+                evento.TipoCalendario = tipoCalendario;
+                return evento;
+            }, new
+            {
+                workflowId
+            },
             splitOn: "EventoId,TipoEventoId,TipoCalendarioId").FirstOrDefault();
         }
 
@@ -338,6 +338,8 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), parametros)) > 0;
         }
+
+        
 
         private static void MontaFiltroTipoCalendario(StringBuilder query)
         {
@@ -538,8 +540,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             query.AppendLine("from evento e");
             query.AppendLine("inner join evento_tipo et on e.tipo_evento_id = et.id");
-            query.AppendLine(" left join v_abrangencia a on a.ue_codigo = e.ue_id");
-            query.AppendLine("  and a.dre_codigo = e.dre_id");
+            query.AppendLine(" left join v_abrangencia a on a.dre_codigo = e.dre_id");
+            query.AppendLine("and (a.ue_codigo = e.ue_id or (e.ue_id is null and a.ue_codigo is null)) ");
             query.AppendLine("  and a.usuario_id = @usuarioId");
             query.AppendLine("  and a.usuario_perfil = @usuarioPerfil");
             query.AppendLine("where et.ativo");
@@ -631,8 +633,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from");
             query.AppendLine("evento e");
             query.AppendLine("inner join evento_tipo et on e.tipo_evento_id = et.id");
-            query.AppendLine(" left join v_abrangencia a on a.ue_codigo = e.ue_id");
-            query.AppendLine("and a.dre_codigo = e.dre_id");
+            query.AppendLine(" left join v_abrangencia a on a.dre_codigo = e.dre_id");
+            query.AppendLine("and (a.ue_codigo = e.ue_id or (e.ue_id is null and a.ue_codigo is null)) ");
             query.AppendLine("and a.usuario_id = @usuarioId");
             query.AppendLine("and a.usuario_perfil = @usuarioPerfil");
             query.AppendLine("where et.ativo");
@@ -742,7 +744,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             else if (usuario.EhPerfilDRE())
             {
-                MontaQueryEventosPorDiaFromWhereVisualizacaoDre(query, calendarioEventosMesesFiltro.UeId, calendarioEventosMesesFiltro.EhEventoSme);
+                MontaQueryEventosPorDiaFromWhereVisualizacaoDre(query, calendarioEventosMesesFiltro.UeId, calendarioEventosMesesFiltro.EhEventoSme, calendarioEventosMesesFiltro.DreId);
             }
             else if (usuario.EhPerfilUE())
             {
@@ -784,7 +786,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("end as InicioFimDesc");
         }
 
-        private void MontaQueryEventosPorDiaFromWhereVisualizacaoDre(StringBuilder query, string ueId, bool ehEventoSme)
+        private void MontaQueryEventosPorDiaFromWhereVisualizacaoDre(StringBuilder query, string ueId, bool ehEventoSme, string dreId)
         {
             query.AppendLine("from");
             query.AppendLine("evento e");
@@ -812,6 +814,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and e.ue_id = @ueId");
                 query.AppendLine("and e.status IN (1,2)");
             }
+
+            query.AppendLine("and e.dre_id = @dreId");
 
             query.AppendLine("and((extract(month from e.data_fim) = @mes) or(extract(month from e.data_inicio) = @mes))");
             query.AppendLine("and((extract(day from e.data_fim) = @dia) or(extract(day from e.data_inicio) = @dia))");
@@ -1304,8 +1308,13 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 queryDreUe.AppendLine("and e.ue_id = @UeId");
 
+            bool temFiltroDreUe = false;
+
             if (!String.IsNullOrEmpty(queryDreUe.ToString()))
+            {
+                temFiltroDreUe = true;
                 queryDreUe.AppendLine(")");
+            }
 
             if (podeVisualizarEventosLocalOcorrenciaDre)
             {
@@ -1319,7 +1328,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!String.IsNullOrEmpty(queryDreUe.ToString()))
             {
-                queryDreUe.Insert(queryDreUe.ToString().IndexOf("and") + 4, "((").Insert(queryDreUe.ToString().Length - 1, ")");
+                queryDreUe.Insert(queryDreUe.ToString().IndexOf("and") + 4, temFiltroDreUe ? "((" : "(").Insert(queryDreUe.ToString().Length - 1, ")");
                 query.AppendLine(queryDreUe.ToString());
             }
 

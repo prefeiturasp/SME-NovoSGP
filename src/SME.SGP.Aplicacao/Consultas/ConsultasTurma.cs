@@ -53,13 +53,13 @@ namespace SME.SGP.Aplicacao
             return await TurmaEmPeriodoAberto(turma, dataReferencia, bimestre);
         }
 
-        public async Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia, int bimestre = 0)
+        public async Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia, int bimestre = 0, bool ehAnoLteivo = false)
         {
-            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             if (tipoCalendario == null)
                 throw new NegocioException($"Tipo de calendário para turma {turma.CodigoTurma} não localizado!");
 
-            var periodoEmAberto = await consultasTipoCalendario.PeriodoEmAberto(tipoCalendario, dataReferencia, bimestre);
+            var periodoEmAberto = await consultasTipoCalendario.PeriodoEmAberto(tipoCalendario, dataReferencia, bimestre, ehAnoLteivo);
 
             return periodoEmAberto || await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, bimestre);
         }
@@ -73,19 +73,19 @@ namespace SME.SGP.Aplicacao
         public async Task<Turma> ObterComUeDrePorId(long turmaId)
             => repositorioTurma.ObterTurmaComUeEDrePorId(turmaId);
 
-        public async Task<IEnumerable<PeriodoEscolarAbertoDto>> PeriodosEmAbertoTurma(string turmaCodigo, DateTime dataReferencia)
+        public async Task<IEnumerable<PeriodoEscolarAbertoDto>> PeriodosEmAbertoTurma(string turmaCodigo, DateTime dataReferencia, bool ehAnoLetivo = false)
         {
             var turma = await ObterComUeDrePorCodigo(turmaCodigo);
             if (turma == null)
                 throw new NegocioException($"Turma de código {turmaCodigo} não localizada!");
 
-            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma, dataReferencia);
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var listaPeriodos = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
-            return await ObterPeriodosEmAberto(turma, dataReferencia, listaPeriodos.Periodos);
+            return await ObterPeriodosEmAberto(turma, dataReferencia, listaPeriodos.Periodos, ehAnoLetivo);
         }
 
-        private async Task<IEnumerable<PeriodoEscolarAbertoDto>> ObterPeriodosEmAberto(Turma turma, DateTime dataReferencia, List<PeriodoEscolarDto> periodos)
+        private async Task<IEnumerable<PeriodoEscolarAbertoDto>> ObterPeriodosEmAberto(Turma turma, DateTime dataReferencia, List<PeriodoEscolarDto> periodos, bool ehAnoLetivo = false)
         {
             var periodosAbertos = new List<PeriodoEscolarAbertoDto>();
             foreach (var periodo in periodos)
@@ -93,14 +93,14 @@ namespace SME.SGP.Aplicacao
                 periodosAbertos.Add(new PeriodoEscolarAbertoDto()
                 {
                     Bimestre = periodo.Bimestre,
-                    Aberto = await TurmaEmPeriodoAberto(turma, dataReferencia, periodo.Bimestre)
+                    Aberto = await TurmaEmPeriodoAberto(turma, dataReferencia, periodo.Bimestre, ehAnoLetivo)
                 });
             }
 
             return periodosAbertos;
         }
 
-        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, PeriodoEscolarDto periodoEscolarDto = null)
+        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, PeriodoEscolar periodoEscolar = null)
         {
             var dadosAlunos = await servicoEOL.ObterAlunosPorTurma(turmaCodigo, anoLetivo);
             if (dadosAlunos == null || !dadosAlunos.Any())
@@ -112,8 +112,8 @@ namespace SME.SGP.Aplicacao
             {
                 var dadosBasicos = (AlunoDadosBasicosDto)dadoAluno;
                 // se informado periodo escolar carrega marcadores no periodo
-                if (periodoEscolarDto != null)
-                    dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolarDto);
+                if (periodoEscolar != null)
+                    dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolar);
 
                 dadosAlunosDto.Add(dadosBasicos);
             }

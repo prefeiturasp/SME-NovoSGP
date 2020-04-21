@@ -45,9 +45,6 @@ namespace SME.SGP.Aplicacao
             
             var mensagensDeErro = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina);
 
-            if (!mensagensDeErro.Any())
-                mensagensDeErro.Add("Fechamento(s) salvo(s) com sucesso!");
-
             return mensagensDeErro.ToArray();
         }
 
@@ -61,8 +58,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<FechamentoTurmaDisciplina> TransformarDtoSalvarEmEntidade(FechamentoFinalSalvarDto fechamentoFinalSalvarDto, Turma turma)
         {
-            // TODO : Passar no DTO a DisciplinaId que é a disciplina principal do fechamento (para o caso de regencia) assim não precisa fixar no codigo
-            var disciplinaId = fechamentoFinalSalvarDto.EhRegencia ? 1105 : fechamentoFinalSalvarDto.Itens.First().ComponenteCurricularCodigo;
+            var disciplinaId = fechamentoFinalSalvarDto.EhRegencia ? long.Parse(fechamentoFinalSalvarDto.DisciplinaId) : fechamentoFinalSalvarDto.Itens.First().ComponenteCurricularCodigo;
 
             FechamentoTurmaDisciplina fechamentoTurmaDisciplina = null;
             var fechamentoFinalTurma = await repositorioFechamentoTurma.ObterPorTurmaPeriodo(turma.Id);
@@ -72,7 +68,7 @@ namespace SME.SGP.Aplicacao
                 fechamentoTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(fechamentoFinalSalvarDto.TurmaCodigo, disciplinaId);
 
             if (fechamentoTurmaDisciplina == null)
-                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina() { DisciplinaId = disciplinaId };
+                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina() { DisciplinaId = disciplinaId, Situacao = SituacaoFechamento.ProcessadoComSucesso };
 
             fechamentoTurmaDisciplina.FechamentoTurma = fechamentoFinalTurma;
 
@@ -80,7 +76,7 @@ namespace SME.SGP.Aplicacao
             {
                 var fechamentoAluno = await repositorioFechamentoAluno.ObterFechamentoAlunoENotas(fechamentoTurmaDisciplina.Id, agrupamentoAluno.Key);
                 if (fechamentoAluno == null)
-                    fechamentoAluno = new FechamentoAluno();
+                    fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoAluno.Key };
 
                 foreach(var fechamentoItemDto in agrupamentoAluno)
                 {

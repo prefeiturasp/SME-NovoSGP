@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             var turma = BuscaTurma(turmaId);
 
             // Busca periodo
-            var periodo = BuscaPeriodo(turma.AnoLetivo, turma.ModalidadeCodigo, bimestre, turma.Semestre);
+            var periodo = await BuscaPeriodo(turma, bimestre);
 
             var alunosEOL = await servicoEOL.ObterAlunosPorTurma(turmaId);
             if (alunosEOL == null || !alunosEOL.Any())
@@ -204,16 +204,21 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private PeriodoEscolarDto BuscaPeriodo(int anoLetivo, Modalidade modalidadeCodigo, int bimestre, int semestre)
+        private async Task<PeriodoEscolar> BuscaPeriodo(Turma turma, int bimestre)
         {
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio);
-            var periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos.FirstOrDefault(p => p.Bimestre == bimestre);
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
+            if (tipoCalendario == null)
+                throw new NegocioException("Não foi possível localizar o tipo de calendário da turma");
 
-            // TODO alterar verificação para checagem de periodo de fechamento e reabertura do fechamento depois de implementado
-            if (DateTime.Now < periodo.PeriodoInicio || DateTime.Now > periodo.PeriodoFim)
-                throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto");
+            var periodosEscolares = consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
+            if (periodosEscolares == null || !periodosEscolares.Any())
+                throw new NegocioException("Não foi possível localizar os períodos escolares da turma");
 
-            return periodo;
+            var periodoEscolar = periodosEscolares?.FirstOrDefault(p => p.Bimestre == bimestre);
+            if (periodoEscolar == null)
+                throw new NegocioException($"Período escolar do {bimestre}º Bimestre não localizado para a turma");
+
+            return periodoEscolar;
         }
 
         private Turma BuscaTurma(string turmaId)
@@ -225,7 +230,7 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private IndicativoFrequenciaDto ObterIndicativoFrequencia(AlunoPorTurmaResposta aluno, string disciplinaId, PeriodoEscolarDto bimestre, int percentualAlerta, int percentualCritico)
+        private IndicativoFrequenciaDto ObterIndicativoFrequencia(AlunoPorTurmaResposta aluno, string disciplinaId, PeriodoEscolar bimestre, int percentualAlerta, int percentualCritico)
         {
             var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(aluno.CodigoAluno, disciplinaId, bimestre.PeriodoInicio, bimestre.PeriodoFim, TipoFrequenciaAluno.PorDisciplina);
             // Frequencia não calculada
@@ -281,6 +286,9 @@ namespace SME.SGP.Aplicacao
         public async Task<double> ObterFrequenciaGeralAluno(string alunoCodigo)
         {
             var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo);
+
+            if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
+                return 100;
 
             var frequenciaAluno = new FrequenciaAluno()
             {
