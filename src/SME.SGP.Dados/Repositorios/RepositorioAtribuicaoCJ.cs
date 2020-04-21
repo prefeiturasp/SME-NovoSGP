@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long disciplinaId,
-            string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaIds = null)
+            string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaIds = null, int? anoLetivo = null)
         {
             var query = new StringBuilder();
 
@@ -69,6 +69,9 @@ namespace SME.SGP.Dados.Repositorios
             if (turmaIds != null)
                 query.AppendLine("and t.turma_id = ANY(@turmaIds)");
 
+            if (anoLetivo != null)
+                query.AppendLine("and t.ano_letivo = @anoLetivo");
+
             return (await database.Conexao.QueryAsync<AtribuicaoCJ, Turma, AtribuicaoCJ>(query.ToString(), (atribuicaoCJ, turma) =>
             {
                 atribuicaoCJ.Turma = turma;
@@ -83,7 +86,8 @@ namespace SME.SGP.Dados.Repositorios
                 usuarioNome,
                 substituir,
                 dreCodigo,
-                turmaIds
+                turmaIds,
+                anoLetivo
             }, splitOn: "id,id"));
         }
     }

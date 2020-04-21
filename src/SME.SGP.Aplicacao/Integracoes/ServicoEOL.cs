@@ -103,6 +103,42 @@ namespace SME.SGP.Aplicacao.Integracoes
             else return null;
         }
 
+        public IEnumerable<CicloRetornoDto> BuscarCiclos()
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = httpClient.GetAsync("abrangencia/ciclo-ensino").Result;
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<IEnumerable<CicloRetornoDto>>(json);
+            }
+            else
+            {
+                RegistrarLogSentry(resposta, "escolas/tiposEscolas", string.Empty);
+                throw new NegocioException("Ocorreu um erro na tentativa de buscar ciclos de ensino no EOL.");
+            }
+        }
+
+        public IEnumerable<TipoEscolaRetornoDto> BuscarTiposEscola()
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = httpClient.GetAsync("escolas/tiposEscolas").Result;
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<IEnumerable<TipoEscolaRetornoDto>>(json);
+            }
+            else
+            {
+                RegistrarLogSentry(resposta, "escolas/tiposEscolas", string.Empty);
+                throw new NegocioException("Ocorreu um erro na tentativa de buscar tipos de escolas no EOL.");
+            }
+        }
+
         public async Task<bool> ExisteUsuarioComMesmoEmail(string login, string email)
         {
             var resposta = await httpClient.GetAsync($"autenticacaoSgp/{login}/ValidarEmailExistente/{email}/");
@@ -226,20 +262,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo)
-        {
-            var alunos = new List<AlunoPorTurmaResposta>();
-
-            var resposta = await httpClient.GetAsync($"alunos/{codidoAluno}/turmas/anosLetivos/{anoLetivo}");
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
-            }
-
-            return alunos;
-        }
-
         [Obsolete("não utilizar mais esse método, utilize o ObterAlunosPorTurma")]
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo)
         {
@@ -254,6 +276,33 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil)
+        {
+            var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}";
+            return await ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(url);
+        }
+
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)
+        {
+            var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}/planejamento";
+            return await ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(url);
+        }
+
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo)
+        {
+            var alunos = new List<AlunoPorTurmaResposta>();
+
+            var resposta = await httpClient.GetAsync($"alunos/{codidoAluno}/turmas/anosLetivos/{anoLetivo}");
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+            }
+
+            return alunos;
+        }
+
+        [Obsolete("Utilizar: ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento")]
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas/planejamento";
@@ -266,6 +315,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return await ObterDisciplinas(url, "ObterDisciplinasPorCodigoTurma");
         }
 
+        [Obsolete("Utilizar: ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", true)]
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas";
@@ -823,8 +873,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             });
         }
 
-        private string ObterChaveCacheAlunosTurma(string turmaId)
-                                                                                                                                                                                                                                                                                            => $"alunos-turma:{turmaId}";
+        private string ObterChaveCacheAlunosTurma(string turmaId) => $"alunos-turma:{turmaId}";
 
         private string[] ObterCodigosDres()
         {
@@ -844,6 +893,20 @@ namespace SME.SGP.Aplicacao.Integracoes
                 SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
                 return null;
             }
+        }
+
+        private async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string url)
+        {
+            var resposta = await httpClient.GetAsync(url);
+
+            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent && resposta.StatusCode != HttpStatusCode.BadRequest)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
+            }
+
+            await RegistrarLogSentryAsync(resposta, "ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", url);
+            throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
         }
 
         private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url, string rotina)

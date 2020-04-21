@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -19,6 +20,8 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasAula consultasAula;
+        private readonly IRepositorioEventoTipo repositorioEventoTipo;
+        private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
@@ -40,7 +43,9 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IConsultasDisciplina consultasDisciplina,
-            IConsultasAula consultasAula)
+            IConsultasAula consultasAula,
+            IRepositorioEventoTipo repositorioEventoTipo,
+            IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.comandosDiasLetivos = comandosDiasLetivos ?? throw new ArgumentNullException(nameof(comandosDiasLetivos));
@@ -54,6 +59,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasAula = consultasAula ?? throw new ArgumentNullException(nameof(consultasAula));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
+            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
         }
 
         public async Task<DiaEventoAula> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
@@ -153,14 +160,48 @@ namespace SME.SGP.Aplicacao
                 });
             });
 
+            var dentroDoPeriodo = await consultasAula.AulaDentroPeriodo(filtro.TurmaId, filtro.Data) || await PodeCriarAulaNoPeriodo(filtro.Data, filtro.TipoCalendarioId, filtro.UeId, filtro.DreId );
+
             return new DiaEventoAula
             {
                 EventosAulas = eventosAulas,
                 Letivo = comandosDiasLetivos.VerificarSeDataLetiva(eventos, data),
-                DentroPeriodo = await consultasAula.AulaDentroPeriodo(filtro.TurmaId, filtro.Data)
+                DentroPeriodo = dentroDoPeriodo
             };
         }
 
+        private async Task<bool> PodeCriarAulaNoPeriodo(DateTime dataAula, long tipoCalendarioId, string ueCodigo, string dreCodigo)
+        {
+
+            if (dataAula.Year != DateTime.Now.Year)
+            {
+
+                var periodoEscolarDaAula = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAula);
+                if (periodoEscolarDaAula == null)
+                    throw new NegocioException("Não foi possível localizar o período escolar da aula.");
+                
+                
+                var hoje = DateTime.Today;
+
+                var tipodeEventoReabertura = ObterTipoEventoFechamentoBimestre();
+
+                if (await repositorioEvento.TemEventoNosDiasETipo(hoje, hoje, (TipoEvento)tipodeEventoReabertura.Codigo, tipoCalendarioId, ueCodigo, dreCodigo))
+                {
+                    var fechamentoReabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(periodoEscolarDaAula.Bimestre, hoje, tipoCalendarioId, dreCodigo, ueCodigo);
+                    if (fechamentoReabertura == null)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+        private EventoTipo ObterTipoEventoFechamentoBimestre()
+        {
+            EventoTipo tipoEvento = repositorioEventoTipo.ObterPorCodigo((int)TipoEvento.FechamentoBimestre);
+            if (tipoEvento == null)
+                throw new NegocioException($"Não foi possível localizar o tipo de evento {TipoEvento.FechamentoBimestre.GetAttribute<DisplayAttribute>().Name}.");
+            return tipoEvento;
+        }
         public async Task<IEnumerable<EventosAulasCalendarioDto>> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)
         {
             List<DateTime> diasLetivos = new List<DateTime>();

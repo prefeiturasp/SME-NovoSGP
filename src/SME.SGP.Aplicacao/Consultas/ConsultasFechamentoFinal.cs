@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,6 +25,8 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFrequencia consultasFrequencia;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
+        private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
 
         public ConsultasFechamentoFinal(IRepositorioTurma repositorioTurma, IRepositorioTipoCalendario repositorioTipoCalendario,
                             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
@@ -31,7 +34,8 @@ namespace SME.SGP.Aplicacao
             IServicoAluno servicoAluno,
             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioNotaTipoValor repositorioNotaTipoValor,
             IServicoUsuario servicoUsuario, IRepositorioParametrosSistema repositorioParametrosSistema,
-            IConsultasDisciplina consultasDisciplina, IConsultasFrequencia consultasFrequencia)
+            IConsultasDisciplina consultasDisciplina, IConsultasFrequencia consultasFrequencia, IConsultasPeriodoFechamento consultasPeriodoFechamento,
+            IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
@@ -46,12 +50,14 @@ namespace SME.SGP.Aplicacao
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new System.ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasDisciplina = consultasDisciplina ?? throw new System.ArgumentNullException(nameof(consultasDisciplina));
             this.consultasFrequencia = consultasFrequencia ?? throw new System.ArgumentNullException(nameof(consultasFrequencia));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
+            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
         }
 
         public async Task<FechamentoFinalConsultaRetornoDto> ObterFechamentos(FechamentoFinalConsultaFiltroDto filtros)
         {
             var retorno = new FechamentoFinalConsultaRetornoDto();
-            var turma = repositorioTurma.ObterPorCodigo(filtros.TurmaCodigo);
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(filtros.TurmaCodigo);
 
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma.");
@@ -66,7 +72,9 @@ namespace SME.SGP.Aplicacao
 
             await VerificaSePodeFazerFechamentoFinal(periodosEscolares, turma);
 
-            retorno.EventoData = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault().PeriodoFim;
+            var ultimoPeriodoEscolar = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault();
+
+            retorno.EventoData = ultimoPeriodoEscolar.PeriodoFim;
 
             var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
             if (alunosDaTurma == null || !alunosDaTurma.Any())
@@ -108,12 +116,13 @@ namespace SME.SGP.Aplicacao
             var notasFechamentosBimestres = Enumerable.Empty<FechamentoNotaAlunoDto>();
             if (!retorno.EhSintese)
             {
-               notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
-            }             
+                notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
+            }
 
             var professorTitular = await ObterRfProfessorTitularDisciplina(turma.CodigoTurma, filtros.DisciplinaCodigo);
             if (string.IsNullOrEmpty(professorTitular))
                 throw new NegocioException("Não foi possível localizar o professor titular.");
+
             foreach (var aluno in alunosDaTurma.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
             {
                 var totalAusencias = 0;
@@ -122,7 +131,7 @@ namespace SME.SGP.Aplicacao
 
                 FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno = TrataFrequenciaAluno(filtros, periodosEscolares, aluno, ref totalAusencias, ref totalAusenciasCompensadas, ref totalDeAulas);
 
-                var marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolarDto() { PeriodoFim = retorno.EventoData });
+                var marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar() { PeriodoFim = retorno.EventoData });
                 if (marcador != null)
                     fechamentoFinalAluno.Informacao = marcador.Descricao;
 
@@ -167,7 +176,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                fechamentoFinalAluno.PodeEditar = PodeEditarNotaOuConceito(usuarioAtual, professorTitular, aluno);
+                fechamentoFinalAluno.PodeEditar = await PodeEditarNotaOuConceito(usuarioAtual, professorTitular, aluno, ultimoPeriodoEscolar, turma);
                 fechamentoFinalAluno.Codigo = aluno.CodigoAluno;
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
@@ -181,7 +190,7 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf, AlunoPorTurmaResposta aluno)
+        private async Task<bool> PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf, AlunoPorTurmaResposta aluno, PeriodoEscolar periodoEscolar, Turma turma)
         {
             if (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo &&
                 aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
@@ -192,7 +201,14 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.CodigoRf != professorTitularDaTurmaDisciplinaRf)
                 return false;
 
-            return true;
+            var periodoFechamento = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre);
+
+            var reabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(periodoEscolar.Bimestre, DateTime.Today, periodoEscolar.TipoCalendarioId, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
+
+            var dentroPeriodo = (periodoFechamento != null && periodoFechamento.DataDentroPeriodo(DateTime.Today)) ||
+                (reabertura != null && reabertura.DataDentroPeriodo(DateTime.Now));
+
+            return dentroPeriodo;
         }
 
         private string MontaTextoAuditoriaAlteracao(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, bool EhNota)

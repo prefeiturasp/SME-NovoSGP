@@ -35,6 +35,7 @@ const PendenciasFechamentoForm = ({ match }) => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
+  const [carregandoDados, setCarregandoDados] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [listaBimestres, setListaBimestres] = useState([]);
   const [auditoria, setAuditoria] = useState([]);
@@ -50,7 +51,7 @@ const PendenciasFechamentoForm = ({ match }) => {
   const [descricao, setdescricao] = useState('');
   const [detalhamento, setDetalhamento] = useState('');
 
-  const resetarTela = ()=> {
+  const resetarTela = () => {
     setSituacaoId('');
     setSituacaoNome('');
     setCodigoComponenteCurricular('');
@@ -59,9 +60,9 @@ const PendenciasFechamentoForm = ({ match }) => {
     setDetalhamento('');
     setAuditoria({});
     setExibirAuditoria(false);
-  }
+  };
 
-  useEffect(() => {    
+  useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [permissoesTela]);
 
@@ -115,26 +116,48 @@ const PendenciasFechamentoForm = ({ match }) => {
           RotasDto.PENDENCIAS_FECHAMENTO
         );
         setIdPendenciaFechamento(match.params.id);
-
+        setCarregandoDados(true);
         const retorno = await ServicoPendenciasFechamento.obterPorId(
           match.params.id
         ).catch(e => erros(e));
 
         if (retorno && retorno.data) {
-          const { situacao, situacaoNome, componenteCurricular, bimestre, descricao, detalhamento } = retorno.data;
+          const {
+            situacao,
+            situacaoNome,
+            componenteCurricular,
+            bimestre,
+            descricao,
+            detalhamento,
+          } = retorno.data;
           setSituacaoId(situacao);
           setSituacaoNome(situacaoNome);
           setCodigoComponenteCurricular(String(componenteCurricular));
           setBimestre(String(bimestre));
           setdescricao(descricao);
-          setDetalhamento(detalhamento);          
+          setDetalhamento(detalhamento);
 
-          const { criadoPor, criadoRF, criadoEm, alteradoPor, alteradoRF, alteradoEm } = retorno.data;
-          setAuditoria({ criadoPor, criadoRf: criadoRF, criadoEm, alteradoPor, alteradoRf: alteradoRF, alteradoEm });
+          const {
+            criadoPor,
+            criadoRF,
+            criadoEm,
+            alteradoPor,
+            alteradoRF,
+            alteradoEm,
+          } = retorno.data;
+          setAuditoria({
+            criadoPor,
+            criadoRf: criadoRF,
+            criadoEm,
+            alteradoPor,
+            alteradoRf: alteradoRF,
+            alteradoEm,
+          });
           setExibirAuditoria(true);
         } else {
           resetarTela();
         }
+        setCarregandoDados(false);
       }
     };
 
@@ -144,15 +167,15 @@ const PendenciasFechamentoForm = ({ match }) => {
   const onClickVoltar = () => history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}`);
 
   const onClickAprovar = async () => {
-    const retorno = await ServicoPendenciasFechamento.aprovar([idPendenciaFechamento]).catch(e =>
-      erros(e)
-      );
+    const retorno = await ServicoPendenciasFechamento.aprovar([
+      idPendenciaFechamento,
+    ]).catch(e => erros(e));
     if (retorno && retorno.data) {
       const comErros = retorno.data.filter(item => !item.sucesso);
       if (comErros && comErros.length) {
         const mensagensErros = comErros.map(e => e.mensagemConsistencia);
         mensagensErros.forEach(msg => {
-          erro(msg);          
+          erro(msg);
         });
       } else {
         sucesso(`Pendência aprovada com sucesso`);
@@ -187,7 +210,7 @@ const PendenciasFechamentoForm = ({ match }) => {
   };
 
   return (
-    <>
+    <Loader loading={carregandoDados} tip="">
       {usuario && turmaSelecionada.turma ? (
         ''
       ) : (
@@ -265,9 +288,9 @@ const PendenciasFechamentoForm = ({ match }) => {
                 autoSize={{ minRows: 2, maxRows: 2 }}
                 value={descricao}
                 readOnly
-                />                
+              />
             </Campo>
-            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">    
+            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
               <Editor
                 label="Detalhamento"
                 inicial={detalhamento}
@@ -290,7 +313,7 @@ const PendenciasFechamentoForm = ({ match }) => {
           ''
         )}
       </Card>
-    </>
+    </Loader>
   );
 };
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace SME.SGP.Dominio
@@ -16,7 +17,13 @@ namespace SME.SGP.Dominio
         {
             if (TipoNota == TipoNota.Conceito)
                 return ConceitoId.ToString();
-            else return Nota.ToString();
+            else
+            {
+                if (!Nota.HasValue)
+                    return Nota.ToString();
+
+                return Nota.Value.ToString(CultureInfo.InvariantCulture);
+            }
         }
 
         public void Validar(string professorRf)
