@@ -63,6 +63,8 @@ namespace SME.SGP.Aplicacao
                 var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
                 if (!validacaoConselhoFinal.Item2)
                     throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                
+                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today,bimestre);
             }
             else
             {
