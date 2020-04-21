@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosConselhoClasseAluno
     {
-        Task<AuditoriaConselhoClasseAlunoDto> SalvarAsync(ConselhoClasseAlunoDto conselhoClasseAlunoDto);
+        Task<AuditoriaConselhoClasseAlunoDto> SalvarAsync(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto);
     }
 }
