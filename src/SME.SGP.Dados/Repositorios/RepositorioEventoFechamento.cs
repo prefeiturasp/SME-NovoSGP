@@ -55,6 +55,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> UeEmFechamento(DateTime dataReferencia, string dreCodigo, string ueCodigo, long tipoCalendarioId, int bimestre)
         {
             var query = new StringBuilder();
+            var consultaObterBimestreFinal = "(select pe2.bimestre from periodo_escolar pe2 where pe.tipo_calendario_id = pe2.tipo_calendario_id order by pe2.bimestre desc limit 1)";
 
             query.AppendLine(@"select count(pf.id) from periodo_fechamento pf 
                         inner join periodo_fechamento_bimestre pfb on pf.id = pfb.periodo_fechamento_id 
@@ -67,8 +68,8 @@ namespace SME.SGP.Dados.Repositorios
                         and pfb.inicio_fechamento <= @dataReferencia
                         and pfb.final_fechamento >= @dataReferencia");
 
-            if(bimestre > 0)
-                query.AppendLine("and pe.bimestre = @bimestre");
+
+            query.AppendLine($"and pe.bimestre =  {(bimestre > 0 ? "@bimestre" : consultaObterBimestreFinal)}");
 
             return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new
             {

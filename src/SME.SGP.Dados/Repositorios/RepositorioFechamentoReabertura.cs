@@ -172,13 +172,16 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoReabertura>> ObterReaberturaFechamentoBimestre(int bimestre, DateTime dataInicio, DateTime dataFim, long tipoCalendarioId, string dreCodigo, string ueCodigo)
         {
-            var query = @"select fr.* 
+            var bimetreQuery = "(select pe.bimestre from periodo_escolar pe inner join tipo_calendario tc on tc.id  = pe.tipo_calendario_id and tc.id = fr.tipo_calendario_id order by pe.bimestre  desc limit 1)";
+            var bimestreWhere = $"and frb.bimestre = {(bimestre > 0 ? " @bimestre" : bimetreQuery)}";
+
+            var query = $@"select fr.* 
                           from fechamento_reabertura_bimestre frb
                          inner join fechamento_reabertura fr on fr.id = frb.fechamento_reabertura_id
                          inner join dre on dre.id = fr.dre_id
                          inner join ue on ue.id = fr.ue_id
                          where not fr.excluido
-                           and frb.bimestre = @bimestre
+                           {bimestreWhere}
                            and TO_DATE(fr.inicio::TEXT, 'yyyy/mm/dd') = TO_DATE(@dataInicio, 'yyyy/mm/dd')
                            and TO_DATE(fr.fim::TEXT, 'yyyy/mm/dd') = TO_DATE(@dataFim, 'yyyy/mm/dd')
                            and fr.tipo_calendario_id = @tipoCalendarioId
@@ -198,13 +201,16 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<FechamentoReabertura> ObterReaberturaFechamentoBimestrePorDataReferencia(int bimestre, DateTime dataReferencia, long tipoCalendarioId, string dreCodigo, string ueCodigo)
         {
-            var query = @"select fr.* 
+            var bimetreQuery = "(select pe.bimestre from periodo_escolar pe inner join tipo_calendario tc on tc.id  = pe.tipo_calendario_id and tc.id = fr.tipo_calendario_id order by pe.bimestre  desc limit 1)";
+            var bimestreWhere = $"and frb.bimestre = {(bimestre > 0 ? " @bimestre" : bimetreQuery)}";
+
+            var query = $@"select fr.* 
                           from fechamento_reabertura_bimestre frb
                          inner join fechamento_reabertura fr on fr.id = frb.fechamento_reabertura_id
                          inner join dre on dre.id = fr.dre_id
                          inner join ue on ue.id = fr.ue_id
-                         where not fr.excluido
-                           and frb.bimestre = @bimestre
+                         where not fr.excluido 
+                          {bimestreWhere}
                            and TO_DATE(fr.inicio::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
                            and TO_DATE(fr.fim::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
                            and fr.tipo_calendario_id = @tipoCalendarioId
