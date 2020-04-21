@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioAula repositorio;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
@@ -26,6 +27,7 @@ namespace SME.SGP.Aplicacao
         public ConsultasAula(IRepositorioAula repositorio,
                              IConsultasPeriodoEscolar consultasPeriodoEscolar,
                              IConsultasFrequencia consultasFrequencia,
+                             IConsultasTipoCalendario consultasTipoCalendario,
                              IRepositorioPlanoAula repositorioPlanoAula,
                              IRepositorioTurma repositorioTurma,
                              IServicoUsuario servicoUsuario,
@@ -42,6 +44,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
+            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
@@ -82,7 +85,7 @@ namespace SME.SGP.Aplicacao
             if (!bimestreForaPeriodo && bimestreAula >= bimestreAtual)
                 return true;
 
-            return await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTime.Now, bimestreAtual);
+            return await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoAula(turma, DateTime.Now, bimestreAtual, bimestreAula);
         }
 
         public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
@@ -130,14 +133,21 @@ namespace SME.SGP.Aplicacao
             var usuarioRF = usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : string.Empty;
 
             var turma = repositorioTurma.ObterPorCodigo(turmaCodigo);
-            var periodosEscolares = await consultasPeriodoEscolar.ObterPeriodosEmAberto(turma.UeId, turma.ModalidadeCodigo, anoLetivo);
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada");
+
+            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turma.ModalidadeTipoCalendario);
+            if (tipoCalendario == null)
+                throw new NegocioException("Tipo de calendário não existe para turma selecionada");
+
+            var periodosEscolares = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
             return ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplina, usuarioLogado, usuarioRF);
         }
 
-        private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolarDto> periodosEscolares, int anoLetivo, string turmaCodigo, string disciplina, Usuario usuarioLogado, string usuarioRF)
+        private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplina, Usuario usuarioLogado, string usuarioRF)
         {
-            foreach (var periodoEscolar in periodosEscolares.Distinct())
+            foreach (var periodoEscolar in periodosEscolares.Periodos)
             {
                 foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, disciplina, usuarioRF))
                 {
