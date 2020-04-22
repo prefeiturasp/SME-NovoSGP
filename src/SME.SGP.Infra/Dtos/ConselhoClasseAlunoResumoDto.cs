@@ -9,5 +9,7 @@ namespace SME.SGP.Infra
         public long? ConselhoClasseTurmaId { get; set; }
         public long FechamentoTurmaId { get; set; }
         public int Bimestre { get; set; }
+        public DateTime? PeriodoFechamentoInicio { get; set; }
+        public DateTime? PeriodoFechamentoFim { get; set; }
     }
 }
