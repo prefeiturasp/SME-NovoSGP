@@ -13,6 +13,9 @@ import CampoConceitoPosConselho from '~/componentes-sgp/conselho-classe/CampoCon
 
 const ListaNotasConselho = props => {
   const dadosLista = Dados;
+  const alturaLinhaMesclada = dadosLista.componentesRegencia
+    ? dadosLista.componentesRegencia.notas.length * 2
+    : 0;
 
   const montarCampoNotaConceito = (nota, tipoNota) => {
     switch (Number(tipoNota)) {
@@ -94,30 +97,44 @@ const ListaNotasConselho = props => {
             })}
             {dadosLista.componentesRegencia.notas.map((item, index) => {
               return (
-                <tr key={shortid.generate()}>
-                  <BarraLateralBordo />
-                  <td
-                    className="coluna-disciplina sombra-direita"
-                    style={{ textAlign: 'left', paddingLeft: '20px' }}
-                  >
-                    {item.nome}
-                  </td>
-                  <td>
-                    <CampoDesabilitado>
-                      <span>{item.notaConceito}</span>
-                    </CampoDesabilitado>
-                  </td>
-                  <td>
-                    {montarCampoNotaConceito(
-                      item.notaPosConslelho,
-                      dadosLista.componentesRegencia.tipoNota
-                    )}
-                  </td>
-                  <td>{item.quantidadeAulas}</td>
-                  <td>{item.faltas}</td>
-                  <td>{item.ausenciasCompensadas}</td>
-                  <td>{item.frequencia}%</td>
-                </tr>
+                <>
+                  <tr key={shortid.generate()}>
+                    <BarraLateralBordo />
+                    <td
+                      className="coluna-disciplina sombra-direita"
+                      style={{ textAlign: 'left', paddingLeft: '20px' }}
+                    >
+                      {item.nome}
+                    </td>
+                    <td>
+                      <CampoDesabilitado>
+                        <span>{item.notaConceito}</span>
+                      </CampoDesabilitado>
+                    </td>
+                    <td>
+                      {montarCampoNotaConceito(
+                        item.notaPosConslelho,
+                        dadosLista.componentesRegencia.tipoNota
+                      )}
+                    </td>
+                    {index === 0 ? (
+                      <td rowSpan={alturaLinhaMesclada}>
+                        {item.quantidadeAulas}
+                      </td>
+                    ) : null}
+                    {index === 0 ? (
+                      <td rowSpan={alturaLinhaMesclada}>{item.faltas}</td>
+                    ) : null}
+                    {index === 0 ? (
+                      <td rowSpan={alturaLinhaMesclada}>
+                        {item.ausenciasCompensadas}
+                      </td>
+                    ) : null}
+                    {index === 0 ? (
+                      <td rowSpan={alturaLinhaMesclada}>{item.frequencia}%</td>
+                    ) : null}
+                  </tr>
+                </>
               );
             })}
           </tbody>
