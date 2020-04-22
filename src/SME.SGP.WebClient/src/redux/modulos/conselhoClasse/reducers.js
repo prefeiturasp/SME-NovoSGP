@@ -1,6 +1,7 @@
 import produce from 'immer';
 
 const inicial = {
+  listaTiposConceitos: {},
   dadosAlunoObjectCard: {},
   alunosConselhoClasse: [],
   recomendacaoAluno: '',
@@ -103,6 +104,12 @@ export default function ConselhoClasse(state = inicial, action) {
         return {
           ...draft,
           fechamentoPeriodoInicioFim: action.payload,
+        };
+      }
+      case '@conselhoClasse/setListaTiposConceitos': {
+        return {
+          ...draft,
+          listaTiposConceitos: action.payload,
         };
       }
 
