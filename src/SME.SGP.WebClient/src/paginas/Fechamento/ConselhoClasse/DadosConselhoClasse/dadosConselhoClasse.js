@@ -11,8 +11,8 @@ import AnotacoesRecomendacoes from './AnotacoesRecomendacoes/anotacoesRecomendac
 import servicoSalvarConselhoClasse from '../servicoSalvarConselhoClasse';
 import AlertaDentroPeriodo from './AlertaDentroPeriodo/alertaDentroPeriodo';
 import MarcadorPeriodoInicioFim from './MarcadorPeriodoInicioFim/marcadorPeriodoInicioFim';
-import ListaNotasConselho from './ListaNotasConselho/listaNotasConselho';
 import Sintese from './Sintese/Sintese';
+import ListasNotasConceitos from './ListasNotasConceito/listasNotasConceitos';
 
 const { TabPane } = Tabs;
 
@@ -60,7 +60,11 @@ const DadosConselhoClasse = props => {
       <>
         <AlertaDentroPeriodo />
         <MarcadorPeriodoInicioFim />
-        <ListaNotasConselho />
+        <ListasNotasConceitos
+          bimestreSelecionado={bimestreAtual}
+          codigoTurma={codigoTurma}
+          codigoEOL={codigoEOL}
+        />
         <Sintese
           ehFinal={bimestreAtual.valor === 'final'}
           bimestreSelecionado={bimestreAtual}

@@ -62,3 +62,8 @@ export const setFechamentoPeriodoInicioFim = payload => ({
   type: '@conselhoClasse/setFechamentoPeriodoInicioFim',
   payload,
 });
+
+export const setListaTiposConceitos = payload => ({
+  type: '@conselhoClasse/listaTiposConceitos',
+  payload,
+});
