@@ -55,7 +55,6 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
             var bimestre = fechamentoTurma.PeriodoEscolar?.Bimestre;
 
-            PeriodoFechamentoBimestre periodoFechamentoBimestre = null;
             var emFechamento = true;
 
             if (!bimestre.HasValue)
@@ -68,7 +67,6 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(fechamentoTurma.Turma, bimestre.Value);
                 emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma.CodigoTurma, DateTime.Today, bimestre.Value);
             }
 
@@ -78,12 +76,12 @@ namespace SME.SGP.Aplicacao
             
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFechamentoAsync(fechamentoTurma.Id, alunoCodigo);
             if (conselhoClasseAluno == null)
-                return await ObterRecomendacoesIniciais(anotacoesDoAluno, periodoFechamentoBimestre, emFechamento);
+                return await ObterRecomendacoesIniciais(anotacoesDoAluno, emFechamento);
 
-            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, periodoFechamentoBimestre, emFechamento);
+            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, emFechamento);
         }
 
-        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, PeriodoFechamentoBimestre periodoFechamentoBimestre, bool emFechamento)
+        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, bool emFechamento)
         {
             var recomendacoes = await repositorioConselhoClasseRecomendacao.ObterTodosAsync();
             if (!recomendacoes.Any())
@@ -94,14 +92,12 @@ namespace SME.SGP.Aplicacao
                 RecomendacaoAluno = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
                 RecomendacaoFamilia = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
                 AnotacoesAluno = anotacoesAluno,
-                PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
-                PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
                 SomenteLeitura = !emFechamento
             };
         }
 
         private ConsultasConselhoClasseRecomendacaoConsultaDto TransformaEntidadeEmConsultaDto(ConselhoClasseAluno conselhoClasseAluno,
-            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, PeriodoFechamentoBimestre periodoFechamentoBimestre, bool emFechamento)
+            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, bool emFechamento)
         {
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
@@ -109,8 +105,6 @@ namespace SME.SGP.Aplicacao
                 RecomendacaoFamilia = conselhoClasseAluno.RecomendacoesFamilia,
                 AnotacoesAluno = anotacoesAluno,
                 AnotacoesPedagogicas = conselhoClasseAluno.AnotacoesPedagogicas,
-                PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
-                PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
                 SomenteLeitura = !emFechamento,
                 Auditoria = (AuditoriaDto)conselhoClasseAluno
             };

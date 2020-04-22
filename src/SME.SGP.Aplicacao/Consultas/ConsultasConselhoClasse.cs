@@ -46,17 +46,23 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasse = await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id);
 
+            PeriodoFechamentoBimestre periodoFechamentoBimestre = null;
+            if (!ehFinal)
+                periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestre);
+
             return new ConselhoClasseAlunoResumoDto()
             {
                 FechamentoTurmaId = fechamentoTurma.Id,
                 ConselhoClasseTurmaId = conselhoClasse?.Id,
-                Bimestre = bimestre
+                Bimestre = bimestre,
+                PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
+                PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento
             };
         }
 
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
-            var turma = await consultasTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaCodigo);
             if (turma == null)
                 throw new NegocioException("Turma não localizada");
 

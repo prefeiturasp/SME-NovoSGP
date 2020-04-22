@@ -10,8 +10,6 @@ namespace SME.SGP.Infra
         public string AnotacoesPedagogicas { get; set; }
         public string RecomendacaoAluno { get; set; }
         public string RecomendacaoFamilia { get; set; }
-        public DateTime? PeriodoFechamentoInicio { get; set; }
-        public DateTime? PeriodoFechamentoFim { get; set; }
         public bool SomenteLeitura { get; set; }
         public AuditoriaDto Auditoria { get; set; }
     }
