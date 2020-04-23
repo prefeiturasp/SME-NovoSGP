@@ -1,5 +1,4 @@
 import api from '~/servicos/api';
-import { MockSintese } from '~/paginas/Fechamento/ConselhoClasse/DadosConselhoClasse/Sintese/mock-sintese';
 
 class ServicoConselhoClasse {
   obterListaAlunos = (turmaCodigo, anoLetivo, periodo) => {
@@ -33,8 +32,10 @@ class ServicoConselhoClasse {
     return api.post('v1/conselhos-classe/recomendacoes', params);
   };
 
-  obterSintese = () => {
-    return Promise.resolve(MockSintese);
+  obterSintese = (conselhoClasseId, fechamentoTurmaId, alunoCodigo) => {
+    return api.get(
+      `v1/conselhos-classe/${conselhoClasseId}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/sintese`
+    );
   };
 }
 

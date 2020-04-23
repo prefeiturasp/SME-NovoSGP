@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { MockSintese } from './mock-sintese';
 import { Base } from '~/componentes';
 import ComponenteSemNota from './ComponenteSemNota/ComponenteSemNota';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
-import { setSintese } from '~/redux/modulos/conselhoClasse/actions';
-import { useDispatch } from 'react-redux';
+import { erro } from '~/servicos/alertas';
 
 const Sintese = props => {
-  const { ehFinal, bimestreSelecionado } = props;
+  const { ehFinal, bimestreSelecionado, codigoAluno } = props;
   const cores = [
     Base.Azul,
     Base.RoxoEventoCalendario,
@@ -24,9 +22,13 @@ const Sintese = props => {
   const [dados, setDados] = useState();
 
   useEffect(() => {
-    ServicoConselhoClasse.obterSintese().then(resp => {
-      setDados(resp);
-    });
+    ServicoConselhoClasse.obterSintese(1, 1, codigoAluno)
+      .then(resp => {
+        setDados(resp.data);
+      })
+      .catch(e => {
+        erro(e);
+      });
   }, [bimestreSelecionado]);
 
   return (
@@ -35,7 +37,7 @@ const Sintese = props => {
         ? dados.map((componente, i) => {
             return (
               <ComponenteSemNota
-                dados={componente.componentes}
+                dados={componente.componenteSinteses}
                 nomeColunaComponente={componente.titulo}
                 corBorda={cores[i]}
                 ehFinal={ehFinal}

@@ -4,7 +4,7 @@ import shortid from 'shortid';
 
 const ComponenteSemNota = props => {
   const { dados, nomeColunaComponente, corBorda, ehFinal } = props;
-  return (
+  return dados ? (
     <Tabela>
       <div className="table-responsive pl-2 pr-2">
         <table className="table mt-2">
@@ -35,16 +35,16 @@ const ComponenteSemNota = props => {
                       width: '250px',
                     }}
                   >
-                    {item.componente}
+                    {item.nome}
                   </td>
                   <td
                     style={{
                       width: '250px',
                     }}
                   >
-                    {item.faltas || '--'}
+                    {item.totalFaltas || '--'}
                   </td>
-                  <td>{`${item.frequencia}%` || '--'}</td>
+                  <td>{`${item.percentualFrequencia}%` || '--'}</td>
                   {ehFinal ? <td>{item.parecerFinal || '--'}</td> : null}
                 </tr>
               );
@@ -53,6 +53,8 @@ const ComponenteSemNota = props => {
         </table>
       </div>
     </Tabela>
+  ) : (
+    <></>
   );
 };
 
