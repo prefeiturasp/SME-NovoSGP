@@ -70,7 +70,6 @@ const CalendarioProfessor = () => {
 
     if (!anoLetivo) return [];
     if (!modalidade) return [];
-    if (!tiposCalendario.length) return [];
 
     if (tipos.length > 0 && modalidadesPorAbrangencia.length === 1) {
       tipos = tiposCalendario.filter(
@@ -78,15 +77,17 @@ const CalendarioProfessor = () => {
       );
     }
 
-    if (Object.entries(turmaSelecionadaStore).length > 0) {
+    if (Object.entries(turmaSelecionadaStore).length) {
       const modalidadeSelecionada =
         String(modalidade) === String(ModalidadeDTO.EJA) ? 2 : 1;
 
       tipos = tiposCalendario
-        .filter(tipo => tipo.anoLetivo === anoLetivo)
+        .filter(tipo => String(tipo.anoLetivo) === String(anoLetivo))
         .filter(
           tipo => Number(tipo.modalidade) === Number(modalidadeSelecionada)
         );
+
+      if (!tiposCalendario.length) return [];
 
       if (!tipos.length) {
         erro(
@@ -95,7 +96,7 @@ const CalendarioProfessor = () => {
       }
     }
 
-    if (tipos && tipos.length > 0) {
+    if (tipos && tipos.length) {
       setTipoCalendarioSelecionado(tipos[0].valor.toString());
     } else {
       setTipoCalendarioSelecionado(undefined);
@@ -106,8 +107,8 @@ const CalendarioProfessor = () => {
     anoLetivo,
     modalidade,
     modalidadesPorAbrangencia,
-    tiposCalendario,
     turmaSelecionadaStore,
+    tiposCalendario,
   ]);
 
   const buscarTipos = useCallback(async () => {
@@ -117,11 +118,11 @@ const CalendarioProfessor = () => {
     );
     if (data && status === 200) {
       setTiposCalendario(
-        data.map(x => ({
-          desc: x.nome,
-          valor: x.id,
-          modalidade: x.modalidade,
-          anoLetivo: x.anoLetivo,
+        data.map(tipo => ({
+          desc: tipo.nome,
+          valor: tipo.id,
+          modalidade: tipo.modalidade,
+          anoLetivo: tipo.anoLetivo,
         }))
       );
       setCarregandoTipos(false);
@@ -129,10 +130,7 @@ const CalendarioProfessor = () => {
   }, [turmaSelecionadaStore]);
 
   useEffect(() => {
-    if (
-      !turmaSelecionadaStore ||
-      Object.entries(turmaSelecionadaStore).length <= 0
-    )
+    if (!turmaSelecionadaStore || !Object.entries(turmaSelecionadaStore).length)
       return;
 
     buscarTipos();
@@ -182,10 +180,16 @@ const CalendarioProfessor = () => {
   const dresStore = useSelector(state => state.filtro.dres);
   const [dres, setDres] = useState([]);
 
-  const obterDres = () => {
+  const obterDres = useCallback(() => {
     setCarregandoDres(true);
     api
-      .get(`v1/abrangencias/${turmaSelecionadaStore.consideraHistorico}/dres`)
+      .get(
+        `v1/abrangencias/${
+          turmaSelecionadaStore.consideraHistorico
+            ? turmaSelecionadaStore.consideraHistorico
+            : false
+        }/dres`
+      )
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -206,7 +210,7 @@ const CalendarioProfessor = () => {
         setDres(dresStore);
         setCarregandoDres(false);
       });
-  };
+  }, [dresStore, turmaSelecionadaStore.consideraHistorico]);
 
   useEffect(() => {
     if (tipoCalendarioSelecionado) {
@@ -217,7 +221,7 @@ const CalendarioProfessor = () => {
       setUnidadeEscolarSelecionada();
       setOpcaoTurma();
     }
-  }, [tipoCalendarioSelecionado]);
+  }, [tipoCalendarioSelecionado, obterDres]);
 
   const aoClicarBotaoVoltar = () => {
     history.push('/');
@@ -408,8 +412,14 @@ const CalendarioProfessor = () => {
                   lista={tiposDeCalendario}
                   valueOption="valor"
                   valueText="desc"
-                  valueSelect={tipoCalendarioSelecionado}
+                  valueSelect={
+                    tiposDeCalendario &&
+                    Object.entries(tiposDeCalendario).length
+                      ? tipoCalendarioSelecionado
+                      : undefined
+                  }
                   placeholder="Selecione o tipo de calendário"
+                  disabled={!Object.entries(turmaSelecionadaStore).length}
                 />
               </Loader>
             </Grid>
