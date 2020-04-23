@@ -13,6 +13,7 @@ const inicial = {
   dadosAnotacoesRecomendacoes: {},
   auditoriaAnotacaoRecomendacao: null,
   fechamentoPeriodoInicioFim: {},
+  notasJustificativas: { componentes: [], componentesRegencia: [] },
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -112,6 +113,14 @@ export default function ConselhoClasse(state = inicial, action) {
           listaTiposConceitos: action.payload,
         };
       }
+
+      case '@conselhoClasse/setNotasJustificativas':
+        draft.notasJustificativas.componentes = [
+          ...(action.payload.componentes || []),
+        ];
+        draft.notasJustificativas.componentesRegencia = [
+          ...(action.payload.componentesRegencia || []),
+        ];
 
       default:
         return draft;
