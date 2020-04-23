@@ -11,6 +11,7 @@ import AnotacoesRecomendacoes from './AnotacoesRecomendacoes/anotacoesRecomendac
 import servicoSalvarConselhoClasse from '../servicoSalvarConselhoClasse';
 import AlertaDentroPeriodo from './AlertaDentroPeriodo/alertaDentroPeriodo';
 import MarcadorPeriodoInicioFim from './MarcadorPeriodoInicioFim/marcadorPeriodoInicioFim';
+import Justificativa from './Justificativa/Justificativa';
 
 const { TabPane } = Tabs;
 
@@ -91,6 +92,7 @@ const DadosConselhoClasse = props => {
             {bimestreAtual.valor === '2'
               ? montarDadosAnotacoesRecomendacoes()
               : ''}
+            <Justificativa />
           </TabPane>
           {modalidade !== modalidadeDto.EJA ? (
             <TabPane tab="3º Bimestre" key="3">
