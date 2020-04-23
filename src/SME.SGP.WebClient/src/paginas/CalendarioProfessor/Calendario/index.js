@@ -68,7 +68,9 @@ const CalendarioProfessor = () => {
   }, [modalidadesAbrangencia]);
 
   const tiposDeCalendario = useMemo(() => {
-    let tipos = tiposCalendario;
+    let tipos = [];
+
+    if (!anoLetivo) return [];
 
     if (tipos.length > 0 && modalidadesPorAbrangencia.length === 1) {
       tipos = tiposCalendario.filter(
@@ -76,17 +78,21 @@ const CalendarioProfessor = () => {
       );
     }
 
-    if (Object.entries(turmaSelecionadaStore).length > 0) {
+    if (Object.entries(turmaSelecionadaStore).length) {
       const modalidadeSelecionada =
         String(turmaSelecionadaStore.modalidade) === String(ModalidadeDTO.EJA)
           ? 2
           : 1;
 
       tipos = tiposCalendario
-        .filter(x => x.anoLetivo === anoLetivo)
-        .filter(y => Number(y.modalidade) === Number(modalidadeSelecionada));
+        .filter(tipo => String(tipo.anoLetivo) === String(anoLetivo))
+        .filter(
+          tipo => Number(tipo.modalidade) === Number(modalidadeSelecionada)
+        );
 
-      if (!tipos || tipos.length === 0) {
+      if (!tiposCalendario.length) return [];
+
+      if (!tipos.length) {
         erro(
           'Nenhum tipo de calendário encontrado para o ano letivo e modalidade selecionada'
         );
@@ -95,7 +101,7 @@ const CalendarioProfessor = () => {
       tipos = [];
     }
 
-    if (tipos && tipos.length > 0) {
+    if (tipos && tipos.length) {
       setTipoCalendarioSelecionado(tipos[0].valor.toString());
     } else {
       setTipoCalendarioSelecionado(undefined);
@@ -105,33 +111,34 @@ const CalendarioProfessor = () => {
   }, [
     anoLetivo,
     modalidadesPorAbrangencia,
-    tiposCalendario,
     turmaSelecionadaStore,
+    tiposCalendario,
   ]);
 
-  useEffect(() => {
-    // Busca os calendarios disponíveis por ano letivo
-    const buscarTipos = async () => {
-      setCarregandoTipos(true);
-      const { data, status } = await ServicoCalendarios.obterTiposCalendario(
-        turmaSelecionadaStore.anoLetivo
+  const buscarTipos = useCallback(async () => {
+    setCarregandoTipos(true);
+    const { data, status } = await ServicoCalendarios.obterTiposCalendario(
+      turmaSelecionadaStore.anoLetivo
+    );
+    if (data && status === 200) {
+      setTiposCalendario(
+        data.map(tipo => ({
+          desc: tipo.nome,
+          valor: tipo.id,
+          modalidade: tipo.modalidade,
+          anoLetivo: tipo.anoLetivo,
+        }))
       );
-      if (data && status === 200) {
-        if (Object.entries(turmaSelecionadaStore).length > 0) {
-          setTiposCalendario(
-            data.map(x => ({
-              desc: x.nome,
-              valor: x.id,
-              modalidade: x.modalidade,
-              anoLetivo: x.anoLetivo,
-            }))
-          );
-        }
-        setCarregandoTipos(false);
-      }
-    };
+      setCarregandoTipos(false);
+    }
+  }, [turmaSelecionadaStore]);
+
+  useEffect(() => {
+    if (!turmaSelecionadaStore || !Object.entries(turmaSelecionadaStore).length)
+      return;
+
     buscarTipos();
-  }, [turmaSelecionadaStore, turmaSelecionadaStore.anoLetivo]);
+  }, [buscarTipos, turmaSelecionadaStore, turmaSelecionadaStore.anoLetivo]);
 
   const eventoAulaCalendarioEdicao = useSelector(
     state => state.calendarioProfessor.eventoAulaCalendarioEdicao
@@ -177,10 +184,16 @@ const CalendarioProfessor = () => {
   const dresStore = useSelector(state => state.filtro.dres);
   const [dres, setDres] = useState([]);
 
-  const obterDres = () => {
+  const obterDres = useCallback(() => {
     setCarregandoDres(true);
     api
-      .get(`v1/abrangencias/${turmaSelecionadaStore.consideraHistorico}/dres`)
+      .get(
+        `v1/abrangencias/${
+          turmaSelecionadaStore.consideraHistorico
+            ? turmaSelecionadaStore.consideraHistorico
+            : false
+        }/dres`
+      )
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -201,7 +214,7 @@ const CalendarioProfessor = () => {
         setDres(dresStore);
         setCarregandoDres(false);
       });
-  };
+  }, [dresStore, turmaSelecionadaStore.consideraHistorico]);
 
   useEffect(() => {
     if (tipoCalendarioSelecionado) {
@@ -212,7 +225,7 @@ const CalendarioProfessor = () => {
       setUnidadeEscolarSelecionada();
       setOpcaoTurma();
     }
-  }, [tipoCalendarioSelecionado]);
+  }, [tipoCalendarioSelecionado, obterDres]);
 
   const aoClicarBotaoVoltar = () => {
     history.push('/');
@@ -412,8 +425,14 @@ const CalendarioProfessor = () => {
                   lista={tiposDeCalendario}
                   valueOption="valor"
                   valueText="desc"
-                  valueSelect={tipoCalendarioSelecionado}
+                  valueSelect={
+                    tiposDeCalendario &&
+                    Object.entries(tiposDeCalendario).length
+                      ? tipoCalendarioSelecionado
+                      : undefined
+                  }
                   placeholder="Selecione o tipo de calendário"
+                  disabled={!Object.entries(turmaSelecionadaStore).length}
                 />
               </Loader>
             </Grid>
