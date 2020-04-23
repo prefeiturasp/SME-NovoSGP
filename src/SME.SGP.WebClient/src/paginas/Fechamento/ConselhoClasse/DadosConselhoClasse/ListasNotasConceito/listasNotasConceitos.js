@@ -1,15 +1,19 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
-import ListaFinal from './ListaFinal/listaFinal';
+import { useSelector } from 'react-redux';
 // import ListaBimestre from './ListaBimestre/listaBimestre';
 import ListaNotasConselho from '../ListaNotasConselho/listaNotasConselho';
+import ListaFinal from './ListaFinal/listaFinal';
 
 const ListasNotasConceitos = props => {
-  const { bimestreSelecionado, codigoEOL, codigoTurma } = props;
+  const { bimestreSelecionado } = props;
 
-  const obterDadosLista = useCallback(async (turma, codigoAluno) => {
-    console.log(`Turma: ${turma}`);
-    console.log(`Aluno: ${codigoAluno}`);
+  const dadosPrincipaisConselhoClasse = useSelector(
+    store => store.conselhoClasse.dadosPrincipaisConselhoClasse
+  );
+
+  const obterDadosLista = useCallback(async () => {
+    console.log('START: obterDadosLista');
 
     // TODO Fazer a consulta para trazer as notas e conceitos aba bimestre e final!
     // Quando for aba final passar bimestre = 0!
@@ -17,11 +21,27 @@ const ListasNotasConceitos = props => {
   }, []);
 
   useEffect(() => {
-    if (codigoTurma && codigoEOL) {
-      const ehFinal = bimestreSelecionado.valor === 'final';
-      obterDadosLista(codigoTurma, codigoEOL, ehFinal);
+    const {
+      turmaCodigo,
+      fechamentoTurmaId,
+      conselhoClasseId,
+      alunoCodigo,
+    } = dadosPrincipaisConselhoClasse;
+
+    const bimestre = bimestreSelecionado.valor;
+
+    const ehFinal = bimestreSelecionado.valor === 'final';
+    if (bimestre && turmaCodigo && fechamentoTurmaId && alunoCodigo) {
+      obterDadosLista(ehFinal);
     }
-  }, [codigoEOL, codigoTurma, obterDadosLista, bimestreSelecionado]);
+
+    console.log(`bimestre: ${bimestre}`);
+    console.log(`turmaCodigo: ${turmaCodigo}`);
+    console.log(`fechamentoTurmaId: ${fechamentoTurmaId}`);
+    console.log(`conselhoClasseId: ${conselhoClasseId}`);
+    console.log(`alunoCodigo: ${alunoCodigo}`);
+    console.log(`ehFinal: ${ehFinal}`);
+  }, [bimestreSelecionado, dadosPrincipaisConselhoClasse, obterDadosLista]);
 
   const validaExibirLista = () => {
     const ehFinal = bimestreSelecionado.valor === 'final';
@@ -37,15 +57,11 @@ const ListasNotasConceitos = props => {
 };
 
 ListasNotasConceitos.propTypes = {
-  bimestreSelecionado: PropTypes.string,
-  codigoTurma: PropTypes.string,
-  codigoEOL: PropTypes.string,
+  bimestreSelecionado: PropTypes.oneOfType([PropTypes.object]),
 };
 
 ListasNotasConceitos.defaultProps = {
-  bimestreSelecionado: '',
-  codigoTurma: '',
-  codigoEOL: '',
+  bimestreSelecionado: {},
 };
 
 export default ListasNotasConceitos;
