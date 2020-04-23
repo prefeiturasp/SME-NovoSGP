@@ -67,3 +67,8 @@ export const setListaTiposConceitos = payload => ({
   type: '@conselhoClasse/listaTiposConceitos',
   payload,
 });
+
+export const setNotasJustificativas = payload => ({
+  type: '@conselhoClasse/setNotasJustificativas',
+  payload,
+});
