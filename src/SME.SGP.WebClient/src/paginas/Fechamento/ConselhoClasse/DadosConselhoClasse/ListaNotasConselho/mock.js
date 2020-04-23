@@ -36,7 +36,7 @@ export const Dados = {
     ],
   },
   componentesRegencia: {
-    tipoNota: 2,
+    tipoNota: 1,
     notas: [
       {
         nome: 'Lingua Inglesa',
