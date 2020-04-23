@@ -18,7 +18,6 @@ import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import { Loader } from '~/componentes';
-import Alert from '~/componentes/alert';
 import { erro } from '~/servicos/alertas';
 import { AlertaSelecionarTurma } from '~/componentes-sgp';
 
@@ -39,7 +38,6 @@ const CalendarioProfessor = () => {
   const [diasLetivos, setDiasLetivos] = useState();
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada: turmaSelecionadaStore } = usuario;
-  const [controleTurmaSelecionada, setControleTurmaSelecionada] = useState();
 
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
 
@@ -107,7 +105,7 @@ const CalendarioProfessor = () => {
   }, [modalidade]);
 
   const tiposDeCalendario = useMemo(() => {
-    let tipos = tiposCalendario;
+    let tipos = [];
 
     if (!anoLetivo || !modalidade || !tipos || tipos.length === 0) return [];
 
@@ -130,8 +128,6 @@ const CalendarioProfessor = () => {
           'Nenhum tipo de calendário encontrado para o ano letivo e modalidade selecionada'
         );
       }
-    } else {
-      tipos = [];
     }
 
     if (tipos && tipos.length > 0) {
@@ -168,13 +164,25 @@ const CalendarioProfessor = () => {
   }, [turmaSelecionadaStore]);
 
   useEffect(() => {
-    // Busca os calendarios disponíveis por ano letivo
-    if (
-      !turmaSelecionadaStore ||
-      Object.entries(turmaSelecionadaStore).length <= 0
-    )
-      return;
-
+    const buscarTipos = async () => {
+      setCarregandoTipos(true);
+      const { data, status } = await ServicoCalendarios.obterTiposCalendario(
+        turmaSelecionadaStore.anoLetivo
+      );
+      if (data && status === 200) {
+        if (Object.entries(turmaSelecionadaStore).length > 0) {
+          setTiposCalendario(
+            data.map(x => ({
+              desc: x.nome,
+              valor: x.id,
+              modalidade: x.modalidade,
+              anoLetivo: x.anoLetivo,
+            }))
+          );
+        }
+        setCarregandoTipos(false);
+      }
+    };
     buscarTipos();
   }, [buscarTipos, turmaSelecionadaStore]);
 
@@ -267,12 +275,9 @@ const CalendarioProfessor = () => {
     setEventoSme(!eventoSme);
   };
 
-  const [dreDesabilitada, setDreDesabilitada] = useState(false);
-
   useEffect(() => {
     if (dres.length === 1) {
       setDreSelecionada(dres[0].valor);
-      setDreDesabilitada(true);
     } else if (
       dres &&
       eventoAulaCalendarioEdicao &&
@@ -281,7 +286,6 @@ const CalendarioProfessor = () => {
       setDreSelecionada(eventoAulaCalendarioEdicao.dre);
     } else if (Object.entries(turmaSelecionadaStore).length > 0) {
       setDreSelecionada(turmaSelecionadaStore.dre);
-      setDreDesabilitada(true);
     }
   }, [dres, eventoAulaCalendarioEdicao, turmaSelecionadaStore]);
 
@@ -289,9 +293,9 @@ const CalendarioProfessor = () => {
     state => state.filtro.unidadesEscolares
   );
   const [unidadesEscolares, setUnidadesEscolares] = useState([]);
-  const [unidadeEscolarDesabilitada, setUnidadeEscolarDesabilitada] = useState(
-    false
-  );
+  // const [unidadeEscolarDesabilitada, setUnidadeEscolarDesabilitada] = useState(
+  //   false
+  // );
 
   const obterUnidadesEscolares = () => {
     setCarregandoUes(true);
@@ -323,7 +327,6 @@ const CalendarioProfessor = () => {
   useEffect(() => {
     if (unidadesEscolares.length === 1) {
       setUnidadeEscolarSelecionada(unidadesEscolares[0].valor);
-      setUnidadeEscolarDesabilitada(true);
     } else if (
       unidadesEscolares &&
       eventoAulaCalendarioEdicao &&
@@ -332,7 +335,6 @@ const CalendarioProfessor = () => {
       setUnidadeEscolarSelecionada(eventoAulaCalendarioEdicao.unidadeEscolar);
     } else if (Object.entries(turmaSelecionadaStore).length > 0) {
       setUnidadeEscolarSelecionada(turmaSelecionadaStore.unidadeEscolar);
-      setUnidadeEscolarDesabilitada(true);
     }
   }, [eventoAulaCalendarioEdicao, unidadesEscolares]);
 
