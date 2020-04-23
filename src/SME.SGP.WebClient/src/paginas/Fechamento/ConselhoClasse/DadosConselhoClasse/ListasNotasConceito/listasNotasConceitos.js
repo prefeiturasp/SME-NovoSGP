@@ -48,7 +48,7 @@ const ListasNotasConceitos = props => {
     if (ehFinal) {
       return <ListaFinal />;
     }
-    return <ListaNotasConselho />;
+    return <ListaNotasConselho bimestreSelecionado={bimestreSelecionado} />;
     // TODO Adicioanr os fontes no ListaBimestre!
     // return <ListaBimestre />;
   };
