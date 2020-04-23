@@ -43,8 +43,8 @@ export const setConselhoClasseEmEdicao = payload => ({
   payload,
 });
 
-export const setDadosAnotacoesRecomendacoes = payload => ({
-  type: '@conselhoClasse/setDadosAnotacoesRecomendacoes',
+export const setDadosPrincipaisConselhoClasse = payload => ({
+  type: '@conselhoClasse/setDadosPrincipaisConselhoClasse',
   payload,
 });
 
