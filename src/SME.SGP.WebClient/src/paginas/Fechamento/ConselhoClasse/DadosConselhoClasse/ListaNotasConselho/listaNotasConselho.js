@@ -59,7 +59,7 @@ const ListaNotasConselho = props => {
   };
 
   return (
-    <Lista>
+    <Lista className="pl-2 pr-2">
       <div className="table-responsive pl-2 pr-2">
         <table className="table mt-4">
           <thead className="tabela-conselho-thead">

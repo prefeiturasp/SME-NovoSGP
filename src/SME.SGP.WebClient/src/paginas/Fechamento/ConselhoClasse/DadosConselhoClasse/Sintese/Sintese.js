@@ -49,12 +49,14 @@ const Sintese = props => {
       {dados
         ? dados.map((componente, i) => {
             return (
-              <ComponenteSemNota
-                dados={componente.componenteSinteses}
-                nomeColunaComponente={componente.titulo}
-                corBorda={cores[i]}
-                ehFinal={ehFinal}
-              />
+              <div className="pl-2 pr-2">
+                <ComponenteSemNota
+                  dados={componente.componenteSinteses}
+                  nomeColunaComponente={componente.titulo}
+                  corBorda={cores[i]}
+                  ehFinal={ehFinal}
+                />
+              </div>
             );
           })
         : null}
