@@ -86,6 +86,27 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, new { alunoCodigo });
         }
 
+        public async Task<FrequenciaAluno> ObterPorAlunoBimestreAsync(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
+        {
+            var query = new StringBuilder(@"select *
+                        from frequencia_aluno
+                        where codigo_aluno = @codigoAluno
+	                        and tipo = @tipoFrequencia
+	                        and bimestre = @bimestre ");
+
+            if (!string.IsNullOrEmpty(disciplinaId))
+                query.AppendLine("and disciplina_id = @disciplinaId");
+
+            query.AppendLine(" order by id desc");
+            return await database.Conexao.QueryFirstOrDefaultAsync<FrequenciaAluno>(query.ToString(), new
+            {
+                codigoAluno,
+                bimestre,
+                tipoFrequencia,
+                disciplinaId
+            });
+        }
+
         public FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
         {
             var query = new StringBuilder(@"select *
