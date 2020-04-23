@@ -3,9 +3,18 @@ import { Base } from '~/componentes';
 import ComponenteSemNota from './ComponenteSemNota/ComponenteSemNota';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import { erro } from '~/servicos/alertas';
+import { useSelector } from 'react-redux';
 
 const Sintese = props => {
-  const { ehFinal, bimestreSelecionado, codigoAluno } = props;
+  const { ehFinal, bimestreSelecionado } = props;
+  const dadosPrincipaisConselhoClasse = useSelector(
+    store => store.conselhoClasse.dadosPrincipaisConselhoClasse
+  );
+  const {
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo,
+  } = dadosPrincipaisConselhoClasse;
   const cores = [
     Base.Azul,
     Base.RoxoEventoCalendario,
@@ -22,14 +31,18 @@ const Sintese = props => {
   const [dados, setDados] = useState();
 
   useEffect(() => {
-    ServicoConselhoClasse.obterSintese(1, 1, codigoAluno)
+    ServicoConselhoClasse.obterSintese(
+      conselhoClasseId,
+      fechamentoTurmaId,
+      alunoCodigo
+    )
       .then(resp => {
         setDados(resp.data);
       })
       .catch(e => {
         erro(e);
       });
-  }, [bimestreSelecionado]);
+  }, [alunoCodigo, conselhoClasseId, fechamentoTurmaId]);
 
   return (
     <>
