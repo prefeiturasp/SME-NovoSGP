@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { MockSintese } from './mock-sintese';
 import { Base } from '~/componentes';
 import ComponenteSemNota from './ComponenteSemNota/ComponenteSemNota';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
-import { setSintese } from '~/redux/modulos/conselhoClasse/actions';
-import { useDispatch } from 'react-redux';
+import { erro } from '~/servicos/alertas';
+import { useSelector } from 'react-redux';
 
 const Sintese = props => {
   const { ehFinal, bimestreSelecionado } = props;
+  const dadosPrincipaisConselhoClasse = useSelector(
+    store => store.conselhoClasse.dadosPrincipaisConselhoClasse
+  );
+  const {
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo,
+  } = dadosPrincipaisConselhoClasse;
   const cores = [
     Base.Azul,
     Base.RoxoEventoCalendario,
@@ -24,22 +31,32 @@ const Sintese = props => {
   const [dados, setDados] = useState();
 
   useEffect(() => {
-    ServicoConselhoClasse.obterSintese().then(resp => {
-      setDados(resp);
-    });
-  }, [bimestreSelecionado]);
+    ServicoConselhoClasse.obterSintese(
+      conselhoClasseId,
+      fechamentoTurmaId,
+      alunoCodigo
+    )
+      .then(resp => {
+        setDados(resp.data);
+      })
+      .catch(e => {
+        erro(e);
+      });
+  }, [alunoCodigo, conselhoClasseId, fechamentoTurmaId]);
 
   return (
     <>
       {dados
         ? dados.map((componente, i) => {
             return (
-              <ComponenteSemNota
-                dados={componente.componentes}
-                nomeColunaComponente={componente.titulo}
-                corBorda={cores[i]}
-                ehFinal={ehFinal}
-              />
+              <div className="pl-2 pr-2">
+                <ComponenteSemNota
+                  dados={componente.componenteSinteses}
+                  nomeColunaComponente={componente.titulo}
+                  corBorda={cores[i]}
+                  ehFinal={ehFinal}
+                />
+              </div>
             );
           })
         : null}

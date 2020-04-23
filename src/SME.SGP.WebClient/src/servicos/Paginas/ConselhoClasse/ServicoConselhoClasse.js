@@ -1,4 +1,3 @@
-import { MockSintese } from '~/paginas/Fechamento/ConselhoClasse/DadosConselhoClasse/Sintese/mock-sintese';
 import { store } from '~/redux';
 import { setListaTiposConceitos } from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
@@ -16,11 +15,12 @@ class ServicoConselhoClasse {
   };
 
   obterAnotacoesRecomendacoes = (
-    conselhoClasseId = 0,
+    conselhoClasseId,
     fechamentoTurmaId,
     alunoCodigo
   ) => {
-    const url = `v1/conselhos-classe/${conselhoClasseId}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/recomendacoes`;
+    const url = `v1/conselhos-classe/${conselhoClasseId ||
+      0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/recomendacoes`;
     return api.get(url);
   };
 
@@ -34,8 +34,11 @@ class ServicoConselhoClasse {
     return api.post('v1/conselhos-classe/recomendacoes', params);
   };
 
-  obterSintese = () => {
-    return Promise.resolve(MockSintese);
+  obterSintese = (conselhoClasseId, fechamentoTurmaId, alunoCodigo) => {
+    return api.get(
+      `v1/conselhos-classe/${conselhoClasseId ||
+        0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/sintese`
+    );
   };
 
   obterInformacoesPrincipais = (
