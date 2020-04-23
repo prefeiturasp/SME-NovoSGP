@@ -1,5 +1,8 @@
-import api from '~/servicos/api';
 import { MockSintese } from '~/paginas/Fechamento/ConselhoClasse/DadosConselhoClasse/Sintese/mock-sintese';
+import { store } from '~/redux';
+import { setListaTiposConceitos } from '~/redux/modulos/conselhoClasse/actions';
+import { erros } from '~/servicos/alertas';
+import api from '~/servicos/api';
 
 class ServicoConselhoClasse {
   obterListaAlunos = (turmaCodigo, anoLetivo, periodo) => {
@@ -13,13 +16,11 @@ class ServicoConselhoClasse {
   };
 
   obterAnotacoesRecomendacoes = (
-    codigoTurma,
-    codigoAluno,
-    numeroBimestre = 0,
-    modalidade,
-    ehFinal = false
+    conselhoClasseId = 0,
+    fechamentoTurmaId,
+    alunoCodigo
   ) => {
-    const url = `v1/conselhos-classe/recomendacoes/turmas/${codigoTurma}/alunos/${codigoAluno}/bimestres/${numeroBimestre}?modalidade=${modalidade}&ehFinal=${ehFinal}`;
+    const url = `v1/conselhos-classe/${conselhoClasseId}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/recomendacoes`;
     return api.get(url);
   };
 
@@ -35,6 +36,42 @@ class ServicoConselhoClasse {
 
   obterSintese = () => {
     return Promise.resolve(MockSintese);
+  };
+
+  obterInformacoesPrincipais = (
+    turmaCodigo,
+    bimestre,
+    alunoCodigo,
+    ehFinal
+  ) => {
+    const url = `v1/conselhos-classe/turmas/${turmaCodigo}/bimestres/${bimestre}/alunos/${alunoCodigo}/final/${ehFinal}`;
+    return api.get(url);
+  };
+
+  carregarListaTiposConceito = async periodoFim => {
+    const { dispatch } = store;
+
+    const lista = await api
+      .get(`v1/avaliacoes/notas/conceitos?data=${periodoFim}`)
+      .catch(e => erros(e));
+
+    if (lista && lista.data && lista.data.length) {
+      const novaLista = lista.data.map(item => {
+        item.id = String(item.id);
+        return item;
+      });
+      dispatch(setListaTiposConceitos(novaLista));
+    }
+    dispatch(setListaTiposConceitos([]));
+  };
+
+  acessarAbaFinalParecerConclusivo = (
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo
+  ) => {
+    const url = `v1/conselhos-classe/${conselhoClasseId}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/parecer`;
+    return api.get(url);
   };
 }
 
