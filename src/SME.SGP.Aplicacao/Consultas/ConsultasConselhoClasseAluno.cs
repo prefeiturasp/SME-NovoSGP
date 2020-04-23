@@ -1,7 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -11,14 +13,23 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
+        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
 
         public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                             IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                            IConsultasFechamentoTurma consultasFechamentoTurma)
+                                            IConsultasFechamentoTurma consultasFechamentoTurma,
+                                            IServicoEOL servicoEOL,
+                                            IServicoUsuario servicoUsuario,
+                                            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
         }
 
         public async Task<bool> ExisteConselhoClasseUltimoBimestreAsync(Turma turma, string alunoCodigo)
@@ -40,6 +51,26 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConselhoClasseAluno> ObterPorConselhoClasseAsync(long conselhoClasseId, string alunoCodigo)
             => await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
+
+        public async Task ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, int bimestre)
+        {
+            var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
+
+            if (fechamentoTurma == null)
+                throw new NegocioException("Não existe fechamento para a turma");
+
+            if (bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurma.Turma, alunoCodigo))
+                throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
+
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(fechamentoTurma.Turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
+
+            var disciplinasSinteses = disciplinas.Where(x => !x.BaseNacional);
+
+            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestres(alunoCodigo, bimestre, fechamentoTurma.Turma.CodigoTurma);
+
+        }
 
         public async Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
