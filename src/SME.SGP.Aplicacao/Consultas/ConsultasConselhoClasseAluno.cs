@@ -22,6 +22,8 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasFechamentoNota consultasFechamentoNota;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly IConsultasFrequencia consultasFrequencia;
 
         public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
@@ -32,7 +34,9 @@ namespace SME.SGP.Aplicacao
                                             IConsultasConselhoClasseNota consultasConselhoClasseNota,
                                             IConsultasFechamentoNota consultasFechamentoNota,
                                             IServicoEOL servicoEOL,
-                                            IServicoUsuario servicoUsuario)
+                                            IServicoUsuario servicoUsuario,
+                                            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
+                                            IConsultasFrequencia consultasFrequencia)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioFrequenciaAluno = repositorioFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAluno));
@@ -44,6 +48,8 @@ namespace SME.SGP.Aplicacao
             this.consultasFechamentoNota = consultasFechamentoNota ?? throw new ArgumentNullException(nameof(consultasFechamentoNota));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
+            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
         }
 
         public async Task<bool> ExisteConselhoClasseUltimoBimestreAsync(Turma turma, string alunoCodigo)
@@ -66,24 +72,116 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAluno> ObterPorConselhoClasseAsync(long conselhoClasseId, string alunoCodigo)
             => await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
 
-        public async Task ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, int bimestre)
+        public async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
+            var retorno = new List<ConselhoDeClasseGrupoMatrizDto>();
+
             var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
 
             if (fechamentoTurma == null)
                 throw new NegocioException("Não existe fechamento para a turma");
+
+            var bimestre = fechamentoTurma.PeriodoEscolar?.Bimestre ?? 0;
 
             if (bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurma.Turma, alunoCodigo))
                 throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(fechamentoTurma.Turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
+            var disciplinas = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(fechamentoTurma.Turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
 
-            var disciplinasSinteses = disciplinas.Where(x => !x.BaseNacional);
+            if (disciplinas == null || !disciplinas.Any())
+                return null;
 
-            var frequenciaAluno = repositorioFrequenciaAluno.ObterFrequenciaBimestres(alunoCodigo, bimestre, fechamentoTurma.Turma.CodigoTurma);
+            var disciplinasSinteses = disciplinas.Where(x => !x.BaseNacional && x.GrupoMatriz != null);
 
+            if (disciplinasSinteses == null || !disciplinasSinteses.Any())
+                return null;
+
+            var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestres(alunoCodigo, bimestre, fechamentoTurma.Turma.CodigoTurma);
+
+            foreach (var componenteCurricular in disciplinasSinteses)
+            {
+                var grupoSintese = retorno.FirstOrDefault(x => x.Id == componenteCurricular.Codigo);
+
+                MapearDto(ref retorno, ref grupoSintese, frequenciaAluno, componenteCurricular, bimestre);
+            }
+
+            return retorno;
+        }
+
+        private void MapearDto(ref List<ConselhoDeClasseGrupoMatrizDto> retorno, ref ConselhoDeClasseGrupoMatrizDto grupoSintese, IEnumerable<FrequenciaAluno> frequenciaAluno, ComponenteCurricularEol componenteCurricular, int bimestre)
+        {
+            var frequenciaDisciplina = ObterFrequenciaPorDisciplina(frequenciaAluno, componenteCurricular);
+
+            var percentualFrequencia = ObterPercentualDeFrequencia(frequenciaDisciplina);
+
+            var dto = MapeaderDisciplinasDto(componenteCurricular);
+
+            var parecerFinal = bimestre == 0 ? consultasFrequencia.ObterSinteseAluno(percentualFrequencia, dto) : null;
+
+            var componenteSinteseAdicionar = MapearConselhoDeClasseComponenteSinteseDto(componenteCurricular, frequenciaDisciplina, percentualFrequencia, parecerFinal);
+
+            if (grupoSintese != null)
+            {
+                grupoSintese.ComponenteSinteses.ToList().Add(componenteSinteseAdicionar);
+                return;
+            }
+
+            grupoSintese = Mapear(componenteCurricular, componenteSinteseAdicionar);
+
+            retorno.Add(grupoSintese);
+        }
+
+        private static ConselhoDeClasseGrupoMatrizDto Mapear(ComponenteCurricularEol componenteCurricular, ConselhoDeClasseComponenteSinteseDto componenteSinteseAdicionar)
+        {
+            return new ConselhoDeClasseGrupoMatrizDto
+            {
+                Id = componenteCurricular.GrupoMatriz.Id,
+                Titulo = componenteCurricular.GrupoMatriz.Nome,
+                ComponenteSinteses = new List<ConselhoDeClasseComponenteSinteseDto>
+                {
+                   componenteSinteseAdicionar
+                }
+            };
+        }
+
+        private static ConselhoDeClasseComponenteSinteseDto MapearConselhoDeClasseComponenteSinteseDto(ComponenteCurricularEol componenteCurricular, IEnumerable<FrequenciaAluno> frequenciaDisciplina, double percentualFrequencia, SinteseDto parecerFinal)
+        {
+            return new ConselhoDeClasseComponenteSinteseDto
+            {
+                Codigo = componenteCurricular.Codigo,
+                Nome = componenteCurricular.Descricao,
+                TotalFaltas = frequenciaDisciplina.Sum(x => x.TotalAusencias),
+                PercentualFrequencia = percentualFrequencia,
+                ParecerFinal = parecerFinal?.SinteseNome ?? string.Empty,
+                ParecerFinalId = (int)(parecerFinal?.SinteseId ?? default)
+            };
+        }
+
+        private static DisciplinaDto MapeaderDisciplinasDto(ComponenteCurricularEol componenteCurricular)
+        {
+            return new DisciplinaDto
+            {
+                CodigoComponenteCurricular = componenteCurricular.Codigo,
+                Compartilhada = componenteCurricular.Compartilhada,
+                LancaNota = componenteCurricular.LancaNota,
+                Nome = componenteCurricular.Descricao,
+                PossuiObjetivos = componenteCurricular.PossuiObjetivos,
+                Regencia = componenteCurricular.Regencia,
+                RegistraFrequencia = componenteCurricular.RegistraFrequencia,
+                TerritorioSaber = componenteCurricular.TerritorioSaber
+            };
+        }
+
+        private static IEnumerable<FrequenciaAluno> ObterFrequenciaPorDisciplina(IEnumerable<FrequenciaAluno> frequenciaAluno, ComponenteCurricularEol componenteCurricular)
+        {
+            return frequenciaAluno.Where(x => x.DisciplinaId == componenteCurricular.Codigo.ToString());
+        }
+
+        private static double ObterPercentualDeFrequencia(IEnumerable<FrequenciaAluno> frequenciaDisciplina)
+        {
+            return frequenciaDisciplina.Any() ? frequenciaDisciplina.Sum(x => x.PercentualFrequencia) / frequenciaDisciplina.Count() : 100;
         }
 
         public async Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
@@ -175,7 +273,7 @@ namespace SME.SGP.Aplicacao
             };
 
             var componentesRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turma.CodigoTurma), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
-            foreach(var componenteRegencia in componentesRegencia)
+            foreach (var componenteRegencia in componentesRegencia)
             {
                 conselhoClasseComponente.ComponentesCurriculares.Add(await ObterNotasRegencia(componenteRegencia, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno));
             }
@@ -211,7 +309,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Tipo de calendário não localizado para a turma");
 
                 var periodosEscolaresTurma = consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
-                foreach(var periodoEscolarTurma in periodosEscolaresTurma)
+                foreach (var periodoEscolarTurma in periodosEscolaresTurma)
                 {
                     var frequenciaAlunoPeriodo = await repositorioFrequenciaAluno.ObterPorAlunoBimestreAsync(alunoCodigo,
                                                                                                              periodoEscolarTurma.Bimestre,
