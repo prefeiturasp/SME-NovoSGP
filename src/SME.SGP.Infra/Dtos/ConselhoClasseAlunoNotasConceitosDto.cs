@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
             ComponentesCurriculares = new List<ConselhoClasseComponenteFrequenciaDto>();
         }
 
+        public string GrupoMatriz { get; set; }
         public ConselhoClasseComponenteRegenciaFrequenciaDto ComponenteRegencia { get; set; }
         public List<ConselhoClasseComponenteFrequenciaDto> ComponentesCurriculares { get; set; }
     }
