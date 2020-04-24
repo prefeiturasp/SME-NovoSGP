@@ -10,27 +10,33 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IConsultasConselhoClasseAluno consultasConselhoClasseAluno;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
+        private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
 
         public ConsultasConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                        IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                       IRepositorioParametrosSistema repositorioParametrosSistema,
                                        IConsultasConselhoClasseAluno consultasConselhoClasseAluno,
                                        IConsultasTurma consultasTurma,
                                        IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                        IConsultasPeriodoFechamento consultasPeriodoFechamento,
-                                       IConsultasFechamentoTurma consultasFechamentoTurma)
+                                       IConsultasFechamentoTurma consultasFechamentoTurma,
+                                       IServicoDeNotasConceitos servicoDeNotasConceitos)
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasConselhoClasseAluno = consultasConselhoClasseAluno ?? throw new ArgumentNullException(nameof(consultasConselhoClasseAluno));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
+            this.servicoDeNotasConceitos = servicoDeNotasConceitos ?? throw new ArgumentNullException(nameof(servicoDeNotasConceitos));
         }
 
         public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false)
@@ -50,14 +56,41 @@ namespace SME.SGP.Aplicacao
             if (!ehFinal)
                 periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestre);
 
+            var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre);
+            var mediaAprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+
             return new ConselhoClasseAlunoResumoDto()
             {
                 FechamentoTurmaId = fechamentoTurma.Id,
                 ConselhoClasseId = conselhoClasse?.Id,
                 Bimestre = bimestre,
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
-                PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento
+                PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
+                TipoNota = tipoNota,
+                Media = mediaAprovacao
             };
+        }
+
+        private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoBimestre periodoFechamentoBimestre)
+        {
+            var dataReferencia = periodoFechamentoBimestre != null ?
+                periodoFechamentoBimestre.FinalDoFechamento :
+                await ObterFimPeriodoUltimoBimestre(turma);
+
+            var tipoNota = await servicoDeNotasConceitos.ObterNotaTipo(turma.CodigoTurma, dataReferencia);
+            if (tipoNota == null)
+                throw new NegocioException("Não foi possível identificar o tipo de nota da turma");
+
+            return tipoNota.TipoNota; 
+        }
+
+        private async Task<DateTime> ObterFimPeriodoUltimoBimestre(Turma turma)
+        {
+            var periodoEscolarUltimoBimestre = await consultasPeriodoEscolar.ObterUltimoPeriodoAsync(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+            if (periodoEscolarUltimoBimestre == null)
+                throw new NegocioException("Não foi possível localizar o período escolar do ultimo bimestre da turma");
+
+            return periodoEscolarUltimoBimestre.PeriodoFim;
         }
 
         private async Task<Turma> ObterTurma(string turmaCodigo)
