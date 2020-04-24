@@ -70,7 +70,7 @@ const ConselhoClasse = () => {
     resetarInfomacoes();
     const frequenciaGeralAluno = await obterFrequenciaAluno(aluno.codigoEOL);
     const novoAluno = aluno;
-    novoAluno.frequencia = frequenciaGeralAluno;    
+    novoAluno.frequencia = frequenciaGeralAluno;
     dispatch(setDadosAlunoObjectCard(aluno));
   };
 
@@ -134,7 +134,7 @@ const ConselhoClasse = () => {
                       <>
                         <ObjectCardConselhoClasse />
                         <DadosConselhoClasse
-                          codigoTurma={turmaSelecionada.turma}
+                          turmaCodigo={turmaSelecionada.turma}
                           modalidade={turmaSelecionada.modalidade}
                         />
                       </>

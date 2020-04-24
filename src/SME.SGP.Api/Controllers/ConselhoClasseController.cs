@@ -63,5 +63,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await consultasConselhoClasseAluno.ObterListagemDeSinteses(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
         }
+
+        [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/notas")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(IEnumerable<ConselhoClasseAlunoNotasConceitosDto>), 200)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterNotasAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices]IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
+            => Ok(await consultasConselhoClasseAluno.ObterNotasFrequencia(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
     }
 }

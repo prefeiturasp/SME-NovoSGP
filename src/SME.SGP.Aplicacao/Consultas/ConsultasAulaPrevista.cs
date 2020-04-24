@@ -76,6 +76,13 @@ namespace SME.SGP.Aplicacao
             return aulaPrevistaDto;
         }
 
+        public async Task<int> ObterAulasDadas(Turma turma, string componenteCurricularCodigo, int bimestre)
+        {
+            var aulaPrevisa = await ObterAulaPrevistaDada(turma.ModalidadeCodigo, turma.CodigoTurma, componenteCurricularCodigo, turma.Semestre);
+
+            return aulaPrevisa.AulasPrevistasPorBimestre.FirstOrDefault(a => a.Bimestre == bimestre)?.Cumpridas ?? 0;
+        }
+
         private AulasPrevistasDadasAuditoriaDto MapearDtoRetorno(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> aulasPrevistasBimestre, IEnumerable<PeriodoEscolarAbertoDto> periodosAbertos = null)
         {
             AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = MapearParaDto(aulaPrevista, aulasPrevistasBimestre, periodosAbertos) ?? new AulasPrevistasDadasAuditoriaDto();
