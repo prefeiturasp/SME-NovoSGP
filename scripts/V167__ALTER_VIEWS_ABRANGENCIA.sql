@@ -1,5 +1,5 @@
 -- v_abrangencia_cadeia_dres_somente
-
+DROP VIEW IF EXISTS public.v_abrangencia_cadeia_dres_somente;
 CREATE OR REPLACE VIEW public.v_abrangencia_cadeia_dres_somente
 AS
 SELECT ab_dres.id AS dre_id,
@@ -24,6 +24,7 @@ AS turma_semestre,
    FROM dre ab_dres;
 
 -- v_abrangencia_cadeia_ues_somente
+DROP VIEW IF EXISTS public.v_abrangencia_cadeia_ues_somente;
 CREATE OR REPLACE VIEW public.v_abrangencia_cadeia_ues_somente
 AS
 SELECT ab_dres.id AS dre_id,
@@ -49,6 +50,7 @@ SELECT ab_dres.id AS dre_id,
      JOIN ue ab_ues ON ab_ues.dre_id = ab_dres.id;
 
 -- v_abrangencia
+DROP VIEW IF EXISTS public.v_abrangencia;
 CREATE OR REPLACE VIEW public.v_abrangencia
 AS
 SELECT COALESCE(turma.dre_codigo, ue.dre_codigo, dre.dre_codigo) AS dre_codigo,
@@ -75,6 +77,7 @@ FROM abrangencia a
 WHERE a.historico = false AND (COALESCE(turma.turma_historica, ue.turma_historica, dre.turma_historica) = false OR COALESCE(turma.turma_historica, ue.turma_historica, dre.turma_historica) IS NULL);
 
 -- v_abrangencia_historica
+DROP VIEW IF EXISTS public.v_abrangencia_historica;
 CREATE OR REPLACE VIEW public.v_abrangencia_historica
 AS
 SELECT COALESCE(turma.dre_codigo, ue.dre_codigo, dre.dre_codigo) AS dre_codigo,
