@@ -1,54 +1,3 @@
--- v_abrangencia_cadeia_dres_somente
-DROP VIEW IF EXISTS public.v_abrangencia_cadeia_dres_somente;
-CREATE OR REPLACE VIEW public.v_abrangencia_cadeia_dres_somente
-AS
-SELECT ab_dres.id AS dre_id,
-    ab_dres.dre_id AS dre_codigo,
-    ab_dres.abreviacao AS dre_abreviacao,
-    ab_dres.nome AS dre_nome,
-    NULL::bigint AS ue_id,
-    NULL::character varying AS ue_codigo,
-    NULL::character varying AS ue_nome,
-    NULL::bigint AS turma_id,
-    NULL::bpchar AS turma_ano,
-    NULL::integer AS turma_ano_letivo,
-    NULL::integer AS modalidade_codigo,
-    NULL::character varying AS turma_nome,
-    NULL::integer
-AS turma_semestre,
-    NULL::smallint AS qt_duracao_aula,
-    NULL::smallint AS tipo_turno,
-    NULL::character varying AS turma_codigo,
-    NULL::boolean AS turma_historica,
-    NULL::date AS dt_fim_turma
-   FROM dre ab_dres;
-
--- v_abrangencia_cadeia_ues_somente
-DROP VIEW IF EXISTS public.v_abrangencia_cadeia_ues_somente;
-CREATE OR REPLACE VIEW public.v_abrangencia_cadeia_ues_somente
-AS
-SELECT ab_dres.id AS dre_id,
-    ab_dres.dre_id AS dre_codigo,
-    ab_dres.abreviacao AS dre_abreviacao,
-    ab_dres.nome AS dre_nome,
-    ab_ues.id AS ue_id,
-    ab_ues.ue_id AS ue_codigo,
-    ab_ues.nome AS ue_nome,
-    NULL::bigint AS turma_id,
-    NULL::bpchar AS turma_ano,
-    NULL::integer AS turma_ano_letivo,
-    NULL::integer AS modalidade_codigo,
-    NULL::character varying AS turma_nome,
-    NULL::integer AS turma_semestre,
-    NULL::smallint AS qt_duracao_aula,
-    NULL
-::smallint AS tipo_turno,
-    NULL::character varying AS turma_codigo,
-    NULL::boolean AS turma_historica,
-    NULL::date AS dt_fim_turma
-   FROM dre ab_dres
-     JOIN ue ab_ues ON ab_ues.dre_id = ab_dres.id;
-
 -- v_abrangencia
 DROP VIEW IF EXISTS public.v_abrangencia;
 CREATE OR REPLACE VIEW public.v_abrangencia
@@ -104,3 +53,54 @@ FROM abrangencia a
     LEFT JOIN v_abrangencia_cadeia_ues_somente ue ON ue.ue_id = a.ue_id
     LEFT JOIN v_abrangencia_cadeia_turmas turma ON a.dre_id = turma.dre_id OR a.ue_id = turma.ue_id OR a.turma_id = turma.turma_id
 WHERE a.historico = true OR dre.turma_historica = true;
+
+-- v_abrangencia_cadeia_dres_somente
+DROP VIEW IF EXISTS public.v_abrangencia_cadeia_dres_somente;
+CREATE OR REPLACE VIEW public.v_abrangencia_cadeia_dres_somente
+AS
+SELECT ab_dres.id AS dre_id,
+    ab_dres.dre_id AS dre_codigo,
+    ab_dres.abreviacao AS dre_abreviacao,
+    ab_dres.nome AS dre_nome,
+    NULL::bigint AS ue_id,
+    NULL::character varying AS ue_codigo,
+    NULL::character varying AS ue_nome,
+    NULL::bigint AS turma_id,
+    NULL::bpchar AS turma_ano,
+    NULL::integer AS turma_ano_letivo,
+    NULL::integer AS modalidade_codigo,
+    NULL::character varying AS turma_nome,
+    NULL::integer
+AS turma_semestre,
+    NULL::smallint AS qt_duracao_aula,
+    NULL::smallint AS tipo_turno,
+    NULL::character varying AS turma_codigo,
+    NULL::boolean AS turma_historica,
+    NULL::date AS dt_fim_turma
+   FROM dre ab_dres;
+
+-- v_abrangencia_cadeia_ues_somente
+DROP VIEW IF EXISTS public.v_abrangencia_cadeia_ues_somente;
+CREATE OR REPLACE VIEW public.v_abrangencia_cadeia_ues_somente
+AS
+SELECT ab_dres.id AS dre_id,
+    ab_dres.dre_id AS dre_codigo,
+    ab_dres.abreviacao AS dre_abreviacao,
+    ab_dres.nome AS dre_nome,
+    ab_ues.id AS ue_id,
+    ab_ues.ue_id AS ue_codigo,
+    ab_ues.nome AS ue_nome,
+    NULL::bigint AS turma_id,
+    NULL::bpchar AS turma_ano,
+    NULL::integer AS turma_ano_letivo,
+    NULL::integer AS modalidade_codigo,
+    NULL::character varying AS turma_nome,
+    NULL::integer AS turma_semestre,
+    NULL::smallint AS qt_duracao_aula,
+    NULL
+::smallint AS tipo_turno,
+    NULL::character varying AS turma_codigo,
+    NULL::boolean AS turma_historica,
+    NULL::date AS dt_fim_turma
+   FROM dre ab_dres
+     JOIN ue ab_ues ON ab_ues.dre_id = ab_dres.id;
