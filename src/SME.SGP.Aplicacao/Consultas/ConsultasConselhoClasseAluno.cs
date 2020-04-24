@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasFechamentoNota consultasFechamentoNota;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IConsultasFrequencia consultasFrequencia;
 
         public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
@@ -47,6 +48,7 @@ namespace SME.SGP.Aplicacao
             this.consultasFechamentoNota = consultasFechamentoNota ?? throw new ArgumentNullException(nameof(consultasFechamentoNota));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
         }
 
@@ -102,13 +104,13 @@ namespace SME.SGP.Aplicacao
             {
                 var grupoSintese = retorno.FirstOrDefault(x => x.Id == componenteCurricular.Codigo);
 
-                MapearDto(retorno, ref grupoSintese, frequenciaAluno, componenteCurricular);
+                MapearDto(ref retorno, ref grupoSintese, frequenciaAluno, componenteCurricular);
             }
 
             return retorno;
         }
 
-        private void MapearDto(IEnumerable<ConselhoDeClasseGrupoMatrizDto> retorno, ref ConselhoDeClasseGrupoMatrizDto grupoSintese, IEnumerable<FrequenciaAluno> frequenciaAluno, ComponenteCurricularEol componenteCurricular)
+        private void MapearDto(ref List<ConselhoDeClasseGrupoMatrizDto> retorno, ref ConselhoDeClasseGrupoMatrizDto grupoSintese, IEnumerable<FrequenciaAluno> frequenciaAluno, ComponenteCurricularEol componenteCurricular)
         {
             var frequenciaDisciplina = ObterFrequenciaPorDisciplina(frequenciaAluno, componenteCurricular);
 
@@ -128,7 +130,7 @@ namespace SME.SGP.Aplicacao
 
             grupoSintese = Mapear(componenteCurricular, componenteSinteseAdicionar);
 
-            retorno.ToList().Add(grupoSintese);
+            retorno.Add(grupoSintese);
         }
 
         private static ConselhoDeClasseGrupoMatrizDto Mapear(ComponenteCurricularEol componenteCurricular, ConselhoDeClasseComponenteSinteseDto componenteSinteseAdicionar)

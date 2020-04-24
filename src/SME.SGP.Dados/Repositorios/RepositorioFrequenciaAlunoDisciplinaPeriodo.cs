@@ -90,7 +90,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select * from frequencia_aluno fa 
                             where fa.codigo_aluno = @codigoAluno
-                            and fa.turma_id = @turmaId";
+                            and fa.turma_id = @turmaId and fa.tipo = 1";
 
             if (bimestre > 0)
                 query += " and fa.bimestre = @bimestre";
