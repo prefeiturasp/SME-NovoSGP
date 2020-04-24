@@ -1,5 +1,9 @@
--- v_abrangencia_cadeia_dres_somente
+DROP VIEW IF EXISTS public.v_abrangencia;
+DROP VIEW IF EXISTS public.v_abrangencia_historica;
+DROP VIEW IF EXISTS public.v_abrangencia_cadeia_dres_somente;
+DROP VIEW IF EXISTS public.v_abrangencia_cadeia_ues_somente;
 
+-- v_abrangencia_cadeia_dres_somente
 CREATE OR REPLACE VIEW public.v_abrangencia_cadeia_dres_somente
 AS
 SELECT ab_dres.id AS dre_id,
