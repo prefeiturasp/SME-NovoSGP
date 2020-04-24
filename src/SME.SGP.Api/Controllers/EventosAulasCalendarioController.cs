@@ -58,6 +58,28 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await ObterDiasDosEventosCalendarioProfessorUseCase.Executar(mediator, filtro, tipoCalendarioId, mes));            
         }
+        [HttpGet]
+        [ProducesResponseType(typeof(EventosAulasNoDiaCalendarioDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("{tipoCalendarioId}/meses/{mes}/dias/{dia}/eventos-aulas")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ObterEventosAulasNoDiaPorCalendario(long tipoCalendarioId, int mes, int dia, [FromQuery]FiltroAulasEventosCalendarioDto filtro, [FromServices]IMediator mediator)
+        {
+            var retorno = new EventosAulasNoDiaCalendarioDto();
+            retorno.PodeCadastrarAula = true;
+
+            var eventoAula1 = new EventoAulaDto() {  EhAula = true, MostrarBotaoFrequencia = true, PodeCadastrarAvaliacao = true, Titulo = "[AULA] LINGUA PORTUGUESA - Quantidade: 2 (Reposição) Aguardando aprovação" };
+            var aav1 = new AtividadeAvaliativaParaEventoAulaDto() { Descricao = "Atividade Avaliativa 1", Id = 10 };
+            eventoAula1.AtividadesAvaliativas.Add(aav1);
+
+            var eventoAula2 = new EventoAulaDto() { Descricao = "Descrição do evento 123", Titulo = "Fechamento do 2º bimestre", TipoEvento = "Fechamento de bimestre" };
+
+            retorno.EventosAulas.Add(eventoAula1);
+            retorno.EventosAulas.Add(eventoAula2);
+
+            return Ok(retorno);
+
+        }
         [HttpPost]
         [ProducesResponseType(typeof(EventosAulasTipoCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
