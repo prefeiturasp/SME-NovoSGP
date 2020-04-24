@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
             return new ConselhoClasseAlunoResumoDto()
             {
                 FechamentoTurmaId = fechamentoTurma.Id,
-                ConselhoClasseTurmaId = conselhoClasse?.Id,
+                ConselhoClasseId = conselhoClasse?.Id,
                 Bimestre = bimestre,
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento

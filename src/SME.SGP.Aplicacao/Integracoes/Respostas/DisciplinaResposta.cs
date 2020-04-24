@@ -28,9 +28,10 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         [JsonProperty("lancaNota")]
         public bool LancaNota { get; set; }
 
+        [JsonProperty("baseNacional")]
         public bool BaseNacional { get; set; }
 
-        public GrupoMatrizDto GrupoMatriz { get; set; }
-
+        [JsonProperty("grupoMatriz")]
+        public GrupoMatriz GrupoMatriz { get; set; }
     }
 }
