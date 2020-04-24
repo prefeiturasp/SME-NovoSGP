@@ -711,7 +711,7 @@ namespace SME.SGP.Dominio.Servicos
         private void VerificaNotificacaoBimestralCalendario(TipoCalendario tipoCalendario, DateTime dataAtual, ModalidadeTipoCalendario modalidade)
         {
             var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
-            var periodoAtual = periodos.FirstOrDefault(p => p.PeriodoInicio <= dataAtual && p.PeriodoFim >= dataAtual);
+            var periodoAtual = periodos.FirstOrDefault(p => p.PeriodoInicio.AddDays(1) <= dataAtual && p.PeriodoFim.AddDays(1) >= dataAtual);
 
             if (periodoAtual == null)
                 return;
@@ -720,7 +720,7 @@ namespace SME.SGP.Dominio.Servicos
             // Ultimo dia do bimestre e primeiro dia do ultimo mes quando ser tratar do ultimo bimestre
             var dataReferencia = ultimoBimestre ?
                                     new DateTime(periodoAtual.PeriodoFim.Year, periodoAtual.PeriodoFim.Month, 1) :
-                                    periodoAtual.PeriodoFim;
+                                    periodoAtual.PeriodoFim.AddDays(1);
 
             if (dataAtual == dataReferencia)
             {
