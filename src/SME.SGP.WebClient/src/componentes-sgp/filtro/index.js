@@ -614,8 +614,8 @@ const Filtro = () => {
   useEffect(() => {
     if (anosLetivos && anosLetivos.length === 1) {
       setAnoLetivoSelecionado(anosLetivos[0].valor);
-      setCampoAnoLetivoDesabilitado(true);
     }
+    setCampoAnoLetivoDesabilitado(anosLetivos && anosLetivos.length === 1);
   }, [anosLetivos]);
 
   useEffect(() => {
