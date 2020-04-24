@@ -216,7 +216,39 @@ namespace SME.SGP.Dados.Repositorios
             var query = ObterEventos(dreId, ueId, null, null, EhEventoSme, !EhEventoSme, filtroDreUe, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
             return database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId });
         }
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUePorMes(long tipoCalendarioId, string dreCodigo, string ueCodigo, int mes, bool VisualizarEventosSME = false, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaQueryCabecalho(query);
+            MontaQueryFrom(query);
+            MontaFiltroTipoCalendario(query);
 
+            if (!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
+                query.AppendFormat(" and et.codigo not in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
+
+            query.AppendLine("and e.dre_id = @dreCodigo and e.ue_id = @ueCodigo");
+            query.AppendLine("and (extract(month from e.data_inicio) = @mes or extract(month from e.data_fim) = @mes)");
+
+
+            if (VisualizarEventosSME)
+            {
+                query.AppendLine("UNION");
+                MontaQueryCabecalho(query);
+                MontaQueryFrom(query);
+                MontaFiltroTipoCalendario(query);
+                query.AppendLine("and e.dre_id is null and e.ue_id is null");
+                query.AppendLine("and (extract(month from e.data_inicio) = @mes or extract(month from e.data_fim) = @mes)");
+            }
+
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new
+            {
+                tipoCalendarioId,
+                dreCodigo,
+                ueCodigo,
+                mes
+            });
+
+        }
         public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeDia(long tipoCalendarioId, string dreId, string ueId, DateTime data, bool EhEventoSme, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = true)
         {
             var query = ObterEventos(dreId, ueId, null, data, EhEventoSme, !EhEventoSme, true, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);

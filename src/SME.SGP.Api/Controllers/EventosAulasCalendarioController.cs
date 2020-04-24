@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -48,7 +49,15 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retorno);
         }
-
+        [HttpGet]
+        [ProducesResponseType(typeof(EventosAulasCalendarioDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("{tipoCalendarioId}/meses/{mes}/eventos-aulas")]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEventosAulasMensaisPorCalendario(long tipoCalendarioId, int mes, [FromQuery]FiltroAulasEventosCalendarioDto filtro, [FromServices]IMediator mediator)
+        {
+            return Ok(await ObterDiasDosEventosCalendarioProfessorUseCase.Executar(mediator, filtro, tipoCalendarioId, mes));            
+        }
         [HttpPost]
         [ProducesResponseType(typeof(EventosAulasTipoCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
