@@ -13,7 +13,7 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "A Ue é obrigatória.", AllowEmptyStrings = false)]
         public string UeCodigo { get; set; }
 
-        [Required(ErrorMessage = "O ano letivo é obrigatória.")]
+        [Required(ErrorMessage = "O ano letivo é obrigatório.")]
         public int AnoLetivo { get; set; }
 
     }
