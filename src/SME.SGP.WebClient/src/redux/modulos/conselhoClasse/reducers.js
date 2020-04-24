@@ -10,9 +10,10 @@ const inicial = {
   anotacoesAluno: [],
   bimestreAtual: { valor: '' },
   conselhoClasseEmEdicao: false,
-  dadosAnotacoesRecomendacoes: {},
+  dadosPrincipaisConselhoClasse: {},
   auditoriaAnotacaoRecomendacao: null,
   fechamentoPeriodoInicioFim: {},
+  notasJustificativas: { componentes: [], componentesRegencia: [] },
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -70,7 +71,7 @@ export default function ConselhoClasse(state = inicial, action) {
           anotacoesAluno: [],
           bimestreAtual: { valor: '' },
           conselhoClasseEmEdicao: false,
-          dadosAnotacoesRecomendacoes: {},
+          dadosPrincipaisConselhoClasse: {},
           auditoriaAnotacaoRecomendacao: null,
           dentroPeriodo: true,
           fechamentoPeriodoInicioFim: {},
@@ -82,10 +83,10 @@ export default function ConselhoClasse(state = inicial, action) {
           conselhoClasseEmEdicao: action.payload,
         };
       }
-      case '@conselhoClasse/setDadosAnotacoesRecomendacoes': {
+      case '@conselhoClasse/setDadosPrincipaisConselhoClasse': {
         return {
           ...draft,
-          dadosAnotacoesRecomendacoes: action.payload,
+          dadosPrincipaisConselhoClasse: action.payload,
         };
       }
       case '@conselhoClasse/setAuditoriaAnotacaoRecomendacao': {
@@ -112,6 +113,14 @@ export default function ConselhoClasse(state = inicial, action) {
           listaTiposConceitos: action.payload,
         };
       }
+
+      case '@conselhoClasse/setNotasJustificativas':
+        draft.notasJustificativas.componentes = [
+          ...(action.payload.componentes || []),
+        ];
+        draft.notasJustificativas.componentesRegencia = [
+          ...(action.payload.componentesRegencia || []),
+        ];
 
       default:
         return draft;

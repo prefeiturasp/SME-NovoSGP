@@ -1,35 +1,35 @@
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Loader } from '~/componentes';
 import {
   setAnotacoesAluno,
   setAnotacoesPedagogicas,
+  setAuditoriaAnotacaoRecomendacao,
+  setConselhoClasseEmEdicao,
+  setDentroPeriodo,
   setRecomendacaoAluno,
   setRecomendacaoFamilia,
-  setConselhoClasseEmEdicao,
-  setDadosAnotacoesRecomendacoes,
-  setAuditoriaAnotacaoRecomendacao,
-  setDentroPeriodo,
-  setFechamentoPeriodoInicioFim,
 } from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import AnotacoesAluno from './AnotacoesAluno/anotacoesAluno';
 import AnotacoesPedagogicas from './AnotacoesPedagogicas/anotacoesPedagogicas';
-import RecomendacaoAlunoFamilia from './RecomendacaoAlunoFamilia/recomendacaoAlunoFamilia';
-import { Loader } from '~/componentes';
 import AuditoriaAnotacaoRecomendacao from './AuditoriaAnotacaoRecomendacao/auditoriaAnotacaoRecomendacao';
+import RecomendacaoAlunoFamilia from './RecomendacaoAlunoFamilia/recomendacaoAlunoFamilia';
 
-const AnotacoesRecomendacoes = props => {
-  const {
-    bimestreSelecionado,
-    codigoTurma,
-    modalidade,
-    codigoEOL,
-    alunoDesabilitado,
-  } = props;
-
+const AnotacoesRecomendacoes = () => {
   const dispatch = useDispatch();
+
+  const dadosPrincipaisConselhoClasse = useSelector(
+    store => store.conselhoClasse.dadosPrincipaisConselhoClasse
+  );
+
+  const {
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo,
+    alunoDesabilitado,
+  } = dadosPrincipaisConselhoClasse;
 
   const [dadosIniciais, setDadosIniciais] = useState({
     anotacoesPedagogicas: '',
@@ -41,6 +41,7 @@ const AnotacoesRecomendacoes = props => {
   const [exibir, setExibir] = useState(false);
   const [carregando, setCarregando] = useState(false);
 
+  // TODO Validar a necessidade de chamar quando esta alterando um registro ou usar somente quando for carergar dados na tela!
   const onChangeAnotacoesRecomendacoes = useCallback(
     (valor, campo) => {
       const dadosDto = dadosIniciais;
@@ -88,20 +89,6 @@ const AnotacoesRecomendacoes = props => {
     [dispatch]
   );
 
-  const setarDados = useCallback(
-    dados => {
-      const valores = {
-        fechamentoTurmaId: dados.fechamentoTurmaId,
-        conselhoClasseId: dados.conselhoClasseId,
-        bimestre: dados.bimestre,
-        periodoFechamentoInicio: dados.periodoFechamentoInicio,
-        periodoFechamentoFim: dados.periodoFechamentoFim,
-      };
-      dispatch(setDadosAnotacoesRecomendacoes(valores));
-    },
-    [dispatch]
-  );
-
   const setarAuditoria = useCallback(
     dados => {
       const { auditoria } = dados;
@@ -120,79 +107,47 @@ const AnotacoesRecomendacoes = props => {
     [dispatch]
   );
 
-  const setarFechamentoPeriodoInicioFim = useCallback(
-    dados => {
-      if (dados) {
-        const { periodoFechamentoInicio, periodoFechamentoFim } = dados;
-        const datas = {
-          periodoFechamentoInicio,
-          periodoFechamentoFim,
-        };
-        dispatch(setFechamentoPeriodoInicioFim(datas));
-      } else {
-        dispatch(setFechamentoPeriodoInicioFim({}));
-      }
-    },
-    [dispatch]
-  );
+  const obterAnotacoesRecomendacoes = useCallback(async () => {
+    setCarregando(true);
 
-  const obterAnotacoesRecomendacoes = useCallback(
-    async (bimestre, codigoAluno, turma, ehFinal) => {
-      setCarregando(true);
+    const resposta = await ServicoConselhoClasse.obterAnotacoesRecomendacoes(
+      conselhoClasseId,
+      fechamentoTurmaId,
+      alunoCodigo
+    ).catch(e => erros(e));
 
-      const resposta = await ServicoConselhoClasse.obterAnotacoesRecomendacoes(
-        turma,
-        codigoAluno,
-        bimestre,
-        modalidade,
-        ehFinal
-      ).catch(e => erros(e));
-
-      if (resposta && resposta.data) {
+    if (resposta && resposta.data) {
+      if (!alunoDesabilitado) {
         setarDentroDoPeriodo(!resposta.data.somenteLeitura);
-        onChangeAnotacoesPedagogicas(resposta.data.anotacoesPedagogicas);
-        onChangeRecomendacaoAluno(resposta.data.recomendacaoAluno);
-        onChangeRecomendacaoFamilia(resposta.data.recomendacaoFamilia);
-        setarAnotacaoAluno(resposta.data.anotacoesAluno);
-        setarDados(resposta.data);
-        setarAuditoria(resposta.data);
-        setarFechamentoPeriodoInicioFim(resposta.data);
-        setExibir(true);
-      } else {
-        setExibir(false);
-        setarFechamentoPeriodoInicioFim(null);
       }
-      setCarregando(false);
-    },
-    [
-      modalidade,
-      setarDentroDoPeriodo,
-      onChangeAnotacoesPedagogicas,
-      onChangeRecomendacaoAluno,
-      onChangeRecomendacaoFamilia,
-      setarAnotacaoAluno,
-      setarDados,
-      setarAuditoria,
-      setarFechamentoPeriodoInicioFim,
-    ]
-  );
+      onChangeAnotacoesPedagogicas(resposta.data.anotacoesPedagogicas);
+      onChangeRecomendacaoAluno(resposta.data.recomendacaoAluno);
+      onChangeRecomendacaoFamilia(resposta.data.recomendacaoFamilia);
+      setarAnotacaoAluno(resposta.data.anotacoesAluno);
+      setarAuditoria(resposta.data);
+      setExibir(true);
+    } else {
+      setExibir(false);
+    }
+    setCarregando(false);
+  }, [
+    alunoCodigo,
+    conselhoClasseId,
+    fechamentoTurmaId,
+    onChangeAnotacoesPedagogicas,
+    onChangeRecomendacaoAluno,
+    onChangeRecomendacaoFamilia,
+    setarAnotacaoAluno,
+    setarAuditoria,
+    setarDentroDoPeriodo,
+    alunoDesabilitado,
+  ]);
 
   useEffect(() => {
-    if (codigoTurma && codigoEOL) {
-      const ehFinal = bimestreSelecionado.valor === 'final';
-      obterAnotacoesRecomendacoes(
-        ehFinal ? '0' : bimestreSelecionado.valor,
-        codigoEOL,
-        codigoTurma,
-        ehFinal
-      );
+    if (fechamentoTurmaId && alunoCodigo) {
+      obterAnotacoesRecomendacoes();
     }
-  }, [
-    bimestreSelecionado,
-    codigoEOL,
-    codigoTurma,
-    obterAnotacoesRecomendacoes,
-  ]);
+  }, [fechamentoTurmaId, alunoCodigo, obterAnotacoesRecomendacoes]);
 
   const setarConselhoClasseEmEdicao = emEdicao => {
     dispatch(setConselhoClasseEmEdicao(emEdicao));
@@ -234,22 +189,6 @@ const AnotacoesRecomendacoes = props => {
       )}
     </Loader>
   );
-};
-
-AnotacoesRecomendacoes.propTypes = {
-  bimestreSelecionado: PropTypes.string,
-  codigoTurma: PropTypes.string,
-  modalidade: PropTypes.oneOfType([PropTypes.any]),
-  codigoEOL: PropTypes.string,
-  alunoDesabilitado: PropTypes.bool,
-};
-
-AnotacoesRecomendacoes.defaultProps = {
-  bimestreSelecionado: '',
-  codigoTurma: '',
-  modalidade: '',
-  codigoEOL: '',
-  alunoDesabilitado: false,
 };
 
 export default AnotacoesRecomendacoes;
