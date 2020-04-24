@@ -109,7 +109,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        public async Task<ConselhoClasseAlunoNotasConceitosDto> ObterNotasFrequencia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
+        public async Task<IEnumerable<ConselhoClasseAlunoNotasConceitosDto>> ObterNotasFrequencia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
             this.conselhoClasseId = conselhoClasseId;
             this.fechamentoTurmaId = fechamentoTurmaId;
@@ -140,7 +140,7 @@ namespace SME.SGP.Aplicacao
                     conselhoClasseAlunoNotas.ComponentesCurriculares.Add(await ObterNotasFrequenciaComponente(disciplina, frequenciaAluno, fechamentoTurma.PeriodoEscolar, fechamentoTurma.Turma));
             }
 
-            return conselhoClasseAlunoNotas;
+            return new List<ConselhoClasseAlunoNotasConceitosDto>() { conselhoClasseAlunoNotas };
         }
 
         private async Task<ConselhoClasseComponenteFrequenciaDto> ObterNotasFrequenciaComponente(DisciplinaResposta disciplina, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma)
