@@ -271,7 +271,10 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<NotaBimestreDto>> ObterNotasFinaisComponentePeriodos(long codigoComponenteCurricular)
         {
             var notasFechamentoAno = new List<NotaBimestreDto>();
-            foreach(var notaFechamento in (await ObterNotasFechamentoAno()).Where(c => c.ComponenteCurricularCodigo == codigoComponenteCurricular && c.Bimestre.HasValue))
+
+            var notasFechamentoBimestres = (await ObterNotasFechamentoAno())
+                                            .Where(c => c.ComponenteCurricularCodigo == codigoComponenteCurricular && c.Bimestre.HasValue);
+            foreach (var notaFechamento in notasFechamentoBimestres)
             {
                 notasFechamentoAno.Add(new NotaBimestreDto()
                 {
