@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasFechamentoNota consultasFechamentoNota;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
 
         private string turmaCodigo;
         private string alunoCodigo;
@@ -42,8 +41,7 @@ namespace SME.SGP.Aplicacao
                                             IConsultasConselhoClasseNota consultasConselhoClasseNota,
                                             IConsultasFechamentoNota consultasFechamentoNota,
                                             IServicoEOL servicoEOL,
-                                            IServicoUsuario servicoUsuario,
-                                            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo)
+                                            IServicoUsuario servicoUsuario)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioFrequenciaAluno = repositorioFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAluno));
@@ -55,7 +53,6 @@ namespace SME.SGP.Aplicacao
             this.consultasFechamentoNota = consultasFechamentoNota ?? throw new ArgumentNullException(nameof(consultasFechamentoNota));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
         }
 
         public async Task<bool> ExisteConselhoClasseUltimoBimestreAsync(Turma turma, string alunoCodigo)
@@ -94,7 +91,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasSinteses = disciplinas.Where(x => !x.BaseNacional);
 
-            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestres(alunoCodigo, bimestre, fechamentoTurma.Turma.CodigoTurma);
+            var frequenciaAluno = repositorioFrequenciaAluno.ObterFrequenciaBimestres(alunoCodigo, bimestre, fechamentoTurma.Turma.CodigoTurma);
 
         }
 
