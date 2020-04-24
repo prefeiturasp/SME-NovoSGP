@@ -77,6 +77,7 @@ const BotoesAcoesConselhoClasse = () => {
   return (
     <>
       <Button
+        id="btn-voltar-conselho-classe"
         label="Voltar"
         icon="arrow-left"
         color={Colors.Azul}
@@ -85,6 +86,7 @@ const BotoesAcoesConselhoClasse = () => {
         onClick={onClickVoltar}
       />
       <Button
+        id="btn-cancelar-conselho-classe"
         label="Cancelar"
         color={Colors.Roxo}
         border
