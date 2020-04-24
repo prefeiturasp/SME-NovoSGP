@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
             var retorno = new List<ConselhoDeClasseGrupoMatrizDto>();
 
             var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
-            
+
             if (fechamentoTurma == null)
                 throw new NegocioException("Não existe fechamento para a turma");
 
@@ -104,13 +104,13 @@ namespace SME.SGP.Aplicacao
             {
                 var grupoSintese = retorno.FirstOrDefault(x => x.Id == componenteCurricular.Codigo);
 
-                MapearDto(ref retorno, ref grupoSintese, frequenciaAluno, componenteCurricular);
+                MapearDto(ref retorno, ref grupoSintese, frequenciaAluno, componenteCurricular, bimestre);
             }
 
             return retorno;
         }
 
-        private void MapearDto(ref List<ConselhoDeClasseGrupoMatrizDto> retorno, ref ConselhoDeClasseGrupoMatrizDto grupoSintese, IEnumerable<FrequenciaAluno> frequenciaAluno, ComponenteCurricularEol componenteCurricular)
+        private void MapearDto(ref List<ConselhoDeClasseGrupoMatrizDto> retorno, ref ConselhoDeClasseGrupoMatrizDto grupoSintese, IEnumerable<FrequenciaAluno> frequenciaAluno, ComponenteCurricularEol componenteCurricular, int bimestre)
         {
             var frequenciaDisciplina = ObterFrequenciaPorDisciplina(frequenciaAluno, componenteCurricular);
 
@@ -118,7 +118,7 @@ namespace SME.SGP.Aplicacao
 
             var dto = MapeaderDisciplinasDto(componenteCurricular);
 
-            var parecerFinal = consultasFrequencia.ObterSinteseAluno(percentualFrequencia, dto);
+            var parecerFinal = bimestre == 0 ? consultasFrequencia.ObterSinteseAluno(percentualFrequencia, dto) : null;
 
             var componenteSinteseAdicionar = MapearConselhoDeClasseComponenteSinteseDto(componenteCurricular, frequenciaDisciplina, percentualFrequencia, parecerFinal);
 
@@ -154,8 +154,8 @@ namespace SME.SGP.Aplicacao
                 Nome = componenteCurricular.Descricao,
                 TotalFaltas = frequenciaDisciplina.Sum(x => x.TotalAusencias),
                 PercentualFrequencia = percentualFrequencia,
-                ParecerFinal = parecerFinal.SinteseNome,
-                ParecerFinalId = (int)parecerFinal.SinteseId
+                ParecerFinal = parecerFinal?.SinteseNome ?? string.Empty,
+                ParecerFinalId = (int)(parecerFinal?.SinteseId ?? default)
             };
         }
 
@@ -273,7 +273,7 @@ namespace SME.SGP.Aplicacao
             };
 
             var componentesRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turma.CodigoTurma), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
-            foreach(var componenteRegencia in componentesRegencia)
+            foreach (var componenteRegencia in componentesRegencia)
             {
                 conselhoClasseComponente.ComponentesCurriculares.Add(await ObterNotasRegencia(componenteRegencia, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno));
             }
@@ -309,7 +309,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Tipo de calendário não localizado para a turma");
 
                 var periodosEscolaresTurma = consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
-                foreach(var periodoEscolarTurma in periodosEscolaresTurma)
+                foreach (var periodoEscolarTurma in periodosEscolaresTurma)
                 {
                     var frequenciaAlunoPeriodo = await repositorioFrequenciaAluno.ObterPorAlunoBimestreAsync(alunoCodigo,
                                                                                                              periodoEscolarTurma.Bimestre,
