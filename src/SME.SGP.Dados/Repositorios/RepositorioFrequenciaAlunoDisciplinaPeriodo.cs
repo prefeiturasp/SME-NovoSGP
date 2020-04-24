@@ -86,6 +86,25 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, new { alunoCodigo });
         }
 
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestres(string codigoAluno, int bimestre, string codigoTurma)
+        {
+            var query = @"select * from frequencia_aluno fa 
+                            where fa.codigo_aluno = @codigoAluno
+                            and fa.turma_id = @turmaId";
+
+            if (bimestre > 0)
+                query += " and fa.bimestre = @bimestre";
+
+            var parametros = new
+            {
+                codigoAluno,
+                bimestre,
+                turmaId = codigoTurma
+            };
+
+            return await database.Conexao.QueryAsync<FrequenciaAluno>(query, parametros);
+        }
+
         public async Task<FrequenciaAluno> ObterPorAlunoBimestreAsync(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
         {
             var query = new StringBuilder(@"select *
@@ -128,7 +147,7 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId
             });
         }
-        
+
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
         {
             var query = @"select *

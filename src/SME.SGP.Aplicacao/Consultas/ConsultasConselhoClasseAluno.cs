@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasFechamentoNota consultasFechamentoNota;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
 
         private string turmaCodigo;
         private string alunoCodigo;
@@ -41,7 +42,8 @@ namespace SME.SGP.Aplicacao
                                             IConsultasConselhoClasseNota consultasConselhoClasseNota,
                                             IConsultasFechamentoNota consultasFechamentoNota,
                                             IServicoEOL servicoEOL,
-                                            IServicoUsuario servicoUsuario)
+                                            IServicoUsuario servicoUsuario,
+                                            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioFrequenciaAluno = repositorioFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAluno));
@@ -53,6 +55,7 @@ namespace SME.SGP.Aplicacao
             this.consultasFechamentoNota = consultasFechamentoNota ?? throw new ArgumentNullException(nameof(consultasFechamentoNota));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
         }
 
         public async Task<bool> ExisteConselhoClasseUltimoBimestreAsync(Turma turma, string alunoCodigo)
@@ -74,6 +77,26 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConselhoClasseAluno> ObterPorConselhoClasseAsync(long conselhoClasseId, string alunoCodigo)
             => await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
+
+        public async Task ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, int bimestre)
+        {
+            var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
+
+            if (fechamentoTurma == null)
+                throw new NegocioException("Não existe fechamento para a turma");
+
+            if (bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurma.Turma, alunoCodigo))
+                throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
+
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(fechamentoTurma.Turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
+
+            var disciplinasSinteses = disciplinas.Where(x => !x.BaseNacional);
+
+            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestres(alunoCodigo, bimestre, fechamentoTurma.Turma.CodigoTurma);
+
+        }
 
         public async Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
