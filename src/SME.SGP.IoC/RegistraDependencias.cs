@@ -15,6 +15,7 @@ using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
+using System.Collections.Generic;
 
 namespace SME.SGP.IoC
 {
@@ -27,6 +28,7 @@ namespace SME.SGP.IoC
             RegistrarComandos(services);
             RegistrarConsultas(services);
             RegistrarServicos(services);
+            RegistararQueries(services);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -240,6 +242,7 @@ namespace SME.SGP.IoC
         {
             services.TryAddScoped<IRequestHandler<ObterTipoDeCalendarioDaTurmaQuery, TipoCalendario>, ObterTipoDeCalendarioDaTurmaQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterTurmaPorCodigoQuery, Turma>, ObterTurmaPorCodigoQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterEventosDaUeSMEPorMesQuery, IEnumerable<Evento>>, ObterEventosDaUeSMEPorMesQueryHandler>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
