@@ -899,14 +899,14 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var resposta = await httpClient.GetAsync(url);
 
-            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent && resposta.StatusCode != HttpStatusCode.BadRequest)
+            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
+                await RegistrarLogSentryAsync(resposta, "ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", url);
+                throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
             }
 
-            await RegistrarLogSentryAsync(resposta, "ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", url);
-            throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
         }
 
         private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url, string rotina)
