@@ -117,35 +117,41 @@ namespace SME.SGP.Aplicacao
             if (disciplinas == null)
                 throw new NegocioException("Disciplinas da turma não localizadas no EOL");
 
-            // Apenas disciplinas da base nacional lançam nota
-            //disciplinas = disciplinas.Where(c => c.BaseNacional);
-
-            var conselhoClasseAlunoNotas = new ConselhoClasseAlunoNotasConceitosDto();
-            foreach (var disciplina in disciplinas)
+            var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
+            // Retornar componentes que lançam nota
+            var gruposMatrizes = disciplinas.Where(c => c.LancaNota).GroupBy(c => c.GrupoMatriz?.Nome);
+            foreach(var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k=>k.Key))
             {
-                // Carrega Frequencia Aluno
-                var frequenciaAluno = await ObterFrequenciaAluno(fechamentoTurma.Turma,
-                                                                 fechamentoTurma.PeriodoEscolar,
-                                                                 disciplina.CodigoComponenteCurricular,
-                                                                 alunoCodigo);
+                var conselhoClasseAlunoNotas = new ConselhoClasseAlunoNotasConceitosDto();
+                conselhoClasseAlunoNotas.GrupoMatriz = grupoDisiplinasMatriz.Key;
 
-                if (disciplina.Regencia)
-                    conselhoClasseAlunoNotas.ComponenteRegencia = await ObterNotasFrequenciaRegencia(disciplina,
-                                                                                                     frequenciaAluno,
-                                                                                                     fechamentoTurma.PeriodoEscolar,
-                                                                                                     fechamentoTurma.Turma,
-                                                                                                     notasConselhoClasseAluno,
-                                                                                                     notasFechamentoAluno);
-                else
-                    conselhoClasseAlunoNotas.ComponentesCurriculares.Add(await ObterNotasFrequenciaComponente(disciplina,
-                                                                                                              frequenciaAluno,
-                                                                                                              fechamentoTurma.PeriodoEscolar,
-                                                                                                              fechamentoTurma.Turma,
-                                                                                                              notasConselhoClasseAluno,
-                                                                                                              notasFechamentoAluno));
+                foreach (var disciplina in grupoDisiplinasMatriz)
+                {
+                    // Carrega Frequencia Aluno
+                    var frequenciaAluno = await ObterFrequenciaAluno(fechamentoTurma.Turma,
+                                                                     fechamentoTurma.PeriodoEscolar,
+                                                                     disciplina.CodigoComponenteCurricular,
+                                                                     alunoCodigo);
+
+                    if (disciplina.Regencia)
+                        conselhoClasseAlunoNotas.ComponenteRegencia = await ObterNotasFrequenciaRegencia(disciplina,
+                                                                                                         frequenciaAluno,
+                                                                                                         fechamentoTurma.PeriodoEscolar,
+                                                                                                         fechamentoTurma.Turma,
+                                                                                                         notasConselhoClasseAluno,
+                                                                                                         notasFechamentoAluno);
+                    else
+                        conselhoClasseAlunoNotas.ComponentesCurriculares.Add(await ObterNotasFrequenciaComponente(disciplina,
+                                                                                                                  frequenciaAluno,
+                                                                                                                  fechamentoTurma.PeriodoEscolar,
+                                                                                                                  fechamentoTurma.Turma,
+                                                                                                                  notasConselhoClasseAluno,
+                                                                                                                  notasFechamentoAluno));
+                }
+                gruposMatrizesNotas.Add(conselhoClasseAlunoNotas);
             }
 
-            return new List<ConselhoClasseAlunoNotasConceitosDto>() { conselhoClasseAlunoNotas };
+            return gruposMatrizesNotas;
         }
 
         private async Task<ConselhoClasseComponenteFrequenciaDto> ObterNotasFrequenciaComponente(DisciplinaResposta disciplina, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
