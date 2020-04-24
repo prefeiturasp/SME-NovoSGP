@@ -3,13 +3,19 @@ import Editor from '~/componentes/editor/editor';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { Historico } from './Justificativa.css';
+import { Colors } from '~/componentes';
+import Button from '~/componentes/button';
 
 const Justificativa = () => {
-  const [refForm, setRefForm] = useState({});
-  const onChangeJustificativa = () => {};
-  const salvarJustificativa = valor => {};
   const validacoes = {
     justificativa: Yup.string().required('Campo justificativa é obrigatório'),
+  };
+  const onChangeJustificativa = () => {};
+  const salvarJustificativa = valor => {};
+
+  const clicouBotaoSalvar = (form, e) => {
+    e.persist();
+    form.validateForm().then(() => form.handleSubmit(e));
   };
   return (
     <>
@@ -20,7 +26,6 @@ const Justificativa = () => {
         <div className="col-sm-12 col-md-8">
           <Formik
             enableReinitialize
-            ref={refForm => setRefForm(refForm)}
             onSubmit={valor => salvarJustificativa(valor)}
             validationSchema={validacoes}
             validateOnBlur={false}
@@ -30,10 +35,20 @@ const Justificativa = () => {
               <fieldset className="mt-3">
                 <Editor
                   form={form}
-                  name="descricao"
-                  id="descricao"
+                  name="justificativa"
+                  id="justificativa"
                   onChange={onChangeJustificativa}
                 />
+                <div className="d-flex justify-content-end pt-2">
+                  <Button
+                    label="Salvar"
+                    color={Colors.Roxo}
+                    onClick={e => {
+                      clicouBotaoSalvar(form, e);
+                    }}
+                    border
+                  />
+                </div>
               </fieldset>
             )}
           </Formik>
