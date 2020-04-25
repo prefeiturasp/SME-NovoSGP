@@ -5,7 +5,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,36 +13,24 @@ namespace SME.SGP.Aplicacao
     public class ConsultasFechamentoTurmaDisciplina : IConsultasFechamentoTurmaDisciplina
     {
         private readonly IConsultasAulaPrevista consultasAulaPrevista;
-        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasDisciplina consultasDisciplina;
+        private readonly IConsultasPeriodoFechamento consultasFechamento;
         private readonly IConsultasFechamentoNota consultasFechamentoNota;
-        private readonly IRepositorioConceito repositorioConceito;
-        private readonly IRepositorioSintese repositorioSintese;
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IConsultasFechamentoAluno consultasFehcamentoAluno;
         private readonly IConsultasFrequencia consultasFrequencia;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
+        private readonly IConsultasTurma consultasTurma;
+        private readonly IRepositorioConceito repositorioConceito;
+        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioSintese repositorioSintese;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IConsultasPeriodoFechamento consultasFechamento;
-        private readonly IConsultasDisciplina consultasDisciplina;
-        private readonly IConsultasFechamentoAluno consultasFehcamentoAluno;
-        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
-        private readonly IConsultasTurma consultasTurma;
-
-        public IEnumerable<Sintese> _sinteses { get; set; }
-        public IEnumerable<Sintese> Sinteses 
-        { 
-            get
-            {
-                if (_sinteses == null)
-                    _sinteses = repositorioSintese.Listar();
-
-                return _sinteses;
-            }
-        }
 
         public ConsultasFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IRepositorioTipoCalendario repositorioTipoCalendario,
@@ -87,8 +74,51 @@ namespace SME.SGP.Aplicacao
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
         }
 
+        public IEnumerable<Sintese> _sinteses { get; set; }
+
+        public IEnumerable<Sintese> Sinteses
+        {
+            get
+            {
+                if (_sinteses == null)
+                    _sinteses = repositorioSintese.Listar();
+
+                return _sinteses;
+            }
+        }
+
+        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, int semestre)
+        {
+            var turma = await consultasTurma.ObterPorCodigo(turmaCodigo);
+            var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(turma.UeId);
+
+            PeriodoEscolar periodoEscolar;
+            if (periodosAberto != null && periodosAberto.Any())
+            {
+                // caso tenha mais de um periodo em aberto (abertura e reabertura) usa o ultimo bimestre
+                periodoEscolar = periodosAberto.OrderBy(c => c.Bimestre).Last();
+            }
+            else
+            {
+                // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
+                var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, semestre);
+                if (tipoCalendario == null)
+                    throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
+                var periodosEscolares = consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
+                if (periodosEscolares == null)
+                    throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
+
+                periodoEscolar = consultasPeriodoEscolar.ObterPeriodoPorData(periodosEscolares, DateTime.Today);
+                if (periodoEscolar == null)
+                    periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
+            }
+
+            var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar);
+            return dadosAlunos.OrderBy(w => w.Nome);
+        }
+
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
-            => await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestre);
+                    => await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestre);
 
         public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaId)
             => await repositorioFechamentoTurmaDisciplina.ObterNotasBimestre(codigoAluno, fechamentoTurmaId);
@@ -287,35 +317,6 @@ namespace SME.SGP.Aplicacao
         {
             var sintese = Sinteses.FirstOrDefault(c => c.Id == id);
             return sintese != null ? sintese.Descricao : "";
-        }
-
-        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, int semestre)
-        {
-            var turma = await consultasTurma.ObterPorCodigo(turmaCodigo);
-            var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(turma.UeId);
-
-            PeriodoEscolar periodoEscolar;
-            if (periodosAberto != null && periodosAberto.Any())
-            {
-                // caso tenha mais de um periodo em aberto (abertura e reabertura) usa o ultimo bimestre
-                periodoEscolar = periodosAberto.OrderBy(c => c.Bimestre).Last();
-            }
-            else
-            {
-                // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
-                var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, semestre);
-                if (tipoCalendario == null)
-                    throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
-                var periodosEscolares = consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
-                if (periodosEscolares == null)
-                    throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
-
-                periodoEscolar = consultasPeriodoEscolar.ObterPeriodoPorData(periodosEscolares, DateTime.Today);
-                if (periodoEscolar == null)
-                    periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
-            }
-
-            return await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar);
         }
     }
 }
