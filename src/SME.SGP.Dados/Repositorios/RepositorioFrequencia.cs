@@ -183,6 +183,6 @@ namespace SME.SGP.Dados.Repositorios
                             and aula_id = @aulaId";
 
             return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
-        }
+        }        
     }
 }
