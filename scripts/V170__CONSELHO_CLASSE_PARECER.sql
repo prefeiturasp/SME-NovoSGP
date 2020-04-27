@@ -28,7 +28,7 @@ CREATE table if not exists public.conselho_classe_parecer_ano (
 	alterado_por varchar(200),
 	alterado_rf varchar(20),
 	alterado_em timestamp,
-	PRIMARY KEY (id, parecer_id),
+	PRIMARY KEY (id),
 	FOREIGN KEY (parecer_id) REFERENCES conselho_classe_parecer (id)
 );  
 
