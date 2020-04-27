@@ -348,7 +348,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<double> ObterNotaPosConselho(DisciplinaResposta componenteCurricular, int? bimestre, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
+        private async Task<double?> ObterNotaPosConselho(DisciplinaResposta componenteCurricular, int? bimestre, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
         {
             var componenteCurricularCodigo = componenteCurricular.CodigoComponenteCurricular;
             // Busca nota do conselho de classe consultado
@@ -357,7 +357,7 @@ namespace SME.SGP.Aplicacao
                 // Dugere nota final do fechamento
                 notaComponente = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre);
 
-            return notaComponente?.NotaConceito ?? 0;
+            return notaComponente?.NotaConceito;
         }
 
         private async Task<List<NotaBimestreDto>> ObterNotasComponente(DisciplinaResposta componenteCurricular, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
@@ -374,7 +374,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<NotaBimestreDto> ObterNotaFinalComponentePeriodo(long codigoComponenteCurricular, int bimestre, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
         {
-            double notaConceito = 0;
+            double? notaConceito = null;
             // Busca nota do FechamentoNota
             var notaFechamento = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == codigoComponenteCurricular);
             if (notaFechamento != null)

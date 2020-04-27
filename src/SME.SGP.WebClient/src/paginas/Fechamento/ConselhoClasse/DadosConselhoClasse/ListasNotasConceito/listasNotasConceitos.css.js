@@ -34,23 +34,25 @@ export const Lista = styled.div`
   .sombra-direita {
     box-shadow: 7px 1px 15px 0px rgba(0, 0, 0, 0.095);
   }
-`;
 
-export const CampoDesabilitado = styled.div`
-  justify-content: center;
-  align-items: center;
-  display: flex;
+  .input-notas-conceitos {
+    width: 43.8px;
+    height: 35.6px;
+    border-radius: 3px;
+    border: solid 1px #ced4da;
+    background-color: #f5f6f8;
+    margin-right: 5px;
+    margin-left: 5px;
+    text-align: center;
+    padding-top: 9px;
+    margin-bottom: 9px;
+    color: #a4a4a4;
+  }
 
-  span {
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    background-color: ${Base.Branco} !important;
-    border-radius: 4px;
-    border: 1px solid ${Base.CinzaDesabilitado};
-    color: ${Base.CinzaDesabilitado} !important;
-    width: 88px;
-    height: 38px;
+  .col-nota-conceito {
+    width: 250px;
+    max-width: 250px;
+    min-width: 250px;
   }
 `;
 

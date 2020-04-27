@@ -34,7 +34,7 @@ class ServicoSalvarConselhoClasse {
     const salvar = async () => {
       const params = {
         conselhoClasseId: dadosPrincipaisConselhoClasse.conselhoClasseId,
-        fechamentoTurmaId: dadosPrincipaisConselhoClasse.fechamentoTurmaId,
+        fechamentoTurmaId: dadosPrincipaisConselhoClasse.fechamentoTurmaId || 0,
         alunoCodigo: dadosAlunoObjectCard.codigoEOL,
         anotacoesPedagogicas,
         recomendacaoAluno,

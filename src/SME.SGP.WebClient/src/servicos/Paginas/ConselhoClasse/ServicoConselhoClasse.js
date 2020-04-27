@@ -54,18 +54,23 @@ class ServicoConselhoClasse {
   carregarListaTiposConceito = async periodoFim => {
     const { dispatch } = store;
 
-    const lista = await api
-      .get(`v1/avaliacoes/notas/conceitos?data=${periodoFim}`)
-      .catch(e => erros(e));
+    if (periodoFim) {
+      const lista = await api
+        .get(`v1/avaliacoes/notas/conceitos?data=${periodoFim}`)
+        .catch(e => erros(e));
 
-    if (lista && lista.data && lista.data.length) {
-      const novaLista = lista.data.map(item => {
-        item.id = String(item.id);
-        return item;
-      });
-      dispatch(setListaTiposConceitos(novaLista));
+      if (lista && lista.data && lista.data.length) {
+        const novaLista = lista.data.map(item => {
+          item.id = String(item.id);
+          return item;
+        });
+        dispatch(setListaTiposConceitos(novaLista));
+      } else {
+        dispatch(setListaTiposConceitos([]));
+      }
+    } else {
+      dispatch(setListaTiposConceitos([]));
     }
-    dispatch(setListaTiposConceitos([]));
   };
 
   acessarAbaFinalParecerConclusivo = (
@@ -73,7 +78,18 @@ class ServicoConselhoClasse {
     fechamentoTurmaId,
     alunoCodigo
   ) => {
-    const url = `v1/conselhos-classe/${conselhoClasseId}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/parecer`;
+    const url = `v1/conselhos-classe/${conselhoClasseId ||
+      0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/parecer`;
+    return api.get(url);
+  };
+
+  obterNotasConceitosConselhoClasse = (
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo
+  ) => {
+    const url = `v1/conselhos-classe/${conselhoClasseId ||
+      0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/notas`;
     return api.get(url);
   };
 }
