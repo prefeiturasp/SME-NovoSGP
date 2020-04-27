@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasConselhoClasseNota
     {
-        Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAluno(long conselhoClasseId, string alunoCodigo);
+        Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAsync(long conselhoClasseId, string alunoCodigo);
     }
 }

@@ -80,7 +80,7 @@ namespace SME.SGP.Dados.Repositorios
                 , new { codigoTurma, codigoAluno, bimestre })).FirstOrDefault();
         }
 
-        public async Task<ConselhoClasseAluno> ObterPorPeriodo(string alunoCodigo, long turmaId, long periodoEscolarId)
+        public async Task<ConselhoClasseAluno> ObterPorPeriodoAsync(string alunoCodigo, long turmaId, long periodoEscolarId)
         {
             var query = @"select cca.* 
                           from fechamento_turma ft

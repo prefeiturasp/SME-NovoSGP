@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
         {
             var periodoEscolar = await ObterPeriodoUltimoBimestre(turma);
 
-            var conselhoClasseUltimoBimestre = await repositorioConselhoClasseAluno.ObterPorPeriodo(alunoCodigo, turma.Id, periodoEscolar.Id);
+            var conselhoClasseUltimoBimestre = await repositorioConselhoClasseAluno.ObterPorPeriodoAsync(alunoCodigo, turma.Id, periodoEscolar.Id);
             return conselhoClasseUltimoBimestre != null;
         }
 
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
             if (disciplinasSinteses == null || !disciplinasSinteses.Any())
                 return null;
 
-            var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestres(alunoCodigo, bimestre, fechamentoTurma.Turma.CodigoTurma);
+            var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestresAsync(alunoCodigo, bimestre, fechamentoTurma.Turma.CodigoTurma);
 
             foreach (var componenteCurricular in disciplinasSinteses)
             {
@@ -206,10 +206,10 @@ namespace SME.SGP.Aplicacao
 
             var turmaCodigo = fechamentoTurma.Turma.CodigoTurma;
 
-            var notasConselhoClasseAluno = await consultasConselhoClasseNota.ObterNotasAluno(conselhoClasseId, alunoCodigo);
+            var notasConselhoClasseAluno = await consultasConselhoClasseNota.ObterNotasAlunoAsync(conselhoClasseId, alunoCodigo);
             var notasFechamentoAluno = fechamentoTurma.PeriodoEscolarId.HasValue ?
-                await consultasFechamentoNota.ObterNotasAlunoBimestre(fechamentoTurmaId, alunoCodigo) :
-                await consultasFechamentoNota.ObterNotasAlunoAno(turmaCodigo, alunoCodigo);
+                await consultasFechamentoNota.ObterNotasAlunoBimestreAsync(fechamentoTurmaId, alunoCodigo) :
+                await consultasFechamentoNota.ObterNotasAlunoAnoAsync(turmaCodigo, alunoCodigo);
 
             var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurma(turmaCodigo);
             if (disciplinas == null)

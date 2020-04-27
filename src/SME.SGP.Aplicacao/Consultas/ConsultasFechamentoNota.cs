@@ -15,10 +15,10 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoBimestre(long fechamentoTurmaId, string alunoCodigo)
-            => await repositorioFechamentoNota.ObterNotasAlunoBimestre(fechamentoTurmaId, alunoCodigo);
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoBimestreAsync(long fechamentoTurmaId, string alunoCodigo)
+            => await repositorioFechamentoNota.ObterNotasAlunoBimestreAsync(fechamentoTurmaId, alunoCodigo);
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAno(string turmaCodigo, string alunoCodigo)
-            => await repositorioFechamentoNota.ObterNotasAlunoAno(turmaCodigo, alunoCodigo);
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAnoAsync(string turmaCodigo, string alunoCodigo)
+            => await repositorioFechamentoNota.ObterNotasAlunoAnoAsync(turmaCodigo, alunoCodigo);
     }
 }
