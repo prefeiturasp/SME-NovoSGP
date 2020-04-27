@@ -117,7 +117,14 @@ namespace SME.SGP.Dados.Repositorios
             MontaWhere(query, tipoCalendarioId, turmaId, ueId, null, null, CodigoRf);
             return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, CodigoRf }));
         }
-
+        public async Task<IEnumerable<Aula>> ObterAulas_v2(long tipoCalendarioId, string turmaCodigo, string ueCodigo, string codigoRf)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaCabecalho(query);
+            query.AppendLine("FROM public.aula a");
+            MontaWhere(query, tipoCalendarioId, turmaCodigo, ueCodigo, null, null, codigoRf);
+            return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId = turmaCodigo, ueId = ueCodigo, codigoRf }));
+        }
         public async Task<IEnumerable<AulaDto>> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, int mes, string CodigoRf)
         {
             StringBuilder query = new StringBuilder();
