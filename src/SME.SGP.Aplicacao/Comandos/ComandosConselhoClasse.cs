@@ -14,5 +14,10 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
         }
+
+        public Task<string> Alterar(long conselhoClasseId, long fechmamentoTurmaId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

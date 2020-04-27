@@ -231,5 +231,10 @@ namespace SME.SGP.Dominio
                 }
             }
         }
+
+        public bool DataDentroPeriodo(DateTime data)
+        {
+            return Inicio.Date <= data.Date && Fim.Date >= data.Date;
+        }
     }
 }

@@ -97,7 +97,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (fechamentoSMEDre == null)
                 {
                     if (!usuarioLogado.EhPerfilSME())
-                        throw new NegocioException("Fechamento da SME/Dre não encontrado para este tipo de calendário.");
+                        return default;
                     else
                     {
                         fechamentoSMEDre = new PeriodoFechamento(null, null);

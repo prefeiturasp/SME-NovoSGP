@@ -8,29 +8,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosConselhoClasseNota : IComandosConselhoClasseNota
     {
-        private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
+        private readonly IServicoConselhoClasse servicoConselhoClasse;
 
-        public ComandosConselhoClasseNota(IRepositorioConselhoClasseNota repositorioConselhoClasseNota, IServicoConselhoClasseNota)
+        public ComandosConselhoClasseNota(IServicoConselhoClasse servicoConselhoClasse)
         {
-            this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
+            this.servicoConselhoClasse = servicoConselhoClasse ?? throw new ArgumentNullException(nameof(servicoConselhoClasse));
         }
 
-        public async Task Persistir(PosConselhosNotasPersistirDto posConselhosNotasPersistirDto)
+        public async Task<AuditoriaDto> Salvar(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId)
         {
-            var notaPosConselho = await repositorioConselhoClasseNota.ObterPorFiltrosAsync(posConselhosNotasPersistirDto.AlunoCodigo, posConselhosNotasPersistirDto.Bimestre,
-                posConselhosNotasPersistirDto.ComponenteCurricularCodigo, posConselhosNotasPersistirDto.TurmaCodigo);
-
-            if (notaPosConselho == null)
-            {
-                notaPosConselho = TransformaPosConselhosNotasPersistirDtoEmEntidade(posConselhosNotasPersistirDto);
-            }
-        }
-
-        private ConselhoClasseNota TransformaPosConselhosNotasPersistirDtoEmEntidade(PosConselhosNotasPersistirDto posConselhosNotasPersistirDto)
-        {
-            var conselhoClasseNota = new ConselhoClasseNota();
-
-            throw new NotImplementedException();
+            return await servicoConselhoClasse.SalvarConselhoClasseAlunoNota(conselhoClasseNotaDto, alunoCodigo, conselhoClasseId, fechamentoTurmaId);
         }
     }
 }

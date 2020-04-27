@@ -24,16 +24,12 @@ namespace SME.SGP.Aplicacao
         public async Task<ComunicadoCompletoDto> BuscarPorIdAsync(long id)
         {
             var comunicado = await repositorio.ObterPorIdAsync(id);
-            if (comunicado is null || !comunicado.Any())
-                throw new NegocioException("Comunicado não encontrado");
             return MapearPorIdParaDto(comunicado);
         }
 
         public async Task<PaginacaoResultadoDto<ComunicadoDto>> ListarPaginado(FiltroComunicadoDto filtro)
         {
             var comunicados = await repositorio.ListarPaginado(filtro, Paginacao);
-            if (comunicados is null || comunicados.Items is null || !comunicados.Items.Any())
-                throw new NegocioException("Nenhum comunicado encontrado");
             return MapearParaDtoPaginado(comunicados);
         }
 

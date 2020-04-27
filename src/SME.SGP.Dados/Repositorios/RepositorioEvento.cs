@@ -339,6 +339,8 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), parametros)) > 0;
         }
 
+        
+
         private static void MontaFiltroTipoCalendario(StringBuilder query)
         {
             query.AppendLine("where");
@@ -538,8 +540,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             query.AppendLine("from evento e");
             query.AppendLine("inner join evento_tipo et on e.tipo_evento_id = et.id");
-            query.AppendLine(" left join v_abrangencia a on a.ue_codigo = e.ue_id");
-            query.AppendLine("  and a.dre_codigo = e.dre_id");
+            query.AppendLine(" left join v_abrangencia a on a.dre_codigo = e.dre_id");
+            query.AppendLine("and (a.ue_codigo = e.ue_id or (e.ue_id is null and a.ue_codigo is null)) ");
             query.AppendLine("  and a.usuario_id = @usuarioId");
             query.AppendLine("  and a.usuario_perfil = @usuarioPerfil");
             query.AppendLine("where et.ativo");
@@ -631,8 +633,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from");
             query.AppendLine("evento e");
             query.AppendLine("inner join evento_tipo et on e.tipo_evento_id = et.id");
-            query.AppendLine(" left join v_abrangencia a on a.ue_codigo = e.ue_id");
-            query.AppendLine("and a.dre_codigo = e.dre_id");
+            query.AppendLine(" left join v_abrangencia a on a.dre_codigo = e.dre_id");
+            query.AppendLine("and (a.ue_codigo = e.ue_id or (e.ue_id is null and a.ue_codigo is null)) ");
             query.AppendLine("and a.usuario_id = @usuarioId");
             query.AppendLine("and a.usuario_perfil = @usuarioPerfil");
             query.AppendLine("where et.ativo");
@@ -1306,8 +1308,13 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 queryDreUe.AppendLine("and e.ue_id = @UeId");
 
+            bool temFiltroDreUe = false;
+
             if (!String.IsNullOrEmpty(queryDreUe.ToString()))
+            {
+                temFiltroDreUe = true;
                 queryDreUe.AppendLine(")");
+            }
 
             if (podeVisualizarEventosLocalOcorrenciaDre)
             {
@@ -1321,7 +1328,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!String.IsNullOrEmpty(queryDreUe.ToString()))
             {
-                queryDreUe.Insert(queryDreUe.ToString().IndexOf("and") + 4, "((").Insert(queryDreUe.ToString().Length - 1, ")");
+                queryDreUe.Insert(queryDreUe.ToString().IndexOf("and") + 4, temFiltroDreUe ? "((" : "(").Insert(queryDreUe.ToString().Length - 1, ")");
                 query.AppendLine(queryDreUe.ToString());
             }
 

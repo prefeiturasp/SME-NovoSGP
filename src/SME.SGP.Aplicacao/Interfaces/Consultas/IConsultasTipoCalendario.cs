@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         IEnumerable<TipoCalendarioDto> Listar();
 
         IEnumerable<TipoCalendarioDto> ListarPorAnoLetivo(int anoLetivo);
-        Task<TipoCalendario> ObterPorTurma(Turma turma, DateTime dataReferencia);
-        Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0);
+        Task<TipoCalendario> ObterPorTurma(Turma turma);
+        Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false);
     }
 }

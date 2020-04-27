@@ -15,14 +15,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<ConselhoClasse> ObterPorTurmaEPeriodoAsync(long turmaId, long? periodoEscolarId = null)
         {
-            var query = new StringBuilder(@"select c.*
-                            from conselho_classe c
-                           where c.turma_id = @turmaId ");
+            var query = new StringBuilder(@"select c.* 
+                            from conselho_classe c 
+                           inner join fechamento_turma t on t.id = c.fechamento_turma_id
+                           where t.turma_id = @turmaId ");
 
             if (periodoEscolarId.HasValue)
-                query.AppendLine(" and c.periodo_escolar_id = @periodoEscolarId");
+                query.AppendLine(" and t.periodo_escolar_id = @periodoEscolarId");
             else
-                query.AppendLine(" and c.periodo_escolar_id is null");
+                query.AppendLine(" and t.periodo_escolar_id is null");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query.ToString(), new { turmaId, periodoEscolarId });
         }
