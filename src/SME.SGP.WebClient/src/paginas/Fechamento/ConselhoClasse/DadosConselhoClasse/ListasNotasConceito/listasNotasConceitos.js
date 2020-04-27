@@ -1,59 +1,83 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-// import ListaBimestre from './ListaBimestre/listaBimestre';
-import ListaNotasConselho from '../ListaNotasConselho/listaNotasConselho';
-import ListaFinal from './ListaFinal/listaFinal';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Loader } from '~/componentes';
+import { setDadosListasNotasConceitos } from '~/redux/modulos/conselhoClasse/actions';
+import { erros } from '~/servicos/alertas';
+import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
+import ListasCarregar from './listasCarregar';
 
 const ListasNotasConceitos = props => {
   const { bimestreSelecionado } = props;
 
+  const dispatch = useDispatch();
+
+  const listaTiposConceitos = useSelector(
+    store => store.conselhoClasse.listaTiposConceitos
+  );
+
   const dadosPrincipaisConselhoClasse = useSelector(
     store => store.conselhoClasse.dadosPrincipaisConselhoClasse
   );
+  const {
+    fechamentoTurmaId,
+    conselhoClasseId,
+    alunoCodigo,
+    turmaCodigo,
+    tipoNota,
+  } = dadosPrincipaisConselhoClasse;
+
+  const [exibir, setExibir] = useState(false);
+  const [carregando, setCarregando] = useState(false);
 
   const obterDadosLista = useCallback(async () => {
-    console.log('START: obterDadosLista');
+    setCarregando(true);
+    const resultado = await ServicoConselhoClasse.obterNotasConceitosConselhoClasse(
+      conselhoClasseId,
+      fechamentoTurmaId,
+      alunoCodigo
+    ).catch(e => erros(e));
 
-    // TODO Fazer a consulta para trazer as notas e conceitos aba bimestre e final!
-    // Quando for aba final passar bimestre = 0!
-    // Quando a consulta retornar vai ter o periodo fim para consultar a lista de conceitos
-  }, []);
+    if (resultado && resultado.data) {
+      dispatch(setDadosListasNotasConceitos(resultado.data));
+      setExibir(true);
+    } else {
+      setExibir(false);
+    }
+    setCarregando(false);
+  }, [alunoCodigo, conselhoClasseId, dispatch, fechamentoTurmaId]);
 
   useEffect(() => {
-    const {
-      turmaCodigo,
-      fechamentoTurmaId,
-      conselhoClasseId,
-      alunoCodigo,
-    } = dadosPrincipaisConselhoClasse;
-
     const bimestre = bimestreSelecionado.valor;
 
-    const ehFinal = bimestreSelecionado.valor === 'final';
     if (bimestre && turmaCodigo && fechamentoTurmaId && alunoCodigo) {
-      obterDadosLista(ehFinal);
+      obterDadosLista();
     }
+  }, [
+    turmaCodigo,
+    alunoCodigo,
+    bimestreSelecionado.valor,
+    fechamentoTurmaId,
+    obterDadosLista,
+  ]);
 
-    console.log(`bimestre: ${bimestre}`);
-    console.log(`turmaCodigo: ${turmaCodigo}`);
-    console.log(`fechamentoTurmaId: ${fechamentoTurmaId}`);
-    console.log(`conselhoClasseId: ${conselhoClasseId}`);
-    console.log(`alunoCodigo: ${alunoCodigo}`);
-    console.log(`ehFinal: ${ehFinal}`);
-  }, [bimestreSelecionado, dadosPrincipaisConselhoClasse, obterDadosLista]);
-
-  const validaExibirLista = () => {
-    const ehFinal = bimestreSelecionado.valor === 'final';
-    if (ehFinal) {
-      return <ListaFinal />;
-    }
-    return <ListaNotasConselho bimestreSelecionado={bimestreSelecionado} />;
-    // TODO Adicioanr os fontes no ListaBimestre!
-    // return <ListaBimestre />;
-  };
-
-  return <>{validaExibirLista()}</>;
+  return (
+    <Loader
+      className={carregando ? 'text-center' : ''}
+      loading={carregando}
+      tip="Carregando lista(s) notas e conceitos"
+    >
+      {exibir && bimestreSelecionado.valor ? (
+        <ListasCarregar
+          ehFinal={bimestreSelecionado.valor === 'final'}
+          tipoNota={tipoNota}
+          listaTiposConceitos={listaTiposConceitos}
+        />
+      ) : (
+        ''
+      )}
+    </Loader>
+  );
 };
 
 ListasNotasConceitos.propTypes = {

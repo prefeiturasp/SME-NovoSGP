@@ -1,20 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Base } from '~/componentes';
-import ComponenteSemNota from './ComponenteSemNota/ComponenteSemNota';
-import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
-import { erro } from '~/servicos/alertas';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import shortid from 'shortid';
+import { Base } from '~/componentes';
+import { erro } from '~/servicos/alertas';
+import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
+import ComponenteSemNota from './ComponenteSemNota/ComponenteSemNota';
 
 const Sintese = props => {
-  const { ehFinal, bimestreSelecionado } = props;
+  const { ehFinal } = props;
+
   const dadosPrincipaisConselhoClasse = useSelector(
     store => store.conselhoClasse.dadosPrincipaisConselhoClasse
   );
+
   const {
     conselhoClasseId,
     fechamentoTurmaId,
     alunoCodigo,
   } = dadosPrincipaisConselhoClasse;
+
   const cores = [
     Base.Azul,
     Base.RoxoEventoCalendario,
@@ -28,7 +33,7 @@ const Sintese = props => {
     Base.VerdeBorda,
   ];
 
-  const [dados, setDados] = useState();
+  const [dados, setDados] = useState([]);
 
   useEffect(() => {
     ServicoConselhoClasse.obterSintese(
@@ -46,10 +51,10 @@ const Sintese = props => {
 
   return (
     <>
-      {dados
+      {dados && dados.length
         ? dados.map((componente, i) => {
             return (
-              <div className="pl-2 pr-2">
+              <div className="pl-2 pr-2" key={shortid.generate()}>
                 <ComponenteSemNota
                   dados={componente.componenteSinteses}
                   nomeColunaComponente={componente.titulo}
@@ -62,6 +67,14 @@ const Sintese = props => {
         : null}
     </>
   );
+};
+
+Sintese.propTypes = {
+  ehFinal: PropTypes.oneOfType([PropTypes.bool]),
+};
+
+Sintese.defaultProps = {
+  ehFinal: false,
 };
 
 export default Sintese;

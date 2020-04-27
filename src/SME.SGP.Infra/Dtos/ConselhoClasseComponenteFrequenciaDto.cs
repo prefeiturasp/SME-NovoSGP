@@ -16,7 +16,7 @@ namespace SME.SGP.Infra
         public int Faltas { get; set; }
         public int AusenciasCompensadas { get; set; }
         public double Frequencia { get; set; }
-        public double NotaPosConselho { get; set; }
+        public double? NotaPosConselho { get; set; }
         public List<NotaBimestreDto> NotasFechamentos { get; set; }
     }
 }
