@@ -15,6 +15,6 @@ namespace SME.SGP.Infra
 
         [Required(ErrorMessage = "O ano letivo é obrigatório.")]
         public int AnoLetivo { get; set; }
-
+        public string TurmaCodigo { get; set; }
     }
 }

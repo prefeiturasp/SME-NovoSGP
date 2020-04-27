@@ -50,7 +50,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
         [HttpGet]
-        [ProducesResponseType(typeof(EventosAulasCalendarioDto), 200)]
+        [ProducesResponseType(typeof(EventoAulaDiaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{tipoCalendarioId}/meses/{mes}/eventos-aulas")]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
