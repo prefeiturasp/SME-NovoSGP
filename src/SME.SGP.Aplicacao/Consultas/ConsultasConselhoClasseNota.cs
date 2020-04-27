@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using System;
 
 namespace SME.SGP.Aplicacao
@@ -9,6 +10,11 @@ namespace SME.SGP.Aplicacao
         public ConsultasConselhoClasseNota(IRepositorioConselhoClasseNota repositorioConselhoClasseNota)
         {
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
+        }
+
+        public ConselhoClasseNota ObterPorId(long id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
