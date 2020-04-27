@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public ConselhoClasseNota ObterPorId(long id)
         {
-            throw new NotImplementedException();
+            return repositorioConselhoClasseNota.ObterPorId(id);
         }
     }
 }
