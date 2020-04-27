@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasFechamentoNota
     {
-        Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoBimestre(long fechamentoTurmaId, string alunoCodigo);
-        Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAno(string turmaCodigo, string alunoCodigo);
+        Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoBimestreAsync(long fechamentoTurmaId, string alunoCodigo);
+        Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAnoAsync(string turmaCodigo, string alunoCodigo);
     }
 }

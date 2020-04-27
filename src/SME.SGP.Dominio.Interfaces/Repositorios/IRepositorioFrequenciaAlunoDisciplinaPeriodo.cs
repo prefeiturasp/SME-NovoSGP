@@ -21,6 +21,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAluno(string alunoCodigo);
 
-        Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestres(string codigoAluno, int bimestre, string codigoTurma);
+        Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma);
     }
 }

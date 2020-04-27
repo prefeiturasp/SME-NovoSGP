@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAluno(long conselhoClasseId, string alunoCodigo)
-            => await repositorioConselhoClasseNota.ObterNotasAluno(conselhoClasseId, alunoCodigo);
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAsync(long conselhoClasseId, string alunoCodigo)
+            => await repositorioConselhoClasseNota.ObterNotasAlunoAsync(conselhoClasseId, alunoCodigo);
     }
 }

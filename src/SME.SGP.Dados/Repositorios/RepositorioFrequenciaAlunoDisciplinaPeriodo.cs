@@ -86,7 +86,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, new { alunoCodigo });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestres(string codigoAluno, int bimestre, string codigoTurma)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma)
         {
             var query = @"select * from frequencia_aluno fa 
                             where fa.codigo_aluno = @codigoAluno
