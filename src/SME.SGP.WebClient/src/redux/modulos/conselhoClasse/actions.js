@@ -43,8 +43,8 @@ export const setConselhoClasseEmEdicao = payload => ({
   payload,
 });
 
-export const setDadosAnotacoesRecomendacoes = payload => ({
-  type: '@conselhoClasse/setDadosAnotacoesRecomendacoes',
+export const setDadosPrincipaisConselhoClasse = payload => ({
+  type: '@conselhoClasse/setDadosPrincipaisConselhoClasse',
   payload,
 });
 
@@ -60,5 +60,20 @@ export const setDentroPeriodo = payload => ({
 
 export const setFechamentoPeriodoInicioFim = payload => ({
   type: '@conselhoClasse/setFechamentoPeriodoInicioFim',
+  payload,
+});
+
+export const setListaTiposConceitos = payload => ({
+  type: '@conselhoClasse/setListaTiposConceitos',
+  payload,
+});
+
+export const setNotasJustificativas = payload => ({
+  type: '@conselhoClasse/setNotasJustificativas',
+  payload,
+});
+
+export const setDadosListasNotasConceitos = payload => ({
+  type: '@conselhoClasse/setDadosListasNotasConceitos',
   payload,
 });

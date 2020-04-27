@@ -86,6 +86,46 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, new { alunoCodigo });
         }
 
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma)
+        {
+            var query = @"select * from frequencia_aluno fa 
+                            where fa.codigo_aluno = @codigoAluno
+                            and fa.turma_id = @turmaId and fa.tipo = 1";
+
+            if (bimestre > 0)
+                query += " and fa.bimestre = @bimestre";
+
+            var parametros = new
+            {
+                codigoAluno,
+                bimestre,
+                turmaId = codigoTurma
+            };
+
+            return await database.Conexao.QueryAsync<FrequenciaAluno>(query, parametros);
+        }
+
+        public async Task<FrequenciaAluno> ObterPorAlunoBimestreAsync(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
+        {
+            var query = new StringBuilder(@"select *
+                        from frequencia_aluno
+                        where codigo_aluno = @codigoAluno
+	                        and tipo = @tipoFrequencia
+	                        and bimestre = @bimestre ");
+
+            if (!string.IsNullOrEmpty(disciplinaId))
+                query.AppendLine("and disciplina_id = @disciplinaId");
+
+            query.AppendLine(" order by id desc");
+            return await database.Conexao.QueryFirstOrDefaultAsync<FrequenciaAluno>(query.ToString(), new
+            {
+                codigoAluno,
+                bimestre,
+                tipoFrequencia,
+                disciplinaId
+            });
+        }
+
         public FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
         {
             var query = new StringBuilder(@"select *
@@ -107,7 +147,7 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId
             });
         }
-        
+
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
         {
             var query = @"select *

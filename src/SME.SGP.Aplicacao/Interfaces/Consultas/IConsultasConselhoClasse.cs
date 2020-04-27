@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,5 +11,6 @@ namespace SME.SGP.Aplicacao
     {
         ConselhoClasse ObterPorId(long conselhoClasseId);
         Task<(int, bool)> ValidaConselhoClasseUltimoBimestre(Turma turma);
+        Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false);
     }
 }
