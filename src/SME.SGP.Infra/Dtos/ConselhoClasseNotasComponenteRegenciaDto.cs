@@ -13,6 +13,6 @@ namespace SME.SGP.Infra
 
         public string Nome { get; set; }
         public List<NotaBimestreDto> NotasFechamentos { get; set; }
-        public double NotaPosConselho { get; set; }
+        public double? NotaPosConselho { get; set; }
     }
 }

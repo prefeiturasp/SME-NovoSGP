@@ -2,6 +2,7 @@ import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Loader } from '~/componentes';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import modalidadeDto from '~/dtos/modalidade';
 import {
@@ -11,13 +12,12 @@ import {
 } from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
-import AnotacoesRecomendacoes from './AnotacoesRecomendacoes/anotacoesRecomendacoes';
 import servicoSalvarConselhoClasse from '../servicoSalvarConselhoClasse';
 import AlertaDentroPeriodo from './AlertaDentroPeriodo/alertaDentroPeriodo';
+import AnotacoesRecomendacoes from './AnotacoesRecomendacoes/anotacoesRecomendacoes';
+import ListasNotasConceitos from './ListasNotasConceito/listasNotasConceitos';
 import MarcadorPeriodoInicioFim from './MarcadorPeriodoInicioFim/marcadorPeriodoInicioFim';
 import Sintese from './Sintese/Sintese';
-import ListasNotasConceitos from './ListasNotasConceito/listasNotasConceitos';
-import { Loader } from '~/componentes';
 
 const { TabPane } = Tabs;
 
@@ -50,7 +50,6 @@ const DadosConselhoClasse = props => {
       alunoCodigo
     ).catch(e => erros(e));
     if (resposta && resposta.data) {
-      console.log(resposta.data);
       return true;
     }
     return false;
@@ -72,37 +71,39 @@ const DadosConselhoClasse = props => {
           dispatch(setBimestreAtual(bimestreConsulta || '1'));
         }
         setSemDados(true);
-        setCarregando(false);
       });
       if (retorno && retorno.data) {
-        // TODO Back vai alterar conselhoClasseTurmaId para conselhoClasseId
         const {
-          conselhoClasseTurmaId,
+          conselhoClasseId,
           fechamentoTurmaId,
           bimestre,
           periodoFechamentoInicio,
           periodoFechamentoFim,
+          tipoNota,
         } = retorno.data;
 
         let podeAcessarAbaFinal = true;
         if (ehFinal) {
           const podeAcessar = await validaAbaFinal(
-            conselhoClasseTurmaId,
+            conselhoClasseId,
             fechamentoTurmaId,
             codigoEOL
           ).catch(e => erros(e));
           podeAcessarAbaFinal = podeAcessar;
         }
         if (!podeAcessarAbaFinal) {
+          dispatch(setBimestreAtual(bimestreConsulta));
+          setCarregando(false);
           return;
         }
 
         const valores = {
           fechamentoTurmaId,
-          conselhoClasseId: conselhoClasseTurmaId,
+          conselhoClasseId: conselhoClasseId || 0,
           alunoCodigo: codigoEOL,
           turmaCodigo,
           alunoDesabilitado: desabilitado,
+          tipoNota,
         };
 
         dispatch(setDadosPrincipaisConselhoClasse(valores));
@@ -112,6 +113,14 @@ const DadosConselhoClasse = props => {
           periodoFechamentoFim,
         };
         dispatch(setFechamentoPeriodoInicioFim(datas));
+
+        if (periodoFechamentoFim) {
+          ServicoConselhoClasse.carregarListaTiposConceito(
+            periodoFechamentoFim
+          );
+        } else {
+          ServicoConselhoClasse.carregarListaTiposConceito();
+        }
 
         if (ehFinal) {
           dispatch(setBimestreAtual(bimestreConsulta));
@@ -123,6 +132,7 @@ const DadosConselhoClasse = props => {
         setSemDados(false);
         setCarregando(false);
       }
+      setCarregando(false);
     },
     [codigoEOL, desabilitado, turmaCodigo, dispatch]
   );

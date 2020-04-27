@@ -64,11 +64,16 @@ export const setFechamentoPeriodoInicioFim = payload => ({
 });
 
 export const setListaTiposConceitos = payload => ({
-  type: '@conselhoClasse/listaTiposConceitos',
+  type: '@conselhoClasse/setListaTiposConceitos',
   payload,
 });
 
 export const setNotasJustificativas = payload => ({
   type: '@conselhoClasse/setNotasJustificativas',
+  payload,
+});
+
+export const setDadosListasNotasConceitos = payload => ({
+  type: '@conselhoClasse/setDadosListasNotasConceitos',
   payload,
 });

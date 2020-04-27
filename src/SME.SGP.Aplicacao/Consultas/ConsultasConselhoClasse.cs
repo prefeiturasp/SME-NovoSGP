@@ -52,9 +52,8 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasse = await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id);
 
-            PeriodoFechamentoBimestre periodoFechamentoBimestre = null;
-            if (!ehFinal)
-                periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestre);
+            var bimestreFechamento = !ehFinal ? bimestre : (await ObterPeriodoUltimoBimestre(turma)).Bimestre;
+            PeriodoFechamentoBimestre periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestreFechamento);
 
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre);
             var mediaAprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
@@ -75,7 +74,7 @@ namespace SME.SGP.Aplicacao
         {
             var dataReferencia = periodoFechamentoBimestre != null ?
                 periodoFechamentoBimestre.FinalDoFechamento :
-                await ObterFimPeriodoUltimoBimestre(turma);
+                (await ObterPeriodoUltimoBimestre(turma)).PeriodoFim;
 
             var tipoNota = await servicoDeNotasConceitos.ObterNotaTipo(turma.CodigoTurma, dataReferencia);
             if (tipoNota == null)
@@ -84,13 +83,13 @@ namespace SME.SGP.Aplicacao
             return tipoNota.TipoNota; 
         }
 
-        private async Task<DateTime> ObterFimPeriodoUltimoBimestre(Turma turma)
+        private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)
         {
             var periodoEscolarUltimoBimestre = await consultasPeriodoEscolar.ObterUltimoPeriodoAsync(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
             if (periodoEscolarUltimoBimestre == null)
                 throw new NegocioException("Não foi possível localizar o período escolar do ultimo bimestre da turma");
 
-            return periodoEscolarUltimoBimestre.PeriodoFim;
+            return periodoEscolarUltimoBimestre;
         }
 
         private async Task<Turma> ObterTurma(string turmaCodigo)
