@@ -41,37 +41,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(204)] 
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> DetalhamentoNotaJustificativa(long id)
-        {
-            var retorno = new ConselhoDeClasseNotaDto
-            {
-                Nota = 5,
-                Migrado = false,
-                Justificativa = "Teste sodfsdfasduhfasudfhuasdfuhasdfhu",
-                Id = 1,
-                ComponenteCurricularCodigo = 1,
-                Conceito = new ConceitoDto
-                {
-                    Id = 1,
-                    Aprovado = false,
-                    Descricao = "teste",
-                    Valor = "NS"
-                },
-                ConceitoId = 1,
-                ConselhoClasseAlunoId = 1,
-                Auditoria = new AuditoriaDto
-                {
-                    Id = 1,
-                    AlteradoEm = DateTime.Now,
-                    AlteradoPor = "Professor",
-                    AlteradoRF = "1234567",
-                    CriadoEm = DateTime.Now.AddMinutes(-5),
-                    CriadoPor = "Professor",
-                    CriadoRF = "1234567"
-                }
-            };
-
-            return Ok(retorno);
+        public IActionResult DetalhamentoNota(long id, [FromServices] IConsultasConselhoClasseNota consultasConselhoClasseNota)
+        {            
+            return Ok(consultasConselhoClasseNota.ObterPorId(id));
         }
 
     }
