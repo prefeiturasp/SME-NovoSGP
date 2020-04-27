@@ -29,20 +29,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(AuditoriaConselhoClasseAlunoDto), 200)]
-        //[Permissao(Permissao.CC_C, Policy = "Bearer")]
+        [Permissao(Permissao.CC_I, Policy = "Bearer")]
         public async Task<IActionResult> SalvarRecomendacoesAlunoFamilia(ConselhoClasseAlunoDto conselhoClasseAlunoDto, [FromServices]IComandosConselhoClasseAluno comandosConselhoClasseAluno)
         {
             return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto));
         }
 
-        [HttpPost("pos-conselhos/notas")]
+        [HttpPost("{conselhoClasseId}/notas/alunos/{codigoAluno}/fechamento-turma/{fechamentoTurmaId}")]
         [ProducesResponseType(401)]
         [ProducesResponseType(200)]
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
-        public async Task<IActionResult> PersistirNotas([FromServices]IConsultasConselhoClasseRecomendacao consultasConselhoClasseRecomendacao,
-           [FromBody]PosConselhosNotasPersistirDto posConselhosNotasPersistirDto)
+        public async Task<IActionResult> PersistirNotas([FromServices]IComandosConselhoClasseNota comandosConselhoClasseNota,
+           [FromBody]ConselhoClasseNotaDto conselhoClasseNotaDto, string codigoAluno, long conselhoClasseId, long fechamentoTurmaId)
         {
-            return Ok();
+            return Ok(await comandosConselhoClasseNota.Salvar(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, fechamentoTurmaId));
         }
     }
 }

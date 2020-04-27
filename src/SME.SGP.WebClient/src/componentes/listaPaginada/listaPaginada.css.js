@@ -46,7 +46,6 @@ export const Container = styled.div`
     font-size: 14px;
     font-weight: bold;
     letter-spacing: 0.12px;
-    text-transform: capitalize;
   }
 
   .ant-table-pagination.ant-pagination {
@@ -108,6 +107,10 @@ export const Container = styled.div`
     border-color: ${Base.Roxo} !important;
     color: ${Base.Branco} !important;
     font-size: 12px;
+  }
+
+  .ant-pagination-item-active a {
+    color: ${Base.Branco} !important;
   }
 
   .ant-pagination-item-active:focus,

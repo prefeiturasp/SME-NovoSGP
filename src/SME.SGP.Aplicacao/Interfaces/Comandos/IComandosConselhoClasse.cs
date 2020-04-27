@@ -5,5 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosConselhoClasse
     {
+        Task<string> Alterar(long conselhoClasseId, long fechmamentoTurmaId);
     }
 }

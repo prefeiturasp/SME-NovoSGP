@@ -5,6 +5,7 @@ import shortid from 'shortid';
 import * as Yup from 'yup';
 import { CampoTexto, Colors, Label, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
+import Alert from '~/componentes/alert';
 import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
@@ -15,16 +16,19 @@ import RotasDto from '~/dtos/rotasDto';
 import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
+import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
 import ServicoCompensacaoAusencia from '~/servicos/Paginas/DiarioClasse/ServicoCompensacaoAusencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-
 import CopiarCompensacao from './copiarCompensacao';
 import ListaAlunos from './listasAlunos/listaAlunos';
 import ListaAlunosAusenciasCompensadas from './listasAlunos/listaAlunosAusenciasCompensadas';
-import { Badge, BotaoListaAlunos, ColunaBotaoListaAlunos, ListaCopiarCompensacoes } from './styles';
-import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
-import moment from 'moment';
+import {
+  Badge,
+  BotaoListaAlunos,
+  ColunaBotaoListaAlunos,
+  ListaCopiarCompensacoes,
+} from './styles';
 
 const CompensacaoAusenciaForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -35,39 +39,44 @@ const CompensacaoAusenciaForm = ({ match }) => {
 
   const { turmaSelecionada } = usuario;
 
-  const [listaDisciplinas, setListaDisciplinas] = useState([]);
-  const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
-  const [
-    carregandoListaAlunosFrequencia,
-    setCarregandoListaAlunosFrequencia,
-  ] = useState(false);
-  const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
-  const [novoRegistro, setNovoRegistro] = useState(true);
+  const [refForm, setRefForm] = useState({});
+  const [auditoria, setAuditoria] = useState([]);
+  const [idsAlunos, setIdsAlunos] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
+  const [temRegencia, setTemRegencia] = useState(false);
+  const [novoRegistro, setNovoRegistro] = useState(true);
+  const [listaDisciplinas, setListaDisciplinas] = useState([]);
+  const [exibirAuditoria, setExibirAuditoria] = useState(false);
+  const [carregandoDados, setCarregandoDados] = useState(false);
+  const [alunosAusenciaTurma, setAlunosAusenciaTurma] = useState([]);
   const [carregouInformacoes, setCarregouInformacoes] = useState(false);
   const [idCompensacaoAusencia, setIdCompensacaoAusencia] = useState(0);
-  const [listaBimestres, setListaBimestres] = useState([]);
-  const [auditoria, setAuditoria] = useState([]);
-  const [exibirAuditoria, setExibirAuditoria] = useState(false);
-  const [listaDisciplinasRegencia, setListaDisciplinasRegencia] = useState([]);
-  const [temRegencia, setTemRegencia] = useState(false);
-  const [refForm, setRefForm] = useState({});
+  const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
+  const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [bimestreSugeridoCopia, setBimestreSugeridoCopia] = useState(null);
-
-  const [
-    alunosAusenciaTurmaOriginal,
-    setAlunosAusenciaTurmaOriginal,
-  ] = useState([]);
-  const [alunosAusenciaTurma, setAlunosAusenciaTurma] = useState([]);
+  const [selecaoAlunoSelecionado, setSelecaoAlunoSelecionado] = useState('');
+  const [listaDisciplinasRegencia, setListaDisciplinasRegencia] = useState([]);
   const [alunosAusenciaCompensada, setAlunosAusenciaCompensada] = useState([]);
-  const [idsAlunos, setIdsAlunos] = useState([]);
+  const [exibirCopiarCompensacao, setExibirCopiarCompensacao] = useState(false);
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
+  const [foraDoPeriodo, setForaDoPeriodo] = useState(false);
+  const [
+    turmaSelecionadaFiltroPrincipal,
+    setTurmaSelecionadaFiltroPrincipal,
+  ] = useState(undefined);
   const [
     idsAlunosAusenciaCompensadas,
     setIdsAlunosAusenciaCompensadas,
   ] = useState([]);
-  const [selecaoAlunoSelecionado, setSelecaoAlunoSelecionado] = useState('');
+  const [
+    alunosAusenciaTurmaOriginal,
+    setAlunosAusenciaTurmaOriginal,
+  ] = useState([]);
+  const [
+    carregandoListaAlunosFrequencia,
+    setCarregandoListaAlunosFrequencia,
+  ] = useState(false);
 
-  const [exibirCopiarCompensacao, setExibirCopiarCompensacao] = useState(false);
   const [compensacoesParaCopiar, setCompensacoesParaCopiar] = useState({
     compensacaoOrigemId: 0,
     turmasIds: [],
@@ -92,6 +101,66 @@ const CompensacaoAusenciaForm = ({ match }) => {
     })
   );
 
+  let listaBi = [];
+  if (turmaSelecionada.modalidade === modalidade.EJA) {
+    listaBi = [
+      { valor: 1, descricao: '1°' },
+      { valor: 2, descricao: '2°' },
+    ];
+  } else {
+    listaBi = [
+      { valor: 1, descricao: '1°' },
+      { valor: 2, descricao: '2°' },
+      { valor: 3, descricao: '3°' },
+      { valor: 4, descricao: '4°' },
+    ];
+  }
+
+  const [listaBimestres] = useState(listaBi);
+
+  const ForaPerido = () => {
+    return (
+      <Alert
+        alerta={{
+          tipo: 'warning',
+          id: 'alerta-perido-fechamento',
+          mensagem:
+            'Apenas é possível consultar este registro pois o período não está em aberto.',
+          estiloTitulo: { fontSize: '18px' },
+        }}
+        className="mb-2"
+      />
+    );
+  };
+
+  const podeAlterarNoPeriodo = useCallback(
+    async bimestre => {
+      const podeAlterar = await ServicoPeriodoFechamento.verificarSePodeAlterarNoPeriodo(
+        turmaSelecionada.turma,
+        bimestre
+      ).catch(e => {
+        erros(e);
+      });
+      if (podeAlterar && podeAlterar.data) {
+        setDesabilitarCampos(false);
+        return true;
+      }
+      setDesabilitarCampos(true);
+      return false;
+    },
+    [turmaSelecionada.turma]
+  );
+
+  useEffect(() => {
+    if (!novoRegistro) {
+      setBreadcrumbManual(
+        match.url,
+        'Alterar Compensação de Ausência',
+        '/diario-classe/compensacao-ausencia'
+      );
+    }
+  }, [match.url, novoRegistro]);
+
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [permissoesTela]);
@@ -102,183 +171,6 @@ const CompensacaoAusenciaForm = ({ match }) => {
       : somenteConsulta || !permissoesTela.podeAlterar;
     setDesabilitarCampos(desabilitar);
   }, [somenteConsulta, novoRegistro, permissoesTela]);
-
-  const resetarForm = useCallback(() => {
-    if (refForm && refForm.resetForm) {
-      refForm.resetForm();
-    }
-    setListaDisciplinasRegencia([]);
-    setTemRegencia(false);
-  }, [refForm]);
-
-  const onChangeCampos = () => {
-    if (!desabilitarCampos && carregouInformacoes && !modoEdicao) {
-      setModoEdicao(true);
-    }
-  };
-
-  const selecionarDisciplina = indice => {
-    const disciplinas = [...listaDisciplinasRegencia];
-    disciplinas[indice].selecionada = !disciplinas[indice].selecionada;
-    disciplinas[indice].codigo = disciplinas[indice].codigoComponenteCurricular;
-    setListaDisciplinasRegencia(disciplinas);
-    onChangeCampos();
-  };
-
-  const selecionarDisciplinas = useCallback(
-    (disciplinasRegenciaEdicao, disciplinasRegencia) => {
-      const disciplinas = [...disciplinasRegencia];
-      disciplinasRegenciaEdicao.forEach(item => {
-        disciplinas.forEach((disci, indice) => {
-          if (item.codigo == disci.codigoComponenteCurricular) {
-            disciplinas[indice].selecionada = !disciplinas[indice].selecionada;
-            disciplinas[indice].codigo =
-              disciplinas[indice].codigoComponenteCurricular;
-          }
-        });
-      });
-      setListaDisciplinasRegencia(disciplinas);
-    },
-    []
-  );
-
-  const obterDisciplinasRegencia = useCallback(
-    async (
-      codigoDisciplinaSelecionada,
-      disciplinasLista,
-      disciplinasRegenciaEdicao
-    ) => {
-      const disciplina = disciplinasLista.find(
-        c => c.codigoComponenteCurricular == codigoDisciplinaSelecionada
-      );
-      if (disciplina && disciplina.regencia) {
-        const disciplinasRegencia = await ServicoDisciplina.obterDisciplinasPlanejamento(
-          codigoDisciplinaSelecionada,
-          turmaSelecionada.turma,
-          false,
-          disciplina.regencia
-        ).catch(e => erros(e));
-
-        if (
-          disciplinasRegencia &&
-          disciplinasRegencia.data &&
-          disciplinasRegencia.data.length
-        ) {
-          setListaDisciplinasRegencia(disciplinasRegencia.data);
-          setTemRegencia(true);
-
-          if (disciplinasRegenciaEdicao && disciplinasRegenciaEdicao.length) {
-            selecionarDisciplinas(
-              disciplinasRegenciaEdicao,
-              disciplinasRegencia.data
-            );
-          }
-        }
-      } else {
-        setListaDisciplinasRegencia([]);
-        setTemRegencia(false);
-      }
-    },
-    [turmaSelecionada.turma, selecionarDisciplinas]
-  );
-
-  const onChangeDisciplina = (codigoDisciplina, form) => {
-    setAlunosAusenciaTurma([]);
-    setAlunosAusenciaTurmaOriginal([]);
-    setAlunosAusenciaCompensada([]);
-    setIdsAlunosAusenciaCompensadas([]);
-    setIdsAlunos([]);
-    obterDisciplinasRegencia(codigoDisciplina, listaDisciplinas);
-    onChangeCampos();
-    form.setFieldValue('bimestre', '');
-  };
-
-  useEffect(() => {
-    const obterDisciplinas = async () => {
-      setCarregandoDisciplinas(true);
-      const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
-        turmaSelecionada.turma
-      );
-      if (disciplinas.data && disciplinas.data.length) {
-        setListaDisciplinas(disciplinas.data);
-      } else {
-        setListaDisciplinas([]);
-      }
-
-      const valoresIniciaisForm = {
-        disciplinaId: '',
-        bimestre: '',
-        atividade: '',
-        descricao: '',
-      };
-      if (disciplinas.data && disciplinas.data.length === 1) {
-        setDesabilitarDisciplina(true);
-
-        if (!(match && match.params && match.params.id)) {
-          const disciplina = disciplinas.data[0];
-          valoresIniciaisForm.disciplinaId = String(
-            disciplina.codigoComponenteCurricular
-          );
-          obterDisciplinasRegencia(
-            String(disciplina.codigoComponenteCurricular),
-            disciplinas.data
-          );
-        }
-      } else {
-        setDesabilitarDisciplina(false);
-      }
-
-      setValoresIniciais(valoresIniciaisForm);
-
-      if (!(match && match.params && match.params.id)) {
-        setCarregouInformacoes(true);
-      }
-      setCarregandoDisciplinas(false);
-    };
-
-    if (turmaSelecionada.turma) {
-      resetarForm();
-      obterDisciplinas(turmaSelecionada.turma);
-    } else {
-      resetarForm();
-      history.push('/diario-classe/compensacao-ausencia');
-    }
-
-    let listaBi = [];
-    if (turmaSelecionada.modalidade == modalidade.EJA) {
-      listaBi = [
-        { valor: 1, descricao: '1°' },
-        { valor: 2, descricao: '2°' },
-      ];
-    } else {
-      listaBi = [
-        { valor: 1, descricao: '1°' },
-        { valor: 2, descricao: '2°' },
-        { valor: 3, descricao: '3°' },
-        { valor: 4, descricao: '4°' },
-      ];
-    }
-    setListaBimestres(listaBi);
-  }, [
-    match,
-    turmaSelecionada.modalidade,
-    turmaSelecionada.turma,
-    resetarForm,
-    obterDisciplinasRegencia,
-  ]);
-
-  useEffect(() => {
-    // Quando alterar a turma volta para a tela de listagem!
-    if (carregouInformacoes && !novoRegistro) {
-      history.push('/diario-classe/compensacao-ausencia');
-    } else if (
-      novoRegistro &&
-      carregouInformacoes &&
-      !(listaDisciplinas && listaDisciplinas.length)
-    ) {
-      history.push('/diario-classe/compensacao-ausencia');
-    }
-  }, [turmaSelecionada.turma]);
 
   const removerAlunosDuplicadosEdicao = (alunosTurma, alunosEdicao) => {
     const novaLista = alunosTurma.filter(
@@ -321,117 +213,325 @@ const CompensacaoAusenciaForm = ({ match }) => {
     [turmaSelecionada.turma]
   );
 
-  useEffect(() => {
-    const consultaPorId = async () => {
-      setBreadcrumbManual(
-        match.url,
-        'Alterar Compensação de Ausência',
-        '/diario-classe/compensacao-ausencia'
+  // Usando somente quando o registro é edição, vem com disciploinas regencia para marcar o label!
+  const selecionarDisciplinas = useCallback(
+    (disciplinasRegenciaEdicao, disciplinasRegencia) => {
+      const disciplinas = [...disciplinasRegencia];
+      disciplinasRegenciaEdicao.forEach(item => {
+        disciplinas.forEach((disci, indice) => {
+          if (item.codigo == disci.codigoComponenteCurricular) {
+            disciplinas[indice].selecionada = !disciplinas[indice].selecionada;
+            disciplinas[indice].codigo =
+              disciplinas[indice].codigoComponenteCurricular;
+          }
+        });
+      });
+      setListaDisciplinasRegencia(disciplinas);
+    },
+    []
+  );
+
+  const obterDisciplinasRegencia = useCallback(
+    async (
+      codigoDisciplinaSelecionada,
+      disciplinasLista,
+      disciplinasRegenciaEdicao
+    ) => {
+      const disciplina = disciplinasLista.find(
+        c => c.codigoComponenteCurricular == codigoDisciplinaSelecionada
       );
-      setIdCompensacaoAusencia(match.params.id);
+      if (disciplina && disciplina.regencia) {
+        const disciplinasRegencia = await ServicoDisciplina.obterDisciplinasPlanejamento(
+          codigoDisciplinaSelecionada,
+          turmaSelecionada.turma,
+          false,
+          disciplina.regencia
+        ).catch(e => erros(e));
 
-      const dadosEdicao = await ServicoCompensacaoAusencia.obterPorId(
-        match.params.id
-      ).catch(e => erros(e));
-
-      if (dadosEdicao && dadosEdicao.data) {
-        setValoresIniciais({
-          disciplinaId: String(dadosEdicao.data.disciplinaId),
-          bimestre: String(dadosEdicao.data.bimestre),
-          atividade: dadosEdicao.data.atividade,
-          descricao: dadosEdicao.data.descricao,
-        });
-        setBimestreSugeridoCopia(String(dadosEdicao.data.bimestre));
-        if (dadosEdicao.data.alunos && dadosEdicao.data.alunos.length) {
-          setAlunosAusenciaCompensada(dadosEdicao.data.alunos);
+        if (
+          disciplinasRegencia &&
+          disciplinasRegencia.data &&
+          disciplinasRegencia.data.length
+        ) {
+          if (disciplinasRegenciaEdicao && disciplinasRegenciaEdicao.length) {
+            selecionarDisciplinas(
+              disciplinasRegenciaEdicao,
+              disciplinasRegencia.data
+            );
+          } else {
+            setListaDisciplinasRegencia(disciplinasRegencia.data);
+          }
+          setTemRegencia(true);
         }
-
-        obterAlunosComAusencia(
-          dadosEdicao.data.disciplinaId,
-          dadosEdicao.data.bimestre,
-          dadosEdicao.data.alunos
-        );
-
-        obterDisciplinasRegencia(
-          dadosEdicao.data.disciplinaId,
-          listaDisciplinas,
-          dadosEdicao.data.disciplinasRegencia
-        );
-
-        setAuditoria({
-          criadoPor: dadosEdicao.data.criadoPor,
-          criadoRf: dadosEdicao.data.criadoRf,
-          criadoEm: dadosEdicao.data.criadoEm,
-          alteradoPor: dadosEdicao.data.alteradoPor,
-          alteradoRf: dadosEdicao.data.alteradoRf,
-          alteradoEm: dadosEdicao.data.alteradoEm,
-        });
-        setExibirAuditoria(true);
-        setCarregouInformacoes(true);
+      } else {
+        setListaDisciplinasRegencia([]);
+        setTemRegencia(false);
       }
-      setNovoRegistro(false);
+    },
+    [turmaSelecionada.turma, selecionarDisciplinas]
+  );
+
+  const consultaPorId = useCallback(
+    async disciplinas => {
+      if (idCompensacaoAusencia && disciplinas.length) {
+        setCarregandoDados(true);
+        const resultado = await ServicoCompensacaoAusencia.obterPorId(
+          idCompensacaoAusencia
+        ).catch(e => {
+          erros(e);
+          setCarregandoDados(false);
+        });
+
+        if (resultado && resultado.data) {
+          obterDisciplinasRegencia(
+            resultado.data.disciplinaId,
+            disciplinas,
+            resultado.data.disciplinasRegencia
+          );
+
+          const dentroPeriodo = await podeAlterarNoPeriodo(
+            String(resultado.data.bimestre)
+          );
+          setForaDoPeriodo(!dentroPeriodo);
+
+          const disciplinasRegencia =
+            resultado.data.disciplinasRegencia &&
+            resultado.data.disciplinasRegencia.length
+              ? resultado.data.disciplinasRegencia
+              : [];
+
+          setValoresIniciais({
+            disciplinaId: String(resultado.data.disciplinaId),
+            bimestre: String(resultado.data.bimestre),
+            atividade: resultado.data.atividade,
+            descricao: resultado.data.descricao,
+            disciplinasRegencia,
+          });
+
+          // Usado no Modal de copiar compensação!
+          setBimestreSugeridoCopia(String(resultado.data.bimestre));
+          if (resultado.data.alunos && resultado.data.alunos.length) {
+            setAlunosAusenciaCompensada(resultado.data.alunos);
+          }
+
+          if (dentroPeriodo) {
+            obterAlunosComAusencia(
+              resultado.data.disciplinaId,
+              resultado.data.bimestre,
+              resultado.data.alunos
+            );
+          }
+
+          setAuditoria({
+            criadoPor: resultado.data.criadoPor,
+            criadoRf: resultado.data.criadoRf,
+            criadoEm: resultado.data.criadoEm,
+            alteradoPor: resultado.data.alteradoPor,
+            alteradoRf: resultado.data.alteradoRf,
+            alteradoEm: resultado.data.alteradoEm,
+          });
+          setExibirAuditoria(true);
+          setCarregouInformacoes(true);
+          setCarregandoDados(false);
+        } else {
+          setCarregandoDados(false);
+        }
+        setNovoRegistro(false);
+      }
+    },
+    [
+      idCompensacaoAusencia,
+      obterAlunosComAusencia,
+      podeAlterarNoPeriodo,
+      obterDisciplinasRegencia,
+    ]
+  );
+
+  useEffect(() => {
+    const temId = match && match.params && match.params.id;
+
+    if (turmaSelecionada.turma && temId) {
+      setIdCompensacaoAusencia(match.params.id);
+    }
+  }, [match, turmaSelecionada.turma]);
+
+  useEffect(() => {
+    if (disciplinaSelecionada && listaDisciplinas && listaDisciplinas.length) {
+      obterDisciplinasRegencia(String(disciplinaSelecionada), listaDisciplinas);
+    }
+  }, [disciplinaSelecionada, listaDisciplinas, obterDisciplinasRegencia]);
+
+  const resetarForm = useCallback(() => {
+    setListaDisciplinas([]);
+    setDisciplinaSelecionada(undefined);
+    if (refForm && refForm.resetForm) {
+      refForm.resetForm();
+    }
+    setListaDisciplinasRegencia([]);
+    setTemRegencia(false);
+  }, [refForm]);
+
+  const onChangeCampos = () => {
+    if (
+      !foraDoPeriodo &&
+      !desabilitarCampos &&
+      carregouInformacoes &&
+      !modoEdicao
+    ) {
+      setModoEdicao(true);
+    }
+  };
+
+  const selecionarDisciplina = indice => {
+    const disciplinas = [...listaDisciplinasRegencia];
+    disciplinas[indice].selecionada = !disciplinas[indice].selecionada;
+    disciplinas[indice].codigo = disciplinas[indice].codigoComponenteCurricular;
+    setListaDisciplinasRegencia(disciplinas);
+    onChangeCampos();
+  };
+
+  const onChangeDisciplina = (codigoDisciplina, form) => {
+    setDisciplinaSelecionada(codigoDisciplina);
+    setAlunosAusenciaTurma([]);
+    setAlunosAusenciaTurmaOriginal([]);
+    setAlunosAusenciaCompensada([]);
+    setIdsAlunosAusenciaCompensadas([]);
+    setIdsAlunos([]);
+    obterDisciplinasRegencia(codigoDisciplina, listaDisciplinas);
+    onChangeCampos();
+    form.setFieldValue('bimestre', '');
+  };
+
+  const obterDisciplinas = useCallback(async () => {
+    setCarregandoDisciplinas(true);
+    const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
+      turmaSelecionada.turma
+    );
+    if (disciplinas.data && disciplinas.data.length) {
+      setListaDisciplinas(disciplinas.data);
+    } else {
+      setListaDisciplinas([]);
+    }
+
+    const valoresIniciaisForm = {
+      disciplinaId: '',
+      bimestre: '',
+      atividade: '',
+      descricao: '',
     };
 
-    if (turmaSelecionada.turma && match && match.params && match.params.id) {
-      consultaPorId();
+    const registroNovo = !(match && match.params && match.params.id);
+
+    if (disciplinas.data && disciplinas.data.length === 1) {
+      setDesabilitarDisciplina(true);
+
+      const disciplina = disciplinas.data[0];
+
+      if (registroNovo) {
+        valoresIniciaisForm.disciplinaId = String(
+          disciplina.codigoComponenteCurricular
+        );
+
+        setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
+      }
+      setCarregandoDisciplinas(false);
+    } else {
+      setDesabilitarDisciplina(false);
+    }
+
+    if (registroNovo) {
+      setCarregouInformacoes(true);
+      setValoresIniciais(valoresIniciaisForm);
+    } else {
+      consultaPorId(
+        disciplinas && disciplinas.data && disciplinas.data.length
+          ? disciplinas.data
+          : []
+      );
+    }
+    setCarregandoDisciplinas(false);
+  }, [match, turmaSelecionada.turma, consultaPorId]);
+
+  useEffect(() => {
+    if (!turmaSelecionada.turma) {
+      history.push('/diario-classe/compensacao-ausencia');
+    }
+
+    if (
+      turmaSelecionadaFiltroPrincipal &&
+      turmaSelecionadaFiltroPrincipal != turmaSelecionada.turma
+    ) {
+      // Somente quando troca a turma para outra turma no filtro principal!
+      resetarForm();
+    }
+    setTurmaSelecionadaFiltroPrincipal(turmaSelecionada.turma);
+    if (
+      turmaSelecionadaFiltroPrincipal &&
+      turmaSelecionada.turma &&
+      turmaSelecionadaFiltroPrincipal == turmaSelecionada.turma &&
+      listaDisciplinas.length < 1
+    ) {
+      obterDisciplinas(turmaSelecionada.turma);
     }
   }, [
-    match,
+    obterDisciplinas,
     turmaSelecionada.turma,
-    obterAlunosComAusencia,
-    obterDisciplinasRegencia,
+    resetarForm,
+    turmaSelecionadaFiltroPrincipal,
     listaDisciplinas,
-    selecionarDisciplinas,
   ]);
 
+  const limparListas = () => {
+    setAlunosAusenciaCompensada([]);
+    setIdsAlunosAusenciaCompensadas([]);
+    setIdsAlunos([]);
+    setAlunosAusenciaTurma([]);
+    setAlunosAusenciaTurmaOriginal([]);
+  };
+
   const onChangeBimestre = async (bimestre, form) => {
-    let podeEditar = false;
-    const podeAlterarNoPeriodo = await ServicoPeriodoFechamento.verificarSePodeAlterarNoPeriodo(
-      turmaSelecionada.turma, bimestre
-    ).catch(e => {
-      erros(e);
-    });
-    if (!podeAlterarNoPeriodo.data) {
-      erro('Apenas é possível consultar este registro pois o período de fechamento deste bimestre está encerrado.');
-      setSomenteConsulta(true);
-    } else {
-      setSomenteConsulta(false);
-    }
-    const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
-      turmaSelecionada.turma,
-      form.values.disciplinaId,
-      bimestre
-    ).catch(e => {
-      erros(e);
-    });
-    if (
-      exucutandoCalculoFrequencia &&
-      exucutandoCalculoFrequencia.status === 200
-    ) {
-      const temProcessoEmExecucao =
-        exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data;
+    limparListas();
+    const dentroPeriodo = await podeAlterarNoPeriodo(String(bimestre));
+    setForaDoPeriodo(!dentroPeriodo);
+    
+    if (dentroPeriodo) {
+      let podeEditar = false;
+      const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
+        turmaSelecionada.turma,
+        form.values.disciplinaId,
+        bimestre
+      ).catch(e => {
+        erros(e);
+      });
+      if (
+        exucutandoCalculoFrequencia &&
+        exucutandoCalculoFrequencia.status === 200
+      ) {
+        const temProcessoEmExecucao =
+          exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data;
 
-      if (temProcessoEmExecucao) {
-        podeEditar = false;
-      } else {
-        podeEditar = true;
-      }
-
-      if (podeEditar) {
-        setAlunosAusenciaCompensada([]);
-        setIdsAlunosAusenciaCompensadas([]);
-        setIdsAlunos([]);
-        if (bimestre && form && form.values.disciplinaId) {
-          obterAlunosComAusencia(form.values.disciplinaId, bimestre);
+        if (temProcessoEmExecucao) {
+          podeEditar = false;
         } else {
-          setAlunosAusenciaTurma([]);
-          setAlunosAusenciaTurmaOriginal([]);
+          podeEditar = true;
         }
-        onChangeCampos();
-      } else {
-        erro(
-          'No momento não é possível realizar a edição pois tem cálculo(s) em processo, tente mais tarde!'
-        );
+
+        if (podeEditar) {
+          setAlunosAusenciaCompensada([]);
+          setIdsAlunosAusenciaCompensadas([]);
+          setIdsAlunos([]);
+          if (bimestre && form && form.values.disciplinaId) {
+            obterAlunosComAusencia(form.values.disciplinaId, bimestre);
+          } else {
+            setAlunosAusenciaTurma([]);
+            setAlunosAusenciaTurmaOriginal([]);
+          }
+          onChangeCampos();
+        } else {
+          erro(
+            'No momento não é possível realizar a edição pois tem cálculo(s) em processo, tente mais tarde!'
+          );
+        }
       }
     }
   };
@@ -484,11 +584,19 @@ const CompensacaoAusenciaForm = ({ match }) => {
       } else {
         setAlunosAusenciaCompensada([]);
       }
-      obterAlunosComAusencia(
-        form.values.disciplinaId,
-        form.values.bimestre,
-        dadosEdicao.data.alunos
+
+      const dentroPeriodo = await podeAlterarNoPeriodo(
+        String(form.values.bimestre)
       );
+      setForaDoPeriodo(!dentroPeriodo);
+
+      if (dentroPeriodo) {
+        obterAlunosComAusencia(
+          form.values.disciplinaId,
+          form.values.bimestre,
+          dadosEdicao.data.alunos
+        );
+      }
       obterDisciplinasRegencia(
         form.values.disciplinaId,
         listaDisciplinas,
@@ -536,7 +644,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
       if (confirmado) {
         validaAntesDoSubmit(form);
       } else {
-        history.push('/diario-classe/compensacao-ausencia')
+        history.push('/diario-classe/compensacao-ausencia');
       }
     } else {
       history.push('/diario-classe/compensacao-ausencia');
@@ -578,11 +686,13 @@ const CompensacaoAusenciaForm = ({ match }) => {
       ) {
         await ServicoCompensacaoAusencia.copiarCompensacao(
           compensacoesParaCopiar
-        ).then(resposta => {
-          if (resposta.status === 200) {
-            sucesso(resposta.data);
-          }
-        }).catch(e => erros(e));
+        )
+          .then(resposta => {
+            if (resposta.status === 200) {
+              sucesso(resposta.data);
+            }
+          })
+          .catch(e => erros(e));
       }
       if (idCompensacaoAusencia) {
         sucesso('Compensação alterada com sucesso.');
@@ -764,12 +874,15 @@ const CompensacaoAusenciaForm = ({ match }) => {
           bimestreSugerido={bimestreSugeridoCopia}
         />
       ) : (
-          ''
-        )}
-
+        ''
+      )}
+      {foraDoPeriodo ? <ForaPerido /> : ''}
       <Cabecalho pagina="Cadastrar Compensação de Ausência" />
       <Card>
-        <Loader loading={carregandoListaAlunosFrequencia} tip="">
+        <Loader
+          loading={carregandoDados || carregandoListaAlunosFrequencia}
+          tip=""
+        >
           <Formik
             enableReinitialize
             ref={refF => setRefForm(refF)}
@@ -809,7 +922,8 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     disabled={
                       somenteConsulta ||
                       !permissoesTela.podeExcluir ||
-                      novoRegistro
+                      novoRegistro ||
+                      foraDoPeriodo
                     }
                     onClick={onClickExcluir}
                   />
@@ -817,13 +931,13 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     id="btn-salvar"
                     label={`${
                       idCompensacaoAusencia > 0 ? 'Alterar' : 'Cadastrar'
-                      }`}
+                    }`}
                     color={Colors.Roxo}
                     border
                     bold
                     className="mr-2"
                     onClick={() => validaAntesDoSubmit(form)}
-                    disabled={desabilitarCampos}
+                    disabled={desabilitarCampos || !modoEdicao}
                   />
                 </div>
 
@@ -845,6 +959,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                           desabilitarDisciplina ||
                           !novoRegistro
                         }
+                        allowClear={false}
                       />
                     </Loader>
                   </div>
@@ -860,6 +975,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       onChange={bi => onChangeBimestre(bi, form)}
                       placeholder="Bimestre"
                       disabled={!novoRegistro}
+                      allowClear={false}
                     />
                   </div>
                   <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
@@ -962,8 +1078,8 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     alteradoEm={auditoria.alteradoEm}
                   />
                 ) : (
-                    ''
-                  )}
+                  ''
+                )}
                 <div className="row mt-3">
                   <div className="col-md-12">
                     <Button
@@ -976,22 +1092,23 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       disabled={novoRegistro || desabilitarCampos}
                     />
                     {compensacoesParaCopiar &&
-                      compensacoesParaCopiar.compensacaoOrigemId && compensacoesParaCopiar.dadosTurmas.length ? (
-                        <ListaCopiarCompensacoes>
-                          <div className="mb-1">
-                            Compensação será copiada para:
-                          </div>
-                          <div
-                            className="font-weight-bold"
-                            key={`bimestre-${shortid.generate()}`}
-                          >
-                            - Bimestre {compensacoesParaCopiar.bimestre}
-                          </div>
-                          {montarExibicaoCompensacoesCopiar()}
-                        </ListaCopiarCompensacoes>
-                      ) : (
-                        ''
-                      )}
+                    compensacoesParaCopiar.compensacaoOrigemId &&
+                    compensacoesParaCopiar.dadosTurmas.length ? (
+                      <ListaCopiarCompensacoes>
+                        <div className="mb-1">
+                          Compensação será copiada para:
+                        </div>
+                        <div
+                          className="font-weight-bold"
+                          key={`bimestre-${shortid.generate()}`}
+                        >
+                          - Bimestre {compensacoesParaCopiar.bimestre}
+                        </div>
+                        {montarExibicaoCompensacoesCopiar()}
+                      </ListaCopiarCompensacoes>
+                    ) : (
+                      ''
+                    )}
                   </div>
                 </div>
               </Form>

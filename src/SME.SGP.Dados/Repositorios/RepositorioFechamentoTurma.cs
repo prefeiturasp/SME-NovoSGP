@@ -39,6 +39,22 @@ namespace SME.SGP.Dados.Repositorios
                 , new { fechamentoTurmaId })).FirstOrDefault();
         }
 
+        public async Task<FechamentoTurma> ObterPorTurmaCodigoBimestreAsync(string turmaCodigo, int bimestre = 0)
+        {
+            var query = new StringBuilder(@"select f.* 
+                            from fechamento_turma f
+                          inner join turma t on t.id = f.turma_id
+                           left join periodo_escolar p on p.id = f.periodo_escolar_id
+                           where not f.excluido 
+                            and t.turma_id = @turmaCodigo ");
+            if (bimestre > 0)
+                query.AppendLine(" and p.bimestre = @bimestre");
+            else 
+                query.AppendLine(" and p.id is null");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre });
+        }
+
         public async Task<FechamentoTurma> ObterPorTurmaPeriodo(long turmaId, long periodoId = 0)
         {
             var query = new StringBuilder(@"select * 

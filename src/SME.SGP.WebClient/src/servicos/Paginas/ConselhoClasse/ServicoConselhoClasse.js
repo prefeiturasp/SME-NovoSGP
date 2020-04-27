@@ -1,8 +1,8 @@
 import api from '~/servicos/api';
 
 class ServicoConselhoClasse {
-  obterListaAlunos = (turmaCodigo, anoLetivo) => {
-    const url = `v1/fechamentos/turmas/${turmaCodigo}/alunos/anos/${anoLetivo}`;
+  obterListaAlunos = (turmaCodigo, anoLetivo, periodo) => {
+    const url = `v1/fechamentos/turmas/${turmaCodigo}/alunos/anos/${anoLetivo}/semestres/${periodo}`;
     return api.get(url);
   };
 
@@ -11,22 +11,25 @@ class ServicoConselhoClasse {
     return api.get(url);
   };
 
-  // TODO
-  obterAnotacaoAluno = (codigoTurma, codigoAluno, numeroBimestre = 0) => {
-    const url = `v1/conselhos-classe/anotacoes-aluno/turmas/${codigoTurma}/alunos/${codigoAluno}/bimestres/${numeroBimestre}`;
+  obterAnotacoesRecomendacoes = (
+    codigoTurma,
+    codigoAluno,
+    numeroBimestre = 0,
+    modalidade,
+    ehFinal = false
+  ) => {
+    const url = `v1/conselhos-classe/recomendacoes/turmas/${codigoTurma}/alunos/${codigoAluno}/bimestres/${numeroBimestre}?modalidade=${modalidade}&ehFinal=${ehFinal}`;
     return api.get(url);
   };
 
-  // TODO
-  obterRecomendacoesAluno = (codigoTurma, codigoAluno, numeroBimestre = 0) => {
-    const url = `v1/conselhos-classe/recomendacoes/turmas/${codigoTurma}/alunos/${codigoAluno}/bimestres/${numeroBimestre}`;
-    return api.get(url);
+  obterBimestreAtual = modalidade => {
+    return api.get(
+      `v1/periodo-escolar/modalidades/${modalidade}/bimestres/atual`
+    );
   };
 
-  // TODO
-  obterAnotacaoPedagogica = (codigoTurma, codigoAluno, numeroBimestre = 0) => {
-    const url = `v1/conselhos-classe/anotacoes-pedagogicas/turmas/${codigoTurma}/alunos/${codigoAluno}/bimestres/${numeroBimestre}`;
-    return api.get(url);
+  salvarRecomendacoesAlunoFamilia = params => {
+    return api.post('v1/conselhos-classe/recomendacoes', params);
   };
 }
 

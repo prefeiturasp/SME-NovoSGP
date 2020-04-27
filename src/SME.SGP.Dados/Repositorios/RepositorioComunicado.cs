@@ -14,7 +14,39 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly string fromComunicado = @"comunicado";
 
-        private readonly string fromOffSet = @"(SELECT id, titulo, descricao, data_envio, data_expiracao, criado_em, criado_por,alterado_em,alterado_por,criado_rf,alterado_rf,excluido from comunicado {0})";
+        private readonly string fromComunicadoGrupo =
+                                                @"(SELECT
+                                                    co.id,
+                                                    co.titulo,
+                                                    co.descricao,
+                                                    co.data_envio,
+                                                    co.data_expiracao,
+                                                    co.criado_em,
+                                                    co.criado_por,
+                                                    co.alterado_em,
+                                                    co.alterado_por,
+                                                    co.criado_rf,
+                                                    co.alterado_rf,
+                                                    co.excluido
+                                                from comunicado co inner join comunidado_grupo cgr
+                                                    on cgr.comunicado_id = co.id
+                                                {0}
+                                                where co.excluido = false
+                                                group by
+                                                    co.id,
+                                                    co.titulo,
+                                                    co.descricao,
+                                                    co.data_envio,
+                                                    co.data_expiracao ,
+                                                    co.criado_em,
+                                                    co.criado_por,
+                                                    co.alterado_em,
+                                                    co.alterado_por,
+                                                    co.criado_rf,
+                                                    co.alterado_rf,
+                                                    co.excluido
+                                                order by co.id
+                                                {1})";
 
         private readonly string queryComunicado = @"
 						SELECT
@@ -35,11 +67,12 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
             string where = MontaWhereListar(filtro);
-            string from;
-
+            string from = "";
+            var whereGrupo = " AND ({0}.grupo_comunicado_id = ANY(@gruposId))";
             if (paginacao.QuantidadeRegistros != 0)
-                from = string.Format(fromOffSet, string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros));
-            else from = fromComunicado;
+                from = string.Format(fromComunicadoGrupo, filtro.GruposId?.Length > 0 ? string.Format(whereGrupo, "cgr") : "", string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros));
+            else from = string.Format(fromComunicadoGrupo, filtro.GruposId?.Length > 0 ? string.Format(whereGrupo, "cgr") : "", "");
+
             query.AppendFormat(queryComunicado, Montarcampos(), from, where);
 
             if (paginacao == null)
@@ -55,18 +88,20 @@ namespace SME.SGP.Dados.Repositorios
                    {
                        filtro.DataEnvio,
                        filtro.DataExpiracao,
-                       filtro.Titulo
+                       filtro.Titulo,
+                       filtro.GruposId
                    },
             splitOn: "id,ComunicadoGrupoId,GrupoId")
             };
 
-            var queryCount = new StringBuilder(string.Format(queryComunicado, "count(distinct c.id)", fromComunicado, where));
+            var queryCount = new StringBuilder(string.Format(queryComunicado, "count(distinct c.id)", fromComunicado, $"{where}{(filtro.GruposId?.Length > 0 ? string.Format(whereGrupo, "cg") : "")}"));
 
             retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), new
             {
                 filtro.DataEnvio,
                 filtro.DataExpiracao,
-                filtro.Titulo
+                filtro.Titulo,
+                filtro.GruposId
             })).Sum();
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
@@ -94,6 +129,7 @@ namespace SME.SGP.Dados.Repositorios
                 where += " AND (date(c.data_envio) = @DataEnvio)";
             if (filtro.DataExpiracao.HasValue)
                 where += " AND (date(c.data_expiracao) = @DataExpiracao)";
+
             return where;
         }
 
