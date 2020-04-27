@@ -9,11 +9,9 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoConselhoClasse : IServicoConselhoClasse
     {
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
-        private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IUnitOfWork unitOfWork;
@@ -22,7 +20,6 @@ namespace SME.SGP.Dominio.Servicos
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                      IConsultasPeriodoFechamento consultasPeriodoFechamento,
-                                     IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                      IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                      IConsultasConselhoClasse consultasConselhoClasse,
                                      IUnitOfWork unitOfWork)
@@ -31,7 +28,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));

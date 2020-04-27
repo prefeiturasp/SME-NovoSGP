@@ -27,21 +27,5 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query.ToString(), new { turmaId, periodoEscolarId });
         }
-
-        //public async Task<ConselhoClasse> ObterPorTurmaBimestreAsync(int bimestre, long fechamentoTurmaId)
-        //{
-        //    var query = @"
-        //                select
-        //                 *
-        //                from
-        //                 conselho_classe cc
-        //                inner join periodo_escolar pe on
-        //                 ft.periodo_escolar_id = pe.id
-        //                where
-        //                 cc.fechamento_turma_id = @fechamentoTurmaId
-        //                 and pe.bimestre = @bimestre";
-
-        //    return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query, new { bimestre, fechamentoTurmaId });
-        //}
     }
 }
