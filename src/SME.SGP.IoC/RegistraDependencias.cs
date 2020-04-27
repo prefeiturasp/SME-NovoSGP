@@ -73,6 +73,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosConselhoClasseAluno, ComandosConselhoClasseAluno>();
             services.TryAddScoped<IComandosConselhoClasseNota, ComandosConselhoClasseNota>();
             services.TryAddScoped<IComandoComunicado, ComandoComunicado>();
+            services.TryAddScoped<IComandosRelatorioSemestral, ComandosRelatorioSemestral>();
+            services.TryAddScoped<IComandosRelatorioSemestralAluno, ComandosRelatorioSemestralAluno>();
+            services.TryAddScoped<IComandosRelatorioSemestralAlunoSecao, ComandosRelatorioSemestralAlunoSecao>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -134,6 +137,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultaGrupoComunicacao, ConsultaGrupoComunicacao>();
             services.TryAddScoped<IConsultaComunicado, ConsultaComunicado>();
             services.TryAddScoped<IConsultasConselhoClasseRecomendacao, ConsultasConselhoClasseRecomendacao>();
+            services.TryAddScoped<IConsultasRelatorioSemestral, ConsultasRelatorioSemestral>();
+            services.TryAddScoped<IConsultasRelatorioSemestralAluno, ConsultasRelatorioSemestralAluno>();
+            services.TryAddScoped<IConsultasRelatorioSemestralAlunoSecao, ConsultasRelatorioSemestralAlunoSecao>();
+            services.TryAddScoped<IConsultasSecaoRelatorioSemestral, ConsultasSecaoRelatorioSemestral>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -233,6 +240,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConselhoClasseRecomendacao, RepositorioConselhoClasseRecomendacao>();
             services.TryAddScoped<IRepositorioCicloEnsino, RepositorioCicloEnsino>();
             services.TryAddScoped<IRepositorioTipoEscola, RepositorioTipoEscola>();
+            services.TryAddScoped<IRepositorioRelatorioSemestral, RepositorioRelatorioSemestral>();
+            services.TryAddScoped<IRepositorioRelatorioSemestralAluno, RepositorioRelatorioSemestralAluno>();
+            services.TryAddScoped<IRepositorioRelatorioSemestralAlunoSecao, RepositorioRelatorioSemestralAlunoSecao>();
+            services.TryAddScoped<IRepositorioSecaoRelatorioSemestral, RepositorioSecaoRelatorioSemestral>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
