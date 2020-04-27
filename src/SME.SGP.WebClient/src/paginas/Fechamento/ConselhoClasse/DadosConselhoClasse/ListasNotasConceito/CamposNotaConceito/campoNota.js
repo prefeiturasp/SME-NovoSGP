@@ -18,11 +18,11 @@ const CampoNota = props => {
   );
 };
 
-CampoNota.defaultProps = {
-  notaPosConselho: PropTypes.string,
+CampoNota.propTypes = {
+  notaPosConselho: PropTypes.oneOfType([PropTypes.any]),
 };
 
-CampoNota.propTypes = {
+CampoNota.defaultProps = {
   notaPosConselho: '',
 };
 

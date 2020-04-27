@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAno(string turmaCodigo, string alunoCodigo)
         {
-            var query = @"select ftd.disciplina_id as ComponenteCurricularCodigo, fn.conceito_id as ConceitoId, fn.nota, pe.bimestre 
+            var query = @"select fn.disciplina_id as ComponenteCurricularCodigo, fn.conceito_id as ConceitoId, fn.nota, pe.bimestre 
                           from fechamento_turma ft
                          inner join turma t on t.id = ft.turma_id 
                           left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoBimestre(long fechamentoTurmaId, string alunoCodigo)
         {
-            var query = @"select ftd.disciplina_id as ComponenteCurricularCodigo, fn.conceito_id as ConceitoId, fn.nota, pe.bimestre
+            var query = @"select fn.disciplina_id as ComponenteCurricularCodigo, fn.conceito_id as ConceitoId, fn.nota, pe.bimestre
                           from fechamento_turma_disciplina ftd 
                          inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
                           left join periodo_escolar pe on pe.id = ft.periodo_escolar_id

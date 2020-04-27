@@ -1,10 +1,12 @@
+import PropTypes from 'prop-types';
 import React from 'react';
-import { Tabela, BarraLateralAzul } from './ComponenteSemNota.css';
 import shortid from 'shortid';
+import { BarraLateralAzul, Tabela } from './ComponenteSemNota.css';
 
 const ComponenteSemNota = props => {
   const { dados, nomeColunaComponente, corBorda, ehFinal } = props;
-  return dados ? (
+
+  return dados && dados.length ? (
     <Tabela>
       <div className="table-responsive pl-2 pr-2">
         <table className="table mt-2">
@@ -42,9 +44,9 @@ const ComponenteSemNota = props => {
                       width: '250px',
                     }}
                   >
-                    {item.totalFaltas || '--'}
+                    {item.totalFaltas || 0}
                   </td>
-                  <td>{`${item.percentualFrequencia}%` || '--'}</td>
+                  <td>{`${item.percentualFrequencia}%` || '0%'}</td>
                   {ehFinal ? <td>{item.parecerFinal || '--'}</td> : null}
                 </tr>
               );
@@ -56,6 +58,20 @@ const ComponenteSemNota = props => {
   ) : (
     <></>
   );
+};
+
+ComponenteSemNota.propTypes = {
+  dados: PropTypes.oneOfType([PropTypes.array]),
+  nomeColunaComponente: PropTypes.string,
+  corBorda: PropTypes.string,
+  ehFinal: PropTypes.bool,
+};
+
+ComponenteSemNota.defaultProps = {
+  dados: [],
+  nomeColunaComponente: '',
+  corBorda: '',
+  ehFinal: false,
 };
 
 export default ComponenteSemNota;

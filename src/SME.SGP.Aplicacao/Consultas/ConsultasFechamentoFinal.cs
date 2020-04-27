@@ -241,7 +241,8 @@ namespace SME.SGP.Aplicacao
                     {
                         foreach (var nota in notasDoBimestre)
                         {
-                            var notaParaAdicionar = ehNota ? nota.Nota.ToString() : nota.ConceitoId.Value.ToString();
+                            var notaParaAdicionar = ehNota ? nota.Nota?.ToString() : nota.ConceitoId?.ToString();
+                            
                             listaRetorno.Add(new FechamentoNotaAlunoDto(periodo.Bimestre, notaParaAdicionar, nota.DisciplinaId, nota.FechamentoAluno.AlunoCodigo));
                         }
                     }

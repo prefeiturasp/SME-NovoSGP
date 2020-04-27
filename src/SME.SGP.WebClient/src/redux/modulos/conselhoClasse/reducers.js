@@ -1,7 +1,7 @@
 import produce from 'immer';
 
 const inicial = {
-  listaTiposConceitos: {},
+  listaTiposConceitos: [],
   dadosAlunoObjectCard: {},
   alunosConselhoClasse: [],
   recomendacaoAluno: '',
@@ -14,6 +14,7 @@ const inicial = {
   auditoriaAnotacaoRecomendacao: null,
   fechamentoPeriodoInicioFim: {},
   notasJustificativas: { componentes: [], componentesRegencia: [] },
+  dadosListasNotasConceitos: [],
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -75,6 +76,7 @@ export default function ConselhoClasse(state = inicial, action) {
           auditoriaAnotacaoRecomendacao: null,
           dentroPeriodo: true,
           fechamentoPeriodoInicioFim: {},
+          dadosListasNotasConceitos: [],
         };
       }
       case '@conselhoClasse/setConselhoClasseEmEdicao': {
@@ -121,6 +123,14 @@ export default function ConselhoClasse(state = inicial, action) {
         draft.notasJustificativas.componentesRegencia = [
           ...(action.payload.componentesRegencia || []),
         ];
+        break;
+
+      case '@conselhoClasse/setDadosListasNotasConceitos': {
+        return {
+          ...draft,
+          dadosListasNotasConceitos: action.payload,
+        };
+      }
 
       default:
         return draft;
