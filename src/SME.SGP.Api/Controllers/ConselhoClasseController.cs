@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -27,6 +28,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpPost("recomendacoes")]
         [ProducesResponseType(401)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(AuditoriaConselhoClasseAlunoDto), 200)]
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
@@ -34,5 +36,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto));
         }
+
+        [HttpGet("detalhamento/{id}")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(204)] 
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult DetalhamentoNota(long id, [FromServices] IConsultasConselhoClasseNota consultasConselhoClasseNota)
+        {            
+            return Ok(consultasConselhoClasseNota.ObterPorId(id));
+        }
+
     }
 }
