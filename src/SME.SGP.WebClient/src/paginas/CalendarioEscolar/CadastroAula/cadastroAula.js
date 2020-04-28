@@ -642,6 +642,7 @@ const CadastroAula = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
+    setCarregandoSalvar(true);
     const observacao = existeFrequenciaPlanoAula
       ? `Esta aula${
           ehAulaUnica ? '' : ', ou sua recorrencia'
@@ -677,6 +678,7 @@ const CadastroAula = ({ match }) => {
 
       await salvar(valoresForm);
     }
+    setCarregandoSalvar(false);
   };
 
   const validaAntesDoSubmit = form => {
@@ -984,7 +986,6 @@ const CadastroAula = ({ match }) => {
                     name="quantidadeRadio"
                     onChange={() => {
                       onChangeCampos();
-                      console.log('Changed');
                       refForm.setFieldValue('quantidadeTexto', '');
                     }}
                     className="text-nowrap"
