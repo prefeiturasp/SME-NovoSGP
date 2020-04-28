@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<AuditoriaDto> SalvarConselhoClasseAlunoNota(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId)
+        public async Task<AuditoriaDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId)
         {
             var conselhoClasseNota = new ConselhoClasseNota();
             if (fechamentoTurmaId == 0)
@@ -58,7 +58,6 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
-            unitOfWork.IniciarTransacao();
             try
             {
                 if (conselhoClasseId == 0)
@@ -66,6 +65,8 @@ namespace SME.SGP.Dominio.Servicos
 
                     var conselhoClasse = new ConselhoClasse();
                     conselhoClasse.FechamentoTurmaId = fechamentoTurmaId;
+
+                    unitOfWork.IniciarTransacao();
                     await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
 
                     long conselhoClasseAlunoId = await SalvarConselhoClasseAluno(conselhoClasse.Id, alunoCodigo);
@@ -78,6 +79,7 @@ namespace SME.SGP.Dominio.Servicos
                 else
                 {
                     var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
+                    unitOfWork.IniciarTransacao();
 
                     var conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAluno(conselhoClasseId, alunoCodigo);
 
@@ -89,6 +91,8 @@ namespace SME.SGP.Dominio.Servicos
                     }
 
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
+
+                    unitOfWork.PersistirTransacao();
                 }
             }
 

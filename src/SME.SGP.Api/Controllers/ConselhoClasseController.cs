@@ -44,7 +44,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> PersistirNotas([FromServices]IComandosConselhoClasseNota comandosConselhoClasseNota,
            [FromBody]ConselhoClasseNotaDto conselhoClasseNotaDto, string codigoAluno, long conselhoClasseId, long fechamentoTurmaId)
         {
-            return Ok(await comandosConselhoClasseNota.Salvar(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, fechamentoTurmaId));
+            return Ok(await comandosConselhoClasseNota.SalvarAsync(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, fechamentoTurmaId));
         }
 
         [HttpGet("detalhamento/{id}")]
