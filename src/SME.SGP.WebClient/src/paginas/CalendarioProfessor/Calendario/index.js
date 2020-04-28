@@ -18,7 +18,6 @@ import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import { Loader } from '~/componentes';
-import Alert from '~/componentes/alert';
 import { erro } from '~/servicos/alertas';
 import { AlertaSelecionarTurma } from '~/componentes-sgp';
 
@@ -39,7 +38,6 @@ const CalendarioProfessor = () => {
   const [diasLetivos, setDiasLetivos] = useState();
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada: turmaSelecionadaStore } = usuario;
-  const [controleTurmaSelecionada, setControleTurmaSelecionada] = useState();
 
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
   const anoLetivo = useMemo(() => {
@@ -235,12 +233,9 @@ const CalendarioProfessor = () => {
     setEventoSme(!eventoSme);
   };
 
-  const [dreDesabilitada, setDreDesabilitada] = useState(false);
-
   useEffect(() => {
     if (dres.length === 1) {
       setDreSelecionada(dres[0].valor);
-      setDreDesabilitada(true);
     } else if (
       dres &&
       eventoAulaCalendarioEdicao &&
@@ -249,7 +244,6 @@ const CalendarioProfessor = () => {
       setDreSelecionada(eventoAulaCalendarioEdicao.dre);
     } else if (Object.entries(turmaSelecionadaStore).length > 0) {
       setDreSelecionada(turmaSelecionadaStore.dre);
-      setDreDesabilitada(true);
     }
   }, [dres, eventoAulaCalendarioEdicao, turmaSelecionadaStore]);
 
@@ -257,9 +251,6 @@ const CalendarioProfessor = () => {
     state => state.filtro.unidadesEscolares
   );
   const [unidadesEscolares, setUnidadesEscolares] = useState([]);
-  const [unidadeEscolarDesabilitada, setUnidadeEscolarDesabilitada] = useState(
-    false
-  );
 
   const obterUnidadesEscolares = () => {
     setCarregandoUes(true);
@@ -291,7 +282,6 @@ const CalendarioProfessor = () => {
   useEffect(() => {
     if (unidadesEscolares.length === 1) {
       setUnidadeEscolarSelecionada(unidadesEscolares[0].valor);
-      setUnidadeEscolarDesabilitada(true);
     } else if (
       unidadesEscolares &&
       eventoAulaCalendarioEdicao &&
@@ -300,7 +290,6 @@ const CalendarioProfessor = () => {
       setUnidadeEscolarSelecionada(eventoAulaCalendarioEdicao.unidadeEscolar);
     } else if (Object.entries(turmaSelecionadaStore).length > 0) {
       setUnidadeEscolarSelecionada(turmaSelecionadaStore.unidadeEscolar);
-      setUnidadeEscolarDesabilitada(true);
     }
   }, [eventoAulaCalendarioEdicao, unidadesEscolares]);
 
