@@ -86,9 +86,9 @@ namespace SME.SGP.Aplicacao.Consultas
             };
         }
 
-        public int ObterBimestre(DateTime data, Modalidade modalidade)
+        public int ObterBimestre(DateTime data, Modalidade modalidade, int semestre = 0)
         {
-            var periodoEscolar = ObterPeriodoPorModalidade(modalidade, data);
+            var periodoEscolar = ObterPeriodoPorModalidade(modalidade, data, semestre);
 
             return periodoEscolar?.Bimestre ?? 0;
         }
@@ -117,9 +117,9 @@ namespace SME.SGP.Aplicacao.Consultas
         public PeriodoEscolar ObterPeriodoAtualPorModalidade(Modalidade modalidade)
             => ObterPeriodoPorModalidade(modalidade, DateTime.Today);
 
-        public PeriodoEscolar ObterPeriodoPorModalidade(Modalidade modalidade, DateTime data)
+        public PeriodoEscolar ObterPeriodoPorModalidade(Modalidade modalidade, DateTime data, int semestre = 0)
         {
-            var tipoCalendario = ObterTipoCalendario(modalidade, data);
+            var tipoCalendario = ObterTipoCalendario(modalidade, data.Year, semestre);
             var periodosEscolares = ObterPeriodosEscolares(tipoCalendario.Id);
 
             return periodosEscolares.FirstOrDefault(x => x.PeriodoInicio <= data && x.PeriodoFim >= data);
@@ -134,11 +134,11 @@ namespace SME.SGP.Aplicacao.Consultas
             return periodosEscolares;
         }
 
-        private TipoCalendarioCompletoDto ObterTipoCalendario(Modalidade modalidade, DateTime data)
+        private TipoCalendarioCompletoDto ObterTipoCalendario(Modalidade modalidade, int anoLetivo, int semestre = 0)
         {
             var modalidadeCalendario = modalidade == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
 
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(data.Year, modalidadeCalendario, data.Semestre());
+            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCalendario, semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Não encontrado calendario escolar cadastrado");
 

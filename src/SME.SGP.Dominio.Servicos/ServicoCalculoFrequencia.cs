@@ -36,7 +36,7 @@ namespace SME.SGP.Dominio.Servicos
         private int ObterBimestre(DateTime data, string turmaId)
         {
             var turma = repositorioTurma.ObterPorCodigo(turmaId);
-            return consultasPeriodoEscolar.ObterBimestre(data, turma.ModalidadeCodigo);
+            return consultasPeriodoEscolar.ObterBimestre(data, turma.ModalidadeCodigo, turma.Semestre);
         }
 
         public void CalcularFrequenciaPorTurma(IEnumerable<string> alunos, DateTime dataAula, string turmaId, string disciplinaId)
