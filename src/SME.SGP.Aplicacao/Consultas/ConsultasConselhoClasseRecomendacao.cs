@@ -52,13 +52,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(string turmaCodigo, string alunoCodigo, int bimestre, Modalidade turmaModalidade, bool EhFinal = false)
         {
-            if (bimestre == 0 && !EhFinal)
-                bimestre = ObterBimestreAtual(turmaModalidade);
-
             PeriodoFechamentoBimestre periodoFechamentoBimestre = null;
             var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaCodigo);
             if (turma == null)
                 throw new NegocioException("Turma não localizada");
+
+            if (bimestre == 0 && !EhFinal)
+                bimestre = ObterBimestreAtual(turmaModalidade, turma.Semestre);
 
             var emFechamento = true;
             if (EhFinal)
@@ -94,9 +94,9 @@ namespace SME.SGP.Aplicacao
             return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre, periodoFechamentoBimestre, fechamentoTurma.Id, emFechamento);
         }
 
-        private int ObterBimestreAtual(Modalidade turmaModalidade)
+        private int ObterBimestreAtual(Modalidade turmaModalidade, int semestre)
         {
-            return consultasPeriodoEscolar.ObterBimestre(DateTime.Today, turmaModalidade);
+            return consultasPeriodoEscolar.ObterBimestre(DateTime.Today, turmaModalidade, semestre);
         }
 
         private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, long fechamentoTurmaId, PeriodoFechamentoBimestre periodoFechamentoBimestre, bool emFechamento, ConselhoClasse conselhoClasseExistente)
