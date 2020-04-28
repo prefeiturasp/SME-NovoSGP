@@ -233,9 +233,9 @@ namespace SME.SGP.Dominio
             return periodosEscolares;
         }
 
-        private async Task<NotaTipoValor> ObterNotaTipo(string turmaId, DateTime dataAvaliacao, bool consideraHistorico)
+        public async Task<NotaTipoValor> ObterNotaTipo(string turmaCodigo, DateTime data, bool consideraHistorico = false)
         {
-            var turma = await consultasAbrangencia.ObterAbrangenciaTurma(turmaId, consideraHistorico);
+            var turma = await consultasAbrangencia.ObterAbrangenciaTurma(turmaCodigo, consideraHistorico);
 
             if (turma == null)
                 throw new NegocioException("Não foi encontrada a turma informada");
@@ -245,7 +245,7 @@ namespace SME.SGP.Dominio
             if (ciclo == null)
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
-            return repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, dataAvaliacao);
+            return repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data);
         }
 
         private void SalvarNoBanco(List<NotaConceito> EntidadesSalvar)

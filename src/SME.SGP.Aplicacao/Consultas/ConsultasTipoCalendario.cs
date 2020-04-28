@@ -27,9 +27,9 @@ namespace SME.SGP.Aplicacao
                    select EntidadeParaDto(t);
         }
 
-        public TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade)
+        public TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre)
         {
-            var entidade = repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
+            var entidade = repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, semestre);
 
             if (entidade != null)
                 return EntidadeParaDtoCompleto(entidade);
