@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<ConselhoClasseNota> ObterPorConselhoClasseAlunoComponenteCurricular(long conselhoClasseAlunoId, long componenteCurricularCodigo)
+        public async Task<ConselhoClasseNota> ObterPorConselhoClasseAlunoComponenteCurricularAsync(long conselhoClasseAlunoId, long componenteCurricularCodigo)
         {
             var query = @"select * 
                         from conselho_classe_nota 
