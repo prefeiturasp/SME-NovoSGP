@@ -50,6 +50,7 @@ import PendenciasFechamentoForm from '~/paginas/Fechamento/PendenciasFechamento/
 import ComunicadosLista from '~/paginas/AcompanhamentoEscolar/Comunicados/Lista';
 import ComunicadosCadastro from '~/paginas/AcompanhamentoEscolar/Comunicados/Cadastro';
 import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselhoClasse';
+import RelatorioSemestral from '~/paginas/Relatorios/PAP/RelatorioSemestral/relatorioSemestral';
 
 const rotas = new Map();
 
@@ -750,6 +751,16 @@ rotas.set(RotasDto.CONSELHO_CLASSE, {
   menu: ['Fechamento'],
   parent: '/',
   component: ConselhoClasse,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+
+rotas.set(RotasDto.RELATORIO_SEMESTRAL, {
+  breadcrumbName: 'Relatório Semestral',
+  menu: ['Relatórios', 'PAP'],
+  parent: '/',
+  component: RelatorioSemestral,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
