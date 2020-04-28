@@ -620,32 +620,24 @@ const CadastroAula = ({ match }) => {
         dados.disciplinaNome = componenteCurricular.nome;
     }
 
-    try {
-      setCarregandoSalvar(true);
-      const {
-        data: dataRespSalvar,
-        status,
-        response,
-      } = await ServicoAula.salvar(idAula, dados);
-      if (dataRespSalvar && status === 200) {
-        setCarregandoSalvar(false);
-        history.push('/calendario-escolar/calendario-professor');
-        sucesso(dataRespSalvar.mensagens[0]);
-      } else if (response) {
-        setCarregandoSalvar(false);
+    const cadastrado = await ServicoAula.salvar(idAula, dados).catch(e =>
+      erros(e)
+    );
+    if (cadastrado) {
+      if (cadastrado.status === 200) {
+        if (cadastrado.data) {
+          history.push('/calendario-escolar/calendario-professor');
+          setTimeout(() => {
+            sucesso(cadastrado.data.mensagens[0]);
+          }, 1000);
+        }
+      } else if (cadastrado.response) {
         erro(
-          response.status === 601
-            ? response.data.mensagens[0]
+          cadastrado.response.status === 601
+            ? cadastrado.response.data.mensagens[0]
             : 'Houve uma falha ao salvar a aula, por favor contate o suporte'
         );
       }
-    } catch (error) {
-      setCarregandoSalvar(false);
-      erro(
-        error.response.status === 601
-          ? error.response.data.mensagens[0]
-          : 'Houve uma falha ao salvar a aula, por favor contate o suporte'
-      );
     }
   };
 
