@@ -77,8 +77,8 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException($"Não foi possivel obter a turma da aula");
 
-            var bimestreAtual = consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo);
-            var bimestreAula = consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo);
+            var bimestreAtual = consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo, turma.Semestre);
+            var bimestreAula = consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo, turma.Semestre);
 
             var bimestreForaPeriodo = bimestreAtual == 0 || bimestreAula == 0;
 
