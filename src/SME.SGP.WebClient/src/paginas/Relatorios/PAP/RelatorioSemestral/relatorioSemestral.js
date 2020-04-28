@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -6,21 +6,21 @@ import Alert from '~/componentes/alert';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
+import SelectComponent from '~/componentes/select';
 import {
+  limparDadosRelatorioSemestral,
   setAlunosRelatorioSemestral,
   setDadosAlunoObjectCard,
-  limparDadosRelatorioSemestral,
 } from '~/redux/modulos/relatorioSemestral/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/ServicoRelatorioSemestral/ServicoRelatorioSemestral';
-import { Container } from './relatorioSemestral.css';
 import BotaoOrdenarListaAlunos from './DadosRelatorioSemestral/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
 import BotoesAcoesRelatorioSemestral from './DadosRelatorioSemestral/BotoesAcoes/botoesAcoesRelatorioSemestral';
-// import DadosRelatorioSemestral from './DadosRelatorioSemestral/dadosRelatorioSemestral';
+import DadosRelatorioSemestral from './DadosRelatorioSemestral/dadosRelatorioSemestral';
 import ObjectCardRelatorioSemestral from './DadosRelatorioSemestral/ObjectCardRelatorioSemestral/objectCardRelatorioSemestral';
 import TabelaRetratilRelatorioSemestral from './DadosRelatorioSemestral/TabelaRetratilRelatorioSemestral/tabelaRetratilRelatorioSemestral';
-// import servicoSalvarRelatorioSemestral from './servicoSalvarRelatorioSemestral';
-import SelectComponent from '~/componentes/select';
+import { Container } from './relatorioSemestral.css';
+import servicoSalvarRelatorioSemestral from './servicoSalvarRelatorioSemestral';
 
 const RelatorioSemestral = () => {
   const dispatch = useDispatch();
@@ -105,12 +105,11 @@ const RelatorioSemestral = () => {
   };
 
   const permiteOnChangeAluno = async () => {
-    // TODO
-    // const continuar = await servicoSalvarRelatorioSemestral.validarSalvarRelatorioSemestral();
-    // if (continuar) {
-    return true;
-    // }
-    // return false;
+    const continuar = await servicoSalvarRelatorioSemestral.validarSalvarRelatorioSemestral();
+    if (continuar) {
+      return true;
+    }
+    return false;
   };
 
   const onChangeSemestre = valor => {
@@ -143,7 +142,7 @@ const RelatorioSemestral = () => {
               <div className="col-md-12">
                 <div className="row">
                   <div className="col-md-12 d-flex justify-content-end pb-4">
-                    {/* <BotoesAcoesRelatorioSemestral /> */}
+                    <BotoesAcoesRelatorioSemestral />
                   </div>
                 </div>
               </div>
@@ -185,10 +184,10 @@ const RelatorioSemestral = () => {
                     >
                       <>
                         <ObjectCardRelatorioSemestral />
-                        {/* <DadosRelatorioSemestral
+                        <DadosRelatorioSemestral
                           codigoTurma={turmaSelecionada.turma}
                           modalidade={turmaSelecionada.modalidade}
-                        /> */}
+                        />
                       </>
                     </TabelaRetratilRelatorioSemestral>
                   </div>

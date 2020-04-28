@@ -24,10 +24,22 @@ class ServicoRelatorioSemestral {
   };
 
   salvarServicoRelatorioSemestral = params => {
-    // TODO
+    // TODO Revisar!
     console.log('<--- SALVAR RELATORIO SEMESTRAL --->');
     console.log(params);
-    return Promise.resolve(true);
+    const retorno = {
+      status: 200,
+      data: {
+        id: 999999,
+        criadoEm: '2010-06-19T00:00:00',
+        criadoPor: 'Joao salvador',
+        criadoRF: '123123',
+        alteradoEm: '2010-06-19T00:00:00',
+        alteradoPor: 'Joao teste alterou',
+        alteradoRF: '321321',
+      },
+    };
+    return Promise.resolve(retorno);
   };
 
   obterListaSemestres = () => {
@@ -38,6 +50,28 @@ class ServicoRelatorioSemestral {
       ],
     };
     return Promise.resolve(semestres);
+  };
+
+  obterDadosCamposDescritivos = (turma, codigoAluno) => {
+    // TODO Revisar consulta!
+    console.log('OBTER COMPOS DESCRITIVOS!');
+    console.log(`turma: ${turma}`);
+    console.log(`codigoAluno: ${codigoAluno}`);
+
+    const dados = {
+      data: {
+        historicoEstudante: 'historicoEstudante TESTE',
+        auditoria: {
+          criadoEm: '2010-06-19T00:00:00',
+          criadoPor: 'TESTE',
+          criadoRF: '99999',
+          alteradoEm: '2010-06-19T00:00:00',
+          alteradoPor: 'TESTE TESTE TESTE',
+          alteradoRF: '00000',
+        },
+      },
+    };
+    return Promise.resolve(dados);
   };
 }
 
