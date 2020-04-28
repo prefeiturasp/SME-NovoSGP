@@ -69,7 +69,7 @@ namespace SME.SGP.Dominio.Servicos
                     unitOfWork.IniciarTransacao();
                     await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
 
-                    long conselhoClasseAlunoId = await SalvarConselhoClasseAluno(conselhoClasse.Id, alunoCodigo);
+                    long conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
 
                     conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
 
@@ -81,7 +81,7 @@ namespace SME.SGP.Dominio.Servicos
                     var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
                     unitOfWork.IniciarTransacao();
 
-                    var conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAluno(conselhoClasseId, alunoCodigo);
+                    var conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAlunoResumido(conselhoClasseId, alunoCodigo);
 
                     conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.ComponenteCurricularCodigo);
 
@@ -104,7 +104,7 @@ namespace SME.SGP.Dominio.Servicos
             return (AuditoriaDto)conselhoClasseNota;
         }
 
-        private async Task<long> SalvarConselhoClasseAluno(long conselhoClasseId, string alunoCodigo)
+        private async Task<long> SalvarConselhoClasseAlunoResumido(long conselhoClasseId, string alunoCodigo)
         {
             var conselhoClasseAluno = new ConselhoClasseAluno()
             {
@@ -127,9 +127,48 @@ namespace SME.SGP.Dominio.Servicos
             };
         }
 
-        Task<AuditoriaConselhoClasseAlunoDto> IServicoConselhoClasse.SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
+        public async Task<AuditoriaDto> GerarConselhoClasse(ConselhoClasse conselhoClasse)
         {
-            throw new NotImplementedException();
+            var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(conselhoClasse.FechamentoTurmaId);
+            if (fechamentoTurma == null)
+                throw new NegocioException("Não foi possível localizar o fechamento da turma informado!");
+
+            var conselhoClasseExistente = await repositorioConselhoClasse.ObterPorTurmaEPeriodoAsync(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId);
+            if (conselhoClasseExistente != null)
+                throw new NegocioException($"Já existe um conselho de classe gerado para a turma {fechamentoTurma.Turma.Nome}!");
+
+            if (fechamentoTurma.PeriodoEscolarId.HasValue)
+            {
+                // Fechamento Bimestral
+                if (!await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma, DateTime.Today, fechamentoTurma.PeriodoEscolar.Bimestre))
+                    throw new NegocioException($"Turma {fechamentoTurma.Turma.Nome} não esta em período de fechamento para o {fechamentoTurma.PeriodoEscolar.Bimestre}º Bimestre!");
+            }
+            else
+            {
+                // Fechamento Final
+                var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
+                if (!validacaoConselhoFinal.Item2)
+                    throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+            }
+
+            await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
+            return (AuditoriaDto)conselhoClasse;
+        }
+
+        public async Task<AuditoriaConselhoClasseAlunoDto> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
+        {
+            // Se não existir conselho de classe para o fechamento gera
+            if (conselhoClasseAluno.ConselhoClasse.Id == 0)
+            {
+                await GerarConselhoClasse(conselhoClasseAluno.ConselhoClasse);
+                conselhoClasseAluno.ConselhoClasseId = conselhoClasseAluno.ConselhoClasse.Id;
+            }
+            else
+                await repositorioConselhoClasse.SalvarAsync(conselhoClasseAluno.ConselhoClasse);
+
+            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
+
+            return (AuditoriaConselhoClasseAlunoDto)conselhoClasseAluno;
         }
     }
 }

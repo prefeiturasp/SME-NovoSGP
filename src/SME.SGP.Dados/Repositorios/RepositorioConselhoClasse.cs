@@ -13,6 +13,15 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<ConselhoClasse> ObterPorFechamentoId(long fechamentoTurmaId)
+        {
+            var query = @"select c.* 
+                            from conselho_classe c 
+                           where c.fechamento_turma_id = @fechamentoTurmaId";
+
+            return database.Conexao.QueryFirstOrDefault<ConselhoClasse>(query, new { fechamentoTurmaId });
+        }
+
         public async Task<ConselhoClasse> ObterPorTurmaEPeriodoAsync(long turmaId, long? periodoEscolarId = null)
         {
             var query = new StringBuilder(@"select c.* 

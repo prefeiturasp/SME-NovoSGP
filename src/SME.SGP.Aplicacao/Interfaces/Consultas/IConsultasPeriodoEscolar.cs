@@ -14,11 +14,12 @@ namespace SME.SGP.Aplicacao
 
         int ObterBimestre(DateTime data, Modalidade modalidade);
         Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEmAberto(long ueId, Modalidade modalidadeCodigo, int anoLetivo);
-        Task<PeriodoEscolarDto> ObterUltimoPeriodoAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre);
+        Task<PeriodoEscolar> ObterUltimoPeriodoAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre);
         PeriodoEscolar ObterPeriodoPorModalidade(Modalidade modalidade, DateTime data);
         PeriodoEscolar ObterPeriodoAtualPorModalidade(Modalidade modalidade);
         PeriodoEscolar ObterPeriodoPorData(IEnumerable<PeriodoEscolar> periodosEscolares, DateTime data);
         PeriodoEscolar ObterUltimoPeriodoPorData(IEnumerable<PeriodoEscolar> periodosEscolares, DateTime data);
         IEnumerable<PeriodoEscolar> ObterPeriodosEscolares(long tipoCalendarioId);
+        Task<PeriodoEscolar> ObterUltimoPeriodoAbertoAsync(Turma turma);
     }
 }

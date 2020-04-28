@@ -1,3 +1,6 @@
+import { store } from '~/redux';
+import { setListaTiposConceitos } from '~/redux/modulos/conselhoClasse/actions';
+import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
 class ServicoConselhoClasse {
@@ -12,13 +15,12 @@ class ServicoConselhoClasse {
   };
 
   obterAnotacoesRecomendacoes = (
-    codigoTurma,
-    codigoAluno,
-    numeroBimestre = 0,
-    modalidade,
-    ehFinal = false
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo
   ) => {
-    const url = `v1/conselhos-classe/recomendacoes/turmas/${codigoTurma}/alunos/${codigoAluno}/bimestres/${numeroBimestre}?modalidade=${modalidade}&ehFinal=${ehFinal}`;
+    const url = `v1/conselhos-classe/${conselhoClasseId ||
+      0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/recomendacoes`;
     return api.get(url);
   };
 
@@ -30,6 +32,65 @@ class ServicoConselhoClasse {
 
   salvarRecomendacoesAlunoFamilia = params => {
     return api.post('v1/conselhos-classe/recomendacoes', params);
+  };
+
+  obterSintese = (conselhoClasseId, fechamentoTurmaId, alunoCodigo) => {
+    return api.get(
+      `v1/conselhos-classe/${conselhoClasseId ||
+        0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/sintese`
+    );
+  };
+
+  obterInformacoesPrincipais = (
+    turmaCodigo,
+    bimestre,
+    alunoCodigo,
+    ehFinal
+  ) => {
+    const url = `v1/conselhos-classe/turmas/${turmaCodigo}/bimestres/${bimestre}/alunos/${alunoCodigo}/final/${ehFinal}`;
+    return api.get(url);
+  };
+
+  carregarListaTiposConceito = async periodoFim => {
+    const { dispatch } = store;
+
+    if (periodoFim) {
+      const lista = await api
+        .get(`v1/avaliacoes/notas/conceitos?data=${periodoFim}`)
+        .catch(e => erros(e));
+
+      if (lista && lista.data && lista.data.length) {
+        const novaLista = lista.data.map(item => {
+          item.id = String(item.id);
+          return item;
+        });
+        dispatch(setListaTiposConceitos(novaLista));
+      } else {
+        dispatch(setListaTiposConceitos([]));
+      }
+    } else {
+      dispatch(setListaTiposConceitos([]));
+    }
+  };
+
+  acessarAbaFinalParecerConclusivo = (
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo
+  ) => {
+    const url = `v1/conselhos-classe/${conselhoClasseId ||
+      0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/parecer`;
+    return api.get(url);
+  };
+
+  obterNotasConceitosConselhoClasse = (
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo
+  ) => {
+    const url = `v1/conselhos-classe/${conselhoClasseId ||
+      0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/notas`;
+    return api.get(url);
   };
 }
 
