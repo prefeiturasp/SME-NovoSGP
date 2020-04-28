@@ -12,9 +12,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasFechamentoFinal : IConsultasFechamentoFinal
     {
+        private readonly IConsultasDisciplina consultasDisciplina;
+        private readonly IConsultasFrequencia consultasFrequencia;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
+        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
+        private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
-        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
@@ -23,10 +27,6 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IConsultasDisciplina consultasDisciplina;
-        private readonly IConsultasFrequencia consultasFrequencia;
-        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
-        private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
 
         public ConsultasFechamentoFinal(IRepositorioTurma repositorioTurma, IRepositorioTipoCalendario repositorioTipoCalendario,
                             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
@@ -190,38 +190,17 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task<bool> PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf, AlunoPorTurmaResposta aluno, PeriodoEscolar periodoEscolar, Turma turma)
-        {
-            if (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade)
-                return false;
-
-            if (usuarioLogado.CodigoRf != professorTitularDaTurmaDisciplinaRf)
-                return false;
-
-            var periodoFechamento = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre);
-
-            var reabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(periodoEscolar.Bimestre, DateTime.Today, periodoEscolar.TipoCalendarioId, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
-
-            var dentroPeriodo = (periodoFechamento != null && periodoFechamento.DataDentroPeriodo(DateTime.Today)) ||
-                (reabertura != null && reabertura.DataDentroPeriodo(DateTime.Now));
-
-            return dentroPeriodo;
-        }
-
         private string MontaTextoAuditoriaAlteracao(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, bool EhNota)
         {
             if (fechamentoTurmaDisciplina != null && !string.IsNullOrEmpty(fechamentoTurmaDisciplina.AlteradoPor))
-                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "alteradas" : "alterados")} por {fechamentoTurmaDisciplina.AlteradoPor}({fechamentoTurmaDisciplina.AlteradoRF}) em {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("dd/MM/yyyy")},às {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("H:mm")}.";
+                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "alteradas" : "alterados")} por {fechamentoTurmaDisciplina.AlteradoPor}({fechamentoTurmaDisciplina.AlteradoRF}) em {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("dd/MM/yyyy")},às {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("HH:mm")}.";
             else return string.Empty;
         }
 
         private string MontaTextoAuditoriaInclusao(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, bool EhNota)
         {
             if (fechamentoTurmaDisciplina != null)
-                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "incluídas" : "incluídos")} por {fechamentoTurmaDisciplina.CriadoPor}({fechamentoTurmaDisciplina.CriadoRF}) em {fechamentoTurmaDisciplina.CriadoEm.ToString("dd/MM/yyyy")},às {fechamentoTurmaDisciplina.CriadoEm.ToString("H:mm")}.";
+                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "incluídas" : "incluídos")} por {fechamentoTurmaDisciplina.CriadoPor}({fechamentoTurmaDisciplina.CriadoRF}) em {fechamentoTurmaDisciplina.CriadoEm.ToString("dd/MM/yyyy")},às {fechamentoTurmaDisciplina.CriadoEm.ToString("HH:mm")}.";
             else return string.Empty;
         }
 
@@ -241,7 +220,8 @@ namespace SME.SGP.Aplicacao
                     {
                         foreach (var nota in notasDoBimestre)
                         {
-                            var notaParaAdicionar = ehNota ? nota.Nota.ToString() : nota.ConceitoId.Value.ToString();
+                            var notaParaAdicionar = ehNota ? nota.Nota?.ToString() : nota.ConceitoId?.ToString();
+                            
                             listaRetorno.Add(new FechamentoNotaAlunoDto(periodo.Bimestre, notaParaAdicionar, nota.DisciplinaId, nota.FechamentoAluno.AlunoCodigo));
                         }
                     }
@@ -256,6 +236,27 @@ namespace SME.SGP.Aplicacao
             var professoresTitularesDaTurma = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaCodigo);
             var professorTitularDaDisciplina = professoresTitularesDaTurma.FirstOrDefault(a => a.DisciplinaId == disciplinaCodigo && a.ProfessorRf != string.Empty);
             return professorTitularDaDisciplina == null ? string.Empty : professorTitularDaDisciplina.ProfessorRf;
+        }
+
+        private async Task<bool> PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf, AlunoPorTurmaResposta aluno, PeriodoEscolar periodoEscolar, Turma turma)
+        {
+            if (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo &&
+                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
+                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado &&
+                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade)
+                return false;
+
+            if (usuarioLogado.CodigoRf != professorTitularDaTurmaDisciplinaRf)
+                return false;
+
+            var periodoFechamento = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre);
+
+            var reabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(periodoEscolar.Bimestre, DateTime.Today, periodoEscolar.TipoCalendarioId, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
+
+            var dentroPeriodo = (periodoFechamento != null && periodoFechamento.DataDentroPeriodo(DateTime.Today)) ||
+                (reabertura != null && reabertura.DataDentroPeriodo(DateTime.Now));
+
+            return dentroPeriodo;
         }
 
         private FechamentoFinalConsultaRetornoAlunoDto TrataFrequenciaAluno(FechamentoFinalConsultaFiltroDto filtros, IEnumerable<PeriodoEscolar> periodosEscolares, AlunoPorTurmaResposta aluno, ref int totalAusencias, ref int totalAusenciasCompensadas, ref int totalDeAulas)

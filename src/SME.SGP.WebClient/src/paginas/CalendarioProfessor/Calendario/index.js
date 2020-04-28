@@ -49,40 +49,7 @@ const CalendarioProfessor = () => {
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoUes, setCarregandoUes] = useState(false);
 
-  const obterTiposCalendario = useCallback(
-    async modalidades => {
-      setCarregandoTipos(true);
-      const lista = await ServicoCalendarios.obterTiposCalendario(
-        turmaSelecionadaStore.anoLetivo
-      );
-
-      if (lista && lista.data) {
-        const tiposCalendarioLista = [];
-        if (lista.data) {
-          const tipos = lista.data.filter(tipo => {
-            return (
-              modalidades.indexOf(tipo.modalidade) > -1 &&
-              tipo.anoLetivo === anoLetivo
-            );
-          });
-          tipos.forEach(tipo => {
-            tiposCalendarioLista.push({
-              desc: tipo.nome,
-              valor: tipo.id,
-              modalidade: tipo.modalidade,
-            });
-          });
-        }
-        setCarregandoTipos(false);
-        return tiposCalendarioLista;
-      }
-      setCarregandoTipos(false);
-      return lista.data;
-    },
-    [anoLetivo, turmaSelecionadaStore.anoLetivo]
-  );
-
-  const modalidadesPorAbrangencia = useMemo(() => {
+  const modalidadesPorAbrangencia = useCallback(() => {
     const modalidades = [];
     if (modalidadesAbrangencia) {
       modalidadesAbrangencia.forEach(modalidade => {
@@ -99,40 +66,78 @@ const CalendarioProfessor = () => {
     return modalidades;
   }, [modalidadesAbrangencia]);
 
-  const listarTiposCalendarioPorTurmaSelecionada = useCallback(
-    async tiposLista => {
-      if (Object.entries(turmaSelecionadaStore).length) {
-        const modalidadeSelecionada =
-          turmaSelecionadaStore.modalidade == ModalidadeDTO.EJA
-            ? 2
-            : 1;
+  const tiposDeCalendario = useMemo(() => {
+    let tipos = [];
 
-        if (tiposLista && tiposLista.length) {
-          setTiposCalendario(
-            tiposLista.filter(tipo => {
-              return tipo.modalidade === modalidadeSelecionada;
-            })
-          );
-        } else {
-          const tipos = await obterTiposCalendario(modalidadesPorAbrangencia);
+    if (!anoLetivo) return [];
 
-          if (!tipos || tipos.length === 0) {
-            erro(
-              'Nenhum tipo de calendário encontrado para o ano letivo e modalidade selecionada'
-            );
-            return;
-          }
+    if (tipos.length > 0 && modalidadesPorAbrangencia.length === 1) {
+      tipos = tiposCalendario.filter(
+        x => Number(x.modalidade) === modalidadesPorAbrangencia[0]
+      );
+    }
 
-          setTiposCalendario(
-            tipos.filter(tipo => {
-              return tipo.modalidade === modalidadeSelecionada;
-            })
-          );
-        }
+    if (Object.entries(turmaSelecionadaStore).length) {
+      const modalidadeSelecionada =
+        String(turmaSelecionadaStore.modalidade) === String(ModalidadeDTO.EJA)
+          ? 2
+          : 1;
+
+      tipos = tiposCalendario
+        .filter(tipo => String(tipo.anoLetivo) === String(anoLetivo))
+        .filter(
+          tipo => Number(tipo.modalidade) === Number(modalidadeSelecionada)
+        );
+
+      if (!tiposCalendario.length) return [];
+
+      if (!tipos.length) {
+        erro(
+          'Nenhum tipo de calendário encontrado para o ano letivo e modalidade selecionada'
+        );
       }
-    },
-    [modalidadesPorAbrangencia, obterTiposCalendario, turmaSelecionadaStore]
-  );
+    } else {
+      tipos = [];
+    }
+
+    if (tipos && tipos.length) {
+      setTipoCalendarioSelecionado(tipos[0].valor.toString());
+    } else {
+      setTipoCalendarioSelecionado(undefined);
+    }
+
+    return tipos;
+  }, [
+    anoLetivo,
+    modalidadesPorAbrangencia,
+    turmaSelecionadaStore,
+    tiposCalendario,
+  ]);
+
+  const buscarTipos = useCallback(async () => {
+    setCarregandoTipos(true);
+    const { data, status } = await ServicoCalendarios.obterTiposCalendario(
+      turmaSelecionadaStore.anoLetivo
+    );
+    if (data && status === 200) {
+      setTiposCalendario(
+        data.map(tipo => ({
+          desc: tipo.nome,
+          valor: tipo.id,
+          modalidade: tipo.modalidade,
+          anoLetivo: tipo.anoLetivo,
+        }))
+      );
+      setCarregandoTipos(false);
+    }
+  }, [turmaSelecionadaStore]);
+
+  useEffect(() => {
+    if (!turmaSelecionadaStore || !Object.entries(turmaSelecionadaStore).length)
+      return;
+
+    buscarTipos();
+  }, [buscarTipos, turmaSelecionadaStore, turmaSelecionadaStore.anoLetivo]);
 
   const eventoAulaCalendarioEdicao = useSelector(
     state => state.calendarioProfessor.eventoAulaCalendarioEdicao
@@ -178,13 +183,7 @@ const CalendarioProfessor = () => {
 
     setControleTurmaSelecionada(turmaSelecionadaStore.turma);
     setTipoCalendarioSelecionado('');
-
-    if (turmaSelecionadaStore.turma) listarTiposCalendarioPorTurmaSelecionada();
-  }, [
-    controleTurmaSelecionada,
-    listarTiposCalendarioPorTurmaSelecionada,
-    turmaSelecionadaStore,
-  ]);
+  }, [controleTurmaSelecionada, turmaSelecionadaStore]);
 
   const [dreSelecionada, setDreSelecionada] = useState(undefined);
   const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
@@ -212,10 +211,16 @@ const CalendarioProfessor = () => {
   const dresStore = useSelector(state => state.filtro.dres);
   const [dres, setDres] = useState([]);
 
-  const obterDres = () => {
+  const obterDres = useCallback(() => {
     setCarregandoDres(true);
     api
-      .get(`v1/abrangencias/${turmaSelecionadaStore.consideraHistorico}/dres`)
+      .get(
+        `v1/abrangencias/${
+          turmaSelecionadaStore.consideraHistorico
+            ? turmaSelecionadaStore.consideraHistorico
+            : false
+        }/dres`
+      )
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -236,7 +241,7 @@ const CalendarioProfessor = () => {
         setDres(dresStore);
         setCarregandoDres(false);
       });
-  };
+  }, [dresStore, turmaSelecionadaStore.consideraHistorico]);
 
   useEffect(() => {
     if (tipoCalendarioSelecionado) {
@@ -247,7 +252,7 @@ const CalendarioProfessor = () => {
       setUnidadeEscolarSelecionada();
       setOpcaoTurma();
     }
-  }, [tipoCalendarioSelecionado]);
+  }, [tipoCalendarioSelecionado, obterDres]);
 
   const aoClicarBotaoVoltar = () => {
     history.push('/');
@@ -429,16 +434,16 @@ const CalendarioProfessor = () => {
       {turmaSelecionadaStore && turmaSelecionadaStore.turma ? (
         ''
       ) : (
-          <Alert
-            alerta={{
-              tipo: 'warning',
-              id: 'plano-ciclo-selecione-turma',
-              mensagem: 'Você precisa escolher uma turma.',
-              estiloTitulo: { fontSize: '18px' },
-            }}
-            className="mb-0"
-          />
-        )}
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'plano-ciclo-selecione-turma',
+            mensagem: 'Você precisa escolher uma turma.',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-0"
+        />
+      )}
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">Calendário do professor</Titulo>
       </Grid>
@@ -453,8 +458,14 @@ const CalendarioProfessor = () => {
                   lista={tiposCalendario}
                   valueOption="valor"
                   valueText="desc"
-                  valueSelect={tipoCalendarioSelecionado}
-                  placeholder="Tipo de Calendário"
+                  valueSelect={
+                    tiposDeCalendario &&
+                    Object.entries(tiposDeCalendario).length
+                      ? tipoCalendarioSelecionado
+                      : undefined
+                  }
+                  placeholder="Selecione o tipo de calendário"
+                  disabled={!Object.entries(turmaSelecionadaStore).length}
                 />
               </Loader>
             </Grid>
@@ -476,8 +487,8 @@ const CalendarioProfessor = () => {
                   </Div>
                 </Div>
               ) : (
-                  <Div />
-                )}
+                <Div />
+              )}
               {diasLetivos && diasLetivos.estaAbaixoPermitido && (
                 <Div
                   className="clearfix font-weight-bold pt-2"
@@ -513,7 +524,7 @@ const CalendarioProfessor = () => {
                         eventoSme
                           ? 'Exibindo eventos da SME'
                           : 'Não exibindo eventos da SME'
-                        }`}
+                      }`}
                     >
                       <Switch
                         onChange={aoTrocarEventoSme}
