@@ -221,7 +221,7 @@ namespace SME.SGP.Aplicacao
             if (percentualFrequencia <= percentualAlerta)
                 return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequencia };
 
-            return null;
+            return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequencia };
         }
 
         private FrequenciaDto ObterRegistroFrequencia(long aulaId, Aula aula, Turma turma)
