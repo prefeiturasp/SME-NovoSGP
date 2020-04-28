@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import t from 'prop-types';
 import shortid from 'shortid';
 
@@ -19,6 +19,10 @@ function TabelaRetratil({
 }) {
   const [retraido, setRetraido] = useState(false);
   const [alunoSelecionado, setAlunoSelecionado] = useState(null);
+
+  useEffect(() => {
+    setAlunoSelecionado(null);
+  }, [alunos]);
 
   const permiteSelecionarAluno = useCallback(async () => {
     if (permiteOnChangeAluno) {
