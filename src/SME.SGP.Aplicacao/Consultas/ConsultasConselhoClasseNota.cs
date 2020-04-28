@@ -1,6 +1,9 @@
-﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,5 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             return repositorioConselhoClasseNota.ObterPorId(id);
         }
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAsync(long conselhoClasseId, string alunoCodigo)
+            => await repositorioConselhoClasseNota.ObterNotasAlunoAsync(conselhoClasseId, alunoCodigo);
     }
 }
