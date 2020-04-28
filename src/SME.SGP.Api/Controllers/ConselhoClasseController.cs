@@ -37,6 +37,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto));
         }
 
+        [HttpPost("{conselhoClasseId}/notas/alunos/{codigoAluno}/fechamento-turma/{fechamentoTurmaId}")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(200)]
+        [Permissao(Permissao.CC_I, Policy = "Bearer")]
+        public async Task<IActionResult> PersistirNotas([FromServices]IComandosConselhoClasseNota comandosConselhoClasseNota,
+           [FromBody]ConselhoClasseNotaDto conselhoClasseNotaDto, string codigoAluno, long conselhoClasseId, long fechamentoTurmaId)
+        {
+            return Ok(await comandosConselhoClasseNota.SalvarAsync(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, fechamentoTurmaId));
+        }
+
         [HttpGet("detalhamento/{id}")]
         [ProducesResponseType(401)]
         [ProducesResponseType(204)] 
