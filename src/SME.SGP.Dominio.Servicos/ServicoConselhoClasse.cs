@@ -83,7 +83,7 @@ namespace SME.SGP.Dominio.Servicos
 
                     var conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAluno(conselhoClasseId, alunoCodigo);
 
-                    conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricular(conselhoClasseAlunoId, conselhoClasseNotaDto.ComponenteCurricularCodigo);
+                    conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.ComponenteCurricularCodigo);
 
                     if (conselhoClasseNota == null)
                     {

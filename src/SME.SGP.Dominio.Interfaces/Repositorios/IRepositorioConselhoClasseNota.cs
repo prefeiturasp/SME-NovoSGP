@@ -4,6 +4,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioConselhoClasseNota : IRepositorioBase<ConselhoClasseNota>
     {
-        Task<ConselhoClasseNota> ObterPorConselhoClasseAlunoComponenteCurricular(long conselhoClasseAlunoId, long componenteCurricularCodigo);
+        Task<ConselhoClasseNota> ObterPorConselhoClasseAlunoComponenteCurricularAsync(long conselhoClasseAlunoId, long componenteCurricularCodigo);
     }
 }
