@@ -7,7 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioEvento : IRepositorioBase<Evento>
     {
-        Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUePorMes(long tipoCalendarioId, string dreCodigo, string ueCodigo, int mes, bool VisualizarEventosSME = false, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false);
+        Task<IEnumerable<Evento>> ObterEventosCalendarioProfessorPorMes(long tipoCalendarioId, string dreCodigo, string ueCodigo, int mes, bool VisualizarEventosSME = false, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false);
         List<Evento> EhEventoLetivoPorLiberacaoExcepcional(long tipoCalendarioId, DateTime data, string ueId);
 
         bool EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId);
@@ -43,7 +43,11 @@ namespace SME.SGP.Dominio.Interfaces
             bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
 
         Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento liberacaoExcepcional, long tipoCalendarioId, string UeId, string DreId, bool escopoRetroativo = false);
-       
-        
+               
+        Task<IEnumerable<Evento>> ObterEventosCalendarioProfessorPorMesDia(long tipoCalendarioId, string dreCodigo, string ueCodigo, DateTime dataEvento, bool VisualizarEventosSME = false, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false);
+
+
+
+
     }
 }

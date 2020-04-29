@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulasQuery : IRequest<IEnumerable<Aula>>
+    public class ObterAtividadesAvaliativasCalendarioProfessorPorMesQuery : IRequest<IEnumerable<AtividadeAvaliativa>>
     {
         public string UeCodigo { get; set; }
         public long TipoCalendarioId { get; set; }
@@ -12,5 +12,6 @@ namespace SME.SGP.Aplicacao
         public int Mes { get; set; }
         public string CriadorRF { get; set; }
         public string TurmaCodigo { get; set; }
+        public int AnoLetivo { get; internal set; }
     }
 }

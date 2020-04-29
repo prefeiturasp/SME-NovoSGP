@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDiasDosEventosCalendarioProfessorUseCase
+    public class ObterAulasEventosProfessorCalendarioPorMesUseCase
     {
-        public static async Task<IEnumerable<EventoAulaDiaDto>> Executar(IMediator mediator, FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId, int mes)
+        public static async Task<IEnumerable<EventoAulaDiaDto>> Executar(IMediator mediator, FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId, 
+            int mes, IServicoUsuario servicoUsuario)
         {
 
             var eventosDaUeSME = await mediator.Send(new ObterEventosDaUeSMEPorMesQuery()
@@ -21,13 +23,29 @@ namespace SME.SGP.Aplicacao
                 Mes = mes
             });
 
-            var aulas =  await mediator.Send(new ObterAulasQuery()
+            var usuarioRfLogado = servicoUsuario.ObterRf();
+
+            var aulas = await mediator.Send(new ObterAulasCalendarioProfessorPorMesQuery()
             {
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
                 DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
                 TipoCalendarioId = tipoCalendarioId,
                 TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
-                Mes = mes
+                Mes = mes,
+                CriadorRF = usuarioRfLogado
+
+            });
+
+            var avaliacoes = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesQuery()
+            {
+                UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
+                DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
+                TipoCalendarioId = tipoCalendarioId,
+                TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
+                Mes = mes,
+                AnoLetivo = filtroAulasEventosCalendarioDto.AnoLetivo,
+                CriadorRF = usuarioRfLogado
+
             });
 
             var qntDiasMes = DateTime.DaysInMonth(filtroAulasEventosCalendarioDto.AnoLetivo, mes);
@@ -49,6 +67,9 @@ namespace SME.SGP.Aplicacao
                     if (aulasDoDia.Any(a => a.AulaCJ == false))
                         eventoAula.TemAula = true;
                 }
+
+                if (avaliacoes.Any(a => a.DataAvaliacao.Day == i))
+                    eventoAula.TemAvaliacao = true;
 
                 listaRetorno.Add(eventoAula);
             }
