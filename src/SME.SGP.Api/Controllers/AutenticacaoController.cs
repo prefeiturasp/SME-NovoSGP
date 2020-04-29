@@ -156,6 +156,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(await comandosUsuario.SolicitarRecuperacaoSenha(login));
         }
 
+        [HttpGet("teste")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
+        public async Task<IActionResult> Teste([FromServices] IServicoObjetivosAprendizagem servicoObjetivosAprendizagem)
+        {
+            await servicoObjetivosAprendizagem.SincronizarObjetivosComJurema();
+            return Ok();
+        }
+
         [HttpGet("valida-token-recuperacao-senha/{token}")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

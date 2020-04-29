@@ -17,6 +17,7 @@ namespace SME.SGP.Integracao.Teste
         }
 
         [Fact, Order(1)]
+        [Trait("eita", "opa")]
         public async void Deve_Retornar_Os_Dados_Do_Usuário()
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();
