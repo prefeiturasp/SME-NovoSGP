@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasConselhoClasseRecomendacao
     {
-        Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(string codigoTurma, string codigoAluno, int bimestre, Modalidade turmaModalidade, bool EhFinal = false);
+        Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo);
     }
 }

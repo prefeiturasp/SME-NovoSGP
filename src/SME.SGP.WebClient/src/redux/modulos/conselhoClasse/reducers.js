@@ -1,6 +1,7 @@
 import produce from 'immer';
 
 const inicial = {
+  listaTiposConceitos: [],
   dadosAlunoObjectCard: {},
   alunosConselhoClasse: [],
   recomendacaoAluno: '',
@@ -9,9 +10,11 @@ const inicial = {
   anotacoesAluno: [],
   bimestreAtual: { valor: '' },
   conselhoClasseEmEdicao: false,
-  dadosAnotacoesRecomendacoes: {},
+  dadosPrincipaisConselhoClasse: {},
   auditoriaAnotacaoRecomendacao: null,
   fechamentoPeriodoInicioFim: {},
+  notasJustificativas: { componentes: [], componentesRegencia: [] },
+  dadosListasNotasConceitos: [],
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -69,10 +72,11 @@ export default function ConselhoClasse(state = inicial, action) {
           anotacoesAluno: [],
           bimestreAtual: { valor: '' },
           conselhoClasseEmEdicao: false,
-          dadosAnotacoesRecomendacoes: {},
+          dadosPrincipaisConselhoClasse: {},
           auditoriaAnotacaoRecomendacao: null,
           dentroPeriodo: true,
           fechamentoPeriodoInicioFim: {},
+          dadosListasNotasConceitos: [],
         };
       }
       case '@conselhoClasse/setConselhoClasseEmEdicao': {
@@ -81,10 +85,10 @@ export default function ConselhoClasse(state = inicial, action) {
           conselhoClasseEmEdicao: action.payload,
         };
       }
-      case '@conselhoClasse/setDadosAnotacoesRecomendacoes': {
+      case '@conselhoClasse/setDadosPrincipaisConselhoClasse': {
         return {
           ...draft,
-          dadosAnotacoesRecomendacoes: action.payload,
+          dadosPrincipaisConselhoClasse: action.payload,
         };
       }
       case '@conselhoClasse/setAuditoriaAnotacaoRecomendacao': {
@@ -103,6 +107,28 @@ export default function ConselhoClasse(state = inicial, action) {
         return {
           ...draft,
           fechamentoPeriodoInicioFim: action.payload,
+        };
+      }
+      case '@conselhoClasse/setListaTiposConceitos': {
+        return {
+          ...draft,
+          listaTiposConceitos: action.payload,
+        };
+      }
+
+      case '@conselhoClasse/setNotasJustificativas':
+        draft.notasJustificativas.componentes = [
+          ...(action.payload.componentes || []),
+        ];
+        draft.notasJustificativas.componentesRegencia = [
+          ...(action.payload.componentesRegencia || []),
+        ];
+        break;
+
+      case '@conselhoClasse/setDadosListasNotasConceitos': {
+        return {
+          ...draft,
+          dadosListasNotasConceitos: action.payload,
         };
       }
 
