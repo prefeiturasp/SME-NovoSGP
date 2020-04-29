@@ -11,6 +11,7 @@ const inicial = {
   avancos: '',
   outros: '',
   auditoriaRelatorioSemestral: null,
+  desabilitarCampos: false,
 };
 
 export default function RelatorioSemestral(state = inicial, action) {
@@ -40,6 +41,7 @@ export default function RelatorioSemestral(state = inicial, action) {
           avancos: '',
           outros: '',
           auditoriaRelatorioSemestral: null,
+          desabilitarCampos: false,
         };
       }
       case '@relatorioSemestral/setRelatorioSemestralEmEdicao': {
@@ -88,6 +90,12 @@ export default function RelatorioSemestral(state = inicial, action) {
         return {
           ...draft,
           auditoriaRelatorioSemestral: action.payload,
+        };
+      }
+      case '@relatorioSemestral/setDesabilitarCampos': {
+        return {
+          ...draft,
+          desabilitarCampos: action.payload,
         };
       }
 

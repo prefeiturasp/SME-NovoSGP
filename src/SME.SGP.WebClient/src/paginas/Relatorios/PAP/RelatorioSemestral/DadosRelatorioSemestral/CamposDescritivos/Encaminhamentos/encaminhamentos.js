@@ -1,10 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import Editor from '~/componentes/editor/editor';
 
 const Encaminhamentos = props => {
   const { onChange, dadosIniciais, alunoDesabilitado } = props;
+
+  const desabilitarCampos = useSelector(
+    store => store.relatorioSemestral.desabilitarCampos
+  );
 
   const [exibirCard, setExibirCard] = useState(false);
 
@@ -26,7 +31,7 @@ const Encaminhamentos = props => {
             id="encaminhamentos-editor"
             inicial={dadosIniciais.encaminhamentos}
             onChange={onChange}
-            desabilitar={alunoDesabilitado}
+            desabilitar={alunoDesabilitado || desabilitarCampos}
           />
         ) : (
           ''

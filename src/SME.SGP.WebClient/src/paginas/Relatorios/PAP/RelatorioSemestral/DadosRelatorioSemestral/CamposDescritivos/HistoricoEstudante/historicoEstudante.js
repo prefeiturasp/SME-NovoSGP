@@ -1,10 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import Editor from '~/componentes/editor/editor';
 
 const HistoricoEstudante = props => {
   const { onChange, dadosIniciais, alunoDesabilitado } = props;
+
+  const desabilitarCampos = useSelector(
+    store => store.relatorioSemestral.desabilitarCampos
+  );
 
   const [exibirCard, setExibirCard] = useState(false);
 
@@ -26,7 +31,7 @@ const HistoricoEstudante = props => {
             id="historico-estudante-editor"
             inicial={dadosIniciais.historicoEstudante}
             onChange={onChange}
-            desabilitar={alunoDesabilitado}
+            desabilitar={alunoDesabilitado || desabilitarCampos}
           />
         ) : (
           ''

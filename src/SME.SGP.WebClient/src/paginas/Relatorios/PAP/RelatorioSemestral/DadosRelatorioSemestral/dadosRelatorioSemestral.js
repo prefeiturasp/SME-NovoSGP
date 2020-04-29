@@ -11,6 +11,7 @@ import {
   setHistoricoEstudante,
   setOutros,
   setRelatorioSemestralEmEdicao,
+  setDesabilitarCampos,
 } from '~/redux/modulos/relatorioSemestral/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/ServicoRelatorioSemestral/ServicoRelatorioSemestral';
@@ -20,9 +21,14 @@ import Dificuldades from './CamposDescritivos/Dificuldades/dificuldades';
 import Encaminhamentos from './CamposDescritivos/Encaminhamentos/encaminhamentos';
 import HistoricoEstudante from './CamposDescritivos/HistoricoEstudante/historicoEstudante';
 import Outros from './CamposDescritivos/Outros/outros';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const DadosRelatorioSemestral = props => {
   const { codigoTurma } = props;
+
+  // const usuario = useSelector(store => store.usuario);
+  // const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_SEMESTRAL];
+  // TODO Não tem permissao ainda, descomentar linhas acima quando tiver!
 
   const dadosAlunoObjectCard = useSelector(
     store => store.relatorioSemestral.dadosAlunoObjectCard
@@ -42,6 +48,27 @@ const DadosRelatorioSemestral = props => {
 
   const [exibir, setExibir] = useState(true);
   const [carregando, setCarregando] = useState(false);
+
+  const validaPermissoes = useCallback(
+    novoRegistro => {
+      // TODO Não tem permissao ainda, quando tiver remover valores fixos!
+      const permissoesTela = {
+        podeAlterar: false,
+        podeConsultar: true,
+        podeExcluir: false,
+        podeIncluir: true,
+      };
+
+      const somenteConsulta = verificaSomenteConsulta(permissoesTela);
+
+      const desabilitar = novoRegistro
+        ? somenteConsulta || !permissoesTela.podeIncluir
+        : somenteConsulta || !permissoesTela.podeAlterar;
+
+      dispatch(setDesabilitarCampos(desabilitar));
+    },
+    [dispatch]
+  );
 
   const onChangeCampos = useCallback(
     (valor, campo) => {
@@ -94,13 +121,15 @@ const DadosRelatorioSemestral = props => {
 
   const setarDados = useCallback(
     dados => {
+      const novoRegistro = !dados.id;
+      validaPermissoes(novoRegistro);
       // TODO Setar os ids e dados importantes!
       const valores = {
         id: dados.id,
       };
       dispatch(setDadosRelatorioSemestral(valores));
     },
-    [dispatch]
+    [dispatch, validaPermissoes]
   );
 
   const setarAuditoria = useCallback(
@@ -147,7 +176,7 @@ const DadosRelatorioSemestral = props => {
   useEffect(() => {
     // TODO Revisar!
     if (codigoTurma && codigoEOL) {
-      obterDadosCamposDescritivos();
+      obterDadosCamposDescritivos(codigoEOL, codigoTurma);
     }
   }, [codigoTurma, codigoEOL, obterDadosCamposDescritivos]);
 

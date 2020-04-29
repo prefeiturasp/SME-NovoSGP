@@ -19,6 +19,10 @@ const BotoesAcoesRelatorioSemestral = () => {
     store => store.relatorioSemestral.relatorioSemestralEmEdicao
   );
 
+  const desabilitarCampos = useSelector(
+    store => store.relatorioSemestral.desabilitarCampos
+  );
+
   const onClickSalvar = () => {
     return servicoSalvarRelatorioSemestral.validarSalvarRelatorioSemestral(
       true
@@ -34,7 +38,7 @@ const BotoesAcoesRelatorioSemestral = () => {
   };
 
   const onClickVoltar = async () => {
-    if (relatorioSemestralEmEdicao) {
+    if (!desabilitarCampos && relatorioSemestralEmEdicao) {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
         const salvou = await onClickSalvar();
@@ -85,6 +89,7 @@ const BotoesAcoesRelatorioSemestral = () => {
         className="mr-2"
         onClick={onClickCancelar}
         disabled={
+          desabilitarCampos ||
           !relatorioSemestralEmEdicao ||
           !alunosRelatorioSemestral ||
           alunosRelatorioSemestral.length < 1 ||
@@ -99,7 +104,7 @@ const BotoesAcoesRelatorioSemestral = () => {
         bold
         className="mr-2"
         onClick={onClickSalvar}
-        disabled={!relatorioSemestralEmEdicao}
+        disabled={desabilitarCampos || !relatorioSemestralEmEdicao}
       />
     </>
   );

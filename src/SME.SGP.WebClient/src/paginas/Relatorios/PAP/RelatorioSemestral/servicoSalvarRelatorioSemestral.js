@@ -21,6 +21,7 @@ class ServicoSalvarRelatorioSemestral {
       outros,
       dadosRelatorioSemestral,
       relatorioSemestralEmEdicao,
+      desabilitarCampos,
     } = relatorioSemestral;
 
     const perguntaDescartarRegistros = async () => {
@@ -84,6 +85,10 @@ class ServicoSalvarRelatorioSemestral {
       }
       return false;
     };
+
+    if (desabilitarCampos) {
+      return true;
+    }
 
     if (salvarSemValidar && relatorioSemestralEmEdicao) {
       return salvar();
