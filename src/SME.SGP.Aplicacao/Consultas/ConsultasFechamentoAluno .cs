@@ -38,9 +38,9 @@ namespace SME.SGP.Aplicacao
             return anotacaoDto;
         }
 
-        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacaoAlunoParaConselhoAsync(string alunoCodigo, string turmaCodigo, int bimestre, bool EhFinal)
+        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacaoAlunoParaConselhoAsync(string alunoCodigo, long fechamentoTurmaId)
         {
-            var anotacoesDto = await repositorio.ObterAnotacoesTurmaAlunoBimestreAsync(alunoCodigo, turmaCodigo, bimestre, EhFinal);
+            var anotacoesDto = await repositorio.ObterAnotacoesTurmaAlunoBimestreAsync(alunoCodigo, fechamentoTurmaId);
             if (anotacoesDto == null || !anotacoesDto.Any())
                 return default;
 

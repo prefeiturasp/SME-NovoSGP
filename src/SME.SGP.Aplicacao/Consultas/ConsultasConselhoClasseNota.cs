@@ -1,5 +1,8 @@
 ﻿using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -10,5 +13,8 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
         }
+
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAsync(long conselhoClasseId, string alunoCodigo)
+            => await repositorioConselhoClasseNota.ObterNotasAlunoAsync(conselhoClasseId, alunoCodigo);
     }
 }

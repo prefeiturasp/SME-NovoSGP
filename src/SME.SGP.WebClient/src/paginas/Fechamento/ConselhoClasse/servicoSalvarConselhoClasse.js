@@ -3,7 +3,7 @@ import { erros, sucesso, confirmar, erro } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import {
   setAuditoriaAnotacaoRecomendacao,
-  setDadosAnotacoesRecomendacoes,
+  setDadosPrincipaisConselhoClasse,
   setConselhoClasseEmEdicao,
 } from '~/redux/modulos/conselhoClasse/actions';
 
@@ -15,7 +15,7 @@ class ServicoSalvarConselhoClasse {
     const { conselhoClasse } = state;
 
     const {
-      dadosAnotacoesRecomendacoes,
+      dadosPrincipaisConselhoClasse,
       dadosAlunoObjectCard,
       anotacoesPedagogicas,
       recomendacaoAluno,
@@ -33,8 +33,8 @@ class ServicoSalvarConselhoClasse {
 
     const salvar = async () => {
       const params = {
-        conselhoClasseId: dadosAnotacoesRecomendacoes.conselhoClasseId,
-        fechamentoTurmaId: dadosAnotacoesRecomendacoes.fechamentoTurmaId,
+        conselhoClasseId: dadosPrincipaisConselhoClasse.conselhoClasseId,
+        fechamentoTurmaId: dadosPrincipaisConselhoClasse.fechamentoTurmaId || 0,
         alunoCodigo: dadosAlunoObjectCard.codigoEOL,
         anotacoesPedagogicas,
         recomendacaoAluno,
@@ -56,10 +56,12 @@ class ServicoSalvarConselhoClasse {
       ).catch(e => erros(e));
 
       if (retorno && retorno.status === 200) {
-        if (!dadosAnotacoesRecomendacoes.conselhoClasseId) {
-          dadosAnotacoesRecomendacoes.conselhoClasseId =
+        if (!dadosPrincipaisConselhoClasse.conselhoClasseId) {
+          dadosPrincipaisConselhoClasse.conselhoClasseId =
             retorno.data.conselhoClasseId;
-          dispatch(setDadosAnotacoesRecomendacoes(dadosAnotacoesRecomendacoes));
+          dispatch(
+            setDadosPrincipaisConselhoClasse(dadosPrincipaisConselhoClasse)
+          );
         }
 
         const auditoria = {

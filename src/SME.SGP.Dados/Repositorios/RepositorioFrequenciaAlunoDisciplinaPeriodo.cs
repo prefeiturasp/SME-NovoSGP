@@ -38,15 +38,18 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public IEnumerable<FrequenciaAluno> ObterAlunosComAusenciaPorDisciplinaNoPeriodo(long periodoId)
+        public IEnumerable<FrequenciaAluno> ObterAlunosComAusenciaPorDisciplinaNoPeriodo(long periodoId, bool eja)
         {
-            var query = @"select f.* 
+            var query = $@"select f.* 
                           from frequencia_aluno f
                          inner join periodo_escolar p on p.periodo_fim = f.periodo_fim and p.periodo_inicio = f.periodo_inicio
+                         inner join turma t on t.turma_id = f.turma_id
                         where not f.excluido
                           and p.id = @periodoId
                           and f.tipo = 1
-                          and f.total_ausencias - f.total_compensacoes > 0 ";
+                          and f.total_ausencias - f.total_compensacoes > 0 "
+                        + (eja ? " and t.modalidade_codigo = 3" : " and t.modalidade_codigo <> 3");
+
 
             return database.Conexao.Query<FrequenciaAluno>(query, new { periodoId });
         }
@@ -86,6 +89,46 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, new { alunoCodigo });
         }
 
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma)
+        {
+            var query = @"select * from frequencia_aluno fa 
+                            where fa.codigo_aluno = @codigoAluno
+                            and fa.turma_id = @turmaId and fa.tipo = 1";
+
+            if (bimestre > 0)
+                query += " and fa.bimestre = @bimestre";
+
+            var parametros = new
+            {
+                codigoAluno,
+                bimestre,
+                turmaId = codigoTurma
+            };
+
+            return await database.Conexao.QueryAsync<FrequenciaAluno>(query, parametros);
+        }
+
+        public async Task<FrequenciaAluno> ObterPorAlunoBimestreAsync(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
+        {
+            var query = new StringBuilder(@"select *
+                        from frequencia_aluno
+                        where codigo_aluno = @codigoAluno
+	                        and tipo = @tipoFrequencia
+	                        and bimestre = @bimestre ");
+
+            if (!string.IsNullOrEmpty(disciplinaId))
+                query.AppendLine("and disciplina_id = @disciplinaId");
+
+            query.AppendLine(" order by id desc");
+            return await database.Conexao.QueryFirstOrDefaultAsync<FrequenciaAluno>(query.ToString(), new
+            {
+                codigoAluno,
+                bimestre,
+                tipoFrequencia,
+                disciplinaId
+            });
+        }
+
         public FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
         {
             var query = new StringBuilder(@"select *
@@ -107,7 +150,7 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId
             });
         }
-        
+
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
         {
             var query = @"select *

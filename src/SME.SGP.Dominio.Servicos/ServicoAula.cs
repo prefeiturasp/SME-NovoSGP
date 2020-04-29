@@ -564,9 +564,9 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<IEnumerable<long>> ObterDisciplinasProfessor(Aula aula, Usuario usuario)
         {
-            IEnumerable<DisciplinaResposta> lstDisciplinasProf = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual);
+            IEnumerable<ComponenteCurricularEol> lstDisciplinasProf = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual);
 
-            return lstDisciplinasProf != null && lstDisciplinasProf.Any() ? lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular)) : null;
+            return lstDisciplinasProf != null && lstDisciplinasProf.Any() ? lstDisciplinasProf.Select(d => Convert.ToInt64(d.Codigo)) : null;
         }
 
         private IEnumerable<long> ObterDisciplinasProfessorCJ(Aula aula, Usuario usuario)
