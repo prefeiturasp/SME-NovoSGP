@@ -390,30 +390,35 @@ namespace SME.SGP.Dominio.Servicos
             servicoNotificacao.Salvar(notificacao);
         }
 
-        private IEnumerable<(Cargo? Cargo, Usuario Usuario)> BuscaGestoresUe(string codigoUe)
+        /// <summary>
+        /// Busca gestores da UE (CP > AD > Diretor)
+        /// </summary>
+        /// <param name="codigoUe">Código da UE</param>
+        /// <returns>Lista de Cargos e Usuarios da gestão</returns>
+        private IEnumerable<(Cargo? Cargo, Usuario Usuario)> BuscaGestoresUe(string codigoUe, Cargo cargo = Cargo.CP)
         {
             // Buscar gestor da Ue
-            var funcionariosRetornoEol = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.CP);
+            var funcionariosRetornoEol = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, cargo);
 
             if (funcionariosRetornoEol == null)
-                return null;
-
-            var cargoNotificacao = funcionariosRetornoEol.GroupBy(f => f.Cargo).Select(f => f.Key).First();
-            Cargo? proximoNivel = null;
-
-            if (cargoNotificacao == Cargo.CP || cargoNotificacao == Cargo.AD)
-                proximoNivel = Cargo.Diretor;
-            else
-                proximoNivel = servicoNotificacao.ObterProximoNivel(cargoNotificacao, false);
-
-            if (proximoNivel != null)
-                funcionariosRetornoEol = funcionariosRetornoEol.Concat(servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, proximoNivel));
-            else
                 return null;
 
             var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var usuarioEol in funcionariosRetornoEol)
                 usuarios.Add((usuarioEol.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.Id)));
+
+            var cargoNotificacao = funcionariosRetornoEol.GroupBy(f => f.Cargo).Select(f => f.Key).First();
+            // Carrega só até o nível de Diretor
+            if (!new[] { Cargo.Diretor, Cargo.Supervisor, Cargo.SupervisorTecnico }.Contains(cargoNotificacao.Value))
+            {
+                Cargo? proximoNivel = servicoNotificacao.ObterProximoNivel(cargoNotificacao, false);
+                if (proximoNivel != null)
+                {
+                    var usuariosProximoNivel = BuscaGestoresUe(codigoUe, proximoNivel.Value);
+                    if (usuariosProximoNivel != null && usuariosProximoNivel.Any())
+                        usuarios.AddRange(usuariosProximoNivel);
+                }
+            }
 
             return usuarios;
         }
