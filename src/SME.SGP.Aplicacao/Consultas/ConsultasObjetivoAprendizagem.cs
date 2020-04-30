@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -22,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConfiguration configuration;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano;
         private readonly IServicoJurema servicoJurema;
         private readonly IServicoUsuario servicoUsuario;
@@ -31,13 +30,15 @@ namespace SME.SGP.Aplicacao
                                                      IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                                      IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano,
                                                      IConfiguration configuration,
-                                                     IServicoUsuario servicoUsuario)
+                                                     IServicoUsuario servicoUsuario,
+                                                     IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem)
         {
             this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioObjetivoAprendizagem = repositorioObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagem));
             this.repositorioObjetivosPlano = repositorioObjetivosPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivosPlano));
         }
 
@@ -60,29 +61,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Listar()
         {
-            List<ObjetivoAprendizagemDto> objetivos;
-
-            var objetivosCacheString = await repositorioCache.ObterAsync("ObjetivosAprendizagem", true);
-
-            if (!string.IsNullOrWhiteSpace(objetivosCacheString))
-                return JsonConvert.DeserializeObject<List<ObjetivoAprendizagemDto>>(objetivosCacheString);
-
-            var objetivosJuremaDto = await servicoJurema.ObterListaObjetivosAprendizagem();
-
-            objetivos = MapearParaDto(objetivosJuremaDto).ToList();
-
             var tempoExpiracao = int.Parse(configuration.GetSection("ExpiracaoCache").GetSection("ObjetivosAprendizagem").Value);
 
-            await repositorioCache.SalvarAsync("ObjetivosAprendizagem", JsonConvert.SerializeObject(objetivos), tempoExpiracao, true);
-
-            return objetivos;
+            return await repositorioCache.ObterAsync("ObjetivosAprendizagem", () => ListarSemCache(), tempoExpiracao, true);
         }
 
         public async Task<ObjetivoAprendizagemSimplificadoDto> ObterAprendizagemSimplificadaPorId(long id)
         {
             IEnumerable<ObjetivoAprendizagemDto> lstObjAprendizagemDtos = await Listar();
 
-            ObjetivoAprendizagemDto objetivoDto = lstObjAprendizagemDtos.Where(obj => obj.Id == id).FirstOrDefault();
+            ObjetivoAprendizagemDto objetivoDto = lstObjAprendizagemDtos.FirstOrDefault(obj => obj.Id == id);
 
             return new ObjetivoAprendizagemSimplificadoDto()
             {
@@ -120,21 +108,25 @@ namespace SME.SGP.Aplicacao
                 Where(c => objetivosPlano.Any(o => o.ObjetivoAprendizagemJuremaId == c.Id));
         }
 
-        private IEnumerable<ObjetivoAprendizagemDto> MapearParaDto(IEnumerable<ObjetivoAprendizagemResposta> objetivos)
+        private async Task<List<ObjetivoAprendizagemDto>> ListarSemCache()
         {
-            foreach (var objetivoDto in objetivos)
+            var objetivosJuremaDto = await repositorioObjetivoAprendizagem.Listar();
+            return MapearParaDto(objetivosJuremaDto).ToList();
+        }
+
+        private IEnumerable<ObjetivoAprendizagemDto> MapearParaDto(IEnumerable<ObjetivoAprendizagem> objetivos)
+        {
+            foreach (var objetivoBase in objetivos)
             {
-                var codigo = objetivoDto.Codigo.Replace("(", "").Replace(")", "");
-                var ano = Anos.FirstOrDefault(x => x.Value.Equals(objetivoDto.Ano)).Key;
-                if (ano != 0)
+                if (objetivoBase.Ano != 0)
                 {
                     yield return new ObjetivoAprendizagemDto()
                     {
-                        Descricao = objetivoDto.Descricao,
-                        Id = objetivoDto.Id,
-                        Ano = ano,
-                        Codigo = codigo,
-                        IdComponenteCurricular = objetivoDto.ComponenteCurricularId
+                        Descricao = objetivoBase.Descricao,
+                        Id = objetivoBase.Id,
+                        Ano = objetivoBase.Ano,
+                        Codigo = objetivoBase.Codigo,
+                        IdComponenteCurricular = objetivoBase.ComponenteCurricularId
                     };
                 }
             }
