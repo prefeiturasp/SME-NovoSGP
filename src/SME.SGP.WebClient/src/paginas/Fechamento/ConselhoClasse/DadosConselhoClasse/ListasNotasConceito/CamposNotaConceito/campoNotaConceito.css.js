@@ -13,7 +13,7 @@ export const CampoAlerta = styled.div`
   align-items: center;
   background-color: ${Base.Verde};
   border-radius: 4px;
-  width: 87px;
+  width: ${props => (props.ehNota ? '87px' : '107px')};
   height: 37px;
   padding-left: 1px;
   .ant-input-number {

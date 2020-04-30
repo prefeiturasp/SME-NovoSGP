@@ -1,15 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import CampoNumero from '~/componentes/campoNumero';
 import {
   setExpandirLinha,
   setNotaConceitoPosConselho,
 } from '~/redux/modulos/conselhoClasse/actions';
-import { useDispatch } from 'react-redux';
-import { CampoAlerta, CampoCentralizado } from './campoNota.css';
-import { Tooltip } from 'antd';
-import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import { erro } from '~/servicos/alertas';
+import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
+import { CampoAlerta, CampoCentralizado } from './campoNotaConceito.css';
 
 const CampoNota = props => {
   const { id, notaPosConselho, idCampo, codigoComponenteCurricular } = props;
@@ -19,14 +18,14 @@ const CampoNota = props => {
   const dispatch = useDispatch();
 
   const mostrarJustificativa = () => {
-    let novaLinha = {};
+    const novaLinha = {};
     novaLinha[idCampo] = true;
     dispatch(setExpandirLinha(novaLinha));
   };
 
   const setNotaPosConselho = (
     nota,
-    registroSalvo,
+    ehEdicao,
     justificativa = null,
     auditoria = null
   ) => {
@@ -35,7 +34,7 @@ const CampoNota = props => {
         id,
         codigoComponenteCurricular,
         nota,
-        registroSalvo,
+        ehEdicao,
         justificativa,
         auditoria,
         idCampo,
@@ -46,7 +45,7 @@ const CampoNota = props => {
   const onChangeValor = valor => {
     setNotaValorAtual(valor);
     mostrarJustificativa();
-    setNotaPosConselho(valor, false);
+    setNotaPosConselho(valor, true);
   };
 
   const onClickMostrarJustificativa = async () => {
@@ -64,7 +63,7 @@ const CampoNota = props => {
         alteradoEm: dados.data.alteradoEm,
         alteradoRf: dados.data.alteradoRf,
       };
-      setNotaPosConselho(nota, true, justificativa, auditoria);
+      setNotaPosConselho(nota, false, justificativa, auditoria);
     }
   };
 
@@ -72,7 +71,7 @@ const CampoNota = props => {
     <>
       {id ? (
         <CampoCentralizado>
-          <CampoAlerta>
+          <CampoAlerta ehNota>
             <CampoNumero
               onChange={onChangeValor}
               value={notaValorAtual}
@@ -80,17 +79,8 @@ const CampoNota = props => {
               max={10}
               step={0.5}
             />
-            <div className="icone">
-              <Tooltip
-                title="Teste"
-                placement="bottom"
-                overlayStyle={{ fontSize: '12px' }}
-              >
-                <i
-                  className="fas fa-user-edit"
-                  onClick={onClickMostrarJustificativa}
-                ></i>
-              </Tooltip>
+            <div className="icone" onClick={onClickMostrarJustificativa}>
+              <i className="fas fa-user-edit" />
             </div>
           </CampoAlerta>
         </CampoCentralizado>
@@ -109,10 +99,16 @@ const CampoNota = props => {
 
 CampoNota.propTypes = {
   notaPosConselho: PropTypes.oneOfType([PropTypes.any]),
+  id: PropTypes.oneOfType([PropTypes.number]),
+  idCampo: PropTypes.oneOfType([PropTypes.string]),
+  codigoComponenteCurricular: PropTypes.oneOfType([PropTypes.any]),
 };
 
 CampoNota.defaultProps = {
   notaPosConselho: '',
+  id: null,
+  idCampo: '',
+  codigoComponenteCurricular: '',
 };
 
 export default CampoNota;
