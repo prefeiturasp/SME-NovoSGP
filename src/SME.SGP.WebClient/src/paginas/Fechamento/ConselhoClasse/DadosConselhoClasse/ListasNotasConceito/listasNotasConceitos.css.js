@@ -57,6 +57,11 @@ export const Lista = styled.div`
     max-width: 250px;
     min-width: 250px;
   }
+
+  .borda-abaixo-media {
+    border: solid 2px #b22222 !important;
+    border-radius: 7px;
+  }
 `;
 
 export const BarraLateralVerde = styled.td`
