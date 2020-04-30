@@ -5,11 +5,11 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioObjetivoAprendizagem
     {
-        Task Atualizar(ObjetivoAprendizagem objetivoAprendizagem);
+        Task AtualizarAsync(ObjetivoAprendizagem objetivoAprendizagem);
 
-        Task<IEnumerable<ObjetivoAprendizagem>> Listar();
+        Task<IEnumerable<ObjetivoAprendizagem>> ListarAsync();
 
-        Task<ObjetivoAprendizagem> ObterPorId(long id);
+        Task<ObjetivoAprendizagem> ObterPorIdAsync(long id);
 
         Task ReativarAsync(long id);
 

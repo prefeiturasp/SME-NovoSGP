@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
             this.connectionString = configuration.GetConnectionString("SGP-Postgres");
         }
 
-        public async Task Atualizar(ObjetivoAprendizagem objetivoAprendizagem)
+        public async Task AtualizarAsync(ObjetivoAprendizagem objetivoAprendizagem)
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagem>> Listar()
+        public async Task<IEnumerable<ObjetivoAprendizagem>> ListarAsync()
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
@@ -39,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<ObjetivoAprendizagem> ObterPorId(long id)
+        public async Task<ObjetivoAprendizagem> ObterPorIdAsync(long id)
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {

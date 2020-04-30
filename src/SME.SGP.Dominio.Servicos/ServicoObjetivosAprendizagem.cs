@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio.Servicos
                 var dataUltimaAtualizacao = DateTime.Parse(parametroDataUltimaAtualizacao.Value);
 
                 var objetivosJuremaResposta = await servicoJurema.ObterListaObjetivosAprendizagem();
-                var objetivosBase = await repositorioObjetivoAprendizagem.Listar();
+                var objetivosBase = await repositorioObjetivoAprendizagem.ListarAsync();
 
                 var objetivosAIncluir = objetivosJuremaResposta?.Where(c => !objetivosBase.Any(b => b.CodigoCompleto == c.Codigo));
                 var objetivosADesativar = objetivosBase?.Where(c => !c.Excluido)?.Where(c => !objetivosJuremaResposta.Any(b => b.Codigo == c.CodigoCompleto));
@@ -71,7 +71,7 @@ namespace SME.SGP.Dominio.Servicos
                     foreach (var objetivo in objetivosADesativar)
                     {
                         objetivo.Desativar();
-                        await repositorioObjetivoAprendizagem.Atualizar(objetivo);
+                        await repositorioObjetivoAprendizagem.AtualizarAsync(objetivo);
                     }
                 }
 
@@ -97,11 +97,11 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task AtualizarObjetivoBase(ObjetivoAprendizagemResposta objetivo)
         {
-            var objetivoBase = await repositorioObjetivoAprendizagem.ObterPorId(objetivo.Id);
+            var objetivoBase = await repositorioObjetivoAprendizagem.ObterPorIdAsync(objetivo.Id);
             if (objetivoBase != null)
             {
                 MapearParaObjetivoDominio(objetivo, objetivoBase);
-                await repositorioObjetivoAprendizagem.Atualizar(objetivoBase);
+                await repositorioObjetivoAprendizagem.AtualizarAsync(objetivoBase);
             }
         }
 
