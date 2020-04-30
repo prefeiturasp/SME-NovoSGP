@@ -17,7 +17,7 @@ namespace SME.SGP.Background
             Cliente.ExecutarPeriodicamente<IServicoAbrangencia>(c => c.SincronizarEstruturaInstitucionalVigenteCompleta(), "0 13,17,19 * * 1-5");
 
             //todos os dias à 1 da manhã
-            Cliente.ExecutarPeriodicamente<IServicoObjetivosAprendizagem>(c => c.SincronizarObjetivosComJurema(), Cron.Daily(1));
+            Cliente.ExecutarPeriodicamente<IServicoObjetivosAprendizagem>(c => c.SincronizarObjetivosComJurema(), Cron.Daily(22));
 
             Cliente.ExecutarPeriodicamente<IServicoNotificacaoFrequencia>(c => c.VerificaNotificacaoBimestral(), Cron.Daily(2));
 
