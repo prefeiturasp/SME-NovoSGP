@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<List<ObjetivoAprendizagemDto>> ListarSemCache()
         {
-            var objetivosJuremaDto = await repositorioObjetivoAprendizagem.Listar();
+            var objetivosJuremaDto = await repositorioObjetivoAprendizagem.ListarAsync();
             return MapearParaDto(objetivosJuremaDto).ToList();
         }
 
