@@ -117,13 +117,13 @@ const CampoNota = props => {
     return regexValorInvalido.test(String(valorNovo));
   };
 
-  const editouCampo = (notaOriginal, notaNova) => {
-    const novaNotaOriginal = removerCaracteresInvalidos(String(notaOriginal));
-    const novaNotaNova = removerCaracteresInvalidos(String(notaNova));
-    if (novaNotaOriginal === '' && novaNotaNova === '') {
+  const editouCampo = (original, nova) => {
+    const novaNotaOriginal = removerCaracteresInvalidos(String(original));
+    const novaNota = removerCaracteresInvalidos(String(nova));
+    if (novaNotaOriginal === '' && novaNota === '') {
       return false;
     }
-    return novaNotaOriginal !== novaNotaNova;
+    return novaNotaOriginal !== novaNota;
   };
 
   const campoNotaPosConselho = (abaixoMedia, validarMedia) => {
