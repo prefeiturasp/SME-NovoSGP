@@ -8,11 +8,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
 // Redux
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  setLoaderSecao,
-  setLoaderTabela,
-} from '~/redux/modulos/loader/actions';
+import { useSelector } from 'react-redux';
 
 // Serviços
 import RotasDto from '~/dtos/rotasDto';
@@ -50,9 +46,8 @@ import {
 } from '~/utils/funcoes/gerais';
 
 function AtribuicaoCJForm({ match, location }) {
-  const dispatch = useDispatch();
-  const carregando = useSelector(store => store.loader.loaderSecao);
-  const carregandoTabela = useSelector(store => store.loader.loaderTabela);
+  const [carregando, setCarregando] = useState(false);
+  const [carregandoTabela, setcarregandoTabela] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
   const usuario = useSelector(store => store.usuario);
   const [dreId, setDreId] = useState('');
@@ -99,7 +94,7 @@ function AtribuicaoCJForm({ match, location }) {
 
   const onSubmitFormulario = async valores => {
     try {
-      dispatch(setLoaderSecao(true));
+      setCarregando(true);
       const { data, status } = await AtribuicaoCJServico.salvarAtribuicoes({
         ...valores,
         usuarioRf: valores.professorRf,
@@ -107,14 +102,14 @@ function AtribuicaoCJForm({ match, location }) {
         disciplinas: [...listaProfessores],
       });
       if (data || status === 200) {
-        dispatch(setLoaderSecao(false));
+        setCarregando(false);
         sucesso('Atribuição de CJ salva com sucesso.');
         history.push('/gestao/atribuicao-cjs');
         obterPerfis(usuario.rf);
       }
     } catch (err) {
       if (err) {
-        dispatch(setLoaderSecao(false));
+        setCarregando(false);
         erro(err.response.data.mensagens[0]);
       }
     }
@@ -165,6 +160,7 @@ function AtribuicaoCJForm({ match, location }) {
     if (location && location.search) {
       const query = queryString.parse(location.search);
       setBreadcrumbManual(match.url, 'Atribuição', '/gestao/atribuicao-cjs');
+
       setValoresIniciais({
         ...valoresIniciais,
         modalidadeId: query.modalidadeId,
@@ -173,7 +169,7 @@ function AtribuicaoCJForm({ match, location }) {
         dreId: query.dreId,
       });
     }
-  }, []);
+  }, [location, match.url]);
 
   useEffect(() => {
     async function buscaAtribs(valores) {
@@ -189,23 +185,24 @@ function AtribuicaoCJForm({ match, location }) {
       }
 
       try {
-        setLoaderTabela(true);
+        setcarregandoTabela(true);
         const { data, status } = await AtribuicaoCJServico.buscarAtribuicoes(
           ueId,
           modalidadeId,
           turmaId,
           professorRf
         );
+
         if (data && status === 200) {
           setListaProfessores(data.itens);
           setAuditoria(data);
-          setLoaderTabela(false);
+          setcarregandoTabela(false);
           if (data.itens.some(x => x.substituir === true)) {
             setNovoRegistro(false);
           }
         }
       } catch (error) {
-        setLoaderTabela(false);
+        setcarregandoTabela(false);
         if (
           error.response.data.mensagens &&
           error.response.data.mensagens.length
@@ -268,7 +265,7 @@ function AtribuicaoCJForm({ match, location }) {
                       dreId={dreId}
                       form={form}
                       url="v1/dres"
-                      onChange={() => null}
+                      onChange={() => {}}
                     />
                   </Grid>
                 </Linha>
@@ -280,7 +277,7 @@ function AtribuicaoCJForm({ match, location }) {
                         anoLetivo={anoAtual}
                         showLabel
                         form={form}
-                        onChange={() => null}
+                        onChange={() => {}}
                       />
                     </Row>
                   </Grid>
@@ -288,14 +285,20 @@ function AtribuicaoCJForm({ match, location }) {
                     <ModalidadesDropDown
                       label="Modalidade"
                       form={form}
-                      onChange={() => null}
+                      onChange={() => {
+                        form.setFieldValue('turmaId', undefined);
+                        setValoresIniciais({
+                          ...valoresIniciais,
+                          turmaId: undefined,
+                        });
+                      }}
                     />
                   </Grid>
                   <Grid cols={2}>
                     <TurmasDropDown
                       label="Turma"
                       form={form}
-                      onChange={value => value}
+                      onChange={() => {}}
                     />
                   </Grid>
                 </Linha>
