@@ -2,6 +2,7 @@ import { Form, Formik } from 'formik';
 import * as moment from 'moment';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import shortid from 'shortid';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -31,7 +32,6 @@ const EventosLista = ({ match }) => {
   const permissoesTela = usuario.permissoes[RotasDto.EVENTOS];
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
-
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
   const [listaDre, setListaDre] = useState([]);
   const [campoUeDesabilitado, setCampoUeDesabilitado] = useState(true);
@@ -44,11 +44,10 @@ const EventosLista = ({ match }) => {
   const [eventosSelecionados, setEventosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
   const [selecionouCalendario, setSelecionouCalendario] = useState(false);
-  const [tipocalendarioSelecionado, setTipocalendarioSelecionado] = useState();
-
   const [carregandoTipos, setCarregandoTipos] = useState(false);
-
   const [refForm, setRefForm] = useState();
+
+  const [estaCarregando, setEstaCarregando] = useState(false);
 
   const [valoresIniciais] = useState({
     tipoCalendarioId: undefined,
@@ -93,14 +92,14 @@ const EventosLista = ({ match }) => {
   const validarFiltrar = useCallback(async () => {
     if (refForm) {
       const valido = await refForm.validateForm();
-      if (valido) {
+      if (valido && !estaCarregando) {
         refForm.handleSubmit(e => e);
         setFiltroValido({ valido: true });
       } else {
         setFiltroValido({ valido: false });
       }
     }
-  }, [refForm]);
+  }, [estaCarregando, refForm]);
 
   const filtrar = (campo, valor) => {
     const filtroAtual = filtro;
@@ -191,7 +190,7 @@ const EventosLista = ({ match }) => {
     ) {
       const { tipoCalendarioId } = match.params;
       const temTipoParaSetar = listaCalendarioEscolar.find(
-        item => item.id == tipoCalendarioId
+        item => String(item.id) === String(tipoCalendarioId)
       );
       if (temTipoParaSetar) {
         refForm.setFieldValue('tipoCalendarioId', tipoCalendarioId);
@@ -380,7 +379,7 @@ const EventosLista = ({ match }) => {
 
   const onChangeNomeEvento = e => {
     setNomeEvento(e.target.value);
-    filtrar('nomeEvento', e.target.value);
+    if (e.target.value.length >= 2) filtrar('nomeEvento', e.target.value);
   };
 
   const onChangeTipoEvento = tipo => {
@@ -611,6 +610,7 @@ const EventosLista = ({ match }) => {
               multiSelecao
               selecionarItems={onSelecionarItems}
               filtroEhValido={filtroValido.valido}
+              onCarregando={valor => setEstaCarregando(valor)}
             />
           ) : (
             ''
@@ -619,6 +619,17 @@ const EventosLista = ({ match }) => {
       </Card>
     </>
   );
+};
+
+EventosLista.propTypes = {
+  match: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
+};
+
+EventosLista.defaultProps = {
+  match: {},
 };
 
 export default EventosLista;
