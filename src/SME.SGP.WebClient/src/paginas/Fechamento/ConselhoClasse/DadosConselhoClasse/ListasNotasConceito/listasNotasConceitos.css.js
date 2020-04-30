@@ -36,17 +36,20 @@ export const Lista = styled.div`
   }
 
   .input-notas-conceitos {
-    width: 43.8px;
-    height: 35.6px;
-    border-radius: 3px;
-    border: solid 1px #ced4da;
-    background-color: #f5f6f8;
-    margin-right: 5px;
-    margin-left: 5px;
-    text-align: center;
-    padding-top: 9px;
-    margin-bottom: 9px;
-    color: #a4a4a4;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    span {
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      background-color: #f5f6f8;
+      border-radius: 4px;
+      border: 1px solid #ced4da;
+      color: ${Base.CinzaDesabilitado} !important;
+      width: 43.8px;
+      height: 35.6px;
+    }
   }
 
   .col-nota-conceito {
