@@ -83,11 +83,17 @@ namespace SME.SGP.Dominio.Servicos
 
                     var conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAlunoResumido(conselhoClasseId, alunoCodigo);
 
-                    conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.ComponenteCurricularCodigo);
+                    conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
 
                     if (conselhoClasseNota == null)
                     {
                         conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
+                    }
+                    else
+                    {
+                        conselhoClasseNota.Justificativa = conselhoClasseNotaDto.Justificativa;
+                        conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
+                        conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito;
                     }
 
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
@@ -120,7 +126,7 @@ namespace SME.SGP.Dominio.Servicos
             return new ConselhoClasseNota()
             {
                 ConselhoClasseAlunoId = conselhoClasseAlunoId,
-                ComponenteCurricularCodigo = conselhoClasseNotaDto.ComponenteCurricularCodigo,
+                ComponenteCurricularCodigo = conselhoClasseNotaDto.CodigoComponenteCurricular,
                 Nota = conselhoClasseNotaDto.Nota.Value,
                 ConceitoId = conselhoClasseNotaDto.Conceito,
                 Justificativa = conselhoClasseNotaDto.Justificativa,

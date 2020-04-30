@@ -14,7 +14,9 @@ const inicial = {
   auditoriaAnotacaoRecomendacao: null,
   fechamentoPeriodoInicioFim: {},
   notasJustificativas: { componentes: [], componentesRegencia: [] },
-  dadosListasNotasConceitos: [],
+  expandirLinha: [],
+  dadosListasNotasConceitos: {},
+  notaConceitoPosConselhoAtual: {},
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -129,6 +131,19 @@ export default function ConselhoClasse(state = inicial, action) {
         return {
           ...draft,
           dadosListasNotasConceitos: action.payload,
+        };
+      }
+
+      case '@conselhoClasse/setExpandirLinha': {
+        return {
+          ...draft,
+          expandirLinha: action.payload,
+        };
+      }
+      case '@conselhoClasse/setNotaConceitoPosConselho': {
+        return {
+          ...draft,
+          notaConceitoPosConselhoAtual: action.payload,
         };
       }
 
