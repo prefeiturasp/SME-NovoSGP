@@ -12,7 +12,7 @@ import {
 import LinhaJustificativa from '../../Justificativa/LinhaJustificativa/LinhaJustificativa';
 
 const ListaBimestre = props => {
-  const { dadosLista, tipoNota, listaTiposConceitos } = props;
+  const { dadosLista, tipoNota, listaTiposConceitos, mediaAprovacao } = props;
 
   const descricaoTipoNota =
     tipoNota === notasConceitos.Notas ? 'Nota' : 'Conceito';
@@ -43,7 +43,8 @@ const ListaBimestre = props => {
             id={id}
             notaPosConselho={notaPosConselho}
             idCampo={idCampo}
-            codigoComponenteCurricular={codigoComponenteCurricular}
+            codigoComponenteCurricular={String(codigoComponenteCurricular)}
+            mediaAprovacao={mediaAprovacao}
           />
         );
       case Number(notasConceitos.Conceitos):
@@ -208,12 +209,14 @@ ListaBimestre.propTypes = {
   dadosLista: PropTypes.oneOfType([PropTypes.object]),
   tipoNota: PropTypes.oneOfType([PropTypes.any]),
   listaTiposConceitos: PropTypes.oneOfType([PropTypes.array]),
+  mediaAprovacao: PropTypes.number,
 };
 
 ListaBimestre.defaultProps = {
   dadosLista: {},
   tipoNota: 0,
   listaTiposConceitos: [],
+  mediaAprovacao: 5,
 };
 
 export default ListaBimestre;
