@@ -51,6 +51,9 @@ const ListaBimestre = props => {
           <CampoConceito
             notaPosConselho={notaPosConselho}
             listaTiposConceitos={listaTiposConceitos}
+            id={id}
+            idCampo={idCampo}
+            codigoComponenteCurricular={codigoComponenteCurricular}
           />
         );
       default:

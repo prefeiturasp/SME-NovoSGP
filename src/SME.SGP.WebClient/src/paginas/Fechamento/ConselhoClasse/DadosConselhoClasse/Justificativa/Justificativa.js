@@ -31,7 +31,10 @@ const Justificativa = () => {
   } = dadosPrincipaisConselhoClasse;
 
   const valoresIniciais = {
-    justificativa: notaConceito ? notaConceito.justificativa : '',
+    justificativa:
+      notaConceito && notaConceito.justificativa
+        ? notaConceito.justificativa
+        : '',
   };
   const [auditoria, setAuditoria] = useState(
     notaConceito && notaConceito.auditoria ? notaConceito.auditoria : {}
@@ -50,7 +53,8 @@ const Justificativa = () => {
       alunoCodigo,
       notaDto
     )
-      .then(() => {
+      .then(resp => {
+        if (resp && resp.data) setAuditoria(resp.data);
         if (notaConceito && notaConceito.idCampo) {
           const linha = {};
           linha[notaConceito.idCampo] = false;
@@ -95,7 +99,7 @@ const Justificativa = () => {
                     form={form}
                     name="justificativa"
                     id="justificativa"
-                    desabilitar={notaConceito && notaConceito.registroSalvo}
+                    desabilitar={notaConceito && !notaConceito.ehEdicao}
                   />
                   <div className="d-flex justify-content-end pt-2">
                     <Button
@@ -104,7 +108,7 @@ const Justificativa = () => {
                       onClick={e => {
                         clicouBotaoSalvar(form, e);
                       }}
-                      disabled={notaConceito && notaConceito.registroSalvo}
+                      disabled={notaConceito && !notaConceito.ehEdicao}
                       border
                     />
                   </div>
