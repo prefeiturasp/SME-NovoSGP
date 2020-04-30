@@ -31,6 +31,8 @@ import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/a
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(state => state.usuario);
+  const perfis = useSelector(state => state.perfil);
+
   const dispatch = useDispatch();
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -434,11 +436,19 @@ const FrequenciaPlanoAula = () => {
         'Meus objetivos - O campo meus objetivos específicos é obrigatório'
       );
     }
+
     if (stringNulaOuEmBranco(planoAula.desenvolvimentoAula)) {
       errosValidacaoPlano.push(
         'Desenvolvimento da aula - A sessão de desenvolvimento da aula deve ser preenchida'
       );
     }
+
+    const perfil =
+      perfis && perfis.perfis.find(item => item.nomePerfil === 'PAP');
+    if (perfil && !planoAula.objetivosAprendizagemAula.length) {
+      return;
+    }
+
     if (
       !ehProfessorCj &&
       temObjetivos &&
