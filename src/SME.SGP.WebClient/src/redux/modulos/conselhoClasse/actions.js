@@ -77,3 +77,13 @@ export const setDadosListasNotasConceitos = payload => ({
   type: '@conselhoClasse/setDadosListasNotasConceitos',
   payload,
 });
+
+export const setExpandirLinha = payload => ({
+  type: '@conselhoClasse/setExpandirLinha',
+  payload,
+});
+
+export const setNotaConceitoPosConselho = payload => ({
+  type: '@conselhoClasse/setNotaConceitoPosConselho',
+  payload,
+});

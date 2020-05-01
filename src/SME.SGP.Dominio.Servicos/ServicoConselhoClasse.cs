@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<AuditoriaDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId)
+        public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId)
         {
             var conselhoClasseNota = new ConselhoClasseNota();
             if (fechamentoTurmaId == 0)
@@ -69,6 +69,8 @@ namespace SME.SGP.Dominio.Servicos
                     unitOfWork.IniciarTransacao();
                     await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
 
+                    conselhoClasseId = conselhoClasse.Id;
+
                     long conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
 
                     conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
@@ -83,11 +85,20 @@ namespace SME.SGP.Dominio.Servicos
 
                     var conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAlunoResumido(conselhoClasseId, alunoCodigo);
 
-                    conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.ComponenteCurricularCodigo);
+                    conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
 
                     if (conselhoClasseNota == null)
                     {
                         conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
+                    }
+                    else
+                    {
+                        conselhoClasseNota.Justificativa = conselhoClasseNotaDto.Justificativa;
+                        if (conselhoClasseNotaDto.Nota.HasValue)
+                            conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
+                        else conselhoClasseNota.Nota = null;
+                        if (conselhoClasseNotaDto.Conceito.HasValue)
+                            conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
                     }
 
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
@@ -101,7 +112,13 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
-            return (AuditoriaDto)conselhoClasseNota;
+            var auditoria = (AuditoriaDto)conselhoClasseNota;
+            var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
+            {
+                ConselhoClasseId = conselhoClasseId,
+                Auditoria = auditoria
+            };
+            return conselhoClasseNotaRetorno;
         }
 
         private async Task<long> SalvarConselhoClasseAlunoResumido(long conselhoClasseId, string alunoCodigo)
@@ -117,14 +134,17 @@ namespace SME.SGP.Dominio.Servicos
 
         private ConselhoClasseNota ObterConselhoClasseNota(ConselhoClasseNotaDto conselhoClasseNotaDto, long conselhoClasseAlunoId)
         {
-            return new ConselhoClasseNota()
+            var conselhoClasseNota = new ConselhoClasseNota()
             {
                 ConselhoClasseAlunoId = conselhoClasseAlunoId,
-                ComponenteCurricularCodigo = conselhoClasseNotaDto.ComponenteCurricularCodigo,
-                Nota = conselhoClasseNotaDto.Nota.Value,
-                ConceitoId = conselhoClasseNotaDto.Conceito,
+                ComponenteCurricularCodigo = conselhoClasseNotaDto.CodigoComponenteCurricular,
                 Justificativa = conselhoClasseNotaDto.Justificativa,
             };
+            if (conselhoClasseNotaDto.Nota.HasValue)
+                conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
+            if (conselhoClasseNotaDto.Conceito.HasValue)
+                conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
+            return conselhoClasseNota;
         }
 
         public async Task<AuditoriaDto> GerarConselhoClasse(ConselhoClasse conselhoClasse)
