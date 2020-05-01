@@ -50,6 +50,7 @@ function RelatorioPAPAcompanhamento() {
   const [carregando, setCarregando] = useState(false);
   const [estadoOriginalAlunos, setEstadoOriginalAlunos] = useState(null);
   const { turmaSelecionada } = useSelector(store => store.usuario);
+  const [somenteLeitura, setSomenteLeitura] = useState(false);
 
   const dispararAlteracoes = dados => {
     setEstadoOriginalAlunos(dados.periodo.alunos);
@@ -92,9 +93,16 @@ function RelatorioPAPAcompanhamento() {
 
   const onChangeObjetivoHandler = useCallback(
     async objetivo => {
-      salvarAlteracoes(objetivo);
+      if (!somenteLeitura) {
+        salvarAlteracoes(objetivo);
+        return;
+      }
+
+      if (objetivo) {
+        disparar(setarObjetivoAtivo(objetivo.id));
+      }
     },
-    [salvarAlteracoes]
+    [salvarAlteracoes, somenteLeitura]
   );
 
   const limparTela = useCallback(() => {
@@ -138,11 +146,14 @@ function RelatorioPAPAcompanhamento() {
         });
 
         if (!data) {
-          erro('Não foram encontrados dados para a turma e período selecionados.');
+          erro(
+            'Não foram encontrados dados para a turma e período selecionados.'
+          );
           setCarregando(false);
           return false;
         }
 
+        setSomenteLeitura(!!data.somenteLeitura);
         dispararAlteracoes(data);
         disparar(setarObjetivoAtivo(estado.Objetivos[0]));
         setCarregando(false);
@@ -181,20 +192,20 @@ function RelatorioPAPAcompanhamento() {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-            ...alunoCorrente.respostas.filter(
-              y => y.objetivoId !== estado.ObjetivoAtivo.id
-            ),
-            novaResposta,
-          ]
+              ...alunoCorrente.respostas.filter(
+                y => y.objetivoId !== estado.ObjetivoAtivo.id
+              ),
+              novaResposta,
+            ]
           : [novaResposta];
     } else {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-            ...alunoCorrente.respostas.filter(
-              y => y.objetivoId !== estado.ObjetivoAtivo.id
-            ),
-          ]
+              ...alunoCorrente.respostas.filter(
+                y => y.objetivoId !== estado.ObjetivoAtivo.id
+              ),
+            ]
           : [];
     }
 
@@ -203,9 +214,9 @@ function RelatorioPAPAcompanhamento() {
         estado.Alunos.map(item =>
           item.codAluno === aluno.codAluno
             ? {
-              ...aluno,
-              respostas: respostasAluno,
-            }
+                ...aluno,
+                respostas: respostasAluno,
+              }
             : item
         )
       )
@@ -277,7 +288,7 @@ function RelatorioPAPAcompanhamento() {
       <Loader loading={carregando}>
         <Card mx="mx-0">
           <ButtonGroup
-            somenteConsulta
+            somenteConsulta={somenteLeitura}
             permissoesTela={{
               podeConsultar: true,
               podeAlterar: true,
@@ -290,7 +301,9 @@ function RelatorioPAPAcompanhamento() {
             onClickBotaoPrincipal={() => salvarAlteracoes(estado.ObjetivoAtivo)}
             onClickCancelar={() => onClickCancelarHandler()}
             labelBotaoPrincipal="Salvar"
-            desabilitarBotaoPrincipal={!modoEdicao || !periodo}
+            desabilitarBotaoPrincipal={
+              somenteLeitura || !modoEdicao || !periodo
+            }
           />
           <Grid className="p-0" cols={12}>
             <Linha className="row m-0">
@@ -330,7 +343,7 @@ function RelatorioPAPAcompanhamento() {
               ordenarColunaNumero="numeroChamada"
               ordenarColunaTexto="nome"
               conteudoParaOrdenar={estado.Alunos}
-              desabilitado={estado.Alunos.length <= 0}
+              desabilitado={somenteLeitura || estado.Alunos.length <= 0}
               onChangeOrdenacao={valor => setOrdenacao(valor)}
             />
           </Grid>
@@ -340,6 +353,7 @@ function RelatorioPAPAcompanhamento() {
               objetivoAtivo={estado.ObjetivoAtivo}
               respostas={respostasCorrentes}
               onChangeResposta={onChangeRespostaHandler}
+              somenteConsulta={somenteLeitura}
             />
           </Grid>
         </Card>
