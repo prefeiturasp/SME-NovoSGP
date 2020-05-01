@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
@@ -14,22 +15,45 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela;
         private readonly IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta repositorioRecuperacaoParalelaPeriodoObjetivoResposta;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IServicoUsuario servicoUsuario;
+        private readonly IServicoEOL servicoEOL;
+
+        private readonly IEnumerable<int> componentesCurricularesPAP = new List<int>
+        {
+            1322, 1033, 1051, 1052, 1053, 1054
+        };
 
         public ComandosRecuperacaoParalela(IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
             IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta repositorioRecuperacaoParalelaPeriodoObjetivo,
             IConsultaRecuperacaoParalela consultaRecuperacaoParalela,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IServicoUsuario servicoUsuario,
+            IServicoEOL servicoEOL
+            )
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
             this.repositorioRecuperacaoParalelaPeriodoObjetivoResposta = repositorioRecuperacaoParalelaPeriodoObjetivo ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalelaPeriodoObjetivo));
             this.consultaRecuperacaoParalela = consultaRecuperacaoParalela ?? throw new ArgumentNullException(nameof(consultaRecuperacaoParalela));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
         public async Task<RecuperacaoParalelaListagemDto> Salvar(RecuperacaoParalelaDto recuperacaoParalelaDto)
         {
             var list = new List<RecuperacaoParalelaListagemDto>();
+
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+
+            var turmaCodigo = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId;
+
+            var disciplinas = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo.ToString(), usuarioLogado.Login, usuarioLogado.PerfilAtual);
+
+            if (!disciplinas.Any(x => componentesCurricularesPAP.Any(y => x.Codigo == y)))
+                throw new NegocioException("Somente é possivel realizar acompanhamento para turmas PAP");
+            
             unitOfWork.IniciarTransacao();
+
             foreach (var item in recuperacaoParalelaDto.Periodo.Alunos)
             {
                 var recuperacaoParalela = new RecuperacaoParalela

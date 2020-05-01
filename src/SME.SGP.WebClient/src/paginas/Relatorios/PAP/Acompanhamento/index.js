@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { Cabecalho, Ordenacao } from '~/componentes-sgp';
 
 // Componentes
-import { Card, Loader, ButtonGroup, Grid } from '~/componentes';
+import { Card, Loader, ButtonGroup, Grid, Alert } from '~/componentes';
 import PeriodosDropDown from './componentes/PeriodosDropDown';
 import EixoObjetivo from './componentes/EixoObjetivo';
 import BarraNavegacao from './componentes/BarraNavegacao';
@@ -50,6 +50,7 @@ function RelatorioPAPAcompanhamento() {
   const [carregando, setCarregando] = useState(false);
   const [estadoOriginalAlunos, setEstadoOriginalAlunos] = useState(null);
   const { turmaSelecionada } = useSelector(store => store.usuario);
+  const [semPeriodos, setSemPeriodos] = useState(false);
 
   const dispararAlteracoes = dados => {
     setEstadoOriginalAlunos(dados.periodo.alunos);
@@ -138,7 +139,9 @@ function RelatorioPAPAcompanhamento() {
         });
 
         if (!data) {
-          erro('Não foram encontrados dados para a turma e período selecionados.');
+          erro(
+            'Não foram encontrados dados para a turma e período selecionados.'
+          );
           setCarregando(false);
           return false;
         }
@@ -181,20 +184,20 @@ function RelatorioPAPAcompanhamento() {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-            ...alunoCorrente.respostas.filter(
-              y => y.objetivoId !== estado.ObjetivoAtivo.id
-            ),
-            novaResposta,
-          ]
+              ...alunoCorrente.respostas.filter(
+                y => y.objetivoId !== estado.ObjetivoAtivo.id
+              ),
+              novaResposta,
+            ]
           : [novaResposta];
     } else {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-            ...alunoCorrente.respostas.filter(
-              y => y.objetivoId !== estado.ObjetivoAtivo.id
-            ),
-          ]
+              ...alunoCorrente.respostas.filter(
+                y => y.objetivoId !== estado.ObjetivoAtivo.id
+              ),
+            ]
           : [];
     }
 
@@ -203,9 +206,9 @@ function RelatorioPAPAcompanhamento() {
         estado.Alunos.map(item =>
           item.codAluno === aluno.codAluno
             ? {
-              ...aluno,
-              respostas: respostasAluno,
-            }
+                ...aluno,
+                respostas: respostasAluno,
+              }
             : item
         )
       )
@@ -273,6 +276,18 @@ function RelatorioPAPAcompanhamento() {
   return (
     <>
       <AlertaSelecionarTurma />
+      {semPeriodos && (
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'sem-periodo-pap',
+            mensagem:
+              'Somente é possivel realizar o preenchimento do PAP para turmas PAP',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-4"
+        />
+      )}
       <Cabecalho pagina="Relatório de encaminhamento e acompanhamento do PAP" />
       <Loader loading={carregando}>
         <Card mx="mx-0">
@@ -296,9 +311,12 @@ function RelatorioPAPAcompanhamento() {
             <Linha className="row m-0">
               <Grid cols={3}>
                 <PeriodosDropDown
+                  codigoTurma={turmaSelecionada && turmaSelecionada.turma}
+                  setSemPeriodos={setSemPeriodos}
                   onChangePeriodo={onChangePeriodoHandler}
                   valor={periodo}
                   desabilitado={
+                    semPeriodos ||
                     turmaSelecionada.turma === null ||
                     turmaSelecionada.turma === undefined
                   }
