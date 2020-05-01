@@ -2,7 +2,6 @@ import { Form, Formik } from 'formik';
 import * as moment from 'moment';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import shortid from 'shortid';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -32,6 +31,7 @@ const EventosLista = ({ match }) => {
   const permissoesTela = usuario.permissoes[RotasDto.EVENTOS];
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
+
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
   const [listaDre, setListaDre] = useState([]);
   const [campoUeDesabilitado, setCampoUeDesabilitado] = useState(true);
@@ -44,7 +44,10 @@ const EventosLista = ({ match }) => {
   const [eventosSelecionados, setEventosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
   const [selecionouCalendario, setSelecionouCalendario] = useState(false);
+  const [tipocalendarioSelecionado, setTipocalendarioSelecionado] = useState();
+
   const [carregandoTipos, setCarregandoTipos] = useState(false);
+
   const [refForm, setRefForm] = useState();
 
   const [estaCarregando, setEstaCarregando] = useState(false);
@@ -190,7 +193,7 @@ const EventosLista = ({ match }) => {
     ) {
       const { tipoCalendarioId } = match.params;
       const temTipoParaSetar = listaCalendarioEscolar.find(
-        item => String(item.id) === String(tipoCalendarioId)
+        item => item.id == tipoCalendarioId
       );
       if (temTipoParaSetar) {
         refForm.setFieldValue('tipoCalendarioId', tipoCalendarioId);
@@ -619,17 +622,6 @@ const EventosLista = ({ match }) => {
       </Card>
     </>
   );
-};
-
-EventosLista.propTypes = {
-  match: PropTypes.oneOfType([
-    PropTypes.objectOf(PropTypes.object),
-    PropTypes.any,
-  ]),
-};
-
-EventosLista.defaultProps = {
-  match: {},
 };
 
 export default EventosLista;
