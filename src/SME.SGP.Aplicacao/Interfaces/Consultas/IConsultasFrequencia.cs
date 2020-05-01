@@ -20,6 +20,6 @@ namespace SME.SGP.Aplicacao
         SinteseDto ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina);
 
         double ObterFrequenciaMedia(DisciplinaDto disciplina);
-        Task<double> ObterFrequenciaGeralAluno(string alunoCodigo);
+        Task<double> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "");
     }
 }

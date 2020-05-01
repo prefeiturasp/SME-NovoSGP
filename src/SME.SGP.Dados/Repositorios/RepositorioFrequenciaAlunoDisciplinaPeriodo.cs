@@ -79,14 +79,17 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<AlunoFaltosoBimestreDto>(query.ToString(), new { bimestre, anoLetivo, percentualFrequenciaMinimo });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAluno(string alunoCodigo)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
         {
-            var query = @"select * 
+            var query = new StringBuilder(@"select * 
                             from frequencia_aluno
                            where tipo = 2
-	                        and codigo_aluno = @alunoCodigo";
+	                        and codigo_aluno = @alunoCodigo
+                            and turma_id = @turmaCodigo ");
+            if (!string.IsNullOrEmpty(componenteCurricularCodigo))
+                query.AppendLine(" and disciplina_id = @componenteCurricularCodigo");
 
-            return await database.Conexao.QueryAsync<FrequenciaAluno>(query, new { alunoCodigo });
+            return await database.Conexao.QueryAsync<FrequenciaAluno>(query.ToString(), new { alunoCodigo, turmaCodigo, componenteCurricularCodigo });
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma)

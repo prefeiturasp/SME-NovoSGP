@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -16,14 +16,14 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterListaPorTurmaId(long turmaId, DateTime dataConsulta)
+        public async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterListaPorTurmaIdAsync(long turmaId, DateTime dataConsulta)
         {
             var where = "t.id = @parametro";
 
             return await ObterListaPorTurma(where, turmaId, dataConsulta);
         }
 
-        public async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterListaPorTurmaCodigo(long turmaCodigo, DateTime dataConsulta)
+        public async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterListaPorTurmaCodigoAsync(long turmaCodigo, DateTime dataConsulta)
         {
             var where = "t.turma_id = @parametro";
 
