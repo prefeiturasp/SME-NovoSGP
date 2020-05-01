@@ -20,6 +20,7 @@ const ListaPaginada = props => {
     selecionarItems,
     filtroEhValido,
     onErro,
+    onBuscando,
   } = props;
 
   const [carregando, setCarregando] = useState(false);
@@ -90,6 +91,7 @@ const ListaPaginada = props => {
   const filtrar = () => {
     setLinhasSelecionadas([]);
     setCarregando(true);
+    onBuscando(true);
     api
       .get(urlBusca, { params: filtro })
       .then(resposta => {
@@ -107,7 +109,10 @@ const ListaPaginada = props => {
           else erro(err.response.data.mensagens[0]);
         }
       })
-      .finally(() => setCarregando(false));
+      .finally(() => {
+        setCarregando(false);
+        onBuscando(false);
+      });
   };
 
   useEffect(() => {
@@ -196,6 +201,7 @@ ListaPaginada.propTypes = {
   filtro: PropTypes.oneOfType([PropTypes.object]),
   filtroEhValido: PropTypes.bool,
   onErro: PropTypes.oneOfType([PropTypes.func]),
+  onBuscando: PropTypes.oneOfType([PropTypes.func]),
 };
 
 ListaPaginada.defaultProps = {
@@ -209,6 +215,7 @@ ListaPaginada.defaultProps = {
   filtro: null,
   filtroEhValido: true,
   onErro: () => {},
+  onBuscando: () => {},
 };
 
 export default ListaPaginada;
