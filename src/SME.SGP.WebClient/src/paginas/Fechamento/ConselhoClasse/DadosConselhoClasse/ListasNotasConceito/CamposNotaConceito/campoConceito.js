@@ -1,5 +1,6 @@
+import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import SelectComponent from '~/componentes/select';
@@ -24,9 +25,26 @@ const CampoConceito = props => {
     id,
     idCampo,
     codigoComponenteCurricular,
+    desabilitarCampo,
   } = props;
 
   const [notaValorAtual, setNotaValorAtual] = useState(notaPosConselho);
+  const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
+
+  const validaSeEstaAbaixoDaMedia = useCallback(
+    valorAtual => {
+      const tipoConceito = listaTiposConceitos.find(
+        item => item.id == valorAtual
+      );
+
+      if (tipoConceito && !tipoConceito.aprovado) {
+        setAbaixoDaMedia(true);
+      } else {
+        setAbaixoDaMedia(false);
+      }
+    },
+    [listaTiposConceitos]
+  );
 
   const dispatch = useDispatch();
 
@@ -78,6 +96,10 @@ const CampoConceito = props => {
     setNotaValorAtual(String(valorNovo));
     mostrarJustificativa();
     setNotaPosConselho(valorNovo, true);
+    if (!desabilitarCampo) {
+      validaSeEstaAbaixoDaMedia(valorNovo);
+      setNotaValorAtual(valorNovo);
+    }
   };
 
   return (
@@ -85,34 +107,52 @@ const CampoConceito = props => {
       {id ? (
         <CampoCentralizado>
           <CampoAlerta>
-            <Combo>
-              <SelectComponent
-                onChange={onChangeConceito}
-                valueOption="id"
-                valueText="valor"
-                lista={listaTiposConceitos}
-                valueSelect={notaValorAtual ? String(notaValorAtual) : ''}
-                showSearch
-                placeholder="Conceito"
-              />
-            </Combo>
-            <div className="icone" onClick={onClickMostrarJustificativa}>
-              <i className="fas fa-user-edit" />
-            </div>
+            <Tooltip
+              placement="bottom"
+              title={abaixoDaMedia ? 'Abaixo da Média' : ''}
+            >
+              <Combo>
+                <SelectComponent
+                  onChange={onChangeConceito}
+                  valueOption="id"
+                  valueText="valor"
+                  lista={listaTiposConceitos}
+                  valueSelect={notaValorAtual ? String(notaValorAtual) : ''}
+                  showSearch
+                  placeholder="Conceito"
+                  className={abaixoDaMedia ? 'borda-abaixo-media' : ''}
+                />
+              </Combo>
+            </Tooltip>
+            <Tooltip
+              title="Ver Justificativa"
+              placement="bottom"
+              overlayStyle={{ fontSize: '12px' }}
+            >
+              <div className="icone" onClick={onClickMostrarJustificativa}>
+                <i className="fas fa-user-edit" />
+              </div>
+            </Tooltip>
           </CampoAlerta>
         </CampoCentralizado>
       ) : (
-        <Combo>
-          <SelectComponent
-            onChange={onChangeConceito}
-            valueOption="id"
-            valueText="valor"
-            lista={listaTiposConceitos}
-            valueSelect={notaValorAtual ? String(notaValorAtual) : ''}
-            showSearch
-            placeholder="Conceito"
-          />
-        </Combo>
+        <Tooltip
+          placement="bottom"
+          title={abaixoDaMedia ? 'Abaixo da Média' : ''}
+        >
+          <Combo>
+            <SelectComponent
+              onChange={onChangeConceito}
+              valueOption="id"
+              valueText="valor"
+              lista={listaTiposConceitos}
+              valueSelect={notaValorAtual ? String(notaValorAtual) : ''}
+              showSearch
+              placeholder="Conceito"
+              className={abaixoDaMedia ? 'borda-abaixo-media' : ''}
+            />
+          </Combo>
+        </Tooltip>
       )}
     </>
   );
@@ -124,6 +164,7 @@ CampoConceito.propTypes = {
   id: PropTypes.oneOfType([PropTypes.number]),
   idCampo: PropTypes.oneOfType([PropTypes.string]),
   codigoComponenteCurricular: PropTypes.oneOfType([PropTypes.any]),
+  desabilitarCampo: PropTypes.bool,
 };
 
 CampoConceito.defaultProps = {
@@ -132,6 +173,7 @@ CampoConceito.defaultProps = {
   id: null,
   idCampo: '',
   codigoComponenteCurricular: '',
+  desabilitarCampo: false,
 };
 
 export default CampoConceito;
