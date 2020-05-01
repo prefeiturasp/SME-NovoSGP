@@ -11,7 +11,7 @@ namespace SME.SGP.Dto
         [DataMaiorAtual(ErrorMessage = "A data de envio deve ser igual ou maior que a data atual.")]
         public DateTime DataEnvio { get; set; }
 
-        [DataMaiorAtual(ErrorMessage = "A data de expiracao deve ser igual ou maior que a data atual.")]
+        [DataMaiorAtual(ErrorMessage = "A data de expiração deve ser igual ou maior que a data atual.")]
         public DateTime? DataExpiracao { get; set; }
 
         [Required(ErrorMessage = "É necessário informar a descrição.")]
