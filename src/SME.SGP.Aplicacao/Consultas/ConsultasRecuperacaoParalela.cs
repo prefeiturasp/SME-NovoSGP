@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoRecuperacaoParalela servicoRecuperacaoParalela;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo;
 
         public ConsultasRecuperacaoParalela(
             IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
@@ -29,7 +30,8 @@ namespace SME.SGP.Aplicacao
             IServicoEOL servicoEOL,
             IServicoRecuperacaoParalela servicoRecuperacaoParalela,
             IContextoAplicacao contextoAplicacao,
-            IConsultasPeriodoEscolar consultasPeriodoEscolar) : base(contextoAplicacao)
+            IConsultasPeriodoEscolar consultasPeriodoEscolar,
+            IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo) : base(contextoAplicacao)
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
             this.repositorioEixo = repositorioEixo ?? throw new ArgumentNullException(nameof(repositorioEixo));
@@ -37,6 +39,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioResposta = repositorioResposta ?? throw new ArgumentNullException(nameof(repositorioResposta));
             this.servicoRecuperacaoParalela = servicoRecuperacaoParalela ?? throw new ArgumentNullException(nameof(servicoRecuperacaoParalela));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar;
+            this.repositorioRecuperacaoParalelaPeriodo = repositorioRecuperacaoParalelaPeriodo ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalelaPeriodo));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
@@ -100,7 +103,12 @@ namespace SME.SGP.Aplicacao
             var alunoCriado = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault();
             var alunoAlterado = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault();
 
-            var somenteLeitura = periodoEscolarAtual == null || alunosRecParalela.FirstOrDefault().BimestreEdicao != periodoEscolarAtual.Bimestre;
+            var bimestreEdicao = alunosRecParalela.FirstOrDefault().BimestreEdicao;
+
+            if (bimestreEdicao == 0)
+                bimestreEdicao = repositorioRecuperacaoParalelaPeriodo.ObterPorId(periodoId)?.BimestreEdicao ?? 0;
+
+            var somenteLeitura = bimestreEdicao != 0 && (periodoEscolarAtual == null || bimestreEdicao != periodoEscolarAtual.Bimestre);
             
             var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {

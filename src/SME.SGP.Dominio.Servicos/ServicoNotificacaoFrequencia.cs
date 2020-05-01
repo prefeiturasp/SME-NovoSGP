@@ -101,8 +101,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidade, dataReferencia.Semestre());
 
-            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario.Id);
-            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario.Id);
+            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario?.Id ?? 0);
+            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
         }
 
         public void NotificarCompensacaoAusencia(long compensacaoId)
@@ -241,10 +241,10 @@ namespace SME.SGP.Dominio.Servicos
         private void NotificaAlunosFaltososBimestreModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario, double percentualCritico, int semestre = 0)
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidadeTipoCalendario, semestre);
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendario.Id, dataReferencia);
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendario?.Id ?? 0, dataReferencia);
 
             // Notifica apenas no dia seguinte ao fim do bimestre
-            if (dataReferencia == periodoEscolar.PeriodoFim)
+            if (dataReferencia == periodoEscolar?.PeriodoFim)
             {
                 var alunosFaltososBimestre = repositorioFrequenciaAluno.ObterAlunosFaltososBimestre(modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA, percentualCritico, periodoEscolar.Bimestre, tipoCalendario.AnoLetivo);
 
