@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
         }
 
         public string Nome { get; set; }
+        public long CodigoComponenteCurricular { get; set; }
         public List<NotaBimestreDto> NotasFechamentos { get; set; }
         public NotaPosConselhoDto NotaPosConselho { get; set; }
     }

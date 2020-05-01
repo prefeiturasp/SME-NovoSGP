@@ -344,6 +344,7 @@ namespace SME.SGP.Aplicacao
             return new ConselhoClasseNotasComponenteRegenciaDto()
             {
                 Nome = componenteCurricular.Nome,
+                CodigoComponenteCurricular = componenteCurricular.CodigoComponenteCurricular,
                 NotasFechamentos = await ObterNotasComponente(componenteCurricular, periodoEscolar, notasFechamentoAluno),
                 NotaPosConselho = await ObterNotaPosConselho(componenteCurricular, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno)
             };
