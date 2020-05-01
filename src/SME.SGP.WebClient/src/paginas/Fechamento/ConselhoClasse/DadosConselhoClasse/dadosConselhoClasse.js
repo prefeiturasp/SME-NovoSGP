@@ -80,6 +80,7 @@ const DadosConselhoClasse = props => {
           periodoFechamentoInicio,
           periodoFechamentoFim,
           tipoNota,
+          media,
         } = retorno.data;
 
         let podeAcessarAbaFinal = true;
@@ -104,6 +105,7 @@ const DadosConselhoClasse = props => {
           turmaCodigo,
           alunoDesabilitado: desabilitado,
           tipoNota,
+          media,
         };
 
         dispatch(setDadosPrincipaisConselhoClasse(valores));
