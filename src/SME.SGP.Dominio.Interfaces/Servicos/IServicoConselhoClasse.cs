@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<AuditoriaDto> GerarConselhoClasse(ConselhoClasse conselhoClasse);
         Task<AuditoriaConselhoClasseAlunoDto> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno);
+        Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo);
     }
 }

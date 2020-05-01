@@ -40,6 +40,9 @@
         //Nota Fechamento
         QuantidadeDiasAlteracaoNotaFinal = 19,
 
+        // Frequencia
+        PercentualFrequenciaCriticoBaseNacional = 20,
+
         //Sistema
         HabilitarServicosEmBackground = 100
 
