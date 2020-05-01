@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioResposta repositorioResposta;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoRecuperacaoParalela servicoRecuperacaoParalela;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
 
         public ConsultasRecuperacaoParalela(
             IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
@@ -27,13 +28,15 @@ namespace SME.SGP.Aplicacao
             IRepositorioResposta repositorioResposta,
             IServicoEOL servicoEOL,
             IServicoRecuperacaoParalela servicoRecuperacaoParalela,
-            IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
+            IContextoAplicacao contextoAplicacao,
+            IConsultasPeriodoEscolar consultasPeriodoEscolar) : base(contextoAplicacao)
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
             this.repositorioEixo = repositorioEixo ?? throw new ArgumentNullException(nameof(repositorioEixo));
             this.repositorioObjetivo = repositorioObjetivo ?? throw new ArgumentNullException(nameof(repositorioObjetivo));
             this.repositorioResposta = repositorioResposta ?? throw new ArgumentNullException(nameof(repositorioResposta));
             this.servicoRecuperacaoParalela = servicoRecuperacaoParalela ?? throw new ArgumentNullException(nameof(servicoRecuperacaoParalela));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar;
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
@@ -45,7 +48,10 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
-            return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao);
+
+            var periodoEscolarAtual = consultasPeriodoEscolar.ObterPeriodoEscolarEmAberto(Modalidade.Fundamental, DateTime.Now.Year);
+            
+            return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao, periodoEscolarAtual);
         }
 
         public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? pagina)
@@ -77,7 +83,7 @@ namespace SME.SGP.Aplicacao
             return MapearParaDtoTotalEstudantesPorFrequencia(total, totalAlunosPorSeriesFrequencia);
         }
 
-        private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId, RecuperacaoParalelaOrdenacao? ordenacao)
+        private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId, RecuperacaoParalelaOrdenacao? ordenacao, PeriodoEscolar periodoEscolarAtual)
         {
             //alunos eol que não estão ainda na tabela de recuperação paralela
             var alunos = alunosEol.Where(w => !alunosRecuperacaoParalela.Select(s => s.AlunoId).Contains(Convert.ToInt32(w.CodigoAluno))).ToList();
@@ -94,12 +100,15 @@ namespace SME.SGP.Aplicacao
             var alunoCriado = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault();
             var alunoAlterado = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault();
 
+            var somenteLeitura = periodoEscolarAtual == null || alunosRecParalela.FirstOrDefault().BimestreEdicao != periodoEscolarAtual.Bimestre;
+            
             var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {
                 Ordenacao = ordenacao,
                 Eixos = eixos,
                 Objetivos = objetivos,
                 Respostas = respostas,
+                SomenteLeitura = somenteLeitura,
                 Periodo = new RecuperacaoParalelaPeriodoListagemDto
                 {
                     Id = periodoId,
