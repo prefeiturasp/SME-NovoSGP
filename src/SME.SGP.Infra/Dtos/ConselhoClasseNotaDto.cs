@@ -9,6 +9,6 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "A justificativa é obrigatória")]
         public string Justificativa { get; set; }
         [Required(ErrorMessage = "O código do componente curricular é obrigatório")]
-        public long ComponenteCurricularCodigo { get; set; }
+        public long CodigoComponenteCurricular { get; set; }
     }
 }
