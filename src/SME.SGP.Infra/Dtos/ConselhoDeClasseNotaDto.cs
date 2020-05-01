@@ -10,7 +10,7 @@ namespace SME.SGP.Infra
         public long Id { get; set; }
         public long ConselhoClasseAlunoId { get; set; }
         public long ComponenteCurricularCodigo { get; set; }
-        public double Nota { get; set; }
+        public double? Nota { get; set; }
         public long? ConceitoId { get; set; }
         public ConceitoDto Conceito { get; set; }
         public string Justificativa { get; set; }

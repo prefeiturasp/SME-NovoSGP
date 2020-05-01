@@ -34,7 +34,7 @@ const CampoConceito = props => {
   const validaSeEstaAbaixoDaMedia = useCallback(
     valorAtual => {
       const tipoConceito = listaTiposConceitos.find(
-        item => item.id == valorAtual
+        item => item.id === valorAtual
       );
 
       if (tipoConceito && !tipoConceito.aprovado) {
@@ -55,7 +55,7 @@ const CampoConceito = props => {
   };
 
   const setNotaPosConselho = (
-    nota,
+    conceito,
     ehEdicao,
     justificativa = null,
     auditoria = null
@@ -64,7 +64,7 @@ const CampoConceito = props => {
       setNotaConceitoPosConselho({
         id,
         codigoComponenteCurricular,
-        nota,
+        conceito: Number(conceito),
         ehEdicao,
         justificativa,
         auditoria,
@@ -93,7 +93,7 @@ const CampoConceito = props => {
   };
 
   const onChangeConceito = valorNovo => {
-    setNotaValorAtual(String(valorNovo));
+    setNotaValorAtual(valorNovo);
     mostrarJustificativa();
     setNotaPosConselho(valorNovo, true);
     if (!desabilitarCampo) {
