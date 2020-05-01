@@ -11,6 +11,7 @@ function SelectRespostas({
   onChangeResposta,
   containerVinculoId,
   bloquearLimpar,
+  desabilitar,
 }) {
   const [valorPadrao, setValorPadrao] = useState(null);
 
@@ -45,6 +46,7 @@ function SelectRespostas({
       className="fonte-14"
       onChange={valor => onChangeResposta(aluno, valor)}
       lista={respostas}
+      disabled={desabilitar}
       valueSelect={valorPadrao || undefined}
       valueOption="id"
       valueText="nome"
