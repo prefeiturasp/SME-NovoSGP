@@ -95,20 +95,27 @@ namespace SME.SGP.Aplicacao.Consultas
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEmAberto(long ueId, Modalidade modalidadeCodigo, int anoLetivo)
         {
-            var dataAtual = DateTime.Today;
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo,
-                                                                modalidadeCodigo == Modalidade.EJA ?
-                                                                    ModalidadeTipoCalendario.EJA :
-                                                                    ModalidadeTipoCalendario.FundamentalMedio,
-                                                                dataAtual.Semestre());
+            List<PeriodoEscolar> periodos = new List<PeriodoEscolar>();
 
-            var periodos = new List<PeriodoEscolar>();
-            var periodoAtual = ObterPeriodoEscolarPorData(tipoCalendario.Id, dataAtual);
+            PeriodoEscolar periodoAtual = ObterPeriodoEscolarEmAberto(modalidadeCodigo, anoLetivo);
+
             if (periodoAtual != null)
                 periodos.Add(periodoAtual);
+
             periodos.AddRange(await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(ueId));
 
             return periodos;
+        }
+
+        public PeriodoEscolar ObterPeriodoEscolarEmAberto(Modalidade modalidadeCodigo, int anoLetivo)
+        {
+            var dataAtual = DateTime.Today;
+
+            var modalidade = modalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
+
+            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, dataAtual.Semestre());
+
+            return ObterPeriodoEscolarPorData(tipoCalendario.Id, dataAtual);
         }
 
         public async Task<PeriodoEscolar> ObterUltimoPeriodoAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre)
