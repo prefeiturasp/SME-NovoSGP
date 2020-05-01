@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IConsultasFrequencia consultasFrequencia;
+        private readonly IServicoConselhoClasse servicoConselhoClasse;
 
         public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
@@ -36,7 +37,8 @@ namespace SME.SGP.Aplicacao
                                             IServicoEOL servicoEOL,
                                             IServicoUsuario servicoUsuario,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
-                                            IConsultasFrequencia consultasFrequencia)
+                                            IConsultasFrequencia consultasFrequencia,
+                                            IServicoConselhoClasse servicoConselhoClasse)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioFrequenciaAluno = repositorioFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAluno));
@@ -50,6 +52,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
+            this.servicoConselhoClasse = servicoConselhoClasse ?? throw new ArgumentNullException(nameof(servicoConselhoClasse));
         }
 
         public async Task<bool> ExisteConselhoClasseUltimoBimestreAsync(Turma turma, string alunoCodigo)
@@ -190,11 +193,14 @@ namespace SME.SGP.Aplicacao
             if (!await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurma.Turma, alunoCodigo))
                 throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
 
-            // TODO 12233 consultar parecer conclusivo
+            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
+            if (!conselhoClasseAluno.ConselhoClasseParecerId.HasValue)
+                return await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
+
             return new ParecerConclusivoDto()
             {
-                Id = 1,
-                Nome = "Promovido"
+                Id = conselhoClasseAluno.ConselhoClasseParecerId.Value,
+                Nome = conselhoClasseAluno.ConselhoClasseParecer.Nome
             };
         }
 
