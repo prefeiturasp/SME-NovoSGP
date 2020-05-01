@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { Cabecalho, Ordenacao } from '~/componentes-sgp';
 
 // Componentes
-import { Card, Loader, ButtonGroup, Grid } from '~/componentes';
+import { Card, Loader, ButtonGroup, Grid, Alert } from '~/componentes';
 import PeriodosDropDown from './componentes/PeriodosDropDown';
 import EixoObjetivo from './componentes/EixoObjetivo';
 import BarraNavegacao from './componentes/BarraNavegacao';
@@ -41,6 +41,7 @@ import Reducer, {
 
 // Utils
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+import { MensagemAlerta } from '~/paginas/Perfil/meusDados.css';
 
 function RelatorioPAPAcompanhamento() {
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
@@ -121,8 +122,9 @@ function RelatorioPAPAcompanhamento() {
   const onChangePeriodoHandler = async valor => {
     try {
       setCarregando(true);
+      setSomenteLeitura(false);
 
-      if (modoEdicao) {
+      if (modoEdicao && !somenteLeitura) {
         const confirmou = await confirmar(
           'Atenção',
           'Você não salvou as informações preenchidas.',
@@ -284,6 +286,18 @@ function RelatorioPAPAcompanhamento() {
   return (
     <>
       <AlertaSelecionarTurma />
+      {somenteLeitura && (
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'pap-somente-leitura',
+            mensagem:
+              'Não é possível preencher o relatório fora do período estipulado pela SME',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-4"
+        />
+      )}
       <Cabecalho pagina="Relatório de encaminhamento e acompanhamento do PAP" />
       <Loader loading={carregando}>
         <Card mx="mx-0">
