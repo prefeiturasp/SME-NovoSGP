@@ -8,8 +8,10 @@ namespace SME.SGP.Dto
     public class ComunicadoInserirDto
     {
         [DataRequerida(ErrorMessage = "A data de envio é obrigatória.")]
+        [DataMaiorAtual(ErrorMessage = "A data de envio deve ser igual ou maior que a data atual.")]
         public DateTime DataEnvio { get; set; }
 
+        [DataMaiorAtual(ErrorMessage = "A data de expiracao deve ser igual ou maior que a data atual.")]
         public DateTime? DataExpiracao { get; set; }
 
         [Required(ErrorMessage = "É necessário informar a descrição.")]
