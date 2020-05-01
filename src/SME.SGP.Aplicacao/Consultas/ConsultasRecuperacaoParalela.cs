@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioResposta repositorioResposta;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoRecuperacaoParalela servicoRecuperacaoParalela;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasRecuperacaoParalela(
             IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
@@ -27,13 +28,15 @@ namespace SME.SGP.Aplicacao
             IRepositorioResposta repositorioResposta,
             IServicoEOL servicoEOL,
             IServicoRecuperacaoParalela servicoRecuperacaoParalela,
-            IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
+            IContextoAplicacao contextoAplicacao, 
+            IServicoUsuario servicoUsuario) : base(contextoAplicacao)
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
             this.repositorioEixo = repositorioEixo ?? throw new ArgumentNullException(nameof(repositorioEixo));
             this.repositorioObjetivo = repositorioObjetivo ?? throw new ArgumentNullException(nameof(repositorioObjetivo));
             this.repositorioResposta = repositorioResposta ?? throw new ArgumentNullException(nameof(repositorioResposta));
             this.servicoRecuperacaoParalela = servicoRecuperacaoParalela ?? throw new ArgumentNullException(nameof(servicoRecuperacaoParalela));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
@@ -45,6 +48,7 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
+
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao);
         }
 
