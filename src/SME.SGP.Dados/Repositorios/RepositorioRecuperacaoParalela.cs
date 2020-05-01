@@ -19,9 +19,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
             query.AppendLine(MontaCamposCabecalho());
-            query.AppendLine("from recuperacao_paralela rec ");
-            query.AppendLine("inner join recuperacao_paralela_periodo_objetivo_resposta recRel on rec.id = recRel.recuperacao_paralela_id   ");
-            query.AppendLine("inner join resposta re on re.id = recRel.resposta_id   ");
+            query.AppendLine("from recuperacao_paralela rec");
+            query.AppendLine("inner join recuperacao_paralela_periodo_objetivo_resposta recRel on rec.id = recRel.recuperacao_paralela_id");
+            query.AppendLine("inner join resposta re on re.id = recRel.resposta_id");
+            query.AppendLine("inner join recuperacao_paralela_periodo rpp on rpp.id = recRel.periodo_recuperacao_paralela_id");
             query.AppendLine("where rec.turma_recuperacao_paralela_id = @turmaId ");
             query.AppendLine("and rec.excluido = false ");
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId = turmaId.ToString(), periodoId });
@@ -230,7 +231,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    recRel.objetivo_id AS ObjetivoId,
 	                    recRel.resposta_id AS RespostaId,
 	                    recRel.periodo_recuperacao_paralela_id AS PeriodoRecuperacaoParalelaId,
-                        re.ordem as OrdenacaoResposta";
+                        re.ordem as OrdenacaoResposta,
+                        rpp.bimestre_edicao as BimestreEdicao";
         }
     }
 }
