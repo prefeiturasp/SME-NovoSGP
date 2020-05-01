@@ -38,6 +38,8 @@ const EventosLista = () => {
 
   const [filtroValido, setFiltroValido] = useState({ valido: false });
 
+  const [estaCarregando, setEstaCarregando] = useState(false);
+
   const formatarCampoDataGrid = data => {
     let dataFormatada = '';
     if (data) {
@@ -125,22 +127,25 @@ const EventosLista = () => {
     setEventosSelecionados(items);
   };
 
-  const onFiltrar = useCallback(valores => {
-    if (!valorNuloOuVazio(valores.tipoCalendarioId)) {
-      setSelecionouCalendario(true);
-      setFiltroValido({ valido: true });
-      setFiltro({
-        ...valores,
-        dataInicio: valores.dataInicio && valores.dataInicio.toDate(),
-        dataFim: valores.dataFim && valores.dataFim.toDate(),
-        ehTodasDres: valores.dreId === '0' && true,
-        ehTodasUes: valores.dreId === '0' && true,
-      });
-    } else {
-      setSelecionouCalendario(false);
-      setFiltroValido({ valido: false });
-    }
-  }, []);
+  const onFiltrar = useCallback(
+    valores => {
+      if (!valorNuloOuVazio(valores.tipoCalendarioId) && !estaCarregando) {
+        setSelecionouCalendario(true);
+        setFiltroValido({ valido: true });
+        setFiltro({
+          ...valores,
+          dataInicio: valores.dataInicio && valores.dataInicio.toDate(),
+          dataFim: valores.dataFim && valores.dataFim.toDate(),
+          ehTodasDres: valores.dreId === '0' && true,
+          ehTodasUes: valores.dreId === '0' && true,
+        });
+      } else {
+        setSelecionouCalendario(false);
+        setFiltroValido({ valido: false });
+      }
+    },
+    [estaCarregando]
+  );
 
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
@@ -176,6 +181,7 @@ const EventosLista = () => {
               multiSelecao
               selecionarItems={onSelecionarItems}
               filtroEhValido={filtroValido.valido}
+              onCarregando={valor => setEstaCarregando(valor)}
             />
           ) : (
             ''
