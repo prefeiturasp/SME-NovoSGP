@@ -193,8 +193,8 @@ namespace SME.SGP.Aplicacao
             // TODO 12233 consultar parecer conclusivo
             return new ParecerConclusivoDto()
             {
-                ParecerConclusivoCodigo = ParecerConclusivo.Aprovado,
-                ParecerConclusivoNome = ParecerConclusivo.Aprovado.Name()
+                Id = 1,
+                Nome = "Promovido"
             };
         }
 
@@ -403,5 +403,6 @@ namespace SME.SGP.Aplicacao
 
             return notasPeriodos;
         }
+
     }
 }

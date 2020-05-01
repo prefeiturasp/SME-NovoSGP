@@ -7,7 +7,7 @@ namespace SME.SGP.Infra
 {
     public class ParecerConclusivoDto
     {
-        public ParecerConclusivo ParecerConclusivoCodigo { get; set; }
-        public string ParecerConclusivoNome { get; set; }
+        public long Id { get; set; }
+        public string Nome { get; set; }
     }
 }
