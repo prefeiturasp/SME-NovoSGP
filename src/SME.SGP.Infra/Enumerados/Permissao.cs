@@ -404,5 +404,17 @@
 
         [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhAlteracao = true, Url = "/fechamento/conselho-classe")]
         CC_A = 139,
+
+        [PermissaoMenu(Menu = "Relatório Semestral ", Icone = "", Agrupamento = "Relatórios ", OrdemAgrupamento = 2, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/pap/relatorio-semestral")]
+        RSP_C = 144,
+
+        [PermissaoMenu(Menu = "Relatório Semestral ", Icone = "", Agrupamento = "Relatórios ", OrdemAgrupamento = 2, OrdemMenu = 4, EhInclusao = true, Url = "/relatorios/pap/relatorio-semestral")]
+        RSP_I = 145,
+
+        [PermissaoMenu(Menu = "Relatório Semestral ", Icone = "", Agrupamento = "Relatórios ", OrdemAgrupamento = 2, OrdemMenu = 4, EhExclusao = true, Url = "/relatorios/pap/relatorio-semestral")]
+        RSP_E = 146,
+
+        [PermissaoMenu(Menu = "Relatório Semestral ", Icone = "", Agrupamento = "Relatórios ", OrdemAgrupamento = 2, OrdemMenu = 4, EhAlteracao = true, Url = "/relatorios/pap/relatorio-semestral")]
+        RSP_A = 147,
     }
 }
