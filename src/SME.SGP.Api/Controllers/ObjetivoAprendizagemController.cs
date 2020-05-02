@@ -74,10 +74,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
-        public async Task<IActionResult> SincronizarObjetivos([FromServices]IServicoObjetivosAprendizagem servicoObjetivosAprendizagem, [FromServices]IRepositorioCache repositorioCache)
+        public async Task<IActionResult> SincronizarObjetivos([FromServices]IServicoObjetivosAprendizagem servicoObjetivosAprendizagem)
         {
             await servicoObjetivosAprendizagem.SincronizarObjetivosComJurema();
-            await repositorioCache.RemoverAsync("ObjetivosAprendizagem");
             return Ok();
         }
     }
