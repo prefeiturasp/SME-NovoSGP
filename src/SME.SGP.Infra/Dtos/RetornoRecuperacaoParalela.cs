@@ -18,5 +18,6 @@ namespace SME.SGP.Infra
         public long PeriodoRecuperacaoParalelaId { get; set; }
         public long RespostaId { get; set; }
         public long TurmaId { get; set; }
+        public int BimestreEdicao { get; set; }
     }
 }

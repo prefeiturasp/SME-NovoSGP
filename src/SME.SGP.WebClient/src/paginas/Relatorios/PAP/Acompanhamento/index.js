@@ -41,6 +41,7 @@ import Reducer, {
 
 // Utils
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+import { MensagemAlerta } from '~/paginas/Perfil/meusDados.css';
 
 function RelatorioPAPAcompanhamento() {
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
@@ -51,6 +52,7 @@ function RelatorioPAPAcompanhamento() {
   const [estadoOriginalAlunos, setEstadoOriginalAlunos] = useState(null);
   const { turmaSelecionada } = useSelector(store => store.usuario);
   const [semPeriodos, setSemPeriodos] = useState(false);
+  const [somenteLeitura, setSomenteLeitura] = useState(false);
 
   const dispararAlteracoes = dados => {
     setEstadoOriginalAlunos(dados.periodo.alunos);
@@ -93,9 +95,16 @@ function RelatorioPAPAcompanhamento() {
 
   const onChangeObjetivoHandler = useCallback(
     async objetivo => {
-      salvarAlteracoes(objetivo);
+      if (!somenteLeitura) {
+        salvarAlteracoes(objetivo);
+        return;
+      }
+
+      if (objetivo) {
+        disparar(setarObjetivoAtivo(objetivo.id));
+      }
     },
-    [salvarAlteracoes]
+    [salvarAlteracoes, somenteLeitura]
   );
 
   const limparTela = useCallback(() => {
@@ -114,8 +123,9 @@ function RelatorioPAPAcompanhamento() {
   const onChangePeriodoHandler = async valor => {
     try {
       setCarregando(true);
+      setSomenteLeitura(false);
 
-      if (modoEdicao) {
+      if (modoEdicao && !somenteLeitura) {
         const confirmou = await confirmar(
           'Atenção',
           'Você não salvou as informações preenchidas.',
@@ -146,6 +156,7 @@ function RelatorioPAPAcompanhamento() {
           return false;
         }
 
+        setSomenteLeitura(!!data.somenteLeitura);
         dispararAlteracoes(data);
         disparar(setarObjetivoAtivo(estado.Objetivos[0]));
         setCarregando(false);
@@ -276,6 +287,18 @@ function RelatorioPAPAcompanhamento() {
   return (
     <>
       <AlertaSelecionarTurma />
+      {somenteLeitura && (
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'pap-somente-leitura',
+            mensagem:
+              'Não é possível preencher o relatório fora do período estipulado pela SME',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-4"
+        />
+      )}
       {semPeriodos && (
         <Alert
           alerta={{
@@ -292,7 +315,7 @@ function RelatorioPAPAcompanhamento() {
       <Loader loading={carregando}>
         <Card mx="mx-0">
           <ButtonGroup
-            somenteConsulta
+            somenteConsulta={somenteLeitura}
             permissoesTela={{
               podeConsultar: true,
               podeAlterar: true,
@@ -305,7 +328,9 @@ function RelatorioPAPAcompanhamento() {
             onClickBotaoPrincipal={() => salvarAlteracoes(estado.ObjetivoAtivo)}
             onClickCancelar={() => onClickCancelarHandler()}
             labelBotaoPrincipal="Salvar"
-            desabilitarBotaoPrincipal={!modoEdicao || !periodo}
+            desabilitarBotaoPrincipal={
+              somenteLeitura || !modoEdicao || !periodo
+            }
           />
           <Grid className="p-0" cols={12}>
             <Linha className="row m-0">
@@ -348,7 +373,7 @@ function RelatorioPAPAcompanhamento() {
               ordenarColunaNumero="numeroChamada"
               ordenarColunaTexto="nome"
               conteudoParaOrdenar={estado.Alunos}
-              desabilitado={estado.Alunos.length <= 0}
+              desabilitado={somenteLeitura || estado.Alunos.length <= 0}
               onChangeOrdenacao={valor => setOrdenacao(valor)}
             />
           </Grid>
@@ -358,6 +383,7 @@ function RelatorioPAPAcompanhamento() {
               objetivoAtivo={estado.ObjetivoAtivo}
               respostas={respostasCorrentes}
               onChangeResposta={onChangeRespostaHandler}
+              somenteConsulta={somenteLeitura}
             />
           </Grid>
         </Card>
