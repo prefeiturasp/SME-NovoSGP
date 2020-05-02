@@ -31,8 +31,7 @@ namespace SME.SGP.Aplicacao
             IServicoEOL servicoEOL,
             IServicoRecuperacaoParalela servicoRecuperacaoParalela,
             IContextoAplicacao contextoAplicacao, 
-            IServicoUsuario servicoUsuario) : base(contextoAplicacao)
-            IContextoAplicacao contextoAplicacao,
+            IServicoUsuario servicoUsuario,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo) : base(contextoAplicacao)
         {
