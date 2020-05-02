@@ -9,6 +9,9 @@ import {
   setBimestreAtual,
   setDadosPrincipaisConselhoClasse,
   setFechamentoPeriodoInicioFim,
+  setExpandirLinha,
+  setNotaConceitoPosConselhoAtual,
+  setIdCamposNotasPosConselho,
 } from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
@@ -55,9 +58,16 @@ const DadosConselhoClasse = props => {
     return false;
   };
 
+  const limparDadosNotaPosConselhoJustificativa = () => {
+    dispatch(setExpandirLinha([]));
+    dispatch(setNotaConceitoPosConselhoAtual({}));
+    dispatch(setIdCamposNotasPosConselho({}));
+  };
+
   // Quando passa bimestre 0 o retorno vai trazer dados do bimestre corrente!
   const caregarInformacoes = useCallback(
     async (bimestreConsulta = 0, ehFinal = false) => {
+      limparDadosNotaPosConselhoJustificativa();
       setCarregando(true);
       setSemDados(true);
       const retorno = await ServicoConselhoClasse.obterInformacoesPrincipais(
@@ -146,7 +156,17 @@ const DadosConselhoClasse = props => {
   }, [codigoEOL, bimestreAtual, caregarInformacoes]);
 
   const onChangeTab = async numeroBimestre => {
-    const continuar = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia();
+    let continuar = false;
+
+    const validouNotaConceitoPosConselho = await servicoSalvarConselhoClasse.validarNotaPosConselho();
+
+    if (validouNotaConceitoPosConselho) {
+      const validouAnotacaoRecomendacao = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia();
+      if (validouNotaConceitoPosConselho && validouAnotacaoRecomendacao) {
+        continuar = true;
+      }
+    }
+
     if (continuar) {
       const ehFinal = numeroBimestre === 'final';
       caregarInformacoes(numeroBimestre, ehFinal);

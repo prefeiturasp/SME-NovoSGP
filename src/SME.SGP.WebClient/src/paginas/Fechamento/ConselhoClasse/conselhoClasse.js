@@ -75,9 +75,12 @@ const ConselhoClasse = () => {
   };
 
   const permiteOnChangeAluno = async () => {
-    const continuar = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia();
-    if (continuar) {
-      return true;
+    const validouNotaConceitoPosConselho = await servicoSalvarConselhoClasse.validarNotaPosConselho();
+    if (validouNotaConceitoPosConselho) {
+      const validouAnotacaoRecomendacao = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia();
+      if (validouNotaConceitoPosConselho && validouAnotacaoRecomendacao) {
+        return true;
+      }
     }
     return false;
   };
