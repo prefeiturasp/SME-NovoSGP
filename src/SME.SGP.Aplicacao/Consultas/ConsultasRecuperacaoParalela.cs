@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioResposta repositorioResposta;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoRecuperacaoParalela servicoRecuperacaoParalela;
+        private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo;
 
@@ -29,7 +30,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioResposta repositorioResposta,
             IServicoEOL servicoEOL,
             IServicoRecuperacaoParalela servicoRecuperacaoParalela,
-            IContextoAplicacao contextoAplicacao,
+            IContextoAplicacao contextoAplicacao, 
+            IServicoUsuario servicoUsuario,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo) : base(contextoAplicacao)
         {
@@ -38,6 +40,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioObjetivo = repositorioObjetivo ?? throw new ArgumentNullException(nameof(repositorioObjetivo));
             this.repositorioResposta = repositorioResposta ?? throw new ArgumentNullException(nameof(repositorioResposta));
             this.servicoRecuperacaoParalela = servicoRecuperacaoParalela ?? throw new ArgumentNullException(nameof(servicoRecuperacaoParalela));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar;
             this.repositorioRecuperacaoParalelaPeriodo = repositorioRecuperacaoParalelaPeriodo ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalelaPeriodo));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
