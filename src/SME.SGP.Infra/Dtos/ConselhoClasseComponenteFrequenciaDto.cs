@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -12,11 +10,12 @@ namespace SME.SGP.Infra
         }
 
         public string Nome { get; set; }
+        public long CodigoComponenteCurricular { get; set; }
         public int QuantidadeAulas { get; set; }
         public int Faltas { get; set; }
         public int AusenciasCompensadas { get; set; }
         public double Frequencia { get; set; }
-        public double? NotaPosConselho { get; set; }
+        public NotaPosConselhoDto NotaPosConselho { get; set; }
         public List<NotaBimestreDto> NotasFechamentos { get; set; }
     }
 }

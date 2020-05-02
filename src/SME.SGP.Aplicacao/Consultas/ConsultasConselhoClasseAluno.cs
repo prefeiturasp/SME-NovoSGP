@@ -218,7 +218,7 @@ namespace SME.SGP.Aplicacao
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
             // Retornar componentes que lançam nota
             var gruposMatrizes = disciplinas.Where(c => c.LancaNota).GroupBy(c => c.GrupoMatriz?.Nome);
-            foreach(var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k=>k.Key))
+            foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key))
             {
                 var conselhoClasseAlunoNotas = new ConselhoClasseAlunoNotasConceitosDto();
                 conselhoClasseAlunoNotas.GrupoMatriz = grupoDisiplinasMatriz.Key;
@@ -257,6 +257,7 @@ namespace SME.SGP.Aplicacao
             var conselhoClasseComponente = new ConselhoClasseComponenteFrequenciaDto()
             {
                 Nome = disciplina.Nome,
+                CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
                 QuantidadeAulas = frequenciaAluno.TotalAulas,
                 Faltas = frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
@@ -343,12 +344,13 @@ namespace SME.SGP.Aplicacao
             return new ConselhoClasseNotasComponenteRegenciaDto()
             {
                 Nome = componenteCurricular.Nome,
+                CodigoComponenteCurricular = componenteCurricular.CodigoComponenteCurricular,
                 NotasFechamentos = await ObterNotasComponente(componenteCurricular, periodoEscolar, notasFechamentoAluno),
                 NotaPosConselho = await ObterNotaPosConselho(componenteCurricular, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno)
             };
         }
 
-        private async Task<double?> ObterNotaPosConselho(DisciplinaResposta componenteCurricular, int? bimestre, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
+        private async Task<NotaPosConselhoDto> ObterNotaPosConselho(DisciplinaResposta componenteCurricular, int? bimestre, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
         {
             var componenteCurricularCodigo = componenteCurricular.CodigoComponenteCurricular;
             // Busca nota do conselho de classe consultado
@@ -357,7 +359,10 @@ namespace SME.SGP.Aplicacao
                 // Dugere nota final do fechamento
                 notaComponente = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre);
 
-            return notaComponente?.NotaConceito;
+            return new NotaPosConselhoDto() { 
+                Id = notaComponente?.Id, 
+                Nota = notaComponente?.NotaConceito 
+            };
         }
 
         private async Task<List<NotaBimestreDto>> ObterNotasComponente(DisciplinaResposta componenteCurricular, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)

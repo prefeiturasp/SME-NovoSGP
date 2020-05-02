@@ -14,7 +14,13 @@ const NumeroChamada = styled.td`
   min-width: 20px;
 `;
 
-function TabelaAlunos({ alunos, respostas, objetivoAtivo, onChangeResposta }) {
+function TabelaAlunos({
+  alunos,
+  respostas,
+  objetivoAtivo,
+  onChangeResposta,
+  somenteConsulta,
+}) {
   return (
     <ContainerTabela>
       <Tabela>
@@ -44,9 +50,11 @@ function TabelaAlunos({ alunos, respostas, objetivoAtivo, onChangeResposta }) {
                       respostas={respostas}
                       onChangeResposta={onChangeResposta}
                       containerVinculoId={`resposta-${key}`}
+                      desabilitar={somenteConsulta}
                       bloquearLimpar={
-                        objetivoAtivo &&
-                        (objetivoAtivo.id == 1 || objetivoAtivo.id == 2)
+                        somenteConsulta ||
+                        (objetivoAtivo &&
+                          (objetivoAtivo.id == 1 || objetivoAtivo.id == 2))
                       }
                     />
                   </div>
