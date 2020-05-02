@@ -17,6 +17,7 @@ const inicial = {
   expandirLinha: [],
   dadosListasNotasConceitos: {},
   notaConceitoPosConselhoAtual: {},
+  idCamposNotasPosConselho: {},
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -78,7 +79,11 @@ export default function ConselhoClasse(state = inicial, action) {
           auditoriaAnotacaoRecomendacao: null,
           dentroPeriodo: true,
           fechamentoPeriodoInicioFim: {},
+          notasJustificativas: { componentes: [], componentesRegencia: [] },
+          expandirLinha: [],
           dadosListasNotasConceitos: [],
+          notaConceitoPosConselhoAtual: {},
+          idCamposNotasPosConselho: {},
         };
       }
       case '@conselhoClasse/setConselhoClasseEmEdicao': {
@@ -140,10 +145,16 @@ export default function ConselhoClasse(state = inicial, action) {
           expandirLinha: action.payload,
         };
       }
-      case '@conselhoClasse/setNotaConceitoPosConselho': {
+      case '@conselhoClasse/setNotaConceitoPosConselhoAtual': {
         return {
           ...draft,
           notaConceitoPosConselhoAtual: action.payload,
+        };
+      }
+      case '@conselhoClasse/setIdCamposNotasPosConselho': {
+        return {
+          ...draft,
+          idCamposNotasPosConselho: action.payload,
         };
       }
 

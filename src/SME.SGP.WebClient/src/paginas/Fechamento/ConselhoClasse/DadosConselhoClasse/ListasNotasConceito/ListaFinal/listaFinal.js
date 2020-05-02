@@ -87,24 +87,24 @@ const ListaFinal = props => {
 
     return (
       <>
-        <div className="input-notas-conceitos float-left">
+        <div className="input-notas-conceitos-final float-left">
           {obterValorNotaConceito(
             primeiroBimestre ? primeiroBimestre.notaConceito : ''
           )}
         </div>
-        <div className="input-notas-conceitos float-left">
+        <div className="input-notas-conceitos-final float-left">
           {obterValorNotaConceito(
             segundoBimestre ? segundoBimestre.notaConceito : ''
           )}
         </div>
         {!ehEja ? (
           <>
-            <div className="input-notas-conceitos float-left">
+            <div className="input-notas-conceitos-final float-left">
               {obterValorNotaConceito(
                 terceiroBimestre ? terceiroBimestre.notaConceito : ''
               )}
             </div>
-            <div className="input-notas-conceitos float-left">
+            <div className="input-notas-conceitos-final float-left">
               {obterValorNotaConceito(
                 quartoBimestre ? quartoBimestre.notaConceito : ''
               )}
