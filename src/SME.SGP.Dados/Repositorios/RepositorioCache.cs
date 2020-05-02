@@ -209,17 +209,19 @@ namespace SME.SGP.Dados.Repositorios
             var timer = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                if (utilizarGZip)
+                if (!string.IsNullOrWhiteSpace(valor) && valor != "[]")
                 {
-                    var valorComprimido = UtilGZip.Comprimir(valor);
-                    valor = System.Convert.ToBase64String(valorComprimido);
+                    if (utilizarGZip)
+                    {
+                        var valorComprimido = UtilGZip.Comprimir(valor);
+                        valor = Convert.ToBase64String(valorComprimido);
+                    }
+                    await distributedCache.SetStringAsync(nomeChave, valor, new DistributedCacheEntryOptions()
+                                                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
+
+                    timer.Stop();
+                    servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar async", inicioOperacao, timer.Elapsed, true);
                 }
-
-                await distributedCache.SetStringAsync(nomeChave, valor, new DistributedCacheEntryOptions()
-                                                .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
-
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar async", inicioOperacao, timer.Elapsed, true);
             }
             catch (Exception ex)
             {
