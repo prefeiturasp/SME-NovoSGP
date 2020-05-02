@@ -8,6 +8,9 @@ import { URL_HOME } from '~/constantes/url';
 import {
   setBimestreAtual,
   setConselhoClasseEmEdicao,
+  setExpandirLinha,
+  setNotaConceitoPosConselhoAtual,
+  setIdCamposNotasPosConselho,
 } from '~/redux/modulos/conselhoClasse/actions';
 import servicoSalvarConselhoClasse from '../../servicoSalvarConselhoClasse';
 
@@ -26,10 +29,22 @@ const BotoesAcoesConselhoClasse = () => {
     store => store.conselhoClasse.bimestreAtual
   );
 
-  const onClickSalvar = () => {
-    return servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia(
+  const notaConceitoPosConselhoAtual = useSelector(
+    store => store.conselhoClasse.notaConceitoPosConselhoAtual
+  );
+
+  const onClickSalvar = async () => {
+    const validouNotaConceitoPosConselho = await servicoSalvarConselhoClasse.validarNotaPosConselho(
       true
     );
+    if (validouNotaConceitoPosConselho) {
+      const validouAnotacaoRecomendacao = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia(
+        true
+      );
+      return validouNotaConceitoPosConselho && validouAnotacaoRecomendacao;
+    }
+
+    return false;
   };
 
   const perguntaAoSalvar = async () => {
@@ -41,7 +56,7 @@ const BotoesAcoesConselhoClasse = () => {
   };
 
   const onClickVoltar = async () => {
-    if (conselhoClasseEmEdicao) {
+    if (conselhoClasseEmEdicao || notaConceitoPosConselhoAtual.ehEdicao) {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
         const salvou = await onClickSalvar();
@@ -60,10 +75,13 @@ const BotoesAcoesConselhoClasse = () => {
   const recarregarDados = () => {
     dispatch(setConselhoClasseEmEdicao(false));
     dispatch(setBimestreAtual(bimestreAtual.valor));
+    dispatch(setExpandirLinha([]));
+    dispatch(setNotaConceitoPosConselhoAtual({}));
+    dispatch(setIdCamposNotasPosConselho({}));
   };
 
   const onClickCancelar = async () => {
-    if (conselhoClasseEmEdicao) {
+    if (conselhoClasseEmEdicao || notaConceitoPosConselhoAtual.ehEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
