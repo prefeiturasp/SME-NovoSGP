@@ -117,22 +117,22 @@ namespace SME.SGP.Dados.Repositorios
             MontaWhere(query, tipoCalendarioId, turmaId, ueId, null, null, CodigoRf);
             return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, CodigoRf }));
         }
-        public async Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorMes(long tipoCalendarioId, string turmaCodigo, string ueCodigo, string codigoRf, int mes)
+        public async Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorMes(long tipoCalendarioId, string turmaCodigo, string ueCodigo, int mes)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("SELECT a.id,");
             query.AppendLine("a.data_aula,");
             query.AppendLine("a.tipo_aula,");
-            query.AppendLine("a.aula_cj");
+            query.AppendLine("a.aula_cj,");
+            query.AppendLine("a.disciplina_id");
             query.AppendLine("FROM public.aula a");
             query.AppendLine("WHERE a.excluido = false");
             query.AppendLine("AND a.status <> 3");
             query.AppendLine("AND a.tipo_calendario_id = @tipoCalendarioId");
             query.AppendLine("AND a.turma_id = @turmaCodigo");
-            query.AppendLine("AND extract(month from a.data_aula) = @mes");
-            query.AppendLine("AND a.professor_rf = @codigoRf");
+            query.AppendLine("AND extract(month from a.data_aula) = @mes");            
 
-            return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaCodigo, ueCodigo, codigoRf, mes }));
+            return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaCodigo, ueCodigo,  mes }));
             
         }
         public async Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorData(long tipoCalendarioId, string turmaCodigo, string ueCodigo, string codigoRf, DateTime dataDaAula)

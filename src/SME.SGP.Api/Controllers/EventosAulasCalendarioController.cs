@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
@@ -55,9 +56,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{tipoCalendarioId}/meses/{mes}/eventos-aulas")]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEventosAulasMensaisPorCalendario(long tipoCalendarioId, int mes, [FromQuery]FiltroAulasEventosCalendarioDto filtro, [FromServices]IMediator mediator, [FromServices]IServicoUsuario  servicoUsuario)
+        public async Task<IActionResult> ObterEventosAulasMensaisPorCalendario(long tipoCalendarioId, int mes, [FromQuery]FiltroAulasEventosCalendarioDto filtro, 
+            [FromServices]IMediator mediator, [FromServices]IServicoUsuario  servicoUsuario, [FromServices]IServicoEOL servicoEOL)
         {
-            return Ok(await ObterAulasEventosProfessorCalendarioPorMesUseCase.Executar(mediator, filtro, tipoCalendarioId, mes, servicoUsuario));            
+            return Ok(await ObterAulasEventosProfessorCalendarioPorMesUseCase.Executar(mediator, filtro, tipoCalendarioId, mes, servicoUsuario, servicoEOL));            
         }
         [HttpGet]
         [ProducesResponseType(typeof(EventosAulasNoDiaCalendarioDto), 200)]
