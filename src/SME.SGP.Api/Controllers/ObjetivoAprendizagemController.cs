@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/objetivos-aprendizagem")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class ObjetivoAprendizagemController : ControllerBase
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
@@ -64,6 +67,18 @@ namespace SME.SGP.Api.Controllers
                 return Ok(objetivos);
             else
                 return StatusCode(204);
+        }
+
+        [HttpPost]
+        [Route("sincronizar-jurema")]
+        [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(204)]
+        public async Task<IActionResult> SincronizarObjetivos([FromServices]IServicoObjetivosAprendizagem servicoObjetivosAprendizagem, [FromServices]IRepositorioCache repositorioCache)
+        {
+            await servicoObjetivosAprendizagem.SincronizarObjetivosComJurema();
+            await repositorioCache.RemoverAsync("ObjetivosAprendizagem");
+            return Ok();
         }
     }
 }
