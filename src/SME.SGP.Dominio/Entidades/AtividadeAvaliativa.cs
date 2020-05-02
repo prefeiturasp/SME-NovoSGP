@@ -5,7 +5,13 @@ namespace SME.SGP.Dominio
 {
     public class AtividadeAvaliativa : EntidadeBase
     {
+        public AtividadeAvaliativa()
+        {
+            AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
+            Disciplinas = new List<AtividadeAvaliativaDisciplina>();
+        }
         public List<AtividadeAvaliativaRegencia> AtividadeAvaliativaRegencia { get; set; }
+        public List<AtividadeAvaliativaDisciplina> Disciplinas { get; set; }
         public CategoriaAtividadeAvaliativa Categoria { get; set; }
         public DateTime DataAvaliacao { get; set; }
         public string DescricaoAvaliacao { get; set; }
@@ -24,7 +30,11 @@ namespace SME.SGP.Dominio
         {
             AtividadeAvaliativaRegencia.Add(atividadeAvaliativaRegencia);
         }
-
+        public void Adicionar(AtividadeAvaliativaDisciplina atividadeAvaliativaDisciplina)
+        {
+            if (atividadeAvaliativaDisciplina != null)
+                Disciplinas.Add(atividadeAvaliativaDisciplina);
+        }
         public void AdicionarTipoAvaliacao(TipoAvaliacao tipoAvaliacao)
         {
             TipoAvaliacao = tipoAvaliacao;
