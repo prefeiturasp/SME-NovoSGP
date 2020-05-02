@@ -10,17 +10,20 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoObjetivosAprendizagem : IServicoObjetivosAprendizagem
     {
+        private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoJurema servicoJurema;
 
         public ServicoObjetivosAprendizagem(IServicoJurema servicoJurema,
                                             IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem,
-                                            IRepositorioParametrosSistema repositorioParametrosSistema)
+                                            IRepositorioParametrosSistema repositorioParametrosSistema,
+                                            IRepositorioCache repositorioCache)
         {
             this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
             this.repositorioObjetivoAprendizagem = repositorioObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagem));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task SincronizarObjetivosComJurema()
@@ -40,6 +43,7 @@ namespace SME.SGP.Dominio.Servicos
                 var objetivosAAtualizar = objetivosJuremaResposta?.Where(c => c.AtualizadoEm > dataUltimaAtualizacao);
 
                 var atualizarUltimaDataAtualizacao = false;
+                var houveAlteracaoNosDados = false;
 
                 if (objetivosAAtualizar != null && objetivosAAtualizar.Any())
                 {
@@ -48,6 +52,7 @@ namespace SME.SGP.Dominio.Servicos
                         await AtualizarObjetivoBase(objetivo);
                     }
                     atualizarUltimaDataAtualizacao = true;
+                    houveAlteracaoNosDados = true;
                 }
 
                 if (objetivosAIncluir != null && objetivosAIncluir.Any())
@@ -56,6 +61,7 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         await repositorioObjetivoAprendizagem.SalvarAsync(MapearObjetivoRespostaParaDominio(objetivo));
                     }
+                    houveAlteracaoNosDados = true;
                 }
 
                 if (objetivosAReativar != null && objetivosAReativar.Any())
@@ -64,6 +70,7 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         await repositorioObjetivoAprendizagem.ReativarAsync(objetivo.Id);
                     }
+                    houveAlteracaoNosDados = true;
                 }
 
                 if (objetivosADesativar != null && objetivosADesativar.Any())
@@ -73,6 +80,7 @@ namespace SME.SGP.Dominio.Servicos
                         objetivo.Desativar();
                         await repositorioObjetivoAprendizagem.AtualizarAsync(objetivo);
                     }
+                    houveAlteracaoNosDados = true;
                 }
 
                 if (atualizarUltimaDataAtualizacao)
@@ -80,6 +88,9 @@ namespace SME.SGP.Dominio.Servicos
                     dataUltimaAtualizacao = objetivosJuremaResposta.Max(c => c.AtualizadoEm);
                     await repositorioParametrosSistema.AtualizarValorPorTipoAsync(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema, dataUltimaAtualizacao.ToString("yyyy-MM-dd HH:mm:ss.fff tt"));
                 }
+
+                if (houveAlteracaoNosDados)
+                    await repositorioCache.RemoverAsync("ObjetivosAprendizagem");
             }
             else
                 SentrySdk.CaptureException(new NegocioException("Parâmetro 'DataUltimaAtualizacaoObjetivosJurema' não encontrado na base de dados, os objetivos de aprendizagem não serão atualizados."));
