@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import CampoNumero from '~/componentes/campoNumero';
 import {
   setExpandirLinha,
-  setNotaConceitoPosConselho,
+  setNotaConceitoPosConselhoAtual,
 } from '~/redux/modulos/conselhoClasse/actions';
 import { erro, erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
@@ -25,14 +25,21 @@ const CampoNota = props => {
     store => store.conselhoClasse.fechamentoPeriodoInicioFim
   );
 
+  const idCamposNotasPosConselho = useSelector(
+    store => store.conselhoClasse.idCamposNotasPosConselho[idCampo]
+  );
+
   const { periodoFechamentoFim } = fechamentoPeriodoInicioFim;
 
   const [notaValorAtual, setNotaValorAtual] = useState(notaPosConselho);
   const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
 
+  const [idNotaPosConselho] = useState(id);
+
   const dispatch = useDispatch();
 
   const mostrarJustificativa = () => {
+    dispatch(setNotaConceitoPosConselhoAtual({}));
     const novaLinha = {};
     novaLinha[idCampo] = true;
     dispatch(setExpandirLinha(novaLinha));
@@ -45,8 +52,8 @@ const CampoNota = props => {
     auditoria = null
   ) => {
     dispatch(
-      setNotaConceitoPosConselho({
-        id,
+      setNotaConceitoPosConselhoAtual({
+        id: idNotaPosConselho || idCamposNotasPosConselho,
         codigoComponenteCurricular,
         nota,
         ehEdicao,
@@ -76,7 +83,7 @@ const CampoNota = props => {
   const onChangeValor = async (valor, validarMedia) => {
     setNotaValorAtual(valor);
     const retorno = await ServicoNotaConceito.obterArredondamento(
-      valor,
+      Number(valor),
       periodoFechamentoFim
     ).catch(e => erros(e));
 
@@ -96,7 +103,7 @@ const CampoNota = props => {
   const onClickMostrarJustificativa = async () => {
     mostrarJustificativa();
     const dados = await ServicoConselhoClasse.obterNotaPosConselho(
-      id
+      idNotaPosConselho || idCamposNotasPosConselho
     ).catch(e => erro(e));
     if (dados && dados.data) {
       const { nota, justificativa } = dados.data;
@@ -147,7 +154,7 @@ const CampoNota = props => {
   return (
     <>
       <CampoCentralizado>
-        {id ? (
+        {idNotaPosConselho || idCamposNotasPosConselho ? (
           <CampoAlerta ehNota>
             {campoNotaPosConselho(false, false)}
             <div className="icone" onClick={onClickMostrarJustificativa}>
