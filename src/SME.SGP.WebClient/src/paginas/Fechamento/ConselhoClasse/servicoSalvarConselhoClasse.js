@@ -5,7 +5,11 @@ import {
   setAuditoriaAnotacaoRecomendacao,
   setDadosPrincipaisConselhoClasse,
   setConselhoClasseEmEdicao,
+  setExpandirLinha,
+  setIdCamposNotasPosConselho,
+  setNotaConceitoPosConselhoAtual,
 } from '~/redux/modulos/conselhoClasse/actions';
+import notasConceitos from '~/dtos/notasConceitos';
 
 class ServicoSalvarConselhoClasse {
   validarSalvarRecomendacoesAlunoFamilia = async (salvarSemValidar = false) => {
@@ -27,7 +31,7 @@ class ServicoSalvarConselhoClasse {
       return confirmar(
         'Atenção',
         '',
-        'Os registros deste aluno ainda não foram salvos, deseja descartar os registros?'
+        'Anotações e recomendações ainda não foram salvas, deseja descartar?'
       );
     };
 
@@ -74,7 +78,7 @@ class ServicoSalvarConselhoClasse {
         };
         dispatch(setAuditoriaAnotacaoRecomendacao(auditoria));
         dispatch(setConselhoClasseEmEdicao(false));
-        sucesso('Suas informações foram salvas com sucesso.');
+        sucesso('Anotações e recomendações salvas com sucesso.');
         return true;
       }
       return false;
@@ -106,6 +110,147 @@ class ServicoSalvarConselhoClasse {
       // Tenta salvar os registros se estão válidos e continuar para executação a ação!
       return salvar();
     }
+    return true;
+  };
+
+  salvarNotaPosConselho = async () => {
+    const { dispatch } = store;
+
+    const limparDadosNotaPosConselhoJustificativa = () => {
+      dispatch(setExpandirLinha([]));
+      dispatch(setNotaConceitoPosConselhoAtual({}));
+    };
+
+    const state = store.getState();
+
+    const { conselhoClasse } = state;
+
+    const {
+      dadosPrincipaisConselhoClasse,
+      notaConceitoPosConselhoAtual,
+      idCamposNotasPosConselho,
+    } = conselhoClasse;
+
+    const {
+      conselhoClasseId,
+      fechamentoTurmaId,
+      alunoCodigo,
+      tipoNota,
+    } = dadosPrincipaisConselhoClasse;
+
+    const {
+      justificativa,
+      nota,
+      conceito,
+      codigoComponenteCurricular,
+      idCampo,
+    } = notaConceitoPosConselhoAtual;
+
+    const ehNota = Number(tipoNota) === notasConceitos.Notas;
+
+    if (!justificativa) {
+      erro(
+        `É obrigatório informar justificativa de ${
+          ehNota ? 'nota' : 'conceito'
+        } pós-conselho`
+      );
+      return false;
+    }
+
+    if (!nota && !conceito) {
+      erro(
+        `É obrigatório informar ${ehNota ? 'nota' : 'conceito'} pós-conselho`
+      );
+      return false;
+    }
+
+    const notaDto = {
+      justificativa,
+      nota: ehNota ? nota : '',
+      conceito: !ehNota ? conceito : '',
+      codigoComponenteCurricular,
+    };
+
+    const retorno = await ServicoConselhoClasse.salvarNotaPosConselho(
+      conselhoClasseId,
+      fechamentoTurmaId,
+      alunoCodigo,
+      notaDto
+    ).catch(e => erro(e));
+
+    if (retorno && retorno.status === 200) {
+      if (!dadosPrincipaisConselhoClasse.conselhoClasseId) {
+        dadosPrincipaisConselhoClasse.conselhoClasseId =
+          retorno.data.conselhoClasseId;
+        dispatch(
+          setDadosPrincipaisConselhoClasse(dadosPrincipaisConselhoClasse)
+        );
+      }
+
+      const { auditoria } = retorno.data;
+
+      const temJustificativasDto = idCamposNotasPosConselho;
+      temJustificativasDto[idCampo] = auditoria.id;
+      dispatch(setIdCamposNotasPosConselho(temJustificativasDto));
+
+      limparDadosNotaPosConselhoJustificativa();
+
+      sucesso(
+        `${ehNota ? 'Nota' : 'Conceito'} pós-conselho ${
+          ehNota ? 'salva' : 'salvo'
+        } com sucesso`
+      );
+      return true;
+    }
+    return false;
+  };
+
+  validarNotaPosConselho = async () => {
+    const { dispatch } = store;
+
+    const limparDadosNotaPosConselhoJustificativa = () => {
+      dispatch(setExpandirLinha([]));
+      dispatch(setNotaConceitoPosConselhoAtual({}));
+    };
+
+    const state = store.getState();
+
+    const { conselhoClasse } = state;
+
+    const {
+      notaConceitoPosConselhoAtual,
+      dadosPrincipaisConselhoClasse,
+    } = conselhoClasse;
+
+    const { tipoNota } = dadosPrincipaisConselhoClasse;
+
+    const { ehEdicao } = notaConceitoPosConselhoAtual;
+
+    const ehNota = Number(tipoNota) === notasConceitos.Notas;
+
+    const perguntaDescartarRegistros = async () => {
+      return confirmar(
+        'Atenção',
+        '',
+        `${ehNota ? 'Nota' : 'Conceito'} pós-conselho não foi ${
+          ehNota ? 'salva' : 'salvo'
+        }, deseja descartar?`
+      );
+    };
+
+    if (ehEdicao) {
+      const descartarRegistros = await perguntaDescartarRegistros();
+
+      // Voltar para a tela continua e executa a ação!
+      if (descartarRegistros) {
+        limparDadosNotaPosConselhoJustificativa();
+        return true;
+      }
+
+      // Voltar para a tela e não executa a ação!
+      return false;
+    }
+
     return true;
   };
 }

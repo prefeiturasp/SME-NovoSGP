@@ -1,12 +1,12 @@
 import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import SelectComponent from '~/componentes/select';
 import {
   setExpandirLinha,
-  setNotaConceitoPosConselho,
+  setNotaConceitoPosConselhoAtual,
 } from '~/redux/modulos/conselhoClasse/actions';
 import { erro } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
@@ -28,8 +28,14 @@ const CampoConceito = props => {
     desabilitarCampo,
   } = props;
 
+  const idCamposNotasPosConselho = useSelector(
+    store => store.conselhoClasse.idCamposNotasPosConselho[idCampo]
+  );
+
   const [notaValorAtual, setNotaValorAtual] = useState(notaPosConselho);
   const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
+
+  const [idNotaPosConselho] = useState(id);
 
   const validaSeEstaAbaixoDaMedia = useCallback(
     valorAtual => {
@@ -49,7 +55,8 @@ const CampoConceito = props => {
   const dispatch = useDispatch();
 
   const mostrarJustificativa = () => {
-    let novaLinha = {};
+    dispatch(setNotaConceitoPosConselhoAtual({}));
+    const novaLinha = {};
     novaLinha[idCampo] = true;
     dispatch(setExpandirLinha(novaLinha));
   };
@@ -61,8 +68,8 @@ const CampoConceito = props => {
     auditoria = null
   ) => {
     dispatch(
-      setNotaConceitoPosConselho({
-        id,
+      setNotaConceitoPosConselhoAtual({
+        id: idNotaPosConselho || idCamposNotasPosConselho,
         codigoComponenteCurricular,
         conceito: Number(conceito),
         ehEdicao,
@@ -76,7 +83,7 @@ const CampoConceito = props => {
   const onClickMostrarJustificativa = async () => {
     mostrarJustificativa();
     const dados = await ServicoConselhoClasse.obterNotaPosConselho(
-      id
+      idNotaPosConselho || idCamposNotasPosConselho
     ).catch(e => erro(e));
     if (dados && dados.data) {
       const { nota, justificativa } = dados.data;
@@ -92,38 +99,41 @@ const CampoConceito = props => {
     }
   };
 
-  const onChangeConceito = valorNovo => {
+  const onChangeConceito = (valorNovo, validarMedia) => {
     setNotaValorAtual(valorNovo);
     mostrarJustificativa();
     setNotaPosConselho(valorNovo, true);
     if (!desabilitarCampo) {
-      validaSeEstaAbaixoDaMedia(valorNovo);
+      if (validarMedia) {
+        validaSeEstaAbaixoDaMedia(valorNovo);
+      }
       setNotaValorAtual(valorNovo);
     }
   };
 
+  const campoConceitoPosConselho = (abaixoMedia, validarMedia) => {
+    return (
+      <Combo>
+        <SelectComponent
+          onChange={valorNovo => onChangeConceito(valorNovo, validarMedia)}
+          valueOption="id"
+          valueText="valor"
+          lista={listaTiposConceitos}
+          valueSelect={notaValorAtual ? String(notaValorAtual) : ''}
+          showSearch
+          placeholder="Conceito"
+          className={abaixoMedia ? 'borda-abaixo-media' : ''}
+        />
+      </Combo>
+    );
+  };
+
   return (
     <>
-      {id ? (
+      {idNotaPosConselho || idCamposNotasPosConselho ? (
         <CampoCentralizado>
           <CampoAlerta>
-            <Tooltip
-              placement="bottom"
-              title={abaixoDaMedia ? 'Abaixo da Média' : ''}
-            >
-              <Combo>
-                <SelectComponent
-                  onChange={onChangeConceito}
-                  valueOption="id"
-                  valueText="valor"
-                  lista={listaTiposConceitos}
-                  valueSelect={notaValorAtual ? String(notaValorAtual) : ''}
-                  showSearch
-                  placeholder="Conceito"
-                  className={abaixoDaMedia ? 'borda-abaixo-media' : ''}
-                />
-              </Combo>
-            </Tooltip>
+            {campoConceitoPosConselho(false, false)}
             <Tooltip
               title="Ver Justificativa"
               placement="bottom"
@@ -140,18 +150,7 @@ const CampoConceito = props => {
           placement="bottom"
           title={abaixoDaMedia ? 'Abaixo da Média' : ''}
         >
-          <Combo>
-            <SelectComponent
-              onChange={onChangeConceito}
-              valueOption="id"
-              valueText="valor"
-              lista={listaTiposConceitos}
-              valueSelect={notaValorAtual ? String(notaValorAtual) : ''}
-              showSearch
-              placeholder="Conceito"
-              className={abaixoDaMedia ? 'borda-abaixo-media' : ''}
-            />
-          </Combo>
+          {campoConceitoPosConselho(abaixoDaMedia, true)}
         </Tooltip>
       )}
     </>
