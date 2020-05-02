@@ -14,9 +14,9 @@ const AcompanhamentoPAPServico = {
       .catch(err => err.response);
 
     return {
-      sucesso: retorno.status === 200 || retorno.status === 204,
-      semDados: retorno.status === 204,
-      dados: retorno.data,
+      sucesso: retorno && (retorno.status === 200 || retorno.status === 204),
+      semDados: retorno && retorno.status === 204,
+      dados: retorno && retorno.data,
     };
   },
 };

@@ -18,11 +18,6 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoEOL servicoEOL;
 
-        private readonly IEnumerable<int> componentesCurricularesPAP = new List<int>
-        {
-            1322, 1033, 1051, 1052, 1053, 1054
-        };
-
         public ComandosRecuperacaoParalela(IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
             IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta repositorioRecuperacaoParalelaPeriodoObjetivo,
             IConsultaRecuperacaoParalela consultaRecuperacaoParalela,
@@ -47,9 +42,9 @@ namespace SME.SGP.Aplicacao
 
             var turmaCodigo = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId;
 
-            var disciplinas = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo.ToString(), usuarioLogado.Login, usuarioLogado.PerfilAtual);
+            var turmaPap = await servicoEOL.TurmaPossuiComponenteCurricularPAP(turmaCodigo.ToString(), usuarioLogado.Login, usuarioLogado.PerfilAtual);
 
-            if (!disciplinas.Any(x => componentesCurricularesPAP.Any(y => x.Codigo == y)))
+            if (!turmaPap)
                 throw new NegocioException("Somente é possivel realizar acompanhamento para turmas PAP");
             
             unitOfWork.IniciarTransacao();

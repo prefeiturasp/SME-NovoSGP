@@ -64,6 +64,22 @@ namespace SME.SGP.Aplicacao.Integracoes
             };
         }
 
+        public async Task<bool> TurmaPossuiComponenteCurricularPAP(string codigoTurma, string login, Guid idPerfil)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{idPerfil}/validar/pap";
+
+            var resposta = await httpClient.GetAsync(url);
+
+            if (!resposta.IsSuccessStatusCode)
+                return false;
+
+            var retorno = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<bool>(retorno);
+        }
+
         public async Task AtribuirCJSeNecessario(string codigoRf)
         {
             var resumo = await ObterResumoCore(codigoRf);
