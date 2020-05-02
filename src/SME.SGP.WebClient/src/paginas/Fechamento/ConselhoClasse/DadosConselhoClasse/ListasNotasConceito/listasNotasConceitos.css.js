@@ -36,6 +36,23 @@ export const Lista = styled.div`
   }
 
   .input-notas-conceitos {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    span {
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      background-color: #f5f6f8;
+      border-radius: 4px;
+      border: 1px solid #ced4da;
+      color: ${Base.CinzaDesabilitado} !important;
+      width: 43.8px;
+      height: 35.6px;
+    }
+  }
+
+  .input-notas-conceitos-final {
     width: 43.8px;
     height: 35.6px;
     border-radius: 3px;
@@ -53,6 +70,11 @@ export const Lista = styled.div`
     width: 250px;
     max-width: 250px;
     min-width: 250px;
+  }
+
+  .borda-abaixo-media {
+    border: solid 2px #b22222 !important;
+    border-radius: 7px;
   }
 `;
 

@@ -25,6 +25,7 @@ const ListasNotasConceitos = props => {
     alunoCodigo,
     turmaCodigo,
     tipoNota,
+    media,
   } = dadosPrincipaisConselhoClasse;
 
   const [exibir, setExibir] = useState(false);
@@ -72,6 +73,7 @@ const ListasNotasConceitos = props => {
           ehFinal={bimestreSelecionado.valor === 'final'}
           tipoNota={tipoNota}
           listaTiposConceitos={listaTiposConceitos}
+          mediaAprovacao={media}
         />
       ) : (
         ''
