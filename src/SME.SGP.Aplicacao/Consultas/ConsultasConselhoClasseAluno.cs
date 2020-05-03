@@ -88,12 +88,11 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            var disciplinas = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(fechamentoTurma.Turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
-
+            var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurma(fechamentoTurma.Turma.CodigoTurma);
             if (disciplinas == null || !disciplinas.Any())
                 return null;
 
-            var disciplinasSinteses = disciplinas.Where(x => !x.BaseNacional && x.GrupoMatriz != null);
+            var disciplinasSinteses = disciplinas.Where(x => !x.LancaNota && x.GrupoMatriz != null);
 
             if (disciplinasSinteses == null || !disciplinasSinteses.Any())
                 return null;
@@ -102,7 +101,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var componenteCurricular in disciplinasSinteses)
             {
-                var grupoSintese = retorno.FirstOrDefault(x => x.Id == componenteCurricular.Codigo);
+                var grupoSintese = retorno.FirstOrDefault(x => x.Id == componenteCurricular.CodigoComponenteCurricular);
 
                 MapearDto(ref retorno, ref grupoSintese, frequenciaAluno, componenteCurricular, bimestre);
             }
@@ -110,7 +109,7 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private void MapearDto(ref List<ConselhoDeClasseGrupoMatrizDto> retorno, ref ConselhoDeClasseGrupoMatrizDto grupoSintese, IEnumerable<FrequenciaAluno> frequenciaAluno, ComponenteCurricularEol componenteCurricular, int bimestre)
+        private void MapearDto(ref List<ConselhoDeClasseGrupoMatrizDto> retorno, ref ConselhoDeClasseGrupoMatrizDto grupoSintese, IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre)
         {
             var frequenciaDisciplina = ObterFrequenciaPorDisciplina(frequenciaAluno, componenteCurricular);
 
@@ -133,7 +132,7 @@ namespace SME.SGP.Aplicacao
             retorno.Add(grupoSintese);
         }
 
-        private static ConselhoDeClasseGrupoMatrizDto Mapear(ComponenteCurricularEol componenteCurricular, ConselhoDeClasseComponenteSinteseDto componenteSinteseAdicionar)
+        private static ConselhoDeClasseGrupoMatrizDto Mapear(DisciplinaResposta componenteCurricular, ConselhoDeClasseComponenteSinteseDto componenteSinteseAdicionar)
         {
             return new ConselhoDeClasseGrupoMatrizDto
             {
@@ -146,12 +145,12 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private static ConselhoDeClasseComponenteSinteseDto MapearConselhoDeClasseComponenteSinteseDto(ComponenteCurricularEol componenteCurricular, IEnumerable<FrequenciaAluno> frequenciaDisciplina, double percentualFrequencia, SinteseDto parecerFinal)
+        private static ConselhoDeClasseComponenteSinteseDto MapearConselhoDeClasseComponenteSinteseDto(DisciplinaResposta componenteCurricular, IEnumerable<FrequenciaAluno> frequenciaDisciplina, double percentualFrequencia, SinteseDto parecerFinal)
         {
             return new ConselhoDeClasseComponenteSinteseDto
             {
-                Codigo = componenteCurricular.Codigo,
-                Nome = componenteCurricular.Descricao,
+                Codigo = componenteCurricular.CodigoComponenteCurricular,
+                Nome = componenteCurricular.Nome,
                 TotalFaltas = frequenciaDisciplina.Sum(x => x.TotalAusencias),
                 PercentualFrequencia = percentualFrequencia,
                 ParecerFinal = parecerFinal?.SinteseNome ?? string.Empty,
@@ -159,24 +158,23 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private static DisciplinaDto MapeaderDisciplinasDto(ComponenteCurricularEol componenteCurricular)
+        private static DisciplinaDto MapeaderDisciplinasDto(DisciplinaResposta componenteCurricular)
         {
             return new DisciplinaDto
             {
-                CodigoComponenteCurricular = componenteCurricular.Codigo,
+                CodigoComponenteCurricular = componenteCurricular.CodigoComponenteCurricular,
                 Compartilhada = componenteCurricular.Compartilhada,
                 LancaNota = componenteCurricular.LancaNota,
-                Nome = componenteCurricular.Descricao,
-                PossuiObjetivos = componenteCurricular.PossuiObjetivos,
+                Nome = componenteCurricular.Nome,
                 Regencia = componenteCurricular.Regencia,
-                RegistraFrequencia = componenteCurricular.RegistraFrequencia,
+                RegistraFrequencia = componenteCurricular.RegistroFrequencia,
                 TerritorioSaber = componenteCurricular.TerritorioSaber
             };
         }
 
-        private static IEnumerable<FrequenciaAluno> ObterFrequenciaPorDisciplina(IEnumerable<FrequenciaAluno> frequenciaAluno, ComponenteCurricularEol componenteCurricular)
+        private static IEnumerable<FrequenciaAluno> ObterFrequenciaPorDisciplina(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular)
         {
-            return frequenciaAluno.Where(x => x.DisciplinaId == componenteCurricular.Codigo.ToString());
+            return frequenciaAluno.Where(x => x.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString());
         }
 
         private static double ObterPercentualDeFrequencia(IEnumerable<FrequenciaAluno> frequenciaDisciplina)
