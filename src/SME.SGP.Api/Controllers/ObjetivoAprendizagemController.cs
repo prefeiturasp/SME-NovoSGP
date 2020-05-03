@@ -71,9 +71,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpPost]
         [Route("sincronizar-jurema")]
-        [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(200)]
         public async Task<IActionResult> SincronizarObjetivos([FromServices]IServicoObjetivosAprendizagem servicoObjetivosAprendizagem)
         {
             await servicoObjetivosAprendizagem.SincronizarObjetivosComJurema();
