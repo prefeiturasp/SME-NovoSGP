@@ -20,6 +20,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo;
 
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
@@ -28,8 +29,9 @@ namespace SME.SGP.Dominio.Servicos
                                      IRepositorioConselhoClasseParecerConclusivo repositorioParecer,
                                      IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                      IConsultasConselhoClasse consultasConselhoClasse,                                     
-                                     IRepositorioConselhoClasseNota repositorioConselhoClasseNota,                                     
-                                     IUnitOfWork unitOfWork)
+                                     IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
+                                     IUnitOfWork unitOfWork,
+                                     IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo)
 
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
@@ -41,6 +43,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.servicoCalculoParecerConclusivo = servicoCalculoParecerConclusivo ?? throw new ArgumentNullException(nameof(servicoCalculoParecerConclusivo));
         }
 
         public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId)
@@ -207,7 +210,7 @@ namespace SME.SGP.Dominio.Servicos
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
             var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
 
-            var parecerConclusivo = await CalcularParecerConclusivoAluno(alunoCodigo, turma.CodigoTurma, pareceresDaTurma);
+            var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma);
             conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
@@ -216,13 +219,6 @@ namespace SME.SGP.Dominio.Servicos
                 Id = parecerConclusivo.Id,
                 Nome = parecerConclusivo.Nome
             };
-        }
-
-        private async Task<ConselhoClasseParecerConclusivo> CalcularParecerConclusivoAluno(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
-        {
-            var servicoCalculoFrequencia = Activator.CreateInstance<IServicoCalculoParecerFrequencia>();
-
-            return await servicoCalculoFrequencia.Calcular(alunoCodigo, turmaCodigo, pareceresDaTurma);
         }
 
         private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(long turmaId)
