@@ -42,5 +42,6 @@ namespace SME.SGP.Dominio.Interfaces
         void RemoverPerfisUsuarioCache(string login);
 
         bool UsuarioLogadoPossuiPerfilSme();
+        Task<string[]> ObterComponentesCurricularesQuePodeVisualizarHoje(string turmaCodigo, Usuario usuarioLogado);
     }
 }
