@@ -98,7 +98,26 @@ namespace SME.SGP.Dados.Repositorios
 
             return retorno == null || retorno.Sum() == 0;
         }
+        public bool EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
+        {
+            string cabecalho = "select count(id) from evento e where e.excluido = false";
+            string whereTipoCalendario = "and e.tipo_calendario_id = @tipoCalendarioId";
 
+            StringBuilder query = new StringBuilder();
+
+            ObterContadorEventosNaoLetivosSME(cabecalho, whereTipoCalendario, query);
+
+            if (!string.IsNullOrEmpty(ueId))
+            {
+                query.AppendLine("UNION");
+                ObterContadorEventosNaoLetivosUE(cabecalho, whereTipoCalendario, query);
+            }
+
+            var retorno = database.Conexao.Query<int?>(query.ToString(),
+                new { tipoCalendarioId, dreId, ueId, data = data.Date });
+
+            return retorno != null && retorno.Sum() > 0;
+        }
         public async Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId, bool utilizarRangeDatas = true)
         {
             var query = new StringBuilder();
@@ -312,36 +331,19 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<Evento>> ObterEventosCalendarioProfessorPorMesDia(long tipoCalendarioId, string dreCodigo, string ueCodigo, 
+        public async Task<IEnumerable<Evento>> ObterEventosCalendarioProfessorPorMesDia(long tipoCalendarioId, string dreCodigo, string ueCodigo,
             DateTime dataDoEvento, bool VisualizarEventosSME = false, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false)
 
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select distinct");
-            query.AppendLine("e.id as EventoId,");
-            query.AppendLine("e.id,");
+            query.AppendLine("e.id,");            
             query.AppendLine("e.nome,");
             query.AppendLine("e.descricao,");
             query.AppendLine("e.data_inicio,");
             query.AppendLine("e.data_fim,");
-            query.AppendLine("e.dre_id,");
-            query.AppendLine("e.letivo,");
-            query.AppendLine("e.feriado_id,");
-            query.AppendLine("e.tipo_calendario_id,");
-            query.AppendLine("e.tipo_evento_id,");
-            query.AppendLine("e.ue_id,");
-            query.AppendLine("e.criado_em,");
-            query.AppendLine("e.criado_por,");
-            query.AppendLine("e.alterado_em,");
-            query.AppendLine("e.alterado_por,");
-            query.AppendLine("e.criado_rf,");
-            query.AppendLine("e.alterado_rf,");
-            query.AppendLine("et.id as TipoEventoId,");
-            query.AppendLine("et.ativo,");
-            query.AppendLine("et.tipo_data,");
-            query.AppendLine("et.descricao,");
-            query.AppendLine("et.excluido");
-
+            query.AppendLine("et.id,");
+            query.AppendLine("et.descricao");
             query.AppendLine("from");
             query.AppendLine("evento e");
             query.AppendLine("inner join evento_tipo et on");
@@ -353,7 +355,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
 
-
             if (!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
                 query.AppendFormat("and et.codigo not in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
 
@@ -364,30 +365,14 @@ namespace SME.SGP.Dados.Repositorios
             if (VisualizarEventosSME)
             {
                 query.AppendLine("UNION");
-                query.AppendLine("select");
-                query.AppendLine("e.id as EventoId,");
+                query.AppendLine("select distinct");
                 query.AppendLine("e.id,");
                 query.AppendLine("e.nome,");
                 query.AppendLine("e.descricao,");
                 query.AppendLine("e.data_inicio,");
                 query.AppendLine("e.data_fim,");
-                query.AppendLine("e.dre_id,");
-                query.AppendLine("e.letivo,");
-                query.AppendLine("e.feriado_id,");
-                query.AppendLine("e.tipo_calendario_id,");
-                query.AppendLine("e.tipo_evento_id,");
-                query.AppendLine("e.ue_id,");
-                query.AppendLine("e.criado_em,");
-                query.AppendLine("e.criado_por,");
-                query.AppendLine("e.alterado_em,");
-                query.AppendLine("e.alterado_por,");
-                query.AppendLine("e.criado_rf,");
-                query.AppendLine("e.alterado_rf,");
-                query.AppendLine("et.id as TipoEventoId,");
-                query.AppendLine("et.ativo,");
-                query.AppendLine("et.tipo_data,");
-                query.AppendLine("et.descricao,");
-                query.AppendLine("et.excluido");
+                query.AppendLine("et.id,");
+                query.AppendLine("et.descricao");
 
                 query.AppendLine("from");
                 query.AppendLine("evento e");
@@ -403,7 +388,13 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and @dataDoEvento between symmetric e.data_inicio ::date and e.data_fim ::date");
             }
 
-            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new
+            return await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(query.ToString(), (evento, eventoTipo) =>
+            {
+                evento.AdicionarTipoEvento(eventoTipo);
+
+                return evento;
+
+            }, param: new
             {
                 tipoCalendarioId,
                 dreCodigo,
@@ -534,7 +525,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), parametros)) > 0;
         }
 
-        
+
 
         private static void MontaFiltroTipoCalendario(StringBuilder query)
         {
