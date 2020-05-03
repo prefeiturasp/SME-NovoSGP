@@ -1,4 +1,5 @@
 import { Form, Formik } from 'formik';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
@@ -8,7 +9,9 @@ import Editor from '~/componentes/editor/editor';
 import { setNotaConceitoPosConselhoAtual } from '~/redux/modulos/conselhoClasse/actions';
 import servicoSalvarConselhoClasse from '../../servicoSalvarConselhoClasse';
 
-const Justificativa = () => {
+const Justificativa = props => {
+  const { alunoDesabilitado } = props;
+
   const dispatch = useDispatch();
 
   const validacoes = Yup.object({
@@ -17,6 +20,14 @@ const Justificativa = () => {
 
   const notaConceitoPosConselhoAtual = useSelector(
     store => store.conselhoClasse.notaConceitoPosConselhoAtual
+  );
+
+  const desabilitarCampos = useSelector(
+    store => store.conselhoClasse.desabilitarCampos
+  );
+
+  const dentroPeriodo = useSelector(
+    store => store.conselhoClasse.dentroPeriodo
   );
 
   const {
@@ -51,18 +62,20 @@ const Justificativa = () => {
   };
 
   const onChange = justificativaNova => {
-    dispatch(
-      setNotaConceitoPosConselhoAtual({
-        id,
-        codigoComponenteCurricular,
-        nota,
-        conceito,
-        ehEdicao: true,
-        justificativa: justificativaNova,
-        auditoria,
-        idCampo,
-      })
-    );
+    if (!alunoDesabilitado || !desabilitarCampos || dentroPeriodo) {
+      dispatch(
+        setNotaConceitoPosConselhoAtual({
+          id,
+          codigoComponenteCurricular,
+          nota,
+          conceito,
+          ehEdicao: true,
+          justificativa: justificativaNova,
+          auditoria,
+          idCampo,
+        })
+      );
+    }
   };
 
   return (
@@ -88,7 +101,12 @@ const Justificativa = () => {
                       form={form}
                       name="justificativa"
                       id="justificativa"
-                      desabilitar={!ehEdicao}
+                      desabilitar={
+                        alunoDesabilitado ||
+                        desabilitarCampos ||
+                        !dentroPeriodo ||
+                        !ehEdicao
+                      }
                       onChange={onChange}
                     />
                     <div className="d-flex justify-content-end pt-2">
@@ -98,7 +116,12 @@ const Justificativa = () => {
                         onClick={e => {
                           clicouBotaoSalvar(form, e);
                         }}
-                        disabled={!ehEdicao}
+                        disabled={
+                          alunoDesabilitado ||
+                          desabilitarCampos ||
+                          !dentroPeriodo ||
+                          !ehEdicao
+                        }
                         border
                       />
                     </div>
@@ -127,6 +150,14 @@ const Justificativa = () => {
       )}
     </>
   );
+};
+
+Justificativa.propTypes = {
+  alunoDesabilitado: PropTypes.bool,
+};
+
+Justificativa.defaultProps = {
+  alunoDesabilitado: false,
 };
 
 export default Justificativa;

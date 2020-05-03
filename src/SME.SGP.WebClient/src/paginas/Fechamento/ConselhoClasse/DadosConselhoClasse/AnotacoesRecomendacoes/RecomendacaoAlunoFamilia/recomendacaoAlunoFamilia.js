@@ -16,6 +16,10 @@ const RecomendacaoAlunoFamilia = props => {
     store => store.conselhoClasse.dentroPeriodo
   );
 
+  const desabilitarCampos = useSelector(
+    store => store.conselhoClasse.desabilitarCampos
+  );
+
   const [exibirCardRecomendacao, setExibirCardRecomendacao] = useState(false);
 
   const onClickExpandirRecomendacao = () =>
@@ -43,7 +47,9 @@ const RecomendacaoAlunoFamilia = props => {
                 id="recomendacao-aluno"
                 inicial={dadosIniciais.recomendacaoAluno}
                 onChange={onChangeAluno}
-                desabilitar={alunoDesabilitado || !dentroPeriodo}
+                desabilitar={
+                  alunoDesabilitado || desabilitarCampos || !dentroPeriodo
+                }
               />
             </div>
             <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6">
@@ -52,7 +58,9 @@ const RecomendacaoAlunoFamilia = props => {
                 id="recomendacao-familia"
                 inicial={dadosIniciais.recomendacaoFamilia}
                 onChange={onChangeFamilia}
-                desabilitar={alunoDesabilitado || !dentroPeriodo}
+                desabilitar={
+                  alunoDesabilitado || desabilitarCampos || !dentroPeriodo
+                }
               />
             </div>
           </div>

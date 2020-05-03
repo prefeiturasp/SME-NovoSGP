@@ -752,7 +752,8 @@ rotas.set(RotasDto.CONSELHO_CLASSE, {
   component: ConselhoClasse,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.CONSELHO_CLASSE,
 });
 
 const rotasArray = [];

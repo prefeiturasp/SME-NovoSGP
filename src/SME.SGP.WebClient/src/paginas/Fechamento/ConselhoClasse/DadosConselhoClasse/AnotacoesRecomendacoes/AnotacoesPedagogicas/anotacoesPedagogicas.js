@@ -11,6 +11,10 @@ const AnotacoesPedagogicas = props => {
     store => store.conselhoClasse.dentroPeriodo
   );
 
+  const desabilitarCampos = useSelector(
+    store => store.conselhoClasse.desabilitarCampos
+  );
+
   const [exibirCardAnotacao, setExibirCardAnotacao] = useState(false);
 
   const onClickExpandirAnotacao = async () =>
@@ -31,7 +35,9 @@ const AnotacoesPedagogicas = props => {
             id="anotacoes-pedagogicas-editor"
             inicial={dadosIniciais.anotacoesPedagogicas}
             onChange={onChange}
-            desabilitar={alunoDesabilitado || !dentroPeriodo}
+            desabilitar={
+              alunoDesabilitado || desabilitarCampos || !dentroPeriodo
+            }
           />
         ) : (
           ''

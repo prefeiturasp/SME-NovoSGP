@@ -58,7 +58,8 @@ const ConselhoClasse = () => {
 
   const obterFrequenciaAluno = async codigoAluno => {
     const retorno = await ServicoConselhoClasse.obterFrequenciaAluno(
-      codigoAluno
+      codigoAluno,
+      turma
     ).catch(e => erros(e));
     if (retorno && retorno.data) {
       return retorno.data;

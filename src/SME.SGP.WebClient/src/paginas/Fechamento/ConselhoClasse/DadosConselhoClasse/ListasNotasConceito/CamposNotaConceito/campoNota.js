@@ -19,6 +19,7 @@ const CampoNota = props => {
     idCampo,
     codigoComponenteCurricular,
     mediaAprovacao,
+    alunoDesabilitado,
   } = props;
 
   const fechamentoPeriodoInicioFim = useSelector(
@@ -27,6 +28,14 @@ const CampoNota = props => {
 
   const idCamposNotasPosConselho = useSelector(
     store => store.conselhoClasse.idCamposNotasPosConselho[idCampo]
+  );
+
+  const desabilitarCampos = useSelector(
+    store => store.conselhoClasse.desabilitarCampos
+  );
+
+  const dentroPeriodo = useSelector(
+    store => store.conselhoClasse.dentroPeriodo
   );
 
   const { periodoFechamentoFim } = fechamentoPeriodoInicioFim;
@@ -147,6 +156,7 @@ const CampoNota = props => {
         max={10}
         step={0.5}
         className={abaixoMedia ? 'borda-abaixo-media' : ''}
+        desabilitado={alunoDesabilitado || desabilitarCampos || !dentroPeriodo}
       />
     );
   };
@@ -188,6 +198,7 @@ CampoNota.propTypes = {
   idCampo: PropTypes.oneOfType([PropTypes.string]),
   codigoComponenteCurricular: PropTypes.oneOfType([PropTypes.any]),
   mediaAprovacao: PropTypes.number,
+  alunoDesabilitado: PropTypes.bool,
 };
 
 CampoNota.defaultProps = {
@@ -196,6 +207,7 @@ CampoNota.defaultProps = {
   idCampo: '',
   codigoComponenteCurricular: '',
   mediaAprovacao: 5,
+  alunoDesabilitado: false,
 };
 
 export default CampoNota;
