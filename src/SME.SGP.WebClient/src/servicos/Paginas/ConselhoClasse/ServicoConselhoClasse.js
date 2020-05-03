@@ -92,6 +92,21 @@ class ServicoConselhoClasse {
       0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/notas`;
     return api.get(url);
   };
+
+  salvarNotaPosConselho = (
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo,
+    notaDto
+  ) => {
+    const url = `v1/conselhos-classe/${conselhoClasseId ||
+      0}/notas/alunos/${alunoCodigo}/fechamento-turma/${fechamentoTurmaId}`;
+    return api.post(url, notaDto);
+  };
+
+  obterNotaPosConselho = id => {
+    return api.get(`v1/conselhos-classe/detalhamento/${id}`);
+  };
 }
 
 export default new ServicoConselhoClasse();

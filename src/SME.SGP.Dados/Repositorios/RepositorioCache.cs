@@ -98,6 +98,44 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
+        public async Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720, bool utilizarGZip = false)
+        {
+            var inicioOperacao = DateTime.UtcNow;
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+
+            try
+            {
+                var stringCache = await distributedCache.GetStringAsync(nomeChave);
+
+                timer.Stop();
+                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Obtendo Async", inicioOperacao, timer.Elapsed, true);
+
+                if (!string.IsNullOrWhiteSpace(stringCache))
+                {
+                    if (utilizarGZip)
+                    {
+                        stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
+                    }
+                    return JsonConvert.DeserializeObject<T>(stringCache);
+                }
+
+                var dados = await buscarDados();
+
+                await SalvarAsync(nomeChave, dados, minutosParaExpirar, utilizarGZip);
+
+                return dados;
+            }
+            catch (Exception ex)
+            {
+                //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
+                timer.Stop();
+                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, $"Obtendo Async - Erro {ex.Message}", inicioOperacao, timer.Elapsed, false);
+
+                servicoLog.Registrar(ex);
+                return await buscarDados();
+            }
+        }
+
         public async Task<string> ObterAsync(string nomeChave, bool utilizarGZip = false)
         {
             var inicioOperacao = DateTime.UtcNow;
@@ -171,17 +209,19 @@ namespace SME.SGP.Dados.Repositorios
             var timer = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                if (utilizarGZip)
+                if (!string.IsNullOrWhiteSpace(valor) && valor != "[]")
                 {
-                    var valorComprimido = UtilGZip.Comprimir(valor);
-                    valor = System.Convert.ToBase64String(valorComprimido);
+                    if (utilizarGZip)
+                    {
+                        var valorComprimido = UtilGZip.Comprimir(valor);
+                        valor = Convert.ToBase64String(valorComprimido);
+                    }
+                    await distributedCache.SetStringAsync(nomeChave, valor, new DistributedCacheEntryOptions()
+                                                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
+
+                    timer.Stop();
+                    servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar async", inicioOperacao, timer.Elapsed, true);
                 }
-
-                await distributedCache.SetStringAsync(nomeChave, valor, new DistributedCacheEntryOptions()
-                                                .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
-
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar async", inicioOperacao, timer.Elapsed, true);
             }
             catch (Exception ex)
             {
@@ -190,6 +230,11 @@ namespace SME.SGP.Dados.Repositorios
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar async", inicioOperacao, timer.Elapsed, false);
                 servicoLog.Registrar(ex);
             }
+        }
+
+        public async Task SalvarAsync(string nomeChave, object valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
+        {
+            await SalvarAsync(nomeChave, JsonConvert.SerializeObject(valor), minutosParaExpirar, utilizarGZip);
         }
     }
 }
