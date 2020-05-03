@@ -243,7 +243,15 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRequestHandler<ObterTipoDeCalendarioDaTurmaQuery, TipoCalendario>, ObterTipoDeCalendarioDaTurmaQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterTurmaPorCodigoQuery, Turma>, ObterTurmaPorCodigoQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterEventosDaUeSMEPorMesQuery, IEnumerable<Evento>>, ObterEventosDaUeSMEPorMesQueryHandler>();
-            services.TryAddScoped<IRequestHandler<ObterAulasQuery, IEnumerable<Aula>>, ObterAulasQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterAulasCalendarioProfessorPorMesQuery, IEnumerable<Aula>>, ObterAulasCalendarioProfessorPorMesQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterAulasCalendarioProfessorPorMesDiaQuery, IEnumerable<Aula>>, ObterAulasCalendarioProfessorPorMesDiaQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterTipoCalendarioPorIdQuery, TipoCalendario>, ObterTipoCalendarioPorIdQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterPeriodoEscolarPorCalendarioEDataQuery, PeriodoEscolar>, ObterPeriodoEscolarPorCalendarioEDataQueryHandler>();            
+            services.TryAddScoped<IRequestHandler<ObterTemEventoNaoLetivoPorCalendarioEDiaQuery, bool>, ObterTemEventoNaoLetivoPorCalendarioEDiaQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterTemEventoLetivoPorCalendarioEDiaQuery, bool>, ObterTemEventoLetivoPorCalendarioEDiaQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterFechamentoPorTurmaPeriodoQuery, FechamentoTurma>, ObterFechamentoPorTurmaPeriodoQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterExistePeriodoPorUeDataBimestreQuery, bool>, ObterExistePeriodoPorUeDataBimestreQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterFechamentoReaberturaPorDataTurmaQuery, FechamentoReabertura>, ObterFechamentoReaberturaPorDataTurmaQueryHandler>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

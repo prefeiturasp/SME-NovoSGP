@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Threading.Tasks;
@@ -54,31 +56,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{tipoCalendarioId}/meses/{mes}/eventos-aulas")]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEventosAulasMensaisPorCalendario(long tipoCalendarioId, int mes, [FromQuery]FiltroAulasEventosCalendarioDto filtro, [FromServices]IMediator mediator)
+        public async Task<IActionResult> ObterEventosAulasMensaisPorCalendario(long tipoCalendarioId, int mes, [FromQuery]FiltroAulasEventosCalendarioDto filtro, 
+            [FromServices]IMediator mediator, [FromServices]IServicoUsuario  servicoUsuario, [FromServices]IServicoEOL servicoEOL)
         {
-            return Ok(await ObterDiasDosEventosCalendarioProfessorUseCase.Executar(mediator, filtro, tipoCalendarioId, mes));            
+            return Ok(await ObterAulasEventosProfessorCalendarioPorMesUseCase.Executar(mediator, filtro, tipoCalendarioId, mes, servicoUsuario, servicoEOL));            
         }
         [HttpGet]
         [ProducesResponseType(typeof(EventosAulasNoDiaCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{tipoCalendarioId}/meses/{mes}/dias/{dia}/eventos-aulas")]
         [AllowAnonymous]
-        public async Task<IActionResult> ObterEventosAulasNoDiaPorCalendario(long tipoCalendarioId, int mes, int dia, [FromQuery]FiltroAulasEventosCalendarioDto filtro, [FromServices]IMediator mediator)
+        public async Task<IActionResult> ObterEventosAulasNoDiaPorCalendario(long tipoCalendarioId, int mes, int dia, 
+            [FromQuery]FiltroAulasEventosCalendarioDto filtro, [FromServices]IMediator mediator, [FromServices]IServicoUsuario servicoUsuario, [FromServices]IServicoEOL servicoEOL)
         {
-            var retorno = new EventosAulasNoDiaCalendarioDto();
-            retorno.PodeCadastrarAula = true;
-
-            var eventoAula1 = new EventoAulaDto() {  EhAula = true, MostrarBotaoFrequencia = true, PodeCadastrarAvaliacao = true, Titulo = "[AULA] LINGUA PORTUGUESA - Quantidade: 2 (Reposição) Aguardando aprovação" };
-            var aav1 = new AtividadeAvaliativaParaEventoAulaDto() { Descricao = "Atividade Avaliativa 1", Id = 10 };
-            eventoAula1.AtividadesAvaliativas.Add(aav1);
-
-            var eventoAula2 = new EventoAulaDto() { Descricao = "Descrição do evento 123", Titulo = "Fechamento do 2º bimestre", TipoEvento = "Fechamento de bimestre" };
-
-            retorno.EventosAulas.Add(eventoAula1);
-            retorno.EventosAulas.Add(eventoAula2);
-
-            return Ok(retorno);
-
+            return Ok(await ObterAulasEventosProfessorCalendarioPorDiaMesUseCase.Executar(mediator, filtro, tipoCalendarioId, mes, dia, filtro.AnoLetivo, servicoUsuario, servicoEOL));
         }
         [HttpPost]
         [ProducesResponseType(typeof(EventosAulasTipoCalendarioDto), 200)]
