@@ -14,7 +14,18 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioTipoCalendario(ISgpContext conexao) : base(conexao)
         {
         }
+        public async Task<PeriodoEscolar> ObterPeriodoEscolarPorCalendarioEData(long tipoCalendarioId, DateTime dataParaVerificar)
+        {
+            StringBuilder query = new StringBuilder();
 
+            query.AppendLine("select 1 from periodo_escolar pe");
+            query.AppendLine("inner join tipo_calendario tc");
+            query.AppendLine("on tc.periodo = pe.id");
+            query.AppendLine("where tc.id = @tipoCalendarioId");
+            query.AppendLine("and @dataParaVerificar between symmetric pe.periodo_inicio::date and pe.periodo_fim ::date");
+            
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataParaVerificar });
+        }
         public IEnumerable<TipoCalendario> BuscarPorAnoLetivo(int anoLetivo)
         {
             StringBuilder query = new StringBuilder();
