@@ -9,9 +9,10 @@ import {
   BarraLateralVerde,
   Lista,
 } from '../listasNotasConceitos.css';
+import LinhaJustificativa from '../../Justificativa/LinhaJustificativa/LinhaJustificativa';
 
 const ListaBimestre = props => {
-  const { dadosLista, tipoNota, listaTiposConceitos } = props;
+  const { dadosLista, tipoNota, listaTiposConceitos, mediaAprovacao } = props;
 
   const descricaoTipoNota =
     tipoNota === notasConceitos.Notas ? 'Nota' : 'Conceito';
@@ -29,15 +30,31 @@ const ListaBimestre = props => {
       ? dadosLista.componenteRegencia.componentesCurriculares.length * 2
       : 0;
 
-  const montaCampoPosConselho = notaPosConselho => {
+  const montaCampoPosConselho = (
+    id,
+    notaPosConselho,
+    idCampo,
+    codigoComponenteCurricular
+  ) => {
     switch (Number(tipoNota)) {
       case Number(notasConceitos.Notas):
-        return <CampoNota notaPosConselho={notaPosConselho} />;
+        return (
+          <CampoNota
+            id={id}
+            notaPosConselho={notaPosConselho}
+            idCampo={idCampo}
+            codigoComponenteCurricular={String(codigoComponenteCurricular)}
+            mediaAprovacao={mediaAprovacao}
+          />
+        );
       case Number(notasConceitos.Conceitos):
         return (
           <CampoConceito
             notaPosConselho={notaPosConselho}
             listaTiposConceitos={listaTiposConceitos}
+            id={id}
+            idCampo={idCampo}
+            codigoComponenteCurricular={codigoComponenteCurricular}
           />
         );
       default:
@@ -64,7 +81,7 @@ const ListaBimestre = props => {
         className="input-notas-conceitos"
         style={{ display: 'inline-block' }}
       >
-        {obterValorNotaConceito(notaFechamento)}
+        <span>{obterValorNotaConceito(notaFechamento)}</span>
       </div>
     );
   };
@@ -95,29 +112,40 @@ const ListaBimestre = props => {
               dadosLista.componentesCurriculares &&
               dadosLista.componentesCurriculares.map((item, index) => {
                 return (
-                  <tr key={shortid.generate()}>
-                    <BarraLateralVerde />
-                    <td
-                      className="coluna-disciplina sombra-direita"
-                      style={{
-                        width: '250px',
-                        textAlign: 'left',
-                        paddingLeft: '20px',
-                      }}
-                    >
-                      {item.nome}
-                    </td>
-                    <td className="text-center">
-                      {montarValoresNotasConceitos(item)}
-                    </td>
-                    <td>
-                      {montaCampoPosConselho(item.notaPosConselho, index)}
-                    </td>
-                    <td>{item.quantidadeAulas}</td>
-                    <td>{item.faltas}</td>
-                    <td>{item.ausenciasCompensadas}</td>
-                    <td>{item.frequencia}%</td>
-                  </tr>
+                  <>
+                    <tr key={shortid.generate()}>
+                      <BarraLateralVerde />
+                      <td
+                        className="coluna-disciplina sombra-direita"
+                        style={{
+                          width: '250px',
+                          textAlign: 'left',
+                          paddingLeft: '20px',
+                        }}
+                      >
+                        {item.nome}
+                      </td>
+                      <td className="text-center">
+                        {montarValoresNotasConceitos(item)}
+                      </td>
+                      <td>
+                        {montaCampoPosConselho(
+                          item.notaPosConselho.id,
+                          item.notaPosConselho.nota,
+                          `${descricaoGrupoMatriz} ${index} componente`,
+                          item.codigoComponenteCurricular
+                        )}
+                      </td>
+                      <td>{item.quantidadeAulas}</td>
+                      <td>{item.faltas}</td>
+                      <td>{item.ausenciasCompensadas}</td>
+                      <td>{item.frequencia}%</td>
+                    </tr>
+                    <LinhaJustificativa
+                      idCampo={`${descricaoGrupoMatriz} ${index} componente`}
+                      ehRegencia={false}
+                    />
+                  </>
                 );
               })}
             {dadosLista &&
@@ -126,39 +154,50 @@ const ListaBimestre = props => {
               dadosLista.componenteRegencia.componentesCurriculares.map(
                 (item, index) => {
                   return (
-                    <tr key={shortid.generate()}>
-                      <BarraLateralBordo />
-                      <td
-                        className="coluna-disciplina sombra-direita"
-                        style={{ textAlign: 'left', paddingLeft: '20px' }}
-                      >
-                        {item.nome}
-                      </td>
-                      <td>{montarValoresNotasConceitos(item)}</td>
-                      <td>
-                        {montaCampoPosConselho(item.notaPosConselho, index)}
-                      </td>
-                      {index === 0 ? (
-                        <td rowSpan={alturaLinhaMesclada}>
-                          {dadosLista.componenteRegencia.quantidadeAulas}
+                    <>
+                      <tr key={shortid.generate()}>
+                        <BarraLateralBordo />
+                        <td
+                          className="coluna-disciplina sombra-direita"
+                          style={{ textAlign: 'left', paddingLeft: '20px' }}
+                        >
+                          {item.nome}
                         </td>
-                      ) : null}
-                      {index === 0 ? (
-                        <td rowSpan={alturaLinhaMesclada}>
-                          {dadosLista.componenteRegencia.faltas}
+                        <td>{montarValoresNotasConceitos(item)}</td>
+                        <td>
+                          {montaCampoPosConselho(
+                            item.notaPosConselho.id,
+                            item.notaPosConselho.nota,
+                            `${descricaoGrupoMatriz} ${index} regencia`,
+                            item.codigoComponenteCurricular
+                          )}
                         </td>
-                      ) : null}
-                      {index === 0 ? (
-                        <td rowSpan={alturaLinhaMesclada}>
-                          {dadosLista.componenteRegencia.ausenciasCompensadas}
-                        </td>
-                      ) : null}
-                      {index === 0 ? (
-                        <td rowSpan={alturaLinhaMesclada}>
-                          {dadosLista.componenteRegencia.frequencia}%
-                        </td>
-                      ) : null}
-                    </tr>
+                        {index === 0 ? (
+                          <td rowSpan={alturaLinhaMesclada}>
+                            {dadosLista.componenteRegencia.quantidadeAulas}
+                          </td>
+                        ) : null}
+                        {index === 0 ? (
+                          <td rowSpan={alturaLinhaMesclada}>
+                            {dadosLista.componenteRegencia.faltas}
+                          </td>
+                        ) : null}
+                        {index === 0 ? (
+                          <td rowSpan={alturaLinhaMesclada}>
+                            {dadosLista.componenteRegencia.ausenciasCompensadas}
+                          </td>
+                        ) : null}
+                        {index === 0 ? (
+                          <td rowSpan={alturaLinhaMesclada}>
+                            {dadosLista.componenteRegencia.frequencia}%
+                          </td>
+                        ) : null}
+                      </tr>
+                      <LinhaJustificativa
+                        idCampo={`${descricaoGrupoMatriz} ${index} regencia`}
+                        ehRegencia
+                      />
+                    </>
                   );
                 }
               )}
@@ -173,12 +212,14 @@ ListaBimestre.propTypes = {
   dadosLista: PropTypes.oneOfType([PropTypes.object]),
   tipoNota: PropTypes.oneOfType([PropTypes.any]),
   listaTiposConceitos: PropTypes.oneOfType([PropTypes.array]),
+  mediaAprovacao: PropTypes.number,
 };
 
 ListaBimestre.defaultProps = {
   dadosLista: {},
   tipoNota: 0,
   listaTiposConceitos: [],
+  mediaAprovacao: 5,
 };
 
 export default ListaBimestre;

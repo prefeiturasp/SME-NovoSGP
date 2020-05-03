@@ -102,6 +102,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new CicloEnsinoMap());
                config.AddMap(new ConselhoClasseParecerAnoMap());
                config.AddMap(new ConselhoClasseParecerConclusivoMap());
+               config.AddMap(new ObjetivoAprendizagemMap());
                config.ForDommel();
            });
         }
