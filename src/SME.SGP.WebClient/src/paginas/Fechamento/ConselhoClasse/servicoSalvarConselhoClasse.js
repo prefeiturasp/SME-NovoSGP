@@ -8,6 +8,7 @@ import {
   setExpandirLinha,
   setIdCamposNotasPosConselho,
   setNotaConceitoPosConselhoAtual,
+  setGerandoParecerConclusivo,
 } from '~/redux/modulos/conselhoClasse/actions';
 import notasConceitos from '~/dtos/notasConceitos';
 
@@ -25,6 +26,7 @@ class ServicoSalvarConselhoClasse {
       recomendacaoAluno,
       recomendacaoFamilia,
       conselhoClasseEmEdicao,
+      desabilitarCampos,
     } = conselhoClasse;
 
     const perguntaDescartarRegistros = async () => {
@@ -84,6 +86,10 @@ class ServicoSalvarConselhoClasse {
       return false;
     };
 
+    if (desabilitarCampos) {
+      return true;
+    }
+
     if (salvarSemValidar && conselhoClasseEmEdicao) {
       return salvar();
     }
@@ -116,11 +122,6 @@ class ServicoSalvarConselhoClasse {
   salvarNotaPosConselho = async () => {
     const { dispatch } = store;
 
-    const limparDadosNotaPosConselhoJustificativa = () => {
-      dispatch(setExpandirLinha([]));
-      dispatch(setNotaConceitoPosConselhoAtual({}));
-    };
-
     const state = store.getState();
 
     const { conselhoClasse } = state;
@@ -129,6 +130,7 @@ class ServicoSalvarConselhoClasse {
       dadosPrincipaisConselhoClasse,
       notaConceitoPosConselhoAtual,
       idCamposNotasPosConselho,
+      desabilitarCampos,
     } = conselhoClasse;
 
     const {
@@ -147,6 +149,28 @@ class ServicoSalvarConselhoClasse {
     } = notaConceitoPosConselhoAtual;
 
     const ehNota = Number(tipoNota) === notasConceitos.Notas;
+
+    const limparDadosNotaPosConselhoJustificativa = () => {
+      dispatch(setExpandirLinha([]));
+      dispatch(setNotaConceitoPosConselhoAtual({}));
+    };
+
+    const gerarParecerConclusivo = async () => {
+      dispatch(setGerandoParecerConclusivo(true));
+      const retorno = await ServicoConselhoClasse.gerarParecerConclusivo(
+        conselhoClasseId,
+        fechamentoTurmaId,
+        alunoCodigo
+      ).catch(e => erros(e));
+      if (retorno && retorno.data) {
+        ServicoConselhoClasse.setarParecerConclusivo(retorno.data);
+      }
+      dispatch(setGerandoParecerConclusivo(false));
+    };
+
+    if (desabilitarCampos) {
+      return false;
+    }
 
     if (!justificativa) {
       erro(
@@ -200,6 +224,9 @@ class ServicoSalvarConselhoClasse {
           ehNota ? 'salva' : 'salvo'
         } com sucesso`
       );
+
+      gerarParecerConclusivo();
+
       return true;
     }
     return false;
@@ -220,7 +247,12 @@ class ServicoSalvarConselhoClasse {
     const {
       notaConceitoPosConselhoAtual,
       dadosPrincipaisConselhoClasse,
+      desabilitarCampos,
     } = conselhoClasse;
+
+    if (desabilitarCampos) {
+      return true;
+    }
 
     const { tipoNota } = dadosPrincipaisConselhoClasse;
 

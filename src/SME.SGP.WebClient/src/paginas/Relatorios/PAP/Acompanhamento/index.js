@@ -51,7 +51,6 @@ function RelatorioPAPAcompanhamento() {
   const [carregando, setCarregando] = useState(false);
   const [estadoOriginalAlunos, setEstadoOriginalAlunos] = useState(null);
   const { turmaSelecionada } = useSelector(store => store.usuario);
-  const [semPeriodos, setSemPeriodos] = useState(false);
   const [somenteLeitura, setSomenteLeitura] = useState(false);
 
   const dispararAlteracoes = dados => {
@@ -299,18 +298,6 @@ function RelatorioPAPAcompanhamento() {
           className="mb-4"
         />
       )}
-      {semPeriodos && (
-        <Alert
-          alerta={{
-            tipo: 'warning',
-            id: 'sem-periodo-pap',
-            mensagem:
-              'Somente é possivel realizar o preenchimento do PAP para turmas PAP',
-            estiloTitulo: { fontSize: '18px' },
-          }}
-          className="mb-4"
-        />
-      )}
       <Cabecalho pagina="Relatório de encaminhamento e acompanhamento do PAP" />
       <Loader loading={carregando}>
         <Card mx="mx-0">
@@ -336,12 +323,9 @@ function RelatorioPAPAcompanhamento() {
             <Linha className="row m-0">
               <Grid cols={3}>
                 <PeriodosDropDown
-                  codigoTurma={turmaSelecionada && turmaSelecionada.turma}
-                  setSemPeriodos={setSemPeriodos}
                   onChangePeriodo={onChangePeriodoHandler}
                   valor={periodo}
                   desabilitado={
-                    semPeriodos ||
                     turmaSelecionada.turma === null ||
                     turmaSelecionada.turma === undefined
                   }

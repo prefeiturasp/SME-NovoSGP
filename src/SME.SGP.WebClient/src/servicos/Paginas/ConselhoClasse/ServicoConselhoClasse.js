@@ -1,5 +1,8 @@
 import { store } from '~/redux';
-import { setListaTiposConceitos } from '~/redux/modulos/conselhoClasse/actions';
+import {
+  setListaTiposConceitos,
+  setMarcadorParecerConclusivo,
+} from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
@@ -9,8 +12,8 @@ class ServicoConselhoClasse {
     return api.get(url);
   };
 
-  obterFrequenciaAluno = alunoCodigo => {
-    const url = `v1/calendarios/frequencias/alunos/${alunoCodigo}/geral`;
+  obterFrequenciaAluno = (alunoCodigo, turmaCodigo) => {
+    const url = `v1/calendarios/frequencias/alunos/${alunoCodigo}/turmas/${turmaCodigo}/geral`;
     return api.get(url);
   };
 
@@ -106,6 +109,28 @@ class ServicoConselhoClasse {
 
   obterNotaPosConselho = id => {
     return api.get(`v1/conselhos-classe/detalhamento/${id}`);
+  };
+
+  gerarParecerConclusivo = (
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo
+  ) => {
+    const url = `v1/conselhos-classe/${conselhoClasseId ||
+      0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/parecer`;
+    return api.post(url);
+  };
+
+  setarParecerConclusivo = parecer => {
+    const { dispatch } = store;
+    let parecerAtual = '';
+    if (parecer) {
+      const { nome, id } = parecer;
+      if (nome && id) {
+        parecerAtual = parecer;
+      }
+    }
+    dispatch(setMarcadorParecerConclusivo(parecerAtual));
   };
 }
 

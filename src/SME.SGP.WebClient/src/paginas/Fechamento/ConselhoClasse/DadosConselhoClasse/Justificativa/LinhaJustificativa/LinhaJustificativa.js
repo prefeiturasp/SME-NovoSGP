@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import Justificativa from '../Justificativa';
 
 const LinhaJustificativa = props => {
-  const { idCampo, ehRegencia } = props;
+  const { idCampo, ehRegencia, alunoDesabilitado } = props;
 
   const expandirLinha = useSelector(
     store => store.conselhoClasse.expandirLinha[idCampo]
@@ -14,7 +14,7 @@ const LinhaJustificativa = props => {
       {expandirLinha ? (
         <tr>
           <td style={{ height: '100px' }} colSpan={ehRegencia ? '4' : '8'}>
-            <Justificativa />
+            <Justificativa alunoDesabilitado={alunoDesabilitado} />
           </td>
         </tr>
       ) : (

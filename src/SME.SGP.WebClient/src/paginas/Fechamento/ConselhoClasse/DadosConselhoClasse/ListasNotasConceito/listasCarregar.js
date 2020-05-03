@@ -6,7 +6,13 @@ import ListaBimestre from './ListaBimestre/listaBimestre';
 import ListaFinal from './ListaFinal/listaFinal';
 
 const ListasCarregar = props => {
-  const { ehFinal, tipoNota, listaTiposConceitos, mediaAprovacao } = props;
+  const {
+    ehFinal,
+    tipoNota,
+    listaTiposConceitos,
+    mediaAprovacao,
+    alunoDesabilitado,
+  } = props;
 
   const dadosListasNotasConceitos = useSelector(
     store => store.conselhoClasse.dadosListasNotasConceitos
@@ -21,6 +27,7 @@ const ListasCarregar = props => {
           tipoNota={tipoNota}
           listaTiposConceitos={listaTiposConceitos}
           mediaAprovacao={mediaAprovacao}
+          alunoDesabilitado={alunoDesabilitado}
         />
       ));
     }
@@ -32,6 +39,7 @@ const ListasCarregar = props => {
         tipoNota={tipoNota}
         listaTiposConceitos={listaTiposConceitos}
         mediaAprovacao={mediaAprovacao}
+        alunoDesabilitado={alunoDesabilitado}
       />
     ));
   };
@@ -44,6 +52,7 @@ ListasCarregar.propTypes = {
   tipoNota: PropTypes.oneOfType([PropTypes.any]),
   listaTiposConceitos: PropTypes.oneOfType([PropTypes.array]),
   mediaAprovacao: PropTypes.number,
+  alunoDesabilitado: PropTypes.bool,
 };
 
 ListasCarregar.defaultProps = {
@@ -51,6 +60,7 @@ ListasCarregar.defaultProps = {
   tipoNota: 0,
   listaTiposConceitos: [],
   mediaAprovacao: 5,
+  alunoDesabilitado: false,
 };
 
 export default ListasCarregar;
