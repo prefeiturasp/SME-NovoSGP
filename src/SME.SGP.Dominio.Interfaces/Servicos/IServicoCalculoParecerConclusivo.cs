@@ -8,6 +8,5 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IServicoCalculoParecerConclusivo
     {
         Task<ConselhoClasseParecerConclusivo> Calcular(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma);
-        Task Filtrar(IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma);
     }
 }

@@ -77,7 +77,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
-        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        [Permissao(Permissao.CC_I, Policy = "Bearer")]
         public async Task<IActionResult> GerarParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices]IComandosConselhoClasseAluno comandosConselhoClasseAluno)
             => Ok(await comandosConselhoClasseAluno.GerarParecerConclusivoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
 
