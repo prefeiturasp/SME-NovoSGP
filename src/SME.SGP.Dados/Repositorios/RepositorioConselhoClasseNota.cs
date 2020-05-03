@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
                            and t.turma_id = @turmaCodigo
                            and fa.aluno_codigo = @alunoCodigo ";
 
-            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmaCodigo });
+             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmaCodigo });
         }
     }
 }

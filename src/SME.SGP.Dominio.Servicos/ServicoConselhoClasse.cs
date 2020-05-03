@@ -232,19 +232,21 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<ConselhoClasseAluno> ObterConselhoClasseAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
-            ConselhoClasseAluno conselhoClasseAluno = null;
-            if (conselhoClasseId == 0)
+            ConselhoClasseAluno conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
+            if (conselhoClasseAluno == null)
             {
-                var conselhoClasse = new ConselhoClasse() { FechamentoTurmaId = fechamentoTurmaId };
-                conselhoClasseAluno = new ConselhoClasseAluno() { AlunoCodigo = alunoCodigo, ConselhoClasse = conselhoClasse };
+                ConselhoClasse conselhoClasse = null;
+                if (conselhoClasseId == 0)
+                {
+                    conselhoClasse = new ConselhoClasse() { FechamentoTurmaId = fechamentoTurmaId };
+                    await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
+                }
+                else
+                    conselhoClasse = repositorioConselhoClasse.ObterPorId(conselhoClasseId);
 
-                await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
-                conselhoClasseAluno.ConselhoClasseId = conselhoClasse.Id;
+                conselhoClasseAluno = new ConselhoClasseAluno() { AlunoCodigo = alunoCodigo, ConselhoClasse = conselhoClasse, ConselhoClasseId = conselhoClasse.Id };
                 await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
             }
-            else
-                conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
-
             conselhoClasseAluno.ConselhoClasse.FechamentoTurma = await ObterFechamentoTurma(fechamentoTurmaId);
 
             return conselhoClasseAluno;
