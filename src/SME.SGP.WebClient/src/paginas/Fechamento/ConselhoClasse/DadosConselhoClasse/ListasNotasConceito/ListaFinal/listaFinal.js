@@ -6,11 +6,7 @@ import modalidadeDto from '~/dtos/modalidade';
 import notasConceitos from '~/dtos/notasConceitos';
 import CampoConceito from '../CamposNotaConceito/campoConceito';
 import CampoNota from '../CamposNotaConceito/campoNota';
-import {
-  BarraLateralBordo,
-  BarraLateralVerde,
-  Lista,
-} from '../listasNotasConceitos.css';
+import { BarraLateralLista, Lista } from '../listasNotasConceitos.css';
 import LinhaJustificativa from '../../Justificativa/LinhaJustificativa/LinhaJustificativa';
 
 const ListaFinal = props => {
@@ -20,6 +16,8 @@ const ListaFinal = props => {
     listaTiposConceitos,
     mediaAprovacao,
     alunoDesabilitado,
+    corBarraLateral,
+    corRegenciaBarraLateral,
   } = props;
 
   const usuario = useSelector(store => store.usuario);
@@ -152,7 +150,7 @@ const ListaFinal = props => {
                 return (
                   <>
                     <tr key={shortid.generate()}>
-                      <BarraLateralVerde />
+                      <BarraLateralLista cor={corBarraLateral} />
                       <td
                         className="coluna-disciplina sombra-direita"
                         style={{
@@ -194,7 +192,7 @@ const ListaFinal = props => {
                   return (
                     <>
                       <tr key={shortid.generate()}>
-                        <BarraLateralBordo />
+                        <BarraLateralLista cor={corRegenciaBarraLateral} />
                         <td
                           className="coluna-disciplina sombra-direita"
                           style={{ textAlign: 'left', paddingLeft: '20px' }}
@@ -244,6 +242,8 @@ ListaFinal.propTypes = {
   listaTiposConceitos: PropTypes.oneOfType([PropTypes.array]),
   mediaAprovacao: PropTypes.number,
   alunoDesabilitado: PropTypes.bool,
+  corBarraLateral: PropTypes.string,
+  corRegenciaBarraLateral: PropTypes.string,
 };
 
 ListaFinal.defaultProps = {
@@ -252,6 +252,8 @@ ListaFinal.defaultProps = {
   listaTiposConceitos: [],
   mediaAprovacao: 5,
   alunoDesabilitado: false,
+  corBarraLateral: '',
+  corRegenciaBarraLateral: '',
 };
 
 export default ListaFinal;
