@@ -383,7 +383,7 @@ namespace SME.SGP.Aplicacao
                 return disciplinas;
 
             if (regencia)
-                return disciplinas.Where(x => !x.Regencia);
+                return disciplinas.Where(x => x.Regencia);
 
             return disciplinas.Where(x => x.CodigoComponenteCurricular == codigoDisciplina);
         }
