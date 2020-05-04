@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo
             });
 
-           
+
             var retorno = new EventosAulasNoDiaCalendarioDto();
 
             retorno.PodeCadastrarAula = await PodeCadastrarAulaHoje(dataConsulta, tipoCalendarioId, turma, mediator, filtroAulasEventosCalendarioDto.UeCodigo, filtroAulasEventosCalendarioDto.DreCodigo);
@@ -52,12 +52,22 @@ namespace SME.SGP.Aplicacao
 
             if (aulasParaVisualizar.Any())
             {
+                var atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
+                {
+                    UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
+                    DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
+                    TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
+                    TipoCalendarioId = tipoCalendarioId,
+                    DataReferencia = dataConsulta
+                });
+
+
                 var idsComponentesCurricularesParaVisualizar = aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId))
                               .Distinct()
                               .ToArray();
 
                 var componentesCurricularesParaVisualizacao = await servicoEOL.ObterDisciplinasPorIdsAsync(idsComponentesCurricularesParaVisualizar);
-                
+
                 foreach (var aulaParaVisualizar in aulasParaVisualizar)
                 {
                     var componenteCurricular = componentesCurricularesParaVisualizacao.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId));
@@ -68,6 +78,24 @@ namespace SME.SGP.Aplicacao
                         titulo.Append(" Aguardando aprovação");
 
                     var eventoAulaDto = new EventoAulaDto() { Titulo = titulo.ToString(), EhAula = true };
+
+                    var atividadesAvaliativasDaAula = (from avaliacao in atividadesAvaliativas
+                                                       from disciplina in avaliacao.Disciplinas
+                                                       where disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId || avaliacao.ProfessorRf == usuarioLogado.CodigoRf
+                                                       select avaliacao);
+
+                    if (atividadesAvaliativasDaAula.Any())
+                    {
+                        foreach (var atividadeAvaliativa in atividadesAvaliativasDaAula)
+                        {
+                            eventoAulaDto.AtividadesAvaliativas.Add(new AtividadeAvaliativaParaEventoAulaDto() { Descricao = atividadeAvaliativa.NomeAvaliacao, Id = atividadeAvaliativa.Id });
+                        }
+                    }
+
+                    eventoAulaDto.MostrarBotaoFrequencia = await mediator.Send(new ObterAulaPossuiFrequenciaQuery()
+                    {
+                        AulaId = aulaParaVisualizar.Id
+                    });
 
                     retorno.EventosAulas.Add(eventoAulaDto);
 
@@ -162,14 +190,15 @@ namespace SME.SGP.Aplicacao
                     else
                         return true;
 
-                } else
+                }
+                else
                 {
                     FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(tipoCalendarioId, turma, mediator, hoje);
                     if (periodoFechamentoReabertura != null)
                         return true;
                     else return false;
                 }
-            }            
+            }
         }
 
         private static async Task<FechamentoReabertura> ObterPeriodoFechamentoReabertura(long tipoCalendarioId, Turma turma, IMediator mediator, DateTime hoje)
