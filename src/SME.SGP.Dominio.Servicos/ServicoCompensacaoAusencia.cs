@@ -69,11 +69,16 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
             }
 
+            CompensacaoAusencia compensacaoBanco = new CompensacaoAusencia();
+
+            if (id > 0)
+                compensacaoBanco = repositorioCompensacaoAusencia.ObterPorId(id);
+
             // Carrega dasdos da disciplina no EOL
-            ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds);
+            ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds, compensacaoBanco.Migrado);
 
             // Persiste os dados
-            var compensacao = MapearEntidade(id, compensacaoDto);
+            var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco);
             compensacao.TurmaId = turma.Id;
             compensacao.AnoLetivo = turma.AnoLetivo;
 
@@ -98,7 +103,7 @@ namespace SME.SGP.Dominio.Servicos
             Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
         }
 
-        private void ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds)
+        private void ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool registroMigrado)
         {
             var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId });
 
@@ -107,7 +112,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var disciplina = disciplinasEOL.FirstOrDefault();
 
-            if (disciplina.Regencia && ((disciplinasRegenciaIds == null) || !disciplinasRegenciaIds.Any()))
+            if (!registroMigrado && disciplina.Regencia && ((disciplinasRegenciaIds == null) || !disciplinasRegenciaIds.Any()))
                 throw new NegocioException("Regência de classe deve informar a(s) disciplina(s) relacionadas a esta atividade.");
 
         }
@@ -259,10 +264,16 @@ namespace SME.SGP.Dominio.Servicos
 
         private CompensacaoAusencia MapearEntidade(long id, CompensacaoAusenciaDto compensacaoDto)
         {
-            CompensacaoAusencia compensacao = new CompensacaoAusencia();
-            if (id > 0)
-                compensacao = repositorioCompensacaoAusencia.ObterPorId(id);
+            CompensacaoAusencia compensacaoBanco = new CompensacaoAusencia();
 
+            if (id > 0)
+                compensacaoBanco = repositorioCompensacaoAusencia.ObterPorId(id);
+
+            return MapearEntidade(id, compensacaoDto, compensacaoBanco);
+        }
+
+        private CompensacaoAusencia MapearEntidade(CompensacaoAusenciaDto compensacaoDto, CompensacaoAusencia compensacao)
+        {
             compensacao.DisciplinaId = compensacaoDto.DisciplinaId;
             compensacao.Bimestre = compensacaoDto.Bimestre;
             compensacao.Nome = compensacaoDto.Atividade;
@@ -374,7 +385,8 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     await Salvar(0, compensacaoDto);
                     turmasCopiadas.Append(turmasCopiadas.ToString().Length > 0 ? ", " + turma.Nome : turma.Nome);
-                }catch(Exception e)
+                }
+                catch (Exception e)
                 {
                     turmasComErro.AppendLine($"A cópia para a turma {turma.Nome} não foi realizada: {e.Message}\n");
                 }
