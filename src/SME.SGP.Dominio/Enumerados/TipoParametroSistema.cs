@@ -41,6 +41,9 @@
         //Nota Fechamento
         QuantidadeDiasAlteracaoNotaFinal = 19,
 
+        // Frequencia
+        PercentualFrequenciaCriticoBaseNacional = 20,
+        
         DataUltimaAtualizacaoObjetivosJurema = 22,
 
         //Sistema

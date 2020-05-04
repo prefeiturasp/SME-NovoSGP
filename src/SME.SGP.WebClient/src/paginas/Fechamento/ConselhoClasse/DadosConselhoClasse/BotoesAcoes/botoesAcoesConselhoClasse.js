@@ -33,6 +33,10 @@ const BotoesAcoesConselhoClasse = () => {
     store => store.conselhoClasse.notaConceitoPosConselhoAtual
   );
 
+  const desabilitarCampos = useSelector(
+    store => store.conselhoClasse.desabilitarCampos
+  );
+
   const onClickSalvar = async () => {
     const validouNotaConceitoPosConselho = await servicoSalvarConselhoClasse.validarNotaPosConselho(
       true
@@ -56,7 +60,10 @@ const BotoesAcoesConselhoClasse = () => {
   };
 
   const onClickVoltar = async () => {
-    if (conselhoClasseEmEdicao || notaConceitoPosConselhoAtual.ehEdicao) {
+    if (
+      !desabilitarCampos &&
+      (conselhoClasseEmEdicao || notaConceitoPosConselhoAtual.ehEdicao)
+    ) {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
         const salvou = await onClickSalvar();
@@ -111,6 +118,7 @@ const BotoesAcoesConselhoClasse = () => {
         className="mr-2"
         onClick={onClickCancelar}
         disabled={
+          desabilitarCampos ||
           !alunosConselhoClasse ||
           alunosConselhoClasse.length < 1 ||
           !conselhoClasseEmEdicao
@@ -124,7 +132,7 @@ const BotoesAcoesConselhoClasse = () => {
         bold
         className="mr-2"
         onClick={onClickSalvar}
-        disabled={!conselhoClasseEmEdicao}
+        disabled={desabilitarCampos || !conselhoClasseEmEdicao}
       />
     </>
   );

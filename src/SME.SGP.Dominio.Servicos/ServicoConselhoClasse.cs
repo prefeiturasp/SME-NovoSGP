@@ -2,6 +2,9 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
@@ -12,25 +15,35 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioConselhoClasseParecerConclusivo repositorioParecer;        
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo;
 
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
+                                     IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                     IRepositorioConselhoClasseParecerConclusivo repositorioParecer,
                                      IConsultasPeriodoFechamento consultasPeriodoFechamento,
+                                     IConsultasConselhoClasse consultasConselhoClasse,                                     
                                      IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
-                                     IConsultasConselhoClasse consultasConselhoClasse,
-                                     IUnitOfWork unitOfWork)
+                                     IUnitOfWork unitOfWork,
+                                     IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo)
+
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
-            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioParecer = repositorioParecer ?? throw new ArgumentNullException(nameof(repositorioParecer));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));            
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.servicoCalculoParecerConclusivo = servicoCalculoParecerConclusivo ?? throw new ArgumentNullException(nameof(servicoCalculoParecerConclusivo));
         }
 
         public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId)
@@ -189,6 +202,63 @@ namespace SME.SGP.Dominio.Servicos
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
             return (AuditoriaConselhoClasseAlunoDto)conselhoClasseAluno;
+        }
+
+        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
+        {
+            var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
+            var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
+            var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
+
+            var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma);
+            conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
+            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
+
+            return new ParecerConclusivoDto() 
+            { 
+                Id = parecerConclusivo.Id,
+                Nome = parecerConclusivo.Nome
+            };
+        }
+
+        private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(long turmaId)
+        {
+            var pareceresConclusivos = await repositorioParecer.ObterListaPorTurmaIdAsync(turmaId, DateTime.Today);
+            if (pareceresConclusivos == null || !pareceresConclusivos.Any())
+                throw new NegocioException("Não foram encontrados pareceres conclusivos para a turma!");
+
+            return pareceresConclusivos;
+        }
+
+        private async Task<ConselhoClasseAluno> ObterConselhoClasseAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
+        {
+            ConselhoClasseAluno conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
+            if (conselhoClasseAluno == null)
+            {
+                ConselhoClasse conselhoClasse = null;
+                if (conselhoClasseId == 0)
+                {
+                    conselhoClasse = new ConselhoClasse() { FechamentoTurmaId = fechamentoTurmaId };
+                    await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
+                }
+                else
+                    conselhoClasse = repositorioConselhoClasse.ObterPorId(conselhoClasseId);
+
+                conselhoClasseAluno = new ConselhoClasseAluno() { AlunoCodigo = alunoCodigo, ConselhoClasse = conselhoClasse, ConselhoClasseId = conselhoClasse.Id };
+                await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
+            }
+            conselhoClasseAluno.ConselhoClasse.FechamentoTurma = await ObterFechamentoTurma(fechamentoTurmaId);
+
+            return conselhoClasseAluno;
+        }
+
+        private async Task<FechamentoTurma> ObterFechamentoTurma(long fechamentoTurmaId)
+        {
+            var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
+            if (fechamentoTurma == null)
+                throw new NegocioException("Fechamento da turma não localizado");
+
+            return fechamentoTurma;
         }
     }
 }

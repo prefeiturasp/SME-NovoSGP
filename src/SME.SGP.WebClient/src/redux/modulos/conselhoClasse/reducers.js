@@ -18,6 +18,9 @@ const inicial = {
   dadosListasNotasConceitos: {},
   notaConceitoPosConselhoAtual: {},
   idCamposNotasPosConselho: {},
+  marcadorParecerConclusivo: {},
+  gerandoParecerConclusivo: false,
+  desabilitarCampos: false,
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -84,6 +87,9 @@ export default function ConselhoClasse(state = inicial, action) {
           dadosListasNotasConceitos: [],
           notaConceitoPosConselhoAtual: {},
           idCamposNotasPosConselho: {},
+          marcadorParecerConclusivo: {},
+          gerandoParecerConclusivo: false,
+          desabilitarCampos: false,
         };
       }
       case '@conselhoClasse/setConselhoClasseEmEdicao': {
@@ -155,6 +161,24 @@ export default function ConselhoClasse(state = inicial, action) {
         return {
           ...draft,
           idCamposNotasPosConselho: action.payload,
+        };
+      }
+      case '@conselhoClasse/setMarcadorParecerConclusivo': {
+        return {
+          ...draft,
+          marcadorParecerConclusivo: action.payload,
+        };
+      }
+      case '@conselhoClasse/setGerandoParecerConclusivo': {
+        return {
+          ...draft,
+          gerandoParecerConclusivo: action.payload,
+        };
+      }
+      case '@conselhoClasse/setDesabilitarCampos': {
+        return {
+          ...draft,
+          desabilitarCampos: action.payload,
         };
       }
 
