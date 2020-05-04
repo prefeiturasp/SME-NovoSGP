@@ -269,7 +269,7 @@ namespace SME.SGP.Dominio.Servicos
             if (id > 0)
                 compensacaoBanco = repositorioCompensacaoAusencia.ObterPorId(id);
 
-            return MapearEntidade(id, compensacaoDto, compensacaoBanco);
+            return MapearEntidade(compensacaoDto, compensacaoBanco);
         }
 
         private CompensacaoAusencia MapearEntidade(CompensacaoAusenciaDto compensacaoDto, CompensacaoAusencia compensacao)
