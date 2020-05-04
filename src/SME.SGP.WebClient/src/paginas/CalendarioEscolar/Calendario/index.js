@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Tooltip, Switch } from 'antd';
+import shortid from 'shortid';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import Calendario from '~/componentes-sgp/calendarioEscolar/Calendario';
@@ -40,8 +41,6 @@ const CalendarioEscolar = () => {
   const turmaSelecionadaStore = useSelector(
     state => state.usuario.turmaSelecionada
   );
-
-  const [controleTurmaSelecionada, setControleTurmaSelecionada] = useState();
 
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
@@ -402,6 +401,7 @@ const CalendarioEscolar = () => {
               {diasLetivos && diasLetivos.dias && (
                 <Div>
                   <Button
+                    id={shortid.generate()}
                     label={diasLetivos.dias.toString()}
                     color={
                       diasLetivos.estaAbaixoPermitido
@@ -427,6 +427,7 @@ const CalendarioEscolar = () => {
             </Grid>
             <Grid cols={4}>
               <Button
+                id={shortid.generate()}
                 label="Voltar"
                 icon="arrow-left"
                 color={Colors.Azul}
