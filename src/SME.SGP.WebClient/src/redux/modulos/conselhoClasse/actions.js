@@ -107,3 +107,13 @@ export const setDesabilitarCampos = payload => ({
   type: '@conselhoClasse/setDesabilitarCampos',
   payload,
 });
+
+export const addDisciplinasComNotaPosConselho = payload => ({
+  type: '@conselhoClasse/addDisciplinasComNotaPosConselho',
+  payload,
+});
+
+export const setDisciplinasComNotaPosConselho = payload => ({
+  type: '@conselhoClasse/setDisciplinasComNotaPosConselho',
+  payload,
+});
