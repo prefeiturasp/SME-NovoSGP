@@ -93,3 +93,11 @@ export const BarraLateralBordo = styled.td`
   margin: 0 !important;
   padding: 0 !important;
 `;
+
+export const BarraLateralLista = styled.td`
+  background-color: ${props => props.cor || ''};
+  border: 1px solid ${props => props.cor || ''}!important;
+  width: 7px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+`;
