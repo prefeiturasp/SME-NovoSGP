@@ -131,6 +131,7 @@ class ServicoSalvarConselhoClasse {
       notaConceitoPosConselhoAtual,
       idCamposNotasPosConselho,
       desabilitarCampos,
+      bimestreAtual,
     } = conselhoClasse;
 
     const {
@@ -225,7 +226,9 @@ class ServicoSalvarConselhoClasse {
         } com sucesso`
       );
 
-      gerarParecerConclusivo();
+      if (bimestreAtual && bimestreAtual.valor === 'final') {
+        gerarParecerConclusivo();
+      }
 
       return true;
     }

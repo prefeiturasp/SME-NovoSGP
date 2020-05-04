@@ -38,7 +38,7 @@ const MarcadorParecerConclusivo = () => {
       const { nome } = marcadorParecerConclusivo;
 
       if (nome) {
-        setParecer(nome);
+        setParecer(`Parecer conclusivo: ${nome}`);
       } else {
         setParecer('');
       }
@@ -47,7 +47,7 @@ const MarcadorParecerConclusivo = () => {
 
   const montarDescricao = () => {
     if (gerandoParecerConclusivo) {
-      return 'Gerando parecer';
+      return 'Gerando parecer conclusivo';
     }
     return parecer;
   };

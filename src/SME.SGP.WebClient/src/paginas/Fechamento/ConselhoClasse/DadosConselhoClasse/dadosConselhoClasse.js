@@ -213,7 +213,11 @@ const DadosConselhoClasse = props => {
         {!semDados ? (
           <>
             <AlertaDentroPeriodo />
-            <MarcadorParecerConclusivo />
+            {bimestreAtual.valor === 'final' ? (
+              <MarcadorParecerConclusivo />
+            ) : (
+              ''
+            )}
             <MarcadorPeriodoInicioFim />
             <ListasNotasConceitos bimestreSelecionado={bimestreAtual} />
             <Sintese
