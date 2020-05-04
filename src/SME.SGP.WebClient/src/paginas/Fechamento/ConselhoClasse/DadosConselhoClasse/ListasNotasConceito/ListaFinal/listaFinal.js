@@ -203,7 +203,12 @@ const ListaFinal = props => {
                           {montarValoresNotasConceitos(item.notasFechamentos)}
                         </td>
                         <td>
-                          {montaCampoPosConselho(item.notaPosConselho, index)}
+                          {montaCampoPosConselho(
+                            item.notaPosConselho.id,
+                            item.notaPosConselho.nota,
+                            `${descricaoGrupoMatriz} ${index} regencia`,
+                            item.codigoComponenteCurricular
+                          )}
                         </td>
                         {index === 0 ? (
                           <td rowSpan={alturaLinhaMesclada}>
