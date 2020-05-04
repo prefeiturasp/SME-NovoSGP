@@ -250,7 +250,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRequestHandler<ObterTemEventoNaoLetivoPorCalendarioEDiaQuery, bool>, ObterTemEventoNaoLetivoPorCalendarioEDiaQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterTemEventoLetivoPorCalendarioEDiaQuery, bool>, ObterTemEventoLetivoPorCalendarioEDiaQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterFechamentoPorTurmaPeriodoQuery, FechamentoTurma>, ObterFechamentoPorTurmaPeriodoQueryHandler>();
-            services.TryAddScoped<IRequestHandler<ObterExistePeriodoPorUeDataBimestreQuery, bool>, ObterExistePeriodoPorUeDataBimestreQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterExistePeriodoPorUeDataBimestreQuery, PeriodoFechamento>, ObterExistePeriodoPorUeDataBimestreQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterFechamentoReaberturaPorDataTurmaQuery, FechamentoReabertura>, ObterFechamentoReaberturaPorDataTurmaQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterAulaPossuiFrequenciaQuery, bool>, ObterAulaPossuiFrequenciaQueryHandler>();            
         }
