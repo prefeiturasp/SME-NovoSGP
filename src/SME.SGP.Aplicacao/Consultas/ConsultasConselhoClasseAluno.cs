@@ -95,24 +95,33 @@ namespace SME.SGP.Aplicacao
             if (disciplinas == null || !disciplinas.Any())
                 return null;
 
-            var disciplinasSinteses = disciplinas.Where(x => !x.LancaNota && x.GrupoMatriz != null);
-
-            if (disciplinasSinteses == null || !disciplinasSinteses.Any())
-                return null;
+            var gruposMatrizes = disciplinas.Where(x => !x.LancaNota && x.GrupoMatriz != null)
+                                            .GroupBy(c => new { Id = c.GrupoMatriz?.Id, Nome = c.GrupoMatriz?.Nome });
 
             var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestresAsync(alunoCodigo, bimestre, fechamentoTurma.Turma.CodigoTurma);
 
-            foreach (var componenteCurricular in disciplinasSinteses)
+            foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key.Nome))
             {
-                var grupoSintese = retorno.FirstOrDefault(x => x.Id == componenteCurricular.CodigoComponenteCurricular);
+                var grupoMatriz = new ConselhoDeClasseGrupoMatrizDto()
+                {
+                    Id = grupoDisiplinasMatriz.Key.Id ?? 0,
+                    Titulo = grupoDisiplinasMatriz.Key.Nome ?? "",
+                    ComponenteSinteses = new List<ConselhoDeClasseComponenteSinteseDto>()
+                };
 
-                MapearDto(ref retorno, ref grupoSintese, frequenciaAluno, componenteCurricular, bimestre);
+                foreach (var componenteCurricular in grupoDisiplinasMatriz)
+                {
+                    var componenteCurricularDto = MapearDto(frequenciaAluno, componenteCurricular, bimestre);
+                    grupoMatriz.ComponenteSinteses.Add(componenteCurricularDto);
+                }
+
+                retorno.Add(grupoMatriz);
             }
 
             return retorno;
         }
 
-        private void MapearDto(ref List<ConselhoDeClasseGrupoMatrizDto> retorno, ref ConselhoDeClasseGrupoMatrizDto grupoSintese, IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre)
+        private ConselhoDeClasseComponenteSinteseDto MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre)
         {
             var frequenciaDisciplina = ObterFrequenciaPorDisciplina(frequenciaAluno, componenteCurricular);
 
@@ -123,29 +132,7 @@ namespace SME.SGP.Aplicacao
             var parecerFinal = bimestre == 0 ? consultasFrequencia.ObterSinteseAluno(percentualFrequencia, dto) : null;
 
             var componenteSinteseAdicionar = MapearConselhoDeClasseComponenteSinteseDto(componenteCurricular, frequenciaDisciplina, percentualFrequencia, parecerFinal);
-
-            if (grupoSintese != null)
-            {
-                grupoSintese.ComponenteSinteses.ToList().Add(componenteSinteseAdicionar);
-                return;
-            }
-
-            grupoSintese = Mapear(componenteCurricular, componenteSinteseAdicionar);
-
-            retorno.Add(grupoSintese);
-        }
-
-        private static ConselhoDeClasseGrupoMatrizDto Mapear(DisciplinaResposta componenteCurricular, ConselhoDeClasseComponenteSinteseDto componenteSinteseAdicionar)
-        {
-            return new ConselhoDeClasseGrupoMatrizDto
-            {
-                Id = componenteCurricular.GrupoMatriz.Id,
-                Titulo = componenteCurricular.GrupoMatriz.Nome,
-                ComponenteSinteses = new List<ConselhoDeClasseComponenteSinteseDto>
-                {
-                   componenteSinteseAdicionar
-                }
-            };
+            return componenteSinteseAdicionar;
         }
 
         private static ConselhoDeClasseComponenteSinteseDto MapearConselhoDeClasseComponenteSinteseDto(DisciplinaResposta componenteCurricular, IEnumerable<FrequenciaAluno> frequenciaDisciplina, double percentualFrequencia, SinteseDto parecerFinal)
