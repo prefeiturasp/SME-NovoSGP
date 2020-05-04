@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import ListaBimestre from './ListaBimestre/listaBimestre';
 import ListaFinal from './ListaFinal/listaFinal';
+import { Base } from '~/componentes';
 
 const ListasCarregar = props => {
   const {
@@ -18,9 +19,35 @@ const ListasCarregar = props => {
     store => store.conselhoClasse.dadosListasNotasConceitos
   );
 
+  const cores = [
+    Base.VerdeBorda,
+    Base.LaranjaAlerta,
+    Base.AzulCalendario,
+    Base.Roxo,
+    Base.Verde,
+    '#A7CDE0',
+    '#2279AF',
+    Base.Vermelho,
+    Base.RosaCalendario,
+    Base.Laranja,
+  ];
+
+  const coresRegencia = [
+    Base.Bordo,
+    '#B1DF94',
+    '#31A041',
+    '#FC999C',
+    '#E31426',
+    '#FDBE7B',
+    '#CAB2D4',
+    '#6B3E93',
+    '#FEFEA6',
+    '#B15732',
+  ];
+
   const validaExibirLista = () => {
     if (ehFinal) {
-      return dadosListasNotasConceitos.map(item => (
+      return dadosListasNotasConceitos.map((item, index) => (
         <ListaFinal
           key={shortid.generate()}
           dadosLista={item}
@@ -28,11 +55,13 @@ const ListasCarregar = props => {
           listaTiposConceitos={listaTiposConceitos}
           mediaAprovacao={mediaAprovacao}
           alunoDesabilitado={alunoDesabilitado}
+          corBarraLateral={cores[index] || ''}
+          corRegenciaBarraLateral={coresRegencia[index] || ''}
         />
       ));
     }
 
-    return dadosListasNotasConceitos.map(item => (
+    return dadosListasNotasConceitos.map((item, index) => (
       <ListaBimestre
         key={shortid.generate()}
         dadosLista={item}
@@ -40,6 +69,8 @@ const ListasCarregar = props => {
         listaTiposConceitos={listaTiposConceitos}
         mediaAprovacao={mediaAprovacao}
         alunoDesabilitado={alunoDesabilitado}
+        corBarraLateral={cores[index] || ''}
+        corRegenciaBarraLateral={coresRegencia[index] || ''}
       />
     ));
   };
