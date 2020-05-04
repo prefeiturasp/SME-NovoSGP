@@ -214,6 +214,7 @@ namespace SME.SGP.Dados.Repositorios
                         and aa.ue_id  = @ueCodigo
                         and  aa.data_avaliacao ::date = @dataReferencia
                         and aa.turma_id = @turmaCodigo";
+                        
 
 
             var lookup = new Dictionary<long, AtividadeAvaliativa>();
@@ -235,23 +236,13 @@ namespace SME.SGP.Dados.Repositorios
                 dreCodigo,
                 ueCodigo,
                 dataReferencia,
-                turmaCodigo
+                turmaCodigo,
+
             });
 
             return lookup.Values;
         }
-        public async Task<AtividadeAvaliativa> ObterPorIdAsync(long id)
-        {
-            StringBuilder query = new StringBuilder();
-            MontaQueryCabecalho(query);
-            query.AppendLine(fromCompleto);
-            MontaWhere(query: query, id: id);
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<AtividadeAvaliativa>(query.ToString(), new
-            {
-                id
-            });
-        }
+        
 
         public async Task<bool> VerificarSeExisteAvaliacao(DateTime dataAvaliacao, string ueId, string turmaId, string professorRf, string disciplinaId)
         {

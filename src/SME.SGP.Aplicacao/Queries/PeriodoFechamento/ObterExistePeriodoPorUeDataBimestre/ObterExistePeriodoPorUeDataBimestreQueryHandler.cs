@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterExistePeriodoPorUeDataBimestreQueryHandler : IRequestHandler<ObterExistePeriodoPorUeDataBimestreQuery, bool>
+    public class ObterExistePeriodoPorUeDataBimestreQueryHandler : IRequestHandler<ObterExistePeriodoPorUeDataBimestreQuery, PeriodoFechamento>
     {
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
 
@@ -14,9 +15,9 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
         }
-        public async Task<bool> Handle(ObterExistePeriodoPorUeDataBimestreQuery request, CancellationToken cancellationToken)
+        public async Task<PeriodoFechamento> Handle(ObterExistePeriodoPorUeDataBimestreQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioPeriodoFechamento.ExistePeriodoPorUeDataBimestre(request.UeId, request.DataParaVerificar, request.Bimestre);            
+            return await repositorioPeriodoFechamento.ObterPeriodoPorUeDataBimestreAsync(request.UeId, request.DataParaVerificar, request.Bimestre);            
         }
     }
 }
