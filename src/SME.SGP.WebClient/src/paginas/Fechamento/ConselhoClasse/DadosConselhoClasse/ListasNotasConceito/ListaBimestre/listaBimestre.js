@@ -4,11 +4,7 @@ import shortid from 'shortid';
 import notasConceitos from '~/dtos/notasConceitos';
 import CampoConceito from '../CamposNotaConceito/campoConceito';
 import CampoNota from '../CamposNotaConceito/campoNota';
-import {
-  BarraLateralBordo,
-  BarraLateralVerde,
-  Lista,
-} from '../listasNotasConceitos.css';
+import { BarraLateralLista, Lista } from '../listasNotasConceitos.css';
 import LinhaJustificativa from '../../Justificativa/LinhaJustificativa/LinhaJustificativa';
 
 const ListaBimestre = props => {
@@ -18,6 +14,8 @@ const ListaBimestre = props => {
     listaTiposConceitos,
     mediaAprovacao,
     alunoDesabilitado,
+    corBarraLateral,
+    corRegenciaBarraLateral,
   } = props;
 
   const descricaoTipoNota =
@@ -122,7 +120,7 @@ const ListaBimestre = props => {
                 return (
                   <>
                     <tr key={shortid.generate()}>
-                      <BarraLateralVerde />
+                      <BarraLateralLista cor={corBarraLateral} />
                       <td
                         className="coluna-disciplina sombra-direita"
                         style={{
@@ -165,7 +163,7 @@ const ListaBimestre = props => {
                   return (
                     <>
                       <tr key={shortid.generate()}>
-                        <BarraLateralBordo />
+                        <BarraLateralLista cor={corRegenciaBarraLateral} />
                         <td
                           className="coluna-disciplina sombra-direita"
                           style={{ textAlign: 'left', paddingLeft: '20px' }}
@@ -223,6 +221,8 @@ ListaBimestre.propTypes = {
   listaTiposConceitos: PropTypes.oneOfType([PropTypes.array]),
   mediaAprovacao: PropTypes.number,
   alunoDesabilitado: PropTypes.bool,
+  corBarraLateral: PropTypes.string,
+  corRegenciaBarraLateral: PropTypes.string,
 };
 
 ListaBimestre.defaultProps = {
@@ -231,6 +231,8 @@ ListaBimestre.defaultProps = {
   listaTiposConceitos: [],
   mediaAprovacao: 5,
   alunoDesabilitado: false,
+  corBarraLateral: '',
+  corRegenciaBarraLateral: '',
 };
 
 export default ListaBimestre;
