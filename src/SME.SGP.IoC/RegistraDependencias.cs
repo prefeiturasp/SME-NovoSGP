@@ -252,6 +252,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRequestHandler<ObterFechamentoPorTurmaPeriodoQuery, FechamentoTurma>, ObterFechamentoPorTurmaPeriodoQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterExistePeriodoPorUeDataBimestreQuery, bool>, ObterExistePeriodoPorUeDataBimestreQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterFechamentoReaberturaPorDataTurmaQuery, FechamentoReabertura>, ObterFechamentoReaberturaPorDataTurmaQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterAulaPossuiFrequenciaQuery, bool>, ObterAulaPossuiFrequenciaQueryHandler>();            
         }
 
         private static void RegistrarServicos(IServiceCollection services)
