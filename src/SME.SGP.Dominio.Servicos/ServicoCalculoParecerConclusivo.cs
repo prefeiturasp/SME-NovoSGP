@@ -66,7 +66,7 @@ namespace SME.SGP.Dominio.Servicos
             if (!await ValidarParecerPorFrequencia(alunoCodigo, turmaCodigo, pareceresDaTurma))
                 return ObterParecerValidacao(false);
 
-            if (!await ValidarParecerPorNota(alunoCodigo, turmaCodigo, pareceresDaTurma))
+            if (await ValidarParecerPorNota(alunoCodigo, turmaCodigo, pareceresDaTurma))
                 return ObterParecerValidacao(false);
 
             return ObterParecerValidacao(await ValidarParecerPorConselho(alunoCodigo, turmaCodigo, pareceresDaTurma));
