@@ -8,6 +8,6 @@ namespace SME.SGP.Infra
     {
         public long Id { get; set; }
         public string Titulo { get; set; }
-        public IEnumerable<ConselhoDeClasseComponenteSinteseDto> ComponenteSinteses { get; set; }
+        public List<ConselhoDeClasseComponenteSinteseDto> ComponenteSinteses { get; set; }
     }
 }
