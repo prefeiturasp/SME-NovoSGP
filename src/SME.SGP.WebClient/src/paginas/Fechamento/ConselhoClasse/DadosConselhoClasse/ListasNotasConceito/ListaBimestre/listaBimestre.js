@@ -12,7 +12,13 @@ import {
 import LinhaJustificativa from '../../Justificativa/LinhaJustificativa/LinhaJustificativa';
 
 const ListaBimestre = props => {
-  const { dadosLista, tipoNota, listaTiposConceitos, mediaAprovacao } = props;
+  const {
+    dadosLista,
+    tipoNota,
+    listaTiposConceitos,
+    mediaAprovacao,
+    alunoDesabilitado,
+  } = props;
 
   const descricaoTipoNota =
     tipoNota === notasConceitos.Notas ? 'Nota' : 'Conceito';
@@ -45,6 +51,7 @@ const ListaBimestre = props => {
             idCampo={idCampo}
             codigoComponenteCurricular={String(codigoComponenteCurricular)}
             mediaAprovacao={mediaAprovacao}
+            alunoDesabilitado={alunoDesabilitado}
           />
         );
       case Number(notasConceitos.Conceitos):
@@ -55,6 +62,7 @@ const ListaBimestre = props => {
             id={id}
             idCampo={idCampo}
             codigoComponenteCurricular={codigoComponenteCurricular}
+            alunoDesabilitado={alunoDesabilitado}
           />
         );
       default:
@@ -144,6 +152,7 @@ const ListaBimestre = props => {
                     <LinhaJustificativa
                       idCampo={`${descricaoGrupoMatriz} ${index} componente`}
                       ehRegencia={false}
+                      alunoDesabilitado={alunoDesabilitado}
                     />
                   </>
                 );
@@ -213,6 +222,7 @@ ListaBimestre.propTypes = {
   tipoNota: PropTypes.oneOfType([PropTypes.any]),
   listaTiposConceitos: PropTypes.oneOfType([PropTypes.array]),
   mediaAprovacao: PropTypes.number,
+  alunoDesabilitado: PropTypes.bool,
 };
 
 ListaBimestre.defaultProps = {
@@ -220,6 +230,7 @@ ListaBimestre.defaultProps = {
   tipoNota: 0,
   listaTiposConceitos: [],
   mediaAprovacao: 5,
+  alunoDesabilitado: false,
 };
 
 export default ListaBimestre;

@@ -14,7 +14,13 @@ import {
 import LinhaJustificativa from '../../Justificativa/LinhaJustificativa/LinhaJustificativa';
 
 const ListaFinal = props => {
-  const { dadosLista, tipoNota, listaTiposConceitos, mediaAprovacao } = props;
+  const {
+    dadosLista,
+    tipoNota,
+    listaTiposConceitos,
+    mediaAprovacao,
+    alunoDesabilitado,
+  } = props;
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
@@ -51,6 +57,7 @@ const ListaFinal = props => {
             idCampo={idCampo}
             codigoComponenteCurricular={String(codigoComponenteCurricular)}
             mediaAprovacao={mediaAprovacao}
+            alunoDesabilitado={alunoDesabilitado}
           />
         );
       case Number(notasConceitos.Conceitos):
@@ -61,6 +68,7 @@ const ListaFinal = props => {
             id={id}
             idCampo={idCampo}
             codigoComponenteCurricular={codigoComponenteCurricular}
+            alunoDesabilitado={alunoDesabilitado}
           />
         );
       default:
@@ -173,6 +181,7 @@ const ListaFinal = props => {
                     <LinhaJustificativa
                       idCampo={`${descricaoGrupoMatriz} ${index} componente`}
                       ehRegencia={false}
+                      alunoDesabilitado={alunoDesabilitado}
                     />
                   </>
                 );
@@ -234,6 +243,7 @@ ListaFinal.propTypes = {
   tipoNota: PropTypes.oneOfType([PropTypes.any]),
   listaTiposConceitos: PropTypes.oneOfType([PropTypes.array]),
   mediaAprovacao: PropTypes.number,
+  alunoDesabilitado: PropTypes.bool,
 };
 
 ListaFinal.defaultProps = {
@@ -241,6 +251,7 @@ ListaFinal.defaultProps = {
   tipoNota: 0,
   listaTiposConceitos: [],
   mediaAprovacao: 5,
+  alunoDesabilitado: false,
 };
 
 export default ListaFinal;

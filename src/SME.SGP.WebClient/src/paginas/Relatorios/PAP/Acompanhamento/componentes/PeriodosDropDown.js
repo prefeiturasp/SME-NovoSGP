@@ -1,40 +1,24 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React from 'react';
 import t from 'prop-types';
 
 // Componentes
 import { SelectComponent } from '~/componentes';
-import AcompanhamentoPAPServico from '~/servicos/Paginas/Relatorios/PAP/Acompanhamento';
 
-function PeriodosDropDown({
-  onChangePeriodo,
-  valor,
-  desabilitado,
-  codigoTurma,
-  setSemPeriodos,
-}) {
-  const [opcoes, setOpcoes] = useState(null);
-
-  const obterOpcoes = useCallback(async () => {
-    if (!codigoTurma || codigoTurma === 0 || codigoTurma === '0') return;
-
-    const retorno = await AcompanhamentoPAPServico.ObterPeriodos(codigoTurma);
-
-    if (!retorno.sucesso || retorno.semDados) {
-      setSemPeriodos(true);
-      return;
-    }
-
-    setSemPeriodos(false);
-    setOpcoes(
-      retorno.dados.map(x => {
-        return { valor: x.id, descricao: x.nome };
-      })
-    );
-  }, [codigoTurma, setSemPeriodos]);
-
-  useEffect(() => {
-    obterOpcoes();
-  }, [obterOpcoes, codigoTurma]);
+function PeriodosDropDown({ onChangePeriodo, valor, desabilitado }) {
+  const opcoes = [
+    {
+      valor: '1',
+      descricao: 'Encaminhamento',
+    },
+    {
+      valor: '2',
+      descricao: 'Acompanhamento 1º Semestre',
+    },
+    {
+      valor: '3',
+      descricao: 'Acompanhamento 2º Semestre',
+    },
+  ];
 
   return (
     <SelectComponent
@@ -53,16 +37,12 @@ PeriodosDropDown.propTypes = {
   onChangePeriodo: t.func,
   valor: t.string,
   desabilitado: t.bool,
-  codigoTurma: t.string,
-  setSemPeriodos: t.func,
 };
 
 PeriodosDropDown.defaultProps = {
   onChangePeriodo: () => {},
   valor: undefined,
   desabilitado: false,
-  codigoTurma: '',
-  setSemPeriodos: () => {},
 };
 
 export default PeriodosDropDown;

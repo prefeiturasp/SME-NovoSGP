@@ -25,11 +25,19 @@ const CampoConceito = props => {
     id,
     idCampo,
     codigoComponenteCurricular,
-    desabilitarCampo,
+    alunoDesabilitado,
   } = props;
 
   const idCamposNotasPosConselho = useSelector(
     store => store.conselhoClasse.idCamposNotasPosConselho[idCampo]
+  );
+
+  const desabilitarCampos = useSelector(
+    store => store.conselhoClasse.desabilitarCampos
+  );
+
+  const dentroPeriodo = useSelector(
+    store => store.conselhoClasse.dentroPeriodo
   );
 
   const [notaValorAtual, setNotaValorAtual] = useState(notaPosConselho);
@@ -100,10 +108,10 @@ const CampoConceito = props => {
   };
 
   const onChangeConceito = (valorNovo, validarMedia) => {
-    setNotaValorAtual(valorNovo);
-    mostrarJustificativa();
-    setNotaPosConselho(valorNovo, true);
-    if (!desabilitarCampo) {
+    if (!desabilitarCampos) {
+      setNotaValorAtual(valorNovo);
+      mostrarJustificativa();
+      setNotaPosConselho(valorNovo, true);
       if (validarMedia) {
         validaSeEstaAbaixoDaMedia(valorNovo);
       }
@@ -123,6 +131,7 @@ const CampoConceito = props => {
           showSearch
           placeholder="Conceito"
           className={abaixoMedia ? 'borda-abaixo-media' : ''}
+          desabilitar={alunoDesabilitado || desabilitarCampos || !dentroPeriodo}
         />
       </Combo>
     );
@@ -163,7 +172,7 @@ CampoConceito.propTypes = {
   id: PropTypes.oneOfType([PropTypes.number]),
   idCampo: PropTypes.oneOfType([PropTypes.string]),
   codigoComponenteCurricular: PropTypes.oneOfType([PropTypes.any]),
-  desabilitarCampo: PropTypes.bool,
+  alunoDesabilitado: PropTypes.bool,
 };
 
 CampoConceito.defaultProps = {
@@ -172,7 +181,7 @@ CampoConceito.defaultProps = {
   id: null,
   idCampo: '',
   codigoComponenteCurricular: '',
-  desabilitarCampo: false,
+  alunoDesabilitado: false,
 };
 
 export default CampoConceito;

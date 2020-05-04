@@ -92,3 +92,18 @@ export const setIdCamposNotasPosConselho = payload => ({
   type: '@conselhoClasse/setIdCamposNotasPosConselho',
   payload,
 });
+
+export const setMarcadorParecerConclusivo = payload => ({
+  type: '@conselhoClasse/setMarcadorParecerConclusivo',
+  payload,
+});
+
+export const setGerandoParecerConclusivo = payload => ({
+  type: '@conselhoClasse/setGerandoParecerConclusivo',
+  payload,
+});
+
+export const setDesabilitarCampos = payload => ({
+  type: '@conselhoClasse/setDesabilitarCampos',
+  payload,
+});
