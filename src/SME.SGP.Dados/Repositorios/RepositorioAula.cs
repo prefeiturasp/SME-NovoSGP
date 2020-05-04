@@ -144,13 +144,15 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.tipo_aula,");
             query.AppendLine("a.aula_cj,");
             query.AppendLine("a.disciplina_id,");
-            query.AppendLine("a.quantidade");
+            query.AppendLine("a.quantidade,");
+            query.AppendLine("a.status,");
+            query.AppendLine("a.professor_rf");
             query.AppendLine("FROM public.aula a");
             query.AppendLine("WHERE a.excluido = false");
             query.AppendLine("AND a.status <> 3");
             query.AppendLine("AND a.tipo_calendario_id = @tipoCalendarioId");
             query.AppendLine("AND a.turma_id = @turmaCodigo");
-            query.AppendLine("AND a.data_aula = @dataDaAula");            
+            query.AppendLine("AND a.data_aula::date = @dataDaAula");            
 
             return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaCodigo, ueCodigo, dataDaAula }));
 
