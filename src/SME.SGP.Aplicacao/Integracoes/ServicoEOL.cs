@@ -340,6 +340,9 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             httpClient.DefaultRequestHeaders.Clear();
 
+            if (ids == null || !ids.Any())
+                return default;
+
             var parametros = JsonConvert.SerializeObject(ids);
             var resposta = httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json")).Result;
 
