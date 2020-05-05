@@ -258,7 +258,7 @@ namespace SME.SGP.Aplicacao
                 QuantidadeAulas = frequenciaAluno.TotalAulas,
                 Faltas = frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = frequenciaAluno?.PercentualFrequencia ?? 100,
+                Frequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 100 : 100),
                 NotasFechamentos = await ObterNotasComponente(disciplina, periodoEscolar, notasFechamentoAluno),
                 NotaPosConselho = await ObterNotaPosConselho(disciplina, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno)
             };
@@ -273,7 +273,7 @@ namespace SME.SGP.Aplicacao
                 QuantidadeAulas = frequenciaAluno.TotalAulas,
                 Faltas = frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = frequenciaAluno?.PercentualFrequencia ?? 100
+                Frequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 100: 100)
             };
 
             var componentesRegencia = await ObterComponentesRegencia(turma, componenteCurricular.CodigoComponenteCurricular);
@@ -328,10 +328,9 @@ namespace SME.SGP.Aplicacao
 
                 return new FrequenciaAluno()
                 {
-                    TotalAulas = await repositorioAula.ObterQuantidadeDeAulasPorTurmaDisciplinaPeriodoAsync(turma.CodigoTurma, 
-                                                                                                    componenteCurricularCodigo.ToString(), 
-                                                                                                    periodoEscolar.PeriodoInicio, 
-                                                                                                    periodoEscolar.PeriodoFim),
+                    TotalAulas = await consultasAulaPrevista.ObterAulasDadas(turma,
+                                                                             componenteCurricularCodigo.ToString(),
+                                                                             periodoEscolar.Bimestre)
             };
             }
             else
