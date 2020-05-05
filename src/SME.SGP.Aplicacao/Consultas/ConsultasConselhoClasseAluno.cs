@@ -328,7 +328,7 @@ namespace SME.SGP.Aplicacao
 
                 return new FrequenciaAluno()
                 {
-                    TotalAulas = await repositorioAula.ObterQuantidadeDeAulasPorTurmaDisciplinaPeriodo(turma.CodigoTurma, 
+                    TotalAulas = await repositorioAula.ObterQuantidadeDeAulasPorTurmaDisciplinaPeriodoAsync(turma.CodigoTurma, 
                                                                                                     componenteCurricularCodigo.ToString(), 
                                                                                                     periodoEscolar.PeriodoInicio, 
                                                                                                     periodoEscolar.PeriodoFim),
