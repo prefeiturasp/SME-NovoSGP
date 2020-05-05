@@ -144,6 +144,10 @@ const Notas = ({ match }) => {
     dispatch(setExpandirLinha([]));
   }, [dispatch]);
 
+  useEffect(() => {
+    resetarTela();
+  }, [usuario.turmaSelecionada]);
+
   const obterListaConceitos = async periodoFim => {
     const lista = await api
       .get(`v1/avaliacoes/notas/conceitos?data=${periodoFim}`)
