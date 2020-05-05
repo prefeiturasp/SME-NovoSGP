@@ -18,6 +18,8 @@ export default (state, action) => {
   switch (type) {
     case Tipos.setarEventosMes:
       return Handlers.setarEventosMesHandler(state, payload);
+    case Tipos.setarEventosDia:
+      return Handlers.setarEventosDiaHandler(state, payload);
     case Tipos.setarCarregandoCalendario:
       return {
         ...state,
