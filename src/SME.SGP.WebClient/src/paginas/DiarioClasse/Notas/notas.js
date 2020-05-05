@@ -305,14 +305,17 @@ const Notas = ({ match }) => {
   }, [obterDadosBimestres, usuario.turmaSelecionada.turma]);
 
   const obterTituloTela = useCallback(async () => {
-    const url = `v1/avaliacoes/notas/turmas/${usuario.turmaSelecionada.turma}/anos-letivos/${usuario.turmaSelecionada.anoLetivo}/tipos?consideraHistorico=${usuario.turmaSelecionada.consideraHistorico}`;
-    const tipoNotaTurmaSelecionada = await api.get(url);
-    if (
-      Number(notasConceitos.Conceitos) === Number(tipoNotaTurmaSelecionada.data)
-    ) {
-      return 'Lançamento de Conceitos';
+    if (usuario && usuario.turmaSelecionada && usuario.turmaSelecionada.turma) {
+      const url = `v1/avaliacoes/notas/turmas/${usuario.turmaSelecionada.turma}/anos-letivos/${usuario.turmaSelecionada.anoLetivo}/tipos?consideraHistorico=${usuario.turmaSelecionada.consideraHistorico}`;
+      const tipoNotaTurmaSelecionada = await api.get(url);
+      if (
+        Number(notasConceitos.Conceitos) ===
+        Number(tipoNotaTurmaSelecionada.data)
+      ) {
+        return 'Lançamento de Conceitos';
+      }
+      return 'Lançamento de Notas';
     }
-    return 'Lançamento de Notas';
   }, [usuario.turmaSelecionada.anoLetivo, usuario.turmaSelecionada.turma]);
 
   useEffect(() => {
@@ -913,7 +916,7 @@ const Notas = ({ match }) => {
       <ModalConteudoHtml
         key="inserirJutificativa"
         visivel={exibeModalJustificativa}
-        onClose={() => { }}
+        onClose={() => {}}
         titulo="Inserir justificativa"
         esconderBotaoPrincipal
         esconderBotaoSecundario
@@ -940,7 +943,7 @@ const Notas = ({ match }) => {
                     id: 'justificativa-porcentagem',
                     mensagem: `A maioria dos estudantes está com ${
                       notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'
-                      } abaixo do
+                    } abaixo do
                                mínimo considerado para aprovação, por isso é necessário que você insira uma justificativa.`,
                     estiloTitulo: { fontSize: '18px' },
                   }}
@@ -1093,8 +1096,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {segundoBimestre.numero ? (
                         <TabPane
                           tab={segundoBimestre.descricao}
@@ -1110,8 +1113,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {terceiroBimestre.numero ? (
                         <TabPane
                           tab={terceiroBimestre.descricao}
@@ -1127,8 +1130,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {quartoBimestre.numero ? (
                         <TabPane
                           tab={quartoBimestre.descricao}
@@ -1144,8 +1147,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                     </ContainerTabsCard>
                   </div>
                 </div>
@@ -1171,12 +1174,12 @@ const Notas = ({ match }) => {
                 </div>
               </>
             ) : (
-                ''
-              )}
+              ''
+            )}
           </div>
         </Card>
       </Loader>
-    </Container >
+    </Container>
   );
 };
 
