@@ -23,6 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly IRepositorioAula repositorioAula;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IServicoConselhoClasse servicoConselhoClasse;
 
@@ -37,6 +38,7 @@ namespace SME.SGP.Aplicacao
                                             IServicoEOL servicoEOL,
                                             IServicoUsuario servicoUsuario,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
+                                            IRepositorioAula repositorioAula,
                                             IConsultasFrequencia consultasFrequencia,
                                             IServicoConselhoClasse servicoConselhoClasse)
         {
@@ -51,6 +53,7 @@ namespace SME.SGP.Aplicacao
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
+            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.servicoConselhoClasse = servicoConselhoClasse ?? throw new ArgumentNullException(nameof(servicoConselhoClasse));
         }
@@ -294,10 +297,11 @@ namespace SME.SGP.Aplicacao
 
                 return new FrequenciaAluno()
                 {
-                    TotalAulas = await consultasAulaPrevista.ObterAulasDadas(turma,
-                                                                             componenteCurricularCodigo.ToString(),
-                                                                             periodoEscolar.Bimestre)
-                };
+                    TotalAulas = await repositorioAula.ObterQuantidadeDeAulasPorTurmaDisciplinaPeriodo(turma.CodigoTurma, 
+                                                                                                    componenteCurricularCodigo.ToString(), 
+                                                                                                    periodoEscolar.PeriodoInicio, 
+                                                                                                    periodoEscolar.PeriodoFim),
+            };
             }
             else
             {
