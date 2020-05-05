@@ -124,7 +124,7 @@ const TempoExpiracaoSessao = () => {
 
   const revalidarAutenticacao = async () => {
     setBotaoDesabilitado(true);
-    api.CancelarRequisicoes('Cancelado pelo usuário');
+    // api.CancelarRequisicoes('Cancelado pelo usuário');
 
     const autenticado = await api
       .post('v1/autenticacao/revalidar')
