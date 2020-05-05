@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             var conselhoClasse = await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id);
 
             var bimestreFechamento = !ehFinal ? bimestre : (await ObterPeriodoUltimoBimestre(turma)).Bimestre;
-            PeriodoFechamentoBimestre periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestreFechamento);
+            PeriodoFechamentoBimestre periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestreFechamento, fechamentoTurma.PeriodoEscolarId);
 
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre);
             var mediaAprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
