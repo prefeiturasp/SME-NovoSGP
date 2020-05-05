@@ -30,6 +30,10 @@ const CampoNota = props => {
     store => store.conselhoClasse.idCamposNotasPosConselho[idCampo]
   );
 
+  const notaConceitoPosConselhoAtual = useSelector(
+    store => store.conselhoClasse.notaConceitoPosConselhoAtual
+  );
+
   const desabilitarCampos = useSelector(
     store => store.conselhoClasse.desabilitarCampos
   );
@@ -90,6 +94,13 @@ const CampoNota = props => {
   );
 
   const onChangeValor = async (valor, validarMedia) => {
+    if (
+      notaConceitoPosConselhoAtual &&
+      notaConceitoPosConselhoAtual.idCampo &&
+      notaConceitoPosConselhoAtual.idCampo !== idCampo
+    ) {
+      return;
+    }
     setNotaValorAtual(valor);
     const retorno = await ServicoNotaConceito.obterArredondamento(
       Number(valor),
