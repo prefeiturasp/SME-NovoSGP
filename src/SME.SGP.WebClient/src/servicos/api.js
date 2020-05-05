@@ -6,16 +6,10 @@ import { URL_LOGIN } from '~/constantes/url';
 import { Deslogar } from '~/redux/modulos/usuario/actions';
 import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
 import { LimparSessao } from '~/redux/modulos/sessao/actions';
-import shortid from 'shortid';
 
 let url = '';
-let CancelToken = axios.CancelToken.source();
-CancelToken.id = shortid.generate();
 
-const renovaCancelToken = () => {
-  CancelToken = axios.CancelToken.source();
-  CancelToken.id = shortid.generate();
-};
+let CancelToken = axios.CancelToken.source();
 
 urlBase().then(resposta => (url = resposta.data));
 
@@ -23,7 +17,9 @@ const api = axios.create({
   baseURL: url,
 });
 
-const fila = [];
+const renovaCancelToken = () => {
+  CancelToken = axios.CancelToken.source();
+};
 
 api.interceptors.request.use(async config => {
   const token = store.getState().usuario.token;
@@ -34,36 +30,14 @@ api.interceptors.request.use(async config => {
   config.cancelToken = CancelToken.token;
 
   config.baseURL = url;
-  config.headers.requestId = CancelToken.id;
-  fila.push(config);
 
   return config;
 });
 
 api.interceptors.response.use(
-  response => {
-    let requestId = response.config.headers.requestId;
-    if (requestId) {
-      let requestIndex = fila.findIndex(c => c.headers.requestId == requestId);
-      if (requestIndex > -1) {
-        fila.splice(requestIndex, 1);
-      }
-    }
-    return response;
-  },
+  response => response,
   error => {
-    if (axios.isCancel(error)) {
-      const requests = fila.filter(
-        c => c.url.indexOf('v1/autenticacao/revalidar') < 0
-      );
-      if (requests && requests.length > 0) {
-        const request = requests.find(
-          c => c.headers.requestId == error.message
-        );
-        if (request) return api.request(request);
-      }
-      return Promise.reject(error);
-    }
+    if (axios.isCancel(error)) return Promise.reject(error);
 
     const autenticacao =
       error.response &&
@@ -84,7 +58,7 @@ api.interceptors.response.use(
 );
 
 api.CancelarRequisicoes = mensagem => {
-  CancelToken.cancel(CancelToken.id);
+  CancelToken.cancel(mensagem);
 
   renovaCancelToken();
 };
