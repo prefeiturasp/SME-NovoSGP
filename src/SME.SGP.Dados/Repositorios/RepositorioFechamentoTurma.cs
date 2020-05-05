@@ -46,12 +46,12 @@ namespace SME.SGP.Dados.Repositorios
                           inner join turma t on t.id = f.turma_id
                            left join periodo_escolar p on p.id = f.periodo_escolar_id
                            left join tipo_calendario tp on tp.id = p.tipo_calendario_id 
-                          where not f.excluido and not tp.excluido 
+                          where not f.excluido  
                             and t.turma_id = @turmaCodigo ");
             if (bimestre > 0)
-                query.AppendLine(" and p.bimestre = @bimestre");
+                query.AppendLine(" and p.bimestre = @bimestre and not tp.excluido");
             else 
-                query.AppendLine(" and p.id is null");
+                query.AppendLine(" and f.periodo_escolar_id is null");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre });
         }
