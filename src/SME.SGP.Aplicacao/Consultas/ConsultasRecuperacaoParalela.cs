@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioResposta repositorioResposta,
             IServicoEOL servicoEOL,
             IServicoRecuperacaoParalela servicoRecuperacaoParalela,
-            IContextoAplicacao contextoAplicacao, 
+            IContextoAplicacao contextoAplicacao,
             IServicoUsuario servicoUsuario,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo) : base(contextoAplicacao)
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
 
             var periodoEscolarAtual = consultasPeriodoEscolar.ObterPeriodoEscolarEmAberto(Modalidade.Fundamental, DateTime.Now.Year);
-            
+
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao, periodoEscolarAtual);
         }
 
@@ -108,11 +108,13 @@ namespace SME.SGP.Aplicacao
 
             var bimestreEdicao = alunosRecParalela.FirstOrDefault().BimestreEdicao;
 
+            var recuperacaoParalelaPeriodo = repositorioRecuperacaoParalelaPeriodo.ObterPorId(periodoId);
+
             if (bimestreEdicao == 0)
-                bimestreEdicao = repositorioRecuperacaoParalelaPeriodo.ObterPorId(periodoId)?.BimestreEdicao ?? 0;
+                bimestreEdicao = recuperacaoParalelaPeriodo?.BimestreEdicao ?? 0;
 
             var somenteLeitura = bimestreEdicao != 0 && (periodoEscolarAtual == null || bimestreEdicao != periodoEscolarAtual.Bimestre);
-            
+
             var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {
                 Ordenacao = ordenacao,
@@ -147,7 +149,7 @@ namespace SME.SGP.Aplicacao
                             TurmaId = aluno.CodigoTurma,
                             TurmaRecuperacaoParalelaId = turmaId,
                             Respostas = alunosRecuperacaoParalela
-                                                     .Where(w => w.Id == a.Id)
+                                                     .Where(w => w.Id == a.Id && objetivos.Any(x => x.Id == w.ObjetivoId))
                                                      .Select(s => new ObjetivoRespostaDto
                                                      {
                                                          ObjetivoId = s.ObjetivoId,
@@ -158,16 +160,17 @@ namespace SME.SGP.Aplicacao
                 }
             };
 
-            //parecer conclusivo
-            recuperacaoRetorno.Periodo.Alunos
-                .Where(w => w.Id == 0 && w.ParecerConclusivo.HasValue && char.GetNumericValue(w.ParecerConclusivo.Value) <= 3)
-                .ToList()
-                .ForEach(x => x.Respostas.Add(
-                    new ObjetivoRespostaDto
-                    {
-                        ObjetivoId = 3,
-                        RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
-                    }));
+            if (recuperacaoParalelaPeriodo.Id == 1)
+                //parecer conclusivo
+                recuperacaoRetorno.Periodo.Alunos
+                    .Where(w => w.Id == 0 && w.ParecerConclusivo.HasValue && char.GetNumericValue(w.ParecerConclusivo.Value) <= 3)
+                    .ToList()
+                    .ForEach(x => x.Respostas.Add(
+                        new ObjetivoRespostaDto
+                        {
+                            ObjetivoId = 3,
+                            RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
+                        }));
 
             if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento && alunos.Any())
             {
