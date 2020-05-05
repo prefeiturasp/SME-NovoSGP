@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAulaPrevista consultasAulaPrevista;
         private readonly IConsultasConselhoClasseNota consultasConselhoClasseNota;
         private readonly IConsultasFechamentoNota consultasFechamentoNota;
+        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
@@ -34,6 +35,7 @@ namespace SME.SGP.Aplicacao
                                             IConsultasAulaPrevista consultasAulaPrevista,
                                             IConsultasConselhoClasseNota consultasConselhoClasseNota,
                                             IConsultasFechamentoNota consultasFechamentoNota,
+                                            IConsultasDisciplina consultasDisciplina,
                                             IServicoEOL servicoEOL,
                                             IServicoUsuario servicoUsuario,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
@@ -48,6 +50,7 @@ namespace SME.SGP.Aplicacao
             this.consultasAulaPrevista = consultasAulaPrevista ?? throw new ArgumentNullException(nameof(consultasAulaPrevista));
             this.consultasConselhoClasseNota = consultasConselhoClasseNota ?? throw new ArgumentNullException(nameof(consultasConselhoClasseNota));
             this.consultasFechamentoNota = consultasFechamentoNota ?? throw new ArgumentNullException(nameof(consultasFechamentoNota));
+            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
@@ -260,7 +263,7 @@ namespace SME.SGP.Aplicacao
             return conselhoClasseComponente;
         }
 
-        private async Task<ConselhoClasseComponenteRegenciaFrequenciaDto> ObterNotasFrequenciaRegencia(DisciplinaResposta disciplina, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
+        private async Task<ConselhoClasseComponenteRegenciaFrequenciaDto> ObterNotasFrequenciaRegencia(DisciplinaResposta componenteCurricular, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
         {
             var conselhoClasseComponente = new ConselhoClasseComponenteRegenciaFrequenciaDto()
             {
@@ -270,13 +273,41 @@ namespace SME.SGP.Aplicacao
                 Frequencia = frequenciaAluno?.PercentualFrequencia ?? 100
             };
 
-            var componentesRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turma.CodigoTurma), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
+            var componentesRegencia = await ObterComponentesRegencia(turma, componenteCurricular.CodigoComponenteCurricular);
             foreach (var componenteRegencia in componentesRegencia)
             {
                 conselhoClasseComponente.ComponentesCurriculares.Add(await ObterNotasRegencia(componenteRegencia, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno));
             }
 
             return conselhoClasseComponente;
+        }
+
+        private async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
+        {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            if (usuario.EhProfessorCj())
+                return await consultasDisciplina.ObterComponentesCJ(turma.ModalidadeCodigo, turma.CodigoTurma, turma.Ue.CodigoUe, componenteCurricularCodigo, usuario.CodigoRf);
+            else
+            {
+                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
+
+                return MapearComponentes(componentesCurriculares.Where(c => c.Regencia));
+            }
+        }
+
+        private IEnumerable<DisciplinaResposta> MapearComponentes(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
+        {
+            foreach (var componenteCurricular in componentesCurriculares)
+                yield return new DisciplinaResposta()
+                {
+                    CodigoComponenteCurricularPai = componenteCurricular.CodigoComponenteCurricularPai,
+                    CodigoComponenteCurricular = componenteCurricular.Codigo,
+                    Nome = componenteCurricular.Descricao,
+                    Regencia = componenteCurricular.Regencia,
+                    TerritorioSaber = componenteCurricular.TerritorioSaber,
+                    Compartilhada = componenteCurricular.Compartilhada,
+                    LancaNota = componenteCurricular.LancaNota,
+                };
         }
 
         private async Task<FrequenciaAluno> ObterFrequenciaAluno(Turma turma, PeriodoEscolar periodoEscolar, long componenteCurricularCodigo, string alunoCodigo)
