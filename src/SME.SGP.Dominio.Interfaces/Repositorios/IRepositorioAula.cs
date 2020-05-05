@@ -48,6 +48,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool UsuarioPodeCriarAulaNaUeTurmaEModalidade(Aula aula, ModalidadeTipoCalendario modalidade);
         IEnumerable<DateTime> ObterUltimosDiasLetivos(DateTime dataReferencia, int quantidadeDias, long tipoCalendarioId);
-        Task<int> ObterQuantidadeDeAulasPorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime inicio, DateTime fim);
+        Task<int> ObterQuantidadeDeAulasPorTurmaDisciplinaPeriodoAsync(string turmaId, string disciplinaId, DateTime inicio, DateTime fim);
     }
 }

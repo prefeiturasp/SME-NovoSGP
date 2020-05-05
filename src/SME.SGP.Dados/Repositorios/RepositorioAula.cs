@@ -542,7 +542,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<DateTime>(query, new { dataReferencia, tipoCalendarioId, quantidadeDias });
         }
 
-        public async Task<int> ObterQuantidadeDeAulasPorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime inicio, DateTime fim)
+        public async Task<int> ObterQuantidadeDeAulasPorTurmaDisciplinaPeriodoAsync(string turmaId, string disciplinaId, DateTime inicio, DateTime fim)
         {
             var query = @"select count(id)
                           from aula 
