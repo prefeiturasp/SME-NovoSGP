@@ -27,7 +27,10 @@ namespace SME.SGP.Aplicacao
             IRepositorioResposta repositorioResposta,
             IServicoEOL servicoEOL,
             IServicoRecuperacaoParalela servicoRecuperacaoParalela,
-            IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
+            IContextoAplicacao contextoAplicacao,
+            IServicoUsuario servicoUsuario,
+            IConsultasPeriodoEscolar consultasPeriodoEscolar,
+            IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo) : base(contextoAplicacao)
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
             this.repositorioEixo = repositorioEixo ?? throw new ArgumentNullException(nameof(repositorioEixo));
@@ -45,7 +48,10 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
-            return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao);
+
+            var periodoEscolarAtual = consultasPeriodoEscolar.ObterPeriodoEscolarEmAberto(Modalidade.Fundamental, DateTime.Now.Year);
+
+            return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao, periodoEscolarAtual);
         }
 
         public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? pagina)
@@ -95,6 +101,15 @@ namespace SME.SGP.Aplicacao
             var alunoCriado = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault();
             var alunoAlterado = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault();
 
+            var bimestreEdicao = alunosRecParalela.FirstOrDefault().BimestreEdicao;
+
+            var recuperacaoParalelaPeriodo = repositorioRecuperacaoParalelaPeriodo.ObterPorId(periodoId);
+
+            if (bimestreEdicao == 0)
+                bimestreEdicao = recuperacaoParalelaPeriodo?.BimestreEdicao ?? 0;
+
+            var somenteLeitura = bimestreEdicao != 0 && (periodoEscolarAtual == null || bimestreEdicao != periodoEscolarAtual.Bimestre);
+
             var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {
                 Ordenacao = ordenacao,
@@ -128,7 +143,7 @@ namespace SME.SGP.Aplicacao
                             TurmaId = aluno.CodigoTurma,
                             TurmaRecuperacaoParalelaId = turmaId,
                             Respostas = alunosRecuperacaoParalela
-                                                     .Where(w => w.Id == a.Id)
+                                                     .Where(w => w.Id == a.Id && objetivos.Any(x => x.Id == w.ObjetivoId))
                                                      .Select(s => new ObjetivoRespostaDto
                                                      {
                                                          ObjetivoId = s.ObjetivoId,
@@ -139,16 +154,17 @@ namespace SME.SGP.Aplicacao
                 }
             };
 
-            //parecer conclusivo
-            recuperacaoRetorno.Periodo.Alunos
-                .Where(w => w.Id == 0 && w.ParecerConclusivo.HasValue && char.GetNumericValue(w.ParecerConclusivo.Value) <= 3)
-                .ToList()
-                .ForEach(x => x.Respostas.Add(
-                    new ObjetivoRespostaDto
-                    {
-                        ObjetivoId = 3,
-                        RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
-                    }));
+            if (recuperacaoParalelaPeriodo.Id == 1)
+                //parecer conclusivo
+                recuperacaoRetorno.Periodo.Alunos
+                    .Where(w => w.Id == 0 && w.ParecerConclusivo.HasValue && char.GetNumericValue(w.ParecerConclusivo.Value) <= 3)
+                    .ToList()
+                    .ForEach(x => x.Respostas.Add(
+                        new ObjetivoRespostaDto
+                        {
+                            ObjetivoId = 3,
+                            RespostaId = servicoRecuperacaoParalela.ValidarParecerConclusivo(x.ParecerConclusivo.Value)
+                        }));
 
             if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento && alunos.Any())
             {
