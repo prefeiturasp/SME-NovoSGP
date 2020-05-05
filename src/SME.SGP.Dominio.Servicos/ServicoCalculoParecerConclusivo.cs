@@ -39,13 +39,13 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
-        public void Filtrar(IEnumerable<ConselhoClasseParecerConclusivo> pareceresDoServico, string nomeClasseCalculo)
+        public bool Filtrar(IEnumerable<ConselhoClasseParecerConclusivo> pareceresDoServico, string nomeClasseCalculo)
         {
             this.pareceresDoServico = pareceresDoServico;
 
             // Verifica se retornou 1 verdadeiro e 1 falso
             if (pareceresDoServico == null || !pareceresDoServico.Any())
-                throw new NegocioException($"Não localizado pareceres conclusivos na base para o calculo por {nomeClasseCalculo}");
+                return false;
 
             if (!pareceresDoServico.Where(c => c.Aprovado).Any())
                 throw new NegocioException($"Não localizado parecer conclusivo aprovado para o calculo por {nomeClasseCalculo}");
@@ -56,6 +56,8 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não localizado parecer conclusivo reprovado para o calculo por {nomeClasseCalculo}");
             if (pareceresDoServico.Where(c => !c.Aprovado).Count() > 1)
                 throw new NegocioException($"Encontrado mais de 1 parecer conclusivo reprovado para o calculo por {nomeClasseCalculo}");
+
+            return true;
         }
 
         private ConselhoClasseParecerConclusivo ObterParecerValidacao(bool retornoValidacao)
@@ -63,11 +65,20 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<ConselhoClasseParecerConclusivo> Calcular(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
         {
+            Filtrar(pareceresDaTurma.Where(c => c.Frequencia), "Frequência");
             if (!await ValidarParecerPorFrequencia(alunoCodigo, turmaCodigo, pareceresDaTurma))
                 return ObterParecerValidacao(false);
 
+            var parecerFrequencia = ObterParecerValidacao(true);
+            if (!Filtrar(pareceresDaTurma.Where(c => c.Nota), "Nota"))
+                return parecerFrequencia;
+
             if (await ValidarParecerPorNota(alunoCodigo, turmaCodigo, pareceresDaTurma))
                 return ObterParecerValidacao(true);
+            var parecerNota = ObterParecerValidacao(false);
+
+            if (!Filtrar(pareceresDaTurma.Where(c => c.Conselho), "Conselho"))
+                return parecerNota;
 
             return ObterParecerValidacao(await ValidarParecerPorConselho(alunoCodigo, turmaCodigo, pareceresDaTurma));
         }
@@ -75,8 +86,6 @@ namespace SME.SGP.Dominio.Servicos
         #region Frequência
         private async Task<bool> ValidarParecerPorFrequencia(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
         {
-            Filtrar(pareceresDaTurma.Where(c => c.Frequencia), "Frequência");
-
             if (!await ValidarFrequenciaGeralAluno(alunoCodigo, turmaCodigo))
                 return false;
 
@@ -110,8 +119,6 @@ namespace SME.SGP.Dominio.Servicos
         #region Nota
         private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
         {
-            Filtrar(pareceresDaTurma.Where(c => c.Nota), "Nota");
-
             var notasFechamentoAluno = await repositorioFechamentoNota.ObterNotasFinaisAlunoAsync(turmaCodigo, alunoCodigo);
             if (notasFechamentoAluno == null || !notasFechamentoAluno.Any())
                 return true;
@@ -149,8 +156,6 @@ namespace SME.SGP.Dominio.Servicos
         #region Conselho
         private async Task<bool> ValidarParecerPorConselho(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
         {
-            Filtrar(pareceresDaTurma.Where(c => c.Conselho), "Conselho");
-
             var notasConselhoClasse = await repositorioConselhoClasseNota.ObterNotasFinaisAlunoAsync(alunoCodigo, turmaCodigo);
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
                 return true;
