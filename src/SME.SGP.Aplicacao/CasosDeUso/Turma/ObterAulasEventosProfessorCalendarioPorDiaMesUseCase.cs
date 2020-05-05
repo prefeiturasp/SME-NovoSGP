@@ -46,7 +46,10 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new EventosAulasNoDiaCalendarioDto();
 
-            retorno.PodeCadastrarAula = await PodeCadastrarAulaHoje(dataConsulta, tipoCalendarioId, turma, mediator, filtroAulasEventosCalendarioDto.UeCodigo, filtroAulasEventosCalendarioDto.DreCodigo);
+            var podeCadastrarAulaEMensagem = await PodeCadastrarAulaHoje(dataConsulta, tipoCalendarioId, turma, mediator, filtroAulasEventosCalendarioDto.UeCodigo, filtroAulasEventosCalendarioDto.DreCodigo);
+
+            retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.Item1;
+            retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.Item2;
 
             var aulasParaVisualizar = await ObterAulasParaVisualizacao(usuarioLogado, aulasDoDia, servicoEOL, servicoUsuario, filtroAulasEventosCalendarioDto);
 
@@ -56,8 +59,7 @@ namespace SME.SGP.Aplicacao
                 {
                     UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
                     DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
-                    TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
-                    TipoCalendarioId = tipoCalendarioId,
+                    TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,                    
                     DataReferencia = dataConsulta
                 });
 
@@ -73,7 +75,7 @@ namespace SME.SGP.Aplicacao
                     var componenteCurricular = componentesCurricularesParaVisualizacao.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId));
                     var titulo = new StringBuilder($"[AULA] { componenteCurricular?.Nome } - Quantidade: { aulaParaVisualizar.Quantidade}");
                     if (aulaParaVisualizar.TipoAula == TipoAula.Reposicao)
-                        titulo.Append(" Reposição");
+                        titulo.Append(" (Reposição)");
                     if (aulaParaVisualizar.Status == EntidadeStatus.AguardandoAprovacao)
                         titulo.Append(" Aguardando aprovação");
 
@@ -109,7 +111,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var tituloEvento = new StringBuilder(evento.Nome);
                     if (evento.TipoEvento.TipoData == EventoTipoData.InicioFim)
-                        tituloEvento.AppendFormat("{0}-{1}", evento.DataInicio.ToString("dd/mm/yyyy"), evento.DataFim.ToString("dd/mm/yyyy"));
+                        tituloEvento.AppendFormat("({0} - {1})", evento.DataInicio.ToString("dd/MM/yyyy"), evento.DataFim.ToString("dd/MM/yyyy"));
 
                     var eventoParaAdicionar = new EventoAulaDto() { TipoEvento = evento.TipoEvento.Descricao, Titulo = tituloEvento.ToString(), Descricao = evento.Descricao };
                     retorno.EventosAulas.Add(eventoParaAdicionar);
@@ -119,7 +121,7 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private static async Task<bool> PodeCadastrarAulaHoje(DateTime dataAula, long tipoCalendarioId, Turma turma, IMediator mediator, string ueCodigo, string dreCodigo)
+        private static async Task<(bool, string)> PodeCadastrarAulaHoje(DateTime dataAula, long tipoCalendarioId, Turma turma, IMediator mediator, string ueCodigo, string dreCodigo)
         {
             var hoje = DateTime.Today;
 
@@ -132,7 +134,7 @@ namespace SME.SGP.Aplicacao
             });
 
             if (temEventoLetivoNoDia)
-                return true;
+                return (true, string.Empty);
 
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery()
             {
@@ -143,7 +145,7 @@ namespace SME.SGP.Aplicacao
 
 
             if (hoje.DayOfWeek == DayOfWeek.Sunday)
-                return false;
+                return (false, string.Empty);
 
             else
             {
@@ -155,16 +157,15 @@ namespace SME.SGP.Aplicacao
 
                 if (temEventoNaoLetivoNoDia)
                 {
-                    return false;
+                    return (false, string.Empty);
                 }
-
 
                 if (dataAula.Year == hoje.Year)
                 {
                     if (dataAula <= hoje)
                     {
                         if (periodoEscolar != null)
-                            return true;
+                            return (true, string.Empty);
                         else
                         {
 
@@ -175,30 +176,34 @@ namespace SME.SGP.Aplicacao
                                 UeId = turma.UeId
                             });
 
-                            if (periodoFechamento)
-                                return true;
+                            if (periodoFechamento != null)
+                            {
+                                if (periodoFechamento.ExisteFechamentoEmAberto(hoje))
+                                    return (true, string.Empty);
+                            }
                             else
                             {
                                 FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(tipoCalendarioId, turma, mediator, hoje);
                                 if (periodoFechamentoReabertura != null)
-                                    return true;
-                                else return false;
+                                    return (true, string.Empty);
+                                else return (false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
                             }
 
                         }
                     }
                     else
-                        return true;
+                        return (true, string.Empty);
 
                 }
                 else
                 {
                     FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(tipoCalendarioId, turma, mediator, hoje);
                     if (periodoFechamentoReabertura != null)
-                        return true;
-                    else return false;
+                        return (true, string.Empty);
+                    else return (false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
                 }
             }
+            return (true, string.Empty);
         }
 
         private static async Task<FechamentoReabertura> ObterPeriodoFechamentoReabertura(long tipoCalendarioId, Turma turma, IMediator mediator, DateTime hoje)

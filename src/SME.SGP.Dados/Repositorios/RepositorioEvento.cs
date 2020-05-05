@@ -343,7 +343,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.data_inicio,");
             query.AppendLine("e.data_fim,");
             query.AppendLine("et.id,");
-            query.AppendLine("et.descricao");
+            query.AppendLine("et.descricao,");
+            query.AppendLine("et.tipo_data");
             query.AppendLine("from");
             query.AppendLine("evento e");
             query.AppendLine("inner join evento_tipo et on");
@@ -372,7 +373,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("e.data_inicio,");
                 query.AppendLine("e.data_fim,");
                 query.AppendLine("et.id,");
-                query.AppendLine("et.descricao");
+                query.AppendLine("et.descricao,");
+                query.AppendLine("et.tipo_data");
 
                 query.AppendLine("from");
                 query.AppendLine("evento e");
