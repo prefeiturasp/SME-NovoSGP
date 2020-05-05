@@ -66,13 +66,18 @@ namespace SME.SGP.Aplicacao
                 await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.Excluir(item.Id, recuperacaoParalelaDto.Periodo.Id);
                 foreach (var resposta in recuperacaoParalelaDto.Periodo.Alunos.Where(w => w.CodAluno == item.CodAluno).FirstOrDefault().Respostas)
                 {
-                    await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.SalvarAsync(new RecuperacaoParalelaPeriodoObjetivoResposta
+                    if (resposta.RespostaId == 0)
+                        continue;
+
+                    var recuperacaoParalelaObjetivoResposta = new RecuperacaoParalelaPeriodoObjetivoResposta
                     {
                         ObjetivoId = resposta.ObjetivoId,
                         PeriodoRecuperacaoParalelaId = recuperacaoParalelaDto.Periodo.Id,
                         RecuperacaoParalelaId = recuperacaoParalela.Id,
                         RespostaId = resposta.RespostaId
-                    });
+                    };
+
+                    await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.SalvarAsync(recuperacaoParalelaObjetivoResposta);
                 }
             }
             unitOfWork.PersistirTransacao();
