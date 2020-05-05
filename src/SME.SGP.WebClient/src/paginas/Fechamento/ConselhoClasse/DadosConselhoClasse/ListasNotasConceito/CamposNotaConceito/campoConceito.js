@@ -32,6 +32,10 @@ const CampoConceito = props => {
     store => store.conselhoClasse.idCamposNotasPosConselho[idCampo]
   );
 
+  const notaConceitoPosConselhoAtual = useSelector(
+    store => store.conselhoClasse.notaConceitoPosConselhoAtual
+  );
+
   const desabilitarCampos = useSelector(
     store => store.conselhoClasse.desabilitarCampos
   );
@@ -108,6 +112,13 @@ const CampoConceito = props => {
   };
 
   const onChangeConceito = (valorNovo, validarMedia) => {
+    if (
+      notaConceitoPosConselhoAtual &&
+      notaConceitoPosConselhoAtual.idCampo &&
+      notaConceitoPosConselhoAtual.idCampo !== idCampo
+    ) {
+      return;
+    }
     if (!desabilitarCampos) {
       setNotaValorAtual(valorNovo);
       mostrarJustificativa();
