@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import t from 'prop-types';
 
 // Ant
@@ -33,7 +33,7 @@ function Dia({
     >
       <div className="numeroDia">
         <div>
-          {eventos && eventos.temAtividadeAvaliativa && (
+          {eventos && eventos.temAvaliacao && (
             <Tooltip title="Atividade avaliativa">
               <IconeAtividadeAvaliativa className="fas fa-sticky-note" />
             </Tooltip>

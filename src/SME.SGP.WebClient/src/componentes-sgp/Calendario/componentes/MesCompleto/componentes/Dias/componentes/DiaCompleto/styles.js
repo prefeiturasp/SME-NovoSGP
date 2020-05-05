@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { Base } from '~/componentes';
 
 export const DiaCompletoWrapper = styled.div`
-  min-width: 100%;
   display: flex;
   overflow: hidden;
   max-height: 0;
@@ -14,8 +13,9 @@ export const DiaCompletoWrapper = styled.div`
 
   &.visivel {
     max-height: 1000px !important;
-    min-height: 200px;
+    min-height: 100px;
     height: auto !important;
     overflow: auto;
+    padding: 0.3rem;
   }
 `;

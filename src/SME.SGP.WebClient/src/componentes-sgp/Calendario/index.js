@@ -1,4 +1,4 @@
-import React, { useReducer, useCallback, useEffect } from 'react';
+import React, { useReducer, useCallback } from 'react';
 import t from 'prop-types';
 
 // Componentes

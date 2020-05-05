@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useEffect } from 'react';
 import t from 'prop-types';
 import shortid from 'shortid';
 import _ from 'lodash';
@@ -105,6 +105,7 @@ function Dias({
               <DiaCompleto
                 diasPermitidos={obterSemanaPeloIndice(indice)}
                 dia={diaSelecionado}
+                eventos={eventos.dias}
                 carregandoDia={carregandoDia}
               />
             )}
