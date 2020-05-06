@@ -152,12 +152,9 @@ namespace SME.SGP.Dominio
             return usuario;
         }
 
-        public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "")
+        public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
         {
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, login);
-
-            if (usuario == null)
-                usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(buscaLogin ? null : codigoRf, login);
 
             if (usuario != null)
             {
