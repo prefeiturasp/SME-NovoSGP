@@ -19,6 +19,8 @@ function MesCompleto({
   onClickDia,
   carregandoMes,
   carregandoDia,
+  permissaoTela,
+  tipoCalendarioId,
 }) {
   const deveExibir = useMemo(
     () => mes && mesesPermitidos.indexOf(mes.numeroMes) >= 0,
@@ -39,6 +41,8 @@ function MesCompleto({
             onClickDia={onClickDia}
             carregandoDia={carregandoDia}
             diaSelecionado={diaSelecionado}
+            permissaoTela={permissaoTela}
+            tipoCalendarioId={tipoCalendarioId}
           />
         </Loader>
       )}
@@ -54,6 +58,8 @@ MesCompleto.propTypes = {
   onClickDia: t.func,
   carregandoMes: t.bool,
   carregandoDia: t.bool,
+  permissaoTela: t.oneOfType([t.any]),
+  tipoCalendarioId: t.oneOfType([t.any]),
 };
 
 MesCompleto.defaultProps = {
@@ -64,6 +70,8 @@ MesCompleto.defaultProps = {
   onClickDia: () => {},
   carregandoMes: false,
   carregandoDia: false,
+  permissaoTela: {},
+  tipoCalendarioId: null,
 };
 
 export default MesCompleto;

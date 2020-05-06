@@ -479,11 +479,11 @@ rotas.set(RotasDto.CADASTRO_DE_AULA, {
   chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
 });
 
-rotas.set(`${RotasDto.CADASTRO_DE_AULA}/novo/:tipoCalendarioId`, {
+rotas.set(`${RotasDto.CADASTRO_DE_AULA}/novo/:tipoCalendarioId/:dataAula`, {
   breadcrumbName: 'Cadastro de Aula',
   parent: RotasDto.CADASTRO_DE_AULA,
   component: CadastroAula,
-  exact: true,
+  exact: false,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
