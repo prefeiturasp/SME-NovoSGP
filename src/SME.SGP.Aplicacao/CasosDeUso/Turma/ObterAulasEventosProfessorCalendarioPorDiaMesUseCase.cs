@@ -73,13 +73,17 @@ namespace SME.SGP.Aplicacao
                 foreach (var aulaParaVisualizar in aulasParaVisualizar)
                 {
                     var componenteCurricular = componentesCurricularesParaVisualizacao.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId));
-                    var titulo = new StringBuilder($"[AULA] { componenteCurricular?.Nome } - Quantidade: { aulaParaVisualizar.Quantidade}");
-                    if (aulaParaVisualizar.TipoAula == TipoAula.Reposicao)
-                        titulo.Append(" (Reposição)");
-                    if (aulaParaVisualizar.Status == EntidadeStatus.AguardandoAprovacao)
-                        titulo.Append(" Aguardando aprovação");
 
-                    var eventoAulaDto = new EventoAulaDto() { Titulo = titulo.ToString(), EhAula = true };
+                    var eventoAulaDto = new EventoAulaDto()
+                    {
+                        Titulo = componenteCurricular?.Nome,
+                        EhAula = true,
+                        EhReposicao = aulaParaVisualizar.TipoAula == TipoAula.Reposicao,
+                        EstaAguardandoAprovacao = aulaParaVisualizar.Status == EntidadeStatus.AguardandoAprovacao,
+                        EhAulaCJ = aulaParaVisualizar.AulaCJ,
+                        Quantidade = aulaParaVisualizar.Quantidade,
+                        ComponenteCurricularId = long.Parse(aulaParaVisualizar.DisciplinaId)
+                    };
 
                     var atividadesAvaliativasDaAula = (from avaliacao in atividadesAvaliativas
                                                        from disciplina in avaliacao.Disciplinas
@@ -109,11 +113,19 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var evento in eventosDaUeSME)
                 {
-                    var tituloEvento = new StringBuilder(evento.Nome);
-                    if (evento.TipoEvento.TipoData == EventoTipoData.InicioFim)
-                        tituloEvento.AppendFormat("({0} - {1})", evento.DataInicio.ToString("dd/MM/yyyy"), evento.DataFim.ToString("dd/MM/yyyy"));
+                    var eventoParaAdicionar = new EventoAulaDto()
+                    {
+                        TipoEvento = evento.TipoEvento.Descricao,
+                        Titulo = evento.Nome,
+                        Descricao = evento.Descricao
+                    };
 
-                    var eventoParaAdicionar = new EventoAulaDto() { TipoEvento = evento.TipoEvento.Descricao, Titulo = tituloEvento.ToString(), Descricao = evento.Descricao };
+                    if (evento.TipoEvento.TipoData == EventoTipoData.InicioFim)
+                    {
+                        eventoParaAdicionar.DataInicio = evento.DataInicio;
+                        eventoParaAdicionar.DataFim = evento.DataFim;
+                    }
+
                     retorno.EventosAulas.Add(eventoParaAdicionar);
                 }
             }
