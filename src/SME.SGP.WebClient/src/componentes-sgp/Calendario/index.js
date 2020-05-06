@@ -30,6 +30,8 @@ function Calendario({
   carregandoCalendario,
   carregandoMes,
   carregandoDia,
+  permissaoTela,
+  tipoCalendarioId,
 }) {
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
 
@@ -65,6 +67,8 @@ function Calendario({
                   onClickDia={dia => onClickDiaHandler(dia)}
                   carregandoDia={carregandoDia}
                   carregandoMes={carregandoMes}
+                  permissaoTela={permissaoTela}
+                  tipoCalendarioId={tipoCalendarioId}
                 />
               )}
             </React.Fragment>
@@ -81,6 +85,8 @@ Calendario.propTypes = {
   carregandoCalendario: t.bool,
   carregandoMes: t.bool,
   carregandoDia: t.bool,
+  permissaoTela: t.oneOfType([t.any]),
+  tipoCalendarioId: t.oneOfType([t.any]),
 };
 
 Calendario.defaultProps = {
@@ -90,6 +96,8 @@ Calendario.defaultProps = {
   carregandoCalendario: false,
   carregandoMes: false,
   carregandoDia: false,
+  permissaoTela: {},
+  tipoCalendarioId: null,
 };
 
 export default Calendario;

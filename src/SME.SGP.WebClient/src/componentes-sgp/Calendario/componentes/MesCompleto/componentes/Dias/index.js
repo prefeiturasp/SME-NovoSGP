@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import t from 'prop-types';
 import shortid from 'shortid';
 import _ from 'lodash';
@@ -19,6 +19,8 @@ function Dias({
   diaSelecionado,
   onClickDia,
   carregandoDia,
+  permissaoTela,
+  tipoCalendarioId,
 }) {
   const usuario = useSelector(estado => estado.usuario);
 
@@ -107,6 +109,8 @@ function Dias({
                 dia={diaSelecionado}
                 eventos={eventos.dias}
                 carregandoDia={carregandoDia}
+                permissaoTela={permissaoTela}
+                tipoCalendarioId={tipoCalendarioId}
               />
             )}
           </React.Fragment>
@@ -121,6 +125,8 @@ Dias.propTypes = {
   eventos: t.oneOfType([t.any]),
   onClickDia: t.func,
   carregandoDia: t.bool,
+  permissaoTela: t.oneOfType([t.any]),
+  tipoCalendarioId: t.oneOfType([t.any]),
 };
 
 Dias.defaultProps = {
@@ -129,6 +135,8 @@ Dias.defaultProps = {
   eventos: [],
   onClickDia: () => {},
   carregandoDia: false,
+  permissaoTela: {},
+  tipoCalendarioId: null,
 };
 
 export default Dias;

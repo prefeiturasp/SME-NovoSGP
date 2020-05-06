@@ -33,8 +33,15 @@ import {
   setarCarregandoDia,
 } from './reducer/actions';
 
+// DTOs
+import RotasDTO from '~/dtos/rotasDto';
+
 function CalendarioProfessor() {
-  const { turmaSelecionada } = useSelector(estado => estado.usuario);
+  const { turmaSelecionada, permissoes } = useSelector(
+    estado => estado.usuario
+  );
+
+  const permissaoTela = permissoes[RotasDTO.CALENDARIO_PROFESSOR];
 
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
   const [tipoCalendarioId, setTipoCalendarioId] = useState(undefined);
@@ -160,6 +167,8 @@ function CalendarioProfessor() {
                   carregandoCalendario={estado.carregandoCalendario}
                   carregandoMes={estado.carregandoMes}
                   carregandoDia={estado.carregandoDia}
+                  permissaoTela={permissaoTela}
+                  tipoCalendarioId={tipoCalendarioId}
                 />
               </Grid>
             </Linha>
