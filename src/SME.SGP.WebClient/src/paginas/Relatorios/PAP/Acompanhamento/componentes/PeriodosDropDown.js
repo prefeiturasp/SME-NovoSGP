@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import t from 'prop-types';
 
 // Componentes
@@ -14,7 +14,7 @@ function PeriodosDropDown({
   setSemPeriodos,
 }) {
   const [opcoes, setOpcoes] = useState(null);
-  
+
   const obterOpcoes = useCallback(async () => {
     if (!codigoTurma || codigoTurma === 0 || codigoTurma === '0') return;
 
