@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Sentry;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -12,11 +13,8 @@ namespace SME.SGP.Worker.Service
 {
     internal class Program
     {
-        private static async Task Main(string[] args)
+        private static IHostBuilder CreateBuilder(bool asService)
         {
-            // Run with console or service
-            var asService = !(Debugger.IsAttached || args.Contains("--console"));
-
             var builder = new HostBuilder()
             .ConfigureAppConfiguration((hostContext, config) =>
             {
@@ -44,14 +42,27 @@ namespace SME.SGP.Worker.Service
             });
 
             builder.UseEnvironment(asService ? EnvironmentName.Production : EnvironmentName.Development);
+            return builder;
+        }
 
-            if (asService)
+        private static async Task Main(string[] args)
+        {
+            // Run with console or service
+            var asService = !(Debugger.IsAttached || args.Contains("--console"));
+
+            IHostBuilder builder = CreateBuilder(asService);
+
+            var sentryDSN = Environment.GetEnvironmentVariable("Sentry:DSN");
+            using (SentrySdk.Init(sentryDSN))
             {
-                await builder.Build().RunAsync();
-            }
-            else
-            {
-                await builder.RunConsoleAsync();
+                if (asService)
+                {
+                    await builder.Build().RunAsync();
+                }
+                else
+                {
+                    await builder.RunConsoleAsync();
+                }
             }
         }
     }
