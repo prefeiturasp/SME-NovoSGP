@@ -59,7 +59,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<RegistroFrequenciaAulaDto>(query, new { registroFrequenciaId });
         }
 
-        public IEnumerable<AulasPorTurmaDisciplinaDto> ObterAulasSemRegistroFrequencia(string turmaId, string disciplinaId, TipoNotificacaoFrequencia tipoNotificacao)
+        public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasSemRegistroFrequencia(string turmaId, string disciplinaId, TipoNotificacaoFrequencia tipoNotificacao)
         {
             var query = @"select
 	                        a.id,
@@ -93,7 +93,7 @@ namespace SME.SGP.Dados.Repositorios
             IEnumerable<AulasPorTurmaDisciplinaDto> lista = new List<AulasPorTurmaDisciplinaDto>();
             try
             {
-                lista = database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId, tipoNotificacao });
+                lista = await database.Conexao.QueryAsync<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId, tipoNotificacao });
             }
             catch (Exception ex)
             {
@@ -134,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
             if (Periodo == PeriodoRecuperacaoParalela.AcompanhamentoPrimeiroSemestre)
                 query.AppendLine("and bimestre IN  (1,2)");
             query.AppendLine("group by codigo_aluno");
-      
+
             return await database.Conexao.QueryAsync<RecuperacaoParalelaFrequenciaDto>(query.ToString(), new { CodigoAlunos, CodigoDisciplina = CodigoDisciplina.ToArray(), Ano });
         }
 

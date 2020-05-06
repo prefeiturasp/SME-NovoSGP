@@ -14,7 +14,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId);
 
-        IEnumerable<AulasPorTurmaDisciplinaDto> ObterAulasSemRegistroFrequencia(string turmaId, string disciplinaId, TipoNotificacaoFrequencia tipoNotificacao);
+        Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasSemRegistroFrequencia(string turmaId, string disciplinaId, TipoNotificacaoFrequencia tipoNotificacao);
 
         Task<IEnumerable<AusenciaAlunoDto>> ObterAusencias(string turmaCodigo, string disciplinaCodigo, DateTime[] datas, string[] alunoCodigos);
 
