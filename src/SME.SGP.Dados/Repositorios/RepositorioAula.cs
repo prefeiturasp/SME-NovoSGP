@@ -124,7 +124,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.data_aula,");
             query.AppendLine("a.tipo_aula,");
             query.AppendLine("a.aula_cj,");
-            query.AppendLine("a.disciplina_id");
+            query.AppendLine("a.disciplina_id,");
+            query.AppendLine("a.professor_rf");
             query.AppendLine("FROM public.aula a");
             query.AppendLine("WHERE a.excluido = false");
             query.AppendLine("AND a.status <> 3");
