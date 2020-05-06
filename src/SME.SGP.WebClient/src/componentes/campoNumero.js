@@ -41,7 +41,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
     min,
     step,
     disabled,
-    onBlur
+    onBlur,
   } = props;
 
   const possuiErro = () => {
@@ -80,7 +80,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
                 form.setFieldTouched(name, true);
                 onChange(value);
               }}
-              disabled
+              disabled={disabled}
             />
             {!semMensagem ? <span>{form.errors[name]}</span> : ''}
           </>
