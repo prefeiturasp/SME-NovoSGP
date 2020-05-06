@@ -158,8 +158,7 @@ namespace SME.SGP.Dominio
 
             codigoRf = eNumero ? codigoRf : null;
 
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(buscaLogin ? null, login);
-
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(buscaLogin ? null : codigoRf, login);
 
             if (usuario != null)
             {
