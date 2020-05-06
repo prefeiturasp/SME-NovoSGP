@@ -4,16 +4,17 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioNotificacaoFrequencia : RepositorioBase<NotificacaoFrequencia>, IRepositorioNotificacaoFrequencia
+	public class RepositorioNotificacaoFrequencia : RepositorioBase<NotificacaoFrequencia>, IRepositorioNotificacaoFrequencia
     {
         public RepositorioNotificacaoFrequencia(ISgpContext database) : base(database)
         {
         }
 
-        public IEnumerable<RegistroFrequenciaFaltanteDto> ObterTurmasSemRegistroDeFrequencia(TipoNotificacaoFrequencia tipoNotificacao)
+        public async Task<IEnumerable<RegistroFrequenciaFaltanteDto>> ObterTurmasSemRegistroDeFrequencia(TipoNotificacaoFrequencia tipoNotificacao)
         {
             var query = @"select
 	                        distinct a.turma_id as CodigoTurma,
@@ -55,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        ue.ue_id,
 	                        a.turma_id";
 
-            return database.Conexao.Query<RegistroFrequenciaFaltanteDto>(query, new { tipoNotificacao }, commandTimeout: 600);
+            return await database.Conexao.QueryAsync<RegistroFrequenciaFaltanteDto>(query, new { tipoNotificacao }, commandTimeout: 600);
         }
 
         public bool UsuarioNotificado(long usuarioId, TipoNotificacaoFrequencia tipo)
