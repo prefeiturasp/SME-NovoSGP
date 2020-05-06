@@ -99,6 +99,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and not ra.excluido");
             query.AppendLine("and not a.excluido");
             query.AppendLine("group by");
+            query.AppendLine("p.id, ");
             query.AppendLine("p.periodo_inicio,");
             query.AppendLine("p.periodo_fim,");
             query.AppendLine("p.bimestre");
