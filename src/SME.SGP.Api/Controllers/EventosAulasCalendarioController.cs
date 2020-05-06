@@ -42,6 +42,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("meses/eventos-aulas")]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
+        
         public async Task<IActionResult> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)
         {
             var retorno = await consultasEventosAulasCalendario.ObterEventosAulasMensais(filtro);
