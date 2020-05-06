@@ -42,10 +42,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = $@"select f.* 
                           from frequencia_aluno f
-                         inner join periodo_escolar p on p.periodo_fim = f.periodo_fim and p.periodo_inicio = f.periodo_inicio
                          inner join turma t on t.turma_id = f.turma_id
                         where not f.excluido
-                          and p.id = @periodoId
+                          and f.periodo_escolar_id = @periodoId
                           and f.tipo = 1
                           and f.total_ausencias - f.total_compensacoes > 0 "
                         + (eja ? " and t.modalidade_codigo = 3" : " and t.modalidade_codigo <> 3");
