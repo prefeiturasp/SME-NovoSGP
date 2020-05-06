@@ -386,7 +386,7 @@ rotas.set('/calendario-escolar/tipo-feriado/editar/:id', {
   chavePermissao: RotasDto.TIPO_FERIADO,
 });
 
-rotas.set('/sem-permissao', {
+rotas.set(RotasDto.SEM_PERMISSAO, {
   breadcrumbName: 'Sem permissão',
   parent: '/',
   component: SemPermissao,
