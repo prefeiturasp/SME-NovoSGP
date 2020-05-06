@@ -344,4 +344,11 @@ export default createGlobalStyle`
       margin-left: 115px !important;
     }
   }
+
+  .ant-pagination-item-active a{
+    color:white
+  }
+  .ant-pagination-item-active a:hover{
+    color:#1890ff
+  }
 `;
