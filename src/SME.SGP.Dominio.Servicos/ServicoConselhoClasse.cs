@@ -1,4 +1,6 @@
 ﻿using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -19,8 +21,10 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioConselhoClasseParecerConclusivo repositorioParecer;        
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
+        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo;
+        private readonly IServicoEOL servicoEOL;
 
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
@@ -29,9 +33,11 @@ namespace SME.SGP.Dominio.Servicos
                                      IRepositorioConselhoClasseParecerConclusivo repositorioParecer,
                                      IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                      IConsultasConselhoClasse consultasConselhoClasse,                                     
+                                     IConsultasDisciplina consultasDisciplina,
                                      IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                      IUnitOfWork unitOfWork,
-                                     IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo)
+                                     IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo,
+                                     IServicoEOL servicoEOL)
 
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
@@ -42,8 +48,10 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));            
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
+            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoCalculoParecerConclusivo = servicoCalculoParecerConclusivo ?? throw new ArgumentNullException(nameof(servicoCalculoParecerConclusivo));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
         public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId)
@@ -160,12 +168,8 @@ namespace SME.SGP.Dominio.Servicos
             return conselhoClasseNota;
         }
 
-        public async Task<AuditoriaDto> GerarConselhoClasse(ConselhoClasse conselhoClasse)
+        public async Task<AuditoriaDto> GerarConselhoClasse(ConselhoClasse conselhoClasse, FechamentoTurma fechamentoTurma)
         {
-            var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(conselhoClasse.FechamentoTurmaId);
-            if (fechamentoTurma == null)
-                throw new NegocioException("Não foi possível localizar o fechamento da turma informado!");
-
             var conselhoClasseExistente = await repositorioConselhoClasse.ObterPorTurmaEPeriodoAsync(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId);
             if (conselhoClasseExistente != null)
                 throw new NegocioException($"Já existe um conselho de classe gerado para a turma {fechamentoTurma.Turma.Nome}!");
@@ -190,10 +194,13 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<AuditoriaConselhoClasseAlunoDto> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
         {
+            var fechamentoTurma = await ObterFechamentoTurma(conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId);
+            await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId);
+
             // Se não existir conselho de classe para o fechamento gera
             if (conselhoClasseAluno.ConselhoClasse.Id == 0)
             {
-                await GerarConselhoClasse(conselhoClasseAluno.ConselhoClasse);
+                await GerarConselhoClasse(conselhoClasseAluno.ConselhoClasse, fechamentoTurma);
                 conselhoClasseAluno.ConselhoClasseId = conselhoClasseAluno.ConselhoClasse.Id;
             }
             else
@@ -202,6 +209,37 @@ namespace SME.SGP.Dominio.Servicos
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
             return (AuditoriaConselhoClasseAlunoDto)conselhoClasseAluno;
+        }
+
+        private async Task VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
+        {
+            var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turma.CodigoTurma, periodoEscolarId);
+
+            var componentesCurriculares = await ObterComponentesTurma(turma);
+
+            // Checa se todas as disciplinas da turma receberam nota
+            foreach (var componenteCurricular in componentesCurriculares.Where(c => c.LancaNota))
+                if (!notasAluno.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular))
+                    throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");
+        }
+
+        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurma(Turma turma)
+        {
+            var componentesTurma = new List<DisciplinaDto>();
+            var componentesCurriculares = await consultasDisciplina.ObterDisciplinasPorTurma(turma.CodigoTurma, false);
+            if (componentesCurriculares == null)
+                throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
+
+            componentesTurma.AddRange(componentesCurriculares.Where(c => !c.Regencia));
+            foreach (var componenteCurricular in componentesCurriculares.Where(c => c.Regencia))
+            {
+                // Adiciona lista de componentes relacionados a regencia
+                componentesTurma.AddRange(
+                    consultasDisciplina.MapearParaDto(
+                        await consultasDisciplina.ObterComponentesRegencia(turma, componenteCurricular.CodigoComponenteCurricular)));
+            }
+
+            return componentesTurma;
         }
 
         public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
