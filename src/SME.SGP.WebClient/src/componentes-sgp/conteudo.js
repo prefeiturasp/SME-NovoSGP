@@ -26,6 +26,8 @@ const Conteudo = () => {
             path={rota.path}
             component={rota.component}
             exact={rota.exact}
+            temPermissionamento={rota.temPermissionamento}
+            chavePermissao={rota.chavePermissao}
           />
         ))}
       </Switch>

@@ -32,6 +32,7 @@ const RotasDto = {
   PERIODO_FECHAMENTO_REABERTURA:
     '/calendario-escolar/periodo-fechamento-reabertura',
   RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/acompanhamento',
+  SEM_PERMISSAO: '/sem-permissao',
 };
 
 export default RotasDto;
