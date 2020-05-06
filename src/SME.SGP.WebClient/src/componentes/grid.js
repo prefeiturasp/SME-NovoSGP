@@ -6,7 +6,7 @@ const Grid = props => {
   return (
     <div
       style={style}
-      className={`col-xl-${cols} col-lg-${cols} col-sm-12 col-xs-12 ${className}`}
+      className={`col-xl-${cols} col-md-${cols} col-lg-${cols} col-sm-12 col-xs-12 ${className}`}
     >
       {children}
     </div>
