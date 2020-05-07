@@ -110,6 +110,21 @@ const Justificativa = props => {
                       onChange={onChange}
                     />
                     <div className="d-flex justify-content-end pt-2">
+                      {notaConceitoPosConselhoAtual &&
+                      notaConceitoPosConselhoAtual.id &&
+                      auditoria ? (
+                        <Auditoria
+                          criadoEm={auditoria.criadoEm}
+                          criadoPor={auditoria.criadoPor}
+                          criadoRf={auditoria.criadoRf}
+                          alteradoPor={auditoria.alteradoPor}
+                          alteradoEm={auditoria.alteradoEm}
+                          alteradoRf={auditoria.alteradoRf}
+                          ignorarMarginTop
+                        />
+                      ) : (
+                        ''
+                      )}
                       <Button
                         label="Salvar"
                         color={Colors.Roxo}
@@ -130,20 +145,6 @@ const Justificativa = props => {
               )}
             </Formik>
           </div>
-          {notaConceitoPosConselhoAtual &&
-          notaConceitoPosConselhoAtual.id &&
-          auditoria ? (
-            <Auditoria
-              criadoEm={auditoria.criadoEm}
-              criadoPor={auditoria.criadoPor}
-              criadoRf={auditoria.criadoRf}
-              alteradoPor={auditoria.alteradoPor}
-              alteradoEm={auditoria.alteradoEm}
-              alteradoRf={auditoria.alteradoRf}
-            />
-          ) : (
-            ''
-          )}
         </div>
       ) : (
         ''
