@@ -14,7 +14,7 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "O desenvolvimento descrição deve ser informada.")]
         public string Desenvolvimento { get; set; }
 
-        [Required(ErrorMessage = "A descrição deve ser informada.")]
+        [Required(ErrorMessage = "A reflexão deve ser informada.")]
         public string Reflexao { get; set; }
     }
 }

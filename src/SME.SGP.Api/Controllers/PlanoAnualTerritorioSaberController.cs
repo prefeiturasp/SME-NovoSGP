@@ -17,7 +17,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<PlanoAnualTerritorioSaberCompletoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        [Permissao(Permissao.PT_C, Policy = "Bearer")]
         public IActionResult Get(string turmaId, string ueId, int anoLetivo, long territorioExperienciaId, [FromServices]IConsultasPlanoAnualTerritorioSaber consultasPlanoAnualTerritorioSaber)
         {
             return Ok(consultasPlanoAnualTerritorioSaber.ObterPorUETurmaAnoETerritorioExperiencia(ueId, turmaId, anoLetivo, territorioExperienciaId));
@@ -26,7 +26,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
+        [Permissao(Permissao.PT_I, Permissao.PT_A, Policy = "Bearer")]
         public IActionResult Post(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, [FromServices]IComandosPlanoAnualTerritorioSaber comandosPlanoAnualTerritorioSaber)
         {
             comandosPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaberDto);
