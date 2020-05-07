@@ -65,6 +65,7 @@ namespace SME.SGP.Aplicacao
             string[] componentesCurricularesDoProfessor = new string[0];
             if (usuarioLogado.EhProfessor())
             {
+                //Transformar em query
                 componentesCurricularesDoProfessor = await servicoUsuario.ObterComponentesCurricularesQuePodeVisualizarHoje(filtroAulasEventosCalendarioDto.TurmaCodigo, usuarioLogado);
             }
 
