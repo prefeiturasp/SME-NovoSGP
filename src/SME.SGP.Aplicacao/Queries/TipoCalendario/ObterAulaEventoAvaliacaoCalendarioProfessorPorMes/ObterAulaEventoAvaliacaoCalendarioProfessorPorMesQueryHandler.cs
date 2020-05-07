@@ -51,7 +51,6 @@ namespace SME.SGP.Aplicacao
 
                             if (temAvaliacaoComComponente.Any())
                                 eventoAula.TemAvaliacao = true;
-
                         }
 
                     }
