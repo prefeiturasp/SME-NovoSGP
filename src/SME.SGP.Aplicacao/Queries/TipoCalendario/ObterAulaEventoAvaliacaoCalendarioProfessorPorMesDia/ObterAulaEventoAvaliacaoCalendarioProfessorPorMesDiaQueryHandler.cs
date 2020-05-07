@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     eventoAulaDto.MostrarBotaoFrequencia = await repositorioFrequencia.FrequenciaAulaRegistrada(aulaParaVisualizar.Id);
-
+                    eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
 
                     retorno.Add(eventoAulaDto);
 
@@ -83,6 +83,17 @@ namespace SME.SGP.Aplicacao
             }
 
             return retorno.AsEnumerable();
+        }
+
+        private bool ObterPodeCadastrarAvaliacao(IEnumerable<AtividadeAvaliativa> atividadesAvaliativasDaAula, DisciplinaDto componenteCurricular)
+        {
+            if (componenteCurricular.Regencia)
+                return true;
+
+            if (atividadesAvaliativasDaAula.Any())
+                return false;
+
+            return true;
         }
     }
 }
