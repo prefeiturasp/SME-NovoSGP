@@ -114,18 +114,15 @@ function RegistroPOALista() {
     }
   };
 
-  const ehFiltroValido = useCallback(
-    () => !!filtro.dreId && !!filtro.ueId && !!filtro.professorRf,
-    [filtro.dreId, filtro.professorRf, filtro.ueId]
-  );
-
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [permissoesTela]);
 
   useEffect(() => {
-    setFiltroValido(ehFiltroValido());
-  }, [ehFiltroValido, filtro]);
+    setFiltroValido(
+      () => !!filtro && !!filtro.dreId && !!filtro.ueId && !!filtro.codigoRf
+    );
+  }, [filtro]);
 
   const onChangeFiltro = useCallback(
     valoresFiltro => {
