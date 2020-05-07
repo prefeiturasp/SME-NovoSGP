@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import shortid from 'shortid';
 import t from 'prop-types';
 
@@ -9,11 +9,24 @@ import { Colors } from '~/componentes';
 import { Botao } from '../styles';
 
 function LabelAulaEvento({ dadosEvento }) {
+  const tipoEventoMemo = useMemo(() => {
+    const { ehAula, ehAulaCJ, tipoEvento } = dadosEvento;
+
+    if (ehAula && !ehAulaCJ) return 'Aula';
+    if (ehAula && ehAulaCJ) return 'CJ';
+
+    return tipoEvento;
+  }, [dadosEvento]);
+
   return (
     <Botao
       id={shortid.generate()}
-      label={dadosEvento.ehAula ? 'Aula' : dadosEvento.tipoEvento}
-      color={(dadosEvento.ehAula && Colors.Roxo) || Colors.CinzaBotao}
+      label={tipoEventoMemo}
+      color={
+        (tipoEventoMemo === 'Aula' && Colors.Roxo) ||
+        (tipoEventoMemo === 'CJ' && Colors.Laranja) ||
+        Colors.CinzaBotao
+      }
       className="w-100"
       height={dadosEvento.ehAula ? '38px' : 'auto'}
       border

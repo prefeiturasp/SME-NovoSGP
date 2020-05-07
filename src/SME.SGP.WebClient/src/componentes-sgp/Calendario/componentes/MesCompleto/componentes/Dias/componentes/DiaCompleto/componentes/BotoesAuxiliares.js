@@ -26,7 +26,7 @@ const BotoesAuxiliares = ({
         label="Nova Avaliação"
         color={Colors.Roxo}
         disabled={
-          (permissaoTela && !permissaoTela.podeIncluir) ||
+          !permissaoTela?.podeIncluir ||
           !dentroPeriodo ||
           !temAula ||
           !podeCadastrarAvaliacao ||
@@ -40,11 +40,7 @@ const BotoesAuxiliares = ({
         onClick={onClickNovaAula}
         label="Nova Aula"
         color={Colors.Roxo}
-        disabled={
-          (permissaoTela && !permissaoTela.podeIncluir) ||
-          !dentroPeriodo ||
-          desabilitado
-        }
+        disabled={!permissaoTela?.podeIncluir || !dentroPeriodo || desabilitado}
       />
     </BotoesAuxiliaresEstilo>
   );

@@ -1,6 +1,3 @@
-// Componentes
-import { Base } from '~/componentes';
-
 // Tipos
 import Tipos from './types';
 
@@ -94,6 +91,8 @@ export default (state, action) => {
       return Handlers.selecionarMesHandler(state, payload);
     case Tipos.selecionarDia:
       return Handlers.selecionarDiaHandler(state, payload);
+    case Tipos.zeraCalendario:
+      return Handlers.zeraCalendario(state);
     default:
       return state;
   }

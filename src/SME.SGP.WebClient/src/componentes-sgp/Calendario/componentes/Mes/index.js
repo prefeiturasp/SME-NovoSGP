@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import t from 'prop-types';
 
 // Estilos
 import { DivMes, DivWrapperMes } from './styles';
 
-function Mes({ tipoCalenarioId, onClickMes, mes }) {
-  const handleOnClick = () => {
-    onClickMes(mes);
-  };
+function Mes({ tipoCalendarioId, onClickMes, mes }) {
+  const handleOnClick = useCallback(() => {
+    if (tipoCalendarioId) onClickMes(mes);
+  }, [mes, onClickMes, tipoCalendarioId]);
 
   return (
     <DivWrapperMes className={`${mes.estaAberto ? 'aberto' : ''}`}>
@@ -17,7 +17,7 @@ function Mes({ tipoCalenarioId, onClickMes, mes }) {
         role="button"
         tabIndex={0}
         style={{
-          cursor: tipoCalenarioId ? 'pointer' : 'not-allowed',
+          cursor: tipoCalendarioId ? 'pointer' : 'not-allowed',
         }}
       >
         <div className="seta">
@@ -37,13 +37,13 @@ function Mes({ tipoCalenarioId, onClickMes, mes }) {
 }
 
 Mes.propTypes = {
-  tipoCalenarioId: t.string,
+  tipoCalendarioId: t.string,
   onClickMes: t.func,
   mes: t.oneOfType([t.any]),
 };
 
 Mes.defaultProps = {
-  tipoCalenarioId: null,
+  tipoCalendarioId: null,
   onClickMes: () => {},
   mes: {},
 };

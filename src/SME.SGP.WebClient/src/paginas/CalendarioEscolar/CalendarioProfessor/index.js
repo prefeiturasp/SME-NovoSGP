@@ -140,8 +140,10 @@ function CalendarioProfessor() {
   }, []);
 
   useEffect(() => {
-    console.log(estado);
-  }, [estado]);
+    if (Object.keys(turmaSelecionada).length === 0) {
+      setTipoCalendarioId(undefined);
+    }
+  }, [turmaSelecionada]);
 
   return (
     <>
@@ -169,6 +171,7 @@ function CalendarioProfessor() {
                   carregandoDia={estado.carregandoDia}
                   permissaoTela={permissaoTela}
                   tipoCalendarioId={tipoCalendarioId}
+                  turmaSelecionada={turmaSelecionada}
                 />
               </Grid>
             </Linha>
