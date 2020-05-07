@@ -9,7 +9,6 @@ import {
   setIdCamposNotasPosConselho,
   setNotaConceitoPosConselhoAtual,
   setGerandoParecerConclusivo,
-  addDisciplinasComNotaPosConselho,
 } from '~/redux/modulos/conselhoClasse/actions';
 import notasConceitos from '~/dtos/notasConceitos';
 
@@ -205,7 +204,6 @@ class ServicoSalvarConselhoClasse {
     ).catch(e => erro(e));
 
     if (retorno && retorno.status === 200) {
-      dispatch(addDisciplinasComNotaPosConselho(codigoComponenteCurricular));
       if (!dadosPrincipaisConselhoClasse.conselhoClasseId) {
         dadosPrincipaisConselhoClasse.conselhoClasseId =
           retorno.data.conselhoClasseId;
@@ -237,19 +235,12 @@ class ServicoSalvarConselhoClasse {
     return false;
   };
 
-  validarNotaPosConselho = async clickouEmSalvar => {
+  validarNotaPosConselho = async () => {
     const { dispatch } = store;
 
     const limparDadosNotaPosConselhoJustificativa = () => {
       dispatch(setExpandirLinha([]));
       dispatch(setNotaConceitoPosConselhoAtual({}));
-    };
-
-    const erroAoValidarNotasSalvas = () => {
-      erro(
-        'O estudante precisa ter todas as notas pós-conselho informadas para que seja possível salvar o seu conselho de classe'
-      );
-      return false;
     };
 
     const state = store.getState();
@@ -260,29 +251,7 @@ class ServicoSalvarConselhoClasse {
       notaConceitoPosConselhoAtual,
       dadosPrincipaisConselhoClasse,
       desabilitarCampos,
-      dadosListasNotasConceitos,
-      disciplinasComNotaPosConselho,
     } = conselhoClasse;
-
-    const validarNotasConceitosSalvos = componentes => {
-      if (!componentes || componentes.length === 0) return true;
-      for (let index = 0; index < componentes.length; index++) {
-        const componente = componentes[index];
-        if (!componente.notaPosConselho.nota) {
-          if (
-            !disciplinasComNotaPosConselho.find(
-              d => String(d) === String(componente.codigoComponenteCurricular)
-            )
-          ) {
-            const retorno = erroAoValidarNotasSalvas();
-            if (!retorno) {
-              return retorno;
-            }
-          }
-        }
-      }
-      return true;
-    };
 
     if (desabilitarCampos) {
       return true;
@@ -315,27 +284,6 @@ class ServicoSalvarConselhoClasse {
 
       // Voltar para a tela e não executa a ação!
       return false;
-    }
-
-    if (clickouEmSalvar) {
-      for (let index = 0; index < dadosListasNotasConceitos.length; index++) {
-        const dados = dadosListasNotasConceitos[index];
-        const validacaoCompCurricular = validarNotasConceitosSalvos(
-          dados.componentesCurriculares
-        );
-        if (!validacaoCompCurricular) {
-          return false;
-        }
-        const validacaoCompRegencia = dados.componenteRegencia
-          ? validarNotasConceitosSalvos(
-              dados.componenteRegencia.componentesCurriculares
-            )
-          : true;
-        if (!validacaoCompRegencia) {
-          return false;
-        }
-      }
-      return true;
     }
 
     return true;
