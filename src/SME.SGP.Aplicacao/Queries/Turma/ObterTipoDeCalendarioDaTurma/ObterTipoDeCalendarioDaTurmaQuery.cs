@@ -10,5 +10,6 @@ namespace SME.SGP.Aplicacao
     public class ObterTipoDeCalendarioDaTurmaQuery : IRequest<TipoCalendario>
     {
         public Turma Turma { get; set; }
+
     }
 }
