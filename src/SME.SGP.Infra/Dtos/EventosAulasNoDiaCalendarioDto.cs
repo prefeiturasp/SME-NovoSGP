@@ -8,10 +8,10 @@ namespace SME.SGP.Infra
     {
         public EventosAulasNoDiaCalendarioDto()
         {
-            EventosAulas = new List<EventoAulaDto>();
+            
         }
         public bool PodeCadastrarAula { get; set; }
-        public IList<EventoAulaDto> EventosAulas { get; set; }        
+        public IEnumerable<EventoAulaDto> EventosAulas { get; set; }        
         public string MensagemPeriodoEncerrado { get; set; }
     }
 }
