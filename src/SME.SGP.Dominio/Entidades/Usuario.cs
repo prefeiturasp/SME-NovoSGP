@@ -52,6 +52,29 @@ namespace SME.SGP.Dominio
             this.PerfilAtual = perfilAtual;
         }
 
+        public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, string[] componentesCurricularesProfessor)
+        {
+
+
+
+            if (TemPerfilGestaoUes())
+            {
+                return aulas;
+            }
+            else
+            {
+                if (EhProfessorCj())
+                {
+                    return aulas.Where(a => a.ProfessorRf == CodigoRf);
+                }
+                else
+                {
+                    return aulas.Where(a => componentesCurricularesProfessor.Contains(a.DisciplinaId) || a.ProfessorRf == CodigoRf);
+                }
+
+            }
+        }
+
         public void DefinirPerfis(IEnumerable<PrioridadePerfil> perfisUsuario)
         {
             Perfis = perfisUsuario;
@@ -109,7 +132,7 @@ namespace SME.SGP.Dominio
             if (Perfis == null || !Perfis.Any())
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
 
-            if(ehProfCJSemTurmaTitular)
+            if (ehProfCJSemTurmaTitular)
                 return Dominio.Perfis.PERFIL_CJ;
 
             var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR && possuiTurmaAtiva);
