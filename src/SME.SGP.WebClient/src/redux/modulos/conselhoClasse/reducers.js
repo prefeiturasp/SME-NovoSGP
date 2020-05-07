@@ -21,7 +21,6 @@ const inicial = {
   marcadorParecerConclusivo: {},
   gerandoParecerConclusivo: false,
   desabilitarCampos: false,
-  disciplinasComNotaPosConselho: [],
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -91,7 +90,6 @@ export default function ConselhoClasse(state = inicial, action) {
           marcadorParecerConclusivo: {},
           gerandoParecerConclusivo: false,
           desabilitarCampos: false,
-          disciplinasComNotaPosConselho: [],
         };
       }
       case '@conselhoClasse/setConselhoClasseEmEdicao': {
@@ -182,24 +180,7 @@ export default function ConselhoClasse(state = inicial, action) {
           ...draft,
           desabilitarCampos: action.payload,
         };
-      }
-
-      case '@conselhoClasse/setDisciplinasComNotaPosConselho': {
-        return {
-          ...draft,
-          disciplinasComNotaPosConselho: action.payload,
-        };
-      }
-
-      case '@conselhoClasse/addDisciplinasComNotaPosConselho': {
-        if (
-          state.disciplinasComNotaPosConselho.length === 0 ||
-          !state.disciplinasComNotaPosConselho.find(d => d === action.payload)
-        ) {
-          draft.disciplinasComNotaPosConselho.push(action.payload);
-        }
-        break;
-      }
+      } 
 
       default:
         return draft;
