@@ -20,6 +20,7 @@ const anoAtual = window.moment().format('YYYY');
 
 function Filtro({ onFiltrar }) {
   const anosLetivos = useSelector(redux => redux.filtro.anosLetivos);
+
   const [refForm, setRefForm] = useState({});
   const [anoLetivo] = useState(anoAtual);
   const [valoresIniciais] = useState({
@@ -62,7 +63,7 @@ function Filtro({ onFiltrar }) {
                 valueText="desc"
                 valueOption="valor"
                 form={form}
-                onChange={() => null}
+                onChange={() => {}}
                 allowClear={false}
               />
             </Grid>
