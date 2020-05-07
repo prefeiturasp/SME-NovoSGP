@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<PeriodoEscolar> ObterPeriodoEscolar(string turmaId, int anoLetivo)
         {
-            var turma = repositorioTurma.ObterPorId(turmaId);
+            var turma = repositorioTurma.ObterPorCodigo(turmaId);
             if (turma == null)
             {
                 throw new NegocioException("Turma não encontrada.");

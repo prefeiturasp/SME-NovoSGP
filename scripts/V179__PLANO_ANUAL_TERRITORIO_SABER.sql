@@ -16,3 +16,5 @@ CREATE TABLE if not exists public.plano_anual_territorio_saber (
   CONSTRAINT plano_anual_territorio_saber_pk PRIMARY KEY (id),
   CONSTRAINT plano_anual_territorio_saber_un UNIQUE (escola_id, turma_id, ano, bimestre)
 );
+
+
