@@ -52,7 +52,7 @@ namespace SME.SGP.Worker.Service
 
             IHostBuilder builder = CreateBuilder(asService);
 
-            var sentryDSN = Environment.GetEnvironmentVariable("Sentry:DSN");
+            var sentryDSN = Environment.GetEnvironmentVariable("Sentry__DSN");
             using (SentrySdk.Init(sentryDSN))
             {
                 if (asService)
