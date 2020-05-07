@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select * 
                         from conselho_classe_nota 
                         where conselho_classe_aluno_id = @conselhoClasseAlunoId
-                        and componente_curricular_codigo = @componenteCurricularCodigo";
+                          and componente_curricular_codigo = @componenteCurricularCodigo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseNota>(query.ToString(), new { conselhoClasseAlunoId, componenteCurricularCodigo });
         }
@@ -34,9 +34,10 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { conselhoClasseId, alunoCodigo });
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisAlunoAsync(string alunoCodigo, string turmaCodigo)
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAsync(string alunoCodigo, string turmaCodigo, long? periodoEscolarId = null)
         {
-            var query = @"select distinct * from (
+            var condicaoPeriodoEscolar = periodoEscolarId.HasValue ? "ft.periodo_escolar_id = @periodoEscolarId" : "ft.periodo_escolar_id is null";
+            var query = $@"select distinct * from (
                 select fn.disciplina_id as ComponenteCurricularCodigo, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
                   from fechamento_turma ft
                  inner join turma t on t.id = ft.turma_id 
@@ -48,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
 		                                        and cca.aluno_codigo = fa.aluno_codigo 
                   left join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
 		                                        and ccn.componente_curricular_codigo = fn.disciplina_id 
-                 where ft.periodo_escolar_id is null
+                 where {condicaoPeriodoEscolar}
                    and t.turma_id = @turmaCodigo
                    and fa.aluno_codigo = @alunoCodigo
                 union all 
@@ -63,12 +64,12 @@ namespace SME.SGP.Dados.Repositorios
 		                                        and cca.aluno_codigo = fa.aluno_codigo 
                   left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
 		                                        and ccn.componente_curricular_codigo = fn.disciplina_id 
-                 where ft.periodo_escolar_id is null
+                 where {condicaoPeriodoEscolar}
                    and t.turma_id = @turmaCodigo
                    and cca.aluno_codigo = @alunoCodigo
                 ) x ";
 
-             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmaCodigo });
+             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmaCodigo, periodoEscolarId });
         }
     }
 }
