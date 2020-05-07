@@ -65,9 +65,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
         public async Task<IActionResult> SalvarRelatorioAluno(string alunoCodigo, string turmaCodigo, int semestre
-            , long relatorioSemestralId, long relatorioSemestralAlunoId, [FromBody] RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto
+            , [FromBody] RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto
             , [FromServices]IComandosRelatorioSemestralAluno comandosRelatorioSemestralAluno)
-            => await comandosRelatorioSemestralAluno.Salvar(alunoCodigo, turmaCodigo, semestre, relatorioSemestralId, relatorioSemestralAlunoId, relatorioSemestralAlunoDto);
+            => Ok(await comandosRelatorioSemestralAluno.Salvar(alunoCodigo, turmaCodigo, semestre, relatorioSemestralAlunoDto));
 
     }
 }
