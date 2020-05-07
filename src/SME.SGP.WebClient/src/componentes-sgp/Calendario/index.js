@@ -1,4 +1,4 @@
-import React, { useReducer, useCallback } from 'react';
+import React, { useReducer, useCallback, useEffect } from 'react';
 import t from 'prop-types';
 
 // Componentes
@@ -15,7 +15,11 @@ import { FundoCinza } from './styles';
 import Reducer, { estadoInicial } from './reducer';
 
 // Actions
-import { selecionarMes, selecionarDia } from './reducer/actions';
+import {
+  selecionarMes,
+  selecionarDia,
+  zeraCalendario,
+} from './reducer/actions';
 
 const obterMesesPermitidos = numeroMes => {
   if (numeroMes <= 4) return [1, 2, 3, 4];
@@ -32,6 +36,7 @@ function Calendario({
   carregandoDia,
   permissaoTela,
   tipoCalendarioId,
+  turmaSelecionada,
 }) {
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
 
@@ -51,28 +56,35 @@ function Calendario({
     [onClickDia]
   );
 
+  useEffect(() => {
+    disparar(zeraCalendario());
+  }, [turmaSelecionada]);
+
   return (
     <Loader loading={carregandoCalendario}>
       <FundoCinza>
-        {estado.meses &&
-          estado.meses.map(item => (
-            <React.Fragment key={item.numeroMes}>
-              <Mes mes={item} onClickMes={() => onClickMesHandler(item)} />
-              {item.numeroMes % 4 === 0 && (
-                <MesCompleto
-                  eventos={eventos}
-                  mes={estado.meses.filter(x => x.estaAberto)[0]}
-                  mesesPermitidos={obterMesesPermitidos(item.numeroMes)}
-                  diaSelecionado={estado.diaSelecionado}
-                  onClickDia={dia => onClickDiaHandler(dia)}
-                  carregandoDia={carregandoDia}
-                  carregandoMes={carregandoMes}
-                  permissaoTela={permissaoTela}
-                  tipoCalendarioId={tipoCalendarioId}
-                />
-              )}
-            </React.Fragment>
-          ))}
+        {estado?.meses?.map(item => (
+          <React.Fragment key={item.numeroMes}>
+            <Mes
+              tipoCalendarioId={tipoCalendarioId}
+              mes={item}
+              onClickMes={() => onClickMesHandler(item)}
+            />
+            {item.numeroMes % 4 === 0 && (
+              <MesCompleto
+                eventos={eventos}
+                mes={estado.meses.filter(x => x.estaAberto)[0]}
+                mesesPermitidos={obterMesesPermitidos(item.numeroMes)}
+                diaSelecionado={estado.diaSelecionado}
+                onClickDia={dia => onClickDiaHandler(dia)}
+                carregandoDia={carregandoDia}
+                carregandoMes={carregandoMes}
+                permissaoTela={permissaoTela}
+                tipoCalendarioId={tipoCalendarioId}
+              />
+            )}
+          </React.Fragment>
+        ))}
       </FundoCinza>
     </Loader>
   );
@@ -87,6 +99,7 @@ Calendario.propTypes = {
   carregandoDia: t.bool,
   permissaoTela: t.oneOfType([t.any]),
   tipoCalendarioId: t.oneOfType([t.any]),
+  turmaSelecionada: t.oneOfType([t.any]),
 };
 
 Calendario.defaultProps = {
@@ -98,6 +111,7 @@ Calendario.defaultProps = {
   carregandoDia: false,
   permissaoTela: {},
   tipoCalendarioId: null,
+  turmaSelecionada: {},
 };
 
 export default Calendario;

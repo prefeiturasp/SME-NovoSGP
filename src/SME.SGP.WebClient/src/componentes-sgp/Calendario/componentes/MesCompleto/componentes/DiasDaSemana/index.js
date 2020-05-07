@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import shortid from 'shortid';
 
 // Estilos
@@ -15,9 +15,6 @@ const Dias = [
 ];
 
 function DiasDaSemana() {
-  useEffect(() => {
-    console.log('Renderizou DiasDaSemana');
-  }, []);
   return (
     <DiasDaSemanaWrapper>
       {Dias.map(dia => (

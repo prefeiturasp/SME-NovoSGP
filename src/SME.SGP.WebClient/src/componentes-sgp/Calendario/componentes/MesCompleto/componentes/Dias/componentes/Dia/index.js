@@ -29,11 +29,11 @@ function Dia({
       mesAtual={Number(mesSelecionado.numeroMes) === Number(dia.getMonth() + 1)}
       selecionado={selecionado}
       className="col"
-      onClick={onClick}
+      onClick={() => onClick()}
     >
       <div className="numeroDia">
         <div>
-          {eventos && eventos.temAvaliacao && (
+          {eventos?.temAvaliacao && (
             <Tooltip title="Atividade avaliativa">
               <IconeAtividadeAvaliativa className="fas fa-sticky-note" />
             </Tooltip>

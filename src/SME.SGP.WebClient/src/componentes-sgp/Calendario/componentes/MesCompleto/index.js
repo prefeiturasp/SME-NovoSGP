@@ -34,8 +34,7 @@ function MesCompleto({
           <DiasDaSemana />
           <Dias
             eventos={
-              eventos.meses &&
-              eventos.meses.filter(evt => evt.numeroMes === mes.numeroMes)[0]
+              eventos?.meses?.filter(evt => evt.numeroMes === mes.numeroMes)[0]
             }
             mesSelecionado={mes}
             onClickDia={onClickDia}

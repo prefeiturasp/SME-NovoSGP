@@ -1,4 +1,5 @@
 export default {
-  selecionarMes: '@calendarioProfessor/selecionarMes',
-  selecionarDia: '@calendarioProfessor/selecionarDia',
+  selecionarMes: '@calendario/selecionarMes',
+  selecionarDia: '@calendario/selecionarDia',
+  zeraCalendario: '@calendario/zeraCalendario',
 };

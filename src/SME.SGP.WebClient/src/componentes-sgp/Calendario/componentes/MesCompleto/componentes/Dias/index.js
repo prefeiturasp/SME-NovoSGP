@@ -89,7 +89,7 @@ function Dias({
               mesSelecionado={mesSelecionado}
               dia={dia}
               eventos={
-                eventos.dias && dia.getMonth() === mesSelecionado.numeroMes - 1
+                eventos?.dias && dia.getMonth() === mesSelecionado.numeroMes - 1
                   ? eventos.dias.filter(
                       diaAtual => Number(diaAtual.dia) === Number(dia.getDate())
                     )[0]

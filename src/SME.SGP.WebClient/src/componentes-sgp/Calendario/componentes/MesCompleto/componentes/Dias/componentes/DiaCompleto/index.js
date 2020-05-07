@@ -2,11 +2,18 @@ import React, { useMemo, useCallback } from 'react';
 import shortid from 'shortid';
 import t from 'prop-types';
 
+// Ant
+import { Tooltip } from 'antd';
+
+// Redux
+import { store } from '~/redux';
+import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
+
 // Estilos
-import { DiaCompletoWrapper, LinhaEvento } from './styles';
+import { DiaCompletoWrapper, LinhaEvento, Pilula } from './styles';
 
 // Componentes
-import { Loader } from '~/componentes';
+import { Loader, Base } from '~/componentes';
 
 // Componentes internos
 import AlertaDentroPeriodo from './componentes/AlertaPeriodoEncerrado';
@@ -15,6 +22,7 @@ import BotoesAuxiliares from './componentes/BotoesAuxiliares';
 import SemEventos from './componentes/SemEventos';
 import BotaoAvaliacoes from './componentes/BotaoAvaliacoes';
 import BotaoFrequencia from './componentes/BotaoFrequencia';
+import DataInicioFim from './componentes/DataInicioFim';
 
 // Utils
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
@@ -53,14 +61,22 @@ function DiaCompleto({
     [tipoCalendarioId]
   );
 
+  const onClickFrequenciaHandler = useCallback(
+    (disciplinaId, diaSelecionado) => {
+      store.dispatch(salvarDadosAulaFrequencia(disciplinaId, diaSelecionado));
+      history.push(`${RotasDTO.FREQUENCIA_PLANO_AULA}`);
+    },
+    []
+  );
+
   return (
     <DiaCompletoWrapper className={`${deveExibir && `visivel`}`}>
       {deveExibir && (
         <Loader loading={carregandoDia} tip="Carregando...">
           <AlertaDentroPeriodo
-            exibir={dadosDia.dados && !!dadosDia.dados.mensagemPeriodoEncerrado}
+            exibir={!!dadosDia?.dados?.mensagemPeriodoEncerrado}
           />
-          {dadosDia && dadosDia.dados && dadosDia.dados.eventosAulas.length > 0
+          {dadosDia?.dados?.eventosAulas.length > 0
             ? dadosDia.dados.eventosAulas.map(eventoAula => (
                 <LinhaEvento
                   key={shortid.generate()}
@@ -69,36 +85,61 @@ function DiaCompleto({
                   <div className="labelEventoAula">
                     <LabelAulaEvento dadosEvento={eventoAula} />
                   </div>
-                  <div className="tituloEventoAula">{eventoAula.titulo}</div>
-                  <div className="botoesEventoAula">
-                    {eventoAula &&
-                      eventoAula.ehAula &&
-                      !eventoAula.mostrarBotaoFrequencia && (
-                        <BotaoFrequencia onClickFrequencia={() => null} />
+                  <div className="tituloEventoAula">
+                    <div>
+                      <Tooltip title={eventoAula.descricao}>
+                        {eventoAula.titulo}
+                      </Tooltip>
+                    </div>
+                    <div className="detalhesEvento">
+                      {eventoAula.quantidade > 0 && (
+                        <span>
+                          Quantidade: <strong>{eventoAula.quantidade}</strong>
+                        </span>
                       )}
-                    {eventoAula &&
-                      eventoAula.atividadesAvaliativas.length > 0 && (
-                        <BotaoAvaliacoes
-                          atividadesAvaliativas={
-                            eventoAula.atividadesAvaliativas
+                      {eventoAula.estaAguardandoAprovacao && (
+                        <Pilula cor={Base.Branco} fundo={Base.AzulCalendario}>
+                          Aguardando aprovação
+                        </Pilula>
+                      )}
+                      {eventoAula.ehReposicao && (
+                        <Pilula cor={Base.Branco} fundo={Base.RoxoClaro}>
+                          Reposição
+                        </Pilula>
+                      )}
+                      <DataInicioFim dadosAula={eventoAula} />
+                    </div>
+                  </div>
+                  <div className="botoesEventoAula">
+                    {eventoAula?.ehAula &&
+                      !eventoAula?.mostrarBotaoFrequencia && (
+                        <BotaoFrequencia
+                          onClickFrequencia={() =>
+                            onClickFrequenciaHandler(
+                              eventoAula.componenteCurricularId,
+                              dia
+                            )
                           }
-                          permissaoTela={permissaoTela}
                         />
                       )}
+                    {eventoAula?.atividadesAvaliativas.length > 0 && (
+                      <BotaoAvaliacoes
+                        atividadesAvaliativas={eventoAula.atividadesAvaliativas}
+                        permissaoTela={permissaoTela}
+                      />
+                    )}
                   </div>
                 </LinhaEvento>
               ))
             : !carregandoDia && <SemEventos />}
           <BotoesAuxiliares
             temAula={
-              dadosDia.dados &&
-              dadosDia.dados.eventosAulas.length > 0 &&
+              dadosDia?.dados?.eventosAulas.length > 0 &&
               dadosDia.dados.eventosAulas.filter(evento => evento.ehAula)
                 .length > 0
             }
             podeCadastrarAvaliacao={
-              dadosDia.dados &&
-              typeof dadosDia.dados.eventosAulas === 'array' &&
+              typeof dadosDia?.dados?.eventosAulas === 'array' &&
               dadosDia.dados.eventosAulas.filter(
                 evento =>
                   evento.ehAula && evento.dadosAula.podeCadastrarAvaliacao
@@ -109,10 +150,9 @@ function DiaCompleto({
             }
             onClickNovaAvaliacao={() => {}}
             permissaoTela={permissaoTela}
-            dentroPeriodo={
-              dadosDia.dados &&
-              valorNuloOuVazio(dadosDia.dados.mensagemPeriodoEncerrado)
-            }
+            dentroPeriodo={valorNuloOuVazio(
+              dadosDia?.dados?.mensagemPeriodoEncerrado
+            )}
             desabilitado={carregandoDia}
           />
         </Loader>

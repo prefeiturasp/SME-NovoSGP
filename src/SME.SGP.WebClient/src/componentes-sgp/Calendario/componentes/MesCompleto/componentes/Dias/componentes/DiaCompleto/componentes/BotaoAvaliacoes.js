@@ -17,7 +17,7 @@ import history from '~/servicos/history';
 function BotaoAvaliacoes({ atividadesAvaliativas, permissaoTela }) {
   const onClickAvaliacaoHandler = useCallback(
     avaliacao => {
-      if (permissaoTela && permissaoTela.podeConsultar) {
+      if (permissaoTela?.podeConsultar) {
         history.push(`${RotasDTO.CADASTRO_DE_AVALIACAO}/editar/${avaliacao}`);
       }
     },
@@ -26,7 +26,7 @@ function BotaoAvaliacoes({ atividadesAvaliativas, permissaoTela }) {
 
   return (
     <div className="pr-0 d-flex align-items-center px-2 p-x-md-3">
-      {atividadesAvaliativas.length > 1 ? (
+      {atividadesAvaliativas?.length > 1 ? (
         <SelectComponent
           lista={atividadesAvaliativas}
           classNameContainer="w-100"
@@ -41,8 +41,7 @@ function BotaoAvaliacoes({ atividadesAvaliativas, permissaoTela }) {
           color={Base.Roxo}
         />
       ) : (
-        atividadesAvaliativas &&
-        atividadesAvaliativas.length === 1 && (
+        atividadesAvaliativas?.length === 1 && (
           <Botao
             id={shortid.generate()}
             label={`${atividadesAvaliativas[0].descricao}`}

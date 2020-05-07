@@ -20,7 +20,7 @@ export default {
     };
   },
   selecionarDiaHandler: (state, payload) => {
-    const { diaSelecionado } = payload;
+    const diaSelecionado = payload?.diaSelecionado;
     return {
       ...state,
       diaSelecionado:
@@ -28,6 +28,16 @@ export default {
         state.diaSelecionado.toString() === diaSelecionado.toString()
           ? undefined
           : diaSelecionado,
+    };
+  },
+  zeraCalendario: state => {
+    return {
+      ...state,
+      meses: state.meses.map(mesAtual => ({
+        ...mesAtual,
+        estaAberto: false,
+      })),
+      diaSelecionado: undefined,
     };
   },
 };

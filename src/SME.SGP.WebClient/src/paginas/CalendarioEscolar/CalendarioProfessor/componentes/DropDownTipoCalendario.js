@@ -8,6 +8,9 @@ import { Loader, SelectComponent } from '~/componentes';
 import CalendarioProfessorServico from '~/servicos/Paginas/CalendarioProfessor';
 import { erro } from '~/servicos/alertas';
 
+// Utils
+import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+
 function DropDownTipoCalendario({
   label,
   onChange,
@@ -21,21 +24,25 @@ function DropDownTipoCalendario({
   useEffect(() => {
     async function buscarTiposCalendario() {
       try {
-        setCarregando(true);
-        const {
-          data,
-          status,
-        } = await CalendarioProfessorServico.buscarTiposCalendario(
-          turmaSelecionada
-        );
-        if (data && status === 200) {
-          setListaTipoCalendario(
-            [data].map(x => ({
-              desc: x.nome,
-              valor: String(x.id),
-            }))
+        if (valorNuloOuVazio(turmaSelecionada)) {
+          setListaTipoCalendario([]);
+        } else {
+          setCarregando(true);
+          const {
+            data,
+            status,
+          } = await CalendarioProfessorServico.buscarTiposCalendario(
+            turmaSelecionada
           );
-          setCarregando(false);
+          if (data && status === 200) {
+            setListaTipoCalendario(
+              [data].map(x => ({
+                desc: x.nome,
+                valor: String(x.id),
+              }))
+            );
+            setCarregando(false);
+          }
         }
       } catch (error) {
         setCarregando(false);
@@ -60,7 +67,7 @@ function DropDownTipoCalendario({
         className="fonte-14"
         onChange={onChange}
         lista={listaTipoCalendario}
-        valueSelect={valor && String(valor)}
+        valueSelect={(!valorNuloOuVazio(valor) && String(valor)) || undefined}
         valueOption="valor"
         valueText="desc"
         placeholder="Selecione o tipo de calendário..."
@@ -82,8 +89,8 @@ DropDownTipoCalendario.defaultProps = {
   label: '',
   onChange: () => {},
   desabilitado: false,
-  turmaSelecionada: {},
-  valor: {},
+  turmaSelecionada: undefined,
+  valor: undefined,
 };
 
 export default DropDownTipoCalendario;

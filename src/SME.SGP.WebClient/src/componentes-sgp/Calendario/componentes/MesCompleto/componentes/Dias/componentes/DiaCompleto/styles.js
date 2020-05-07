@@ -29,10 +29,17 @@ export const LinhaEvento = styled.div`
 
   .tituloEventoAula {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     padding-left: 0.5rem;
     font-weight: bold;
     flex: 1;
+    flex-direction: column;
+
+    .detalhesEvento {
+      span {
+        font-weight: normal;
+      }
+    }
   }
 
   .botoesEventoAula {
@@ -67,4 +74,14 @@ export const BotoesAuxiliaresEstilo = styled.div`
   justify-content: flex-end;
   padding: 0.7rem;
   width: 100%;
+`;
+
+export const Pilula = styled.div`
+  font-size: 0.6rem;
+  color: ${props => props.cor};
+  background-color: ${props => props.fundo};
+  border-radius: 0.2rem;
+  padding: 0.1rem 0.3rem;
+  margin: 0 5px;
+  display: inline-flex;
 `;

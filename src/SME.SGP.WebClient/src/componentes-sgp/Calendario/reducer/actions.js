@@ -10,3 +10,7 @@ export const selecionarDia = payload => ({
   type: Tipos.selecionarDia,
   payload,
 });
+
+export const zeraCalendario = () => ({
+  type: Tipos.zeraCalendario,
+});
