@@ -1,6 +1,7 @@
 import produce from 'immer';
 
 const inicial = {
+  listaTiposConceitos: [],
   dadosAlunoObjectCard: {},
   alunosConselhoClasse: [],
   recomendacaoAluno: '',
@@ -9,9 +10,18 @@ const inicial = {
   anotacoesAluno: [],
   bimestreAtual: { valor: '' },
   conselhoClasseEmEdicao: false,
-  dadosAnotacoesRecomendacoes: {},
+  dadosPrincipaisConselhoClasse: {},
   auditoriaAnotacaoRecomendacao: null,
   fechamentoPeriodoInicioFim: {},
+  notasJustificativas: { componentes: [], componentesRegencia: [] },
+  expandirLinha: [],
+  dadosListasNotasConceitos: {},
+  notaConceitoPosConselhoAtual: {},
+  idCamposNotasPosConselho: {},
+  marcadorParecerConclusivo: {},
+  gerandoParecerConclusivo: false,
+  desabilitarCampos: false,
+  disciplinasComNotaPosConselho: [],
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -69,10 +79,19 @@ export default function ConselhoClasse(state = inicial, action) {
           anotacoesAluno: [],
           bimestreAtual: { valor: '' },
           conselhoClasseEmEdicao: false,
-          dadosAnotacoesRecomendacoes: {},
+          dadosPrincipaisConselhoClasse: {},
           auditoriaAnotacaoRecomendacao: null,
           dentroPeriodo: true,
           fechamentoPeriodoInicioFim: {},
+          notasJustificativas: { componentes: [], componentesRegencia: [] },
+          expandirLinha: [],
+          dadosListasNotasConceitos: [],
+          notaConceitoPosConselhoAtual: {},
+          idCamposNotasPosConselho: {},
+          marcadorParecerConclusivo: {},
+          gerandoParecerConclusivo: false,
+          desabilitarCampos: false,
+          disciplinasComNotaPosConselho: [],
         };
       }
       case '@conselhoClasse/setConselhoClasseEmEdicao': {
@@ -81,10 +100,10 @@ export default function ConselhoClasse(state = inicial, action) {
           conselhoClasseEmEdicao: action.payload,
         };
       }
-      case '@conselhoClasse/setDadosAnotacoesRecomendacoes': {
+      case '@conselhoClasse/setDadosPrincipaisConselhoClasse': {
         return {
           ...draft,
-          dadosAnotacoesRecomendacoes: action.payload,
+          dadosPrincipaisConselhoClasse: action.payload,
         };
       }
       case '@conselhoClasse/setAuditoriaAnotacaoRecomendacao': {
@@ -104,6 +123,82 @@ export default function ConselhoClasse(state = inicial, action) {
           ...draft,
           fechamentoPeriodoInicioFim: action.payload,
         };
+      }
+      case '@conselhoClasse/setListaTiposConceitos': {
+        return {
+          ...draft,
+          listaTiposConceitos: action.payload,
+        };
+      }
+
+      case '@conselhoClasse/setNotasJustificativas':
+        draft.notasJustificativas.componentes = [
+          ...(action.payload.componentes || []),
+        ];
+        draft.notasJustificativas.componentesRegencia = [
+          ...(action.payload.componentesRegencia || []),
+        ];
+        break;
+
+      case '@conselhoClasse/setDadosListasNotasConceitos': {
+        return {
+          ...draft,
+          dadosListasNotasConceitos: action.payload,
+        };
+      }
+
+      case '@conselhoClasse/setExpandirLinha': {
+        return {
+          ...draft,
+          expandirLinha: action.payload,
+        };
+      }
+      case '@conselhoClasse/setNotaConceitoPosConselhoAtual': {
+        return {
+          ...draft,
+          notaConceitoPosConselhoAtual: action.payload,
+        };
+      }
+      case '@conselhoClasse/setIdCamposNotasPosConselho': {
+        return {
+          ...draft,
+          idCamposNotasPosConselho: action.payload,
+        };
+      }
+      case '@conselhoClasse/setMarcadorParecerConclusivo': {
+        return {
+          ...draft,
+          marcadorParecerConclusivo: action.payload,
+        };
+      }
+      case '@conselhoClasse/setGerandoParecerConclusivo': {
+        return {
+          ...draft,
+          gerandoParecerConclusivo: action.payload,
+        };
+      }
+      case '@conselhoClasse/setDesabilitarCampos': {
+        return {
+          ...draft,
+          desabilitarCampos: action.payload,
+        };
+      }
+
+      case '@conselhoClasse/setDisciplinasComNotaPosConselho': {
+        return {
+          ...draft,
+          disciplinasComNotaPosConselho: action.payload,
+        };
+      }
+
+      case '@conselhoClasse/addDisciplinasComNotaPosConselho': {
+        if (
+          state.disciplinasComNotaPosConselho.length === 0 ||
+          !state.disciplinasComNotaPosConselho.find(d => d === action.payload)
+        ) {
+          draft.disciplinasComNotaPosConselho.push(action.payload);
+        }
+        break;
       }
 
       default:

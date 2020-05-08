@@ -283,9 +283,9 @@ namespace SME.SGP.Aplicacao
             return _mediaFrequencia;
         }
 
-        public async Task<double> ObterFrequenciaGeralAluno(string alunoCodigo)
+        public async Task<double> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
         {
-            var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo);
+            var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, componenteCurricularCodigo);
 
             if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
                 return 100;

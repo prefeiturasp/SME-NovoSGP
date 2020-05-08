@@ -52,6 +52,8 @@ import ComunicadosCadastro from '~/paginas/AcompanhamentoEscolar/Comunicados/Cad
 import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselhoClasse';
 import RelatorioSemestral from '~/paginas/Relatorios/PAP/RelatorioSemestral/relatorioSemestral';
 
+import CalendarioProfessorNovo from '~/paginas/CalendarioEscolar/CalendarioProfessor';
+
 const rotas = new Map();
 
 rotas.set(RotasDto.ACOMPANHAMENTO_COMUNICADOS, {
@@ -457,6 +459,17 @@ rotas.set(RotasDto.CALENDARIO_PROFESSOR, {
   chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
 });
 
+rotas.set(RotasDto.CALENDARIO_PROFESSOR_II, {
+  breadcrumbName: 'Calendário do Professor',
+  menu: ['Calendário Escolar'],
+  parent: '/',
+  component: CalendarioProfessorNovo,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.CALENDARIO_PROFESSOR_II,
+});
+
 rotas.set(RotasDto.CADASTRO_DE_AULA, {
   breadcrumbName: 'Cadastro de Aula',
   parent: '/calendario-escolar/calendario-professor',
@@ -471,7 +484,7 @@ rotas.set(`${RotasDto.CADASTRO_DE_AULA}/novo/:tipoCalendarioId`, {
   breadcrumbName: 'Cadastro de Aula',
   parent: RotasDto.CADASTRO_DE_AULA,
   component: CadastroAula,
-  exact: true,
+  exact: false,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
@@ -753,7 +766,8 @@ rotas.set(RotasDto.CONSELHO_CLASSE, {
   component: ConselhoClasse,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.CONSELHO_CLASSE,
 });
 
 rotas.set(RotasDto.RELATORIO_SEMESTRAL, {

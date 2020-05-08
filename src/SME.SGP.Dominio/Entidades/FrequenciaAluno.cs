@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio
         public FrequenciaAluno(string codigoAluno,
                  string turmaId,
                  string disciplinaId,
+                 long? periodoEscolarId,
                  DateTime periodoInicio,
                  DateTime periodoFim,
                  int bimestre,
@@ -19,6 +20,7 @@ namespace SME.SGP.Dominio
             CodigoAluno = codigoAluno;
             TurmaId = turmaId;
             DisciplinaId = disciplinaId;
+            PeriodoEscolarId = periodoEscolarId;
             PeriodoFim = periodoFim;
             PeriodoInicio = periodoInicio;
             TotalAulas = totalAulas;
@@ -38,11 +40,15 @@ namespace SME.SGP.Dominio
         public double PercentualFrequencia {
             get
             {
+                if (TotalAulas == 0)
+                    return 0;
+
                 var porcentagem = 100 - ((double)NumeroFaltasNaoCompensadas / TotalAulas) * 100;
                 
                 return Math.Round(porcentagem, 2);
             }
         }
+        public long? PeriodoEscolarId { get; set; }
         public DateTime PeriodoFim { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public TipoFrequenciaAluno Tipo { get; set; }

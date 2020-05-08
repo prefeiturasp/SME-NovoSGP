@@ -421,7 +421,9 @@ const CadastroAula = ({ match }) => {
       setNovoRegistro(true);
       setDataAula(window.moment(diaAula));
     } else {
-      validaF5();
+      // validaF5();
+      setNovoRegistro(true);
+      setDataAula(window.moment(match.params.dataAula));
     }
   };
 
@@ -601,8 +603,12 @@ const CadastroAula = ({ match }) => {
     );
     if (cadastrado) {
       if (cadastrado.status === 200) {
-        if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
-        history.push('/calendario-escolar/calendario-professor');
+        if (cadastrado.data) {
+          history.push('/calendario-escolar/calendario-professor');
+          setTimeout(() => {
+            sucesso(cadastrado.data.mensagens[0]);
+          }, 1000);
+        }
       } else if (cadastrado.response) {
         erro(
           cadastrado.response.status === 601

@@ -101,8 +101,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidade, dataReferencia.Semestre());
 
-            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario.Id);
-            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario.Id);
+            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario?.Id ?? 0);
+            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
         }
 
         public void NotificarCompensacaoAusencia(long compensacaoId)
@@ -241,10 +241,10 @@ namespace SME.SGP.Dominio.Servicos
         private void NotificaAlunosFaltososBimestreModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario, double percentualCritico, int semestre = 0)
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidadeTipoCalendario, semestre);
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendario.Id, dataReferencia);
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendario?.Id ?? 0, dataReferencia);
 
             // Notifica apenas no dia seguinte ao fim do bimestre
-            if (dataReferencia == periodoEscolar.PeriodoFim)
+            if (dataReferencia == periodoEscolar?.PeriodoFim)
             {
                 var alunosFaltososBimestre = repositorioFrequenciaAluno.ObterAlunosFaltososBimestre(modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA, percentualCritico, periodoEscolar.Bimestre, tipoCalendario.AnoLetivo);
 
@@ -390,30 +390,35 @@ namespace SME.SGP.Dominio.Servicos
             servicoNotificacao.Salvar(notificacao);
         }
 
-        private IEnumerable<(Cargo? Cargo, Usuario Usuario)> BuscaGestoresUe(string codigoUe)
+        /// <summary>
+        /// Busca gestores da UE (CP > AD > Diretor)
+        /// </summary>
+        /// <param name="codigoUe">Código da UE</param>
+        /// <returns>Lista de Cargos e Usuarios da gestão</returns>
+        private IEnumerable<(Cargo? Cargo, Usuario Usuario)> BuscaGestoresUe(string codigoUe, Cargo cargo = Cargo.CP)
         {
             // Buscar gestor da Ue
-            var funcionariosRetornoEol = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.CP);
+            var funcionariosRetornoEol = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, cargo);
 
             if (funcionariosRetornoEol == null)
-                return null;
-
-            var cargoNotificacao = funcionariosRetornoEol.GroupBy(f => f.Cargo).Select(f => f.Key).First();
-            Cargo? proximoNivel = null;
-
-            if (cargoNotificacao == Cargo.CP || cargoNotificacao == Cargo.AD)
-                proximoNivel = Cargo.Diretor;
-            else
-                proximoNivel = servicoNotificacao.ObterProximoNivel(cargoNotificacao, false);
-
-            if (proximoNivel != null)
-                funcionariosRetornoEol = funcionariosRetornoEol.Concat(servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, proximoNivel));
-            else
                 return null;
 
             var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var usuarioEol in funcionariosRetornoEol)
                 usuarios.Add((usuarioEol.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.Id)));
+
+            var cargoNotificacao = funcionariosRetornoEol.GroupBy(f => f.Cargo).Select(f => f.Key).First();
+            // Carrega só até o nível de Diretor
+            if (!new[] { Cargo.Diretor, Cargo.Supervisor, Cargo.SupervisorTecnico }.Contains(cargoNotificacao.Value))
+            {
+                Cargo? proximoNivel = servicoNotificacao.ObterProximoNivel(cargoNotificacao, false);
+                if (proximoNivel != null)
+                {
+                    var usuariosProximoNivel = BuscaGestoresUe(codigoUe, proximoNivel.Value);
+                    if (usuariosProximoNivel != null && usuariosProximoNivel.Any())
+                        usuarios.AddRange(usuariosProximoNivel);
+                }
+            }
 
             return usuarios;
         }
@@ -724,78 +729,81 @@ namespace SME.SGP.Dominio.Servicos
 
             if (dataAtual == dataReferencia)
             {
-                var alunosAusentes = repositorioFrequenciaAluno.ObterAlunosComAusenciaPorDisciplinaNoPeriodo(periodoAtual.Id);
+                var alunosAusentes = repositorioFrequenciaAluno.ObterAlunosComAusenciaPorDisciplinaNoPeriodo(periodoAtual.Id, tipoCalendario.Modalidade == ModalidadeTipoCalendario.EJA);
 
-                // Carrega dados das disciplinas do EOL
-                var disciplinasIds = alunosAusentes.Select(a => long.Parse(a.DisciplinaId)).ToArray();
-                var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(disciplinasIds);
-
-                // Carrega dados das turmas (ue e dre)
-                var turmas = new List<Turma>();
-                alunosAusentes.Select(a => a.TurmaId).Distinct().ToList()
-                    .ForEach(turmaId =>
-                    {
-                        if (turmaId != null)
-                            turmas.Add(repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId));
-                    });
-
-                var percentualFrequenciaFund = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
-                var percentualFrequenciaRegencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
-
-                // Agrupa por DRE / UE / Turma / Disciplina
-                foreach (var turmasDRE in turmas.GroupBy(t => t.Ue.Dre))
+                if (alunosAusentes != null && alunosAusentes.Any())
                 {
-                    foreach (var turmasUE in turmasDRE.GroupBy(x => x.Ue))
-                    {
-                        var gestores = BuscaGestoresUe(turmasUE.Key.CodigoUe);
+                    // Carrega dados das disciplinas do EOL
+                    var disciplinasIds = alunosAusentes.Select(a => long.Parse(a.DisciplinaId)).ToArray();
+                    var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(disciplinasIds);
 
-                        foreach (var turma in turmasUE)
+                    // Carrega dados das turmas (ue e dre)
+                    var turmas = new List<Turma>();
+                    alunosAusentes.Select(a => a.TurmaId).Distinct().ToList()
+                        .ForEach(turmaId =>
                         {
-                            var alunosEOL = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
+                            if (turmaId != null)
+                                turmas.Add(repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId));
+                        });
 
-                            var alunosTurma = alunosAusentes.Where(c => c.TurmaId == turma.CodigoTurma);
-                            alunosTurma.Select(a => a.DisciplinaId).Distinct().ToList()
-                                .ForEach(disciplinaId =>
-                                {
-                                    var alunosDisciplina = alunosTurma.Where(c => c.DisciplinaId == disciplinaId);
+                    var percentualFrequenciaFund = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+                    var percentualFrequenciaRegencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
 
-                                    var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
-                                    var disciplinaEOL = disciplinasEol.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString() == disciplinaId);
+                    // Agrupa por DRE / UE / Turma / Disciplina
+                    foreach (var turmasDRE in turmas.GroupBy(t => t.Ue.Dre))
+                    {
+                        foreach (var turmasUE in turmasDRE.GroupBy(x => x.Ue))
+                        {
+                            var gestores = BuscaGestoresUe(turmasUE.Key.CodigoUe);
 
-                                    foreach (var alunoDisciplina in alunosDisciplina)
+                            foreach (var turma in turmasUE)
+                            {
+                                var alunosEOL = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
+
+                                var alunosTurma = alunosAusentes.Where(c => c.TurmaId == turma.CodigoTurma);
+                                alunosTurma.Select(a => a.DisciplinaId).Distinct().ToList()
+                                    .ForEach(disciplinaId =>
                                     {
-                                        if (alunoDisciplina.PercentualFrequencia <
-                                                (disciplinaEOL.Regencia ? percentualFrequenciaRegencia : percentualFrequenciaFund))
+                                        var alunosDisciplina = alunosTurma.Where(c => c.DisciplinaId == disciplinaId);
+
+                                        var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
+                                        var disciplinaEOL = disciplinasEol.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString() == disciplinaId);
+
+                                        foreach (var alunoDisciplina in alunosDisciplina)
                                         {
-                                            alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
+                                            if (alunoDisciplina.PercentualFrequencia <
+                                                    (disciplinaEOL.Regencia ? percentualFrequenciaRegencia : percentualFrequenciaFund))
                                             {
-                                                CodigoAluno = alunoDisciplina.CodigoAluno,
-                                                NomeAluno = alunosEOL.FirstOrDefault(x => x.CodigoAluno == alunoDisciplina.CodigoAluno).NomeAluno,
-                                                PercentualFrequencia = alunoDisciplina.PercentualFrequencia
-                                            });
-                                        }
-                                    };
+                                                alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
+                                                {
+                                                    CodigoAluno = alunoDisciplina.CodigoAluno,
+                                                    NomeAluno = alunosEOL.FirstOrDefault(x => x.CodigoAluno == alunoDisciplina.CodigoAluno).NomeAluno,
+                                                    PercentualFrequencia = alunoDisciplina.PercentualFrequencia
+                                                });
+                                            }
+                                        };
 
-                                    if (alunosDto.Any())
-                                    {
-                                        foreach (var gestor in gestores)
+                                        if (alunosDto.Any())
                                         {
-                                            NotificarFrequenciaBimestre(turma.CodigoTurma,
-                                                                turma.Nome,
-                                                                periodoAtual.Bimestre,
-                                                                turmasUE.Key.CodigoUe,
-                                                                turmasUE.Key.Nome,
-                                                                turmasDRE.Key.CodigoDre,
-                                                                turmasDRE.Key.Nome,
-                                                                disciplinaEOL.Nome,
-                                                                gestor.Usuario.Id,
-                                                                alunosDto);
+                                            foreach (var gestor in gestores)
+                                            {
+                                                NotificarFrequenciaBimestre(turma.CodigoTurma,
+                                                                    turma.Nome,
+                                                                    periodoAtual.Bimestre,
+                                                                    turmasUE.Key.CodigoUe,
+                                                                    turmasUE.Key.Nome,
+                                                                    turmasDRE.Key.CodigoDre,
+                                                                    turmasDRE.Key.Nome,
+                                                                    disciplinaEOL.Nome,
+                                                                    gestor.Usuario.Id,
+                                                                    alunosDto);
+                                            }
                                         }
-                                    }
-                                });
-                        }
-                    };
-                };
+                                    });
+                            }
+                        };
+                    }; 
+                }
             }
         }
 

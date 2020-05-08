@@ -123,5 +123,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task RemoverCJSeNecessario(Guid usuarioId);
 
         Task<bool> ValidarProfessor(string professorRf);
+
+        Task<bool> TurmaPossuiComponenteCurricularPAP(string codigoTurma, string login, Guid idPerfil);
     }
 }

@@ -290,5 +290,20 @@ namespace SME.SGP.Dados.Repositorios
             if (ids != null && ids.Any())
                 query.AppendLine("and fr.id = ANY(@ids)");
         }
+
+        public async Task<FechamentoReabertura> ObterPorDataTurmaCalendarioAsync(long ueId, DateTime dataReferencia, long tipoCalendarioId)
+        {
+            var query = @"select * from fechamento_reabertura fr 
+                        where 
+                        @dataReferencia between symmetric fr.inicio::date and fr.fim ::date
+                        and fr.ue_id = @ueId and fr.tipo_calendario_id = @tipoCalendarioId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoReabertura>(query, new
+            {
+                dataReferencia,
+                ueId,
+                tipoCalendarioId
+            });
+        }
     }
 }

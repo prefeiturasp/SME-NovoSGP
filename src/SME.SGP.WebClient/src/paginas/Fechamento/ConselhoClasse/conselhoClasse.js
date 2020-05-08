@@ -58,7 +58,8 @@ const ConselhoClasse = () => {
 
   const obterFrequenciaAluno = async codigoAluno => {
     const retorno = await ServicoConselhoClasse.obterFrequenciaAluno(
-      codigoAluno
+      codigoAluno,
+      turma
     ).catch(e => erros(e));
     if (retorno && retorno.data) {
       return retorno.data;
@@ -70,14 +71,17 @@ const ConselhoClasse = () => {
     resetarInfomacoes();
     const frequenciaGeralAluno = await obterFrequenciaAluno(aluno.codigoEOL);
     const novoAluno = aluno;
-    novoAluno.frequencia = frequenciaGeralAluno;    
+    novoAluno.frequencia = frequenciaGeralAluno;
     dispatch(setDadosAlunoObjectCard(aluno));
   };
 
   const permiteOnChangeAluno = async () => {
-    const continuar = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia();
-    if (continuar) {
-      return true;
+    const validouNotaConceitoPosConselho = await servicoSalvarConselhoClasse.validarNotaPosConselho();
+    if (validouNotaConceitoPosConselho) {
+      const validouAnotacaoRecomendacao = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia();
+      if (validouNotaConceitoPosConselho && validouAnotacaoRecomendacao) {
+        return true;
+      }
     }
     return false;
   };
@@ -134,7 +138,7 @@ const ConselhoClasse = () => {
                       <>
                         <ObjectCardConselhoClasse />
                         <DadosConselhoClasse
-                          codigoTurma={turmaSelecionada.turma}
+                          turmaCodigo={turmaSelecionada.turma}
                           modalidade={turmaSelecionada.modalidade}
                         />
                       </>

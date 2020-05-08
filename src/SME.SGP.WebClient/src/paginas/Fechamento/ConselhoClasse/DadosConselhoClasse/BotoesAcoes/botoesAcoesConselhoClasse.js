@@ -8,6 +8,9 @@ import { URL_HOME } from '~/constantes/url';
 import {
   setBimestreAtual,
   setConselhoClasseEmEdicao,
+  setExpandirLinha,
+  setNotaConceitoPosConselhoAtual,
+  setIdCamposNotasPosConselho,
 } from '~/redux/modulos/conselhoClasse/actions';
 import servicoSalvarConselhoClasse from '../../servicoSalvarConselhoClasse';
 
@@ -26,10 +29,26 @@ const BotoesAcoesConselhoClasse = () => {
     store => store.conselhoClasse.bimestreAtual
   );
 
-  const onClickSalvar = () => {
-    return servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia(
+  const notaConceitoPosConselhoAtual = useSelector(
+    store => store.conselhoClasse.notaConceitoPosConselhoAtual
+  );
+
+  const desabilitarCampos = useSelector(
+    store => store.conselhoClasse.desabilitarCampos
+  );
+
+  const onClickSalvar = async () => {
+    const validouNotaConceitoPosConselho = await servicoSalvarConselhoClasse.validarNotaPosConselho(
       true
     );
+    if (validouNotaConceitoPosConselho) {
+      const validouAnotacaoRecomendacao = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia(
+        true
+      );
+      return validouNotaConceitoPosConselho && validouAnotacaoRecomendacao;
+    }
+
+    return false;
   };
 
   const perguntaAoSalvar = async () => {
@@ -41,7 +60,10 @@ const BotoesAcoesConselhoClasse = () => {
   };
 
   const onClickVoltar = async () => {
-    if (conselhoClasseEmEdicao) {
+    if (
+      !desabilitarCampos &&
+      (conselhoClasseEmEdicao || notaConceitoPosConselhoAtual.ehEdicao)
+    ) {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
         const salvou = await onClickSalvar();
@@ -60,10 +82,13 @@ const BotoesAcoesConselhoClasse = () => {
   const recarregarDados = () => {
     dispatch(setConselhoClasseEmEdicao(false));
     dispatch(setBimestreAtual(bimestreAtual.valor));
+    dispatch(setExpandirLinha([]));
+    dispatch(setNotaConceitoPosConselhoAtual({}));
+    dispatch(setIdCamposNotasPosConselho({}));
   };
 
   const onClickCancelar = async () => {
-    if (conselhoClasseEmEdicao) {
+    if (conselhoClasseEmEdicao || notaConceitoPosConselhoAtual.ehEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -77,6 +102,7 @@ const BotoesAcoesConselhoClasse = () => {
   return (
     <>
       <Button
+        id="btn-voltar-conselho-classe"
         label="Voltar"
         icon="arrow-left"
         color={Colors.Azul}
@@ -85,12 +111,14 @@ const BotoesAcoesConselhoClasse = () => {
         onClick={onClickVoltar}
       />
       <Button
+        id="btn-cancelar-conselho-classe"
         label="Cancelar"
         color={Colors.Roxo}
         border
         className="mr-2"
         onClick={onClickCancelar}
         disabled={
+          desabilitarCampos ||
           !alunosConselhoClasse ||
           alunosConselhoClasse.length < 1 ||
           !conselhoClasseEmEdicao
@@ -104,7 +132,7 @@ const BotoesAcoesConselhoClasse = () => {
         bold
         className="mr-2"
         onClick={onClickSalvar}
-        disabled={!conselhoClasseEmEdicao}
+        disabled={desabilitarCampos || !conselhoClasseEmEdicao}
       />
     </>
   );

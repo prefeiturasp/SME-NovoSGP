@@ -230,6 +230,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioRelatorioSemestralAluno, RepositorioRelatorioSemestralAluno>();
             services.TryAddScopedWorkerService<IRepositorioRelatorioSemestralAlunoSecao, RepositorioRelatorioSemestralAlunoSecao>();
             services.TryAddScopedWorkerService<IRepositorioSecaoRelatorioSemestral, RepositorioSecaoRelatorioSemestral>();
+            services.TryAddScopedWorkerService<IRepositorioObjetivoAprendizagem, RepositorioObjetivoAprendizagem>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -264,6 +265,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoFechamentoTurmaDisciplina, ServicoFechamentoTurmaDisciplina>();
             services.TryAddScopedWorkerService<IServicoPendenciaFechamento, ServicoPendenciaFechamento>();
             services.TryAddScopedWorkerService<IServicoConselhoClasse, ServicoConselhoClasse>();
+            services.TryAddScopedWorkerService<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
+            services.TryAddScopedWorkerService<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

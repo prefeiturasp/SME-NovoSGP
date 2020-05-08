@@ -16,6 +16,7 @@ const RotasDto = {
   EVENTOS: '/calendario-escolar/eventos',
   CALENDARIO_ESCOLAR: '/calendario-escolar',
   CALENDARIO_PROFESSOR: '/calendario-escolar/calendario-professor',
+  CALENDARIO_PROFESSOR_II: '/calendario-escolar/calendario-professor/v2',
   CADASTRO_DE_AULA: '/calendario-escolar/calendario-professor/cadastro-aula',
   CADASTRO_DE_AVALIACAO:
     '/calendario-escolar/calendario-professor/cadastro-avaliacao',
