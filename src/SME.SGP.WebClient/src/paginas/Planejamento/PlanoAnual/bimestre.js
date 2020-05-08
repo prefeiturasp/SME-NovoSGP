@@ -43,7 +43,7 @@ const Bimestre = ({
       item.selecionado = true;
     });
     return bimestre.objetivosAprendizagem;
-  }
+  };
 
   const onChangeDisciplinasSelecionadas = disciplinasSelecionadas => {
     if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
@@ -65,7 +65,9 @@ const Bimestre = ({
               }
             });
             objetivosSelecionados.forEach(objetivoSelecionado => {
-              const objetivo = resposta.data.find(o => o.id === objetivoSelecionado.id);
+              const objetivo = resposta.data.find(
+                o => o.id === objetivoSelecionado.id
+              );
               if (!objetivo) {
                 resposta.data.push(objetivoSelecionado);
               }
@@ -110,6 +112,7 @@ const Bimestre = ({
   };
 
   useMemo(() => {
+    console.log(disciplinaSemObjetivo);
     setLayoutEspecial(ehEja || ehMedio || disciplinaSemObjetivo);
   }, [disciplinaSemObjetivo, ehEja, ehMedio]);
 

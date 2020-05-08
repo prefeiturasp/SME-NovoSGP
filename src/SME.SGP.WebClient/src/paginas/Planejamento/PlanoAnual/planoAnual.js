@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Collapse } from 'antd';
-import Row from '~/componentes/row';
+import shortid from 'shortid';
 
 import {
   Grid,
@@ -12,14 +12,8 @@ import {
   Loader,
 } from '~/componentes';
 import CopiarConteudo from './copiarConteudo';
-import Alert from '~/componentes/alert';
 import modalidade from '~/dtos/modalidade';
-import {
-  Titulo,
-  TituloAno,
-  Planejamento,
-  ContainerBimestres,
-} from './planoAnual.css';
+import { Titulo, ContainerBimestres } from './planoAnual.css';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 import servicoDisciplinas from '~/servicos/Paginas/ServicoDisciplina';
 import { erros, sucesso, confirmar } from '~/servicos/alertas';
@@ -230,27 +224,25 @@ const PlanoAnual = () => {
       const expandido = planoAnual.find(c => c.obrigatorio);
       if (expandido) setBimestreExpandido([expandido.bimestre]);
     }
-  }, [planoAnual]);
+  }, [emEdicao, planoAnual]);
 
   /**
-   * expande o bimestre atual
+   ** Expande o bimestre atual
    */
   useEffect(() => {
     if (bimestreExpandido) {
       const refBimestre = refsPainel[bimestreExpandido - 1];
+      console.log(refBimestre, refBimestre.current);
       if (refBimestre && refBimestre.current) {
         setTimeout(() => {
-          window.scrollTo(
-            0,
-            refsPainel[bimestreExpandido - 1].current.offsetTop
-          );
+          window.scrollTo(0, refBimestre.current.offsetTop);
         }, 500);
       }
     }
   }, [bimestreExpandido, refsPainel]);
 
   /**
-   *carrega lista de disciplinas
+   ** Carrega lista de disciplinas
    */
   useEffect(() => {
     if (turmaSelecionada.turma) {
@@ -352,7 +344,10 @@ const PlanoAnual = () => {
       setEhEja(
         turmaSelecionada.modalidade.toString() === modalidade.EJA.toString()
       );
-      setEhMedio(turmaSelecionada.modalidade.toString() === modalidade.ENSINO_MEDIO.toString())
+      setEhMedio(
+        turmaSelecionada.modalidade.toString() ===
+          modalidade.ENSINO_MEDIO.toString()
+      );
     } else {
       setDisciplinaSelecionada(null);
       setCodigoDisciplinaSelecionada(null);
@@ -431,6 +426,7 @@ const PlanoAnual = () => {
           </div>
           <div className="col-md-8 col-sm-2 d-flex justify-content-end">
             <Button
+              id={shortid.generate()}
               label="Copiar Conteúdo"
               icon="share-square"
               color={Colors.Azul}
@@ -440,6 +436,7 @@ const PlanoAnual = () => {
               disabled={emEdicao || !possuiTurmasDisponiveisParaCopia}
             />
             <Button
+              id={shortid.generate()}
               label="Voltar"
               icon="arrow-left"
               color={Colors.Azul}
@@ -448,16 +445,17 @@ const PlanoAnual = () => {
               onClick={() => history.push('/')}
             />
             <Button
+              id={shortid.generate()}
               label="Cancelar"
               color={Colors.Roxo}
               border
               bold
-              disabled={!emEdicao}
               className="mr-3"
               disabled={!emEdicao || !Object.entries(turmaSelecionada).length}
               onClick={cancelar}
             />
             <Button
+              id={shortid.generate()}
               label="Salvar"
               color={Colors.Roxo}
               bold
