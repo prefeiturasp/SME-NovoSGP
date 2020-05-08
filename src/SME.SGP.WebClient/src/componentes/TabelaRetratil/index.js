@@ -32,12 +32,6 @@ function TabelaRetratil({
     return true;
   }, [permiteOnChangeAluno]);
 
-  const selecionarAluno = async aluno => {
-    const permite = await permiteSelecionarAluno();
-    if (permite) {
-      setAlunoSelecionado(aluno);
-    }
-  };
 
   const isAlunoSelecionado = aluno => {
     return alunoSelecionado && aluno.codigoEOL === alunoSelecionado.codigoEOL;
@@ -92,7 +86,7 @@ function TabelaRetratil({
   const onClickLinhaAluno = async aluno => {
     const permite = await permiteSelecionarAluno();
     if (permite) {
-      selecionarAluno(aluno);
+      setAlunoSelecionado(aluno);
       onChangeAlunoSelecionado(aluno);
     }
   };

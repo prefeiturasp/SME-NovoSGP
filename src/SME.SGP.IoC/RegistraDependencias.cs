@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
@@ -14,6 +15,7 @@ using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
+using System.Collections.Generic;
 
 namespace SME.SGP.IoC
 {
@@ -26,6 +28,7 @@ namespace SME.SGP.IoC
             RegistrarComandos(services);
             RegistrarConsultas(services);
             RegistrarServicos(services);
+            RegistararQueries(services);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -141,6 +144,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasRelatorioSemestralAluno, ConsultasRelatorioSemestralAluno>();
             services.TryAddScoped<IConsultasRelatorioSemestralAlunoSecao, ConsultasRelatorioSemestralAlunoSecao>();
             services.TryAddScoped<IConsultasSecaoRelatorioSemestral, ConsultasSecaoRelatorioSemestral>();
+            services.TryAddScoped<IConsultaRecuperacaoParalelaPeriodo, ConsultaRecuperacaoParalelaPeriodo>();            
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -244,6 +248,30 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioRelatorioSemestralAluno, RepositorioRelatorioSemestralAluno>();
             services.TryAddScoped<IRepositorioRelatorioSemestralAlunoSecao, RepositorioRelatorioSemestralAlunoSecao>();
             services.TryAddScoped<IRepositorioSecaoRelatorioSemestral, RepositorioSecaoRelatorioSemestral>();
+            services.TryAddScoped<IRepositorioObjetivoAprendizagem, RepositorioObjetivoAprendizagem>();
+            services.TryAddScoped<IRepositorioConselhoClasseParecerConclusivo, RepositorioConselhoClasseParecerConclusivo>();
+        }
+
+        private static void RegistararQueries(IServiceCollection services)
+        {
+            services.TryAddScoped<IRequestHandler<ObterTipoDeCalendarioDaTurmaQuery, TipoCalendario>, ObterTipoDeCalendarioDaTurmaQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterTurmaPorCodigoQuery, Turma>, ObterTurmaPorCodigoQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterEventosDaUeSMEPorMesQuery, IEnumerable<Evento>>, ObterEventosDaUeSMEPorMesQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterAulasCalendarioProfessorPorMesQuery, IEnumerable<Aula>>, ObterAulasCalendarioProfessorPorMesQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterAulasCalendarioProfessorPorMesDiaQuery, IEnumerable<Aula>>, ObterAulasCalendarioProfessorPorMesDiaQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterTipoCalendarioPorIdQuery, TipoCalendario>, ObterTipoCalendarioPorIdQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterPeriodoEscolarPorCalendarioEDataQuery, PeriodoEscolar>, ObterPeriodoEscolarPorCalendarioEDataQueryHandler>();            
+            services.TryAddScoped<IRequestHandler<ObterTemEventoNaoLetivoPorCalendarioEDiaQuery, bool>, ObterTemEventoNaoLetivoPorCalendarioEDiaQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterTemEventoLetivoPorCalendarioEDiaQuery, bool>, ObterTemEventoLetivoPorCalendarioEDiaQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterFechamentoPorTurmaPeriodoQuery, FechamentoTurma>, ObterFechamentoPorTurmaPeriodoQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterExistePeriodoPorUeDataBimestreQuery, PeriodoFechamento>, ObterExistePeriodoPorUeDataBimestreQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterFechamentoReaberturaPorDataTurmaQuery, FechamentoReabertura>, ObterFechamentoReaberturaPorDataTurmaQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterAulaPossuiFrequenciaQuery, bool>, ObterAulaPossuiFrequenciaQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterPodeCadastrarAulaPorDataQuery, PodeCadastrarAulaPorDataRetornoDto>, ObterPodeCadastrarAulaPorDataQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery, IEnumerable<EventoAulaDiaDto>>, ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery, IEnumerable<EventoAulaDto>>, ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterUsuarioLogadoQuery, Usuario>, ObterUsuarioLogadoQueryHandler>();            
+
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -280,6 +308,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoPendenciaFechamento, ServicoPendenciaFechamento>();
             services.TryAddScoped<IServicoFechamentoFinal, ServicoFechamentoFinal>();
             services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
+            services.TryAddScoped<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
+            services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
         }
     }
 }

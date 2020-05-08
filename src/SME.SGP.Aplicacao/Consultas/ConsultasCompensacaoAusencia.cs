@@ -149,6 +149,9 @@ namespace SME.SGP.Aplicacao
                 var disciplinasRegencia = await consultasCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacao.Id);
                 var disciplinasIds = disciplinasRegencia.Select(x => long.Parse(x.DisciplinaId));
 
+                if(!disciplinasIds.Any())
+                    return compensacaoDto;
+
                 disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(disciplinasIds.ToArray());
 
                 foreach (var disciplinaEOL in disciplinasEOL)

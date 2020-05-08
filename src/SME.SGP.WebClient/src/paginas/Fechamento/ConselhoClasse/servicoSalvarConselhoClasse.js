@@ -3,9 +3,15 @@ import { erros, sucesso, confirmar, erro } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import {
   setAuditoriaAnotacaoRecomendacao,
-  setDadosAnotacoesRecomendacoes,
+  setDadosPrincipaisConselhoClasse,
   setConselhoClasseEmEdicao,
+  setExpandirLinha,
+  setIdCamposNotasPosConselho,
+  setNotaConceitoPosConselhoAtual,
+  setGerandoParecerConclusivo,
+  addDisciplinasComNotaPosConselho,
 } from '~/redux/modulos/conselhoClasse/actions';
+import notasConceitos from '~/dtos/notasConceitos';
 
 class ServicoSalvarConselhoClasse {
   validarSalvarRecomendacoesAlunoFamilia = async (salvarSemValidar = false) => {
@@ -15,26 +21,27 @@ class ServicoSalvarConselhoClasse {
     const { conselhoClasse } = state;
 
     const {
-      dadosAnotacoesRecomendacoes,
+      dadosPrincipaisConselhoClasse,
       dadosAlunoObjectCard,
       anotacoesPedagogicas,
       recomendacaoAluno,
       recomendacaoFamilia,
       conselhoClasseEmEdicao,
+      desabilitarCampos,
     } = conselhoClasse;
 
     const perguntaDescartarRegistros = async () => {
       return confirmar(
         'Atenção',
         '',
-        'Os registros deste aluno ainda não foram salvos, deseja descartar os registros?'
+        'Anotações e recomendações ainda não foram salvas, deseja descartar?'
       );
     };
 
     const salvar = async () => {
       const params = {
-        conselhoClasseId: dadosAnotacoesRecomendacoes.conselhoClasseId,
-        fechamentoTurmaId: dadosAnotacoesRecomendacoes.fechamentoTurmaId,
+        conselhoClasseId: dadosPrincipaisConselhoClasse.conselhoClasseId,
+        fechamentoTurmaId: dadosPrincipaisConselhoClasse.fechamentoTurmaId || 0,
         alunoCodigo: dadosAlunoObjectCard.codigoEOL,
         anotacoesPedagogicas,
         recomendacaoAluno,
@@ -56,10 +63,12 @@ class ServicoSalvarConselhoClasse {
       ).catch(e => erros(e));
 
       if (retorno && retorno.status === 200) {
-        if (!dadosAnotacoesRecomendacoes.conselhoClasseId) {
-          dadosAnotacoesRecomendacoes.conselhoClasseId =
+        if (!dadosPrincipaisConselhoClasse.conselhoClasseId) {
+          dadosPrincipaisConselhoClasse.conselhoClasseId =
             retorno.data.conselhoClasseId;
-          dispatch(setDadosAnotacoesRecomendacoes(dadosAnotacoesRecomendacoes));
+          dispatch(
+            setDadosPrincipaisConselhoClasse(dadosPrincipaisConselhoClasse)
+          );
         }
 
         const auditoria = {
@@ -72,11 +81,15 @@ class ServicoSalvarConselhoClasse {
         };
         dispatch(setAuditoriaAnotacaoRecomendacao(auditoria));
         dispatch(setConselhoClasseEmEdicao(false));
-        sucesso('Suas informações foram salvas com sucesso.');
+        sucesso('Anotações e recomendações salvas com sucesso.');
         return true;
       }
       return false;
     };
+
+    if (desabilitarCampos) {
+      return true;
+    }
 
     if (salvarSemValidar && conselhoClasseEmEdicao) {
       return salvar();
@@ -104,6 +117,227 @@ class ServicoSalvarConselhoClasse {
       // Tenta salvar os registros se estão válidos e continuar para executação a ação!
       return salvar();
     }
+    return true;
+  };
+
+  salvarNotaPosConselho = async () => {
+    const { dispatch } = store;
+
+    const state = store.getState();
+
+    const { conselhoClasse } = state;
+
+    const {
+      dadosPrincipaisConselhoClasse,
+      notaConceitoPosConselhoAtual,
+      idCamposNotasPosConselho,
+      desabilitarCampos,
+      bimestreAtual,
+    } = conselhoClasse;
+
+    const {
+      conselhoClasseId,
+      fechamentoTurmaId,
+      alunoCodigo,
+      tipoNota,
+    } = dadosPrincipaisConselhoClasse;
+
+    const {
+      justificativa,
+      nota,
+      conceito,
+      codigoComponenteCurricular,
+      idCampo,
+    } = notaConceitoPosConselhoAtual;
+
+    const ehNota = Number(tipoNota) === notasConceitos.Notas;
+
+    const limparDadosNotaPosConselhoJustificativa = () => {
+      dispatch(setExpandirLinha([]));
+      dispatch(setNotaConceitoPosConselhoAtual({}));
+    };
+
+    const gerarParecerConclusivo = async () => {
+      dispatch(setGerandoParecerConclusivo(true));
+      const retorno = await ServicoConselhoClasse.gerarParecerConclusivo(
+        conselhoClasseId,
+        fechamentoTurmaId,
+        alunoCodigo
+      ).catch(e => erros(e));
+      if (retorno && retorno.data) {
+        ServicoConselhoClasse.setarParecerConclusivo(retorno.data);
+      }
+      dispatch(setGerandoParecerConclusivo(false));
+    };
+
+    if (desabilitarCampos) {
+      return false;
+    }
+
+    if (!justificativa) {
+      erro(
+        `É obrigatório informar justificativa de ${
+          ehNota ? 'nota' : 'conceito'
+        } pós-conselho`
+      );
+      return false;
+    }
+
+    if (!nota && !conceito) {
+      erro(
+        `É obrigatório informar ${ehNota ? 'nota' : 'conceito'} pós-conselho`
+      );
+      return false;
+    }
+
+    const notaDto = {
+      justificativa,
+      nota: ehNota ? nota : '',
+      conceito: !ehNota ? conceito : '',
+      codigoComponenteCurricular,
+    };
+
+    const retorno = await ServicoConselhoClasse.salvarNotaPosConselho(
+      conselhoClasseId,
+      fechamentoTurmaId,
+      alunoCodigo,
+      notaDto
+    ).catch(e => erro(e));
+
+    if (retorno && retorno.status === 200) {
+      dispatch(addDisciplinasComNotaPosConselho(codigoComponenteCurricular));
+      if (!dadosPrincipaisConselhoClasse.conselhoClasseId) {
+        dadosPrincipaisConselhoClasse.conselhoClasseId =
+          retorno.data.conselhoClasseId;
+        dispatch(
+          setDadosPrincipaisConselhoClasse(dadosPrincipaisConselhoClasse)
+        );
+      }
+
+      const { auditoria } = retorno.data;
+
+      const temJustificativasDto = idCamposNotasPosConselho;
+      temJustificativasDto[idCampo] = auditoria.id;
+      dispatch(setIdCamposNotasPosConselho(temJustificativasDto));
+
+      limparDadosNotaPosConselhoJustificativa();
+
+      sucesso(
+        `${ehNota ? 'Nota' : 'Conceito'} pós-conselho ${
+          ehNota ? 'salva' : 'salvo'
+        } com sucesso`
+      );
+
+      if (bimestreAtual && bimestreAtual.valor === 'final') {
+        gerarParecerConclusivo();
+      }
+
+      return true;
+    }
+    return false;
+  };
+
+  validarNotaPosConselho = async clickouEmSalvar => {
+    const { dispatch } = store;
+
+    const limparDadosNotaPosConselhoJustificativa = () => {
+      dispatch(setExpandirLinha([]));
+      dispatch(setNotaConceitoPosConselhoAtual({}));
+    };
+
+    const erroAoValidarNotasSalvas = () => {
+      erro(
+        'O estudante precisa ter todas as notas pós-conselho informadas para que seja possível salvar o seu conselho de classe'
+      );
+      return false;
+    };
+
+    const state = store.getState();
+
+    const { conselhoClasse } = state;
+
+    const {
+      notaConceitoPosConselhoAtual,
+      dadosPrincipaisConselhoClasse,
+      desabilitarCampos,
+      dadosListasNotasConceitos,
+      disciplinasComNotaPosConselho,
+    } = conselhoClasse;
+
+    const validarNotasConceitosSalvos = componentes => {
+      if (!componentes || componentes.length === 0) return true;
+      for (let index = 0; index < componentes.length; index++) {
+        const componente = componentes[index];
+        if (!componente.notaPosConselho.nota) {
+          if (
+            !disciplinasComNotaPosConselho.find(
+              d => String(d) === String(componente.codigoComponenteCurricular)
+            )
+          ) {
+            const retorno = erroAoValidarNotasSalvas();
+            if (!retorno) {
+              return retorno;
+            }
+          }
+        }
+      }
+      return true;
+    };
+
+    if (desabilitarCampos) {
+      return true;
+    }
+
+    const { tipoNota } = dadosPrincipaisConselhoClasse;
+
+    const { ehEdicao } = notaConceitoPosConselhoAtual;
+
+    const ehNota = Number(tipoNota) === notasConceitos.Notas;
+
+    const perguntaDescartarRegistros = async () => {
+      return confirmar(
+        'Atenção',
+        '',
+        `${ehNota ? 'Nota' : 'Conceito'} pós-conselho não foi ${
+          ehNota ? 'salva' : 'salvo'
+        }, deseja descartar?`
+      );
+    };
+
+    if (ehEdicao) {
+      const descartarRegistros = await perguntaDescartarRegistros();
+
+      // Voltar para a tela continua e executa a ação!
+      if (descartarRegistros) {
+        limparDadosNotaPosConselhoJustificativa();
+        return true;
+      }
+
+      // Voltar para a tela e não executa a ação!
+      return false;
+    }
+
+    if (clickouEmSalvar) {
+      for (let index = 0; index < dadosListasNotasConceitos.length; index++) {
+        const dados = dadosListasNotasConceitos[index];
+        const validacaoCompCurricular = validarNotasConceitosSalvos(
+          dados.componentesCurriculares
+        );
+        if (!validacaoCompCurricular) {
+          return false;
+        }
+        const validacaoCompRegencia = dados.componenteRegencia
+          ? validarNotasConceitosSalvos(
+              dados.componenteRegencia.componentesCurriculares
+            )
+          : true;
+        if (!validacaoCompRegencia) {
+          return false;
+        }
+      }
+      return true;
+    }
+
     return true;
   };
 }

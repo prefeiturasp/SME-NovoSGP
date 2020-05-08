@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { Base } from './colors';
 
 const LoaderWrapper = styled.div`
+  width: inherit !important;
   .ant-spin-text {
     color: ${Base.CinzaMako};
   }

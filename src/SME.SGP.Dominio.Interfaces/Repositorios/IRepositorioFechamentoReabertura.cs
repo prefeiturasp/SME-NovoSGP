@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioFechamentoReabertura : IRepositorioBase<FechamentoReabertura>
     {
+        Task<FechamentoReabertura> ObterPorDataTurmaCalendarioAsync(long ueId, DateTime dataReferencia, long tipoCalendarioId);
         void ExcluirBimestres(long id);
 
         Task ExcluirVinculoDeNotificacoesAsync(long fechamentoReaberturaId);

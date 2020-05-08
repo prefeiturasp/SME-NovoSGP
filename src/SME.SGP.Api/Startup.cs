@@ -13,9 +13,11 @@ using SME.SGP.Background;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using MediatR;
 
 namespace SME.SGP.Api
 {
@@ -109,6 +111,9 @@ namespace SME.SGP.Api
             });
 
             services.AddApplicationInsightsTelemetry(Configuration);
+
+            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
+            services.AddMediatR(assembly);
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
 

@@ -16,16 +16,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<ConselhoClasseAluno> ObterPorConselhoClasseAsync(long conselhoClasseId, string alunoCodigo)
         {
-            var query = @"select cca.*, cc.*
+            var query = @"select cca.*, cc.*, pc.*
                             from conselho_classe_aluno cca
                           inner join conselho_classe cc on cc.id = cca.conselho_classe_id
+                           left join conselho_classe_parecer pc on pc.id = cca.conselho_classe_parecer_id
                           where cca.conselho_classe_id = @conselhoClasseId
                             and cca.aluno_codigo = @alunoCodigo";
 
-            return (await database.Conexao.QueryAsync<ConselhoClasseAluno, ConselhoClasse, ConselhoClasseAluno>(query
-                , (conselhoClasseAluno, conselhoClasse) =>
+            return (await database.Conexao.QueryAsync<ConselhoClasseAluno, ConselhoClasse, ConselhoClasseParecerConclusivo, ConselhoClasseAluno>(query
+                , (conselhoClasseAluno, conselhoClasse, parecerConclusivo) =>
                 {
                     conselhoClasseAluno.ConselhoClasse = conselhoClasse;
+                    conselhoClasseAluno.ConselhoClasseParecer = parecerConclusivo;
                     return conselhoClasseAluno;
                 }
                 , new { conselhoClasseId, alunoCodigo })).FirstOrDefault();
@@ -78,6 +80,19 @@ namespace SME.SGP.Dados.Repositorios
                     return conselhoClasseAluno;
                 }
                 , new { codigoTurma, codigoAluno, bimestre })).FirstOrDefault();
+        }
+
+        public async Task<ConselhoClasseAluno> ObterPorPeriodoAsync(string alunoCodigo, long turmaId, long periodoEscolarId)
+        {
+            var query = @"select cca.* 
+                          from fechamento_turma ft
+                         inner join conselho_classe cc on cc.fechamento_turma_id = ft.id 
+                         inner join conselho_classe_aluno cca on cca.conselho_classe_id = cc.id
+                         where ft.periodo_escolar_id = @periodoEscolarId
+                           and ft.turma_id = @turmaId
+                           and cca.aluno_codigo = @alunoCodigo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseAluno>(query, new { alunoCodigo, turmaId, periodoEscolarId });
         }
     }
 }

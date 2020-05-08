@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { Cabecalho, Ordenacao } from '~/componentes-sgp';
 
 // Componentes
-import { Card, Loader, ButtonGroup, Grid } from '~/componentes';
+import { Card, Loader, ButtonGroup, Grid, Alert } from '~/componentes';
 import PeriodosDropDown from './componentes/PeriodosDropDown';
 import EixoObjetivo from './componentes/EixoObjetivo';
 import BarraNavegacao from './componentes/BarraNavegacao';
@@ -41,6 +41,7 @@ import Reducer, {
 
 // Utils
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+import { MensagemAlerta } from '~/paginas/Perfil/meusDados.css';
 
 function RelatorioPAPAcompanhamento() {
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
@@ -50,6 +51,8 @@ function RelatorioPAPAcompanhamento() {
   const [carregando, setCarregando] = useState(false);
   const [estadoOriginalAlunos, setEstadoOriginalAlunos] = useState(null);
   const { turmaSelecionada } = useSelector(store => store.usuario);
+  const [semPeriodos, setSemPeriodos] = useState(false);
+  const [somenteLeitura, setSomenteLeitura] = useState(false);
 
   const dispararAlteracoes = dados => {
     setEstadoOriginalAlunos(dados.periodo.alunos);
@@ -92,9 +95,16 @@ function RelatorioPAPAcompanhamento() {
 
   const onChangeObjetivoHandler = useCallback(
     async objetivo => {
-      salvarAlteracoes(objetivo);
+      if (!somenteLeitura) {
+        salvarAlteracoes(objetivo);
+        return;
+      }
+
+      if (objetivo) {
+        disparar(setarObjetivoAtivo(objetivo.id));
+      }
     },
-    [salvarAlteracoes]
+    [salvarAlteracoes, somenteLeitura]
   );
 
   const limparTela = useCallback(() => {
@@ -113,8 +123,9 @@ function RelatorioPAPAcompanhamento() {
   const onChangePeriodoHandler = async valor => {
     try {
       setCarregando(true);
+      setSomenteLeitura(false);
 
-      if (modoEdicao) {
+      if (modoEdicao && !somenteLeitura) {
         const confirmou = await confirmar(
           'Atenção',
           'Você não salvou as informações preenchidas.',
@@ -138,11 +149,14 @@ function RelatorioPAPAcompanhamento() {
         });
 
         if (!data) {
-          erro('Não foram encontrados dados para a turma e período selecionados.');
+          erro(
+            'Não foram encontrados dados para a turma e período selecionados.'
+          );
           setCarregando(false);
           return false;
         }
 
+        setSomenteLeitura(!!data.somenteLeitura);
         dispararAlteracoes(data);
         disparar(setarObjetivoAtivo(estado.Objetivos[0]));
         setCarregando(false);
@@ -181,20 +195,20 @@ function RelatorioPAPAcompanhamento() {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-            ...alunoCorrente.respostas.filter(
-              y => y.objetivoId !== estado.ObjetivoAtivo.id
-            ),
-            novaResposta,
-          ]
+              ...alunoCorrente.respostas.filter(
+                y => y.objetivoId !== estado.ObjetivoAtivo.id
+              ),
+              novaResposta,
+            ]
           : [novaResposta];
     } else {
       respostasAluno =
         alunoCorrente.respostas && alunoCorrente.respostas.length > 0
           ? [
-            ...alunoCorrente.respostas.filter(
-              y => y.objetivoId !== estado.ObjetivoAtivo.id
-            ),
-          ]
+              ...alunoCorrente.respostas.filter(
+                y => y.objetivoId !== estado.ObjetivoAtivo.id
+              ),
+            ]
           : [];
     }
 
@@ -203,9 +217,9 @@ function RelatorioPAPAcompanhamento() {
         estado.Alunos.map(item =>
           item.codAluno === aluno.codAluno
             ? {
-              ...aluno,
-              respostas: respostasAluno,
-            }
+                ...aluno,
+                respostas: respostasAluno,
+              }
             : item
         )
       )
@@ -273,11 +287,35 @@ function RelatorioPAPAcompanhamento() {
   return (
     <>
       <AlertaSelecionarTurma />
+      {somenteLeitura && (
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'pap-somente-leitura',
+            mensagem:
+              'Não é possível preencher o relatório fora do período estipulado pela SME',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-4"
+        />
+      )}
+      {semPeriodos && (
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'sem-periodo-pap',
+            mensagem:
+              'Somente é possivel realizar o preenchimento do PAP para turmas PAP',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-4"
+        />
+      )}
       <Cabecalho pagina="Relatório de encaminhamento e acompanhamento do PAP" />
       <Loader loading={carregando}>
         <Card mx="mx-0">
           <ButtonGroup
-            somenteConsulta
+            somenteConsulta={somenteLeitura}
             permissoesTela={{
               podeConsultar: true,
               podeAlterar: true,
@@ -290,15 +328,20 @@ function RelatorioPAPAcompanhamento() {
             onClickBotaoPrincipal={() => salvarAlteracoes(estado.ObjetivoAtivo)}
             onClickCancelar={() => onClickCancelarHandler()}
             labelBotaoPrincipal="Salvar"
-            desabilitarBotaoPrincipal={!modoEdicao || !periodo}
+            desabilitarBotaoPrincipal={
+              somenteLeitura || !modoEdicao || !periodo
+            }
           />
           <Grid className="p-0" cols={12}>
             <Linha className="row m-0">
               <Grid cols={3}>
                 <PeriodosDropDown
+                  codigoTurma={turmaSelecionada && turmaSelecionada.turma}
+                  setSemPeriodos={setSemPeriodos}
                   onChangePeriodo={onChangePeriodoHandler}
                   valor={periodo}
                   desabilitado={
+                    semPeriodos ||
                     turmaSelecionada.turma === null ||
                     turmaSelecionada.turma === undefined
                   }
@@ -330,7 +373,7 @@ function RelatorioPAPAcompanhamento() {
               ordenarColunaNumero="numeroChamada"
               ordenarColunaTexto="nome"
               conteudoParaOrdenar={estado.Alunos}
-              desabilitado={estado.Alunos.length <= 0}
+              desabilitado={somenteLeitura || estado.Alunos.length <= 0}
               onChangeOrdenacao={valor => setOrdenacao(valor)}
             />
           </Grid>
@@ -340,6 +383,7 @@ function RelatorioPAPAcompanhamento() {
               objetivoAtivo={estado.ObjetivoAtivo}
               respostas={respostasCorrentes}
               onChangeResposta={onChangeRespostaHandler}
+              somenteConsulta={somenteLeitura}
             />
           </Grid>
         </Card>

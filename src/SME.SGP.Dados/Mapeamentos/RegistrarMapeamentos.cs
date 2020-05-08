@@ -104,6 +104,9 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RelatorioSemestralAlunoMap());
                config.AddMap(new RelatorioSemestralAlunoSecaoMap());
                config.AddMap(new SecaoRelatorioSemestralMap());
+               config.AddMap(new ConselhoClasseParecerAnoMap());
+               config.AddMap(new ConselhoClasseParecerConclusivoMap());
+               config.AddMap(new ObjetivoAprendizagemMap());
                config.ForDommel();
            });
         }

@@ -16,7 +16,23 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPeriodoFechamento(ISgpContext conexao) : base(conexao)
         {
         }
+        public async Task<bool> ExistePeriodoPorUeDataBimestre(long ueId, DateTime dataReferencia, int bimestre)
+        {
+            string query = @"select  1
+                           from periodo_fechamento p
+                           left join periodo_fechamento_bimestre pfb ON pfb.periodo_fechamento_id = p.id
+                           left join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
+                           where p.ue_id = @ueId
+                           and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento
+                           and pe.bimestre = @bimestre";
 
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new
+            {
+                ueId,
+                dataReferencia,
+                bimestre
+            });
+        }
         public void AlterarPeriodosComHierarquiaInferior(DateTime inicioDoFechamento, DateTime finalDoFechamento, long periodoEscolarId, long? dreId)
         {
             var query = new StringBuilder("update ");
@@ -40,9 +56,9 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<bool> ExistePeriodoPorUeDataBimestre(long ueId, DateTime dataReferencia, int bimestre)
+        public async Task<PeriodoFechamento> ObterPeriodoPorUeDataBimestreAsync(long ueId, DateTime dataReferencia, int bimestre)
         {
-            string query = @"select  1
+            string query = @"select p.*, pfb.*
                            from periodo_fechamento p
                            left join periodo_fechamento_bimestre pfb ON pfb.periodo_fechamento_id = p.id
                            left join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
@@ -50,17 +66,27 @@ namespace SME.SGP.Dados.Repositorios
                            and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento
                            and pe.bimestre = @bimestre";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new
+            var lookup = new Dictionary<long, PeriodoFechamento>();
+
+            await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoFechamento>(query.ToString(), (periodoFechamento, periodoFechamentoBimestre) => {
+
+                periodoFechamento.AdicionarFechamentoBimestre(periodoFechamentoBimestre);
+
+                return periodoFechamento;
+            },  new
             {
                 ueId,
                 dataReferencia,
                 bimestre
             });
+
+            return lookup.Select( a => a.Value).FirstOrDefault();
         }
 
-        public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(long ueId, long dreId, int bimestre)
+        public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(long ueId, long dreId, int bimestre, long? periodoEscolarId)
         {
             var validacaoBimestre = bimestre == 0 ? "order by pe.bimestre desc limit 1" : "and pe.bimestre = @bimestre";
+            var validacaoPeriodo = periodoEscolarId.HasValue ? "and pe.id = @periodoEscolarId" : "";
 
             var query = $@"select pfb.* 
                           from periodo_fechamento pf 
@@ -68,9 +94,12 @@ namespace SME.SGP.Dados.Repositorios
                          inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
                          where pf.ue_id = @ueId
                            and pf.dre_id = @dreId 
+                            {validacaoPeriodo} 
                             {validacaoBimestre}";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { ueId, dreId, bimestre });
+
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { ueId, dreId, bimestre, periodoEscolarId });
         }
 
         public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? dreId, long? ueId, long? turmaId)

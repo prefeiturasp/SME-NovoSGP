@@ -23,5 +23,8 @@ namespace SME.SGP.Aplicacao
         Task<List<DisciplinaDto>> ObterDisciplinasPorTurma(string codigoTurma, bool turmaPrograma);
 
         Task<DisciplinaDto> ObterDisciplina(long disciplinaId);
+
+        Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo);
+        IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas);
     }
 }

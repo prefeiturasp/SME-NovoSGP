@@ -6,7 +6,10 @@ class ServicoNotaConceito {
   };
 
   obterArredondamento = (nota, data) => {
-    return api.get(`v1/avaliacoes/notas/${nota}/arredondamento?data=${data}`);
+    return api.get(
+      `v1/avaliacoes/notas/${nota}/arredondamento?data=${data ||
+        window.moment().format('YYYY-MM-DD')}`
+    );
   };
 }
 export default new ServicoNotaConceito();

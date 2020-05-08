@@ -49,93 +49,62 @@ namespace SME.SGP.Aplicacao
 
             return str.ToString().Trim();
         }
-
-        public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(string turmaCodigo, string alunoCodigo, int bimestre, Modalidade turmaModalidade, bool EhFinal = false)
+        
+        public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
-            if (bimestre == 0 && !EhFinal)
-                bimestre = ObterBimestreAtual(turmaModalidade);
-
-            PeriodoFechamentoBimestre periodoFechamentoBimestre = null;
-            var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaCodigo);
-            if (turma == null)
-                throw new NegocioException("Turma não localizada");
+            var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
+            var bimestre = fechamentoTurma.PeriodoEscolar?.Bimestre;
 
             var emFechamento = true;
-            if (EhFinal)
+
+            if (!bimestre.HasValue)
             {
-                var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(turma);
+                var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
                 if (!validacaoConselhoFinal.Item2)
                     throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
                 
-                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today,bimestre);
+                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma.CodigoTurma, DateTime.Today);
             }
             else
             {
-                periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestre);                
-                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestre);
+                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma.CodigoTurma, DateTime.Today, bimestre.Value);
             }
 
-            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turmaCodigo, bimestre);
-            if (fechamentoTurma == null)
-                throw new NegocioException("Fechamento da turma não localizado " + (!EhFinal ? $"para o bimestre {bimestre}" : ""));
-
-            var anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, turmaCodigo, bimestre, EhFinal);
+            var anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, fechamentoTurmaId);
             if (anotacoesDoAluno == null)
                 anotacoesDoAluno = new List<FechamentoAlunoAnotacaoConselhoDto>();
             
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFechamentoAsync(fechamentoTurma.Id, alunoCodigo);
             if (conselhoClasseAluno == null)
-            {
-                var conselhoClasseExistente = await repositorioConselhoClasse.ObterPorTurmaEPeriodoAsync(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId);         
+                return await ObterRecomendacoesIniciais(anotacoesDoAluno, emFechamento);
 
-                return await ObterRecomendacoesIniciais(anotacoesDoAluno, bimestre, fechamentoTurma.Id, periodoFechamentoBimestre, emFechamento, conselhoClasseExistente);
-            }
-
-            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, bimestre, periodoFechamentoBimestre, fechamentoTurma.Id, emFechamento);
+            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, emFechamento);
         }
 
-        private int ObterBimestreAtual(Modalidade turmaModalidade)
-        {
-            return consultasPeriodoEscolar.ObterBimestre(DateTime.Today, turmaModalidade);
-        }
-
-        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, long fechamentoTurmaId, PeriodoFechamentoBimestre periodoFechamentoBimestre, bool emFechamento, ConselhoClasse conselhoClasseExistente)
+        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, bool emFechamento)
         {
             var recomendacoes = await repositorioConselhoClasseRecomendacao.ObterTodosAsync();
-
-            long conselhoClasseId = conselhoClasseExistente?.Id ?? 0;          
-
             if (!recomendacoes.Any())
                 throw new NegocioException("Não foi possível localizar as recomendações da família e aluno.");
 
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
-                FechamentoTurmaId = fechamentoTurmaId,
-                ConselhoClasseId = conselhoClasseId,
                 RecomendacaoAluno = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
                 RecomendacaoFamilia = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
                 AnotacoesAluno = anotacoesAluno,
-                Bimestre = bimestre,
-                PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
-                PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
                 SomenteLeitura = !emFechamento
             };
         }
 
         private ConsultasConselhoClasseRecomendacaoConsultaDto TransformaEntidadeEmConsultaDto(ConselhoClasseAluno conselhoClasseAluno,
-            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, int bimestre, PeriodoFechamentoBimestre periodoFechamentoBimestre, long fechamentoTurmaId, bool emFechamento)
+            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, bool emFechamento)
         {
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
-                FechamentoTurmaId = fechamentoTurmaId,
-                ConselhoClasseId = conselhoClasseAluno.ConselhoClasseId,
                 RecomendacaoAluno = conselhoClasseAluno.RecomendacoesAluno,
                 RecomendacaoFamilia = conselhoClasseAluno.RecomendacoesFamilia,
                 AnotacoesAluno = anotacoesAluno,
                 AnotacoesPedagogicas = conselhoClasseAluno.AnotacoesPedagogicas,
-                Bimestre = bimestre,
-                PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
-                PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
                 SomenteLeitura = !emFechamento,
                 Auditoria = (AuditoriaDto)conselhoClasseAluno
             };

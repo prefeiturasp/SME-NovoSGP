@@ -220,7 +220,8 @@ namespace SME.SGP.Aplicacao
                     {
                         foreach (var nota in notasDoBimestre)
                         {
-                            var notaParaAdicionar = ehNota ? nota.Nota.ToString() : nota.ConceitoId.Value.ToString();
+                            var notaParaAdicionar = ehNota ? nota.Nota?.ToString() : nota.ConceitoId?.ToString();
+                            
                             listaRetorno.Add(new FechamentoNotaAlunoDto(periodo.Bimestre, notaParaAdicionar, nota.DisciplinaId, nota.FechamentoAluno.AlunoCodigo));
                         }
                     }
@@ -248,7 +249,7 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.CodigoRf != professorTitularDaTurmaDisciplinaRf)
                 return false;
 
-            var periodoFechamento = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre);
+            var periodoFechamento = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre, periodoEscolar.Id);
 
             var reabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(periodoEscolar.Bimestre, DateTime.Today, periodoEscolar.TipoCalendarioId, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
 
