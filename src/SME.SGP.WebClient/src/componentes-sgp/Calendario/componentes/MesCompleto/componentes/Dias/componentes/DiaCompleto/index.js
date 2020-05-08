@@ -55,11 +55,15 @@ function DiaCompleto({
   const onClickNovaAulaHandler = useCallback(
     diaSelecionado => {
       history.push(
-        `${RotasDTO.CADASTRO_DE_AULA}/novo/${tipoCalendarioId}/${diaSelecionado}`
+        `${RotasDTO.CADASTRO_DE_AULA}/novo/${tipoCalendarioId}?diaAula=${diaSelecionado}`
       );
     },
     [tipoCalendarioId]
   );
+
+  const onClickNovaAvaliacaoHandler = useCallback(() => {
+    history.push(`${RotasDTO.CADASTRO_DE_AVALIACAO}/novo`);
+  }, []);
 
   const onClickFrequenciaHandler = useCallback(
     (disciplinaId, diaSelecionado) => {
@@ -139,16 +143,14 @@ function DiaCompleto({
                 .length > 0
             }
             podeCadastrarAvaliacao={
-              typeof dadosDia?.dados?.eventosAulas === 'array' &&
-              dadosDia.dados.eventosAulas.filter(
-                evento =>
-                  evento.ehAula && evento.dadosAula.podeCadastrarAvaliacao
+              dadosDia?.dados?.eventosAulas?.filter(
+                evento => evento.ehAula && evento.podeCadastrarAvaliacao
               ).length > 0
             }
             onClickNovaAula={() =>
               onClickNovaAulaHandler(window.moment(dia).format('YYYY-MM-DD'))
             }
-            onClickNovaAvaliacao={() => {}}
+            onClickNovaAvaliacao={() => onClickNovaAvaliacaoHandler()}
             permissaoTela={permissaoTela}
             dentroPeriodo={valorNuloOuVazio(
               dadosDia?.dados?.mensagemPeriodoEncerrado
