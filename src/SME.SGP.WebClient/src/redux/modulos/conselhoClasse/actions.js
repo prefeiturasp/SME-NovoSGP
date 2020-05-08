@@ -43,8 +43,8 @@ export const setConselhoClasseEmEdicao = payload => ({
   payload,
 });
 
-export const setDadosAnotacoesRecomendacoes = payload => ({
-  type: '@conselhoClasse/setDadosAnotacoesRecomendacoes',
+export const setDadosPrincipaisConselhoClasse = payload => ({
+  type: '@conselhoClasse/setDadosPrincipaisConselhoClasse',
   payload,
 });
 
@@ -60,5 +60,60 @@ export const setDentroPeriodo = payload => ({
 
 export const setFechamentoPeriodoInicioFim = payload => ({
   type: '@conselhoClasse/setFechamentoPeriodoInicioFim',
+  payload,
+});
+
+export const setListaTiposConceitos = payload => ({
+  type: '@conselhoClasse/setListaTiposConceitos',
+  payload,
+});
+
+export const setNotasJustificativas = payload => ({
+  type: '@conselhoClasse/setNotasJustificativas',
+  payload,
+});
+
+export const setDadosListasNotasConceitos = payload => ({
+  type: '@conselhoClasse/setDadosListasNotasConceitos',
+  payload,
+});
+
+export const setExpandirLinha = payload => ({
+  type: '@conselhoClasse/setExpandirLinha',
+  payload,
+});
+
+export const setNotaConceitoPosConselhoAtual = payload => ({
+  type: '@conselhoClasse/setNotaConceitoPosConselhoAtual',
+  payload,
+});
+
+export const setIdCamposNotasPosConselho = payload => ({
+  type: '@conselhoClasse/setIdCamposNotasPosConselho',
+  payload,
+});
+
+export const setMarcadorParecerConclusivo = payload => ({
+  type: '@conselhoClasse/setMarcadorParecerConclusivo',
+  payload,
+});
+
+export const setGerandoParecerConclusivo = payload => ({
+  type: '@conselhoClasse/setGerandoParecerConclusivo',
+  payload,
+});
+
+export const setDesabilitarCampos = payload => ({
+  type: '@conselhoClasse/setDesabilitarCampos',
+  payload,
+});
+
+export const addDisciplinasComNotaPosConselho = payload => ({
+  type: '@conselhoClasse/addDisciplinasComNotaPosConselho',
+  payload,
+});
+
+export const setDisciplinasComNotaPosConselho = payload => ({
+  type: '@conselhoClasse/setDisciplinasComNotaPosConselho',
   payload,
 });

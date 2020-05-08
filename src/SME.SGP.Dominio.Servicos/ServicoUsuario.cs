@@ -152,13 +152,14 @@ namespace SME.SGP.Dominio
             return usuario;
         }
 
-        public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "")
+        public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
         {
             var eNumero = int.TryParse(codigoRf, out int n);
 
             codigoRf = eNumero ? codigoRf : null;
 
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, login);
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(buscaLogin ? null : codigoRf, login);
+
             if (usuario != null)
             {
                 if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
@@ -235,7 +236,7 @@ namespace SME.SGP.Dominio
 
             if (!usuario.EhProfessorCj())
                 return await servicoEOL.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, data);
-            
+
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
 
             return atribuicaoCj != null && atribuicaoCj.Any();

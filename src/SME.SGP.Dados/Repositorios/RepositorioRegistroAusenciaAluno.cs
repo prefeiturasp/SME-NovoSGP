@@ -73,6 +73,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
             query.AppendLine("count(ra.id) as TotalAusencias, ");
+            query.AppendLine("p.id as PeriodoEscolarId, ");
             query.AppendLine("p.periodo_inicio as PeriodoInicio, ");
             query.AppendLine("p.periodo_fim as PeriodoFim, ");
             query.AppendLine("p.bimestre ");
@@ -98,6 +99,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and not ra.excluido");
             query.AppendLine("and not a.excluido");
             query.AppendLine("group by");
+            query.AppendLine("p.id, ");
             query.AppendLine("p.periodo_inicio,");
             query.AppendLine("p.periodo_fim,");
             query.AppendLine("p.bimestre");

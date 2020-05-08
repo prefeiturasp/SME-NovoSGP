@@ -40,6 +40,8 @@ const Base = {
   VermelhoNotificacao: '#B40C02',
   Vermelho: '#B40C02',
   LaranjaAlerta: '#D06D12',
+  VerdeBorda: '#20AA73',
+  Bordo: '#864241',
 };
 
 const Active = {

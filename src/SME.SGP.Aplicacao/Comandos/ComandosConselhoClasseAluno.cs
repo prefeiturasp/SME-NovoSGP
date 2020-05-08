@@ -21,10 +21,13 @@ namespace SME.SGP.Aplicacao
             this.servicoConselhoClasse = servicoConselhoClasse ?? throw new ArgumentNullException(nameof(servicoConselhoClasse));
         }
 
-        public async Task<AuditoriaConselhoClasseAlunoDto> SalvarAsync(ConselhoClasseAlunoDto conselhoClasseAlunoDto)
+        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
+            => await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
+
+        public async Task<AuditoriaConselhoClasseAlunoDto> SalvarAsync(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto)
             => await servicoConselhoClasse.SalvarConselhoClasseAluno(await MapearParaEntidade(conselhoClasseAlunoDto));
 
-        private async Task<ConselhoClasseAluno> MapearParaEntidade(ConselhoClasseAlunoDto conselhoClasseAlunoDto)
+        private async Task<ConselhoClasseAluno> MapearParaEntidade(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto)
         {
             var conselhoClasseAluno = await consultasConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseAlunoDto.ConselhoClasseId, conselhoClasseAlunoDto.AlunoCodigo);
             if (conselhoClasseAluno == null)

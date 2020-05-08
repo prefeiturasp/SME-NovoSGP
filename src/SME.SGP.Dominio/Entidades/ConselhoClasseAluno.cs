@@ -13,6 +13,9 @@ namespace SME.SGP.Dominio
         public string RecomendacoesFamilia { get; set; }
         public string AnotacoesPedagogicas { get; set; }
 
+        public long? ConselhoClasseParecerId { get; set; }
+        public ConselhoClasseParecerConclusivo ConselhoClasseParecer { get; set; }
+
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
     }

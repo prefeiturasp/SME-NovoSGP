@@ -2,17 +2,24 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioConselhoClasse: RepositorioBase<ConselhoClasse>, IRepositorioConselhoClasse
+    public class RepositorioConselhoClasse : RepositorioBase<ConselhoClasse>, IRepositorioConselhoClasse
     {
-        public RepositorioConselhoClasse(ISgpContext database): base(database)
+        public RepositorioConselhoClasse(ISgpContext database) : base(database)
         {
+        }
+
+        public async Task<ConselhoClasse> ObterPorFechamentoId(long fechamentoTurmaId)
+        {
+            var query = @"select c.* 
+                            from conselho_classe c 
+                           where c.fechamento_turma_id = @fechamentoTurmaId";
+
+            return database.Conexao.QueryFirstOrDefault<ConselhoClasse>(query, new { fechamentoTurmaId });
         }
 
         public async Task<ConselhoClasse> ObterPorTurmaEPeriodoAsync(long turmaId, long? periodoEscolarId = null)

@@ -106,7 +106,15 @@ const DiaCompleto = props => {
     return () => {
       estado = false;
     };
-  }, [diaSelecionado]);
+  }, [
+    diaSelecionado,
+    dreSelecionada,
+    estaAberto,
+    eventoSme,
+    mesAtual,
+    tipoCalendarioSelecionado,
+    unidadeEscolarSelecionada,
+  ]);
 
   useEffect(() => {
     estaAberto = false;
@@ -114,7 +122,7 @@ const DiaCompleto = props => {
   }, [filtros]);
 
   const aoClicarEvento = id => {
-    if (permissaoTela && permissaoTela.podeIncluir) {
+    if (permissaoTela && permissaoTela.podeConsultar) {
       store.dispatch(
         salvarEventoCalendarioEdicao(
           tipoCalendarioSelecionado,
@@ -145,6 +153,7 @@ const DiaCompleto = props => {
                   >
                     <Div cols={1} className="pl-0">
                       <Botao
+                        id={shortid.generate()}
                         label="Evento"
                         color={Colors.CinzaBotao}
                         border

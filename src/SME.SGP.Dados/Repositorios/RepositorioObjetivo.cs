@@ -31,6 +31,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and e.recuperacao_paralela_periodo_id is null");
             else
                 query.AppendLine("and o.EhEspecifico = false");
+
             var listaRetorno = await database.Conexao.QueryAsync<ObjetivoDto>(query.ToString());
 
             return listaRetorno;
