@@ -1,0 +1,1 @@
+﻿insert into SYS_GrupoPermissao(gru_id,sis_id,mod_id,grp_consultar,grp_inserir,grp_alterar,grp_excluir) select gru.gru_id,gru.sis_id, 37 as mod_id , 1 as grp_consulta, 0 as grp_inserir, 0 as grp_alterar, 0 as grp_excluir  from SYS_Grupo as gru where gru.sis_id = 1000 and gru_id = '3BE1E074-37D6-E911-ABD6-F81654FE895D'
