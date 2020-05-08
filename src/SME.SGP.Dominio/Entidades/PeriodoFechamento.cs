@@ -104,5 +104,10 @@ namespace SME.SGP.Dominio
                 }
             }
         }
+
+        public bool ExisteFechamentoEmAberto(DateTime hoje)
+        {
+            return fechamentosBimestre.Any(a => a.DataDentroPeriodo(hoje));            
+        }
     }
 }

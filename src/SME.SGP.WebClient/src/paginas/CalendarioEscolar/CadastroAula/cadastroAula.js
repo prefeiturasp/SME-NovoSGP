@@ -421,7 +421,9 @@ const CadastroAula = ({ match }) => {
       setNovoRegistro(true);
       setDataAula(window.moment(diaAula));
     } else {
-      validaF5();
+      // validaF5();
+      setNovoRegistro(true);
+      setDataAula(window.moment(match.params.dataAula));
     }
   };
 

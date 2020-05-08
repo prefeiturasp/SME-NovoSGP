@@ -287,5 +287,24 @@ namespace SME.SGP.Dominio
             repositorioUsuario.Salvar(usuario);
             await servicoEOL.AlterarEmail(usuario.Login, novoEmail);
         }
+
+        public async Task<string[]> ObterComponentesCurricularesQuePodeVisualizarHoje(string turmaCodigo, Usuario usuarioLogado)
+        {
+            var componentesCurricularesParaVisualizar = new List<string>();
+
+            var componentesCurricularesUsuarioLogado = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
+            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado.Select(b => b.Codigo.ToString());
+
+            var hoje = DateTime.Today;
+
+            foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
+            {
+                if (await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turmaCodigo, componenteParaVerificarAtribuicao, hoje))
+                    componentesCurricularesParaVisualizar.Add(componenteParaVerificarAtribuicao);
+
+            }
+
+            return componentesCurricularesParaVisualizar.ToArray();
+        }
     }
 }
