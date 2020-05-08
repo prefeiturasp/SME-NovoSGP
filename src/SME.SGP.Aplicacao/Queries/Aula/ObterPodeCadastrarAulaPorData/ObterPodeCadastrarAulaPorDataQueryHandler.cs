@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             var hoje = DateTime.Today;
 
-            var temEventoLetivoNoDia = repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
+            var temEventoLetivoNoDia = !repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
 
             if (temEventoLetivoNoDia)
                 return new PodeCadastrarAulaPorDataRetornoDto(true, string.Empty);
