@@ -35,13 +35,18 @@
 
         // Notificação alunos ausentes
         QuantidadeDiasNotificaoCPAlunosAusentes = 16,
+
         QuantidadeDiasNotificaoDiretorAlunosAusentes = 17,
 
         //Nota Fechamento
         QuantidadeDiasAlteracaoNotaFinal = 19,
 
+        // Frequencia
+        PercentualFrequenciaCriticoBaseNacional = 20,
+        
+        DataUltimaAtualizacaoObjetivosJurema = 22,
+
         //Sistema
         HabilitarServicosEmBackground = 100
-
     }
 }

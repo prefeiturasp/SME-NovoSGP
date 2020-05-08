@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import t from 'prop-types';
+import PropTypes from 'prop-types';
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -88,7 +88,7 @@ function Localizador({
         erro(error.response.data.mensagens[0]);
       }
     },
-    [anoLetivo]
+    [anoLetivo, incluirEmei]
   );
 
   const onChangeRF = valor => {
@@ -130,12 +130,13 @@ function Localizador({
     }
   }, [form.initialValues]);
 
+  const { ehProfessor, ehProfessorCj, ehProfessorPoa, rf } = usuario;
+
   useEffect(() => {
-    const { ehProfessor, ehProfessorCj, ehProfessorPoa, rf } = usuario;
-    if (ehProfessor || ehProfessorCj || ehProfessorPoa) {
+    if (dreId && (ehProfessor || ehProfessorCj || ehProfessorPoa)) {
       onBuscarPorRF({ rf });
     }
-  }, [onBuscarPorRF, usuario, dreId]);
+  }, [dreId, ehProfessor, ehProfessorCj, ehProfessorPoa, rf, onBuscarPorRF]);
 
   return (
     <>
@@ -182,20 +183,25 @@ function Localizador({
 
 Localizador.propTypes = {
   onChange: () => {},
-  form: t.oneOfType([t.objectOf(t.object), t.any]),
-  showLabel: t.bool,
-  dreId: t.string,
-  anoLetivo: t.oneOfType([t.number, t.string]),
-  desabilitado: t.bool,
+  form: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
+  showLabel: PropTypes.bool,
+  dreId: PropTypes.string,
+  anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  desabilitado: PropTypes.bool,
+  incluirEmei: PropTypes.bool,
 };
 
 Localizador.defaultProps = {
-  onChange: t.func,
+  onChange: PropTypes.func,
   form: {},
   showLabel: false,
   dreId: null,
   anoLetivo: null,
   desabilitado: false,
+  incluirEmei: false,
 };
 
 export default Localizador;

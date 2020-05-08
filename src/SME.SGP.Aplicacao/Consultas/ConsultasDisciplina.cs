@@ -331,6 +331,34 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
+        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
+        {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            if (usuario.EhProfessorCj())
+                return await ObterComponentesCJ(turma.ModalidadeCodigo, turma.CodigoTurma, turma.Ue.CodigoUe, componenteCurricularCodigo, usuario.CodigoRf);
+            else
+            {
+                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
+
+                return MapearComponentes(componentesCurriculares.Where(c => c.Regencia));
+            }
+        }
+
+        private IEnumerable<DisciplinaResposta> MapearComponentes(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
+        {
+            foreach (var componenteCurricular in componentesCurriculares)
+                yield return new DisciplinaResposta()
+                {
+                    CodigoComponenteCurricularPai = componenteCurricular.CodigoComponenteCurricularPai,
+                    CodigoComponenteCurricular = componenteCurricular.Codigo,
+                    Nome = componenteCurricular.Descricao,
+                    Regencia = componenteCurricular.Regencia,
+                    TerritorioSaber = componenteCurricular.TerritorioSaber,
+                    Compartilhada = componenteCurricular.Compartilhada,
+                    LancaNota = componenteCurricular.LancaNota,
+                };
+        }
+
         private DisciplinaResposta MapearDisciplinaResposta(DisciplinaDto disciplinaEol) => new DisciplinaResposta()
         {
             CodigoComponenteCurricular = disciplinaEol.CodigoComponenteCurricular,
@@ -383,9 +411,15 @@ namespace SME.SGP.Aplicacao
                 return disciplinas;
 
             if (regencia)
-                return disciplinas.Where(x => !x.Regencia);
+                return disciplinas.Where(x => x.Regencia);
 
             return disciplinas.Where(x => x.CodigoComponenteCurricular == codigoDisciplina);
+        }
+
+        public IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas)
+        {
+            foreach (var disciplina in disciplinas)
+                yield return MapearParaDto(disciplina).Result;
         }
     }
 }

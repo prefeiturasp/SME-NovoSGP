@@ -9,5 +9,6 @@ namespace SME.SGP.Aplicacao
         Task<AulasPrevistasDadasAuditoriaDto> BuscarPorId(long id);
 
         Task<AulasPrevistasDadasAuditoriaDto> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId, int semestre = 0);
+        Task<int> ObterAulasDadas(Turma turma, string componenteCurricularCodigo, int bimestre);
     }
 }

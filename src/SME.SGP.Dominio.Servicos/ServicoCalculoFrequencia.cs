@@ -36,7 +36,7 @@ namespace SME.SGP.Dominio.Servicos
         private int ObterBimestre(DateTime data, string turmaId)
         {
             var turma = repositorioTurma.ObterPorCodigo(turmaId);
-            return consultasPeriodoEscolar.ObterBimestre(data, turma.ModalidadeCodigo);
+            return consultasPeriodoEscolar.ObterBimestre(data, turma.ModalidadeCodigo, turma.Semestre);
         }
 
         public void CalcularFrequenciaPorTurma(IEnumerable<string> alunos, DateTime dataAula, string turmaId, string disciplinaId)
@@ -61,7 +61,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private FrequenciaAluno MapearFrequenciaAluno(string codigoAluno, string turmaId, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, int bimestre, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipo)
+        private FrequenciaAluno MapearFrequenciaAluno(string codigoAluno, string turmaId, string disciplinaId, long? periodoEscolarId, DateTime periodoInicio, DateTime periodoFim, int bimestre, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipo)
         {
             var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(codigoAluno, disciplinaId, periodoInicio, periodoFim, tipo);
             return frequenciaAluno == null ?
@@ -70,6 +70,7 @@ namespace SME.SGP.Dominio.Servicos
                              codigoAluno,
                              turmaId,
                              disciplinaId,
+                             periodoEscolarId,
                              periodoInicio,
                              periodoFim,
                              bimestre,
@@ -89,6 +90,7 @@ namespace SME.SGP.Dominio.Servicos
                 var frequenciaGeralAluno = MapearFrequenciaAluno(codigoAluno,
                                                                     turmaId,
                                                                     string.Empty,
+                                                                    totalAusenciasGeralAluno.PeriodoEscolarId,
                                                                     totalAusenciasGeralAluno.PeriodoInicio,
                                                                     totalAusenciasGeralAluno.PeriodoFim,
                                                                     totalAusenciasGeralAluno.Bimestre,
@@ -121,6 +123,7 @@ namespace SME.SGP.Dominio.Servicos
                 var frequenciaAluno = MapearFrequenciaAluno(codigoAluno,
                                                             turmaId,
                                                             disciplinaId,
+                                                            ausenciasAlunoPorDisciplina.PeriodoEscolarId,
                                                             ausenciasAlunoPorDisciplina.PeriodoInicio,
                                                             ausenciasAlunoPorDisciplina.PeriodoFim,
                                                             ausenciasAlunoPorDisciplina.Bimestre,

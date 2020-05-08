@@ -11,7 +11,12 @@ import { Button, Colors, Base } from '~/componentes';
 // Estilos
 import { Container } from './styles';
 
-function BarraNavegacao({ objetivos, objetivoAtivo, onChangeObjetivo }) {
+function BarraNavegacao({
+  objetivos,
+  objetivoAtivo,
+  onChangeObjetivo,
+  somenteConsulta,
+}) {
   return (
     <Container>
       <div>
@@ -26,7 +31,9 @@ function BarraNavegacao({ objetivos, objetivoAtivo, onChangeObjetivo }) {
           }
           border
           disabled={
-            objetivos.length < 1 || objetivos.indexOf(objetivoAtivo) === 0
+            somenteConsulta ||
+            objetivos.length < 1 ||
+            objetivos.indexOf(objetivoAtivo) === 0
           }
         />
       </div>
@@ -42,6 +49,7 @@ function BarraNavegacao({ objetivos, objetivoAtivo, onChangeObjetivo }) {
                 onClick={() => onChangeObjetivo(item)}
                 onKeyPress={() => item}
                 role="button"
+                disabled={somenteConsulta}
                 tabIndex="0"
                 className={`itemNavegacao ${
                   item.id === objetivoAtivo.id ? 'ativo' : ''
@@ -65,6 +73,7 @@ function BarraNavegacao({ objetivos, objetivoAtivo, onChangeObjetivo }) {
           }
           border
           disabled={
+            somenteConsulta ||
             objetivos.length < 1 ||
             objetivos.indexOf(objetivoAtivo) === objetivos.length - 1
           }
