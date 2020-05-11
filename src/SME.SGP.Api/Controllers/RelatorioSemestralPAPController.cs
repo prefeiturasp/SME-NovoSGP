@@ -72,7 +72,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/{turmaCodigo}/alunos/anos/{anoLetivo}/semestres/{semestre}")]
         [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterRelatorioAluno(string turmaCodigo, int anoLetivo, int semestre, [FromServices]IConsultasRelatorioSemestralAluno consultasRelatorioSemestralAluno)
+        public async Task<IActionResult> ObterListaAlunos(string turmaCodigo, int anoLetivo, int semestre, [FromServices]IConsultasRelatorioSemestralAluno consultasRelatorioSemestralAluno)
             => Ok(await consultasRelatorioSemestralAluno.ObterListaAlunosAsync(turmaCodigo, anoLetivo, semestre));
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using SME.SGP.Dominio;
@@ -41,6 +42,17 @@ namespace SME.SGP.Dados.Repositorios
         public Task<RelatorioSemestralAluno> ObterPorTurmaAlunoAsync(long relatorioSemestralId, string alunoCodigo)
         {
             throw new System.NotImplementedException();
+        }
+
+        public async Task<IEnumerable<RelatorioSemestralAluno>> ObterRelatoriosAlunosPorTurmaAsync(long turmaId, int semestre)
+        {
+            var query = @"select rsa.* 
+                          from relatorio_semestral rs
+                         inner join relatorio_semestral_aluno rsa on rsa.relatorio_semestral_id = rs.id
+                         where rs.turma_id = @turmaId
+                           and rs.semestre = @semestre";
+
+            return await database.Conexao.QueryAsync<RelatorioSemestralAluno>(query, new { turmaId, semestre });
         }
     }
 }
