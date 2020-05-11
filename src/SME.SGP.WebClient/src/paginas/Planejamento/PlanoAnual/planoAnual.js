@@ -217,7 +217,7 @@ const PlanoAnual = () => {
   };
 
   /**
-   * define o bimestre expandido
+   ** Define o bimestre expandido
    */
   useEffect(() => {
     if (planoAnual && planoAnual.length > 0 && !emEdicao) {
@@ -232,7 +232,6 @@ const PlanoAnual = () => {
   useEffect(() => {
     if (bimestreExpandido) {
       const refBimestre = refsPainel[bimestreExpandido - 1];
-      console.log(refBimestre, refBimestre.current);
       if (refBimestre && refBimestre.current) {
         setTimeout(() => {
           window.scrollTo(0, refBimestre.current.offsetTop);
@@ -319,7 +318,6 @@ const PlanoAnual = () => {
           disciplinaSelecionada && disciplinaSelecionada.regencia
         )
         .then(resposta => {
-          setCarregandoDados(false);
           setListaDisciplinasPlanejamento(
             resposta.data.map(disciplina => {
               return {
@@ -328,6 +326,7 @@ const PlanoAnual = () => {
               };
             })
           );
+          setCarregandoDados(false);
         })
         .catch(e => {
           setCarregandoDados(false);

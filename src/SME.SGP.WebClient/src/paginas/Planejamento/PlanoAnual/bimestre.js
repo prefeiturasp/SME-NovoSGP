@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Disciplinas from './disciplinas';
-import { ListItem, ListItemButton, ListaObjetivos, Erro } from './bimestre.css';
+import { ListItem, ListItemButton, ListaObjetivos } from './bimestre.css';
 import { Button, Colors, Grid, Auditoria, Loader } from '~/componentes';
 import Seta from '../../../recursos/Seta.svg';
 import Editor from '~/componentes/editor/editor';
 import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
-import { erros as mostrarErros } from '~/servicos/alertas';
+import { erros as mostrarErros, erro } from '~/servicos/alertas';
 
 const Bimestre = ({
   bimestre,
   disciplinas,
   ano,
-  erros,
   ehEja,
   ehMedio,
   disciplinaSemObjetivo,
@@ -23,7 +22,7 @@ const Bimestre = ({
   const [objetivosSelecionados, setObjetivosSelecionados] = useState(
     bimestre.objetivosAprendizagem
   );
-  const [disciplinasPreSelecionadas, setDisciplinasPreSelecionadas] = useState(
+  const [disciplinasPreSelecionadas] = useState(
     bimestre.objetivosAprendizagem.map(c => c.componenteCurricularEolId)
   );
   const [descricaoObjetivo, setDescricaoObjetivo] = useState(
@@ -112,7 +111,9 @@ const Bimestre = ({
   };
 
   useMemo(() => {
-    console.log(disciplinaSemObjetivo);
+    if (!disciplinaSemObjetivo)
+      erro('Não foram encontrados objetivos para a disciplina');
+
     setLayoutEspecial(ehEja || ehMedio || disciplinaSemObjetivo);
   }, [disciplinaSemObjetivo, ehEja, ehMedio]);
 
@@ -172,7 +173,7 @@ const Bimestre = ({
             <ListaObjetivos className="mt-4 overflow-auto">
               {objetivosAprendizagem &&
                 objetivosAprendizagem.length > 0 &&
-                objetivosAprendizagem.map((objetivo, index) => (
+                objetivosAprendizagem.map(objetivo => (
                   <ul
                     className="list-group list-group-horizontal mt-3"
                     key={objetivo.codigo}
