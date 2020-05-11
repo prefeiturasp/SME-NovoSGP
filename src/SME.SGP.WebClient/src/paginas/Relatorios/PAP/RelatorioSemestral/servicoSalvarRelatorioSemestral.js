@@ -19,6 +19,7 @@ class ServicoSalvarRelatorioSemestral {
       dadosRelatorioSemestral,
       relatorioSemestralEmEdicao,
       dadosParaSalvarRelatorioSemestral,
+      desabilitarCampos,
     } = relatorioSemestral;
 
     const {
@@ -97,6 +98,10 @@ class ServicoSalvarRelatorioSemestral {
       }
       return false;
     };
+
+    if (desabilitarCampos) {
+      return true;
+    }
 
     if (salvarSemValidar && relatorioSemestralEmEdicao) {
       return salvar();

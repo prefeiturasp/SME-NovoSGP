@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import Editor from '~/componentes/editor/editor';
 import {
@@ -10,6 +10,10 @@ import {
 
 const CampoRelatorioSemestral = props => {
   const { descricao, idSecao, nome, valor, alunoDesabilitado } = props;
+
+  const desabilitarCampos = useSelector(
+    store => store.relatorioSemestral.desabilitarCampos
+  );
 
   const [exibirCard, setExibirCard] = useState(false);
 
@@ -51,7 +55,7 @@ const CampoRelatorioSemestral = props => {
               onChange(valorNovo);
               setarRelatorioSemestralEmEdicao(true);
             }}
-            desabilitar={alunoDesabilitado}
+            desabilitar={alunoDesabilitado || desabilitarCampos}
           />
         ) : (
           ''

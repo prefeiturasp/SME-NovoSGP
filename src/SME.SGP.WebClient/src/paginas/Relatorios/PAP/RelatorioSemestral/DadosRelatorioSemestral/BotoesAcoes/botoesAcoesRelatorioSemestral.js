@@ -3,7 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
-import { setRelatorioSemestralEmEdicao } from '~/redux/modulos/relatorioSemestral/actions';
+import {
+  setRelatorioSemestralEmEdicao,
+  setDadosRelatorioSemestral,
+  limparDadosParaSalvarRelatorioSemestral,
+} from '~/redux/modulos/relatorioSemestral/actions';
 import { confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import servicoSalvarRelatorioSemestral from '../../servicoSalvarRelatorioSemestral';
@@ -17,6 +21,14 @@ const BotoesAcoesRelatorioSemestral = () => {
 
   const relatorioSemestralEmEdicao = useSelector(
     store => store.relatorioSemestral.relatorioSemestralEmEdicao
+  );
+
+  const dadosRelatorioSemestral = useSelector(
+    store => store.relatorioSemestral.dadosRelatorioSemestral
+  );
+
+  const desabilitarCampos = useSelector(
+    store => store.relatorioSemestral.desabilitarCampos
   );
 
   const onClickSalvar = () => {
@@ -34,7 +46,7 @@ const BotoesAcoesRelatorioSemestral = () => {
   };
 
   const onClickVoltar = async () => {
-    if (relatorioSemestralEmEdicao) {
+    if (!desabilitarCampos && relatorioSemestralEmEdicao) {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
         const salvou = await onClickSalvar();
@@ -50,8 +62,11 @@ const BotoesAcoesRelatorioSemestral = () => {
   };
 
   const recarregarDados = () => {
-    // TODO Recarregar os dados em tela!!
+    dispatch(limparDadosParaSalvarRelatorioSemestral());
     dispatch(setRelatorioSemestralEmEdicao(false));
+
+    const dados = dadosRelatorioSemestral;
+    dispatch(setDadosRelatorioSemestral({ ...dados }));
   };
 
   const onClickCancelar = async () => {
@@ -85,6 +100,7 @@ const BotoesAcoesRelatorioSemestral = () => {
         className="mr-2"
         onClick={onClickCancelar}
         disabled={
+          desabilitarCampos ||
           !relatorioSemestralEmEdicao ||
           !alunosRelatorioSemestral ||
           alunosRelatorioSemestral.length < 1 ||
@@ -99,7 +115,7 @@ const BotoesAcoesRelatorioSemestral = () => {
         bold
         className="mr-2"
         onClick={onClickSalvar}
-        disabled={!relatorioSemestralEmEdicao}
+        disabled={desabilitarCampos || !relatorioSemestralEmEdicao}
       />
     </>
   );

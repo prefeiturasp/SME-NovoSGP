@@ -5,14 +5,20 @@ import { Loader } from '~/componentes';
 import {
   setAuditoriaRelatorioSemestral,
   setDadosRelatorioSemestral,
+  setDesabilitarCampos,
 } from '~/redux/modulos/relatorioSemestral/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
 import AuditoriaRelatorioSemestral from './AuditoriaRelatorioSemestral/auditoriaRelatorioSemestral';
 import MontarCamposRelatorioSemestral from './CamposRelatorioSemestral/montarCamposRelatorioSemestral';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import RotasDto from '~/dtos/rotasDto';
 
 const DadosRelatorioSemestral = props => {
   const { codigoTurma, semestreConsulta } = props;
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_SEMESTRAL];
 
   const dadosAlunoObjectCard = useSelector(
     store => store.relatorioSemestral.dadosAlunoObjectCard
@@ -25,15 +31,31 @@ const DadosRelatorioSemestral = props => {
   const [exibir, setExibir] = useState(false);
   const [carregando, setCarregando] = useState(false);
 
+  const validaPermissoes = useCallback(
+    novoRegistro => {
+      const somenteConsulta = verificaSomenteConsulta(permissoesTela);
+
+      const desabilitar = novoRegistro
+        ? somenteConsulta || !permissoesTela.podeIncluir
+        : somenteConsulta || !permissoesTela.podeAlterar;
+
+      dispatch(setDesabilitarCampos(desabilitar));
+    },
+    [dispatch, permissoesTela]
+  );
+
   const setarDados = useCallback(
     dados => {
+      const novoRegistro = !dados.relatorioSemestralAlunoId;
+      validaPermissoes(novoRegistro);
+
       const novosDados = dados;
       novosDados.turmaCodigo = codigoTurma;
       novosDados.semestreConsulta = semestreConsulta;
       novosDados.alunoCodigo = codigoEOL;
       dispatch(setDadosRelatorioSemestral(dados));
     },
-    [codigoEOL, codigoTurma, dispatch, semestreConsulta]
+    [codigoEOL, codigoTurma, dispatch, semestreConsulta, validaPermissoes]
   );
 
   const setarAuditoria = useCallback(
