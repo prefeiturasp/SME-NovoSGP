@@ -156,7 +156,7 @@ namespace SME.SGP.Dominio.Servicos
         #region Conselho
         private async Task<bool> ValidarParecerPorConselho(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
         {
-            var notasConselhoClasse = await repositorioConselhoClasseNota.ObterNotasFinaisAlunoAsync(alunoCodigo, turmaCodigo);
+            var notasConselhoClasse = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turmaCodigo, null);
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
                 return true;
 
