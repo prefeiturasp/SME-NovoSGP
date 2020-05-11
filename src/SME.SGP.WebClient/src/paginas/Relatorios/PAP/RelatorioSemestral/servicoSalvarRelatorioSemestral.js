@@ -1,10 +1,12 @@
 import { store } from '~/redux';
 import {
+  limparDadosParaSalvarRelatorioSemestral,
   setAuditoriaRelatorioSemestral,
   setRelatorioSemestralEmEdicao,
+  setDadosRelatorioSemestral,
 } from '~/redux/modulos/relatorioSemestral/actions';
 import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
-import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/ServicoRelatorioSemestral/ServicoRelatorioSemestral';
+import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
 
 class ServicoSalvarRelatorioSemestral {
   validarSalvarRelatorioSemestral = async (salvarSemValidar = false) => {
@@ -14,14 +16,18 @@ class ServicoSalvarRelatorioSemestral {
     const { relatorioSemestral } = state;
 
     const {
-      historicoEstudante,
-      dificuldades,
-      encaminhamentos,
-      avancos,
-      outros,
       dadosRelatorioSemestral,
       relatorioSemestralEmEdicao,
+      dadosParaSalvarRelatorioSemestral,
     } = relatorioSemestral;
+
+    const {
+      relatorioSemestralId,
+      relatorioSemestralAlunoId,
+      turmaCodigo,
+      semestreConsulta,
+      alunoCodigo,
+    } = dadosRelatorioSemestral;
 
     const perguntaDescartarRegistros = async () => {
       return confirmar(
@@ -31,54 +37,61 @@ class ServicoSalvarRelatorioSemestral {
       );
     };
 
-    const salvar = async () => {
-      // TODO Revisar os paramestros!
+    const todosCamposValidos = (mostrarErro = false) => {
+      const { secoes } = dadosRelatorioSemestral;
+      for (let index = 0; index < secoes.length; index += 1) {
+        const secao = secoes[index];
+
+        if (secao.obrigatorio) {
+          const itemAlterado = dadosParaSalvarRelatorioSemestral.find(
+            campo => campo.id == secao.id
+          );
+          if (itemAlterado) {
+            if (!itemAlterado.valor) {
+              if (mostrarErro) erro(`É obrigatório informar ${secao.nome}`);
+              return false;
+            }
+          } else if (!secao.valor) {
+            if (mostrarErro) erro(`É obrigatório informar ${secao.nome}`);
+            return false;
+          }
+        }
+      }
+      return true;
+    };
+
+    const salvar = async (limparTodosOsDados = false) => {
       const params = {
-        id: dadosRelatorioSemestral.id,
-        historicoEstudante,
-        dificuldades,
-        encaminhamentos,
-        avancos,
-        outros,
+        relatorioSemestralId: !relatorioSemestralId || 0,
+        relatorioSemestralAlunoId: !relatorioSemestralAlunoId || 0,
+        secoes: dadosParaSalvarRelatorioSemestral,
       };
 
-      if (!historicoEstudante) {
-        erro('É obrigatório informar Histórico do estudante');
+      const temRegistrosInvalidos = !todosCamposValidos(true);
+      if (temRegistrosInvalidos) {
         return false;
       }
 
-      if (!dificuldades) {
-        erro('É obrigatório informar Dificuldades do estudante');
-        return false;
-      }
-
-      if (!encaminhamentos) {
-        erro('É obrigatório informar Encaminhamentos do estudante');
-        return false;
-      }
-
-      if (!avancos) {
-        erro('É obrigatório informar Avanços do estudante');
-        return false;
-      }
-
-      // TODO Revisar o post!
       const retorno = await ServicoRelatorioSemestral.salvarServicoRelatorioSemestral(
+        turmaCodigo,
+        semestreConsulta,
+        alunoCodigo,
         params
       ).catch(e => erros(e));
 
       if (retorno && retorno.status === 200) {
-        // TODO Validar retorno da auditoria!
-        const auditoria = {
-          criadoEm: retorno.data.criadoEm,
-          criadoPor: retorno.data.criadoPor,
-          criadoRF: retorno.data.criadoRF,
-          alteradoEm: retorno.data.alteradoEm,
-          alteradoPor: retorno.data.alteradoPor,
-          alteradoRF: retorno.data.alteradoRF,
-        };
+        const { auditoria } = retorno.data;
+
         dispatch(setAuditoriaRelatorioSemestral(auditoria));
         dispatch(setRelatorioSemestralEmEdicao(false));
+
+        if (limparTodosOsDados) {
+          dispatch(setDadosRelatorioSemestral());
+          dispatch(limparDadosParaSalvarRelatorioSemestral());
+        } else {
+          dispatch(limparDadosParaSalvarRelatorioSemestral());
+        }
+
         sucesso('Suas informações foram salvas com sucesso.');
         return true;
       }
@@ -90,12 +103,7 @@ class ServicoSalvarRelatorioSemestral {
     }
 
     if (relatorioSemestralEmEdicao) {
-      const temRegistrosInvalidos =
-        !historicoEstudante ||
-        !dificuldades ||
-        !encaminhamentos ||
-        !avancos ||
-        !outros;
+      const temRegistrosInvalidos = !todosCamposValidos();
 
       let descartarRegistros = false;
       if (temRegistrosInvalidos) {
@@ -114,7 +122,7 @@ class ServicoSalvarRelatorioSemestral {
       }
 
       // Tenta salvar os registros se estão válidos e continuar para executação a ação!
-      return salvar();
+      return salvar(true);
     }
     return true;
   };

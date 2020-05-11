@@ -4,103 +4,36 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
 import {
   setAuditoriaRelatorioSemestral,
-  setAvancos,
   setDadosRelatorioSemestral,
-  setDificuldades,
-  setEncaminhamentos,
-  setHistoricoEstudante,
-  setOutros,
-  setRelatorioSemestralEmEdicao,
 } from '~/redux/modulos/relatorioSemestral/actions';
 import { erros } from '~/servicos/alertas';
-import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/ServicoRelatorioSemestral/ServicoRelatorioSemestral';
+import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
 import AuditoriaRelatorioSemestral from './AuditoriaRelatorioSemestral/auditoriaRelatorioSemestral';
-import Avancos from './CamposDescritivos/Avancos/avancos';
-import Dificuldades from './CamposDescritivos/Dificuldades/dificuldades';
-import Encaminhamentos from './CamposDescritivos/Encaminhamentos/encaminhamentos';
-import HistoricoEstudante from './CamposDescritivos/HistoricoEstudante/historicoEstudante';
-import Outros from './CamposDescritivos/Outros/outros';
+import MontarCamposRelatorioSemestral from './CamposRelatorioSemestral/montarCamposRelatorioSemestral';
 
 const DadosRelatorioSemestral = props => {
-  const { codigoTurma } = props;
+  const { codigoTurma, semestreConsulta } = props;
 
   const dadosAlunoObjectCard = useSelector(
     store => store.relatorioSemestral.dadosAlunoObjectCard
   );
 
-  const { codigoEOL, desabilitado } = dadosAlunoObjectCard;
+  const { codigoEOL } = dadosAlunoObjectCard;
 
   const dispatch = useDispatch();
 
-  const [dadosIniciais, setDadosIniciais] = useState({
-    historicoEstudante: '',
-    dificuldades: '',
-    encaminhamentos: '',
-    avancos: '',
-    outros: '',
-  });
-
-  const [exibir, setExibir] = useState(true);
+  const [exibir, setExibir] = useState(false);
   const [carregando, setCarregando] = useState(false);
-
-  const onChangeCampos = useCallback(
-    (valor, campo) => {
-      const dadosDto = dadosIniciais;
-      dadosDto[campo] = valor;
-      setDadosIniciais(dadosDto);
-    },
-    [dadosIniciais]
-  );
-
-  const onChangeHistoricoEstudante = useCallback(
-    valor => {
-      dispatch(setHistoricoEstudante(valor));
-      onChangeCampos(valor, 'historicoEstudante');
-    },
-    [dispatch, onChangeCampos]
-  );
-
-  const onChangeDificuldades = useCallback(
-    valor => {
-      dispatch(setDificuldades(valor));
-      onChangeCampos(valor, 'dificuldades');
-    },
-    [dispatch, onChangeCampos]
-  );
-
-  const onChangeEncaminhamentos = useCallback(
-    valor => {
-      dispatch(setEncaminhamentos(valor));
-      onChangeCampos(valor, 'encaminhamentos');
-    },
-    [dispatch, onChangeCampos]
-  );
-
-  const onChangeAvancos = useCallback(
-    valor => {
-      dispatch(setAvancos(valor));
-      onChangeCampos(valor, 'avancos');
-    },
-    [dispatch, onChangeCampos]
-  );
-
-  const onChangeOutros = useCallback(
-    valor => {
-      dispatch(setOutros(valor));
-      onChangeCampos(valor, 'outros');
-    },
-    [dispatch, onChangeCampos]
-  );
 
   const setarDados = useCallback(
     dados => {
-      // TODO Setar os ids e dados importantes!
-      const valores = {
-        id: dados.id,
-      };
-      dispatch(setDadosRelatorioSemestral(valores));
+      const novosDados = dados;
+      novosDados.turmaCodigo = codigoTurma;
+      novosDados.semestreConsulta = semestreConsulta;
+      novosDados.alunoCodigo = codigoEOL;
+      dispatch(setDadosRelatorioSemestral(dados));
     },
-    [dispatch]
+    [codigoEOL, codigoTurma, dispatch, semestreConsulta]
   );
 
   const setarAuditoria = useCallback(
@@ -121,85 +54,36 @@ const DadosRelatorioSemestral = props => {
     [dispatch]
   );
 
-  const obterDadosCamposDescritivos = useCallback(
-    async (codigoAluno, turma) => {
-      setCarregando(true);
+  const obterDadosCamposDescritivos = useCallback(async () => {
+    setCarregando(true);
 
-      // TODO Revisar consulta!
-      const resposta = await ServicoRelatorioSemestral.obterDadosCamposDescritivos(
-        turma,
-        codigoAluno
-      ).catch(e => erros(e));
+    const resposta = await ServicoRelatorioSemestral.obterDadosCamposDescritivos(
+      codigoEOL,
+      codigoTurma,
+      semestreConsulta
+    ).catch(e => erros(e));
 
-      if (resposta && resposta.data) {
-        onChangeHistoricoEstudante(resposta.data.historicoEstudante);
-        setarDados(resposta.data);
-        setarAuditoria(resposta.data);
-        setExibir(true);
-      } else {
-        setExibir(false);
-      }
-      setCarregando(false);
-    },
-    [onChangeHistoricoEstudante, setarDados, setarAuditoria]
-  );
+    if (resposta && resposta.data) {
+      setarDados(resposta.data);
+      setarAuditoria(resposta.data);
+      setExibir(true);
+    } else {
+      setExibir(false);
+    }
+    setCarregando(false);
+  }, [codigoEOL, codigoTurma, semestreConsulta, setarAuditoria, setarDados]);
 
   useEffect(() => {
-    // TODO Revisar!
-    if (codigoTurma && codigoEOL) {
+    if (codigoTurma && codigoEOL && semestreConsulta) {
       obterDadosCamposDescritivos();
     }
-  }, [codigoTurma, codigoEOL, obterDadosCamposDescritivos]);
-
-  const setarRelatorioSemestralEmEdicao = emEdicao => {
-    dispatch(setRelatorioSemestralEmEdicao(emEdicao));
-  };
+  }, [codigoTurma, codigoEOL, semestreConsulta, obterDadosCamposDescritivos]);
 
   return (
     <Loader className={carregando ? 'text-center' : ''} loading={carregando}>
       {exibir ? (
         <>
-          <HistoricoEstudante
-            alunoDesabilitado={desabilitado}
-            onChange={valor => {
-              onChangeHistoricoEstudante(valor);
-              setarRelatorioSemestralEmEdicao(true);
-            }}
-            dadosIniciais={dadosIniciais}
-          />
-          <Dificuldades
-            alunoDesabilitado={desabilitado}
-            onChange={valor => {
-              onChangeDificuldades(valor);
-              setarRelatorioSemestralEmEdicao(true);
-            }}
-            dadosIniciais={dadosIniciais}
-          />
-          <Encaminhamentos
-            alunoDesabilitado={desabilitado}
-            onChange={valor => {
-              onChangeEncaminhamentos(valor);
-              setarRelatorioSemestralEmEdicao(true);
-            }}
-            dadosIniciais={dadosIniciais}
-          />
-          <Avancos
-            alunoDesabilitado={desabilitado}
-            onChange={valor => {
-              onChangeAvancos(valor);
-              setarRelatorioSemestralEmEdicao(true);
-            }}
-            dadosIniciais={dadosIniciais}
-          />
-          <Outros
-            alunoDesabilitado={desabilitado}
-            onChange={valor => {
-              onChangeOutros(valor);
-              setarRelatorioSemestralEmEdicao(true);
-            }}
-            dadosIniciais={dadosIniciais}
-          />
-
+          <MontarCamposRelatorioSemestral />
           <AuditoriaRelatorioSemestral />
         </>
       ) : (
@@ -211,10 +95,12 @@ const DadosRelatorioSemestral = props => {
 
 DadosRelatorioSemestral.propTypes = {
   codigoTurma: PropTypes.string,
+  semestreConsulta: PropTypes.oneOfType([PropTypes.any]),
 };
 
 DadosRelatorioSemestral.defaultProps = {
   codigoTurma: '',
+  semestreConsulta: '',
 };
 
 export default DadosRelatorioSemestral;
