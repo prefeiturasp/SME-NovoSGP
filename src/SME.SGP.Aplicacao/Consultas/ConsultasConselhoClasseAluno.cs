@@ -66,7 +66,10 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = await ObterPeriodoUltimoBimestre(turma);
 
             var conselhoClasseUltimoBimestre = await repositorioConselhoClasseAluno.ObterPorPeriodoAsync(alunoCodigo, turma.Id, periodoEscolar.Id);
-            return conselhoClasseUltimoBimestre != null;
+            if (conselhoClasseUltimoBimestre == null)
+                return false;
+
+            return await servicoConselhoClasse.VerificaNotasTodosComponentesCurriculares(alunoCodigo, turma, periodoEscolar.Id);
         }
 
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)
@@ -276,41 +279,13 @@ namespace SME.SGP.Aplicacao
                 Frequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 100: 100)
             };
 
-            var componentesRegencia = await ObterComponentesRegencia(turma, componenteCurricular.CodigoComponenteCurricular);
+            var componentesRegencia = await consultasDisciplina.ObterComponentesRegencia(turma, componenteCurricular.CodigoComponenteCurricular);
             foreach (var componenteRegencia in componentesRegencia)
             {
                 conselhoClasseComponente.ComponentesCurriculares.Add(await ObterNotasRegencia(componenteRegencia, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno));
             }
 
             return conselhoClasseComponente;
-        }
-
-        private async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
-        {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
-            if (usuario.EhProfessorCj())
-                return await consultasDisciplina.ObterComponentesCJ(turma.ModalidadeCodigo, turma.CodigoTurma, turma.Ue.CodigoUe, componenteCurricularCodigo, usuario.CodigoRf);
-            else
-            {
-                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
-
-                return MapearComponentes(componentesCurriculares.Where(c => c.Regencia));
-            }
-        }
-
-        private IEnumerable<DisciplinaResposta> MapearComponentes(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
-        {
-            foreach (var componenteCurricular in componentesCurriculares)
-                yield return new DisciplinaResposta()
-                {
-                    CodigoComponenteCurricularPai = componenteCurricular.CodigoComponenteCurricularPai,
-                    CodigoComponenteCurricular = componenteCurricular.Codigo,
-                    Nome = componenteCurricular.Descricao,
-                    Regencia = componenteCurricular.Regencia,
-                    TerritorioSaber = componenteCurricular.TerritorioSaber,
-                    Compartilhada = componenteCurricular.Compartilhada,
-                    LancaNota = componenteCurricular.LancaNota,
-                };
         }
 
         private async Task<FrequenciaAluno> ObterFrequenciaAluno(Turma turma, PeriodoEscolar periodoEscolar, long componenteCurricularCodigo, string alunoCodigo)
