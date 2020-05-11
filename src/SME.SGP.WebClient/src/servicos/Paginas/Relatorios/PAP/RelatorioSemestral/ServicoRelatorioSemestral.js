@@ -4,7 +4,7 @@ const urlPadrao = 'v1/relatorios/pap/semestral';
 
 class ServicoRelatorioSemestral {
   obterListaAlunos = (turmaCodigo, anoLetivo, semestreConsulta) => {
-    const url = `v1/fechamentos/turmas/${turmaCodigo}/alunos/anos/${anoLetivo}/semestres/${semestreConsulta}`;
+    const url = `${urlPadrao}/turmas/${turmaCodigo}/alunos/anos/${anoLetivo}/semestres/${semestreConsulta}`;
     return api.get(url);
   };
 
