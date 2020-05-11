@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra.Enumerados
+﻿namespace SME.SGP.Infra.Enumerados
 {
     public enum Abrangencia
     {
-        UE,
-        Professor,
-        UeTurmasDisciplinas,
-        Dre,
-        DreEscolasAtribuidas,
-        SME
+        UE = 1,
+        Professor = 2,
+        UeTurmasDisciplinas = 3,
+        Dre = 4,
+        DreEscolasAtribuidas = 5,
+        SME = 6
     }
 }
