@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
@@ -32,32 +33,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RelatorioSemestralAlunoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
-        public async Task<IActionResult> ObterRelatorioAluno(string alunoCodigo, string turmaCodigo, int semestre, [FromServices]IConsultasRelatorioSemestralAluno consultasRelatorioSemestralAluno)
+        public async Task<IActionResult> ObterRelatorioAluno(string alunoCodigo, string turmaCodigo, int semestre, [FromServices]IMediator mediator, [FromServices]IConsultasPeriodoEscolar consultasPeriodoEscolar)
         {
-            return Ok(new RelatorioSemestralAlunoDto()
-            {
-                PodeEditar = true,
-                RelatorioSemestralId = 1,
-                RelatorioSemestralAlunoId = 1,
-                Secoes = new List<RelatorioSemestralAlunoSecaoDto>()
-                {
-                    new RelatorioSemestralAlunoSecaoDto(1, "Histórico do Estudante", "Trajetória do estudante, reprovações, histórico de faltas, acompanhamento das aprendizagens", true, "Teste valor histórico"),
-                    new RelatorioSemestralAlunoSecaoDto(2, "Dificuldades", "Dificuldades apresentadas inicialmente ", true, "Teste valor dificuldades"),
-                    new RelatorioSemestralAlunoSecaoDto(3, "Encaminhamentos", "Encaminhamentos realizados", true, "Teste valor Encaminhamentos"),
-                    new RelatorioSemestralAlunoSecaoDto(4, "Avanços", "Avanços observados", true, "Teste valor Avanços"),
-                    new RelatorioSemestralAlunoSecaoDto(5, "Outros", "Outras observações", false, "Teste valor outros"),
-                },
-                Auditoria = new AuditoriaDto()
-                {
-                    Id = 1,
-                    CriadoPor = "Fulano",
-                    CriadoEm = DateTime.Today,
-                    CriadoRF = "789456123",
-                    AlteradoPor = "Fulano",
-                    AlteradoEm = DateTime.Now,
-                    AlteradoRF = "789456123",
-                }
-            });
+            return Ok(await ObterRelatorioSemestralPorTurmaSemestreAlunoUseCase.Executar(mediator, alunoCodigo, turmaCodigo, semestre, consultasPeriodoEscolar));
+            //});
         }
 
         [HttpPost("turmas/{turmaCodigo}/semestres/{semestre}/alunos/{alunoCodigo}")]

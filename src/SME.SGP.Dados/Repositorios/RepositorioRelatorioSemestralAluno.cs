@@ -1,9 +1,10 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
+﻿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -38,9 +39,49 @@ namespace SME.SGP.Dados.Repositorios
             return relatorioAluno;
         }
 
+        public async Task<IEnumerable<RelatorioSemestralAlunoSecaoDto>> ObterDadosSecaoPorRelatorioSemestralAlunoIdDataReferenciaAsync(long relatorioSemestralAlunoId, DateTime dataReferencia)
+        {
+            var query = @"select srs.id, 
+	                             srs.nome, 
+	                             srs.descricao, 
+	                             srs.obrigatorio,
+	                             rsas.valor
+                            from secao_relatorio_semestral srs
+                            left join relatorio_semestral_aluno_secao rsas on rsas.secao_relatorio_semestral_id = srs.id
+                           where srs.inicio_vigencia <= @dataReferencia 
+                             and srs.fim_vigencia >= @dataReferencia or srs.fim_vigencia is null";
+
+            if (relatorioSemestralAlunoId > 0)
+            {
+                query += "and rsas.id = @relatorioSemestralAlunoId";
+            }
+
+            return await database.Conexao.QueryAsync<RelatorioSemestralAlunoSecaoDto>(query, new { relatorioSemestralAlunoId, dataReferencia });
+        }
+
+
         public Task<RelatorioSemestralAluno> ObterPorTurmaAlunoAsync(long relatorioSemestralId, string alunoCodigo)
         {
             throw new System.NotImplementedException();
+        }
+
+        public async Task<RelatorioSemestralAluno> ObterRelatorioSemestralPorAlunoTurmaSemestreAsync(string alunoCodigo, string turmaCodigo, int semestre)
+        {
+            var query = @"select rsa.relatorio_semestral_id,
+	                   rsa.id,
+	                   rsa.criado_em,
+	                   rsa.criado_por,
+	                   rsa.criado_rf,
+	                   rsa.alterado_em,
+	                   rsa.alterado_por
+                  from relatorio_semestral_aluno rsa 
+                 inner join relatorio_semestral rs on rs.id = rsa.relatorio_semestral_id 
+                 left join turma t on t.id = rs.turma_id
+                where not rsa.excluido
+                  and rsa.aluno_codigo = @alunoCodigo
+                  and t.turma_id  = @turmaCodigo
+                  and rs.semestre  = @semestre";
+            return await database.Conexao.QueryFirstOrDefaultAsync<RelatorioSemestralAluno>(query, new { alunoCodigo, turmaCodigo, semestre});
         }
     }
 }
