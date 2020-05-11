@@ -10,9 +10,11 @@ using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Infra;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SME.SGP.Integracao.Teste
@@ -27,7 +29,7 @@ namespace SME.SGP.Integracao.Teste
         {
             try
             {
-                runner = PostgresRunner.Start(new PostgresRunnerOptions() { Port = 5432 });
+                runner = PostgresRunner.Start(new PostgresRunnerOptions() { Port = 5434 });
                 MontaBaseDados(runner);
 
                 var projectPath = GetContentRootPath("../src/SME.SGP.Api");
@@ -98,12 +100,17 @@ namespace SME.SGP.Integracao.Teste
 
         private string CleanStringOfNonDigits_V1(string s)
         {
-            Regex rxNonDigits = new Regex(@"[^\d]+");
 
-            if (string.IsNullOrEmpty(s))
-                return s;
+            s = s.ToUpper().Replace("V", "");
+            var clearStr = s.Split("__");
+            return clearStr[0];
 
-            return rxNonDigits.Replace(s, "");
+            //Regex rxNonDigits = new Regex(@"[^\d]+");
+
+            //if (string.IsNullOrEmpty(s))
+            //    return s;
+
+            //return rxNonDigits.Replace(s, "");
         }
 
         private string GetContentRootPath(string projectName)
@@ -129,12 +136,28 @@ namespace SME.SGP.Integracao.Teste
                 {
                     string script = File.ReadAllText(file.FullName);
 
+                    script = RemoveDiacritics(script);
+
                     using (var cmd = new NpgsqlCommand(script, conn))
                     {
-                        cmd.ExecuteNonQuery();
+                        try
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception($"Erro ao executar o script {file.FullName}. Erro: {ex.Message}");
+                        }
+                        
                     }
                 }
             }
+        }
+        static string RemoveDiacritics(string text)
+        {
+            byte[] tempBytes;
+            tempBytes = System.Text.Encoding.GetEncoding("ISO-8859-8").GetBytes(text);
+            return  System.Text.Encoding.UTF8.GetString(tempBytes);
         }
     }
 }
