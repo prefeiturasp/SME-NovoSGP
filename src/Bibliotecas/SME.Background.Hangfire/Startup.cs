@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Hangfire.Dashboard;
+using Hangfire.Dashboard.BasicAuthorization;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,11 +24,12 @@ namespace SME.Background.Hangfire
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            var filter = new DashboardAuthorizationFilter(new SgpAuthAuthorizationFilterOptions());
             app.UseHangfireDashboard("/worker", new DashboardOptions()
             {
-                IsReadOnlyFunc = (DashboardContext context) => !env.IsDevelopment(),
-                Authorization = new[] { new DashboardAuthorizationFilter() },
-                StatsPollingInterval = 10000 // atualiza a cada 10s
+                IsReadOnlyFunc = filter.ReadOnly,
+                Authorization = new[] { filter },
+                StatsPollingInterval = 10000, // atualiza a cada 10s
             });
         }
 
