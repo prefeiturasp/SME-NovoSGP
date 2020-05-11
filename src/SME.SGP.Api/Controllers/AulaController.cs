@@ -5,7 +5,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -42,7 +41,6 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_E, Policy = "Bearer")]
         public async Task<IActionResult> Excluir(long id, string disciplinaNome, RecorrenciaAula recorrencia, [FromServices]IComandosAula comandos)
         {
-
             var retorno = new RetornoBaseDto();
             retorno.Mensagens.Add(await comandos.Excluir(id, UtilCriptografia.DesconverterBase64(disciplinaNome), recorrencia));
             return Ok(retorno);
@@ -63,7 +61,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AulaRecorrenciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices]IConsultasAula consultas)
         {
             var recorrencia = await consultas.ObterRecorrenciaDaSerie(aulaId);
