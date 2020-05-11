@@ -19,10 +19,10 @@ namespace SME.SGP.Aplicacao
             this.consultasFechamentoTurmaDisciplina = consultasFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(consultasFechamentoTurmaDisciplina));
         }
 
-        public async Task<IEnumerable<AlunoDadosBasicosRelatorioPAPDto>> ObterListaAlunosAsync(string turmaCodigo, int anoLetivo, int semestre)
+        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterListaAlunosAsync(string turmaCodigo, int anoLetivo, int semestre)
         {
             var listaAlunos = await consultasFechamentoTurmaDisciplina.ObterDadosAlunos(turmaCodigo, anoLetivo, semestre);
-            return listaAlunos.Select(aluno => (AlunoDadosBasicosRelatorioPAPDto)aluno);
+            return listaAlunos;
         }
 
         public Task<RelatorioSemestralAluno> ObterPorTurmaAlunoAsync(long relatorioSemestralId, string alunoCodigo)

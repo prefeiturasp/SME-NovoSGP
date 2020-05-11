@@ -10,6 +10,6 @@ namespace SME.SGP.Aplicacao
     public interface IConsultasRelatorioSemestralAluno
     {
         Task<RelatorioSemestralAluno> ObterPorTurmaAlunoAsync(long relatorioSemestralId, string alunoCodigo);
-        Task<IEnumerable<AlunoDadosBasicosRelatorioPAPDto>> ObterListaAlunosAsync(string turmaCodigo, int anoLetivo, int semestre);
+        Task<IEnumerable<AlunoDadosBasicosDto>> ObterListaAlunosAsync(string turmaCodigo, int anoLetivo, int semestre);
     }
 }
