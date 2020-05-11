@@ -777,7 +777,8 @@ rotas.set(RotasDto.RELATORIO_SEMESTRAL, {
   component: RelatorioSemestral,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_SEMESTRAL,
 });
 
 const rotasArray = [];

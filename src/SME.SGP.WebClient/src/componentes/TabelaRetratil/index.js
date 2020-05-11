@@ -31,7 +31,7 @@ function TabelaRetratil({
     }
     return true;
   }, [permiteOnChangeAluno]);
-
+  
 
   const isAlunoSelecionado = aluno => {
     return alunoSelecionado && aluno.codigoEOL === alunoSelecionado.codigoEOL;
@@ -119,7 +119,20 @@ function TabelaRetratil({
                     ''
                   )}
                 </td>
-                <td>{item.nome}</td>
+                <td>
+                  <div
+                    style={{
+                      marginLeft: item.processoConcluido ? '-9px' : '6px',
+                    }}
+                  >
+                    <i
+                      className={`icone-concluido ${
+                        item.processoConcluido ? 'fas fa-check-circle' : ''
+                      } `}
+                    />
+                    {item.nome}
+                  </div>
+                </td>
               </LinhaTabela>
             ))}
           </tbody>

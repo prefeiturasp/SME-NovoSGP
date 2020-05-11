@@ -80,6 +80,12 @@ export const LinhaTabela = styled.tr`
     .iconeSituacao {
       background: white !important;
     }
+
+    .icone-concluido {
+      color: white !important;
+      font-size: 16px;
+      margin-right: 2px;
+    }
   }
 
   &.selecionado {
@@ -89,6 +95,12 @@ export const LinhaTabela = styled.tr`
     .iconeSituacao {
       background: white !important;
     }
+  }
+
+  .icone-concluido {
+    color: ${Base.Verde};
+    font-size: 16px;
+    margin-right: 2px;
   }
 `;
 
