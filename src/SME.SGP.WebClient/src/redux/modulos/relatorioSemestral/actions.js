@@ -37,3 +37,8 @@ export const setAuditoriaRelatorioSemestral = payload => ({
   type: '@relatorioSemestral/setAuditoriaRelatorioSemestral',
   payload,
 });
+
+export const setDesabilitarCampos = payload => ({
+  type: '@relatorioSemestral/setDesabilitarCampos',
+  payload,
+});
