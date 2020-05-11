@@ -22,8 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Queries\ConselhoClasse\ObterImpressaoPorTurma\" />
-    <Folder Include="Queries\ConselhoClasse\ObterImpressaoPorTurmaAluno\" />
     <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
 </Project>
