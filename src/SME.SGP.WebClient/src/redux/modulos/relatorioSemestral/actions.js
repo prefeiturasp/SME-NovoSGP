@@ -23,28 +23,13 @@ export const setDadosRelatorioSemestral = payload => ({
   payload,
 });
 
-export const setHistoricoEstudante = payload => ({
-  type: '@relatorioSemestral/setHistoricoEstudante',
+export const setDadosParaSalvarRelatorioSemestral = payload => ({
+  type: '@relatorioSemestral/setDadosParaSalvarRelatorioSemestral',
   payload,
 });
 
-export const setDificuldades = payload => ({
-  type: '@relatorioSemestral/setDificuldades',
-  payload,
-});
-
-export const setEncaminhamentos = payload => ({
-  type: '@relatorioSemestral/setEncaminhamentos',
-  payload,
-});
-
-export const setAvancos = payload => ({
-  type: '@relatorioSemestral/setAvancos',
-  payload,
-});
-
-export const setOutros = payload => ({
-  type: '@relatorioSemestral/setOutros',
+export const limparDadosParaSalvarRelatorioSemestral = payload => ({
+  type: '@relatorioSemestral/limparDadosParaSalvarRelatorioSemestral',
   payload,
 });
 
