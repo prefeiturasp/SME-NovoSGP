@@ -5,12 +5,9 @@ const inicial = {
   alunosRelatorioSemestral: [],
   relatorioSemestralEmEdicao: false,
   dadosRelatorioSemestral: {},
-  historicoEstudante: '',
-  dificuldades: '',
-  encaminhamentos: '',
-  avancos: '',
-  outros: '',
+  dadosParaSalvarRelatorioSemestral: [],
   auditoriaRelatorioSemestral: null,
+  desabilitarCampos: false,
 };
 
 export default function RelatorioSemestral(state = inicial, action) {
@@ -28,18 +25,15 @@ export default function RelatorioSemestral(state = inicial, action) {
           alunosRelatorioSemestral: action.payload,
         };
       }
-      case '@relatorioSemestral/limparDadosRelatorioSemestral': {        
+      case '@relatorioSemestral/limparDadosRelatorioSemestral': {
         return {
           ...draft,
           dadosAlunoObjectCard: {},
           relatorioSemestralEmEdicao: false,
           dadosRelatorioSemestral: {},
-          historicoEstudante: '',
-          dificuldades: '',
-          encaminhamentos: '',
-          avancos: '',
-          outros: '',
+          dadosParaSalvarRelatorioSemestral: [],
           auditoriaRelatorioSemestral: null,
+          desabilitarCampos: false,
         };
       }
       case '@relatorioSemestral/setRelatorioSemestralEmEdicao': {
@@ -54,40 +48,39 @@ export default function RelatorioSemestral(state = inicial, action) {
           dadosRelatorioSemestral: action.payload,
         };
       }
-      case '@relatorioSemestral/setHistoricoEstudante': {        
-        return {
-          ...draft,
-          historicoEstudante: action.payload,
-        };
+      case '@relatorioSemestral/setDadosParaSalvarRelatorioSemestral': {
+        const dados = state.dadosParaSalvarRelatorioSemestral;
+        if (dados.length > 0) {
+          const valor = dados.find(item => item.id == action.payload.id);
+          if (valor) {
+            const indexItem = dados.findIndex(
+              item => item.id == action.payload.id
+            );
+            draft.dadosParaSalvarRelatorioSemestral[indexItem] = action.payload;
+          } else {
+            draft.dadosParaSalvarRelatorioSemestral.push(action.payload);
+          }
+        } else {
+          draft.dadosParaSalvarRelatorioSemestral.push(action.payload);
+        }
+        break;
       }
-      case '@relatorioSemestral/setDificuldades': {
+      case '@relatorioSemestral/limparDadosParaSalvarRelatorioSemestral': {
         return {
           ...draft,
-          dificuldades: action.payload,
-        };
-      }
-      case '@relatorioSemestral/setEncaminhamentos': {
-        return {
-          ...draft,
-          encaminhamentos: action.payload,
-        };
-      }
-      case '@relatorioSemestral/setAvancos': {
-        return {
-          ...draft,
-          avancos: action.payload,
-        };
-      }
-      case '@relatorioSemestral/setOutros': {
-        return {
-          ...draft,
-          outros: action.payload,
+          dadosParaSalvarRelatorioSemestral: [],
         };
       }
       case '@relatorioSemestral/setAuditoriaRelatorioSemestral': {
         return {
           ...draft,
           auditoriaRelatorioSemestral: action.payload,
+        };
+      }
+      case '@relatorioSemestral/setDesabilitarCampos': {
+        return {
+          ...draft,
+          desabilitarCampos: action.payload,
         };
       }
 

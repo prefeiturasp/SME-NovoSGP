@@ -13,7 +13,7 @@ import {
   setDadosAlunoObjectCard,
 } from '~/redux/modulos/relatorioSemestral/actions';
 import { erros } from '~/servicos/alertas';
-import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/ServicoRelatorioSemestral/ServicoRelatorioSemestral';
+import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
 import BotaoOrdenarListaAlunos from './DadosRelatorioSemestral/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
 import BotoesAcoesRelatorioSemestral from './DadosRelatorioSemestral/BotoesAcoes/botoesAcoesRelatorioSemestral';
 import DadosRelatorioSemestral from './DadosRelatorioSemestral/dadosRelatorioSemestral';
@@ -27,7 +27,7 @@ const RelatorioSemestral = () => {
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
-  const { turma, anoLetivo, periodo } = turmaSelecionada;
+  const { turma, anoLetivo } = turmaSelecionada;
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
 
@@ -44,7 +44,6 @@ const RelatorioSemestral = () => {
       const retorno = await ServicoRelatorioSemestral.obterListaAlunos(
         turma,
         anoLetivo,
-        periodo,
         semestreConsulta
       ).catch(e => erros(e));
       if (retorno && retorno.data) {
@@ -55,11 +54,10 @@ const RelatorioSemestral = () => {
       }
       setCarregandoGeral(false);
     },
-    [anoLetivo, dispatch, turma, periodo, resetarInfomacoes]
+    [anoLetivo, dispatch, turma, resetarInfomacoes]
   );
 
   const obterListaSemestres = async () => {
-    // TODO Revisar!
     const retorno = await ServicoRelatorioSemestral.obterListaSemestres().catch(
       e => erros(e)
     );
@@ -88,7 +86,8 @@ const RelatorioSemestral = () => {
 
   const obterFrequenciaAluno = async codigoAluno => {
     const retorno = await ServicoRelatorioSemestral.obterFrequenciaAluno(
-      codigoAluno
+      codigoAluno,
+      turma
     ).catch(e => erros(e));
     if (retorno && retorno.data) {
       return retorno.data;
@@ -153,7 +152,7 @@ const RelatorioSemestral = () => {
                       id="disciplina"
                       name="disciplinaId"
                       lista={listaSemestres}
-                      valueOption="valor"
+                      valueOption="semestre"
                       valueText="descricao"
                       valueSelect={semestreSelecionado}
                       onChange={onChangeSemestre}
@@ -187,6 +186,7 @@ const RelatorioSemestral = () => {
                         <DadosRelatorioSemestral
                           codigoTurma={turmaSelecionada.turma}
                           modalidade={turmaSelecionada.modalidade}
+                          semestreConsulta={semestreSelecionado}
                         />
                       </>
                     </TabelaRetratilRelatorioSemestral>
