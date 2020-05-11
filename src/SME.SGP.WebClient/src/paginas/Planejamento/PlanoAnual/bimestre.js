@@ -74,10 +74,11 @@ const Bimestre = ({
           }
           setObjetivosAprendizagem(resposta.data);
           setObjetivosCarregados(true);
-          setCarregandoDados(false);
         })
         .catch(e => {
           mostrarErros(e);
+        })
+        .finally(() => {
           setCarregandoDados(false);
         });
     } else {
@@ -112,7 +113,9 @@ const Bimestre = ({
 
   useMemo(() => {
     if (!disciplinaSemObjetivo)
-      erro('Não foram encontrados objetivos para a disciplina');
+      erro(
+        'Não foram encontrados objetivos para alguma(s) disciplina(s) selecionada(s)'
+      );
 
     setLayoutEspecial(ehEja || ehMedio || disciplinaSemObjetivo);
   }, [disciplinaSemObjetivo, ehEja, ehMedio]);
