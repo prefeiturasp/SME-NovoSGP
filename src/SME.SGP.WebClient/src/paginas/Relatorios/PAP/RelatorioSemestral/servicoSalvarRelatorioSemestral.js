@@ -63,8 +63,8 @@ class ServicoSalvarRelatorioSemestral {
 
     const salvar = async (limparTodosOsDados = false) => {
       const params = {
-        relatorioSemestralId: !relatorioSemestralId || 0,
-        relatorioSemestralAlunoId: !relatorioSemestralAlunoId || 0,
+        relatorioSemestralId: relatorioSemestralId || 0,
+        relatorioSemestralAlunoId: relatorioSemestralAlunoId || 0,
         secoes: dadosParaSalvarRelatorioSemestral,
       };
 
