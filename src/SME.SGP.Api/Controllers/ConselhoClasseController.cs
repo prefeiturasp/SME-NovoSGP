@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -104,15 +105,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<ConselhoClasseAlunoNotasConceitosDto>), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ImprimirTurma(long conselhoClasseId, [FromServices]IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
-          => Ok(await consultasConselhoClasseAluno.ObterNotasFrequencia(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
+        public async Task<IActionResult> ImprimirTurma(string turmaCodigo, [FromServices]IMediator mediator)
+          =>  Ok(await ObterImpressaoPorTurmaUseCase.Executar(mediator, turmaCodigo));
 
         [HttpGet("turmas/{turmaCodigo}/alunos/{alunoCodigo}/impressao")]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<ConselhoClasseAlunoNotasConceitosDto>), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ImprimirAluno(long conselhoClasseId, [FromServices]IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
-         => Ok(await consultasConselhoClasseAluno.ObterNotasFrequencia(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
+        public async Task<IActionResult> ImprimirAluno(string turmaCodigo, string alunoCodigo, [FromServices]IMediator mediator)
+         => Ok(await ObterImpressaoPorTurmaAlunoUseCase.Executar(mediator, turmaCodigo, alunoCodigo));
     }
 }

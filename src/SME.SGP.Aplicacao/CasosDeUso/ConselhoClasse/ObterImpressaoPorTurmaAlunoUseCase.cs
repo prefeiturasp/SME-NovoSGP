@@ -8,8 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterImpressaoPorTurmaAlunoUseCase
     {
-        public static async Task Executar(IMediator mediator, FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId, int mes, int dia, int anoLetivo,
-          IServicoUsuario servicoUsuario, IServicoEOL servicoEOL)
+        public static async Task Executar(IMediator mediator, string turmaCodigo, string alunoCodigo)
         {
         }
     }
