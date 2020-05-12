@@ -24,7 +24,7 @@ namespace SME.Background.Hangfire
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            var filter = new DashboardAuthorizationFilter(new SgpAuthAuthorizationFilterOptions());
+            var filter = new DashboardAuthorizationFilter(new SgpAuthAuthorizationFilterOptions(configuration));
             app.UseHangfireDashboard("/worker", new DashboardOptions()
             {
                 IsReadOnlyFunc = filter.ReadOnly,
