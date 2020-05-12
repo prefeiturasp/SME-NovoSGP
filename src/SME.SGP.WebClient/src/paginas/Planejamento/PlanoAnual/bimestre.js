@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Disciplinas from './disciplinas';
-import { ListItem, ListItemButton, ListaObjetivos, Erro } from './bimestre.css';
+import { ListItem, ListItemButton, ListaObjetivos } from './bimestre.css';
 import { Button, Colors, Grid, Auditoria, Loader } from '~/componentes';
 import Seta from '../../../recursos/Seta.svg';
 import Editor from '~/componentes/editor/editor';
 import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
-import { erros as mostrarErros } from '~/servicos/alertas';
+import { erros as mostrarErros, erro } from '~/servicos/alertas';
 
 const Bimestre = ({
   bimestre,
   disciplinas,
   ano,
-  erros,
   ehEja,
   ehMedio,
   disciplinaSemObjetivo,
@@ -23,7 +22,7 @@ const Bimestre = ({
   const [objetivosSelecionados, setObjetivosSelecionados] = useState(
     bimestre.objetivosAprendizagem
   );
-  const [disciplinasPreSelecionadas, setDisciplinasPreSelecionadas] = useState(
+  const [disciplinasPreSelecionadas] = useState(
     bimestre.objetivosAprendizagem.map(c => c.componenteCurricularEolId)
   );
   const [descricaoObjetivo, setDescricaoObjetivo] = useState(
@@ -43,7 +42,7 @@ const Bimestre = ({
       item.selecionado = true;
     });
     return bimestre.objetivosAprendizagem;
-  }
+  };
 
   const onChangeDisciplinasSelecionadas = disciplinasSelecionadas => {
     if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
@@ -65,7 +64,9 @@ const Bimestre = ({
               }
             });
             objetivosSelecionados.forEach(objetivoSelecionado => {
-              const objetivo = resposta.data.find(o => o.id === objetivoSelecionado.id);
+              const objetivo = resposta.data.find(
+                o => o.id === objetivoSelecionado.id
+              );
               if (!objetivo) {
                 resposta.data.push(objetivoSelecionado);
               }
@@ -73,10 +74,11 @@ const Bimestre = ({
           }
           setObjetivosAprendizagem(resposta.data);
           setObjetivosCarregados(true);
-          setCarregandoDados(false);
         })
         .catch(e => {
           mostrarErros(e);
+        })
+        .finally(() => {
           setCarregandoDados(false);
         });
     } else {
@@ -110,6 +112,11 @@ const Bimestre = ({
   };
 
   useMemo(() => {
+    if (!disciplinaSemObjetivo)
+      erro(
+        'Não foram encontrados objetivos para alguma(s) disciplina(s) selecionada(s)'
+      );
+
     setLayoutEspecial(ehEja || ehMedio || disciplinaSemObjetivo);
   }, [disciplinaSemObjetivo, ehEja, ehMedio]);
 
@@ -169,7 +176,7 @@ const Bimestre = ({
             <ListaObjetivos className="mt-4 overflow-auto">
               {objetivosAprendizagem &&
                 objetivosAprendizagem.length > 0 &&
-                objetivosAprendizagem.map((objetivo, index) => (
+                objetivosAprendizagem.map(objetivo => (
                   <ul
                     className="list-group list-group-horizontal mt-3"
                     key={objetivo.codigo}
