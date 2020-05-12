@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select 1 from periodo_escolar pe");
             query.AppendLine("inner join tipo_calendario tc");
-            query.AppendLine("on tc.periodo = pe.id");
+            query.AppendLine("on tc.id = pe.tipo_calendario_id");
             query.AppendLine("where tc.id = @tipoCalendarioId");
             query.AppendLine("and @dataParaVerificar between symmetric pe.periodo_inicio::date and pe.periodo_fim ::date");
             
