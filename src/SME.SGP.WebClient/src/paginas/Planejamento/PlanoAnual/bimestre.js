@@ -5,7 +5,7 @@ import { Button, Colors, Grid, Auditoria, Loader } from '~/componentes';
 import Seta from '../../../recursos/Seta.svg';
 import Editor from '~/componentes/editor/editor';
 import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
-import { erros as mostrarErros } from '~/servicos/alertas';
+import { erros as mostrarErros, erro } from '~/servicos/alertas';
 
 const Bimestre = ({
   bimestre,
@@ -43,7 +43,7 @@ const Bimestre = ({
       item.selecionado = true;
     });
     return bimestre.objetivosAprendizagem;
-  }
+  };
 
   const onChangeDisciplinasSelecionadas = disciplinasSelecionadas => {
     if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
@@ -65,7 +65,9 @@ const Bimestre = ({
               }
             });
             objetivosSelecionados.forEach(objetivoSelecionado => {
-              const objetivo = resposta.data.find(o => o.id === objetivoSelecionado.id);
+              const objetivo = resposta.data.find(
+                o => o.id === objetivoSelecionado.id
+              );
               if (!objetivo) {
                 resposta.data.push(objetivoSelecionado);
               }
@@ -73,10 +75,11 @@ const Bimestre = ({
           }
           setObjetivosAprendizagem(resposta.data);
           setObjetivosCarregados(true);
-          setCarregandoDados(false);
         })
         .catch(e => {
           mostrarErros(e);
+        })
+        .finally(() => {
           setCarregandoDados(false);
         });
     } else {
@@ -110,6 +113,11 @@ const Bimestre = ({
   };
 
   useMemo(() => {
+    if (!disciplinaSemObjetivo)
+      erro(
+        'Não foram encontrados objetivos para alguma(s) disciplina(s) selecionada(s)'
+      );
+
     setLayoutEspecial(ehEja || ehMedio || disciplinaSemObjetivo);
   }, [disciplinaSemObjetivo, ehEja, ehMedio]);
 
