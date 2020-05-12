@@ -1,4 +1,8 @@
-﻿DROP TABLE IF EXISTS public.secao_relatorio_semestral;
+﻿DROP TABLE IF EXISTS public.relatorio_semestral_aluno_secao; 
+DROP TABLE IF EXISTS public.relatorio_semestral_aluno; 
+DROP TABLE IF EXISTS public.relatorio_semestral; 
+DROP TABLE IF EXISTS public.secao_relatorio_semestral;
+
 CREATE TABLE public.secao_relatorio_semestral (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	nome varchar(50) NOT NULL,
@@ -18,7 +22,6 @@ insert into public.secao_relatorio_semestral(nome, descricao, obrigatorio, inici
   	('Outros', 'Outras observações', false, '2014-01-01');
 
 
-DROP TABLE IF EXISTS public.relatorio_semestral; 
 CREATE TABLE public.relatorio_semestral (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	turma_id int8 not null,
@@ -30,7 +33,6 @@ CREATE INDEX relatorio_semestral_turma_idx ON public.relatorio_semestral USING b
 ALTER TABLE public.relatorio_semestral ADD CONSTRAINT relatorio_semestral_turma_fk FOREIGN KEY (turma_id) REFERENCES turma(id);
 
 
-DROP TABLE IF EXISTS public.relatorio_semestral_aluno; 
 CREATE TABLE public.relatorio_semestral_aluno (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	relatorio_semestral_id int8 not null,
@@ -52,7 +54,6 @@ CREATE INDEX relatorio_semestral_aluno_relatorio_idx ON public.relatorio_semestr
 ALTER TABLE public.relatorio_semestral_aluno ADD CONSTRAINT relatorio_semestral_aluno_relatorio_fk FOREIGN KEY (relatorio_semestral_id) REFERENCES relatorio_semestral(id);
 
 
-DROP TABLE IF EXISTS public.relatorio_semestral_aluno_secao; 
 CREATE TABLE public.relatorio_semestral_aluno_secao (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	relatorio_semestral_aluno_id int8 not null,
