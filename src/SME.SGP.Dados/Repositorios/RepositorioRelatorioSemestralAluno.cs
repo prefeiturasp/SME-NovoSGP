@@ -48,7 +48,8 @@ namespace SME.SGP.Dados.Repositorios
 	                             srs.nome, 
 	                             srs.descricao, 
 	                             srs.obrigatorio,
-	                             rsas.valor
+	                             rsas.valor,
+                                 srs.ordem
                             from secao_relatorio_semestral srs
                             left join relatorio_semestral_aluno_secao rsas on rsas.secao_relatorio_semestral_id = srs.id
                            where srs.inicio_vigencia <= @dataReferencia 
@@ -58,6 +59,8 @@ namespace SME.SGP.Dados.Repositorios
             {
                 query += " and rsas.relatorio_semestral_aluno_id = @relatorioSemestralAlunoId";
             }
+
+            query += " order by srs.ordem ";
 
             return await database.Conexao.QueryAsync<RelatorioSemestralAlunoSecaoDto>(query, new { relatorioSemestralAlunoId, dataReferencia });
         }
