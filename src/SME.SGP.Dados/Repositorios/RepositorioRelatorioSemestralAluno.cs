@@ -56,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (relatorioSemestralAlunoId > 0)
             {
-                query += "and rsas.id = @relatorioSemestralAlunoId";
+                query += " and rsas.relatorio_semestral_aluno_id = @relatorioSemestralAlunoId";
             }
 
             return await database.Conexao.QueryAsync<RelatorioSemestralAlunoSecaoDto>(query, new { relatorioSemestralAlunoId, dataReferencia });
