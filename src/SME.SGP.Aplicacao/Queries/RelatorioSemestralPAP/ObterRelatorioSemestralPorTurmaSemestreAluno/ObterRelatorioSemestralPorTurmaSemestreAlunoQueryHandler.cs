@@ -41,15 +41,7 @@ namespace SME.SGP.Aplicacao
                 RelatorioSemestralId = relatorio.RelatorioSemestralId
             };
 
-            dto.Auditoria = new AuditoriaDto()
-            {
-                AlteradoEm = relatorio.AlteradoEm,
-                AlteradoRF = relatorio.AlteradoRF,
-                AlteradoPor = relatorio.AlteradoPor,
-                CriadoEm = relatorio.CriadoEm,
-                CriadoPor = relatorio.CriadoPor,
-                CriadoRF = relatorio.CriadoRF,
-            };
+            dto.Auditoria = (AuditoriaDto) relatorio;
 
             return dto;
         }
