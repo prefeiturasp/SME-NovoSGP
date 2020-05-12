@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
             if (turma.ModalidadeCodigo != Modalidade.EJA)
             {
-                relatorio.PodeEditar = bimestreAtual == 2 || bimestreAtual == 4;
+                relatorio.PodeEditar = (bimestreAtual == 2 && semestre == 1) || (bimestreAtual == 4 && semestre == 2);                
             }
             else
             {
