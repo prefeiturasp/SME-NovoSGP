@@ -13,11 +13,11 @@ namespace SME.Background.Hangfire
         public SgpAuthAuthorizationFilterOptions(IConfiguration configuration)
         {
             // Carrega e valida variáveis de ambiente
-            var configUserAdminStr = configuration.GetSection("HangfireUser_Admin").Value;
+            var configUserAdminStr = configuration.GetSection("HangfireUser_Admin").Value ?? "admin:Sgp@amcom";
             if (string.IsNullOrEmpty(configUserAdminStr))
                 throw new ArgumentNullException("HangfireUser_Admin", "Não localizado variável de ambiente do usuario Admin do Hangfire!");
 
-            var configUserBasicStr = configuration.GetSection("HangfireUser_Basic").Value;
+            var configUserBasicStr = configuration.GetSection("HangfireUser_Basic").Value ?? "user:Sgp@1234";
             if (string.IsNullOrEmpty(configUserBasicStr))
                 throw new ArgumentNullException("HangfireUser_Basic", "Não localizado variável de ambiente do usuario Básico do Hangfire!");
 
