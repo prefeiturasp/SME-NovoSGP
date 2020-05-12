@@ -8,6 +8,5 @@
         public long SecaoRelatorioSemestralId { get; set; }
         public SecaoRelatorioSemestral SecaoRelatorioSemestral { get; set; }
         public string Valor { get; set; }
-        public int Ordem { get; set; }
     }
 }

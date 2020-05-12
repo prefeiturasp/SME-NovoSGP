@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio
         public bool Obrigatorio { get; set; }
         public DateTime InicioVigencia { get; set; }
         public DateTime FimVigencia { get; set; }
+        public int Ordem { get; set; }
     }
 }
