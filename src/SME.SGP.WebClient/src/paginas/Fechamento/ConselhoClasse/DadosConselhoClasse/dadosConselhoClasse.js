@@ -227,7 +227,7 @@ const DadosConselhoClasse = props => {
             <AnotacoesRecomendacoes bimestreSelecionado={bimestreAtual} />
           </>
         ) : semDados && !carregando ? (
-          'Sem dados'
+          <div className="text-center">Sem dados</div>
         ) : (
           ''
         )}
