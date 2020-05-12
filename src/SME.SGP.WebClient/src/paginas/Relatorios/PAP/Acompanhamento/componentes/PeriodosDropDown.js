@@ -3,7 +3,6 @@ import t from 'prop-types';
 
 // Componentes
 import { SelectComponent } from '~/componentes';
-
 import AcompanhamentoPAPServico from '~/servicos/Paginas/Relatorios/PAP/Acompanhamento';
 
 function PeriodosDropDown({
@@ -54,12 +53,16 @@ PeriodosDropDown.propTypes = {
   onChangePeriodo: t.func,
   valor: t.string,
   desabilitado: t.bool,
+  codigoTurma: t.string,
+  setSemPeriodos: t.func,
 };
 
 PeriodosDropDown.defaultProps = {
   onChangePeriodo: () => {},
   valor: undefined,
   desabilitado: false,
+  codigoTurma: '',
+  setSemPeriodos: () => {},
 };
 
 export default PeriodosDropDown;
