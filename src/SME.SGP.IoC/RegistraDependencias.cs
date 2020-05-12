@@ -144,7 +144,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasRelatorioSemestralAluno, ConsultasRelatorioSemestralAluno>();
             services.TryAddScoped<IConsultasRelatorioSemestralAlunoSecao, ConsultasRelatorioSemestralAlunoSecao>();
             services.TryAddScoped<IConsultasSecaoRelatorioSemestral, ConsultasSecaoRelatorioSemestral>();
-            services.TryAddScoped<IConsultaRecuperacaoParalelaPeriodo, ConsultaRecuperacaoParalelaPeriodo>();            
+            services.TryAddScoped<IConsultaRecuperacaoParalelaPeriodo, ConsultaRecuperacaoParalelaPeriodo>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -260,7 +260,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRequestHandler<ObterAulasCalendarioProfessorPorMesQuery, IEnumerable<Aula>>, ObterAulasCalendarioProfessorPorMesQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterAulasCalendarioProfessorPorMesDiaQuery, IEnumerable<Aula>>, ObterAulasCalendarioProfessorPorMesDiaQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterTipoCalendarioPorIdQuery, TipoCalendario>, ObterTipoCalendarioPorIdQueryHandler>();
-            services.TryAddScoped<IRequestHandler<ObterPeriodoEscolarPorCalendarioEDataQuery, PeriodoEscolar>, ObterPeriodoEscolarPorCalendarioEDataQueryHandler>();            
+            services.TryAddScoped<IRequestHandler<ObterPeriodoEscolarPorCalendarioEDataQuery, PeriodoEscolar>, ObterPeriodoEscolarPorCalendarioEDataQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterTemEventoNaoLetivoPorCalendarioEDiaQuery, bool>, ObterTemEventoNaoLetivoPorCalendarioEDiaQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterTemEventoLetivoPorCalendarioEDiaQuery, bool>, ObterTemEventoLetivoPorCalendarioEDiaQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterFechamentoPorTurmaPeriodoQuery, FechamentoTurma>, ObterFechamentoPorTurmaPeriodoQueryHandler>();
@@ -272,6 +272,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery, IEnumerable<EventoAulaDto>>, ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterUsuarioLogadoQuery, Usuario>, ObterUsuarioLogadoQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterRelatorioSemestralPorTurmaSemestreAlunoQuery, RelatorioSemestralAlunoDto>, ObterRelatorioSemestralPorTurmaSemestreAlunoQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterBimestreAtualQuery, int>, ObterBimestreAtualQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterListaSemestresRelatorioPAPQuery, List<SemestreAcompanhamentoDto>>, ObterListaSemestresRelatorioPAPQueryHandler>();
+
 
         }
 

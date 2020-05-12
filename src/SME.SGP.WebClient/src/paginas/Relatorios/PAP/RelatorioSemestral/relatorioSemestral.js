@@ -58,9 +58,9 @@ const RelatorioSemestral = () => {
   );
 
   const obterListaSemestres = async () => {
-    const retorno = await ServicoRelatorioSemestral.obterListaSemestres().catch(
-      e => erros(e)
-    );
+    const retorno = await ServicoRelatorioSemestral.obterListaSemestres(
+      turma
+    ).catch(e => erros(e));
     if (retorno && retorno.data) {
       setListaSemestres(retorno.data);
     } else {
