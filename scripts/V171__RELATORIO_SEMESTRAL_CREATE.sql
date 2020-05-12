@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS public.secao_relatorio_semestral;
+ï»¿DROP TABLE IF EXISTS public.secao_relatorio_semestral;
 CREATE TABLE public.secao_relatorio_semestral (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	nome varchar(50) NOT NULL,
@@ -11,11 +11,11 @@ CREATE TABLE public.secao_relatorio_semestral (
 );
 
 insert into public.secao_relatorio_semestral(nome, descricao, obrigatorio, inicio_vigencia) values 
-  	('Histórico do Estudante', 'Trajetória do estudante, reprovações, histórico de faltas, acompanhamento das aprendizagens', true, '2014-01-01'),
+  	('HistÃ³rico do Estudante', 'TrajetÃ³ria do estudante, reprovaÃ§Ãµes, histÃ³rico de faltas, acompanhamento das aprendizagens', true, '2014-01-01'),
   	('Dificuldades', 'Dificuldades apresentadas inicialmente ', true, '2014-01-01'),
   	('Encaminhamentos', 'Encaminhamentos realizados', true, '2014-01-01'),
-  	('Avanços', 'Avanços observados', true, '2014-01-01'),
-  	('Outros', 'Outras observações', false, '2014-01-01');
+  	('AvanÃ§os', 'AvanÃ§os observados', true, '2014-01-01'),
+  	('Outros', 'Outras observaÃ§Ãµes', false, '2014-01-01');
 
 
 DROP TABLE IF EXISTS public.relatorio_semestral; 
