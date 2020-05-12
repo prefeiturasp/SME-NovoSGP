@@ -66,25 +66,25 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<ConselhoClasseParecerConclusivo> Calcular(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
         {
             Filtrar(pareceresDaTurma.Where(c => c.Frequencia), "Frequência");
-            if (!await ValidarParecerPorFrequencia(alunoCodigo, turmaCodigo, pareceresDaTurma))
+            if (!await ValidarParecerPorFrequencia(alunoCodigo, turmaCodigo))
                 return ObterParecerValidacao(false);
 
             var parecerFrequencia = ObterParecerValidacao(true);
             if (!Filtrar(pareceresDaTurma.Where(c => c.Nota), "Nota"))
                 return parecerFrequencia;
 
-            if (await ValidarParecerPorNota(alunoCodigo, turmaCodigo, pareceresDaTurma))
+            if (await ValidarParecerPorNota(alunoCodigo, turmaCodigo))
                 return ObterParecerValidacao(true);
             var parecerNota = ObterParecerValidacao(false);
 
             if (!Filtrar(pareceresDaTurma.Where(c => c.Conselho), "Conselho"))
                 return parecerNota;
 
-            return ObterParecerValidacao(await ValidarParecerPorConselho(alunoCodigo, turmaCodigo, pareceresDaTurma));
+            return ObterParecerValidacao(await ValidarParecerPorConselho(alunoCodigo, turmaCodigo));
         }
 
         #region Frequência
-        private async Task<bool> ValidarParecerPorFrequencia(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
+        private async Task<bool> ValidarParecerPorFrequencia(string alunoCodigo, string turmaCodigo)
         {
             if (!await ValidarFrequenciaGeralAluno(alunoCodigo, turmaCodigo))
                 return false;
@@ -117,7 +117,7 @@ namespace SME.SGP.Dominio.Servicos
         #endregion
 
         #region Nota
-        private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
+        private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string turmaCodigo)
         {
             var notasFechamentoAluno = await repositorioFechamentoNota.ObterNotasFinaisAlunoAsync(turmaCodigo, alunoCodigo);
             if (notasFechamentoAluno == null || !notasFechamentoAluno.Any())
@@ -154,7 +154,7 @@ namespace SME.SGP.Dominio.Servicos
         #endregion
 
         #region Conselho
-        private async Task<bool> ValidarParecerPorConselho(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
+        private async Task<bool> ValidarParecerPorConselho(string alunoCodigo, string turmaCodigo)
         {
             var notasConselhoClasse = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turmaCodigo, null);
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
