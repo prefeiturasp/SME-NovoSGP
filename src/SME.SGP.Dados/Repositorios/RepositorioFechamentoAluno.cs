@@ -60,13 +60,19 @@ namespace SME.SGP.Dados.Repositorios
                              and a.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
                              and a.aluno_codigo = @alunoCodigo";
 
-            return (await database.Conexao.QueryAsync<FechamentoAluno, FechamentoNota, FechamentoAluno>(query
+            FechamentoAluno fechamentoAlunoRetorno = null;
+            await database.Conexao.QueryAsync<FechamentoAluno, FechamentoNota, FechamentoAluno>(query
                 , (fechamentoAluno, fechamentoNota) =>
                 {
-                    fechamentoAluno.FechamentoNotas.Add(fechamentoNota);
+                    if (fechamentoAlunoRetorno == null)
+                        fechamentoAlunoRetorno = fechamentoAluno;
+
+                    fechamentoAlunoRetorno.FechamentoNotas.Add(fechamentoNota);
                     return fechamentoAluno;
                 }
-                , new { fechamentoTurmaDisciplinaId, alunoCodigo })).FirstOrDefault();
+                , new { fechamentoTurmaDisciplinaId, alunoCodigo });
+
+            return fechamentoAlunoRetorno;
         }
 
         public async Task<IEnumerable<FechamentoAluno>> ObterPorFechamentoTurmaDisciplina(long fechamentoTurmaDisciplinaId)
@@ -76,13 +82,23 @@ namespace SME.SGP.Dados.Repositorios
                            inner join fechamento_nota n on n.fechamento_aluno_id = fa.id
                            where fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId";
 
-            return await database.Conexao.QueryAsync<FechamentoAluno, FechamentoNota, FechamentoAluno>(query
+            List<FechamentoAluno> fechamentosAlunos = new List<FechamentoAluno>();
+
+            await database.Conexao.QueryAsync<FechamentoAluno, FechamentoNota, FechamentoAluno>(query
                 , (fechamentoAluno, fechamentoNota) =>
                 {
-                    fechamentoAluno.FechamentoNotas.Add(fechamentoNota);
+                    var fechamentoAlunoLista = fechamentosAlunos.FirstOrDefault(a => a.Id == fechamentoAluno.Id);
+                    if (fechamentoAlunoLista == null)
+                    {
+                        fechamentoAlunoLista = fechamentoAluno;
+                        fechamentosAlunos.Add(fechamentoAluno);
+                    }
+                    fechamentoAlunoLista.FechamentoNotas.Add(fechamentoNota);
                     return fechamentoAluno;
                 }
                 , new { fechamentoTurmaDisciplinaId });
+
+            return fechamentosAlunos;
         }
     }
 }
