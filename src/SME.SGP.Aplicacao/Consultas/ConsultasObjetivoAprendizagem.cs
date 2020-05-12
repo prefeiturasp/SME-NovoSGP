@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
             return objetivos?
                 .Where(c => componentesJurema.Contains(c.IdComponenteCurricular)
-                    && c.Ano == filtroObjetivosAprendizagemDto.Ano);
+                    && c.Ano == filtroObjetivosAprendizagemDto.Ano).OrderBy(o => o.Codigo);
         }
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Listar()
