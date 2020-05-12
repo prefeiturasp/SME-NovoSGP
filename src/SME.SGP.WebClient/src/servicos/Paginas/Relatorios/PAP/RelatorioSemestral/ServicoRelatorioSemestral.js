@@ -23,8 +23,8 @@ class ServicoRelatorioSemestral {
     return api.post(url, params);
   };
 
-  obterListaSemestres = () => {
-    return api.get(`${urlPadrao}/semestres`);
+  obterListaSemestres = turmaCodigo => {
+    return api.get(`${urlPadrao}/semestres/${turmaCodigo}`);
   };
 
   obterDadosCamposDescritivos = (

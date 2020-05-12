@@ -5,8 +5,7 @@ using System.Text;
 namespace SME.SGP.Infra
 {
     public class RelatorioSemestralAlunoDto
-    {
-        public bool PodeEditar { get; set; }
+    {        
         public long RelatorioSemestralId { get; set; }
         public long RelatorioSemestralAlunoId { get; set; }
         public IEnumerable<RelatorioSemestralAlunoSecaoDto> Secoes { get; set; }
