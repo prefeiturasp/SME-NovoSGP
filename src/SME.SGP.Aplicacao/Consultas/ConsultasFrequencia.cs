@@ -53,6 +53,36 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
             => await repositorioFrequencia.FrequenciaAulaRegistrada(aulaId);
 
+        public async Task<double> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
+        {
+            var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, componenteCurricularCodigo);
+
+            if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
+                return 100;
+
+            var frequenciaAluno = new FrequenciaAluno()
+            {
+                TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
+                TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
+                TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
+            };
+
+            return frequenciaAluno.PercentualFrequencia;
+        }
+
+        public double ObterFrequenciaMedia(DisciplinaDto disciplina)
+        {
+            if (_mediaFrequencia == 0)
+            {
+                if (disciplina.Regencia || !disciplina.LancaNota)
+                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
+                else
+                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+            }
+
+            return _mediaFrequencia;
+        }
+
         public async Task<IEnumerable<AlunoAusenteDto>> ObterListaAlunosComAusencia(string turmaId, string disciplinaId, int bimestre)
         {
             var alunosAusentesDto = new List<AlunoAusenteDto>();
@@ -142,10 +172,10 @@ namespace SME.SGP.Aplicacao
             if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
                 throw new NegocioException("Disciplina da aula não encontrada");
 
-            foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada()))
+            foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
             {
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia
-                if (aluno.EstaInativo() && (aluno.DataSituacao < bimestre.PeriodoInicio))
+                if (aluno.EstaInativo(aula.DataAula) && (aluno.DataSituacao < bimestre.PeriodoInicio))
                     continue;
 
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
@@ -155,7 +185,7 @@ namespace SME.SGP.Aplicacao
                     NumeroAlunoChamada = aluno.NumeroAlunoChamada,
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,
-                    Desabilitado = (aluno.EstaInativo() && (aula.DataAula.Date >= aluno.DataSituacao.Date)) || aula.EhDataSelecionadaFutura,
+                    Desabilitado = aluno.EstaInativo(aula.DataAula) || aula.EhDataSelecionadaFutura,
                 };
 
                 // Marcador visual da situação
@@ -194,7 +224,7 @@ namespace SME.SGP.Aplicacao
 
         public SinteseDto ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina)
         {
-            var sintese = percentualFrequencia >= ObterFrequenciaMedia(disciplina) ? 
+            var sintese = percentualFrequencia >= ObterFrequenciaMedia(disciplina) ?
                         SinteseEnum.Frequente : SinteseEnum.NaoFrequente;
 
             return new SinteseDto()
@@ -268,36 +298,6 @@ namespace SME.SGP.Aplicacao
                 Desabilitado = !aula.PermiteRegistroFrequencia(turma)
             };
             return registroFrequenciaDto;
-        }
-
-        public double ObterFrequenciaMedia(DisciplinaDto disciplina)
-        {
-            if (_mediaFrequencia == 0)
-            {
-                if (disciplina.Regencia || !disciplina.LancaNota)
-                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
-                else
-                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
-            }
-
-            return _mediaFrequencia;
-        }
-
-        public async Task<double> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
-        {
-            var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, componenteCurricularCodigo);
-
-            if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
-                return 100;
-
-            var frequenciaAluno = new FrequenciaAluno()
-            {
-                TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
-                TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
-                TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
-            };
-
-            return frequenciaAluno.PercentualFrequencia;
         }
     }
 }
