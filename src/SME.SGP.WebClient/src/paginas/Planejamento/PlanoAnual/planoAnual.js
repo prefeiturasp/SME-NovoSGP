@@ -190,8 +190,7 @@ const PlanoAnual = () => {
       servicoPlanoAnual
         .salvar(plano)
         .then(resp => {
-          setPlanoAnual(resp.data);
-          setCarregandoDados(false);
+          setPlanoAnual(resp.data.result);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
           setListaBimestresPreenchidos(
@@ -203,8 +202,10 @@ const PlanoAnual = () => {
           );
         })
         .catch(e => {
-          setCarregandoDados(false);
           erros(e);
+        })
+        .finally(() => {
+          setCarregandoDados(false);
         });
     } else {
       const erro = err.findIndex(c => !!c.length > 0);
@@ -257,7 +258,6 @@ const PlanoAnual = () => {
       servicoDisciplinas
         .obterDisciplinasPorTurma(turmaSelecionada.turma)
         .then(resposta => {
-          setCarregandoDados(false);
           setListaDisciplinas(resposta.data);
           if (resposta.data.length === 1) {
             const disciplina = resposta.data[0];
@@ -268,8 +268,10 @@ const PlanoAnual = () => {
           }
         })
         .catch(e => {
-          setCarregandoDados(false);
           erros(e);
+        })
+        .finally(() => {
+          setCarregandoDados(false);
         });
     }
   }, [turmaSelecionada.ano, turmaSelecionada.turma]);
@@ -294,7 +296,6 @@ const PlanoAnual = () => {
           turmaSelecionada.turma
         )
         .then(resposta => {
-          setCarregandoDados(false);
           limparErros();
           setPlanoAnual(resposta.data);
           const migrado = resposta.data.filter(c => c.migrado);
@@ -309,10 +310,12 @@ const PlanoAnual = () => {
           );
         })
         .catch(e => {
-          setCarregandoDados(false);
           setPlanoAnual([]);
           setEmEdicao(false);
           erros(e);
+        })
+        .finally(() => {
+          setCarregandoDados(false);
         });
 
       const turmaPrograma = !!(turmaSelecionada.ano === '0');
@@ -333,13 +336,14 @@ const PlanoAnual = () => {
               };
             })
           );
-          setCarregandoDados(false);
         })
         .catch(e => {
-          setCarregandoDados(false);
           setPlanoAnual([]);
           setEmEdicao(false);
           erros(e);
+        })
+        .finally(() => {
+          setCarregandoDados(false);
         });
     }
   }, [codigoDisciplinaSelecionada, disciplinaSelecionada, turmaSelecionada]);
