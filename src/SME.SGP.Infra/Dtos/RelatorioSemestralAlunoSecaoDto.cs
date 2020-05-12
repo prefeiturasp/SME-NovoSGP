@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
         public string Descricao { get; set; }
         public bool Obrigatorio { get; set; }
         public string Valor { get; set; }
+        public int Ordem { get; set; }
     }
 }

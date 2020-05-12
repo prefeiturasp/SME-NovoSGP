@@ -16,27 +16,22 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class RelatorioSemestralPAPController : ControllerBase
     {
-        [HttpGet("semestres")]
+        [HttpGet("semestres/{turmaCodigo}")]
         [ProducesResponseType(typeof(IEnumerable<SemestreAcompanhamentoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSemestres()
+        public async Task<IActionResult> ObterSemestres(string turmaCodigo, [FromServices]IMediator mediator)
         {
-            return Ok(new List<SemestreAcompanhamentoDto>()
-            {
-                new SemestreAcompanhamentoDto(1, "Acompanhamento 1º Semestre"),
-                new SemestreAcompanhamentoDto(2, "Acompanhamento 2º Semestre")
-            });
+            return Ok(await ObterListaSemestresUseCase.Executar(mediator, turmaCodigo));
         }
 
         [HttpGet("turmas/{turmaCodigo}/semestres/{semestre}/alunos/{alunoCodigo}")]
         [ProducesResponseType(typeof(RelatorioSemestralAlunoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
-        public async Task<IActionResult> ObterRelatorioAluno(string alunoCodigo, string turmaCodigo, int semestre, [FromServices]IMediator mediator, [FromServices]IConsultasPeriodoEscolar consultasPeriodoEscolar)
+        public async Task<IActionResult> ObterRelatorioAluno(string alunoCodigo, string turmaCodigo, int semestre, [FromServices]IMediator mediator)
         {
-            return Ok(await ObterRelatorioSemestralPorTurmaSemestreAlunoUseCase.Executar(mediator, alunoCodigo, turmaCodigo, semestre, consultasPeriodoEscolar));
-            //});
+            return Ok(await ObterRelatorioSemestralPorTurmaSemestreAlunoUseCase.Executar(mediator, alunoCodigo, turmaCodigo, semestre));
         }
 
         [HttpPost("turmas/{turmaCodigo}/semestres/{semestre}/alunos/{alunoCodigo}")]

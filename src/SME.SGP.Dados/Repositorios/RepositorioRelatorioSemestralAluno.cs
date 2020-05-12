@@ -45,19 +45,24 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<RelatorioSemestralAlunoSecaoDto>> ObterDadosSecaoPorRelatorioSemestralAlunoIdDataReferenciaAsync(long relatorioSemestralAlunoId, DateTime dataReferencia)
         {
             var query = @"select srs.id, 
-	                             srs.nome, 
-	                             srs.descricao, 
-	                             srs.obrigatorio,
-	                             rsas.valor
-                            from secao_relatorio_semestral srs
-                            left join relatorio_semestral_aluno_secao rsas on rsas.secao_relatorio_semestral_id = srs.id
-                           where srs.inicio_vigencia <= @dataReferencia 
-                             and srs.fim_vigencia >= @dataReferencia or srs.fim_vigencia is null";
+                                 srs.nome, 
+                                 srs.descricao, 
+                                 srs.obrigatorio,
+                                 srs.ordem";
+            if (relatorioSemestralAlunoId > 0)
+            {
+                query += " ,rsas.valor";
+            }
+            query += @" from secao_relatorio_semestral srs ";
 
             if (relatorioSemestralAlunoId > 0)
             {
-                query += "and rsas.id = @relatorioSemestralAlunoId";
+                query += @"left join relatorio_semestral_aluno_secao rsas on rsas.secao_relatorio_semestral_id = srs.id  and rsas.relatorio_semestral_aluno_id = @relatorioSemestralAlunoId
+                           where srs.inicio_vigencia <= @dataReferencia
+                             and srs.fim_vigencia >= @dataReferencia or srs.fim_vigencia is null";
             }
+
+            query += " order by srs.ordem ";
 
             return await database.Conexao.QueryAsync<RelatorioSemestralAlunoSecaoDto>(query, new { relatorioSemestralAlunoId, dataReferencia });
         }
