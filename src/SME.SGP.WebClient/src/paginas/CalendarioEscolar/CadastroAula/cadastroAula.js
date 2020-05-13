@@ -1,4 +1,5 @@
 import { Form, Formik } from 'formik';
+import queryString from 'query-string';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
@@ -32,7 +33,10 @@ import ServicoAula from '~/servicos/Paginas/ServicoAula';
 import { removerAlerta } from '~/redux/modulos/alertas/actions';
 import { store } from '~/redux';
 
-const CadastroAula = ({ match }) => {
+// Utils
+import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+
+const CadastroAula = ({ match, location }) => {
   const usuario = useSelector(state => state.usuario);
   const permissaoTela = useSelector(
     state => state.usuario.permissoes[RotasDTO.CALENDARIO_PROFESSOR]
@@ -88,10 +92,10 @@ const CadastroAula = ({ match }) => {
     tipoCalendarioId: '',
     ueId: '',
     turmaId: '',
-    dataAulaCompleta: window.moment(diaAula),
+    dataAulaCompleta: undefined,
   });
-  const [aula] = useState(inicial);
 
+  const [aula] = useState(inicial);
   const [idDisciplina, setIdDisciplina] = useState();
   const [disciplinaCompartilhada, setDisciplinaCompartilhada] = useState(false);
   const [
@@ -413,43 +417,65 @@ const CadastroAula = ({ match }) => {
       '/calendario-escolar/calendario-professor'
     );
 
-    if (match && match.params && match.params.id) {
+    if (match?.params?.id) {
       setNovoRegistro(false);
       setIdAula(match.params.id);
       consultaPorId(match.params.id);
     } else if (diaAula) {
       setNovoRegistro(true);
       setDataAula(window.moment(diaAula));
+      if (refForm?.setFieldValue) {
+        refForm.setFieldValue('dataAulaCompleta', window.moment(diaAula));
+      }
+    } else if (!valorNuloOuVazio(location.search)) {
+      const query = queryString.parse(location.search);
+      if (refForm?.setFieldValue) {
+        refForm.setFieldValue('dataAulaCompleta', window.moment(query.diaAula));
+        setInicial(valoresAntigos => ({
+          ...valoresAntigos,
+          dataAulaCompleta: window.moment(query.diaAula),
+        }));
+      }
+      setNovoRegistro(true);
     } else {
       validaF5();
     }
   };
 
   useEffect(() => {
-    const obterDisciplinas = async () => {
-      const disciplinas = await api.get(
-        `v1/professores/turmas/${turmaId}/disciplinas`
-      );
-      setListaDisciplinas(disciplinas.data);
+    async function obterListaDisciplinas() {
+      try {
+        setCarregandoSalvar(true);
+        const { data, status } = await api.get(
+          `v1/professores/turmas/${turmaId}/disciplinas`
+        );
 
-      if (disciplinas.data && disciplinas.data.length === 1) {
-        inicial.disciplinaId = disciplinas.data[0].codigoComponenteCurricular.toString();
-        if (Object.keys(refForm).length > 0) {
-          onChangeDisciplinas(
-            disciplinas.data[0].codigoComponenteCurricular,
-            disciplinas.data
-          );
+        if (data && status === 200) {
+          setCarregandoSalvar(false);
+          setListaDisciplinas(data);
+
+          if (data?.length === 1) {
+            setInicial(estadoAnterior => ({
+              ...estadoAnterior,
+              disciplinaId: data[0].codigoComponenteCurricular.toString(),
+            }));
+
+            if (Object.keys(refForm).length > 0) {
+              onChangeDisciplinas(data[0].codigoComponenteCurricular, data);
+            }
+
+            const { regencia } = data ? data[0] : false;
+            setEhRegencia(regencia);
+          }
         }
-        const { regencia } = disciplinas.data ? disciplinas.data[0] : false;
-        setEhRegencia(regencia);
+      } catch (error) {
+        erro('Não foi possível obter os componentes curriculares.');
+        setCarregandoSalvar(false);
       }
+    }
 
-      if (novoRegistro) {
-        setInicial(inicial);
-      }
-    };
     if (turmaId) {
-      obterDisciplinas();
+      obterListaDisciplinas();
       validarConsultaModoEdicaoENovo();
     }
   }, [refForm]);
@@ -530,7 +556,6 @@ const CadastroAula = ({ match }) => {
     idDisciplina,
     quantidadeMaximaAulas,
     turmaSelecionada.modalidade,
-    idDisciplina,
   ]);
 
   useEffect(() => {
@@ -601,12 +626,8 @@ const CadastroAula = ({ match }) => {
     );
     if (cadastrado) {
       if (cadastrado.status === 200) {
-        if (cadastrado.data) {
-          history.push('/calendario-escolar/calendario-professor');
-          setTimeout(() => {
-            sucesso(cadastrado.data.mensagens[0]);
-          }, 1000);
-        }
+        if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
+        history.push('/calendario-escolar/calendario-professor');
       } else if (cadastrado.response) {
         erro(
           cadastrado.response.status === 601
@@ -734,12 +755,18 @@ const CadastroAula = ({ match }) => {
     });
   };
 
-  const getDataFormatada = () => {
-    const titulo = `${dataAula ? dataAula.format('dddd') : ''}, ${
-      dataAula ? dataAula.format('DD/MM/YYYY') : ''
-    } `;
-    return titulo;
-  };
+  const getDataFormatada = useCallback(() => {
+    if (refForm && Object.keys(refForm).length > 0) {
+      const diaAulaContexto = refForm?.getFormikContext()?.values
+        .dataAulaCompleta;
+      const titulo = `${
+        diaAulaContexto ? diaAulaContexto.format('dddd') : ''
+      }, ${diaAulaContexto ? diaAulaContexto.format('DD/MM/YYYY') : ''} `;
+      return titulo;
+    }
+
+    return undefined;
+  }, [refForm]);
 
   return (
     <Loader loading={carregandoSalvar} tip="">
@@ -1045,10 +1072,12 @@ const CadastroAula = ({ match }) => {
 
 CadastroAula.propTypes = {
   match: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  location: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 };
 
 CadastroAula.defaultProps = {
   match: {},
+  location: {},
 };
 
 export default CadastroAula;

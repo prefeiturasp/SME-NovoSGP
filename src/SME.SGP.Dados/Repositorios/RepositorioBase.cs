@@ -27,6 +27,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             return database.Conexao.Get<T>(id);
         }
+        public virtual async Task<T> ObterPorIdAsync(long id)
+        {
+            return await database.Conexao.GetAsync<T>(id);
+        }
 
         public virtual void Remover(long id)
         {
