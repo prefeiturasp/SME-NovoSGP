@@ -12,12 +12,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQueryHandler : IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery, IEnumerable<EventoAulaDto>>
     {
-        private readonly IRepositorioFrequencia repositorioFrequencia;
-
-        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQueryHandler(IRepositorioFrequencia repositorioFrequencia)
-        {
-            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
-        }
         public async Task<IEnumerable<EventoAulaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery request, CancellationToken cancellationToken)
         {
             var retorno = new List<EventoAulaDto>();
@@ -53,7 +47,7 @@ namespace SME.SGP.Aplicacao
                         }
                     }
 
-                    eventoAulaDto.MostrarBotaoFrequencia = await repositorioFrequencia.FrequenciaAulaRegistrada(aulaParaVisualizar.Id);
+                    eventoAulaDto.MostrarBotaoFrequencia = componenteCurricular.RegistraFrequencia;
                     eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
 
                     retorno.Add(eventoAulaDto);

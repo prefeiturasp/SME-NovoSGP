@@ -83,7 +83,7 @@ namespace SME.SGP.Dados.Repositorios
             return lookup.Select( a => a.Value).FirstOrDefault();
         }
 
-        public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(long ueId, long dreId, int bimestre, long? periodoEscolarId)
+        public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(long ueId, long dreId, int anoLetivo, int bimestre, long? periodoEscolarId)
         {
             var validacaoBimestre = bimestre == 0 ? "order by pe.bimestre desc limit 1" : "and pe.bimestre = @bimestre";
             var validacaoPeriodo = periodoEscolarId.HasValue ? "and pe.id = @periodoEscolarId" : "";
@@ -92,14 +92,16 @@ namespace SME.SGP.Dados.Repositorios
                           from periodo_fechamento pf 
                          inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
                          inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
+                         inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
                          where pf.ue_id = @ueId
                            and pf.dre_id = @dreId 
+                           and tc.ano_letivo  = @anoLetivo
                             {validacaoPeriodo} 
                             {validacaoBimestre}";
 
 
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { ueId, dreId, bimestre, periodoEscolarId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { ueId, dreId, anoLetivo, bimestre, periodoEscolarId });
         }
 
         public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? dreId, long? ueId, long? turmaId)

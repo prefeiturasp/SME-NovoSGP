@@ -66,7 +66,10 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = await ObterPeriodoUltimoBimestre(turma);
 
             var conselhoClasseUltimoBimestre = await repositorioConselhoClasseAluno.ObterPorPeriodoAsync(alunoCodigo, turma.Id, periodoEscolar.Id);
-            return conselhoClasseUltimoBimestre != null;
+            if (conselhoClasseUltimoBimestre == null)
+                return false;
+
+            return await servicoConselhoClasse.VerificaNotasTodosComponentesCurriculares(alunoCodigo, turma, periodoEscolar.Id);
         }
 
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)
