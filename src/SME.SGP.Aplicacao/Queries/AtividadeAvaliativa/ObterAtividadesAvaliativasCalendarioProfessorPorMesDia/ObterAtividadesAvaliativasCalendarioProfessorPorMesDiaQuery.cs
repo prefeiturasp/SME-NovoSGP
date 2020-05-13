@@ -9,7 +9,8 @@ namespace SME.SGP.Aplicacao
     {
         public string UeCodigo { get; set; }        
         public string DreCodigo { get; internal set; }
-        public string TurmaCodigo { get; set; }        
+        public string TurmaCodigo { get; set; }
+        public string CodigoRf { get; set; }
         public DateTime DataReferencia { get; set; }
     }
 }
