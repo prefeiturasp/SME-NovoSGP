@@ -205,15 +205,17 @@ namespace SME.SGP.Dados.Repositorios
             return lookup.Values;
         }
 
-        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesCalendarioProfessorPorMesDia(string dreCodigo, string ueCodigo, string turmaCodigo, DateTime dataReferencia)
+        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesCalendarioProfessorPorMesDia(string dreCodigo, string ueCodigo, string turmaCodigo, string codigoRf, DateTime dataReferencia)
         {
             var query = @"select aa.id, aa.nome_avaliacao, aa.tipo_avaliacao_id, aa.data_avaliacao, aad.id, aad.disciplina_id from atividade_avaliativa aa
                             inner join atividade_avaliativa_disciplina aad
                             on aad.atividade_avaliativa_id  = aa.id
-                        where aa.dre_id  = @dreCodigo
+                        where not aa.excluido
+                        and aa.dre_id  = @dreCodigo
                         and aa.ue_id  = @ueCodigo
-                        and  aa.data_avaliacao ::date = @dataReferencia
-                        and aa.turma_id = @turmaCodigo";
+                        and aa.professor_rf = @codigoRf    
+                        and aa.data_avaliacao ::date = @dataReferencia
+                        and aa.turma_id = @turmaCodigo    ";
                         
 
 
@@ -237,7 +239,7 @@ namespace SME.SGP.Dados.Repositorios
                 ueCodigo,
                 dataReferencia,
                 turmaCodigo,
-
+                codigoRf
             });
 
             return lookup.Values;
