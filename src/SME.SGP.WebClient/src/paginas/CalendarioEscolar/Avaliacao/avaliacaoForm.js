@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import queryString from 'query-string';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
@@ -11,7 +12,6 @@ import CampoTexto from '~/componentes/campoTexto';
 import SelectComponent from '~/componentes/select';
 import { Colors, Label, Loader, Editor } from '~/componentes';
 import history from '~/servicos/history';
-import TextEditor from '~/componentes/textEditor';
 import { Div, Titulo, Badge, InseridoAlterado } from './avaliacao.css';
 import RotasDTO from '~/dtos/rotasDto';
 import ServicoAvaliacao from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
@@ -19,7 +19,10 @@ import { erro, sucesso, confirmar } from '~/servicos/alertas';
 import ModalCopiarAvaliacao from './componentes/ModalCopiarAvaliacao';
 import Alert from '~/componentes/alert';
 
-const AvaliacaoForm = ({ match }) => {
+// Utils
+import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+
+const AvaliacaoForm = ({ match, location }) => {
   const [
     mostrarModalCopiarAvaliacao,
     setMostrarModalCopiarAvaliacao,
@@ -127,7 +130,7 @@ const AvaliacaoForm = ({ match }) => {
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
 
-  const [dataAvaliacao, setdataAvaliacao] = useState();
+  const [dataAvaliacao, setDataAvaliacao] = useState();
 
   const cadastrarAvaliacao = async dados => {
     const avaliacao = {};
@@ -376,10 +379,13 @@ const AvaliacaoForm = ({ match }) => {
 
     if (!idAvaliacao) setDadosAvaliacao(inicial);
 
-    if (match && match.params && match.params.id) {
+    if (match?.params?.id) {
       setIdAvaliacao(match.params.id);
     } else if (diaAvaliacao) {
-      setdataAvaliacao(window.moment(diaAvaliacao));
+      setDataAvaliacao(window.moment(diaAvaliacao));
+    } else if (!valorNuloOuVazio(location.search)) {
+      const query = queryString.parse(location.search);
+      setDataAvaliacao(window.moment(query.diaAvaliacao));
     } else {
       validaF5();
     }
@@ -399,7 +405,7 @@ const AvaliacaoForm = ({ match }) => {
       setCarregandoTela(true);
       const avaliacao = await ServicoAvaliacao.buscar(idAvaliacao);
       if (avaliacao && avaliacao.data) {
-        setdataAvaliacao(window.moment(avaliacao.data.dataAvaliacao));
+        setDataAvaliacao(window.moment(avaliacao.data.dataAvaliacao));
         setListaDisciplinasSelecionadas(avaliacao.data.disciplinasId);
         setDisciplinaSelecionada(avaliacao.data.disciplinasId[0]);
         validaInterdisciplinar(avaliacao.data.categoriaId);
@@ -469,6 +475,12 @@ const AvaliacaoForm = ({ match }) => {
     form.values.disciplinasId = [];
   };
 
+  const renderDataAvaliacao = useCallback(() => {
+    return `${dataAvaliacao?.format('dddd')}, ${dataAvaliacao?.format(
+      'DD/MM/YYYY'
+    )}`;
+  }, [dataAvaliacao]);
+
   return (
     <>
       <div className="col-md-12">
@@ -517,9 +529,7 @@ const AvaliacaoForm = ({ match }) => {
         )}
         <Grid cols={12} className="mb-1 p-0">
           <Titulo className="font-weight-bold">
-            {`Cadastro de avaliação - ${
-              dataAvaliacao ? dataAvaliacao.format('dddd') : ''
-            }, ${dataAvaliacao ? dataAvaliacao.format('DD/MM/YYYY') : ''} `}
+            {`Cadastro de avaliação - ${renderDataAvaliacao()}`}
           </Titulo>
         </Grid>
         <Loader loading={carregandoTela} tip="Carregando...">
@@ -778,10 +788,12 @@ const AvaliacaoForm = ({ match }) => {
 
 AvaliacaoForm.propTypes = {
   match: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  location: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 };
 
 AvaliacaoForm.defaultProps = {
   match: {},
+  location: {},
 };
 
 export default AvaliacaoForm;

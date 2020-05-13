@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import t from 'prop-types';
 import shortid from 'shortid';
 
@@ -17,10 +17,6 @@ const BotoesAuxiliares = ({
   dentroPeriodo,
   desabilitado,
 }) => {
-  useEffect(() => {
-    console.log('Pode cadastrar avaliação', podeCadastrarAvaliacao);
-  }, [podeCadastrarAvaliacao]);
-
   return (
     <BotoesAuxiliaresEstilo>
       <Botao

@@ -23,7 +23,7 @@ export const LinhaEvento = styled.div`
   display: flex;
   border-bottom: 1px solid ${Base.CinzaDesabilitado};
   padding: 0.4rem;
-  cursor: pointer;
+  cursor: pointer !important;
   border-radius: 0.2rem;
   transition: all 0.2s;
 
