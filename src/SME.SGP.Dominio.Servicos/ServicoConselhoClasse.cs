@@ -249,6 +249,11 @@ namespace SME.SGP.Dominio.Servicos
         {
             var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
+
+            // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
+            if (!await ExisteNotasAluno(alunoCodigo, turma.CodigoTurma))
+                return new ParecerConclusivoDto();
+
             var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
 
             var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma);
@@ -260,6 +265,12 @@ namespace SME.SGP.Dominio.Servicos
                 Id = parecerConclusivo.Id,
                 Nome = parecerConclusivo.Nome
             };
+        }
+
+        private async Task<bool> ExisteNotasAluno(string alunoCodigo, string turmaCodigo)
+        {
+            var notas = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turmaCodigo, null);
+            return notas != null && notas.Any();
         }
 
         private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(long turmaId)
