@@ -27,7 +27,6 @@ import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventos
 import SemPermissao from '~/paginas/SemPermissao/sem-permissao';
 import RotasDto from '~/dtos/rotasDto';
 import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula';
-import CalendarioProfessor from '~/paginas/CalendarioProfessor/Calendario';
 import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/frequenciaPlanoAula';
 import AvaliacaoForm from '~/paginas/CalendarioEscolar/Avaliacao/avaliacaoForm';
 import Notas from '~/paginas/DiarioClasse/Notas/notas';
@@ -50,6 +49,8 @@ import PendenciasFechamentoForm from '~/paginas/Fechamento/PendenciasFechamento/
 import ComunicadosLista from '~/paginas/AcompanhamentoEscolar/Comunicados/Lista';
 import ComunicadosCadastro from '~/paginas/AcompanhamentoEscolar/Comunicados/Cadastro';
 import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselhoClasse';
+
+import CalendarioProfessor from '~/paginas/CalendarioEscolar/CalendarioProfessor';
 
 const rotas = new Map();
 
@@ -470,7 +471,7 @@ rotas.set(`${RotasDto.CADASTRO_DE_AULA}/novo/:tipoCalendarioId`, {
   breadcrumbName: 'Cadastro de Aula',
   parent: RotasDto.CADASTRO_DE_AULA,
   component: CadastroAula,
-  exact: true,
+  exact: false,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.CALENDARIO_PROFESSOR,

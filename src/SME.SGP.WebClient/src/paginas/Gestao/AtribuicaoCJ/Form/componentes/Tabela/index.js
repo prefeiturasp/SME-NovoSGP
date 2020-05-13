@@ -1,5 +1,5 @@
 import React from 'react';
-import t from 'prop-types';
+import PropTypes from 'prop-types';
 
 // Ant
 import { Switch } from 'antd';
@@ -49,9 +49,9 @@ function Tabela({ carregando, lista, onChangeSubstituir }) {
 }
 
 Tabela.propTypes = {
-  carregando: t.bool,
-  lista: t.oneOfType([t.array]),
-  onChangeSubstituir: t.func,
+  carregando: PropTypes.bool,
+  lista: PropTypes.oneOfType([PropTypes.array]),
+  onChangeSubstituir: PropTypes.func,
 };
 
 Tabela.defaultProps = {
