@@ -61,8 +61,10 @@ function DiaCompleto({
     [tipoCalendarioId]
   );
 
-  const onClickNovaAvaliacaoHandler = useCallback(() => {
-    history.push(`${RotasDTO.CADASTRO_DE_AVALIACAO}/novo`);
+  const onClickNovaAvaliacaoHandler = useCallback(diaSelecionado => {
+    history.push(
+      `${RotasDTO.CADASTRO_DE_AVALIACAO}/novo?diaAvaliacao=${diaSelecionado}`
+    );
   }, []);
 
   const onClickFrequenciaHandler = useCallback(
@@ -72,6 +74,10 @@ function DiaCompleto({
     },
     []
   );
+
+  const onClickAula = useCallback(() => {
+    // TODO: Ao modificar o reorno do backend encaminhar o usuario aos detalhes da aula
+  }, []);
 
   return (
     <DiaCompletoWrapper className={`${deveExibir && `visivel`}`}>
@@ -85,6 +91,7 @@ function DiaCompleto({
                 <LinhaEvento
                   key={shortid.generate()}
                   className={`${!eventoAula.ehAula && `evento`}`}
+                  onClick={() => onClickAula(eventoAula)}
                 >
                   <div className="labelEventoAula">
                     <LabelAulaEvento dadosEvento={eventoAula} />
@@ -150,7 +157,11 @@ function DiaCompleto({
             onClickNovaAula={() =>
               onClickNovaAulaHandler(window.moment(dia).format('YYYY-MM-DD'))
             }
-            onClickNovaAvaliacao={() => onClickNovaAvaliacaoHandler()}
+            onClickNovaAvaliacao={() =>
+              onClickNovaAvaliacaoHandler(
+                window.moment(dia).format('YYYY-MM-DD')
+              )
+            }
             permissaoTela={permissaoTela}
             dentroPeriodo={valorNuloOuVazio(
               dadosDia?.dados?.mensagemPeriodoEncerrado
