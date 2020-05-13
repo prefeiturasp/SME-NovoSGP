@@ -209,7 +209,7 @@ namespace SME.SGP.Aplicacao
             var notasConselhoClasseAluno = await consultasConselhoClasseNota.ObterNotasAlunoAsync(conselhoClasseId, alunoCodigo);
             var notasFechamentoAluno = fechamentoTurma.PeriodoEscolarId.HasValue ?
                 await consultasFechamentoNota.ObterNotasAlunoBimestreAsync(fechamentoTurmaId, alunoCodigo) :
-                await consultasFechamentoNota.ObterNotasAlunoAnoAsync(turmaCodigo, alunoCodigo);
+                await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmaCodigo);
 
             var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurma(turmaCodigo);
             if (disciplinas == null)
@@ -356,7 +356,7 @@ namespace SME.SGP.Aplicacao
             // Busca nota do conselho de classe consultado
             var notaComponente = notasConselhoClasseAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo);
             if (notaComponente == null)
-                // Dugere nota final do fechamento
+                // Sugere nota final do fechamento
                 notaComponente = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre);
 
             return new NotaPosConselhoDto() { 
