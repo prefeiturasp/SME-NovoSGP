@@ -22,6 +22,7 @@ import {
 // Serviços
 import CalendarioProfessorServico from '~/servicos/Paginas/CalendarioProfessor';
 import { erro } from '~/servicos/alertas';
+import history from '~/servicos/history';
 
 // Reducer
 import Reducer, { estadoInicial } from './reducer';
@@ -151,7 +152,7 @@ function CalendarioProfessor() {
       <Cabecalho pagina="Calendário do professor" />
       <Loader loading={false}>
         <Card>
-          <ButtonGroup />
+          <ButtonGroup onClickVoltar={() => history.push('/')} />
           <Grid cols={4} className="p-0 m-0">
             <DropDownTipoCalendario
               turmaSelecionada={turmaSelecionada.turma}
