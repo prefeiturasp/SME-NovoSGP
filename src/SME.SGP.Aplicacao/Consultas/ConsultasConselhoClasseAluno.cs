@@ -256,7 +256,7 @@ namespace SME.SGP.Aplicacao
                 Faltas = frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
                 Frequencia = frequenciaAluno?.PercentualFrequencia ?? 100,
-                NotasFechamentos = await ObterNotasComponente(disciplina, periodoEscolar, notasFechamentoAluno),
+                NotasFechamentos = await ObterNotasComponente(disciplina, periodoEscolar, notasFechamentoAluno, notasConselhoClasseAluno),
                 NotaPosConselho = await ObterNotaPosConselho(disciplina, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno)
             };
 
@@ -367,7 +367,7 @@ namespace SME.SGP.Aplicacao
             {
                 Nome = componenteCurricular.Nome,
                 CodigoComponenteCurricular = componenteCurricular.CodigoComponenteCurricular,
-                NotasFechamentos = await ObterNotasComponente(componenteCurricular, periodoEscolar, notasFechamentoAluno),
+                NotasFechamentos = await ObterNotasComponente(componenteCurricular, periodoEscolar, notasFechamentoAluno, notasConselhoClasseAluno),
                 NotaPosConselho = await ObterNotaPosConselho(componenteCurricular, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno)
             };
         }
@@ -387,14 +387,14 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<List<NotaBimestreDto>> ObterNotasComponente(DisciplinaResposta componenteCurricular, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
+        private async Task<List<NotaBimestreDto>> ObterNotasComponente(DisciplinaResposta componenteCurricular, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno)
         {
             var notasFinais = new List<NotaBimestreDto>();
 
             if (periodoEscolar != null)
                 notasFinais.Add(await ObterNotaFinalComponentePeriodo(componenteCurricular.CodigoComponenteCurricular, periodoEscolar.Bimestre, notasFechamentoAluno));
             else
-                notasFinais.AddRange(await ObterNotasFinaisComponentePeriodos(componenteCurricular.CodigoComponenteCurricular, notasFechamentoAluno));
+                notasFinais.AddRange(await ObterNotasFinaisComponentePeriodos(componenteCurricular.CodigoComponenteCurricular, notasFechamentoAluno, notasConselhoClasseAluno));
 
             return notasFinais;
         }
@@ -414,17 +414,18 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<IEnumerable<NotaBimestreDto>> ObterNotasFinaisComponentePeriodos(long codigoComponenteCurricular, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
+        private async Task<IEnumerable<NotaBimestreDto>> ObterNotasFinaisComponentePeriodos(long codigoComponenteCurricular, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno)
         {
             var notasPeriodos = new List<NotaBimestreDto>();
 
             var notasFechamentoBimestres = notasFechamentoAluno.Where(c => c.ComponenteCurricularCodigo == codigoComponenteCurricular && c.Bimestre.HasValue);
             foreach (var notaFechamento in notasFechamentoBimestres)
             {
+                var notaConselhoClasse = notasConselhoClasseAluno.FirstOrDefault(c => c.Bimestre == notaFechamento.Bimestre.Value && c.ComponenteCurricularCodigo == codigoComponenteCurricular);
                 notasPeriodos.Add(new NotaBimestreDto()
                 {
                     Bimestre = notaFechamento.Bimestre.Value,
-                    NotaConceito = notaFechamento.NotaConceito
+                    NotaConceito = notaConselhoClasse?.NotaConceito ?? notaFechamento.NotaConceito
                 });
             }
 
