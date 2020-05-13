@@ -8,6 +8,8 @@ const inicial = {
   dadosParaSalvarRelatorioSemestral: [],
   auditoriaRelatorioSemestral: null,
   desabilitarCampos: false,
+  dentroPeriodo: true,
+  codigoAlunoSelecionado: null,
 };
 
 export default function RelatorioSemestral(state = inicial, action) {
@@ -81,6 +83,18 @@ export default function RelatorioSemestral(state = inicial, action) {
         return {
           ...draft,
           desabilitarCampos: action.payload,
+        };
+      }
+      case '@relatorioSemestral/setDentroPeriodo': {
+        return {
+          ...draft,
+          dentroPeriodo: action.payload,
+        };
+      }
+      case '@relatorioSemestral/setCodigoAlunoSelecionado': {
+        return {
+          ...draft,
+          codigoAlunoSelecionado: action.payload,
         };
       }
 

@@ -42,3 +42,13 @@ export const setDesabilitarCampos = payload => ({
   type: '@relatorioSemestral/setDesabilitarCampos',
   payload,
 });
+
+export const setDentroPeriodo = payload => ({
+  type: '@relatorioSemestral/setDentroPeriodo',
+  payload,
+});
+
+export const setCodigoAlunoSelecionado = payload => ({
+  type: '@relatorioSemestral/setCodigoAlunoSelecionado',
+  payload,
+});

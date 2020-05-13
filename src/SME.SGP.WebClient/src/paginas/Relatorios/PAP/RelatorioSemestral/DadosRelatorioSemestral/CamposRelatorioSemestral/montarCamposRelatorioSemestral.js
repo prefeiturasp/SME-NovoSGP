@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import shortid from 'shortid';
 import CampoRelatorioSemestral from './campoRelatorioSemestral';
 
 const MontarCamposRelatorioSemestral = () => {
@@ -18,7 +19,7 @@ const MontarCamposRelatorioSemestral = () => {
       {dadosRelatorioSemestral && dadosRelatorioSemestral.secoes
         ? dadosRelatorioSemestral.secoes.map(item => {
             return (
-              <>
+              <div key={shortid.generate()}>
                 <CampoRelatorioSemestral
                   descricao={item.descricao}
                   idSecao={item.id}
@@ -27,7 +28,7 @@ const MontarCamposRelatorioSemestral = () => {
                   valor={item.valor}
                   alunoDesabilitado={desabilitado}
                 />
-              </>
+              </div>
             );
           })
         : ''}
