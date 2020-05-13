@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao
 
                     var eventoAulaDto = new EventoAulaDto()
                     {
+                        AulaId = aulaParaVisualizar.Id,
                         Titulo = componenteCurricular?.Nome,
                         EhAula = true,
                         EhReposicao = aulaParaVisualizar.TipoAula == TipoAula.Reposicao,
