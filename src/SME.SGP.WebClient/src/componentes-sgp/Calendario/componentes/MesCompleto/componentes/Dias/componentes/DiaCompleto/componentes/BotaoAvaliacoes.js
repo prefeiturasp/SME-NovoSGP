@@ -2,6 +2,9 @@ import React, { useCallback } from 'react';
 import shortid from 'shortid';
 import t from 'prop-types';
 
+// Ant
+import { Tooltip } from 'antd';
+
 // Componentes
 import { SelectComponent, Base, Colors } from '~/componentes';
 
@@ -25,7 +28,7 @@ function BotaoAvaliacoes({ atividadesAvaliativas, permissaoTela }) {
   );
 
   return (
-    <div className="pr-0 d-flex align-items-center px-2 p-x-md-3">
+    <div className="pr-0 d-flex align-items-center px-2 p-x-md-3 zIndex">
       {atividadesAvaliativas?.length > 1 ? (
         <SelectComponent
           lista={atividadesAvaliativas}
@@ -42,16 +45,23 @@ function BotaoAvaliacoes({ atividadesAvaliativas, permissaoTela }) {
         />
       ) : (
         atividadesAvaliativas?.length === 1 && (
-          <Botao
-            id={shortid.generate()}
-            label={`${atividadesAvaliativas[0].descricao}`}
-            color={Colors.Roxo}
-            className="w-100 position-relative btn-sm zIndex"
-            onClick={() => onClickAvaliacaoHandler(atividadesAvaliativas[0].id)}
-            height="24px"
-            padding="0 1rem"
-            border
-          />
+          <Tooltip
+            className="zIndex"
+            title={atividadesAvaliativas[0].descricao}
+          >
+            <Botao
+              id={shortid.generate()}
+              label="Avaliação"
+              color={Colors.Roxo}
+              className="w-100 position-relative btn-sm zIndex"
+              onClick={() =>
+                onClickAvaliacaoHandler(atividadesAvaliativas[0].id)
+              }
+              height="24px"
+              padding="0 1rem"
+              border
+            />
+          </Tooltip>
         )
       )}
     </div>
