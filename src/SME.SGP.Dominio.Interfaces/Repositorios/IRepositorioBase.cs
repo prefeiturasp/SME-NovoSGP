@@ -9,6 +9,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         T ObterPorId(long id);
 
+        Task<T> ObterPorIdAsync(long id);
+
         void Remover(long id);
 
         void Remover(T entidade);

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import urlBase from './variaveis';
+import { urlBase } from './variaveis';
 import { store } from '~/redux';
 import history from '~/servicos/history';
 import { URL_LOGIN } from '~/constantes/url';

@@ -17,14 +17,14 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IServicoEOL servicoEOL;
-        private readonly IServicoAluno servicoAluno;
+        private readonly IServicoAluno servicoAluno;        
 
         public ConsultasTurma(IRepositorioTurma repositorioTurma,
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                 IServicoEOL servicoEOL,
-                                IServicoAluno servicoAluno
+                                IServicoAluno servicoAluno                                
             )
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
+            this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));            
         }
 
         public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia, int bimestre = 0)
@@ -98,6 +98,18 @@ namespace SME.SGP.Aplicacao
             }
 
             return periodosAbertos;
+        }
+        public async Task<TipoCalendarioSugestaoDto> ObterSugestaoTipoCalendarioPorTurma(string turmaCodigo)
+        {
+            var turma = await ObterComUeDrePorCodigo(turmaCodigo);
+            if (turma == null)
+                throw new NegocioException($"Turma de código {turmaCodigo} não localizada!");
+
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
+            if (tipoCalendario == null)
+                throw new NegocioException($"Não foi possível obter o tipo de calendário da turma {turmaCodigo}");
+
+            return new TipoCalendarioSugestaoDto() { Id = tipoCalendario.Id, Nome = tipoCalendario.Nome };
         }
 
         public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, PeriodoEscolar periodoEscolar = null)
