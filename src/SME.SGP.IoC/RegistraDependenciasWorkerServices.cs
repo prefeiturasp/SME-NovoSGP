@@ -255,7 +255,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
             services.TryAddScopedWorkerService<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
             services.TryAddScopedWorkerService<IServicoNotificacaoAulaPrevista, ServicoNotificacaoAulaPrevista>();
-            services.TryAddScopedWorkerService<IServicoEventoMatricula, ServicoEventoMatricula>();
             services.TryAddScopedWorkerService<IServicoAluno, ServicoAluno>();
             services.TryAddScopedWorkerService<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
             services.TryAddScopedWorkerService<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();

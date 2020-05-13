@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-const Container = styled.div`
-  object-fit: contain;
-  font-family: Roboto;
-  font-size: 9px;
-  font-weight: bold;
-  color: #42474a;
-  margin-top: 16px;
-  width: 100%;
-`;
 const Auditoria = ({
   criadoPor,
   criadoEm,
@@ -17,6 +8,7 @@ const Auditoria = ({
   alteradoEm,
   criadoRf,
   alteradoRf,
+  ignorarMarginTop,
 }) => {
   const [criado] = useState(
     criadoEm ? window.moment(criadoEm) : window.moment()
@@ -25,10 +17,24 @@ const Auditoria = ({
     alteradoEm ? window.moment(alteradoEm) : window.moment()
   );
 
+  const Container = styled.div`
+    object-fit: contain;
+    font-family: Roboto;
+    font-size: 9px;
+    font-weight: bold;
+    color: #42474a;
+    margin-top: ${ignorarMarginTop ? '0px' : '16px'};
+    width: 100%;
+  `;
+
   return (
     <Container>
       {criadoPor ? (
-        <div className="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-start mt-2">
+        <div
+          className={`col-xs-12 col-md-12 col-lg-12 d-flex justify-content-start ${
+            ignorarMarginTop ? '' : 'mt-2'
+          }`}
+        >
           INSERIDO por {criadoPor} {criadoRf && `(rf: ${criadoRf})`} em{' '}
           {`${criado.format('DD/MM/YYYY')} às ${criado.format('HH:mm')}`}
         </div>

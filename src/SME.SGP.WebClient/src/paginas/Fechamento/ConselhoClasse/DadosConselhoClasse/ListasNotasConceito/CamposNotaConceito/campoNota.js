@@ -130,10 +130,10 @@ const CampoNota = props => {
       const auditoria = {
         criadoEm: dados.data.criadoEm,
         criadoPor: dados.data.criadoPor,
-        criadoRf: dados.data.criadoRf,
+        criadoRf: dados.data.criadoRF,
         alteradoPor: dados.data.alteradoPor,
         alteradoEm: dados.data.alteradoEm,
-        alteradoRf: dados.data.alteradoRf,
+        alteradoRf: dados.data.alteradoRF,
       };
       setNotaPosConselho(nota, false, justificativa, auditoria);
     }
