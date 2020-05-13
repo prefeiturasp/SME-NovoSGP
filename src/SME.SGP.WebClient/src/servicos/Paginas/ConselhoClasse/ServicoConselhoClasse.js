@@ -132,6 +132,12 @@ class ServicoConselhoClasse {
     }
     dispatch(setMarcadorParecerConclusivo(parecerAtual));
   };
+
+  podeImprimirTodosOsConselhos = () => {
+    return Promise.resolve({
+      data: true,
+    });
+  };
 }
 
 export default new ServicoConselhoClasse();
