@@ -1,6 +1,8 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Router, Switch } from 'react-router-dom';
+import ReactGA from 'react-ga';
+import { obterTrackingID } from './servicos/variaveis';
 
 import './configuracao/ReactotronConfig';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -18,8 +20,9 @@ import { rotaAtiva } from './redux/modulos/navegacao/actions';
 import CapturaErros from './captura-erros';
 import { Deslogar } from '~/redux/modulos/usuario/actions';
 
-function App() {
+obterTrackingID().then(id => ReactGA.initialize(id));
 
+function App() {
   window.addEventListener("beforeunload", function (event) {
     verificaSairResetSenha();
   });
@@ -41,11 +44,13 @@ function App() {
         }
       }
     }
-  }
+  };
 
   history.listen(location => {
     localStorage.setItem('rota-atual', location.pathname);
     store.dispatch(rotaAtiva(location.pathname));
+    ReactGA.set({ page: location.pathname });
+    ReactGA.pageview(location.pathname);
   });
 
   return (
