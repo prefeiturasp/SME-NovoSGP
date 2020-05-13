@@ -10,4 +10,14 @@ const urlBase = () =>
       window.location.href = '/erro';
     });
 
-export default urlBase;
+const obterTrackingID = () =>
+  axios
+    .get('/../../../configuracoes/variaveis.json')
+    .then(response => {
+      return response.data.TRACKING_ID;
+    })
+    .catch(() => {
+      window.location.href = '/erro';
+    });
+
+export { urlBase, obterTrackingID };
