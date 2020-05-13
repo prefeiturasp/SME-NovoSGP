@@ -24,6 +24,7 @@ namespace SME.SGP.Infra
         public string Descricao { get; set; }
         public bool PodeCadastrarAvaliacao { get; set; }
         public IList<AtividadeAvaliativaParaEventoAulaDto> AtividadesAvaliativas { get; set; }
+        public long? AulaId { get; set; }
         public bool EhAula { get; set; }
         public bool EhAulaCJ { get; set; }
         public bool MostrarBotaoFrequencia { get; set; }
