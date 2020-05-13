@@ -11,9 +11,12 @@ import {
   limparDadosRelatorioSemestral,
   setAlunosRelatorioSemestral,
   setDadosAlunoObjectCard,
+  setDentroPeriodo,
+  setCodigoAlunoSelecionado,
 } from '~/redux/modulos/relatorioSemestral/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
+import AlertaDentroPeriodoPAP from './DadosRelatorioSemestral/AlertaDentroPeriodoPAP/alertaDentroPeriodoPAP';
 import BotaoOrdenarListaAlunos from './DadosRelatorioSemestral/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
 import BotoesAcoesRelatorioSemestral from './DadosRelatorioSemestral/BotoesAcoes/botoesAcoesRelatorioSemestral';
 import DadosRelatorioSemestral from './DadosRelatorioSemestral/dadosRelatorioSemestral';
@@ -57,7 +60,7 @@ const RelatorioSemestral = () => {
     [anoLetivo, dispatch, turma, resetarInfomacoes]
   );
 
-  const obterListaSemestres = async () => {
+  const obterListaSemestres = useCallback(async () => {
     const retorno = await ServicoRelatorioSemestral.obterListaSemestres(
       turma
     ).catch(e => erros(e));
@@ -66,7 +69,7 @@ const RelatorioSemestral = () => {
     } else {
       setListaSemestres([]);
     }
-  };
+  }, [turma]);
 
   useEffect(() => {
     resetarInfomacoes();
@@ -74,7 +77,13 @@ const RelatorioSemestral = () => {
     if (turma) {
       obterListaSemestres();
     }
-  }, [obterListaAlunos, turma, resetarInfomacoes, dispatch]);
+  }, [
+    obterListaAlunos,
+    turma,
+    resetarInfomacoes,
+    dispatch,
+    obterListaSemestres,
+  ]);
 
   useEffect(() => {
     if (semestreSelecionado) {
@@ -101,6 +110,8 @@ const RelatorioSemestral = () => {
     const novoAluno = aluno;
     novoAluno.frequencia = frequenciaGeralAluno;
     dispatch(setDadosAlunoObjectCard(aluno));
+
+    dispatch(setCodigoAlunoSelecionado(aluno.codigoEOL));
   };
 
   const permiteOnChangeAluno = async () => {
@@ -113,7 +124,16 @@ const RelatorioSemestral = () => {
 
   const onChangeSemestre = valor => {
     resetarInfomacoes();
+    dispatch(setAlunosRelatorioSemestral([]));
+    dispatch(setCodigoAlunoSelecionado());
     setSemestreSelecionado(valor);
+
+    let dentroPeriodo = true;
+    if (valor) {
+      const semestreNovo = listaSemestres.find(item => item.semestre == valor);
+      dentroPeriodo = semestreNovo.podeEditar;
+    }
+    dispatch(setDentroPeriodo(dentroPeriodo));
   };
 
   return (
@@ -133,6 +153,7 @@ const RelatorioSemestral = () => {
       ) : (
         ''
       )}
+      <AlertaDentroPeriodoPAP />
       <Cabecalho pagina="Relatório semestral" />
       <Loader loading={carregandoGeral}>
         <Card>

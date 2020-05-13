@@ -15,6 +15,10 @@ const CampoRelatorioSemestral = props => {
     store => store.relatorioSemestral.desabilitarCampos
   );
 
+  const dentroPeriodo = useSelector(
+    store => store.relatorioSemestral.dentroPeriodo
+  );
+
   const [exibirCard, setExibirCard] = useState(false);
 
   const dispatch = useDispatch();
@@ -55,7 +59,9 @@ const CampoRelatorioSemestral = props => {
               onChange(valorNovo);
               setarRelatorioSemestralEmEdicao(true);
             }}
-            desabilitar={alunoDesabilitado || desabilitarCampos}
+            desabilitar={
+              alunoDesabilitado || !dentroPeriodo || desabilitarCampos
+            }
           />
         ) : (
           ''

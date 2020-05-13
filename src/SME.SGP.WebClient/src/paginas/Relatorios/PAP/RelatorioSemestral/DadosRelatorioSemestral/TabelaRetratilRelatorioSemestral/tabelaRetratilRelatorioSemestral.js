@@ -12,6 +12,10 @@ const TabelaRetratilRelatorioSemestral = ({
     store => store.relatorioSemestral.alunosRelatorioSemestral
   );
 
+  const codigoAlunoSelecionado = useSelector(
+    store => store.relatorioSemestral.codigoAlunoSelecionado
+  );
+
   return (
     <>
       {alunosRelatorioSemestral && alunosRelatorioSemestral.length ? (
@@ -19,6 +23,8 @@ const TabelaRetratilRelatorioSemestral = ({
           onChangeAlunoSelecionado={onChangeAlunoSelecionado}
           permiteOnChangeAluno={permiteOnChangeAluno}
           alunos={alunosRelatorioSemestral}
+          codigoAlunoSelecionado={codigoAlunoSelecionado}
+          exibirProcessoConcluido
         >
           {children}
         </TabelaRetratil>

@@ -4,6 +4,8 @@ import {
   setAuditoriaRelatorioSemestral,
   setRelatorioSemestralEmEdicao,
   setDadosRelatorioSemestral,
+  setAlunosRelatorioSemestral,
+  setCodigoAlunoSelecionado,
 } from '~/redux/modulos/relatorioSemestral/actions';
 import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
@@ -20,6 +22,7 @@ class ServicoSalvarRelatorioSemestral {
       relatorioSemestralEmEdicao,
       dadosParaSalvarRelatorioSemestral,
       desabilitarCampos,
+      alunosRelatorioSemestral,
     } = relatorioSemestral;
 
     const {
@@ -87,13 +90,22 @@ class ServicoSalvarRelatorioSemestral {
         dispatch(setRelatorioSemestralEmEdicao(false));
 
         if (limparTodosOsDados) {
-          dispatch(setDadosRelatorioSemestral());
+          dispatch(setDadosRelatorioSemestral({}));
           dispatch(limparDadosParaSalvarRelatorioSemestral());
         } else {
           dispatch(limparDadosParaSalvarRelatorioSemestral());
         }
 
         sucesso('Suas informações foram salvas com sucesso.');
+
+        const alunoAtualIndex = alunosRelatorioSemestral.findIndex(
+          item => item.codigoEOL === alunoCodigo
+        );
+        const alunosRelatorioSemestralDto = alunosRelatorioSemestral;
+        alunosRelatorioSemestralDto[alunoAtualIndex].processoConcluido = true;
+        dispatch(setCodigoAlunoSelecionado(alunoCodigo));
+        dispatch(setAlunosRelatorioSemestral([...alunosRelatorioSemestralDto]));
+
         return true;
       }
       return false;
