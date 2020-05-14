@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível obter o RF do usuário.");
             }
 
-            if (!await consultasTurma.TurmaEmPeriodoAberto(planoAnualDto.TurmaId.Value, DateTime.Today))
+            if (planoAnualDto.TurmaId.HasValue && !await consultasTurma.TurmaEmPeriodoAberto(planoAnualDto.TurmaId.Value.ToString(), DateTime.Today))
                 throw new NegocioException("Turma não esta em período aberto");
 
             unitOfWork.IniciarTransacao();
