@@ -169,7 +169,8 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesCalendarioProfessorPorMes(string dreCodigo, string ueCodigo, int mes, int ano, string turmaCodigo)
         {
-            var query = @"select aa.id, aa.professor_rf, aa.tipo_avaliacao_id, aa.data_avaliacao, aad.id, aad.disciplina_id from atividade_avaliativa aa
+            var query = @"select aa.id, aa.professor_rf, aa.tipo_avaliacao_id, aa.data_avaliacao, aa.eh_cj,
+                                 aad.id, aad.disciplina_id from atividade_avaliativa aa
                             inner join atividade_avaliativa_disciplina aad
                             on aad.atividade_avaliativa_id  = aa.id
                         where not aa.excluido
@@ -208,7 +209,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesCalendarioProfessorPorMesDia(string dreCodigo, string ueCodigo, string turmaCodigo, DateTime dataReferencia)
         {
-            var query = @"select aa.id, aa.professor_rf, aa.nome_avaliacao, aa.tipo_avaliacao_id, aa.data_avaliacao, aad.id, aad.disciplina_id from atividade_avaliativa aa
+            var query = @"select aa.id, aa.professor_rf, aa.nome_avaliacao, aa.tipo_avaliacao_id, 
+                                 aa.data_avaliacao, aa.eh_cj, aad.id,  aad.disciplina_id 
+                        from atividade_avaliativa aa
                             inner join atividade_avaliativa_disciplina aad
                             on aad.atividade_avaliativa_id  = aa.id
                         where not aa.excluido
