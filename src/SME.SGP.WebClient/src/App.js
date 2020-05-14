@@ -23,16 +23,6 @@ import { Deslogar } from '~/redux/modulos/usuario/actions';
 obterTrackingID().then(id => ReactGA.initialize(id));
 
 function App() {
-  window.addEventListener("beforeunload", function (event) {
-    verificaSairResetSenha();
-  });
-
-  window.addEventListener('popstate', function (event) {
-    if (performance.navigation.type == 1) {
-      verificaSairResetSenha();
-    }
-  });
-
   const verificaSairResetSenha = () => {
     const persistJson = localStorage.getItem('persist:sme-sgp');
     if (persistJson) {
@@ -45,6 +35,16 @@ function App() {
       }
     }
   };
+
+  window.addEventListener('beforeunload', () => {
+    verificaSairResetSenha();
+  });
+
+  window.addEventListener('popstate', () => {
+    if (performance.navigation.type === 1) {
+      verificaSairResetSenha();
+    }
+  });
 
   history.listen(location => {
     localStorage.setItem('rota-atual', location.pathname);
@@ -61,13 +61,15 @@ function App() {
             <GlobalStyle />
             <div className="h-100">
               <Switch>
-                <RotaAutenticadaDesestruturada
-                  component={RedefinirSenha}
-                  path="/redefinir-senha"
-                />
                 <RotaNaoAutenticadaDesestruturada
                   component={RedefinirSenha}
                   path="/redefinir-senha/:token"
+                  exact
+                />
+                <RotaAutenticadaDesestruturada
+                  component={RedefinirSenha}
+                  path="/redefinir-senha"
+                  exact
                 />
                 <RotaNaoAutenticadaDesestruturada
                   component={RecuperarSenha}
