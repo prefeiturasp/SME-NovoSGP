@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<AtividadeAvaliativa>> Handle(ObterAtividadesAvaliativasCalendarioProfessorPorMesQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioAtividadeAvaliativa.ObterAtividadesCalendarioProfessorPorMes(request.DreCodigo, request.UeCodigo, request.Mes, request.AnoLetivo,request.TurmaCodigo, request.CodigoRf);
+            return await repositorioAtividadeAvaliativa.ObterAtividadesCalendarioProfessorPorMes(request.DreCodigo, request.UeCodigo, request.Mes, request.AnoLetivo,request.TurmaCodigo);
         }
     }
 }
