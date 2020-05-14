@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
         public List<AtividadeAvaliativaRegenciaDto> AtividadesRegencia { get; set; }
         public string Categoria { get; set; }
         public DateTime CriadoEm { get; set; }
+        public bool DentroPeriodo { get; set; }
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }
         public long Id { get; set; }

@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
@@ -40,7 +39,22 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = "select * from evento_tipo where descricao = @descricao";
 
-            return database.Conexao.QuerySingleOrDefault<EventoTipo>(sql, new { descricao = "Feriado"});
+            return database.Conexao.QuerySingleOrDefault<EventoTipo>(sql, new { descricao = "Feriado" });
+        }
+
+        public EventoTipo ObterTipoEventoPorTipo(TipoEvento tipoEvento)
+        {
+            var sql = "select * from evento_tipo where codigo = @tipoEvento";
+
+            return database.Conexao.QuerySingleOrDefault<EventoTipo>(sql, new { tipoEvento });
+            
+        }
+
+        public EventoTipo ObterPorCodigo(long id)
+        {
+            var sql = "select * from evento_tipo where codigo = @id";
+
+            return database.Conexao.QuerySingleOrDefault<EventoTipo>(sql, new { id });
         }
 
         private static StringBuilder MontaQueryCompleta(EventoLocalOcorrencia eventoLocalOcorrencia, EventoLetivo eventoLetivo, string descricao, Paginacao paginacao)

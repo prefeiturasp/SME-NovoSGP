@@ -1,57 +1,67 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Disciplina from './disciplina';
+import { Loader } from '~/componentes';
 
 const Disciplinas = ({
   disciplinas,
   preSelecionadas,
   layoutEspecial,
   onChange,
+  carregandoDisciplinas,
 }) => {
   const [listaDisciplinas, setListaDisciplinas] = useState(disciplinas);
-  const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState([]);
+  const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    if (disciplinas) {
+    if (disciplinas && disciplinas.length) {
       setListaDisciplinas(disciplinas);
+      setCarregando(false);
+      carregandoDisciplinas(false);
     }
-  }, [disciplinas, onChange]);
+  }, [carregandoDisciplinas, disciplinas, onChange]);
 
   const selecionarDisciplina = (codigoComponenteCurricular, selecionada) => {
     if (!layoutEspecial) {
-      const indiceDisciplina = disciplinasSelecionadas.findIndex(
-        c => c === codigoComponenteCurricular
-      );
-      if (indiceDisciplina >= 0) {
-        if (!selecionada) {
-          disciplinasSelecionadas.splice(indiceDisciplina, 1);
-        }
-      } else if (selecionada) {
-        disciplinasSelecionadas.push(codigoComponenteCurricular);
-      }
-      setDisciplinasSelecionadas([...disciplinasSelecionadas]);
-      onChange(disciplinasSelecionadas);
+      const disciplina = selecionada ? [codigoComponenteCurricular] : [];
+      disciplinas.forEach(item => {
+        item.selecionada =
+          item.codigoComponenteCurricular === codigoComponenteCurricular
+            ? selecionada
+            : false;
+      });
+      setListaDisciplinas([...disciplinas]);
+      onChange(disciplina);
     }
   };
 
   useEffect(() => {
-    setDisciplinasSelecionadas(preSelecionadas);
-    onChange(preSelecionadas);
+    onChange(undefined);
   }, [preSelecionadas]);
 
   return (
-    <>
+    <Loader loading={carregando}>
       {listaDisciplinas.map(disciplina => (
         <Disciplina
           disciplina={disciplina}
           onClick={selecionarDisciplina}
           preSelecionada={preSelecionadas.find(
-            c => c == disciplina.codigoComponenteCurricular
+            c => String(c) === String(disciplina.codigoComponenteCurricular)
           )}
           key={disciplina.codigoComponenteCurricular}
           layoutEspecial={layoutEspecial}
         />
       ))}
-    </>
+    </Loader>
   );
 };
+
+Disciplinas.propTypes = {
+  disciplinas: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  preSelecionadas: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  layoutEspecial: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  onChange: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  carregandoDisciplinas: PropTypes.oneOfType([PropTypes.any]).isRequired,
+};
+
 export default Disciplinas;

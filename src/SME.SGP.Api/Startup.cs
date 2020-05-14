@@ -9,13 +9,15 @@ using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
-using SME.SGP.Api.Middlewares;
 using SME.SGP.Background;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using MediatR;
 
 namespace SME.SGP.Api
 {
@@ -55,11 +57,14 @@ namespace SME.SGP.Api
                 .AllowAnyHeader()
                 .AllowCredentials());
 
+            app.UseMetricServer();
+
+            app.UseHttpMetrics();
+
             app.UseAuthentication();
-            app.UseMiddleware<TokenServiceMiddleware>();
 
             app.UseMvc();
-            app.UseMetricServer();
+
             app.UseStaticFiles();
 
             app.UseHealthChecks("/healthz", new HealthCheckOptions()
@@ -99,13 +104,16 @@ namespace SME.SGP.Api
                             });
             });
 
-            services.AddScoped<TokenServiceMiddleware>();
-
             services.AddDistributedRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("SGP-Redis");
                 options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
             });
+
+            services.AddApplicationInsightsTelemetry(Configuration);
+
+            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
+            services.AddMediatR(assembly);
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
 
@@ -128,6 +136,12 @@ namespace SME.SGP.Api
                         name: "Postgres")
                     .AddCheck<ApiJuremaCheck>("API Jurema")
                     .AddCheck<ApiEolCheck>("API EOL");
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
+                options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
+            });
         }
     }
 }

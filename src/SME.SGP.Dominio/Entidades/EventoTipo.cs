@@ -17,5 +17,6 @@
         public EventoLetivo Letivo { get; set; }
         public EventoLocalOcorrencia LocalOcorrencia { get; set; }
         public EventoTipoData TipoData { get; set; }
+        public bool SomenteLeitura { get; set; }
     }
 }

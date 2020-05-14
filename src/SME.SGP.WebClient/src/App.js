@@ -1,6 +1,8 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Router, Switch } from 'react-router-dom';
+import ReactGA from 'react-ga';
+import { obterTrackingID } from './servicos/variaveis';
 
 import './configuracao/ReactotronConfig';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -16,12 +18,41 @@ import RotaNaoAutenticadaDesestruturada from './rotas/rotaNaoAutenticadaDesestru
 import RotaAutenticadaDesestruturada from './rotas/rotaAutenticadaDesestruturada';
 import { rotaAtiva } from './redux/modulos/navegacao/actions';
 import CapturaErros from './captura-erros';
+import { Deslogar } from '~/redux/modulos/usuario/actions';
+
+obterTrackingID().then(id => ReactGA.initialize(id));
 
 function App() {
+  window.addEventListener("beforeunload", function (event) {
+    verificaSairResetSenha();
+  });
+
+  window.addEventListener('popstate', function (event) {
+    if (performance.navigation.type == 1) {
+      verificaSairResetSenha();
+    }
+  });
+
+  const verificaSairResetSenha = () => {
+    const persistJson = localStorage.getItem('persist:sme-sgp');
+    if (persistJson) {
+      const dados = JSON.parse(persistJson);
+      if (dados && dados.usuario) {
+        const usuario = JSON.parse(dados.usuario);
+        if (usuario && usuario.logado && usuario.modificarSenha) {
+          store.dispatch(Deslogar());
+        }
+      }
+    }
+  };
+
   history.listen(location => {
     localStorage.setItem('rota-atual', location.pathname);
     store.dispatch(rotaAtiva(location.pathname));
+    ReactGA.set({ page: location.pathname });
+    ReactGA.pageview(location.pathname);
   });
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>

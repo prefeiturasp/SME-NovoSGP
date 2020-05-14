@@ -75,6 +75,10 @@ const Sider = () => {
   const alternarRetraido = () => {
     setOpenKeys([]);
     store.dispatch(menuRetraido(!NavegacaoStore.retraido));
+    document.documentElement.style.setProperty(
+      '--espacamento-conteudo',
+      `${NavegacaoStore.retraido ? 250 : 115}px`
+    );
   };
 
   const onOpenChange = openKeys => {
@@ -95,11 +99,11 @@ const Sider = () => {
       return item.subMenus && item.subMenus.length > 0 ? (
         criarMenus([item])
       ) : (
-        <Menu.Item key={item.codigo} id={item.codigo}>
-          <span className="menuItem"> {item.descricao}</span>
-          {item.url ? <Link to={item.url} id={'link-' + item.codigo} /> : ''}
-        </Menu.Item>
-      );
+          <Menu.Item key={item.codigo} id={item.codigo}>
+            <span className="menuItem"> {item.descricao}</span>
+            {item.url ? <Link to={item.url} id={'link-' + item.codigo} /> : ''}
+          </Menu.Item>
+        );
     });
     return itens;
   };
@@ -132,16 +136,16 @@ const Sider = () => {
                     <span>{subMenu.descricao}</span>
                   </div>
                 ) : (
-                  <div
-                    className={
-                      'item-menu-retraido' + temSubmenu
-                        ? ' submenu-subnivel'
-                        : ''
-                    }
-                  >
-                    <span>{subMenu.descricao}</span>
-                  </div>
-                )
+                    <div
+                      className={
+                        'item-menu-retraido' + temSubmenu
+                          ? ' submenu-subnivel'
+                          : ''
+                      }
+                    >
+                      <span>{subMenu.descricao}</span>
+                    </div>
+                  )
               }
             >
               {criarItensMenu(subMenu.menus ? subMenu.menus : subMenu.subMenus)}
@@ -212,7 +216,7 @@ const Sider = () => {
           <div
             className={`menu-scope${
               NavegacaoStore.retraido ? ' menu-scope-retraido' : ''
-            }`}
+              }`}
           >
             <Menu
               id="menuPrincipal"

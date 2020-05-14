@@ -1,5 +1,5 @@
 import { Form, Formik } from 'formik';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import * as Yup from 'yup';
 import { erros } from 'servicos/alertas';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -21,6 +21,7 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+import moment from 'moment';
 
 export default function ReiniciarSenha() {
   const [linhaSelecionada, setLinhaSelecionada] = useState({});
@@ -39,7 +40,25 @@ export default function ReiniciarSenha() {
   const [semEmailCadastrado, setSemEmailCadastrado] = useState(false);
   const [refForm, setRefForm] = useState();
 
-  const usuario = store.getState().usuario;
+  const [dreDesabilitada, setDreDesabilitada] = useState(false);
+  const [ueDesabilitada, setUeDesabilitada] = useState(false);
+
+  const { usuario } = store.getState();
+  const anoLetivo = useMemo(
+    () =>
+      (usuario.turmaSelecionada && usuario.turmaSelecionada.anoLetivo) ||
+      moment().year(),
+    [usuario.turmaSelecionada]
+  );
+
+  const consideraHistorico = useMemo(
+    () =>
+      (usuario.turmaSelecionada &&
+        !!usuario.turmaSelecionada.consideraHistorico) ||
+      false,
+    [usuario.turmaSelecionada]
+  );
+
   const permissoesTela = usuario.permissoes[RotasDto.REINICIAR_SENHA];
 
   const [validacoes] = useState(
@@ -81,7 +100,9 @@ export default function ReiniciarSenha() {
 
   useEffect(() => {
     const carregarDres = async () => {
-      const dres = await api.get('v1/dres');
+      const dres = await api.get(
+        `v1/abrangencias/${consideraHistorico}/dres?anoLetivo=${anoLetivo}`
+      );
       if (dres.data) {
         setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
       } else {
@@ -91,7 +112,29 @@ export default function ReiniciarSenha() {
 
     carregarDres();
     verificaSomenteConsulta(permissoesTela);
-  }, []);
+  }, [anoLetivo, consideraHistorico, permissoesTela]);
+
+  useEffect(() => {
+    let desabilitada = !listaDres || listaDres.length === 0;
+
+    if (!desabilitada && listaDres.length === 1) {
+      setDreSelecionada(String(listaDres[0].codigo));
+      desabilitada = true;
+    }
+
+    setDreDesabilitada(desabilitada);
+  }, [listaDres]);
+
+  useEffect(() => {
+    let desabilitada = !listaUes || listaUes.length === 0;
+
+    if (!desabilitada && listaUes.length === 1) {
+      setUeSelecionada(String(listaUes[0].codigo));
+      desabilitada = true;
+    }
+
+    setUeDesabilitada(desabilitada);
+  }, [listaUes]);
 
   const onClickVoltar = () => history.push(URL_HOME);
 
@@ -99,9 +142,6 @@ export default function ReiniciarSenha() {
     setDreSelecionada(dre);
     setUeSelecionada([]);
     setListaUes([]);
-    if (dre) {
-      carregarUes(dre);
-    }
   };
 
   const onChangeUe = ue => {
@@ -116,17 +156,28 @@ export default function ReiniciarSenha() {
     setRfSelecionado(rf.target.value);
   };
 
-  const carregarUes = async dre => {
-    const ues = await api.get(`/v1/abrangencias/false/dres/${dre}/ues`);
-    if (ues.data) {
-      ues.data.forEach(
-        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
+  const carregarUes = useCallback(
+    async dre => {
+      const ues = await api.get(
+        `/v1/abrangencias/${consideraHistorico}/dres/${dre}/ues`
       );
-      setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
-    } else {
-      setListaUes([]);
+      if (ues.data) {
+        ues.data.forEach(ue => {
+          ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`;
+        });
+        setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+      } else {
+        setListaUes([]);
+      }
+    },
+    [consideraHistorico]
+  );
+
+  useEffect(() => {
+    if (dreSelecionada) {
+      carregarUes(dreSelecionada);
     }
-  };
+  }, [carregarUes, dreSelecionada]);
 
   const onClickFiltrar = async () => {
     if (!permissoesTela.podeConsultar) return;
@@ -244,11 +295,11 @@ export default function ReiniciarSenha() {
             name="dre-reiniciar-senha"
             id="dre-reiniciar-senha"
             lista={listaDres}
-            disabled={!permissoesTela.podeConsultar}
-            valueOption="id"
+            disabled={!permissoesTela.podeConsultar || dreDesabilitada}
+            valueOption="codigo"
             valueText="nome"
             onChange={onChangeDre}
-            valueSelect={dreSelecionada || []}
+            valueSelect={String(dreSelecionada) || ''}
             label="Diretoria Regional de Educação (DRE)"
             placeholder="Diretoria Regional de Educação (DRE)"
           />
@@ -258,11 +309,11 @@ export default function ReiniciarSenha() {
             name="ues-list"
             id="ues-list"
             lista={listaUes}
-            disabled={!permissoesTela.podeConsultar}
+            disabled={!permissoesTela.podeConsultar || ueDesabilitada}
             valueOption="codigo"
             valueText="nome"
             onChange={onChangeUe}
-            valueSelect={ueSelecionada || []}
+            valueSelect={ueSelecionada || ''}
             label="Unidade Escolar (UE)"
             placeholder="Unidade Escolar (UE)"
           />

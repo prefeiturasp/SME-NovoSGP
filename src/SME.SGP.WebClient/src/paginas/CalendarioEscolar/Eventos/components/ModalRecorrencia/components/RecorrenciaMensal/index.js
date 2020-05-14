@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // Components
-import { VerticalCentralizado } from '../../styles';
 import LinhaBootstrap from '../LinhaBootstrap';
 import DiasDropDown from './components/DiasDropDown';
 import RecorrenciaDropDown from './components/RecorrenciaDropDown';
@@ -20,34 +19,34 @@ function RecorrenciaMensal({
   return (
     <>
       <LinhaBootstrap>
-        <VerticalCentralizado className="col-lg-12">
+        <div className="col-lg-12">
           <span style={{ paddingBottom: '7px', fontWeight: 'bold' }}>
             Padrão de recorrência
           </span>
-        </VerticalCentralizado>
-        <VerticalCentralizado className="col-lg-4">
+        </div>
+        <div className="col-lg-6">
           <RecorrenciaDropDown
             selected={currentRecurrence}
             onChange={onChangeRecurrence}
             form={form}
           />
-        </VerticalCentralizado>
+        </div>
         {currentRecurrence === '0' ? (
-          <VerticalCentralizado className="col-lg-4">
+          <div className="col-lg-4">
             <NumeroDia
               form={form}
               value={currentDayNumber}
               onChange={onChangeDayNumber}
             />
-          </VerticalCentralizado>
+          </div>
         ) : (
-          <VerticalCentralizado className="col-lg-4">
+          <div className="col-lg-6">
             <DiasDropDown
               onChange={onChangeWeekDay}
               selected={currentWeekDay}
               form={form}
             />
-          </VerticalCentralizado>
+          </div>
         )}
       </LinhaBootstrap>
     </>

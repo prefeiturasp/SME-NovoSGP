@@ -24,6 +24,7 @@ import {
   ModalConteudoHtml,
   RadioGroupButton,
   SelectComponent,
+  Loader,
 } from '~/componentes';
 
 // Components locais
@@ -41,12 +42,13 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import LocalOcorrencia from '~/constantes/localOcorrencia';
 
 // Styles
-import { ListaCopiarEventos } from './eventos.css';
+import { ListaCopiarEventos, StatusAguardandoAprovacao } from './eventos.css';
 
 // Utils
 import { parseScreenObject } from '~/utils/parsers/eventRecurrence';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+import entidadeStatusDto from '~/dtos/entidadeStatusDto';
 
 const EventosForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -105,6 +107,7 @@ const EventosForm = ({ match }) => {
     tipoEventoId: '',
     ueId: '',
     recorrenciaEventos: null,
+    podeAlterar: true,
   };
   const [valoresIniciais, setValoresIniciais] = useState(inicial);
   const [usuarioPodeAlterar, setUsuarioPodeAlterar] = useState(true);
@@ -122,6 +125,8 @@ const EventosForm = ({ match }) => {
   const [dataInicioEvento, setDataInicioEvento] = useState(null);
   const [dataAlterada, setDataAlterada] = useState(false);
   const [recorrencia, setRecorrencia] = useState(null);
+
+  const [aguardandoAprovacao, setAguardandoAprovacao] = useState(false);
 
   const obterUesPorDre = dre => {
     return api.get(`/v1/abrangencias/false/dres/${dre}/ues`);
@@ -153,7 +158,7 @@ const EventosForm = ({ match }) => {
       }
 
       const tiposEvento = await api.get(
-        'v1/calendarios/eventos/tipos/listar?ehCadastro=true'
+        'v1/calendarios/eventos/tipos/listar?ehCadastro=true&numeroRegistros=100'
       );
       if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
         setListaTipoEvento(tiposEvento.data.items);
@@ -172,6 +177,11 @@ const EventosForm = ({ match }) => {
     const desabilitar = novoRegistro
       ? somenteConsulta || !permissoesTela.podeIncluir
       : somenteConsulta || !permissoesTela.podeAlterar;
+
+    if (aguardandoAprovacao) {
+      setDesabilitarCampos(aguardandoAprovacao);
+      return;
+    }
     setDesabilitarCampos(desabilitar);
   }, [
     somenteConsulta,
@@ -179,6 +189,7 @@ const EventosForm = ({ match }) => {
     permissoesTela.podeIncluir,
     permissoesTela.podeAlterar,
     usuarioPodeAlterar,
+    aguardandoAprovacao,
   ]);
 
   const montaValidacoes = useCallback(() => {
@@ -289,11 +300,6 @@ const EventosForm = ({ match }) => {
   const validarConsultaModoEdicaoENovo = async () => {
     if (match && match.params && match.params.id) {
       setNovoRegistro(false);
-      setBreadcrumbManual(
-        match.url,
-        'Cadastro de Eventos no Calendário Escolar',
-        '/calendario-escolar/eventos'
-      );
       setIdEvento(match.params.id);
       consultaPorId(match.params.id);
     } else {
@@ -317,6 +323,11 @@ const EventosForm = ({ match }) => {
       }
       inicial.tipoCalendarioId = match.params.tipoCalendarioId;
     }
+    setBreadcrumbManual(
+      match.url,
+      'Cadastro de Eventos no Calendário Escolar',
+      '/calendario-escolar/eventos'
+    );
   };
 
   const montarTipoCalendarioPorId = async id => {
@@ -338,6 +349,11 @@ const EventosForm = ({ match }) => {
     const evento = await servicoEvento.obterPorId(id).catch(e => erros(e));
 
     if (evento && evento.data) {
+      if (evento.data.status == entidadeStatusDto.AguardandoAprovacao) {
+        setAguardandoAprovacao(true);
+      } else {
+        setAguardandoAprovacao(false);
+      }
       if (evento.data.dreId && evento.data.dreId > 0) {
         carregarUes(evento.data.dreId);
       }
@@ -368,6 +384,7 @@ const EventosForm = ({ match }) => {
           : undefined,
         id: evento.data.id,
         recorrenciaEventos: evento.data.recorrenciaEventos,
+        podeAlterar: evento.data.podeAlterar,
       });
       setAuditoria({
         criadoPor: evento.data.criadoPor,
@@ -383,14 +400,6 @@ const EventosForm = ({ match }) => {
       onChangeTipoEvento(evento.data.tipoEventoId);
 
       setExibirAuditoria(true);
-
-      if (Object.entries(eventoCalendarioEdicao).length > 0) {
-        setBreadcrumbManual(
-          match.url,
-          'Cadastro de Eventos no Calendário Escolar',
-          '/calendario-escolar'
-        );
-      }
     }
   };
 
@@ -426,22 +435,39 @@ const EventosForm = ({ match }) => {
     setListaFeriados(feriados.data);
   };
 
+  const urlTelaListagemEventos = () => {
+    if (match && match.params && match.params.tipoCalendarioId) {
+      return `/calendario-escolar/eventos/${match.params.tipoCalendarioId}`;
+    }
+    return '/calendario-escolar/eventos';
+  };
+
+  const setBreadcrumbLista = () => {
+    setBreadcrumbManual(
+      `/calendario-escolar/eventos/${match.params.tipoCalendarioId}`,
+      '',
+      '/calendario-escolar/eventos'
+    );
+  };
+
   const onClickVoltar = async () => {
-    if (modoEdicao) {
+    if (modoEdicao && valoresIniciais.podeAlterar) {
       const confirmado = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
         'Deseja voltar para tela de listagem agora?'
       );
       if (Object.entries(eventoCalendarioEdicao).length > 0) {
+        setBreadcrumbLista();
         history.push('/calendario-escolar');
       } else if (confirmado) {
-        history.push('/calendario-escolar/eventos');
+        history.push(urlTelaListagemEventos());
       }
     } else if (Object.entries(eventoCalendarioEdicao).length > 0) {
       history.push('/calendario-escolar');
     } else {
-      history.push('/calendario-escolar/eventos');
+      setBreadcrumbLista();
+      history.push(urlTelaListagemEventos());
     }
   };
 
@@ -481,7 +507,11 @@ const EventosForm = ({ match }) => {
     return confirmar('Confirmar data', '', response.mensagens[0], 'Sim', 'Não');
   };
 
+  const [carregandoSalvar, setCarregandoSalvar] = useState(false);
+
   const onClickCadastrar = async valoresForm => {
+    setCarregandoSalvar(true);
+
     if (tipoDataUnico) valoresForm.dataFim = valoresForm.dataInicio;
 
     const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map(id => {
@@ -504,10 +534,12 @@ const EventosForm = ({ match }) => {
           sucesso(resposta.data[0].mensagem);
         } else {
           sucesso(
-            'Evento cadastrado com sucesso. Serão cadastrados eventos recorrentes, em breve você receberá uma notificação com o resultado do processamento.'
+            `Evento ${
+              idEvento ? 'alterado' : 'cadastrado'
+            } com sucesso. Serão cadastrados eventos recorrentes, em breve você receberá uma notificação com o resultado do processamento.`
           );
         }
-        history.push('/calendario-escolar/eventos');
+        history.push(urlTelaListagemEventos());
       }
     };
 
@@ -548,6 +580,8 @@ const EventosForm = ({ match }) => {
       }
       erros(e);
     }
+
+    setCarregandoSalvar(false);
   };
 
   const onChangeCampos = () => {
@@ -559,9 +593,9 @@ const EventosForm = ({ match }) => {
   const onClickExcluir = async () => {
     if (!novoRegistro) {
       const confirmado = await confirmar(
-        'Excluir tipo de calendário escolar',
+        'Excluir evento',
         '',
-        'Deseja realmente excluir este calendário?',
+        'Deseja realmente excluir este evento?',
         'Excluir',
         'Cancelar'
       );
@@ -571,7 +605,7 @@ const EventosForm = ({ match }) => {
           .catch(e => erros(e));
         if (excluir) {
           sucesso('Evento excluído com sucesso.');
-          history.push('/calendario-escolar/eventos');
+          history.push(urlTelaListagemEventos());
         }
       }
     }
@@ -604,8 +638,8 @@ const EventosForm = ({ match }) => {
     const anoAtual = window.moment().format('YYYY');
     const tiposCalendario = await api.get(
       usuarioStore && turmaSelecionada && turmaSelecionada.anoLetivo
-        ? `v1/calendarios/tipos/anos-letivos/${turmaSelecionada.anoLetivo}`
-        : `v1/calendarios/tipos/anos-letivos/${anoAtual}`
+        ? `v1/calendarios/tipos/anos/letivos/${turmaSelecionada.anoLetivo}`
+        : `v1/calendarios/tipos/anos/letivos/${anoAtual}`
     );
     if (
       tiposCalendario &&
@@ -744,7 +778,7 @@ const EventosForm = ({ match }) => {
 
   const onCloseRetornoCopiarEvento = () => {
     setExibirModalRetornoCopiarEvento(false);
-    history.push('/calendario-escolar/eventos');
+    history.push(urlTelaListagemEventos());
   };
 
   const validaAntesDoSubmit = form => {
@@ -760,7 +794,7 @@ const EventosForm = ({ match }) => {
   };
 
   return (
-    <>
+    <Loader loading={carregandoSalvar} tip="">
       <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
       <ModalRecorrencia
         onCloseRecorrencia={onCloseRecorrencia}
@@ -813,7 +847,7 @@ const EventosForm = ({ match }) => {
                     border
                     className="mr-2"
                     onClick={() => onClickCancelar(form)}
-                    disabled={!modoEdicao}
+                    disabled={!modoEdicao || !valoresIniciais.podeAlterar}
                   />
                   <Button
                     id={shortid.generate()}
@@ -827,7 +861,7 @@ const EventosForm = ({ match }) => {
                       somenteConsulta ||
                       !permissoesTela.podeExcluir ||
                       novoRegistro ||
-                      !usuarioPodeAlterar
+                      !valoresIniciais.podeAlterar
                     }
                   />
                   <Button
@@ -1100,7 +1134,7 @@ const EventosForm = ({ match }) => {
           ))}
         </ModalConteudoHtml>
       </Card>
-    </>
+    </Loader>
   );
 };
 

@@ -2,6 +2,9 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -33,6 +36,35 @@ namespace SME.SGP.Api.Controllers
         {
             comandoPeriodo.Salvar(periodos);
             return Ok();
+        }
+
+        [HttpGet("bimestres/{bimestre}/turmas/{turmaCodigo}/aberto")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> PeriodoEmAberto(string turmaCodigo, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices]IConsultasTurma consultas)
+        {
+            var dataConsulta = dataReferencia == DateTime.MinValue ? DateTime.Today : dataReferencia;
+            return Ok(await consultas.TurmaEmPeriodoAberto(turmaCodigo, dataConsulta, bimestre));
+        }
+
+        [HttpGet("turmas/{turmaCodigo}/bimestres/aberto")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarAbertoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> PeriodosEmAberto(string turmaCodigo, [FromQuery] DateTime dataReferencia, [FromServices]IConsultasTurma consultas)
+        {
+            var dataConsulta = dataReferencia == DateTime.MinValue ? DateTime.Today : dataReferencia;
+            return Ok(await consultas.PeriodosEmAbertoTurma(turmaCodigo, dataConsulta));
+        }
+
+        [HttpGet("modalidades/{modalidade}/bimestres/atual")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult ObterAtual(int modalidade, [FromServices]IConsultasPeriodoEscolar consultas)
+        {
+            return Ok(consultas.ObterBimestre(DateTime.Today, (Dominio.Modalidade)modalidade));
         }
     }
 }

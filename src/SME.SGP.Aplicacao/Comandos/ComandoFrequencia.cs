@@ -10,11 +10,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandoFrequencia : IComandoFrequencia
     {
+        private readonly IConsultasAula consultasAula;
         private readonly IServicoFrequencia servicoFrequencia;
 
-        public ComandoFrequencia(IServicoFrequencia servicoFrequencia)
+        public ComandoFrequencia(IServicoFrequencia servicoFrequencia,
+                                 IConsultasAula consultasAula)
         {
             this.servicoFrequencia = servicoFrequencia ?? throw new System.ArgumentNullException(nameof(servicoFrequencia));
+            this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));
         }
 
         public async Task Registrar(FrequenciaDto frequenciaDto)
@@ -23,7 +26,13 @@ namespace SME.SGP.Aplicacao
             await servicoFrequencia.Registrar(frequenciaDto.AulaId, registrosAusenciaAlunos);
 
             var alunos = frequenciaDto.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
-            Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(alunos, frequenciaDto.AulaId));
+            if (alunos == null || !alunos.Any())
+            {
+                throw new NegocioException("A lista de alunos a turma e a disciplina devem ser informados para calcular a frequência.");
+            }
+
+            var aula = await consultasAula.BuscarPorId(frequenciaDto.AulaId);
+            Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId));
         }
 
         private static List<RegistroAusenciaAluno> ObtemListaDeAusencias(FrequenciaDto frequenciaDto)

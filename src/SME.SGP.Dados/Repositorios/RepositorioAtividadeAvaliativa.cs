@@ -13,12 +13,12 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioAtividadeAvaliativa : RepositorioBase<AtividadeAvaliativa>, IRepositorioAtividadeAvaliativa
     {
         private readonly string fromCompleto = @"from atividade_avaliativa a
-                                                inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id 
+                                                inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id
                                                 inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = a.id";
 
         private readonly string fromCompletoRegencia = @"from atividade_avaliativa a
                                                         inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id
-                                                        inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id 
+                                                        inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id
                                                         inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = a.id";
 
         public RepositorioAtividadeAvaliativa(ISgpContext conexao) : base(conexao)
@@ -108,7 +108,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalhoSimples(query);
             query.AppendLine(fromCompleto);
-            MontaWhere(query, dataAvaliacao, null, ueId, null, null, turmaId);
+            MontaWhere(query, dataAvaliacao, ueId: ueId, turmaId: turmaId, disciplinaId: disciplinaId);
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<AtividadeAvaliativa>(query.ToString(), new
             {
@@ -117,6 +117,19 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId,
                 ueId
             }));
+        }
+
+        public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasSemNotaParaNenhumAluno(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var sql = @"select av.*
+                        from atividade_avaliativa av
+                       inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = av.id
+                        left join notas_conceito n on n.atividade_avaliativa = av.id
+                       where av.turma_id = @turmaCodigo
+	                     and aad.disciplina_id = @disciplinaId
+                         and n.id is null";
+
+            return database.Query<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, disciplinaId, inicioPeriodo, fimPeriodo });
         }
 
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesPorDia(string dreId, string ueId, DateTime dataAvaliacao, string professorRf, string turmaId)
@@ -154,19 +167,84 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId
             }));
         }
-
-        public async Task<AtividadeAvaliativa> ObterPorIdAsync(long id)
+        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesCalendarioProfessorPorMes(string dreCodigo, string ueCodigo, int mes, int ano, string turmaCodigo)
         {
-            StringBuilder query = new StringBuilder();
-            MontaQueryCabecalho(query);
-            query.AppendLine(fromCompleto);
-            MontaWhere(query: query, id: id);
+            var query = @"select aa.id, aa.tipo_avaliacao_id, aa.data_avaliacao, aad.id, aad.disciplina_id from atividade_avaliativa aa
+                            inner join atividade_avaliativa_disciplina aad
+                            on aad.atividade_avaliativa_id  = aa.id
+                        where aa.dre_id  = @dreCodigo
+                        and aa.ue_id  = @ueCodigo
+                        and extract(month from aa.data_avaliacao) = @mes 
+                        and extract(year from aa.data_avaliacao) = @ano
+                        and aa.turma_id = @turmaCodigo";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<AtividadeAvaliativa>(query.ToString(), new
+
+            var lookup = new Dictionary<long, AtividadeAvaliativa>();
+
+            await database.Conexao.QueryAsync<AtividadeAvaliativa, AtividadeAvaliativaDisciplina, AtividadeAvaliativa>(query, (atividadeAvaliativa, atividadeAvaliativaDisciplina) => {
+
+                var retorno = new AtividadeAvaliativa();
+                if (!lookup.TryGetValue(atividadeAvaliativa.Id, out retorno))
+                {
+                    retorno = atividadeAvaliativa;
+                    lookup.Add(atividadeAvaliativa.Id, retorno);
+                }
+
+                retorno.Adicionar(atividadeAvaliativaDisciplina);
+
+                return retorno;
+            }, param: new
             {
-                id
+                dreCodigo,
+                ueCodigo,
+                mes,
+                ano,
+                turmaCodigo
             });
+
+            return lookup.Values;
         }
+
+        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesCalendarioProfessorPorMesDia(string dreCodigo, string ueCodigo, string turmaCodigo, string codigoRf, DateTime dataReferencia)
+        {
+            var query = @"select aa.id, aa.nome_avaliacao, aa.tipo_avaliacao_id, aa.data_avaliacao, aad.id, aad.disciplina_id from atividade_avaliativa aa
+                            inner join atividade_avaliativa_disciplina aad
+                            on aad.atividade_avaliativa_id  = aa.id
+                        where not aa.excluido
+                        and aa.dre_id  = @dreCodigo
+                        and aa.ue_id  = @ueCodigo
+                        and aa.professor_rf = @codigoRf    
+                        and aa.data_avaliacao ::date = @dataReferencia
+                        and aa.turma_id = @turmaCodigo    ";
+                        
+
+
+            var lookup = new Dictionary<long, AtividadeAvaliativa>();
+
+            await database.Conexao.QueryAsync<AtividadeAvaliativa, AtividadeAvaliativaDisciplina, AtividadeAvaliativa>(query, (atividadeAvaliativa, atividadeAvaliativaDisciplina) => {
+
+                var retorno = new AtividadeAvaliativa();
+                if (!lookup.TryGetValue(atividadeAvaliativa.Id, out retorno))
+                {
+                    retorno = atividadeAvaliativa;
+                    lookup.Add(atividadeAvaliativa.Id, retorno);
+                }
+
+                retorno.Adicionar(atividadeAvaliativaDisciplina);
+
+                return retorno;
+            }, param: new
+            {
+                dreCodigo,
+                ueCodigo,
+                dataReferencia,
+                turmaCodigo,
+                codigoRf
+            });
+
+            return lookup.Values;
+        }
+        
 
         public async Task<bool> VerificarSeExisteAvaliacao(DateTime dataAvaliacao, string ueId, string turmaId, string professorRf, string disciplinaId)
         {
@@ -216,7 +294,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
             query.AppendLine(fromCompleto);
-            MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf, null, null, false,null, disciplinasId, false, null, null, id, id.HasValue); ;
+            MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf, null, null, false, null, disciplinasId, false, null, null, id, id.HasValue); ;
 
             var resultado = (await database.Conexao.QueryAsync<AtividadeAvaliativa>(query.ToString(), new
             {
@@ -370,6 +448,11 @@ namespace SME.SGP.Dados.Repositorios
             if (disciplinasId != null && disciplinasId.Length > 0)
             {
                 query.AppendLine("and aad.disciplina_id =  ANY(@disciplinasId)");
+                query.AppendLine("and aad.excluido =  false");
+            }
+            if (!String.IsNullOrEmpty(disciplinaId))
+            {
+                query.AppendLine("and aad.disciplina_id =  @disciplinaId");
                 query.AppendLine("and aad.excluido =  false");
             }
             if (ehRegencia.HasValue)

@@ -5,6 +5,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -32,7 +33,21 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("frequencias/notificar")]
         public IActionResult Notificar()
         {
-            Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.ExecutaNotificacaoFrequencia());
+            Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.ExecutaNotificacaoRegistroFrequencia());
+            return Ok();
+        }
+
+        [HttpPost("frequencias/notificar/alunos/faltosos")]
+        public IActionResult NotificarAlunosFaltosos([FromServices]IServicoNotificacaoFrequencia servico)
+        {
+            servico.NotificarAlunosFaltosos();
+            return Ok();
+        }
+
+        [HttpPost("frequencias/notificar/alunos/faltosos/bimestre")]
+        public IActionResult NotificarAlunosFaltososBimestre([FromServices]IServicoNotificacaoFrequencia servico)
+        {
+            servico.NotificarAlunosFaltososBimestre();
             return Ok();
         }
 
@@ -56,5 +71,20 @@ namespace SME.SGP.Api.Controllers
             await comandoFrequencia.Registrar(frequenciaDto);
             return Ok();
         }
+
+        [HttpGet("frequencias/ausencias/turmas/{turmaId}/disciplinas/{disciplinaId}/bimestres/{bimestre}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<AlunoAusenteDto>), 200)]
+        public async Task<IActionResult> ObterAusenciasTurma(string turmaId, string disciplinaId, int bimestre, [FromServices] IConsultasFrequencia consultasFrequencia)
+            => Ok(await consultasFrequencia.ObterListaAlunosComAusencia(turmaId, disciplinaId, bimestre));
+
+        [HttpGet("frequencias/alunos/{alunoCodigo}/turmas/{turmaCodigo}/geral")]
+        [ProducesResponseType(typeof(double), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo , [FromServices] IConsultasFrequencia consultasFrequencia)
+             => Ok(await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo));
+
     }
 }

@@ -8,9 +8,10 @@ import { Spin, Icon } from 'antd';
 import styled from 'styled-components';
 
 // Componentes
-import { Base } from '~/componentes';
+import { Base } from './colors';
 
 const LoaderWrapper = styled.div`
+  width: inherit !important;
   .ant-spin-text {
     color: ${Base.CinzaMako};
   }

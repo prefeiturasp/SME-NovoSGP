@@ -4,13 +4,84 @@ import { Base } from '../../componentes/colors';
 
 export const Container = styled.div``;
 
-export const Lista = styled.div`
-  max-width: 100%;
-  min-width: 100%;
+export const TabelaColunasFixas = styled.div`
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 0px !important ;
+  }
 
-  .desabilitar-nota {
-    opacity: 0.4 !important;
-    cursor: unset !important;
+  .wrapper {
+    position: relative;
+    overflow: auto;
+    white-space: nowrap;
+    height: 400px;
+
+    ::-webkit-scrollbar-track {
+      background-color: #f4f4f4 !important;
+    }
+
+    ::-webkit-scrollbar {
+      width: 9px !important;
+      background-color: rgba(229, 237, 244, 0.71) !important;
+      border-radius: 2.5px !important;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #a8a8a8 !important;
+      border-radius: 3px !important;
+    }
+  }
+
+  .sticky-col {
+    position: sticky;
+    position: -webkit-sticky;
+    background-color: white;
+  }
+
+  .col-numero-chamada {
+    width: 55px;
+    min-width: 55px;
+    max-width: 55px;
+    left: 0px;
+    z-index: 2;
+    border-left: solid 1px ${Base.CinzaDesabilitado};
+  }
+
+  .col-nome-aluno {
+    width: 100%;
+    min-width: 250px;
+    max-width: 250px;
+    left: 55px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
+    z-index: 2;
+    box-shadow: 8px 0px 8px -4px #8080804d;
+    vertical-align: middle;
+  }
+
+  .col-frequencia {
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    right: 0px;
+    z-index: 2;
+  }
+
+  .col-nota-final {
+    width: 125px;
+    min-width: 125px;
+    max-width: 125px;
+    right: 100px;
+    z-index: 2;
+  }
+
+  .header-fixo {
+    position: sticky;
+    top: 0;
+    z-index: 5;
   }
 
   .tabela-avaliacao-thead {
@@ -24,15 +95,6 @@ export const Lista = styled.div`
 
     tr {
       border-left: solid 1px ${Base.CinzaDesabilitado};
-    }
-
-    .border-right-none {
-      border-right: none !important;
-    }
-
-    .coluna-ordenacao-th {
-      border-top: none;
-      background-color: white;
     }
 
     .coluna-ordenacao-tr {
@@ -60,94 +122,45 @@ export const Lista = styled.div`
     min-width: 150px;
   }
 
-  .width-70 {
-    width: 70px;
-    max-width: 70px;
-    min-width: 70px;
+  .cabecalho-nota-conceito-final {
+    box-shadow: -8px 0px 8px -4px #8080804d;
+    border-bottom: 0 !important;
+    vertical-align: middle;
+    background: ${Base.CinzaFundo};
   }
 
-  .width-50 {
-    width: 50px;
-    max-width: 50px;
-    min-width: 50px;
+  .cabecalho-frequencia {
+    border-bottom: 0 !important;
+    vertical-align: middle;
+    background: ${Base.CinzaFundo};
   }
 
-  .width-60 {
-    width: 60px;
-    max-width: 60px;
-    min-width: 60px;
+  .linha-nota-conceito-final {
+    box-shadow: -8px 0px 8px -4px #8080804d;
+    background: ${Base.CinzaFundo};
   }
 
-  .width-460 {
-    /* width: 460px;
-    max-width: 460px; */
-    min-width: 460px;
-    width: 100%;
+  .linha-nota-conceito-final-clicada {
+    box-shadow: -8px 0px 8px -4px #8080804d;
+    background: ${Base.Roxo};
+    color: white;
   }
 
-  .width-400 {
-    /* width: 400px;
-    max-width: 400px; */
-    min-width: 400px;
-    width: 100%;
+  .linha-frequencia {
+    background: ${Base.CinzaFundo};
   }
 
-  .cursor-pointer {
-    cursor: pointer;
-  }
-
-  .botao-ordenacao-avaliacao {
-    float: left;
-    margin-left: -12px !important;
-  }
-
-  .texto-header-avaliacao {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    max-width: 140px;
-    width: 140px;
-  }
-
-  .select-conceitos {
-    border-radius: 4px;
-    margin-bottom: -3px;
-  }
-
-  .aluno-conceitos {
-    border-top: solid 2px white;
-    background-color: white;
-    border-radius: 7px;
-    border-right: solid 22px white;
-    padding-left: 2px;
-    margin-left: 13px;
-  }
-
-  .aluno-ausente-conceitos {
-    border-top: solid 2px #d06d12 !important;
-    background-color: #d06d12 !important;
-    border-radius: 7px !important;
-    border-right: solid 22px #d06d12 !important;
-    padding-left: 2px !important;
-    margin-left: 13px !important;
-  }
-
-  .aluno-notas {
-    border-top: solid 3px white !important;
-    background-color: white !important;
-    border-radius: 7px !important;
-    border-right: solid 20px white !important;
-    padding-left: 3px !important;
-    margin-left: 23px !important;
+  .cinza-fundo {
+    background: ${Base.CinzaFundo};
   }
 
   .aluno-ausente-notas {
     border-top: solid 3px #d06d12 !important;
     background-color: #d06d12 !important;
     border-radius: 7px !important;
-    border-right: solid 28px #d06d12 !important;
-    padding-left: 3px !important;
-    margin-left: 23px !important;
+    margin-right: 3px !important;
+    margin-left: 10px !important;
+    padding-right: 11px !important;
   }
 
   .icon-aluno-ausente {
@@ -158,19 +171,62 @@ export const Lista = styled.div`
     margin-right: 5px;
   }
 
-  .scroll-tabela-avaliacao-thead {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    ::-webkit-scrollbar {
-      width: 9px !important;
-      background-color: rgba(229, 237, 244, 0.71) !important;
-    }
+  .desabilitar-nota {
+    opacity: 0.4 !important;
+    cursor: unset !important;
   }
 
-  .scroll-tabela-avaliacao-tbody {
-    max-height: 500px;
-    overflow-y: scroll;
-    border-bottom: solid 1px ${Base.CinzaDesabilitado};
+  .botao-ordenacao-avaliacao {
+    float: left;
+    position: absolute !important;
+    z-index: 6;
+  }
+
+  .texto-header-avaliacao {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 140px;
+    width: 140px;
+  }
+
+  .border-registro-alterado {
+    border: solid 2px ${Base.Roxo} !important;
+    border-radius: 7px;
+  }
+
+  .border-abaixo-media {
+    border: solid 2px #b22222 !important;
+    border-radius: 7px;
+  }
+
+  .select-conceitos {
+    border-radius: 4px;
+    margin-bottom: -3px;
+  }
+
+  .aluno-ausente-conceitos {
+    border-top: solid 2px #d06d12 !important;
+    background-color: #d06d12 !important;
+    border-radius: 7px !important;
+    border-right: solid 22px #d06d12 !important;
+    padding-left: 2px !important;
+  }
+
+  .tamanho-conceito-final {
+    width: 100px;
+    max-width: 100px;
+    min-width: 100px;
+  }
+
+  .linha-conceito-final {
+    border-left: solid 1px ${Base.CinzaDesabilitado};
+    box-shadow: 0px 0px 7px 3px ${Base.CinzaDesabilitado};
+    border-radius: 3px;
+    width: 400px;
+    overflow: auto;
+    position: relative;
+    z-index: 3;
 
     ::-webkit-scrollbar-track {
       background-color: #f4f4f4 !important;
@@ -188,28 +244,10 @@ export const Lista = styled.div`
     }
   }
 
-  .linha-expandida {
-    color: ${Base.Roxo};
-    background: ${Base.CinzaFundo};
-    text-align: left;
-    i {
-      transform: rotate(-90deg);
-    }
-  }
-
-  .fa-minus-linha-expandida {
-    border: 1.6px solid #6933ff !important;
-    border-radius: 20px !important;
-    display: inline;
-    font-size: 13px;
-  }
-
-  .ant-input-number-handler-wrap {
-    display: none !important;
-  }
-
-  .border-registro-alterado {
-    border: solid 2px ${Base.Roxo} !important;
+  .desc-linha-conceito-final {
+    margin-left: 20px;
+    margin-top: 25px;
+    margin-right: 37px;
   }
 `;
 
@@ -218,7 +256,6 @@ export const CaixaMarcadores = styled.span`
   border-radius: 9px;
   padding-left: 10px;
   padding-right: 10px;
-  margin-left: 8px;
   font-weight: bold;
   color: ${Base.Roxo};
 `;
@@ -228,4 +265,14 @@ export const IconePlusMarcadores = styled.i`
   font-size: 16px;
   margin-left: 5px;
   cursor: pointer;
+  font-size: 18px;
+  margin-top: 10px;
+`;
+
+export const InfoMarcador = styled.i`
+  color: ${Base.Roxo} !important;
+  font-size: 15px;
+  margin-left: 2px;
+  position: absolute;
+  padding-top: 5px;
 `;

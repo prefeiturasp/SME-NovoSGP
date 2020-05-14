@@ -20,10 +20,12 @@ function ButtonGroup({
   onClickExcluir,
   onClickBotaoPrincipal,
   onClickCancelar,
+  somenteConsulta,
 }) {
   const desabilitarExcluir = () => {
     const { podeExcluir } = permissoesTela;
     return (
+      somenteConsulta ||
       (!podeExcluir && temItemSelecionado === false) ||
       (!podeExcluir && temItemSelecionado === true) ||
       (podeExcluir && temItemSelecionado === false) ||
@@ -52,6 +54,7 @@ function ButtonGroup({
           className="btnGroupItem"
           onClick={() => onClickCancelar(form)}
           disabled={
+            somenteConsulta ||
             !modoEdicao ||
             !permissoesTela.podeIncluir ||
             !permissoesTela.podeAlterar
@@ -65,20 +68,26 @@ function ButtonGroup({
           color={Colors.Roxo}
           border
           className="btnGroupItem"
-          disabled={desabilitarExcluir()}
+          disabled={somenteConsulta || desabilitarExcluir()}
           onClick={onClickExcluir}
         />
       )}
-      <Button
-        id={shortid.generate()}
-        label={labelBotaoPrincipal}
-        color={Colors.Roxo}
-        border
-        bold
-        className="btnGroupItem"
-        onClick={onClickBotaoPrincipal}
-        disabled={!permissoesTela.podeIncluir || desabilitarBotaoPrincipal}
-      />
+      {typeof onClickBotaoPrincipal === 'function' && (
+        <Button
+          id={shortid.generate()}
+          label={labelBotaoPrincipal}
+          color={Colors.Roxo}
+          border
+          bold
+          className="btnGroupItem"
+          onClick={onClickBotaoPrincipal}
+          disabled={
+            somenteConsulta ||
+            !permissoesTela.podeIncluir ||
+            desabilitarBotaoPrincipal
+          }
+        />
+      )}
     </ButtonGroupEstilo>
   );
 }

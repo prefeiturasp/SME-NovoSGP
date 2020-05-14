@@ -30,7 +30,7 @@ import CampoTexto from '~/componentes/campoTexto';
 import { URL_RECUPERARSENHA } from '~/constantes/url';
 import history from '~/servicos/history';
 import { Loader } from '~/componentes';
-import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/usuario/actions';
+import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/mensagens/actions';
 
 const Login = props => {
   const dispatch = useDispatch();
@@ -46,7 +46,7 @@ const Login = props => {
   });
 
   const exibirMensagemSessaoExpirou = useSelector(
-    store => store.usuario.exibirMensagemSessaoExpirou
+    store => store.usuario.sessaoExpirou
   );
 
   let redirect = null;
@@ -108,10 +108,12 @@ const Login = props => {
   }, [exibirMensagemSessaoExpirou]);
 
   const navegarParaRecuperarSenha = () => {
+    const rf =
+      inputUsuarioRf && inputUsuarioRf.currrent && inputUsuarioRf.current.value;
     history.push({
       pathname: URL_RECUPERARSENHA,
       state: {
-        rf: inputUsuarioRf.current.value,
+        rf,
       },
     });
   };

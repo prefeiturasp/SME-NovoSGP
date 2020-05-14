@@ -6,5 +6,6 @@ namespace SME.SGP.Infra
     {
         public IEnumerable<EventosAulasTipoDiaDto> EventosAulas { get; set; }
         public bool Letivo { get; set; }
+        public bool DentroPeriodo { get; set; }
     }
 }

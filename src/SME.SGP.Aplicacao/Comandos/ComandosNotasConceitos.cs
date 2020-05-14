@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
         private NotaConceito ObterEntidadeEdicao(NotaConceitoDto dto, NotaConceito entidade)
         {
             entidade.Nota = dto.Nota;
-            entidade.Conceito = dto.Conceito;
+            entidade.ConceitoId = dto.Conceito;
 
             return entidade;
         }
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
                 AtividadeAvaliativaID = Dto.AtividadeAvaliativaId,
                 AlunoId = Dto.AlunoId,
                 Nota = Dto.Nota,
-                Conceito = Dto.Conceito,
+                ConceitoId = Dto.Conceito,
             };
         }
 

@@ -31,5 +31,6 @@ namespace SME.SGP.Dto
 
         [EnumeradoRequirido(ErrorMessage = "Deve ser informado o tipo de data")]
         public EventoTipoData TipoData { get; set; }
+        public bool SomenteLeitura { get; set; }
     }
 }

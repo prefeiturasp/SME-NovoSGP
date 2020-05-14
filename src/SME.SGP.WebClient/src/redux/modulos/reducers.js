@@ -12,6 +12,8 @@ import filtro from './filtro/reducers';
 import atribuicaoEsporadica from './atribuicaoEsporadica/reducers';
 import loader from './loader/reducer';
 import notasConceitos from './notasConceitos/reducer';
+import mensagens from './mensagens/reducers';
+import conselhoClasse from './conselhoClasse/reducers';
 
 const reducers = combineReducers({
   navegacao,
@@ -26,6 +28,8 @@ const reducers = combineReducers({
   atribuicaoEsporadica,
   loader,
   notasConceitos,
+  mensagens,
+  conselhoClasse,
 });
 
 const rootReducer = (state, action) => {

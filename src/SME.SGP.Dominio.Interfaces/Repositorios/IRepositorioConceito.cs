@@ -5,6 +5,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioConceito : IRepositorioBase<Conceito>
     {
-        IEnumerable<Conceito> ObterPorDataAvaliacao(DateTime dataAvaliacao);
+        IEnumerable<Conceito> ObterPorData(DateTime dataAvaliacao);
     }
 }

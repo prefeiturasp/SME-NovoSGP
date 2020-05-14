@@ -18,6 +18,7 @@ import history from '~/servicos/history';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import { CaixaAno, CaixaTextoAno } from './tipoCalendarioEscolar.css';
+import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
 
 const TipoCalendarioEscolarForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -60,8 +61,8 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   ];
 
   const opcoesModalidade = [
-    { label: 'Fundamental/Médio', value: 1 },
-    { label: 'EJA', value: 2 },
+    { label: 'Fundamental/Médio', value: modalidadeTipoCalendario.FUNDAMENTAL_MEDIO },
+    { label: 'EJA', value: modalidadeTipoCalendario.EJA },
   ];
 
   const opcoesSituacao = [

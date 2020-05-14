@@ -2,10 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -23,13 +21,6 @@ namespace SME.SGP.Api.Controllers
             this.consultasProfessor = consultasProfessor;
         }
 
-        [HttpGet("eventos/matriculas")]
-        public async Task<IActionResult> EventosMatricula([FromServices] IServicoEventoMatricula eventos)
-        {
-            eventos.ExecutaCargaEventos();
-            return Ok();
-        }
-
         [HttpGet]
         [Route("{codigoRf}/turmas")]
         [ProducesResponseType(typeof(IEnumerable<ProfessorTurmaDto>), 200)]
@@ -37,9 +28,6 @@ namespace SME.SGP.Api.Controllers
         public IActionResult Get(string codigoRf)
         {
             var retorno = consultasProfessor.Listar(codigoRf);
-
-            if (!retorno.Any())
-                return NoContent();
 
             return Ok(retorno);
         }
@@ -51,8 +39,15 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultasProfessor.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(codigoRF, codigoEscola, anoLetivo);
 
-            if (!retorno.Any())
-                return NoContent();
+            return Ok(retorno);
+        }
+
+        [HttpGet("turmas/{codigoTurma}/disciplinas/agrupadas")]
+        [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> GetDisciplinasAgrupadas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
+        {
+            var retorno = await consultasDisciplina.ObterDisciplinasAgrupadasPorProfessorETurma(codigoTurma, turmaPrograma);
 
             return Ok(retorno);
         }
@@ -62,10 +57,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterDisciplinas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
-            var retorno = await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma, turmaPrograma);
-
-            if (!retorno.Any())
-                return NoContent();
+            var retorno = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(codigoTurma, turmaPrograma);
 
             return Ok(retorno);
         }
@@ -82,14 +74,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterDisciplinasParaPlanejamento(long codigoTurma, [FromQuery]FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto, [FromServices]IConsultasDisciplina consultasDisciplina)
+        public async Task<IActionResult> ObterDisciplinasParaPlanejamento(string codigoTurma, long codigoDisciplina, bool turmaPrograma, bool regencia, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
-            filtroDisciplinaPlanejamentoDto.CodigoTurma = codigoTurma;
-
-            var retorno = await consultasDisciplina.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto);
-
-            if (retorno == null || !retorno.Any())
-                return NoContent();
+            var retorno = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(codigoDisciplina, codigoTurma, turmaPrograma, regencia);
 
             return Ok(retorno);
         }
@@ -121,9 +108,6 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultasProfessor.ObterResumoAutoComplete(anoLetivo, dreId, nomeProfessor, incluirEmei);
 
-            if (retorno == null)
-                return NoContent();
-
             return Ok(retorno);
         }
 
@@ -133,9 +117,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
         {
             var retorno = await consultasProfessor.ObterResumoAutoComplete(anoLetivo, dreId, nomeProfessor);
-
-            if (retorno == null)
-                return NoContent();
 
             return Ok(retorno);
         }

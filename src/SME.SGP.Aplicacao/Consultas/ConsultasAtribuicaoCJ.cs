@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> Listar(AtribuicaoCJListaFiltroDto filtroDto)
         {
             var listaRetorno = await repositorioAtribuicaoCJ.ObterPorFiltros(null, null, filtroDto.UeId, 0,
-                filtroDto.UsuarioRf, filtroDto.UsuarioNome, true);
+                filtroDto.UsuarioRf, filtroDto.UsuarioNome, true, anoLetivo: filtroDto.AnoLetivo);
 
             if (listaRetorno.Any())
                 return TransformaEntidadesEmDtosListaRetorno(listaRetorno);

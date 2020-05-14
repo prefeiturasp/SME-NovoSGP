@@ -52,10 +52,10 @@ namespace SME.SGP.Dados.Repositorios
             return @"select apb.id, apb.criado_em as CriadoEm, apb.criado_por as CriadoPor, apb.alterado_em as AlteradoEm, apb.alterado_por as AlteradoPor,
                          apb.alterado_rf as AlteradoRF, apb.criado_rf as CriadoRF, p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim,
                          apb.aulas_previstas as Previstas,
-                         COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = false) as CriadasTitular,
-                         COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = true) as CriadasCJ,
-                         COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null) as Cumpridas,
-                         COUNT(a.id) filter (where a.tipo_aula = 2 and rf.id is not null) as Reposicoes
+                         SUM(a.quantidade) filter (where a.tipo_aula = 1 and a.aula_cj = false) as CriadasTitular,
+                         SUM(a.quantidade) filter (where a.tipo_aula = 1 and a.aula_cj = true) as CriadasCJ,
+                         SUM(a.quantidade) filter (where a.tipo_aula = 1 and rf.id is not null) as Cumpridas,
+                         SUM(a.quantidade) filter (where a.tipo_aula = 2 and rf.id is not null) as Reposicoes
                          from periodo_escolar p
                          inner join tipo_calendario tp on p.tipo_calendario_id = tp.id
                          left join aula_prevista ap on ap.tipo_calendario_id = p.tipo_calendario_id

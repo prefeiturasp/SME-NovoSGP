@@ -2,9 +2,12 @@
 using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -39,6 +42,28 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select 1 from registro_frequencia where aula_id = @aulaId";
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId });
+        }
+
+        public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)
+        {
+            var query = @"select a.turma_id as TurmaCodigo, a.data_aula as DataAula, fa.codigo_aluno as CodigoAluno
+	                        , sum(a.quantidade) as QuantidadeAulas , fa.qtd_faltas as QuantidadeFaltas, t.modalidade_codigo as modalidadeCodigo, t.ano 
+                          from aula a
+                         inner join registro_frequencia rf on a.id = rf.aula_id  
+                         inner join turma t on t.turma_id = a.turma_id
+                          left join (select aa.turma_id, aa.data_aula, raa.codigo_aluno, count(raa.id) qtd_faltas
+		                         from aula aa 
+		                        inner join registro_frequencia rfa on aa.id = rfa.aula_id  
+	  	                        inner join registro_ausencia_aluno raa on rfa.id = raa.registro_frequencia_id
+	                           where not rfa.excluido and not raa.excluido 
+	                            and aa.data_aula >= @dataReferencia
+	                            group by aa.turma_id, aa.data_aula, raa.codigo_aluno) fa on fa.turma_id = a.turma_id  and fa.data_aula = a.data_aula 
+                         where not a.excluido and not rf.excluido 
+                           and a.data_aula >= @dataReferencia
+                           and a.tipo_calendario_id = @tipoCalendarioId
+                        group by a.turma_id, a.data_aula, fa.codigo_aluno, fa.qtd_faltas,  t.modalidade_codigo, t.ano";
+
+            return database.Conexao.Query<AlunosFaltososDto>(query, new { dataReferencia, tipoCalendarioId });
         }
 
         public RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId)
@@ -117,6 +142,24 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigos });
         }
 
+        public async Task<IEnumerable<RecuperacaoParalelaFrequenciaDto>> ObterFrequenciaAusencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
+        {
+            var query = new StringBuilder();
+            query.AppendLine("select codigo_aluno CodigoAluno,");
+            query.AppendLine("SUM(total_aulas) TotalAulas,");
+            query.AppendLine("SUM(total_ausencias) TotalAusencias");
+            query.AppendLine("from frequencia_aluno");
+            query.AppendLine("where codigo_aluno::varchar(100) = ANY(@CodigoAlunos)");
+            query.AppendLine("and date_part('year',periodo_inicio) = @Ano");
+            query.AppendLine("and date_part('year',periodo_fim) = @Ano");
+            query.AppendLine("and disciplina_id = @CodigoDisciplina");
+            if (Periodo == PeriodoRecuperacaoParalela.AcompanhamentoPrimeiroSemestre)
+                query.AppendLine("and bimestre IN  (1,2)");
+            query.AppendLine("group by codigo_aluno");
+      
+            return await database.Conexao.QueryAsync<RecuperacaoParalelaFrequenciaDto>(query.ToString(), new { CodigoAlunos, CodigoDisciplina = CodigoDisciplina.ToArray(), Ano });
+        }
+
         public IEnumerable<RegistroAusenciaAluno> ObterListaFrequenciaPorAula(long aulaId)
         {
             var query = @"select ra.*
@@ -140,6 +183,6 @@ namespace SME.SGP.Dados.Repositorios
                             and aula_id = @aulaId";
 
             return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
-        }
+        }        
     }
 }

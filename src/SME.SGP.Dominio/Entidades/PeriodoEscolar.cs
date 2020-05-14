@@ -8,7 +8,19 @@ namespace SME.SGP.Dominio
         public bool Migrado { get; set; }
         public DateTime PeriodoFim { get; set; }
         public DateTime PeriodoInicio { get; set; }
+        public TipoCalendario TipoCalendario { get; set; }
         public long TipoCalendarioId { get; set; }
+
+        public void AdicionarTipoCalendario(TipoCalendario tipoCalendario)
+        {
+            TipoCalendario = tipoCalendario;
+            TipoCalendarioId = tipoCalendario.Id;
+        }
+
+        public bool DataDentroPeriodo(DateTime data)
+        {
+            return PeriodoInicio.Date <= data.Date && PeriodoFim.Date >= data.Date;
+        }
 
         public void Validar(int anoBase, bool eja)
         {

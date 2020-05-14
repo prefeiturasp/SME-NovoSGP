@@ -19,6 +19,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Semestre).ToColumn("semestre");
             Map(c => c.TipoTurno).ToColumn("tipo_turno");
             Map(c => c.UeId).ToColumn("ue_id");
+            Map(c => c.ModalidadeTipoCalendario).Ignore();
         }
     }
 }
