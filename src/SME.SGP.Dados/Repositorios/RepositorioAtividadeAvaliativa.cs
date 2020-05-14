@@ -167,15 +167,14 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId
             }));
         }
-        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesCalendarioProfessorPorMes(string dreCodigo, string ueCodigo, int mes, int ano, string turmaCodigo, string codigoRf)
+        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesCalendarioProfessorPorMes(string dreCodigo, string ueCodigo, int mes, int ano, string turmaCodigo)
         {
-            var query = @"select aa.id, aa.tipo_avaliacao_id, aa.data_avaliacao, aad.id, aad.disciplina_id from atividade_avaliativa aa
+            var query = @"select aa.id, aa.professor_rf, aa.tipo_avaliacao_id, aa.data_avaliacao, aad.id, aad.disciplina_id from atividade_avaliativa aa
                             inner join atividade_avaliativa_disciplina aad
                             on aad.atividade_avaliativa_id  = aa.id
                         where not aa.excluido
                         and aa.dre_id  = @dreCodigo
-                        and aa.ue_id  = @ueCodigo
-                        and aa.professor_rf = @codigoRf    
+                        and aa.ue_id  = @ueCodigo 
                         and extract(month from aa.data_avaliacao) = @mes 
                         and extract(year from aa.data_avaliacao) = @ano
                         and aa.turma_id = @turmaCodigo";
@@ -201,8 +200,7 @@ namespace SME.SGP.Dados.Repositorios
                 ueCodigo,
                 mes,
                 ano,
-                turmaCodigo,
-                codigoRf
+                turmaCodigo
             });
 
             return lookup.Values;
@@ -210,13 +208,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesCalendarioProfessorPorMesDia(string dreCodigo, string ueCodigo, string turmaCodigo, DateTime dataReferencia)
         {
-            var query = @"select aa.id, aa.nome_avaliacao, aa.tipo_avaliacao_id, aa.data_avaliacao, aad.id, aad.disciplina_id from atividade_avaliativa aa
+            var query = @"select aa.id, aa.professor_rf, aa.nome_avaliacao, aa.tipo_avaliacao_id, aa.data_avaliacao, aad.id, aad.disciplina_id from atividade_avaliativa aa
                             inner join atividade_avaliativa_disciplina aad
                             on aad.atividade_avaliativa_id  = aa.id
-                        where aa.dre_id  = @dreCodigo
-                        and aa.ue_id  = @ueCodigo
-                        and  aa.data_avaliacao ::date = @dataReferencia
-                        and aa.turma_id = @turmaCodigo";
+                        where not aa.excluido
+                        and aa.dre_id  = @dreCodigo
+                        and aa.ue_id  = @ueCodigo 
+                        and aa.data_avaliacao ::date = @dataReferencia
+                        and aa.turma_id = @turmaCodigo    ";
                         
 
 
@@ -239,8 +238,7 @@ namespace SME.SGP.Dados.Repositorios
                 dreCodigo,
                 ueCodigo,
                 dataReferencia,
-                turmaCodigo,
-
+                turmaCodigo
             });
 
             return lookup.Values;
