@@ -166,7 +166,10 @@ const PlanoAnual = () => {
           setPlanoAnual(resposta.data);
           setEmEdicao(false);
         })
-        .catch(e => erros(e));
+        .catch(e => erros(e))
+        .finally(() => {
+          setCarregandoDados(false);
+        });
     }
   };
 
@@ -438,13 +441,16 @@ const PlanoAnual = () => {
             <SelectComponent
               name="disciplinas"
               id="disciplinas"
-              lista={listaDisciplinas}
+              lista={listaDisciplinas || []}
               valueOption="codigoComponenteCurricular"
               valueText="nome"
               onChange={onChangeDisciplinas}
               valueSelect={codigoDisciplinaSelecionada}
               placeholder="Selecione um componente curricular"
-              disabled={listaDisciplinas && listaDisciplinas.length === 1}
+              disabled={
+                (listaDisciplinas && !listaDisciplinas.length) ||
+                (listaDisciplinas && listaDisciplinas.length === 1)
+              }
             />
           </div>
           <div className="col-md-8 col-sm-2 d-flex justify-content-end">
@@ -494,7 +500,8 @@ const PlanoAnual = () => {
                   setBimestreExpandido(c);
                 }}
               >
-                {planoAnual &&
+                {turmaSelecionada &&
+                  planoAnual &&
                   planoAnual.length > 0 &&
                   planoAnual.map(plano => (
                     <Panel
@@ -518,6 +525,7 @@ const PlanoAnual = () => {
                             disciplinaSelecionada &&
                             !disciplinaSelecionada.possuiObjetivos
                           }
+                          detalhesDisciplinaObjetivos={disciplinaSelecionada}
                           onChange={onChangeBimestre}
                           key={plano.bimestre}
                           erros={listaErros[plano.bimestre - 1]}
