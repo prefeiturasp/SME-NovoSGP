@@ -45,7 +45,6 @@ namespace SME.SGP.Aplicacao
 
             var avaliacoes = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesQuery()
             {
-                CodigoRf = usuarioLogado.CodigoRf,
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
                 DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
                 TipoCalendarioId = tipoCalendarioId,
@@ -53,6 +52,8 @@ namespace SME.SGP.Aplicacao
                 Mes = mes,
                 AnoLetivo = filtroAulasEventosCalendarioDto.AnoLetivo
             });
+
+            avaliacoes = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, componentesCurricularesDoProfessor);
 
             return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
             {
