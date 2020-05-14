@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import PropTypes from 'prop-types';
+import shortid from 'shortid';
 import Disciplinas from './disciplinas';
 import { ListItem, ListItemButton, ListaObjetivos } from './bimestre.css';
 import { Button, Colors, Grid, Auditoria, Loader } from '~/componentes';
@@ -16,6 +18,7 @@ const Bimestre = ({
   disciplinaSemObjetivo,
   selecionarObjetivo,
   onChangeDescricaoObjetivo,
+  detalhesDisciplinaObjetivos,
 }) => {
   const [objetivosAprendizagem, setObjetivosAprendizagem] = useState([]);
   const [objetivosCarregados, setObjetivosCarregados] = useState(false);
@@ -29,7 +32,7 @@ const Bimestre = ({
     bimestre.descricao
   );
   const [layoutEspecial, setLayoutEspecial] = useState(false);
-  const [carregandoDados, setCarregandoDados] = useState(false);
+  const [carregandoDados, setCarregandoDados] = useState(true);
 
   const getSelecionados = () => {
     if (objetivosAprendizagem && objetivosAprendizagem.length) {
@@ -53,9 +56,10 @@ const Bimestre = ({
           if (objetivosSelecionados && objetivosSelecionados.length > 0) {
             resposta.data.forEach(c => {
               const objetivo = objetivosSelecionados.find(o => {
-                if (o.id == c.id) {
+                if (String(o.id) === String(c.id)) {
                   return o;
                 }
+                return false;
               });
               if (objetivo) {
                 c.selecionado = true;
@@ -111,12 +115,18 @@ const Bimestre = ({
     setObjetivosSelecionados([]);
   };
 
-  useMemo(() => {
-    if (!disciplinaSemObjetivo)
+  useEffect(() => {
+    if (
+      detalhesDisciplinaObjetivos &&
+      !detalhesDisciplinaObjetivos.possuiObjetivos
+    ) {
       erro(
-        'Não foram encontrados objetivos para alguma(s) disciplina(s) selecionada(s)'
+        `Não foram encontrados objetivos para a disciplina ${detalhesDisciplinaObjetivos.nome}`
       );
+    }
+  }, [detalhesDisciplinaObjetivos]);
 
+  useMemo(() => {
     setLayoutEspecial(ehEja || ehMedio || disciplinaSemObjetivo);
   }, [disciplinaSemObjetivo, ehEja, ehMedio]);
 
@@ -148,7 +158,11 @@ const Bimestre = ({
       );
       setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
     }
-  }, [objetivosCarregados]);
+  }, [
+    bimestre.objetivosAprendizagem,
+    objetivosAprendizagem,
+    objetivosCarregados,
+  ]);
 
   useEffect(() => {
     setDescricaoObjetivo(bimestre.descricao);
@@ -169,6 +183,9 @@ const Bimestre = ({
               preSelecionadas={disciplinasPreSelecionadas}
               onChange={onChangeDisciplinasSelecionadas}
               layoutEspecial={layoutEspecial}
+              carregandoDisciplinas={carregando =>
+                setCarregandoDados(carregando)
+              }
             />
           </div>
 
@@ -217,6 +234,7 @@ const Bimestre = ({
               objetivosSelecionados.map(selecionado => {
                 return (
                   <Button
+                    id={shortid.generate()}
                     key={selecionado.codigo}
                     label={selecionado.codigo}
                     color={Colors.AzulAnakiwa}
@@ -303,6 +321,18 @@ const Bimestre = ({
       </div>
     </Loader>
   );
+};
+
+Bimestre.propTypes = {
+  bimestre: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  disciplinas: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  ano: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  ehEja: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  ehMedio: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  disciplinaSemObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  selecionarObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  onChangeDescricaoObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  detalhesDisciplinaObjetivos: PropTypes.oneOfType([PropTypes.any]).isRequired,
 };
 
 export default Bimestre;

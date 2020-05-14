@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Disciplina from './disciplina';
 import { Loader } from '~/componentes';
 
@@ -7,16 +8,18 @@ const Disciplinas = ({
   preSelecionadas,
   layoutEspecial,
   onChange,
+  carregandoDisciplinas,
 }) => {
   const [listaDisciplinas, setListaDisciplinas] = useState(disciplinas);
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    if (disciplinas) {
+    if (disciplinas && disciplinas.length) {
       setListaDisciplinas(disciplinas);
       setCarregando(false);
+      carregandoDisciplinas(false);
     }
-  }, [disciplinas, onChange]);
+  }, [carregandoDisciplinas, disciplinas, onChange]);
 
   const selecionarDisciplina = (codigoComponenteCurricular, selecionada) => {
     if (!layoutEspecial) {
@@ -51,6 +54,14 @@ const Disciplinas = ({
       ))}
     </Loader>
   );
+};
+
+Disciplinas.propTypes = {
+  disciplinas: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  preSelecionadas: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  layoutEspecial: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  onChange: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  carregandoDisciplinas: PropTypes.oneOfType([PropTypes.any]).isRequired,
 };
 
 export default Disciplinas;
