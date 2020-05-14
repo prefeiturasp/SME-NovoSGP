@@ -167,13 +167,15 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId
             }));
         }
-        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesCalendarioProfessorPorMes(string dreCodigo, string ueCodigo, int mes, int ano, string turmaCodigo)
+        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesCalendarioProfessorPorMes(string dreCodigo, string ueCodigo, int mes, int ano, string turmaCodigo, string codigoRf)
         {
             var query = @"select aa.id, aa.tipo_avaliacao_id, aa.data_avaliacao, aad.id, aad.disciplina_id from atividade_avaliativa aa
                             inner join atividade_avaliativa_disciplina aad
                             on aad.atividade_avaliativa_id  = aa.id
-                        where aa.dre_id  = @dreCodigo
+                        where not aa.excluido
+                        and aa.dre_id  = @dreCodigo
                         and aa.ue_id  = @ueCodigo
+                        and aa.professor_rf = @codigoRf    
                         and extract(month from aa.data_avaliacao) = @mes 
                         and extract(year from aa.data_avaliacao) = @ano
                         and aa.turma_id = @turmaCodigo";
@@ -199,7 +201,8 @@ namespace SME.SGP.Dados.Repositorios
                 ueCodigo,
                 mes,
                 ano,
-                turmaCodigo
+                turmaCodigo,
+                codigoRf
             });
 
             return lookup.Values;

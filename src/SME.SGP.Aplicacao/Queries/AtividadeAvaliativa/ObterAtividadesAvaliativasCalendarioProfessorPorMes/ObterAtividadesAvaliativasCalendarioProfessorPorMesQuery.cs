@@ -12,5 +12,6 @@ namespace SME.SGP.Aplicacao
         public int Mes { get; set; }        
         public string TurmaCodigo { get; set; }
         public int AnoLetivo { get; internal set; }
+        public string CodigoRf { get; set; }
     }
 }
