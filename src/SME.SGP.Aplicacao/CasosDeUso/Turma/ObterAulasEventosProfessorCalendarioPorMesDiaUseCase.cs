@@ -82,12 +82,12 @@ namespace SME.SGP.Aplicacao
 
                 atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
                 {
+                    CodigoRf = usuarioLogado.CodigoRf,
                     UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
                     DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
                     TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
                     DataReferencia = dataConsulta
                 });
-
             }
 
             retorno.EventosAulas = await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery()
