@@ -65,6 +65,21 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
         }
 
+        public IEnumerable<Ue> ObterTodas()
+        {
+            var query = @"select
+	                        id,
+	                        ue_id,
+	                        dre_id,
+	                        nome,
+	                        tipo_escola,
+	                        data_atualizacao
+                        from
+	                        ue";
+
+            return contexto.Query<Ue>(query);
+        }
+
         public IEnumerable<Ue> ObterPorDre(long dreId)
         {
             var query = @"select
@@ -81,6 +96,9 @@ namespace SME.SGP.Dados.Repositorios
 
             return contexto.Query<Ue>(query, new { dreId });
         }
+
+        public Ue ObterPorId(long id)
+                    => contexto.Conexao.QueryFirst<Ue>("select * from ue where id = @id", new { id });
 
         public async Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano)
         {

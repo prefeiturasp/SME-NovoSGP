@@ -34,7 +34,7 @@ function ModalRecorrencia({
   // Usado quando for selecionado a recorrencia mensal
   const [diaSemana, setDiaSemana] = useState();
 
-  const [diaNumero, setDiaNumero] = useState(1);
+  const [diaNumero, setDiaNumero] = useState();
   const [padraoRecorrencia, setPadraoRecorrencia] = useState();
   const [quantidadeRecorrencia, setQuantidadeRecorrencia] = useState(1);
   const [tipoRecorrencia, setTipoRecorrencia] = useState({
@@ -113,9 +113,12 @@ function ModalRecorrencia({
 
   const onChangeDataInicio = e => setDataInicio(e);
   const onChangeDataTermino = e => setDataTermino(e);
-  const onChangeRecurrence = value => setPadraoRecorrencia(value);
-  const onChangeWeekDayMonth = value => setDiaSemana(value);
   const onChangeDayNumber = value => setDiaNumero(value);
+  const onChangeRecurrence = value => {
+    onChangeDayNumber();
+    setPadraoRecorrencia(value);
+  };
+  const onChangeWeekDayMonth = value => setDiaSemana(value);
 
   const onChangeTipoRecorrencia = value => {
     setTipoRecorrencia(value);
@@ -156,6 +159,7 @@ function ModalRecorrencia({
   };
 
   const onCloseModal = () => {
+    setPadraoRecorrencia(undefined);
     setDataInicio('');
     setDataTermino('');
     setDiasSemana([]);
@@ -241,7 +245,7 @@ function ModalRecorrencia({
                 </VerticalCentralizado>
               </LinhaBootstrap>
               <LinhaBootstrap paddingBottom={3}>
-                <VerticalCentralizado className="col-lg-12">
+                <div className="col-lg-12">
                   {tipoRecorrencia && tipoRecorrencia.value === '1' ? (
                     <DiasDaSemana
                       currentState={diasSemana || null}
@@ -258,7 +262,7 @@ function ModalRecorrencia({
                       form={form}
                     />
                   )}
-                </VerticalCentralizado>
+                </div>
               </LinhaBootstrap>
               <TextoDiasDaSemana diasSemana={diasSemana} />
               <TextoInformativo dataTermino={dataTermino} />

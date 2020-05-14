@@ -16,6 +16,8 @@ const DataTable = props => {
     locale,
     idLinha,
     loading,
+    id,
+    scroll
   } = props;
 
   const rowSelection = {
@@ -27,13 +29,13 @@ const DataTable = props => {
 
   const selectRow = row => {
     let selected = [...selectedRowKeys];
-    if (selected.indexOf(row.id) >= 0) {
-      selected.splice(selected.indexOf(row.id), 1);
+    if (selected.indexOf(row[idLinha]) >= 0) {
+      selected.splice(selected.indexOf(row[idLinha]), 1);
     } else if (selectMultipleRows) {
-      selected.push(row.id);
+      selected.push(row[idLinha]);
     } else {
       selected = [];
-      selected.push(row.id);
+      selected.push(row[idLinha]);
     }
     onSelectRow(selected);
   };
@@ -47,6 +49,8 @@ const DataTable = props => {
   return (
     <Container className="table-responsive">
       <Table
+        id={id}
+        scroll={scroll}
         className={selectMultipleRows ? '' : 'ocultar-coluna-multi-selecao'}
         rowKey={idLinha}
         rowSelection={rowSelection}
@@ -79,6 +83,7 @@ const DataTable = props => {
                 colunaClicada.target.className == 'ant-table-selection-column'
               ) {
                 const checkboxSelecionarTodos = document
+                  .getElementById(id)
                   .getElementsByClassName('ant-table-selection')[0]
                   .getElementsByClassName('ant-checkbox-wrapper')[0]
                   .getElementsByClassName('ant-checkbox')[0]
@@ -106,6 +111,8 @@ DataTable.propTypes = {
   onClickRow: PropTypes.func,
   locale: PropTypes.object,
   idLinha: PropTypes.string,
+  id: PropTypes.string,
+  scroll: PropTypes.object,
 };
 
 DataTable.defaultProps = {
@@ -117,6 +124,8 @@ DataTable.defaultProps = {
   onRowClick: () => {},
   locale: { emptyText: 'Sem dados' },
   idLinha: 'id',
+  id: 'componente-tabela-sgp',
+  scroll: {},
 };
 
 export default DataTable;

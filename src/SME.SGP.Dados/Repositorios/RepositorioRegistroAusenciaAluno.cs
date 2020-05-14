@@ -58,14 +58,22 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("and a.turma_id = @turmaId ");
 
-            return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
-        }
+            try
+            {
+                return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
+            }
+            catch
+            {
+                return 0;
+            }
+       }
 
         public AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
             query.AppendLine("count(ra.id) as TotalAusencias, ");
+            query.AppendLine("p.id as PeriodoEscolarId, ");
             query.AppendLine("p.periodo_inicio as PeriodoInicio, ");
             query.AppendLine("p.periodo_fim as PeriodoFim, ");
             query.AppendLine("p.bimestre ");
@@ -91,6 +99,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and not ra.excluido");
             query.AppendLine("and not a.excluido");
             query.AppendLine("group by");
+            query.AppendLine("p.id, ");
             query.AppendLine("p.periodo_inicio,");
             query.AppendLine("p.periodo_fim,");
             query.AppendLine("p.bimestre");

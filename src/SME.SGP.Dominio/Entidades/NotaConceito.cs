@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace SME.SGP.Dominio
@@ -7,7 +8,7 @@ namespace SME.SGP.Dominio
     {
         public string AlunoId { get; set; }
         public long AtividadeAvaliativaID { get; set; }
-        public long? Conceito { get; set; }
+        public long? ConceitoId { get; set; }
         public string DisciplinaId { get; set; }
         public double? Nota { get; set; }
         public TipoNota TipoNota { get; set; }
@@ -15,8 +16,14 @@ namespace SME.SGP.Dominio
         public string ObterNota()
         {
             if (TipoNota == TipoNota.Conceito)
-                return Conceito.ToString();
-            else return Nota.ToString();
+                return ConceitoId.ToString();
+            else
+            {
+                if (!Nota.HasValue)
+                    return Nota.ToString();
+
+                return Nota.Value.ToString(CultureInfo.InvariantCulture);
+            }
         }
 
         public void Validar(string professorRf)
@@ -27,7 +34,7 @@ namespace SME.SGP.Dominio
 
         public void ValidarConceitos(IEnumerable<Conceito> conceitos, string nomeAluno)
         {
-            var conceito = conceitos.FirstOrDefault(c => c.Id == Conceito);
+            var conceito = conceitos.FirstOrDefault(c => c.Id == ConceitoId);
 
             if (conceito == null || (!conceito.Ativo && Id == 0))
                 throw new NegocioException($"O conceito informado para o aluno {nomeAluno} não existe");

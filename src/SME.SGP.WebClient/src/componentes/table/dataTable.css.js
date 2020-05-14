@@ -148,6 +148,10 @@ export const Container = styled.div`
       color: ${Base.Roxo} !important;
       background: ${Base.Branco} !important;
     }
+
+    i {
+      color: ${Base.Branco} !important;
+    }
   }
 
   .ant-table-tbody tr:hover {
@@ -178,6 +182,10 @@ export const Container = styled.div`
     div button {
       color: ${Base.Roxo} !important;
       background: ${Base.Branco} !important;
+    }
+
+    i {
+      color: ${Base.Branco} !important;
     }
   }
 

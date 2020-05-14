@@ -17,5 +17,6 @@ namespace SME.SGP.Infra
         public AulasQuantidadePorProfessorDto Criadas { get; set; }
 
         public int Reposicoes { get; set; }
+        public bool PodeEditar { get; set; }
     }
 }

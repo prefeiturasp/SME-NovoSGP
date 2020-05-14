@@ -100,6 +100,11 @@ namespace SME.SGP.Dominio
             return TipoEvento.Letivo == EventoLetivo.Sim;
         }
 
+        public bool EhTipoEventoFechamento()
+        {
+            return TipoEvento.Codigo == (long)Dominio.TipoEvento.FechamentoBimestre;
+        }
+
         public void EnviarParaWorkflowDeAprovacao(long idWorkflow)
         {
             WorkflowAprovacaoId = idWorkflow;
@@ -173,6 +178,9 @@ namespace SME.SGP.Dominio
             return TipoEvento.Concomitancia;
         }
 
+        public bool PodeAlterar()
+            => !TipoEvento.SomenteLeitura && Status != EntidadeStatus.AguardandoAprovacao;
+
         public void PodeCriarEventoLiberacaoExcepcional(Usuario usuario, bool dataConfirmada, IEnumerable<PeriodoEscolar> periodos)
         {
             if (this.TipoEvento.Codigo == (long)Dominio.TipoEvento.LiberacaoExcepcional)
@@ -217,16 +225,14 @@ namespace SME.SGP.Dominio
         public void ValidaPeriodoEvento()
         {
             TipoEventoObrigatorio();
+
             if (TipoEvento.TipoData == EventoTipoData.InicioFim && DataFim == DateTime.MinValue)
             {
                 throw new NegocioException("Neste tipo de evento a data final do evento deve ser informada.");
             }
-            else
+            else if (TipoEvento.TipoData == EventoTipoData.Unico)
             {
-                if (TipoEvento.TipoData == EventoTipoData.Unico)
-                {
-                    DataFim = DataInicio;
-                }
+                DataFim = DataInicio;
             }
         }
 

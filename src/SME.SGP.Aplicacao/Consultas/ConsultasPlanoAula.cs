@@ -13,24 +13,31 @@ namespace SME.SGP.Aplicacao.Consultas
         private readonly IConsultasAula consultasAula;
         private readonly IConsultasObjetivoAprendizagemAula consultasObjetivosAula;
         private readonly IConsultasPlanoAnual consultasPlanoAnual;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioPlanoAula repositorio;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasPlanoAula(IRepositorioPlanoAula repositorioPlanoAula,
                                 IConsultasPlanoAnual consultasPlanoAnual,
                                 IConsultasObjetivoAprendizagemAula consultasObjetivosAprendizagemAula,
                                 IConsultasAula consultasAula,
-                                IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa)
+                                IConsultasPeriodoEscolar consultasPeriodoEscolar,
+                                IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
+                                IServicoUsuario servicoUsuario)
         {
-            this.repositorio = repositorioPlanoAula;
-            this.consultasObjetivosAula = consultasObjetivosAprendizagemAula;
-            this.consultasPlanoAnual = consultasPlanoAnual;
-            this.consultasAula = consultasAula;
-            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa;
+            this.repositorio = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
+            this.consultasObjetivosAula = consultasObjetivosAprendizagemAula ?? throw new ArgumentNullException(nameof(consultasObjetivosAprendizagemAula));
+            this.consultasPlanoAnual = consultasPlanoAnual ?? throw new ArgumentNullException(nameof(consultasPlanoAnual));
+            this.consultasAula = consultasAula ?? throw new ArgumentNullException(nameof(consultasAula));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<PlanoAulaRetornoDto> ObterPlanoAulaPorAula(long aulaId)
         {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
             PlanoAulaRetornoDto planoAulaDto = new PlanoAulaRetornoDto();
             // Busca plano de aula por data e disciplina da aula
             var plano = await repositorio.ObterPlanoAulaPorAula(aulaId);
@@ -50,18 +57,29 @@ namespace SME.SGP.Aplicacao.Consultas
                     TurmaId = aulaDto.TurmaId
                 }, seNaoExistirRetornaNovo: false);
 
-                if (planoAnual == null)
-                    throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
-
                 // Carrega objetivos já cadastrados no plano de aula
                 var objetivosAula = await consultasObjetivosAula.ObterObjetivosPlanoAula(plano.Id);
-                // Filtra objetivos anual com os objetivos da aula
-                planoAulaDto.ObjetivosAprendizagemAula = planoAnual.ObjetivosAprendizagem
-                                    .Where(c => objetivosAula.Any(a => a.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId == c.Id))
-                                    .ToList();
+
+                if (planoAnual != null)
+                {
+                    // Filtra objetivos anual com os objetivos da aula
+                    planoAulaDto.ObjetivosAprendizagemAula = planoAnual.ObjetivosAprendizagem
+                                        .Where(c => objetivosAula.Any(a => a.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId == c.Id))
+                                        .ToList();
+                }
+                else
+                {
+                    if (!usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
+                        throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
+                }
             }
+            var periodoEscolar = consultasPeriodoEscolar.ObterPorTipoCalendario(aulaDto.TipoCalendarioId);
+            var periodo = periodoEscolar.Periodos.FirstOrDefault(p => p.PeriodoInicio <= aulaDto.DataAula && p.PeriodoFim >= aulaDto.DataAula);
+            var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
+                        aulaDto.DataAula.Year, aulaDto.UeId, long.Parse(aulaDto.TurmaId), periodo.Bimestre, long.Parse(aulaDto.DisciplinaId));
 
             // Carrega informações da aula para o retorno
+            planoAulaDto.PossuiPlanoAnual = planoAnualId > 0;
             planoAulaDto.AulaId = aulaDto.Id;
             planoAulaDto.QtdAulas = aulaDto.Quantidade;
             planoAulaDto.IdAtividadeAvaliativa = atividadeAvaliativa?.Id;

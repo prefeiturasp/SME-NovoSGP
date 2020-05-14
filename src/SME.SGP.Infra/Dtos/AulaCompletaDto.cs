@@ -18,6 +18,7 @@ namespace SME.SGP.Infra
         public TipoAula TipoAula { get; set; }
         public long TipoCalendarioId { get; set; }
         public string TurmaId { get; set; }
+        public bool DentroPeriodo { get; set; }
         public string TurmaNome { get; set; }
         public string UeId { get; set; }
         public string UeNome { get; set; }

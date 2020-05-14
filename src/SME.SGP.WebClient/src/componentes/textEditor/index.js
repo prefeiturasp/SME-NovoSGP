@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import Editor from './component';
 import Container from './container';
 
@@ -10,4 +10,4 @@ const TextEditor = React.forwardRef((props, ref) => {
   );
 });
 
-export default TextEditor;
+export default memo(TextEditor);

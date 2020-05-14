@@ -24,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(IEnumerable<RetornoCopiarEventoDto>), 200)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.E_I, Policy = "Bearer")]
         public async Task<IActionResult> Criar([FromServices]IComandosEvento comandosEvento, [FromBody]EventoDto eventoDto)

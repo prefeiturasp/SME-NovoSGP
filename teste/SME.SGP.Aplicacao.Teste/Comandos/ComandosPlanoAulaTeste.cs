@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>()))
                 .Returns(Task.FromResult(new AbrangenciaFiltroRetorno()
                 {
-                    Ano = 2019,
+                    Ano = "2019",
                     CodigoTurma = "123",
                     Modalidade = Modalidade.EJA
                 }));
@@ -177,7 +177,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             // Abrangencia
             abrangencia = new AbrangenciaFiltroRetorno()
             {
-                Ano = 2019,
+                Ano = "2019",
                 CodigoTurma = "123",
                 QtDuracaoAula = 3,
                 Modalidade = Modalidade.Fundamental

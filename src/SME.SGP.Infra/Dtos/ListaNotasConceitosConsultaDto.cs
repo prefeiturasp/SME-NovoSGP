@@ -8,6 +8,7 @@ namespace SME.SGP.Infra
         public int? Bimestre { get; set; }
         public string DisciplinaCodigo { get; set; }
         public Modalidade Modalidade { get; set; }
+        public int Semestre { get; set; }
         public string TurmaCodigo { get; set; }
         public bool TurmaHistorico { get; set; }
     }

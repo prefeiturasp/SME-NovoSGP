@@ -25,6 +25,12 @@ export function Deslogar() {
   };
 }
 
+export function DeslogarSessaoExpirou() {
+  return {
+    type: '@usuario/deslogarSessaoExpirou',
+  };
+}
+
 export function turmasUsuario(turmas) {
   return {
     type: '@usuario/turmasUsuario',
@@ -94,9 +100,3 @@ export function setPermissoes(permissoes) {
   };
 }
 
-export function setExibirMensagemSessaoExpirou(sessaoExpirou) {
-  return {
-    type: '@usuario/setExibirMensagemSessaoExpirou',
-    payload: sessaoExpirou,
-  };
-}

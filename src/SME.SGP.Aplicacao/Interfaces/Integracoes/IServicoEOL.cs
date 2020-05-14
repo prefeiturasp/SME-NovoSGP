@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
@@ -19,6 +20,10 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
+        IEnumerable<CicloRetornoDto> BuscarCiclos();
+
+        IEnumerable<TipoEscolaRetornoDto> BuscarTiposEscola();
+
         Task<bool> ExisteUsuarioComMesmoEmail(string login, string email);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
@@ -27,9 +32,21 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds);
 
+        Task<string[]> ObterAdministradoresSGP(string codigoDreOuUe);
+
+        Task<string[]> ObterAdministradoresSGPParaNotificar(string codigoDreOuUe);
+
+        Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(long turmaId);
+
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo);
+
+        Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil);
+
+        Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil);
+
+        Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo);
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil);
 
@@ -95,10 +112,18 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data);
 
+        Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, string[] datas, long codigoDisciplina);
+
+        Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data);
+
         Task ReiniciarSenha(string login);
+
+        Task<UsuarioEolAutenticacaoRetornoDto> RelecionarUsuarioPerfis(string login);
 
         Task RemoverCJSeNecessario(Guid usuarioId);
 
         Task<bool> ValidarProfessor(string professorRf);
+
+        Task<bool> TurmaPossuiComponenteCurricularPAP(string codigoTurma, string login, Guid idPerfil);
     }
 }

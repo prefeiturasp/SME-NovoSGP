@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         Task<string> Alterar(AulaDto dto, long id);
 
-        Task<string> Excluir(long id, RecorrenciaAula recorrencia);
+        Task<string> Excluir(long id, string disciplinaNome, RecorrenciaAula recorrencia);
 
         Task<string> Inserir(AulaDto dto);
     }

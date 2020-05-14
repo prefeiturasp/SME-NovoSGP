@@ -265,3 +265,4 @@ sme-api.env
 variaveis.json
 src/SME.SGP.WebClient/package-lock.json
 src/SME.SGP.Api/healthchecksdb
+/src/Benchmarks/SME.SGP.Benchmarks/BenchmarkDotNet.Artifacts/results

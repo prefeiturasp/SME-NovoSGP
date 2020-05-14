@@ -114,27 +114,38 @@ function RegistroPOALista() {
     }
   };
 
-  const ehFiltroValido = useCallback(
-    () => !!filtro.dreId && !!filtro.ueId && !!filtro.professorRf,
-    [filtro.dreId, filtro.professorRf, filtro.ueId]
-  );
-
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [permissoesTela]);
 
   useEffect(() => {
-    setFiltroValido(ehFiltroValido());
-  }, [ehFiltroValido, filtro]);
+    setFiltroValido(
+      () => !!filtro && !!filtro.dreId && !!filtro.ueId && !!filtro.codigoRf
+    );
+  }, [filtro]);
 
   const onChangeFiltro = useCallback(
     valoresFiltro => {
-      setFiltro({
-        ...valoresFiltro,
-        CodigoRf: valoresFiltro.professorRf,
-        anoLetivo,
-        bimestre: valoresFiltro.bimestre || 0,
-      });
+      const paramsConsulta = {};
+      if (valoresFiltro.bimestre) {
+        paramsConsulta.bimestre = valoresFiltro.bimestre;
+      }
+      if (valoresFiltro.professorRf) {
+        paramsConsulta.codigoRf = valoresFiltro.professorRf;
+      }
+      if (valoresFiltro.dreId) {
+        paramsConsulta.dreId = valoresFiltro.dreId;
+      }
+      if (valoresFiltro.titulo) {
+        paramsConsulta.titulo = valoresFiltro.titulo;
+      }
+      if (valoresFiltro.ueId) {
+        paramsConsulta.ueId = valoresFiltro.ueId;
+      }
+      if (anoLetivo) {
+        paramsConsulta.anoLetivo = anoLetivo;
+      }
+      setFiltro(paramsConsulta);
     },
     [anoLetivo]
   );

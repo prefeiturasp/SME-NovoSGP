@@ -93,7 +93,7 @@ const RecuperarSenha = props => {
   };
 
   const onClickCancelar = () => {
-    setRf();
+    setRf('');
   };
 
   const onClickContinuar = () => {

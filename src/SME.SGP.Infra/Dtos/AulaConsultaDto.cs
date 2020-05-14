@@ -24,6 +24,7 @@ namespace SME.SGP.Infra
         public long TipoCalendarioId { get; set; }
         public string TurmaId { get; set; }
         public string UeId { get; set; }
+        public bool DentroPeriodo { get; set; }
 
         public void VerificarSomenteLeitura(string disciplinaId)
         {

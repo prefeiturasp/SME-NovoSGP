@@ -5,8 +5,9 @@ import shortid from 'shortid';
 import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
 
-const Mensagens = props => {
-  const { somenteConsulta } = props;
+const Mensagens = () => {
+
+  const somenteConsulta = useSelector(store => store.navegacao.somenteConsulta);
   const alertas = useSelector(state => state.alertas);
   return (
     <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">

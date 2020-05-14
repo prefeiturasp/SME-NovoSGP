@@ -26,6 +26,7 @@ const Base = {
   CinzaMako: '#42474A',
   CinzaMenu: '#EEEEEE',
   CinzaMenuItem: '#686868',
+  CinzaTabela: '#FAFAFA',
   Laranja: '#F39200',
   Preto: '#000',
   RosaCalendario: '#FEE4E2',
@@ -39,6 +40,8 @@ const Base = {
   VermelhoNotificacao: '#B40C02',
   Vermelho: '#B40C02',
   LaranjaAlerta: '#D06D12',
+  VerdeBorda: '#20AA73',
+  Bordo: '#864241',
 };
 
 const Active = {

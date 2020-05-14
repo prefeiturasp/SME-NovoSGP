@@ -27,18 +27,21 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<Usuario> ObterUsuarioLogado();
 
-        Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "");
+        Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false);
 
         Task PodeModificarPerfil(Guid perfilParaModificar, string login);
 
         Task<bool> PodePersistirTurma(string codigoRf, string turmaId, DateTime data);
 
-        Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data);
+        Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null);
+
+        Task<bool> PodePersistirTurmaNasDatas(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null);
 
         void RemoverPerfisUsuarioAtual();
 
         void RemoverPerfisUsuarioCache(string login);
 
         bool UsuarioLogadoPossuiPerfilSme();
+        Task<string[]> ObterComponentesCurricularesQuePodeVisualizarHoje(string turmaCodigo, Usuario usuarioLogado);
     }
 }

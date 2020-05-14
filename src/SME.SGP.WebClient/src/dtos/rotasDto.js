@@ -16,6 +16,7 @@ const RotasDto = {
   EVENTOS: '/calendario-escolar/eventos',
   CALENDARIO_ESCOLAR: '/calendario-escolar',
   CALENDARIO_PROFESSOR: '/calendario-escolar/calendario-professor',
+  CALENDARIO_PROFESSOR_II: '/calendario-escolar/calendario-professor/v2',
   CADASTRO_DE_AULA: '/calendario-escolar/calendario-professor/cadastro-aula',
   CADASTRO_DE_AVALIACAO:
     '/calendario-escolar/calendario-professor/cadastro-avaliacao',
@@ -24,6 +25,17 @@ const RotasDto = {
   NOTAS: '/diario-classe/notas',
   AULA_DADA_AULA_PREVISTA: '/diario-classe/aula-dada-aula-prevista',
   REGISTRO_POA: '/diario-classe/registro-poa',
+  COMPENSACAO_AUSENCIA: '/diario-classe/compensacao-ausencia',
+  FECHAMENTO_BIMESTRE: '/fechamento/fechamento-bimestre',
+  PERIODO_FECHAMENTO_ABERTURA:
+    '/calendario-escolar/periodo-fechamento-abertura',
+  PAP: '/relatorios/pap/resumos-e-graficos',
+  PERIODO_FECHAMENTO_REABERTURA:
+    '/calendario-escolar/periodo-fechamento-reabertura',
+  RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/acompanhamento',
+  PENDENCIAS_FECHAMENTO: '/fechamento/pendencias-fechamento',
+  ACOMPANHAMENTO_COMUNICADOS: '/gestao/acompanhamento-escolar/comunicados',
+  CONSELHO_CLASSE: '/fechamento/conselho-classe',
 };
 
 export default RotasDto;

@@ -15,7 +15,6 @@ import { sucesso, erro, confirmar, erros } from '~/servicos/alertas';
 import servicoEvento from '~/servicos/Paginas/Calendario/ServicoTipoEvento';
 
 const TipoEventosForm = ({ match }) => {
-  const campoNomeTipoEventoRef = useRef();
   const botaoCadastrarRef = useRef();
 
   const [idTipoEvento, setIdTipoEvento] = useState('');
@@ -188,15 +187,14 @@ const TipoEventosForm = ({ match }) => {
       });
   };
 
-  const aoDigitarDescricao = () => {
+  const aoDigitarDescricao = e => {
     setDadosTipoEvento({
       ...dadosTipoEvento,
-      descricao: campoNomeTipoEventoRef.current.value,
+      descricao: e.target.value,
     });
   };
 
   useEffect(() => {
-    campoNomeTipoEventoRef.current.focus();
     if (dadosTipoEvento.descricao.length > 0)
       setDesabilitarBotaoCadastrar(false);
   }, [dadosTipoEvento.descricao]);
@@ -314,7 +312,6 @@ const TipoEventosForm = ({ match }) => {
                         maxlength={100}
                         placeholder="Nome do evento"
                         type="input"
-                        ref={campoNomeTipoEventoRef}
                         onChange={aoDigitarDescricao}
                         desabilitado={possuiEventos}
                         icon

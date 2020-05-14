@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
@@ -25,7 +25,7 @@ const CopiarConteudo = ({
   const refForm = useRef();
 
   useEffect(() => {
-    if (componenteCurricularEolId && turmaId)
+    if (componenteCurricularEolId && turmaId) {
       servicoPlanoAnual
         .obterTurmasParaCopia(turmaId, componenteCurricularEolId)
         .then(c => {
@@ -37,6 +37,7 @@ const CopiarConteudo = ({
         .catch(e => {
           erros(e);
         });
+    }
   }, [componenteCurricularEolId, turmaId]);
 
   const fecharCopiarConteudo = () => {
@@ -166,4 +167,4 @@ const CopiarConteudo = ({
     </Formik>
   );
 };
-export default CopiarConteudo;
+export default memo(CopiarConteudo);

@@ -143,7 +143,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join plano_anual p on
 	                        p.turma_id = a.turma_id
                         where
-	                        t.turma_id = Any(@turmasId) and not a.historico";
+	                        t.turma_id = Any(@turmasId) and not a.historico group by t.id";
 
             return database.Conexao.Query<TurmaParaCopiaPlanoAnualDto>(query, new { turmasId });
         }

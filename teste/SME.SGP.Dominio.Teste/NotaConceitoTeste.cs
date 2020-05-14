@@ -14,15 +14,15 @@ namespace SME.SGP.Dominio.Teste
             var notaconceito = ObterEntidade();
             var conceitos = ObterConceitos();
 
-            notaconceito.Conceito = 5;
+            notaconceito.ConceitoId = 5;
 
             Assert.Throws<NegocioException>(() => notaconceito.ValidarConceitos(conceitos, "João Kleber"));
 
-            notaconceito.Conceito = 0;
+            notaconceito.ConceitoId = 0;
 
             Assert.Throws<NegocioException>(() => notaconceito.ValidarConceitos(conceitos, "João Kleber"));
 
-            notaconceito.Conceito = 1;
+            notaconceito.ConceitoId = 1;
 
             notaconceito.ValidarConceitos(conceitos, "João Kleber");
         }
@@ -80,7 +80,7 @@ namespace SME.SGP.Dominio.Teste
             {
                 AlunoId = "1",
                 AtividadeAvaliativaID = 1,
-                Conceito = 'P',
+                ConceitoId = 'P',
                 Nota = 10,
                 TipoNota = TipoNota.Nota,
                 Id = 1,

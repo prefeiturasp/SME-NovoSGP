@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,8 +18,12 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AusenciaAlunoDto>> ObterAusencias(string turmaCodigo, string disciplinaCodigo, DateTime[] datas, string[] alunoCodigos);
 
+        Task<IEnumerable<RecuperacaoParalelaFrequenciaDto>> ObterFrequenciaAusencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo);
+
         IEnumerable<RegistroAusenciaAluno> ObterListaFrequenciaPorAula(long aulaId);
 
         RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId);
+
+        IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId);
     }
 }

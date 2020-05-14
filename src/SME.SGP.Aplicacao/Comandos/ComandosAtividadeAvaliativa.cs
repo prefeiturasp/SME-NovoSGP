@@ -56,13 +56,15 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var disciplina = ObterDisciplina(dto.DisciplinasId[0]);
+            ValidaDisciplinaNaAvaliacao(disciplina);
+
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, disciplina.Regencia);
 
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
 
             atividadeAvaliativa.PodeSerAlterada(usuario);
 
-            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, dto.DisciplinasId[0], atividadeAvaliativa.DataAvaliacao);
+            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, dto.DisciplinasId[0], atividadeAvaliativa.DataAvaliacao, usuario);
 
             unitOfWork.IniciarTransacao();
 
@@ -116,6 +118,12 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
+        private void ValidaDisciplinaNaAvaliacao(DisciplinaDto disciplina)
+        {
+            if (!disciplina.LancaNota)
+                throw new NegocioException("Não é possível cadastrar avaliações para componente curricular que não lança nota.");
+        }
+
         public async Task Excluir(long idAtividadeAvaliativa)
         {
             var atividadeAvaliativa = repositorioAtividadeAvaliativa.ObterPorId(idAtividadeAvaliativa);
@@ -131,10 +139,10 @@ namespace SME.SGP.Aplicacao
 
             foreach (var atividadeDisciplina in atividadeDisciplinas)
             {
-                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeDisciplina.DisciplinaId, atividadeAvaliativa.DataAvaliacao);
+                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeDisciplina.DisciplinaId, atividadeAvaliativa.DataAvaliacao, usuario);
             }
 
-                unitOfWork.IniciarTransacao();
+            unitOfWork.IniciarTransacao();
 
             atividadeAvaliativa.Excluir();
             await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
@@ -166,6 +174,8 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var disciplina = ObterDisciplina(dto.DisciplinasId[0]);
+            ValidaDisciplinaNaAvaliacao(disciplina);
+
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia);
             mensagens.AddRange(await Salvar(atividadeAvaliativa, dto));
             mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf));
@@ -241,8 +251,7 @@ namespace SME.SGP.Aplicacao
                     {
                         mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto($"Erro ao copiar para a turma: '{turma.TurmaId}' na data '{turma.DataAtividadeAvaliativa.ToString("dd/MM/yyyy")}'. {nex.Message}"));
                     }
-                }
-                unitOfWork.PersistirTransacao();
+                }               
             }
 
             return mensagens;
@@ -296,7 +305,8 @@ namespace SME.SGP.Aplicacao
                 Nome = atividadeAvaliativaDto.Nome,
                 TipoAvaliacaoId = (int)atividadeAvaliativaDto.TipoAvaliacaoId,
                 TurmaId = atividadeAvaliativaDto.TurmaId,
-                UeID = atividadeAvaliativaDto.UeId
+                UeID = atividadeAvaliativaDto.UeId,
+                DisciplinasId = atividadeAvaliativaDto.DisciplinasId
             };
         }
 
@@ -431,9 +441,12 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula)
+        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            if (!await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
+            if (usuario == null)
+                usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
         }
     }

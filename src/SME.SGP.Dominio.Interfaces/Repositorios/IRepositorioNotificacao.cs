@@ -6,8 +6,10 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioNotificacao : IRepositorioBase<Notificacao>
     {
+        Task ExcluirPorIdsAsync(long[] ids);
+
         Task<PaginacaoResultadoDto<Notificacao>> Obter(string dreId, string ueId, int statusId, string turmaId,
-            string usuarioId, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, Paginacao paginaRegistros);
+                    string usuarioId, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, Paginacao paginaRegistros);
 
         IEnumerable<Notificacao> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite);
 

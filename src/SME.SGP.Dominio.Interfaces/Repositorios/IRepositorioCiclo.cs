@@ -7,8 +7,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         CicloDto ObterCicloPorAno(int ano);
 
-        IEnumerable<CicloDto> ObterCiclosPorAnoModalidade(FiltroCicloDto filtroCicloDto);
+        CicloDto ObterCicloPorAnoModalidade(string ano, Modalidade modalidade);
 
-        CicloDto ObterCicloPorAnoModalidade(int ano, Modalidade modalidade);
+        IEnumerable<CicloDto> ObterCiclosPorAnoModalidade(FiltroCicloDto filtroCicloDto);
     }
 }

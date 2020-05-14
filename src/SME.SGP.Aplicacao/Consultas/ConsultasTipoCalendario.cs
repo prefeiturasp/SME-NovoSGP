@@ -1,9 +1,11 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -25,9 +27,9 @@ namespace SME.SGP.Aplicacao
                    select EntidadeParaDto(t);
         }
 
-        public TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade)
+        public TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
         {
-            var entidade = repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
+            var entidade = repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, semestre);
 
             if (entidade != null)
                 return EntidadeParaDtoCompleto(entidade);
@@ -88,5 +90,20 @@ namespace SME.SGP.Aplicacao
             return from t in retorno
                    select EntidadeParaDto(t);
         }
+
+        public IEnumerable<TipoCalendarioDto> ListarPorAnoLetivo(int anoLetivo)
+        {
+            var retorno = repositorio.ListarPorAnoLetivo(anoLetivo);
+            return from t in retorno
+                   select EntidadeParaDto(t);
+        }
+
+        public async Task<TipoCalendario> ObterPorTurma(Turma turma)
+            => repositorio.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo
+                    , turma.ModalidadeTipoCalendario
+                    , turma.Semestre);
+
+        public Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
+            => repositorio.PeriodoEmAberto(tipoCalendario.Id, dataReferencia, bimestre, ehAnoLetivo);
     }
 }
