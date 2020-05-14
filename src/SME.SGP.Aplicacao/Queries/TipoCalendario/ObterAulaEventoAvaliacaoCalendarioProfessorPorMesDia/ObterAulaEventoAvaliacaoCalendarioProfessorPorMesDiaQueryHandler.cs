@@ -37,7 +37,9 @@ namespace SME.SGP.Aplicacao
 
                     var atividadesAvaliativasDaAula = (from avaliacao in request.Avaliacoes
                                                        from disciplina in avaliacao.Disciplinas
-                                                       where disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId || avaliacao.ProfessorRf == request.UsuarioCodigoRf
+                                                       where avaliacao.EhCj == aulaParaVisualizar.AulaCJ &&
+                                                             ((!avaliacao.EhCj && disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId) || 
+                                                                avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf)
                                                        select avaliacao);
 
                     if (atividadesAvaliativasDaAula.Any())
