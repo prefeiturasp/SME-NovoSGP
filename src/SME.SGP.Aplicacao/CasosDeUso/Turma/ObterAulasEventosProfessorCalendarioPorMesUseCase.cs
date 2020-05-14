@@ -45,6 +45,7 @@ namespace SME.SGP.Aplicacao
 
             var avaliacoes = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesQuery()
             {
+                CodigoRf = usuarioLogado.CodigoRf,
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
                 DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
                 TipoCalendarioId = tipoCalendarioId,
