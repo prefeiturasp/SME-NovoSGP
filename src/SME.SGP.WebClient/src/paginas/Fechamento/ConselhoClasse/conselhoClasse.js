@@ -32,6 +32,14 @@ const ConselhoClasse = () => {
   const [exibirListas, setExibirListas] = useState(false);
   const [podeImprimir, setPodeImprimir] = useState(false);
 
+  const conselhoClasseId = useSelector(
+    store => store.conselhoClasse.dadosPrincipaisConselhoClasse.conselhoClasseId
+  );
+
+  useEffect(() => {
+    setPodeImprimir(conselhoClasseId);
+  }, [conselhoClasseId]);
+
   const obterListaAlunos = useCallback(async () => {
     setCarregandoGeral(true);
     const retorno = await ServicoConselhoClasse.obterListaAlunos(
@@ -42,12 +50,6 @@ const ConselhoClasse = () => {
     if (retorno && retorno.data) {
       dispatch(setAlunosConselhoClasse(retorno.data));
       setExibirListas(true);
-    }
-    const retornoPodeImprimir = await ServicoConselhoClasse.podeImprimirTodosOsConselhos().catch(
-      e => erros(e)
-    );
-    if (retornoPodeImprimir && retornoPodeImprimir.data) {
-      setPodeImprimir(retornoPodeImprimir.data);
     }
     setCarregandoGeral(false);
   }, [anoLetivo, dispatch, turma, periodo]);
