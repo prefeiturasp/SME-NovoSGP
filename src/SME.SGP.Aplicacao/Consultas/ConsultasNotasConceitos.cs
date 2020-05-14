@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
             List<AtividadeAvaliativa> atividadesAvaliativaEBimestres = new List<AtividadeAvaliativa>();
             // Carrega disciplinas filhas da disciplina passada como parametro
             var disciplinasProfessor = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(filtro.TurmaCodigo, true);
-            var disciplinasFilha = disciplinasProfessor.Where(d => d.CdComponenteCurricularPai == int.Parse(filtro.DisciplinaCodigo));
+            var disciplinasFilha = disciplinasProfessor.Where(d => d.CdComponenteCurricularPai == long.Parse(filtro.DisciplinaCodigo));
 
             if (disciplinasFilha.Any())
             {
