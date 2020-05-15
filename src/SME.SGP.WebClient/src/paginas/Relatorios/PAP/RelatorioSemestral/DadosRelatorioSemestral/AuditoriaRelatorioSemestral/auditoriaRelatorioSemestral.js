@@ -14,7 +14,7 @@ const Container = styled.div`
 
 const AuditoriaRelatorioSemestral = () => {
   const auditoriaRelatorioSemestral = useSelector(
-    store => store.relatorioSemestral.auditoriaRelatorioSemestral
+    store => store.relatorioSemestralPAP.auditoriaRelatorioSemestral
   );
 
   const { criadoPor, criadoEm, criadoRF, alteradoPor, alteradoEm, alteradoRF } =

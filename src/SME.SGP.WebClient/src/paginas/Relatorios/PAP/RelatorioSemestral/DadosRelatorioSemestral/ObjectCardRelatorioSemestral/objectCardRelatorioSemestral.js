@@ -4,7 +4,7 @@ import DetalhesAluno from '~/componentes/Alunos/Detalhes';
 
 const ObjectCardRelatorioSemestral = () => {
   const dadosAlunoObjectCard = useSelector(
-    store => store.relatorioSemestral.dadosAlunoObjectCard
+    store => store.relatorioSemestralPAP.dadosAlunoObjectCard
   );
 
   return <DetalhesAluno dados={dadosAlunoObjectCard} />;

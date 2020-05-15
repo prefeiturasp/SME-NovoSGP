@@ -1,54 +1,54 @@
 export const setDadosAlunoObjectCard = payload => ({
-  type: '@relatorioSemestral/setDadosAlunoObjectCard',
+  type: '@relatorioSemestralPAP/setDadosAlunoObjectCard',
   payload,
 });
 
 export const setAlunosRelatorioSemestral = payload => ({
-  type: '@relatorioSemestral/setAlunosRelatorioSemestral',
+  type: '@relatorioSemestralPAP/setAlunosRelatorioSemestral',
   payload,
 });
 
 export const limparDadosRelatorioSemestral = payload => ({
-  type: '@relatorioSemestral/limparDadosRelatorioSemestral',
+  type: '@relatorioSemestralPAP/limparDadosRelatorioSemestral',
   payload,
 });
 
 export const setRelatorioSemestralEmEdicao = payload => ({
-  type: '@relatorioSemestral/setRelatorioSemestralEmEdicao',
+  type: '@relatorioSemestralPAP/setRelatorioSemestralEmEdicao',
   payload,
 });
 
 export const setDadosRelatorioSemestral = payload => ({
-  type: '@relatorioSemestral/setDadosRelatorioSemestral',
+  type: '@relatorioSemestralPAP/setDadosRelatorioSemestral',
   payload,
 });
 
 export const setDadosParaSalvarRelatorioSemestral = payload => ({
-  type: '@relatorioSemestral/setDadosParaSalvarRelatorioSemestral',
+  type: '@relatorioSemestralPAP/setDadosParaSalvarRelatorioSemestral',
   payload,
 });
 
 export const limparDadosParaSalvarRelatorioSemestral = payload => ({
-  type: '@relatorioSemestral/limparDadosParaSalvarRelatorioSemestral',
+  type: '@relatorioSemestralPAP/limparDadosParaSalvarRelatorioSemestral',
   payload,
 });
 
 export const setAuditoriaRelatorioSemestral = payload => ({
-  type: '@relatorioSemestral/setAuditoriaRelatorioSemestral',
+  type: '@relatorioSemestralPAP/setAuditoriaRelatorioSemestral',
   payload,
 });
 
 export const setDesabilitarCampos = payload => ({
-  type: '@relatorioSemestral/setDesabilitarCampos',
+  type: '@relatorioSemestralPAP/setDesabilitarCampos',
   payload,
 });
 
 export const setDentroPeriodo = payload => ({
-  type: '@relatorioSemestral/setDentroPeriodo',
+  type: '@relatorioSemestralPAP/setDentroPeriodo',
   payload,
 });
 
 export const setCodigoAlunoSelecionado = payload => ({
-  type: '@relatorioSemestral/setCodigoAlunoSelecionado',
+  type: '@relatorioSemestralPAP/setCodigoAlunoSelecionado',
   payload,
 });

@@ -2,11 +2,11 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Ordenacao } from '~/componentes-sgp';
 
-import { setAlunosRelatorioSemestral } from '~/redux/modulos/relatorioSemestral/actions';
+import { setAlunosRelatorioSemestral } from '~/redux/modulos/relatorioSemestralPAP/actions';
 
 const BotaoOrdenarListaAlunos = () => {
   const alunosRelatorioSemestral = useSelector(
-    store => store.relatorioSemestral.alunosRelatorioSemestral
+    store => store.relatorioSemestralPAP.alunosRelatorioSemestral
   );
 
   const dispatch = useDispatch();
