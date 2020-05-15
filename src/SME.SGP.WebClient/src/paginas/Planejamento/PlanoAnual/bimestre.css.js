@@ -2,7 +2,8 @@ import styled from 'styled-components';
 import { Base } from '../../../componentes/colors';
 
 export const Badge = styled.button`
-  color: ${props => (props.disabled ? Base.CinzaDesabilitado : Base.Preto)} !important;
+  color: ${props =>
+    props.disabled ? Base.CinzaDesabilitado : Base.Preto} !important;
   &:last-child {
     margin-right: 10 !important;
   }
@@ -32,4 +33,5 @@ export const ListItemButton = styled(ListItem)`
 export const Erro = styled.div`
   color: ${Base.Vermelho};
   font-size: 0.8rem;
+  margin-bottom: 10px;
 `;
