@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import Disciplinas from './disciplinas';
@@ -47,6 +47,16 @@ const Bimestre = ({
     return bimestre.objetivosAprendizagem;
   };
 
+  const setCarregandoDisciplinas = carregando => {
+    if (disciplinas) {
+      setTimeout(() => {
+        setCarregandoDados(carregando);
+      }, 2000);
+    }
+  };
+
+  const refDivObjetivos = useRef();
+
   const onChangeDisciplinasSelecionadas = disciplinasSelecionadas => {
     if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
       setCarregandoDados(true);
@@ -83,13 +93,17 @@ const Bimestre = ({
           mostrarErros(e);
         })
         .finally(() => {
-          setCarregandoDados(false);
+          setCarregandoDisciplinas(false);
         });
     } else {
       const objs = getSelecionados();
       setObjetivosAprendizagem(objs);
       setObjetivosSelecionados(objs);
+      setCarregandoDisciplinas(false);
     }
+
+    if (refDivObjetivos && refDivObjetivos.current)
+      refDivObjetivos.current.scrollTo(0, 0);
   };
 
   const selecionaObjetivo = objetivo => {
@@ -158,11 +172,7 @@ const Bimestre = ({
       );
       setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
     }
-  }, [
-    bimestre.objetivosAprendizagem,
-    objetivosAprendizagem,
-    objetivosCarregados,
-  ]);
+  }, [bimestre.objetivosAprendizagem, objetivosCarregados]);
 
   useEffect(() => {
     setDescricaoObjetivo(bimestre.descricao);
@@ -183,14 +193,14 @@ const Bimestre = ({
               preSelecionadas={disciplinasPreSelecionadas}
               onChange={onChangeDisciplinasSelecionadas}
               layoutEspecial={layoutEspecial}
-              carregandoDisciplinas={carregando =>
-                setCarregandoDados(carregando)
-              }
             />
           </div>
 
           {!layoutEspecial && (
-            <ListaObjetivos className="mt-4 overflow-auto">
+            <ListaObjetivos
+              ref={refDivObjetivos}
+              className="mt-4 overflow-auto"
+            >
               {objetivosAprendizagem &&
                 objetivosAprendizagem.length > 0 &&
                 objetivosAprendizagem.map(objetivo => (
