@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import Disciplinas from './disciplinas';
-import { ListItem, ListItemButton, ListaObjetivos } from './bimestre.css';
+import { ListItem, ListItemButton, ListaObjetivos, Erro } from './bimestre.css';
 import { Button, Colors, Grid, Auditoria, Loader } from '~/componentes';
 import Seta from '../../../recursos/Seta.svg';
 import Editor from '~/componentes/editor/editor';
 import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
-import { erros as mostrarErros, erro } from '~/servicos/alertas';
+import { erros as mostrarErros } from '~/servicos/alertas';
 
 const Bimestre = ({
   bimestre,
@@ -18,7 +18,6 @@ const Bimestre = ({
   disciplinaSemObjetivo,
   selecionarObjetivo,
   onChangeDescricaoObjetivo,
-  detalhesDisciplinaObjetivos,
 }) => {
   const [objetivosAprendizagem, setObjetivosAprendizagem] = useState([]);
   const [objetivosCarregados, setObjetivosCarregados] = useState(false);
@@ -46,6 +45,16 @@ const Bimestre = ({
     });
     return bimestre.objetivosAprendizagem;
   };
+
+  const setCarregandoDisciplinas = carregando => {
+    if (disciplinas) {
+      setTimeout(() => {
+        setCarregandoDados(carregando);
+      }, 500);
+    }
+  };
+
+  const refDivObjetivos = useRef();
 
   const onChangeDisciplinasSelecionadas = disciplinasSelecionadas => {
     if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
@@ -114,17 +123,6 @@ const Bimestre = ({
     );
     setObjetivosSelecionados([]);
   };
-
-  useEffect(() => {
-    if (
-      detalhesDisciplinaObjetivos &&
-      !detalhesDisciplinaObjetivos.possuiObjetivos
-    ) {
-      erro(
-        `Não foram encontrados objetivos para a disciplina ${detalhesDisciplinaObjetivos.nome}`
-      );
-    }
-  }, [detalhesDisciplinaObjetivos]);
 
   useMemo(() => {
     setLayoutEspecial(ehEja || ehMedio || disciplinaSemObjetivo);
@@ -301,9 +299,22 @@ const Bimestre = ({
               </li>
             </ul>
             <fieldset className="mt-3">
+              {!layoutEspecial &&
+              objetivosSelecionados &&
+              !objetivosSelecionados.length ? (
+                <Erro>
+                  Você precisa selecionar objetivos na lista ao lado para poder
+                  inserir a descrição do plano!
+                </Erro>
+              ) : null}
               <Editor
                 onChange={onChangeDescricaoObjetivos}
                 inicial={descricaoObjetivo}
+                desabilitar={
+                  !layoutEspecial &&
+                  objetivosSelecionados &&
+                  !objetivosSelecionados.length
+                }
               />
             </fieldset>
             <Grid cols={12} className="p-0">
@@ -332,7 +343,6 @@ Bimestre.propTypes = {
   disciplinaSemObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
   selecionarObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
   onChangeDescricaoObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
-  detalhesDisciplinaObjetivos: PropTypes.oneOfType([PropTypes.any]).isRequired,
 };
 
 export default Bimestre;
