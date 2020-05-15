@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Collapse } from 'antd';
+import shortid from 'shortid';
 import Row from '~/componentes/row';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
@@ -15,12 +16,7 @@ import {
 import CopiarConteudo from './copiarConteudo';
 import Alert from '~/componentes/alert';
 import modalidade from '~/dtos/modalidade';
-import {
-  Titulo,
-  TituloAno,
-  Planejamento,
-  ContainerBimestres,
-} from './planoAnual.css';
+import { Titulo, ContainerBimestres } from './planoAnual.css';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 import servicoDisciplinas from '~/servicos/Paginas/ServicoDisciplina';
 import { erros, sucesso, confirmar } from '~/servicos/alertas';
@@ -455,6 +451,7 @@ const PlanoAnual = () => {
           </div>
           <div className="col-md-8 col-sm-2 d-flex justify-content-end">
             <Button
+              id={shortid.generate()}
               label="Copiar Conteúdo"
               icon="share-square"
               color={Colors.Azul}
@@ -466,6 +463,7 @@ const PlanoAnual = () => {
               }
             />
             <Button
+              id={shortid.generate()}
               label="Voltar"
               icon="arrow-left"
               color={Colors.Azul}
@@ -474,11 +472,11 @@ const PlanoAnual = () => {
               onClick={() => history.push('/')}
             />
             <Button
+              id={shortid.generate()}
               label="Cancelar"
               color={Colors.Roxo}
               border
               bold
-              disabled={!emEdicao}
               className="mr-3"
               disabled={
                 somenteConsulta ||
@@ -488,6 +486,7 @@ const PlanoAnual = () => {
               onClick={cancelar}
             />
             <Button
+              id={shortid.generate()}
               label="Salvar"
               color={Colors.Roxo}
               bold

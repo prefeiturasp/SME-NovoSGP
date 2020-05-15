@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import PropTypes from 'prop-types';
+import shortid from 'shortid';
 import Disciplinas from './disciplinas';
 import { ListItem, ListItemButton, ListaObjetivos } from './bimestre.css';
 import { Button, Colors, Grid, Auditoria, Loader } from '~/componentes';
@@ -44,6 +46,16 @@ const Bimestre = ({
     return bimestre.objetivosAprendizagem;
   };
 
+  const setCarregandoDisciplinas = carregando => {
+    if (disciplinas) {
+      setTimeout(() => {
+        setCarregandoDados(carregando);
+      }, 2000);
+    }
+  };
+
+  const refDivObjetivos = useRef();
+
   const onChangeDisciplinasSelecionadas = disciplinasSelecionadas => {
     if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
       setCarregandoDados(true);
@@ -79,13 +91,17 @@ const Bimestre = ({
           mostrarErros(e);
         })
         .finally(() => {
-          setCarregandoDados(false);
+          setCarregandoDisciplinas(false);
         });
     } else {
       const objs = getSelecionados();
       setObjetivosAprendizagem(objs);
       setObjetivosSelecionados(objs);
+      setCarregandoDisciplinas(false);
     }
+
+    if (refDivObjetivos && refDivObjetivos.current)
+      refDivObjetivos.current.scrollTo(0, 0);
   };
 
   const selecionaObjetivo = objetivo => {
@@ -148,7 +164,7 @@ const Bimestre = ({
       );
       setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
     }
-  }, [objetivosCarregados]);
+  }, [bimestre.objetivosAprendizagem, objetivosCarregados]);
 
   useEffect(() => {
     setDescricaoObjetivo(bimestre.descricao);
@@ -173,7 +189,10 @@ const Bimestre = ({
           </div>
 
           {!layoutEspecial && (
-            <ListaObjetivos className="mt-4 overflow-auto">
+            <ListaObjetivos
+              ref={refDivObjetivos}
+              className="mt-4 overflow-auto"
+            >
               {objetivosAprendizagem &&
                 objetivosAprendizagem.length > 0 &&
                 objetivosAprendizagem.map(objetivo => (

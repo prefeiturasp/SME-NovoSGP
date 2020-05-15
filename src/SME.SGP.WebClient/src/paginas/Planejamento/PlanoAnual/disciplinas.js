@@ -33,7 +33,7 @@ const Disciplinas = ({
   };
 
   useEffect(() => {
-    onChange(undefined);
+    onChange();
   }, [preSelecionadas]);
 
   return (
@@ -51,6 +51,13 @@ const Disciplinas = ({
       ))}
     </Loader>
   );
+};
+
+Disciplinas.propTypes = {
+  disciplinas: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  preSelecionadas: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  layoutEspecial: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  onChange: PropTypes.oneOfType([PropTypes.any]).isRequired,
 };
 
 export default Disciplinas;
