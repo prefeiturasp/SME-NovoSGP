@@ -7,18 +7,18 @@ using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasRelatorioSemestral : IConsultasRelatorioSemestral
+    public class ConsultasRelatorioSemestralTurmaPAP : IConsultasRelatorioSemestralTurmaPAP
     {
-        private readonly IRepositorioRelatorioSemestral repositorioRelatorioSemestral;
-        public ConsultasRelatorioSemestral(IRepositorioRelatorioSemestral repositorioRelatorioSemestral)
+        private readonly IRepositorioRelatorioSemestralTurmaPAP repositorioRelatorioSemestral;
+        public ConsultasRelatorioSemestralTurmaPAP(IRepositorioRelatorioSemestralTurmaPAP repositorioRelatorioSemestral)
         {
             this.repositorioRelatorioSemestral = repositorioRelatorioSemestral ?? throw new ArgumentNullException(nameof(repositorioRelatorioSemestral));
         }
 
-        public async Task<RelatorioSemestral> ObterPorIdAsync(long relatorioSemestralId)
+        public async Task<RelatorioSemestralTurmaPAP> ObterPorIdAsync(long relatorioSemestralId)
             => await repositorioRelatorioSemestral.ObterPorIdAsync(relatorioSemestralId);
 
-        public Task<RelatorioSemestral> ObterPorTurmaCodigoSemestreAsync(string turmaCodigo, int semestre)
+        public Task<RelatorioSemestralTurmaPAP> ObterPorTurmaCodigoSemestreAsync(string turmaCodigo, int semestre)
         {
             throw new NotImplementedException();
         }

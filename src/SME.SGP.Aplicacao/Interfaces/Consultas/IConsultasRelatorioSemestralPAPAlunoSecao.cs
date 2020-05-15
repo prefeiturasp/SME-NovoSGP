@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IConsultasRelatorioSemestralAlunoSecao
+    public interface IConsultasRelatorioSemestralPAPAlunoSecao
     {
     }
 }

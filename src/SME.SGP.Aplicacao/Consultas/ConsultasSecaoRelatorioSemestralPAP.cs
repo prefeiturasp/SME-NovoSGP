@@ -6,13 +6,13 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasSecaoRelatorioSemestral : IConsultasSecaoRelatorioSemestral
+    public class ConsultasSecaoRelatorioSemestralPAP : IConsultasSecaoRelatorioSemestralPAP
     {
-        public ConsultasSecaoRelatorioSemestral()
+        public ConsultasSecaoRelatorioSemestralPAP()
         {
         }
 
-        public Task<IEnumerable<SecaoRelatorioSemestral>> ObterSecoesVigentes(DateTime dataReferencia)
+        public Task<IEnumerable<SecaoRelatorioSemestralPAP>> ObterSecoesVigentes(DateTime dataReferencia)
         {
             throw new NotImplementedException();
         }

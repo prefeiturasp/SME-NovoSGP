@@ -9,19 +9,19 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ComandosRelatorioSemestralAluno : IComandosRelatorioSemestralAluno
+    public class ComandosRelatorioSemestralPAPAluno : IComandosRelatorioSemestralPAPAluno
     {
-        private readonly IRepositorioRelatorioSemestralAluno repositorioRelatorioSemestralAluno;
-        private readonly IComandosRelatorioSemestral comandosRelatorioSemestral;
-        private readonly IConsultasRelatorioSemestral consultasRelatorioSemestral;
-        private readonly IComandosRelatorioSemestralAlunoSecao comandosRelatorioSemestralAlunoSecao;
+        private readonly IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno;
+        private readonly IComandosRelatorioSemestralTurmaPAP comandosRelatorioSemestral;
+        private readonly IConsultasRelatorioSemestralTurmaPAP consultasRelatorioSemestral;
+        private readonly IComandosRelatorioSemestralPAPAlunoSecao comandosRelatorioSemestralAlunoSecao;
         private readonly IConsultasTurma consultasTurma;
         private readonly IUnitOfWork unitOfWork;
 
-        public ComandosRelatorioSemestralAluno(IRepositorioRelatorioSemestralAluno repositorioRelatorioSemestralAluno,
-                                               IComandosRelatorioSemestral comandosRelatorioSemestral,
-                                               IConsultasRelatorioSemestral consultasRelatorioSemestral,
-                                               IComandosRelatorioSemestralAlunoSecao comandosRelatorioSemestralAlunoSecao,
+        public ComandosRelatorioSemestralPAPAluno(IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno,
+                                               IComandosRelatorioSemestralTurmaPAP comandosRelatorioSemestral,
+                                               IConsultasRelatorioSemestralTurmaPAP consultasRelatorioSemestral,
+                                               IComandosRelatorioSemestralPAPAlunoSecao comandosRelatorioSemestralAlunoSecao,
                                                IConsultasTurma consultasTurma,
                                                IUnitOfWork unitOfWork)
         {
@@ -44,10 +44,10 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     // Relatorio Semestral
-                    if (relatorioSemestralAluno.RelatorioSemestral != null)
+                    if (relatorioSemestralAluno.RelatorioSemestralTurmaPAP != null)
                     {
-                        await comandosRelatorioSemestral.SalvarAsync(relatorioSemestralAluno.RelatorioSemestral);
-                        relatorioSemestralAluno.RelatorioSemestralId = relatorioSemestralAluno.RelatorioSemestral.Id;
+                        await comandosRelatorioSemestral.SalvarAsync(relatorioSemestralAluno.RelatorioSemestralTurmaPAP);
+                        relatorioSemestralAluno.RelatorioSemestralTurmaPAPId = relatorioSemestralAluno.RelatorioSemestralTurmaPAP.Id;
                     }
 
                     // Relatorio Semestral Aluno
@@ -55,10 +55,10 @@ namespace SME.SGP.Aplicacao
 
                     foreach(var secaoRelatorio in relatorioSemestralAlunoDto.Secoes)
                     {
-                        var secaoRelatorioAluno = relatorioSemestralAluno.Secoes.FirstOrDefault(c => c.SecaoRelatorioSemestralId == secaoRelatorio.Id);
+                        var secaoRelatorioAluno = relatorioSemestralAluno.Secoes.FirstOrDefault(c => c.SecaoRelatorioSemestralPAPId == secaoRelatorio.Id);
                         if (secaoRelatorioAluno != null)
                         {
-                            secaoRelatorioAluno.RelatorioSemestralAlunoId = relatorioSemestralAluno.Id;
+                            secaoRelatorioAluno.RelatorioSemestralPAPAlunoId = relatorioSemestralAluno.Id;
                             secaoRelatorioAluno.Valor = secaoRelatorio.Valor;
 
                             // Relatorio Semestral Aluno x Secao
@@ -78,41 +78,41 @@ namespace SME.SGP.Aplicacao
             return MapearParaAuditorio(relatorioSemestralAluno);
         }
 
-        private AuditoriaRelatorioSemestralAlunoDto MapearParaAuditorio(RelatorioSemestralAluno relatorioSemestralAluno)
+        private AuditoriaRelatorioSemestralAlunoDto MapearParaAuditorio(RelatorioSemestralPAPAluno relatorioSemestralAluno)
             => new AuditoriaRelatorioSemestralAlunoDto()
             {
-                RelatorioSemestralId = relatorioSemestralAluno.RelatorioSemestralId,
+                RelatorioSemestralId = relatorioSemestralAluno.RelatorioSemestralTurmaPAPId,
                 RelatorioSemestralAlunoId = relatorioSemestralAluno.Id,
                 Auditoria = (AuditoriaDto)relatorioSemestralAluno
             };
 
-        private async Task<RelatorioSemestralAluno> NovoRelatorioSemestralAluno(long relatorioSemestralId, string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto)
+        private async Task<RelatorioSemestralPAPAluno> NovoRelatorioSemestralAluno(long relatorioSemestralId, string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto)
         {
             var relatorioSemestral = relatorioSemestralId > 0 ?
                 await consultasRelatorioSemestral.ObterPorIdAsync(relatorioSemestralId) :
                 await NovoRelatorioSemestral(turmaCodigo, semestre);
 
-            var novoRelatorioAluno = new RelatorioSemestralAluno()
+            var novoRelatorioAluno = new RelatorioSemestralPAPAluno()
             {
                 AlunoCodigo = alunoCodigo,
-                RelatorioSemestral = relatorioSemestral,
+                RelatorioSemestralTurmaPAP = relatorioSemestral,
             };
 
             foreach (var secaoRelatorio in relatorioSemestralAlunoDto.Secoes)
-                novoRelatorioAluno.Secoes.Add(new RelatorioSemestralAlunoSecao()
+                novoRelatorioAluno.Secoes.Add(new RelatorioSemestralPAPAlunoSecao()
                 {
-                    RelatorioSemestralAluno = novoRelatorioAluno,
-                    SecaoRelatorioSemestralId = secaoRelatorio.Id,
+                    RelatorioSemestralPAPAluno = novoRelatorioAluno,
+                    SecaoRelatorioSemestralPAPId = secaoRelatorio.Id,
                 });
 
             return novoRelatorioAluno;
         }
 
-        private async Task<RelatorioSemestral> NovoRelatorioSemestral(string turmaCodigo, int semestre)
+        private async Task<RelatorioSemestralTurmaPAP> NovoRelatorioSemestral(string turmaCodigo, int semestre)
         {
             var turma = await ObterTurma(turmaCodigo);
 
-            return new RelatorioSemestral()
+            return new RelatorioSemestralTurmaPAP()
             {
                 TurmaId = turma.Id,
                 Semestre = semestre
