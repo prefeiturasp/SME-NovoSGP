@@ -60,9 +60,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select id, dre_id as DreId, escola_id as EscolaId, supervisor_id as SupervisorId ");
-            query.AppendLine("  , criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm ");
-            query.AppendLine("  , alterado_por as AlteradoPor, criado_rf as CriadoRf, alterado_rf as AlteradoRf, excluido ");
+            query.AppendLine("select id, dre_id as DreId, escola_id as EscolaId, supervisor_id as SupervisorId");
+            query.AppendLine(", criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm");
+            query.AppendLine(", alterado_por as AlteradoPor, criado_rf as CriadoRf, alterado_rf as AlteradoRf, excluido");
             query.AppendLine("from supervisor_escola_dre sed");
             query.AppendLine("where escola_id = @ueId and excluido = false");
 
