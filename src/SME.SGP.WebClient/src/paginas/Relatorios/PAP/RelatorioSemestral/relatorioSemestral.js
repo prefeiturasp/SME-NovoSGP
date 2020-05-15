@@ -13,7 +13,7 @@ import {
   setDadosAlunoObjectCard,
   setDentroPeriodo,
   setCodigoAlunoSelecionado,
-} from '~/redux/modulos/relatorioSemestral/actions';
+} from '~/redux/modulos/relatorioSemestralPAP/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
 import AlertaDentroPeriodoPAP from './DadosRelatorioSemestral/AlertaDentroPeriodoPAP/alertaDentroPeriodoPAP';
@@ -43,19 +43,21 @@ const RelatorioSemestral = () => {
 
   const obterListaAlunos = useCallback(
     async semestreConsulta => {
-      setCarregandoGeral(true);
-      const retorno = await ServicoRelatorioSemestral.obterListaAlunos(
-        turma,
-        anoLetivo,
-        semestreConsulta
-      ).catch(e => erros(e));
-      if (retorno && retorno.data) {
-        dispatch(setAlunosRelatorioSemestral(retorno.data));
-      } else {
-        resetarInfomacoes();
-        dispatch(setAlunosRelatorioSemestral([]));
+      if (turma) {
+        setCarregandoGeral(true);
+        const retorno = await ServicoRelatorioSemestral.obterListaAlunos(
+          turma,
+          anoLetivo,
+          semestreConsulta
+        ).catch(e => erros(e));
+        if (retorno && retorno.data) {
+          dispatch(setAlunosRelatorioSemestral(retorno.data));
+        } else {
+          resetarInfomacoes();
+          dispatch(setAlunosRelatorioSemestral([]));
+        }
+        setCarregandoGeral(false);
       }
-      setCarregandoGeral(false);
     },
     [anoLetivo, dispatch, turma, resetarInfomacoes]
   );
@@ -76,6 +78,9 @@ const RelatorioSemestral = () => {
     dispatch(setAlunosRelatorioSemestral([]));
     if (turma) {
       obterListaSemestres();
+    } else {
+      setSemestreSelecionado(undefined);
+      setListaSemestres([]);
     }
   }, [
     obterListaAlunos,

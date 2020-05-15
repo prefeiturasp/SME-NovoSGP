@@ -6,17 +6,17 @@ import Editor from '~/componentes/editor/editor';
 import {
   setDadosParaSalvarRelatorioSemestral,
   setRelatorioSemestralEmEdicao,
-} from '~/redux/modulos/relatorioSemestral/actions';
+} from '~/redux/modulos/relatorioSemestralPAP/actions';
 
 const CampoRelatorioSemestral = props => {
   const { descricao, idSecao, nome, valor, alunoDesabilitado } = props;
 
   const desabilitarCampos = useSelector(
-    store => store.relatorioSemestral.desabilitarCampos
+    store => store.relatorioSemestralPAP.desabilitarCampos
   );
 
   const dentroPeriodo = useSelector(
-    store => store.relatorioSemestral.dentroPeriodo
+    store => store.relatorioSemestralPAP.dentroPeriodo
   );
 
   const [exibirCard, setExibirCard] = useState(false);
