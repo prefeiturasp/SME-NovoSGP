@@ -8,28 +8,28 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioRelatorioSemestral : IRepositorioRelatorioSemestral
+    public class RepositorioRelatorioSemestralTurmaPAP : IRepositorioRelatorioSemestralTurmaPAP
     {
         private readonly ISgpContext database;
 
-        public RepositorioRelatorioSemestral(ISgpContext database)
+        public RepositorioRelatorioSemestralTurmaPAP(ISgpContext database)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<RelatorioSemestral> ObterPorIdAsync(long id)
+        public async Task<RelatorioSemestralTurmaPAP> ObterPorIdAsync(long id)
         {
-            var query = "select * from repositorio_semestral where id = @id";
+            var query = "select * from relatorio_semestral_turma_pap where id = @id";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<RelatorioSemestral>(query, new { id });
+            return await database.Conexao.QueryFirstOrDefaultAsync<RelatorioSemestralTurmaPAP>(query, new { id });
         }
 
-        public Task<RelatorioSemestral> ObterPorTurmaCodigoSemestreAsync(string turmaCodigo, int semestre)
+        public Task<RelatorioSemestralTurmaPAP> ObterPorTurmaCodigoSemestreAsync(string turmaCodigo, int semestre)
         {
             throw new System.NotImplementedException();
         }
 
-        public async Task SalvarAsync(RelatorioSemestral relatorioSemestral)
+        public async Task SalvarAsync(RelatorioSemestralTurmaPAP relatorioSemestral)
         {
             if (relatorioSemestral.Id > 0)
                 await database.Conexao.UpdateAsync(relatorioSemestral);

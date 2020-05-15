@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioSecaoRelatorioSemestral : IRepositorioSecaoRelatorioSemestral
+    public class RepositorioSecaoRelatorioSemestralPAP : IRepositorioSecaoRelatorioSemestralPAP
     {
         private readonly ISgpContext database;
 
-        public RepositorioSecaoRelatorioSemestral(ISgpContext database)
+        public RepositorioSecaoRelatorioSemestralPAP(ISgpContext database)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public Task<IEnumerable<SecaoRelatorioSemestral>> ObterSecoesVigentes(DateTime dataReferencia)
+        public Task<IEnumerable<SecaoRelatorioSemestralPAP>> ObterSecoesVigentes(DateTime dataReferencia)
         {
             throw new NotImplementedException();
         }

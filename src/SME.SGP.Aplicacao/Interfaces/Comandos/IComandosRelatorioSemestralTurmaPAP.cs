@@ -6,8 +6,8 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IComandosRelatorioSemestral
+    public interface IComandosRelatorioSemestralTurmaPAP
     {
-        Task SalvarAsync(RelatorioSemestral relatorioSemestral);
+        Task SalvarAsync(RelatorioSemestralTurmaPAP relatorioSemestral);
     }
 }
