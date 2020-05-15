@@ -220,11 +220,15 @@ const PlanoAnual = () => {
       const erro = err.findIndex(c => !!c.length > 0);
       if (erro > -1) {
         const refBimestre = refsPainel[erro];
-        if (refBimestre && refBimestre.current) {
+        if (
+          refBimestre &&
+          refBimestre.current &&
+          refBimestre.current.offsetTop
+        ) {
           if (erro + 1 !== bimestreExpandido) {
             setBimestreExpandido([erro + 1]);
           }
-          window.scrollTo(0, refsPainel[erro].current.offsetTop);
+          window.scrollTo(0, refBimestre.current.offsetTop);
         }
       }
     }
@@ -246,14 +250,15 @@ const PlanoAnual = () => {
   useEffect(() => {
     if (bimestreExpandido) {
       const refBimestre = refsPainel[bimestreExpandido - 1];
-      if (refBimestre && refBimestre.current) {
-        setTimeout(() => {
-          window.scrollTo(
-            0,
-            refsPainel[bimestreExpandido - 1].current.offsetTop
-          );
-        }, 500);
-      }
+      setTimeout(() => {
+        if (
+          refBimestre &&
+          refBimestre.current &&
+          refBimestre.current.offsetTop
+        ) {
+          window.scrollTo(0, refBimestre.current.offsetTop);
+        }
+      }, 500);
     }
   }, [bimestreExpandido, refsPainel]);
 
@@ -274,6 +279,10 @@ const PlanoAnual = () => {
             setCodigoDisciplinaSelecionada(
               String(disciplina.codigoComponenteCurricular)
             );
+          } else {
+            setDisciplinaSelecionada();
+            setCodigoDisciplinaSelecionada();
+            setPlanoAnual([]);
           }
         })
         .catch(e => {
@@ -292,6 +301,7 @@ const PlanoAnual = () => {
     setPlanoAnual([]);
 
     if (
+      disciplinaSelecionada &&
       codigoDisciplinaSelecionada &&
       turmaSelecionada &&
       turmaSelecionada.turma
@@ -365,8 +375,9 @@ const PlanoAnual = () => {
         turmaSelecionada.modalidade.toString() === modalidade.EJA.toString()
       );
     } else {
-      setDisciplinaSelecionada(null);
-      setCodigoDisciplinaSelecionada(null);
+      setDisciplinaSelecionada();
+      setCodigoDisciplinaSelecionada();
+      setPlanoAnual([]);
     }
   }, [turmaSelecionada]);
 
@@ -513,6 +524,8 @@ const PlanoAnual = () => {
                 }}
               >
                 {turmaSelecionada &&
+                  disciplinaSelecionada &&
+                  codigoDisciplinaSelecionada &&
                   planoAnual &&
                   planoAnual.length > 0 &&
                   planoAnual.map(plano => (
@@ -531,13 +544,12 @@ const PlanoAnual = () => {
                             turmaSelecionada &&
                             turmaSelecionada.modalidade &&
                             turmaSelecionada.modalidade.toString() ===
-                            modalidade.ENSINO_MEDIO.toString()
+                              modalidade.ENSINO_MEDIO.toString()
                           }
                           disciplinaSemObjetivo={
                             disciplinaSelecionada &&
                             !disciplinaSelecionada.possuiObjetivos
                           }
-                          detalhesDisciplinaObjetivos={disciplinaSelecionada}
                           onChange={onChangeBimestre}
                           key={plano.bimestre}
                           erros={listaErros[plano.bimestre - 1]}
