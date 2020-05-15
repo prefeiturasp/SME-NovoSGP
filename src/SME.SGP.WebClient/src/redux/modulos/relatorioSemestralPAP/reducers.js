@@ -12,22 +12,22 @@ const inicial = {
   codigoAlunoSelecionado: null,
 };
 
-export default function RelatorioSemestral(state = inicial, action) {
+export default function RelatorioSemestralPAP(state = inicial, action) {
   return produce(state, draft => {
     switch (action.type) {
-      case '@relatorioSemestral/setDadosAlunoObjectCard': {
+      case '@relatorioSemestralPAP/setDadosAlunoObjectCard': {
         return {
           ...draft,
           dadosAlunoObjectCard: action.payload,
         };
       }
-      case '@relatorioSemestral/setAlunosRelatorioSemestral': {
+      case '@relatorioSemestralPAP/setAlunosRelatorioSemestral': {
         return {
           ...draft,
           alunosRelatorioSemestral: action.payload,
         };
       }
-      case '@relatorioSemestral/limparDadosRelatorioSemestral': {
+      case '@relatorioSemestralPAP/limparDadosRelatorioSemestral': {
         return {
           ...draft,
           dadosAlunoObjectCard: {},
@@ -36,21 +36,23 @@ export default function RelatorioSemestral(state = inicial, action) {
           dadosParaSalvarRelatorioSemestral: [],
           auditoriaRelatorioSemestral: null,
           desabilitarCampos: false,
+          codigoAlunoSelecionado: null,
+          dentroPeriodo: true,
         };
       }
-      case '@relatorioSemestral/setRelatorioSemestralEmEdicao': {
+      case '@relatorioSemestralPAP/setRelatorioSemestralEmEdicao': {
         return {
           ...draft,
           relatorioSemestralEmEdicao: action.payload,
         };
       }
-      case '@relatorioSemestral/setDadosRelatorioSemestral': {
+      case '@relatorioSemestralPAP/setDadosRelatorioSemestral': {
         return {
           ...draft,
           dadosRelatorioSemestral: action.payload,
         };
       }
-      case '@relatorioSemestral/setDadosParaSalvarRelatorioSemestral': {
+      case '@relatorioSemestralPAP/setDadosParaSalvarRelatorioSemestral': {
         const dados = state.dadosParaSalvarRelatorioSemestral;
         if (dados.length > 0) {
           const valor = dados.find(item => item.id == action.payload.id);
@@ -67,31 +69,31 @@ export default function RelatorioSemestral(state = inicial, action) {
         }
         break;
       }
-      case '@relatorioSemestral/limparDadosParaSalvarRelatorioSemestral': {
+      case '@relatorioSemestralPAP/limparDadosParaSalvarRelatorioSemestral': {
         return {
           ...draft,
           dadosParaSalvarRelatorioSemestral: [],
         };
       }
-      case '@relatorioSemestral/setAuditoriaRelatorioSemestral': {
+      case '@relatorioSemestralPAP/setAuditoriaRelatorioSemestral': {
         return {
           ...draft,
           auditoriaRelatorioSemestral: action.payload,
         };
       }
-      case '@relatorioSemestral/setDesabilitarCampos': {
+      case '@relatorioSemestralPAP/setDesabilitarCampos': {
         return {
           ...draft,
           desabilitarCampos: action.payload,
         };
       }
-      case '@relatorioSemestral/setDentroPeriodo': {
+      case '@relatorioSemestralPAP/setDentroPeriodo': {
         return {
           ...draft,
           dentroPeriodo: action.payload,
         };
       }
-      case '@relatorioSemestral/setCodigoAlunoSelecionado': {
+      case '@relatorioSemestralPAP/setCodigoAlunoSelecionado': {
         return {
           ...draft,
           codigoAlunoSelecionado: action.payload,

@@ -5,11 +5,11 @@ import CampoRelatorioSemestral from './campoRelatorioSemestral';
 
 const MontarCamposRelatorioSemestral = () => {
   const dadosAlunoObjectCard = useSelector(
-    store => store.relatorioSemestral.dadosAlunoObjectCard
+    store => store.relatorioSemestralPAP.dadosAlunoObjectCard
   );
 
   const dadosRelatorioSemestral = useSelector(
-    store => store.relatorioSemestral.dadosRelatorioSemestral
+    store => store.relatorioSemestralPAP.dadosRelatorioSemestral
   );
 
   const { desabilitado } = dadosAlunoObjectCard;
