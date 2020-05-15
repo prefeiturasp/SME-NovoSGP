@@ -251,7 +251,7 @@ namespace SME.SGP.Dominio.Servicos
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
 
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
-            if (!await ExisteNotasAluno(alunoCodigo, turma.CodigoTurma))
+            if (!await VerificaNotasTodosComponentesCurriculares(alunoCodigo, turma, null))
                 return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
@@ -265,12 +265,6 @@ namespace SME.SGP.Dominio.Servicos
                 Id = parecerConclusivo.Id,
                 Nome = parecerConclusivo.Nome
             };
-        }
-
-        private async Task<bool> ExisteNotasAluno(string alunoCodigo, string turmaCodigo)
-        {
-            var notas = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turmaCodigo, null);
-            return notas != null && notas.Any();
         }
 
         private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(long turmaId)
