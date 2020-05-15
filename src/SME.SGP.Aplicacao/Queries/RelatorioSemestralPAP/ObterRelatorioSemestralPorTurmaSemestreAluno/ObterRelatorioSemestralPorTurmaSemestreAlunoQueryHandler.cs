@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterRelatorioSemestralPorTurmaSemestreAlunoQueryHandler : IRequestHandler<ObterRelatorioSemestralPorTurmaSemestreAlunoQuery, RelatorioSemestralAlunoDto>
     {
-        private readonly IRepositorioRelatorioSemestralAluno repositorioRelatorioSemestralAluno;
+        private readonly IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno;
 
-        public ObterRelatorioSemestralPorTurmaSemestreAlunoQueryHandler(IRepositorioRelatorioSemestralAluno repositorioRelatorioSemestralAluno)
+        public ObterRelatorioSemestralPorTurmaSemestreAlunoQueryHandler(IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno)
         {
             this.repositorioRelatorioSemestralAluno = repositorioRelatorioSemestralAluno ?? throw new ArgumentNullException(nameof(repositorioRelatorioSemestralAluno));
         }
@@ -33,12 +33,12 @@ namespace SME.SGP.Aplicacao
             return relatorioSemestralAlunoDto;
         }
 
-        private RelatorioSemestralAlunoDto ConverterParaDto(RelatorioSemestralAluno relatorio)
+        private RelatorioSemestralAlunoDto ConverterParaDto(RelatorioSemestralPAPAluno relatorio)
         {
             var dto = new RelatorioSemestralAlunoDto()
             {
                 RelatorioSemestralAlunoId = relatorio.Id,
-                RelatorioSemestralId = relatorio.RelatorioSemestralId
+                RelatorioSemestralId = relatorio.RelatorioSemestralTurmaPAPId
             };
 
             dto.Auditoria = (AuditoriaDto) relatorio;

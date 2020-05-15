@@ -7,15 +7,15 @@ using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ComandosRelatorioSemestral : IComandosRelatorioSemestral
+    public class ComandosRelatorioSemestralTurmaPAP : IComandosRelatorioSemestralTurmaPAP
     {
-        private readonly IRepositorioRelatorioSemestral repositorioRelatorioSemestral;
-        public ComandosRelatorioSemestral(IRepositorioRelatorioSemestral repositorioRelatorioSemestral)
+        private readonly IRepositorioRelatorioSemestralTurmaPAP repositorioRelatorioSemestral;
+        public ComandosRelatorioSemestralTurmaPAP(IRepositorioRelatorioSemestralTurmaPAP repositorioRelatorioSemestral)
         {
             this.repositorioRelatorioSemestral = repositorioRelatorioSemestral ?? throw new ArgumentNullException(nameof(repositorioRelatorioSemestral));
         }
 
-        public async Task SalvarAsync(RelatorioSemestral relatorioSemestral)
+        public async Task SalvarAsync(RelatorioSemestralTurmaPAP relatorioSemestral)
             => await repositorioRelatorioSemestral.SalvarAsync(relatorioSemestral);
     }
 }

@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IConsultasRelatorioSemestralAluno
+    public interface IConsultasRelatorioSemestralPAPAluno
     {
-        Task<RelatorioSemestralAluno> ObterPorTurmaAlunoAsync(long relatorioSemestralId, string alunoCodigo);
+        Task<RelatorioSemestralPAPAluno> ObterPorTurmaAlunoAsync(long relatorioSemestralId, string alunoCodigo);
         Task<IEnumerable<AlunoDadosBasicosDto>> ObterListaAlunosAsync(string turmaCodigo, int anoLetivo, int semestre);
-        Task<IEnumerable<RelatorioSemestralAluno>> ObterRelatoriosAlunosPorTurmaAsync(long turmaId, int semestre);
+        Task<IEnumerable<RelatorioSemestralPAPAluno>> ObterRelatoriosAlunosPorTurmaAsync(long turmaId, int semestre);
     }
 }

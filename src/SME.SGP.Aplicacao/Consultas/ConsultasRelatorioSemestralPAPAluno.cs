@@ -10,18 +10,18 @@ using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasRelatorioSemestralAluno : ConsultasBase, IConsultasRelatorioSemestralAluno
+    public class ConsultasRelatorioSemestralPAPAluno : ConsultasBase, IConsultasRelatorioSemestralPAPAluno
     {
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
-        private readonly IRepositorioRelatorioSemestralAluno repositorioRelatorioSemestralAluno;
+        private readonly IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno;
 
-        public ConsultasRelatorioSemestralAluno(IContextoAplicacao contextoAplicacao,
+        public ConsultasRelatorioSemestralPAPAluno(IContextoAplicacao contextoAplicacao,
                                                 IConsultasTurma consultasTurma,
                                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                                 IConsultasTipoCalendario consultasTipoCalendario,
-                                                IRepositorioRelatorioSemestralAluno repositorioRelatorioSemestralAluno) : base(contextoAplicacao)
+                                                IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno) : base(contextoAplicacao)
         {
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
@@ -63,12 +63,12 @@ namespace SME.SGP.Aplicacao
             return periodoAtual;
         }
 
-        public Task<RelatorioSemestralAluno> ObterPorTurmaAlunoAsync(long relatorioSemestralId, string alunoCodigo)
+        public Task<RelatorioSemestralPAPAluno> ObterPorTurmaAlunoAsync(long relatorioSemestralId, string alunoCodigo)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<RelatorioSemestralAluno>> ObterRelatoriosAlunosPorTurmaAsync(long turmaId, int semestre)
+        public async Task<IEnumerable<RelatorioSemestralPAPAluno>> ObterRelatoriosAlunosPorTurmaAsync(long turmaId, int semestre)
             => await repositorioRelatorioSemestralAluno.ObterRelatoriosAlunosPorTurmaAsync(turmaId, semestre);
 
     }   
