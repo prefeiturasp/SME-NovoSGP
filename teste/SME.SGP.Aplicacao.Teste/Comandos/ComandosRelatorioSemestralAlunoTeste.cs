@@ -12,24 +12,24 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
 {
     public class ComandosRelatorioSemestralAlunoTeste
     {
-        private readonly ComandosRelatorioSemestralAluno comandosRelatorioSemestralAluno;
-        private readonly Mock<IRepositorioRelatorioSemestralAluno> repositorioRelatorioSemestralAluno;
-        private readonly Mock<IComandosRelatorioSemestral> comandosRelatorioSemestral;
-        private readonly Mock<IConsultasRelatorioSemestral> consultasRelatorioSemestral;
-        private readonly Mock<IComandosRelatorioSemestralAlunoSecao> comandosRelatorioSemestralAlunoSecao;
+        private readonly ComandosRelatorioSemestralPAPAluno comandosRelatorioSemestralAluno;
+        private readonly Mock<IRepositorioRelatorioSemestralPAPAluno> repositorioRelatorioSemestralAluno;
+        private readonly Mock<IComandosRelatorioSemestralTurmaPAP> comandosRelatorioSemestral;
+        private readonly Mock<IConsultasRelatorioSemestralTurmaPAP> consultasRelatorioSemestral;
+        private readonly Mock<IComandosRelatorioSemestralPAPAlunoSecao> comandosRelatorioSemestralAlunoSecao;
         private readonly Mock<IConsultasTurma> consultasTurma;
         private readonly Mock<IUnitOfWork> unitOfWork;
 
         public ComandosRelatorioSemestralAlunoTeste()
         {
-            repositorioRelatorioSemestralAluno = new Mock<IRepositorioRelatorioSemestralAluno>();
-            comandosRelatorioSemestral = new Mock<IComandosRelatorioSemestral>();
-            consultasRelatorioSemestral = new Mock<IConsultasRelatorioSemestral>();
-            comandosRelatorioSemestralAlunoSecao = new Mock<IComandosRelatorioSemestralAlunoSecao>();
+            repositorioRelatorioSemestralAluno = new Mock<IRepositorioRelatorioSemestralPAPAluno>();
+            comandosRelatorioSemestral = new Mock<IComandosRelatorioSemestralTurmaPAP>();
+            consultasRelatorioSemestral = new Mock<IConsultasRelatorioSemestralTurmaPAP>();
+            comandosRelatorioSemestralAlunoSecao = new Mock<IComandosRelatorioSemestralPAPAlunoSecao>();
             consultasTurma = new Mock<IConsultasTurma>();
             unitOfWork = new Mock<IUnitOfWork>();
 
-            comandosRelatorioSemestralAluno = new ComandosRelatorioSemestralAluno(repositorioRelatorioSemestralAluno.Object,
+            comandosRelatorioSemestralAluno = new ComandosRelatorioSemestralPAPAluno(repositorioRelatorioSemestralAluno.Object,
                                                                                   comandosRelatorioSemestral.Object,
                                                                                   consultasRelatorioSemestral.Object,
                                                                                   comandosRelatorioSemestralAlunoSecao.Object,
@@ -64,9 +64,9 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             //ASSERT
             Assert.NotNull(auditoria);
 
-            comandosRelatorioSemestral.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestral>()), Times.Once);
-            repositorioRelatorioSemestralAluno.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralAluno>()), Times.Once);
-            comandosRelatorioSemestralAlunoSecao.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralAlunoSecao>()), Times.Exactly(5));
+            comandosRelatorioSemestral.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralTurmaPAP>()), Times.Once);
+            repositorioRelatorioSemestralAluno.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralPAPAluno>()), Times.Once);
+            comandosRelatorioSemestralAlunoSecao.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralPAPAlunoSecao>()), Times.Exactly(5));
             unitOfWork.Verify(a => a.PersistirTransacao(), Times.Once);
         }
 
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             };
 
             consultasRelatorioSemestral.Setup(c => c.ObterPorIdAsync(It.IsAny<long>()))
-                .Returns(Task.FromResult(new RelatorioSemestral() { Id = 1, Semestre = 1, TurmaId = 1 }));
+                .Returns(Task.FromResult(new RelatorioSemestralTurmaPAP() { Id = 1, Semestre = 1, TurmaId = 1 }));
 
             //ACT
             var auditoria = await comandosRelatorioSemestralAluno.Salvar("123", "321", 1, dto);
@@ -97,8 +97,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             //ASSERT
             Assert.NotNull(auditoria);
 
-            repositorioRelatorioSemestralAluno.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralAluno>()), Times.Once);
-            comandosRelatorioSemestralAlunoSecao.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralAlunoSecao>()), Times.Exactly(5));
+            repositorioRelatorioSemestralAluno.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralPAPAluno>()), Times.Once);
+            comandosRelatorioSemestralAlunoSecao.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralPAPAlunoSecao>()), Times.Exactly(5));
             unitOfWork.Verify(a => a.PersistirTransacao(), Times.Once);
         }
 
@@ -121,17 +121,17 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             };
 
             repositorioRelatorioSemestralAluno.Setup(a => a.ObterCompletoPorIdAsync(It.IsAny<long>()))
-                .Returns(Task.FromResult(new RelatorioSemestralAluno()
+                .Returns(Task.FromResult(new RelatorioSemestralPAPAluno()
                 {
                     Id = 1,
-                    RelatorioSemestralId = 1,
-                    Secoes = new List<RelatorioSemestralAlunoSecao>()
+                    RelatorioSemestralTurmaPAPId = 1,
+                    Secoes = new List<RelatorioSemestralPAPAlunoSecao>()
                     {
-                        new RelatorioSemestralAlunoSecao() { SecaoRelatorioSemestralId = 1, Valor = "Teste 1"},
-                        new RelatorioSemestralAlunoSecao() { SecaoRelatorioSemestralId = 2, Valor = "Teste 2"},
-                        new RelatorioSemestralAlunoSecao() { SecaoRelatorioSemestralId = 3, Valor = "Teste 3"},
-                        new RelatorioSemestralAlunoSecao() { SecaoRelatorioSemestralId = 4, Valor = "Teste 4"},
-                        new RelatorioSemestralAlunoSecao() { SecaoRelatorioSemestralId = 5, Valor = "Teste 5"},
+                        new RelatorioSemestralPAPAlunoSecao() { SecaoRelatorioSemestralPAPId = 1, Valor = "Teste 1"},
+                        new RelatorioSemestralPAPAlunoSecao() { SecaoRelatorioSemestralPAPId = 2, Valor = "Teste 2"},
+                        new RelatorioSemestralPAPAlunoSecao() { SecaoRelatorioSemestralPAPId = 3, Valor = "Teste 3"},
+                        new RelatorioSemestralPAPAlunoSecao() { SecaoRelatorioSemestralPAPId = 4, Valor = "Teste 4"},
+                        new RelatorioSemestralPAPAlunoSecao() { SecaoRelatorioSemestralPAPId = 5, Valor = "Teste 5"},
                     }
                 }));
 
@@ -141,8 +141,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             //ASSERT
             Assert.NotNull(auditoria);
 
-            repositorioRelatorioSemestralAluno.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralAluno>()), Times.Once);
-            comandosRelatorioSemestralAlunoSecao.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralAlunoSecao>()), Times.Exactly(5));
+            repositorioRelatorioSemestralAluno.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralPAPAluno>()), Times.Once);
+            comandosRelatorioSemestralAlunoSecao.Verify(a => a.SalvarAsync(It.IsAny<RelatorioSemestralPAPAlunoSecao>()), Times.Exactly(5));
             unitOfWork.Verify(a => a.PersistirTransacao(), Times.Once);
         }
     }

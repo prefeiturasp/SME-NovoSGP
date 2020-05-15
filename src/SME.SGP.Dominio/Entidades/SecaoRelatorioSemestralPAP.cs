@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio
 {
-    public class SecaoRelatorioSemestral
+    public class SecaoRelatorioSemestralPAP
     {
         public long Id { get; set; }
         public string Nome { get; set; }

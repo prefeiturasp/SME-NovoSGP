@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioRelatorioSemestralAlunoSecao : IRepositorioRelatorioSemestralAlunoSecao
+    public class RepositorioRelatorioSemestralPAPAlunoSecao : IRepositorioRelatorioSemestralPAPAlunoSecao
     {
         private readonly ISgpContext database;
 
-        public RepositorioRelatorioSemestralAlunoSecao(ISgpContext database)
+        public RepositorioRelatorioSemestralPAPAlunoSecao(ISgpContext database)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task SalvarAsync(RelatorioSemestralAlunoSecao secaoRelatorioAluno)
+        public async Task SalvarAsync(RelatorioSemestralPAPAlunoSecao secaoRelatorioAluno)
         {
             if (secaoRelatorioAluno.Id > 0)
                 await database.Conexao.UpdateAsync(secaoRelatorioAluno);
