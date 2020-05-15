@@ -4,7 +4,7 @@ import Alert from '~/componentes/alert';
 
 const AlertaDentroPeriodoPAP = () => {
   const dentroPeriodo = useSelector(
-    store => store.relatorioSemestral.dentroPeriodo
+    store => store.relatorioSemestralPAP.dentroPeriodo
   );
 
   return (

@@ -7,7 +7,7 @@ import {
   setRelatorioSemestralEmEdicao,
   setDadosRelatorioSemestral,
   limparDadosParaSalvarRelatorioSemestral,
-} from '~/redux/modulos/relatorioSemestral/actions';
+} from '~/redux/modulos/relatorioSemestralPAP/actions';
 import { confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import servicoSalvarRelatorioSemestral from '../../servicoSalvarRelatorioSemestral';
@@ -16,19 +16,19 @@ const BotoesAcoesRelatorioSemestral = () => {
   const dispatch = useDispatch();
 
   const alunosRelatorioSemestral = useSelector(
-    store => store.relatorioSemestral.alunosRelatorioSemestral
+    store => store.relatorioSemestralPAP.alunosRelatorioSemestral
   );
 
   const relatorioSemestralEmEdicao = useSelector(
-    store => store.relatorioSemestral.relatorioSemestralEmEdicao
+    store => store.relatorioSemestralPAP.relatorioSemestralEmEdicao
   );
 
   const dadosRelatorioSemestral = useSelector(
-    store => store.relatorioSemestral.dadosRelatorioSemestral
+    store => store.relatorioSemestralPAP.dadosRelatorioSemestral
   );
 
   const desabilitarCampos = useSelector(
-    store => store.relatorioSemestral.desabilitarCampos
+    store => store.relatorioSemestralPAP.desabilitarCampos
   );
 
   const onClickSalvar = () => {

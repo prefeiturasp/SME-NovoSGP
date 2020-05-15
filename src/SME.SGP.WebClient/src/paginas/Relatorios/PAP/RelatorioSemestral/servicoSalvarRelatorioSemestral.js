@@ -6,7 +6,7 @@ import {
   setDadosRelatorioSemestral,
   setAlunosRelatorioSemestral,
   setCodigoAlunoSelecionado,
-} from '~/redux/modulos/relatorioSemestral/actions';
+} from '~/redux/modulos/relatorioSemestralPAP/actions';
 import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
 
@@ -15,7 +15,7 @@ class ServicoSalvarRelatorioSemestral {
     const { dispatch } = store;
     const state = store.getState();
 
-    const { relatorioSemestral } = state;
+    const { relatorioSemestralPAP } = state;
 
     const {
       dadosRelatorioSemestral,
@@ -23,7 +23,7 @@ class ServicoSalvarRelatorioSemestral {
       dadosParaSalvarRelatorioSemestral,
       desabilitarCampos,
       alunosRelatorioSemestral,
-    } = relatorioSemestral;
+    } = relatorioSemestralPAP;
 
     const {
       relatorioSemestralId,

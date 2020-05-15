@@ -6,7 +6,7 @@ import {
   setAuditoriaRelatorioSemestral,
   setDadosRelatorioSemestral,
   setDesabilitarCampos,
-} from '~/redux/modulos/relatorioSemestral/actions';
+} from '~/redux/modulos/relatorioSemestralPAP/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
 import AuditoriaRelatorioSemestral from './AuditoriaRelatorioSemestral/auditoriaRelatorioSemestral';
@@ -21,7 +21,7 @@ const DadosRelatorioSemestral = props => {
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_SEMESTRAL];
 
   const dadosAlunoObjectCard = useSelector(
-    store => store.relatorioSemestral.dadosAlunoObjectCard
+    store => store.relatorioSemestralPAP.dadosAlunoObjectCard
   );
 
   const { codigoEOL } = dadosAlunoObjectCard;

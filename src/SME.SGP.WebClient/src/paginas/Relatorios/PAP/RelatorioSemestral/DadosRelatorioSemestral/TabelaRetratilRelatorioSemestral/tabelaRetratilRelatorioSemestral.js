@@ -9,11 +9,11 @@ const TabelaRetratilRelatorioSemestral = ({
   permiteOnChangeAluno,
 }) => {
   const alunosRelatorioSemestral = useSelector(
-    store => store.relatorioSemestral.alunosRelatorioSemestral
+    store => store.relatorioSemestralPAP.alunosRelatorioSemestral
   );
 
   const codigoAlunoSelecionado = useSelector(
-    store => store.relatorioSemestral.codigoAlunoSelecionado
+    store => store.relatorioSemestralPAP.codigoAlunoSelecionado
   );
 
   return (
