@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var chaveCache = $"Disciplinas-planejamento-{codigoTurma}-{codigoDisciplina}-{usuario.PerfilAtual}";
-            if (!usuario.EhProfessor())
+            if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
             {
                 var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
 
@@ -171,7 +171,7 @@ namespace SME.SGP.Aplicacao
                 })?.ToList();
             }
 
-            if (!usuario.EhProfessor())
+            if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
                 await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
 
             return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia);
