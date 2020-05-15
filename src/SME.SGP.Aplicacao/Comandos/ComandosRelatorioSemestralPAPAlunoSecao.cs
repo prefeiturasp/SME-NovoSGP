@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ComandosRelatorioSemestralAlunoSecao: IComandosRelatorioSemestralAlunoSecao
+    public class ComandosRelatorioSemestralPAPAlunoSecao: IComandosRelatorioSemestralPAPAlunoSecao
     {
-        private readonly IRepositorioRelatorioSemestralAlunoSecao repositorioRelatorioSemestralAlunoSecao;
+        private readonly IRepositorioRelatorioSemestralPAPAlunoSecao repositorioRelatorioSemestralAlunoSecao;
 
-        public ComandosRelatorioSemestralAlunoSecao(IRepositorioRelatorioSemestralAlunoSecao repositorioRelatorioSemestralAlunoSecao)
+        public ComandosRelatorioSemestralPAPAlunoSecao(IRepositorioRelatorioSemestralPAPAlunoSecao repositorioRelatorioSemestralAlunoSecao)
         {
             this.repositorioRelatorioSemestralAlunoSecao = repositorioRelatorioSemestralAlunoSecao ?? throw new ArgumentNullException(nameof(repositorioRelatorioSemestralAlunoSecao));
         }
 
-        public async Task SalvarAsync(RelatorioSemestralAlunoSecao secaoRelatorioAluno)
+        public async Task SalvarAsync(RelatorioSemestralPAPAlunoSecao secaoRelatorioAluno)
             => await repositorioRelatorioSemestralAlunoSecao.SalvarAsync(secaoRelatorioAluno);
     }
 }

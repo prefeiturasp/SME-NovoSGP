@@ -40,13 +40,13 @@ namespace SME.SGP.Api.Controllers
         //[Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
         public async Task<IActionResult> SalvarRelatorioAluno(string alunoCodigo, string turmaCodigo, int semestre
             , [FromBody] RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto
-            , [FromServices]IComandosRelatorioSemestralAluno comandosRelatorioSemestralAluno)
+            , [FromServices]IComandosRelatorioSemestralPAPAluno comandosRelatorioSemestralAluno)
             => Ok(await comandosRelatorioSemestralAluno.Salvar(alunoCodigo, turmaCodigo, semestre, relatorioSemestralAlunoDto));
 
         [HttpGet("turmas/{turmaCodigo}/alunos/anos/{anoLetivo}/semestres/{semestre}")]
         [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterListaAlunos(string turmaCodigo, int anoLetivo, int semestre, [FromServices]IConsultasRelatorioSemestralAluno consultasRelatorioSemestralAluno)
+        public async Task<IActionResult> ObterListaAlunos(string turmaCodigo, int anoLetivo, int semestre, [FromServices]IConsultasRelatorioSemestralPAPAluno consultasRelatorioSemestralAluno)
             => Ok(await consultasRelatorioSemestralAluno.ObterListaAlunosAsync(turmaCodigo, anoLetivo, semestre));
     }
 }
