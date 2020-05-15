@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
-    <ProjectReference Include="..\src\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
+    <ProjectReference Include="..\..\src\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
+    <ProjectReference Include="..\..\src\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

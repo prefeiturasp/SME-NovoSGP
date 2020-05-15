@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Infra", "src\SME.SG
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Dominio.Servicos", "src\SME.SGP.Dominio.Servicos\SME.SGP.Dominio.Servicos.csproj", "{99E42486-B706-4D30-8525-244BF2A6EFA5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Dominio.Servicos.Teste", "src\SME.SGP.Dominio.Servicos.Teste\SME.SGP.Dominio.Servicos.Teste.csproj", "{3E400847-6110-4E4F-ABB7-F3001CD36F55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Dominio.Servicos.Teste", "teste\SME.SGP.Dominio.Servicos.Teste\SME.SGP.Dominio.Servicos.Teste.csproj", "{3E400847-6110-4E4F-ABB7-F3001CD36F55}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bibliotecas", "Bibliotecas", "{1146F24F-B029-408F-A257-EF418C424626}"
 EndProject
