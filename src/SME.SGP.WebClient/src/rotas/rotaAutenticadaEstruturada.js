@@ -23,11 +23,7 @@ const RotaAutenticadaEstruturada = memo(
     dispatch(setSomenteConsulta(false));
 
     if (!logado) {
-      return (
-        <Redirect
-          to={`/login/${btoa(`${location.pathname}${location.search}`)}`}
-        />
-      );
+      return <Redirect to={`/login`} />;
     }
 
     if (primeiroAcesso) {
