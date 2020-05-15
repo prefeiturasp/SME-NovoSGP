@@ -190,7 +190,7 @@ const PlanoAnual = () => {
       servicoPlanoAnual
         .salvar(plano)
         .then(resp => {
-          setPlanoAnual(resp.data.result);
+          setPlanoAnual(resp.data);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
           setListaBimestresPreenchidos(
@@ -512,7 +512,7 @@ const PlanoAnual = () => {
                             turmaSelecionada &&
                             turmaSelecionada.modalidade &&
                             turmaSelecionada.modalidade.toString() ===
-                              modalidade.ENSINO_MEDIO.toString()
+                            modalidade.ENSINO_MEDIO.toString()
                           }
                           disciplinaSemObjetivo={
                             disciplinaSelecionada &&
