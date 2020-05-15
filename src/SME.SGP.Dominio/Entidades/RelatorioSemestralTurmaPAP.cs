@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class RelatorioSemestral
+    public class RelatorioSemestralTurmaPAP
     {
         public long Id { get; set; }
         public long TurmaId { get; set; }
