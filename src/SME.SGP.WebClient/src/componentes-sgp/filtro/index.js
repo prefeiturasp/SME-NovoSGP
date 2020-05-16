@@ -850,6 +850,7 @@ const Filtro = () => {
       desc: resultado.descricaoFiltro,
       periodo: resultado.semestre,
       consideraHistorico,
+      ano: resultado.ano,
     };
 
     dispatch(selecionarTurma(turma));
