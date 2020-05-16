@@ -48,6 +48,7 @@ const PlanoAnual = () => {
   ] = useState(false);
   const [emEdicao, setEmEdicao] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
+  const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
   const [exibirCopiarConteudo, setExibirCopiarConteudo] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [listaBimestresPreenchidos, setListaBimestresPreenchidos] = useState(
@@ -266,8 +267,13 @@ const PlanoAnual = () => {
    *carrega lista de disciplinas
    */
   useEffect(() => {
+    setPlanoAnual([]);
+    setDisciplinaSelecionada();
+    setCodigoDisciplinaSelecionada();
+
     if (turmaSelecionada.turma) {
       setEmEdicao(false);
+      setCarregandoDisciplinas(true);
       setCarregandoDados(true);
       servicoDisciplinas
         .obterDisciplinasPorTurma(turmaSelecionada.turma)
@@ -279,10 +285,6 @@ const PlanoAnual = () => {
             setCodigoDisciplinaSelecionada(
               String(disciplina.codigoComponenteCurricular)
             );
-          } else {
-            setDisciplinaSelecionada();
-            setCodigoDisciplinaSelecionada();
-            setPlanoAnual([]);
           }
         })
         .catch(e => {
@@ -290,9 +292,10 @@ const PlanoAnual = () => {
         })
         .finally(() => {
           setCarregandoDados(false);
+          setCarregandoDisciplinas(false);
         });
     }
-  }, [turmaSelecionada.ano, turmaSelecionada.turma]);
+  }, [turmaSelecionada.turma]);
 
   /**
    *carrega a lista de planos
@@ -368,16 +371,16 @@ const PlanoAnual = () => {
   }, [codigoDisciplinaSelecionada, disciplinaSelecionada, turmaSelecionada]);
 
   useEffect(() => {
+    setPlanoAnual([]);
+    setDisciplinaSelecionada();
+    setCodigoDisciplinaSelecionada();
     setEmEdicao(false);
+
     setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     if (turmaSelecionada && turmaSelecionada !== [] && turmaSelecionada.turma) {
       setEhEja(
         turmaSelecionada.modalidade.toString() === modalidade.EJA.toString()
       );
-    } else {
-      setDisciplinaSelecionada();
-      setCodigoDisciplinaSelecionada();
-      setPlanoAnual([]);
     }
   }, [turmaSelecionada]);
 
@@ -455,20 +458,22 @@ const PlanoAnual = () => {
         </Grid>
         <Card className="col-md-12 p-0 float-right" mx="mx-0">
           <div className="col-md-4 col-xs-12">
-            <SelectComponent
-              name="disciplinas"
-              id="disciplinas"
-              lista={listaDisciplinas || []}
-              valueOption="codigoComponenteCurricular"
-              valueText="nome"
-              onChange={onChangeDisciplinas}
-              valueSelect={codigoDisciplinaSelecionada}
-              placeholder="Selecione um componente curricular"
-              disabled={
-                (listaDisciplinas && !listaDisciplinas.length) ||
-                (listaDisciplinas && listaDisciplinas.length === 1)
-              }
-            />
+            <Loader loading={carregandoDisciplinas} tip="">
+              <SelectComponent
+                name="disciplinas"
+                id="disciplinas"
+                lista={listaDisciplinas || []}
+                valueOption="codigoComponenteCurricular"
+                valueText="nome"
+                onChange={onChangeDisciplinas}
+                valueSelect={codigoDisciplinaSelecionada}
+                placeholder="Selecione um componente curricular"
+                disabled={
+                  (listaDisciplinas && !listaDisciplinas.length) ||
+                  (listaDisciplinas && listaDisciplinas.length === 1)
+                }
+              />
+            </Loader>
           </div>
           <div className="col-md-8 col-sm-2 d-flex justify-content-end">
             <Button

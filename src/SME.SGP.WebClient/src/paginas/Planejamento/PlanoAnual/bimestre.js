@@ -139,9 +139,9 @@ const Bimestre = ({
     if (
       objetivosCarregados &&
       bimestre.objetivosAprendizagem &&
-      bimestre.objetivosAprendizagem.length > 0 &&
+      bimestre.objetivosAprendizagem.length &&
       objetivosAprendizagem &&
-      objetivosAprendizagem.length > 0
+      objetivosAprendizagem.length
     ) {
       const componentesCurricularesId = bimestre.objetivosAprendizagem.map(
         c => c.id
@@ -156,11 +156,7 @@ const Bimestre = ({
       );
       setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
     }
-  }, [
-    bimestre.objetivosAprendizagem,
-    objetivosAprendizagem,
-    objetivosCarregados,
-  ]);
+  }, [objetivosCarregados, bimestre]);
 
   useEffect(() => {
     setDescricaoObjetivo(bimestre.descricao);
