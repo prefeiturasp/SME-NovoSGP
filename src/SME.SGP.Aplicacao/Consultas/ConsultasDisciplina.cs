@@ -375,7 +375,8 @@ namespace SME.SGP.Aplicacao
             Nome = disciplinaEol.Nome,
             Regencia = disciplinaEol.Regencia,
             Compartilhada = disciplinaEol.Compartilhada,
-            RegistroFrequencia = disciplinaEol.RegistraFrequencia
+            RegistroFrequencia = disciplinaEol.RegistraFrequencia,
+            LancaNota = disciplinaEol.LancaNota,
         };
 
         private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false)
