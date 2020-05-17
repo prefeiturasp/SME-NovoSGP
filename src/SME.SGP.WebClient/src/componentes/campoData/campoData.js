@@ -328,11 +328,7 @@ Yup.addMethod(
       const dataInicial = this.parent[nomeDataInicial];
       const dataFinal = this.parent[nomeDataFinal];
 
-      if (
-        dataInicial &&
-        dataFinal &&
-        dataInicial.isAfter(dataFinal, 'date')
-      ) {
+      if (dataInicial && dataFinal && dataInicial.isAfter(dataFinal, 'date')) {
         dataValida = false;
       }
       return dataValida;
