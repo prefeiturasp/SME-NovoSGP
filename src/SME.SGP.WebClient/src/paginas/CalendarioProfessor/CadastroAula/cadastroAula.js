@@ -18,6 +18,7 @@ import servicoCadastroAula from '~/servicos/Paginas/CalendarioProfessor/Cadastro
 import { erros, sucesso } from '~/servicos/alertas';
 import servicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import CampoNumeroFormik from '~/componentes/campoNumeroFormik/campoNumeroFormik';
+import { aulaDto } from '~/dtos/aulaDto';
 
 // import { Container } from './styles';
 
@@ -48,11 +49,9 @@ function CadastroDeAula({ match }) {
   const [grade, setGrade] = useState();
 
   const [aula, setAula] = useState({
+    ...aulaDto,
     dataAula: window.moment(diaAula),
-    disciplinaId: '',
-    quantidade: 1,
-    recorrenciaAula: 1,
-    tipoAula: 1,
+    turmaId: turmaSelecionada.turma,
   });
 
   const [listaComponentes, setListaComponentes] = useState([]);
@@ -120,17 +119,17 @@ function CadastroDeAula({ match }) {
   };
 
   const salvar = valoresForm => {
-    console.log(validacoes);
-    debugger;
-
-    // if (componente) valoresForm.disciplinaNome = componente.nome;
-    // servicoCadastroAula
-    //   .salvar(id, valoresForm)
-    //   .then(resposta => {
-    //     history.push('/calendario-escolar/calendario-professor');
-    //     sucesso(resposta.mensagens[0]);
-    //   })
-    //   .catch(e => erros(e));
+    const componente = obterComponenteSelecionadoPorId(
+      valoresForm.disciplinaId
+    );
+    if (componente) valoresForm.disciplinaNome = componente.nome;
+    servicoCadastroAula
+      .salvar(id, valoresForm)
+      .then(resposta => {
+        history.push('/calendario-escolar/calendario-professor');
+        sucesso(resposta.mensagens[0]);
+      })
+      .catch(e => erros(e));
   };
 
   const carregarComponentesCurriculares = useCallback(idTurma => {
