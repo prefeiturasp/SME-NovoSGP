@@ -305,7 +305,7 @@ namespace SME.SGP.Dominio.Servicos
 
             List<DateTime> diasParaAlterarRecorrencia = new List<DateTime>();
             ObterDiasDaRecorrencia(dataRecorrencia, fimRecorrencia, diasParaAlterarRecorrencia);
-            var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaAlterarRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
+            var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaAlterarRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf, aula.AulaPaiId ?? aula.Id);
             if (datasComRegistro.Count() > 0)
                 aulasQueDeramErro.AddRange(
                         datasComRegistro.Select(d =>
