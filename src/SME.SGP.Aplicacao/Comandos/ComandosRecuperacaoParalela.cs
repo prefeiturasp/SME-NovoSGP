@@ -47,6 +47,9 @@ namespace SME.SGP.Aplicacao
                 await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.Excluir(item.Id, recuperacaoParalelaDto.Periodo.Id);
                 foreach (var resposta in recuperacaoParalelaDto.Periodo.Alunos.Where(w => w.CodAluno == item.CodAluno).FirstOrDefault().Respostas)
                 {
+                    if (resposta.RespostaId == 0)
+                        continue;
+
                     await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.SalvarAsync(new RecuperacaoParalelaPeriodoObjetivoResposta
                     {
                         ObjetivoId = resposta.ObjetivoId,
