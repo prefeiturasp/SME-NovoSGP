@@ -111,6 +111,19 @@ function CalendarioProfessor() {
 
           if (data && status === 200) {
             disparar(setarCarregandoDia(false));
+            const mes = {
+              estaAberto: false,
+              eventos: 0,
+              nome: "",
+              numeroMes: dia.getMonth() + 1
+            };
+            disparar(
+              setarEventosMes({
+                ...mes,
+                dias: data.eventosAulasMes,
+              })
+            );
+
             disparar(
               setarEventosDia({
                 diaSelecionado: dia,
