@@ -4,6 +4,7 @@ import shortid from 'shortid';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { Cabecalho } from '~/componentes-sgp';
+import history from '~/servicos/history';
 import {
   Card,
   SelectComponent,
@@ -14,8 +15,9 @@ import {
   Colors,
 } from '~/componentes';
 import servicoCadastroAula from '~/servicos/Paginas/CalendarioProfessor/CadastroAula/ServicoCadastroAula';
-import { erros } from '~/servicos/alertas';
+import { erros, sucesso } from '~/servicos/alertas';
 import servicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import CampoNumeroFormik from '~/componentes/campoNumeroFormik/campoNumeroFormik';
 
 // import { Container } from './styles';
 
@@ -26,7 +28,10 @@ function CadastroDeAula({ match }) {
     Yup.object({
       disciplinaId: Yup.string().required('Informe o componente curricular'),
       dataAula: Yup.string().required('Informe a data da aula'),
-      quantidade: Yup.string().required('Informe a quantidade de aulas'),
+      quantidade: Yup.number()
+        .typeError('O valor informado deve ser um número')
+        .nullable()
+        .required('Informe a quantidade de aulas'),
       recorrenciaAula: Yup.string().required('Informe o tipo de recorrência'),
       tipoAula: Yup.string().required('Informe o tipo de aula'),
     })
@@ -36,8 +41,12 @@ function CadastroDeAula({ match }) {
   const diaAula = useSelector(
     state => state.calendarioProfessor.diaSelecionado
   );
+
   const [carregandoDados, setCarregandoDados] = useState(false);
   const [editandoAulaExistente, setEditandoAulaExistente] = useState(false);
+  const [controlaGrade, setControlaGrade] = useState(false);
+  const [grade, setGrade] = useState();
+
   const [aula, setAula] = useState({
     dataAula: window.moment(diaAula),
     disciplinaId: '',
@@ -47,22 +56,10 @@ function CadastroDeAula({ match }) {
   });
 
   const [listaComponentes, setListaComponentes] = useState([]);
-  const [componenteSelecionado, setComponenteSelecionado] = useState([]);
 
   const opcoesTipoAula = [
     { label: 'Normal', value: 1 },
     { label: 'Reposição', value: 2 },
-  ];
-
-  const opcoesQuantidadeAulas = [
-    {
-      label: '1',
-      value: 1,
-    },
-    {
-      label: '2',
-      value: 2,
-    },
   ];
 
   const recorrencia = {
@@ -83,17 +80,75 @@ function CadastroDeAula({ match }) {
     },
   ];
 
+  const obterComponenteSelecionadoPorId = componenteCurricularId => {
+    return listaComponentes.find(
+      c => c.codigoComponenteCurricular === Number(componenteCurricularId)
+    );
+  };
+
+  const carregarGrade = componenteCurricularId => {
+    const componenteSelecionado = obterComponenteSelecionadoPorId(
+      componenteCurricularId
+    );
+    if (componenteSelecionado) {
+      servicoCadastroAula
+        .obterGradePorComponenteETurma(
+          turmaSelecionada.turma,
+          componenteCurricularId,
+          componenteSelecionado.regencia
+        )
+        .then(respostaGrade => {
+          if (respostaGrade.status === 200) {
+            setGrade(respostaGrade.data);
+            if (
+              !editandoAulaExistente &&
+              respostaGrade.data.quantidadeRestante == 1
+            ) {
+              setAula(aulaState => {
+                return {
+                  ...aulaState,
+                  quantidade: 1,
+                };
+              });
+            }
+          } else setGrade();
+        })
+        .catch(e => {
+          erros(e);
+        });
+    }
+  };
+
   const salvar = valoresForm => {
+    console.log(validacoes);
     debugger;
-    //servicoCadastroAula.salvar(valoresForm);
+
+    // if (componente) valoresForm.disciplinaNome = componente.nome;
+    // servicoCadastroAula
+    //   .salvar(id, valoresForm)
+    //   .then(resposta => {
+    //     history.push('/calendario-escolar/calendario-professor');
+    //     sucesso(resposta.mensagens[0]);
+    //   })
+    //   .catch(e => erros(e));
   };
 
   const carregarComponentesCurriculares = useCallback(idTurma => {
     servicoDisciplina
       .obterDisciplinasPorTurma(idTurma)
-      .then(respostaComponentes =>
-        setListaComponentes(respostaComponentes.data)
-      )
+      .then(respostaComponentes => {
+        setListaComponentes(respostaComponentes.data);
+        if (respostaComponentes.data.length === 1) {
+          setAula(aulaState => {
+            return {
+              ...aulaState,
+              disciplinaId: String(
+                respostaComponentes.data[0].codigoComponenteCurricular
+              ),
+            };
+          });
+        }
+      })
       .catch(e => erros(e))
       .finally(() => setCarregandoDados(false));
   }, []);
@@ -107,7 +162,6 @@ function CadastroDeAula({ match }) {
         .then(resposta => {
           resposta.data.dataAula = window.moment(resposta.data.dataAula);
           setAula(resposta.data);
-          console.log(resposta.data);
           setCarregandoDados(true);
           carregarComponentesCurriculares(resposta.data.turmaId);
         })
@@ -136,16 +190,35 @@ function CadastroDeAula({ match }) {
             {form => (
               <Form className="col-md-12 mb-4">
                 <div className="row">
-                  <div className="col-md-4 pb-2 d-flex justify-content-start">
+                  <div className="col-md-2 pb-2 d-flex justify-content-start">
                     <CampoData
                       placeholder="Data da aula"
+                      label="Data da aula"
                       formatoData="DD/MM/YYYY"
                       name="dataAula"
                       id="dataAula"
                       form={form}
                     />
                   </div>
-                  <div className="col-md-8 pb-2 d-flex justify-content-end">
+                  <div className="col-xs-12 col-md-4 col-lg-4">
+                    <SelectComponent
+                      id="disciplinaId"
+                      name="disciplinaId"
+                      lista={listaComponentes}
+                      label="Componente Curricular"
+                      valueOption="codigoComponenteCurricular"
+                      valueText="nome"
+                      placeholder="Selecione um componente curricular"
+                      form={form}
+                      disabled={
+                        editandoAulaExistente || listaComponentes.length === 1
+                      }
+                      onChange={valor => {
+                        carregarGrade(valor);
+                      }}
+                    />
+                  </div>
+                  <div className="col-md-6 pb-2 d-flex justify-content-end">
                     <Button
                       id={shortid.generate()}
                       label="Voltar"
@@ -181,6 +254,17 @@ function CadastroDeAula({ match }) {
                   </div>
                 </div>
                 <div className="row">
+                  <div className="col-xs-12 col-md-2 col-lg-2">
+                    <CampoNumeroFormik
+                      label="Quantidade de aulas"
+                      id="quantidade-aula"
+                      name="quantidade"
+                      form={form}
+                      min={0}
+                      max={5}
+                      disabled={controlaGrade && grade.quantidadeRestante === 0}
+                    />
+                  </div>
                   <div className="col-xs-12 col-md-4 col-lg-4">
                     <RadioGroupButton
                       id="tipo-aula"
@@ -188,30 +272,7 @@ function CadastroDeAula({ match }) {
                       opcoes={opcoesTipoAula}
                       name="tipoAula"
                       form={form}
-                    />
-                  </div>
-                  <div className="col-xs-12 col-md-6 col-lg-6">
-                    <SelectComponent
-                      id="disciplinaId"
-                      name="disciplinaId"
-                      lista={listaComponentes}
-                      label="Componente Curricular"
-                      valueOption="codigoComponenteCurricular"
-                      valueText="nome"
-                      placeholder="Selecione um componente curricular"
-                      form={form}
-                      disabled={editandoAulaExistente}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-xs-12 col-md-4 col-lg-4">
-                    <RadioGroupButton
-                      id="quantidade-aula"
-                      label="Quantidade de aulas"
-                      opcoes={opcoesQuantidadeAulas}
-                      name="quantidade"
-                      form={form}
+                      onChange={tipo => setControlaGrade(tipo === 1)}
                     />
                   </div>
                   <div className="col-xs-12 col-md-4 col-lg-4">
