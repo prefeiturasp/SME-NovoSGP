@@ -52,7 +52,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf)
+        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf, long? aulaPaiId = null)
         {
             var query = @"select DATE(data_aula)
                  from aula
@@ -62,12 +62,16 @@ namespace SME.SGP.Dados.Repositorios
                   and disciplina_id = @disciplinaId
                   and professor_rf = @professorRf";
 
+            if (aulaPaiId.HasValue)
+                query += " and ((aula_pai_id is null and id <> @aulaPaiId) or (aula_pai_id is not null and aula_pai_id <> @aulaPaiId))";
+
             return (await database.Conexao.QueryAsync<DateTime>(query.ToString(), new
             {
                 datas,
                 turmaId,
                 disciplinaId,
-                professorRf
+                professorRf,
+                aulaPaiId
             }));
         }
 
