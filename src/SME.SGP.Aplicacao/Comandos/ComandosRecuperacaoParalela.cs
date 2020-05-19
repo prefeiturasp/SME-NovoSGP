@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task SalvarRespostasAluno(RecuperacaoParalelaDto recuperacaoParalelaDto, RecuperacaoParalelaAlunoDto item, RecuperacaoParalela recuperacaoParalela)
         {
-            var respostasAluno = recuperacaoParalelaDto.Periodo.Alunos.Where(w => w.CodAluno == item.CodAluno).FirstOrDefault()?.Respostas ?? default;
+            var respostasAluno = recuperacaoParalelaDto.Periodo.Alunos.Where(w => w.CodAluno == item.CodAluno).FirstOrDefault()?.Respostas;
 
             if (respostasAluno == null || !respostasAluno.Any())
                 return;
