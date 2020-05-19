@@ -318,7 +318,8 @@ const FrequenciaPlanoAula = () => {
       if (
         (disciplinaSelecionada && disciplinaSelecionada.regencia) ||
         ehProfessor ||
-        ehProfessorCj
+        ehProfessorCj ||
+        somenteConsulta
       ) {
         let disciplinas = {};
         if (disciplinaSelecionada && disciplinaSelecionada.regencia) {
