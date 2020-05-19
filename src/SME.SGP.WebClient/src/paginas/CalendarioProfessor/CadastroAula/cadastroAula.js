@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
+import Alert from '~/componentes/alert';
 import { Cabecalho } from '~/componentes-sgp';
 import history from '~/servicos/history';
 import {
@@ -23,20 +24,18 @@ import { aulaDto } from '~/dtos/aulaDto';
 // import { Container } from './styles';
 
 function CadastroDeAula({ match }) {
-  const { id } = match.params;
+  const { id, tipoCalendarioId } = match.params;
 
-  const [validacoes, setValidacoes] = useState(
-    Yup.object({
-      disciplinaId: Yup.string().required('Informe o componente curricular'),
-      dataAula: Yup.string().required('Informe a data da aula'),
-      quantidade: Yup.number()
-        .typeError('O valor informado deve ser um número')
-        .nullable()
-        .required('Informe a quantidade de aulas'),
-      recorrenciaAula: Yup.string().required('Informe o tipo de recorrência'),
-      tipoAula: Yup.string().required('Informe o tipo de aula'),
-    })
-  );
+  const [validacoes, setValidacoes] = useState({
+    disciplinaId: Yup.string().required('Informe o componente curricular'),
+    dataAula: Yup.string().required('Informe a data da aula'),
+    quantidade: Yup.number()
+      .typeError('O valor informado deve ser um número')
+      .nullable()
+      .required('Informe a quantidade de aulas'),
+    recorrenciaAula: Yup.string().required('Informe o tipo de recorrência'),
+    tipoAula: Yup.string().required('Informe o tipo de aula'),
+  });
 
   const turmaSelecionada = useSelector(store => store.usuario.turmaSelecionada);
   const diaAula = useSelector(
@@ -45,13 +44,15 @@ function CadastroDeAula({ match }) {
 
   const [carregandoDados, setCarregandoDados] = useState(false);
   const [editandoAulaExistente, setEditandoAulaExistente] = useState(false);
-  const [controlaGrade, setControlaGrade] = useState(false);
-  const [grade, setGrade] = useState();
+  const [controlaGrade, setControlaGrade] = useState(true);
+  const [gradeAtingida, setGradeAtingida] = useState(false);
 
   const [aula, setAula] = useState({
     ...aulaDto,
     dataAula: window.moment(diaAula),
     turmaId: turmaSelecionada.turma,
+    ueId: turmaSelecionada.unidadeEscolar,
+    tipoCalendarioId,
   });
 
   const [listaComponentes, setListaComponentes] = useState([]);
@@ -85,37 +86,81 @@ function CadastroDeAula({ match }) {
     );
   };
 
-  const carregarGrade = componenteCurricularId => {
-    const componenteSelecionado = obterComponenteSelecionadoPorId(
-      componenteCurricularId
-    );
+  const carregarGrade = (componenteSelecionado, dataAula) => {
     if (componenteSelecionado) {
+      setCarregandoDados(true);
       servicoCadastroAula
         .obterGradePorComponenteETurma(
           turmaSelecionada.turma,
-          componenteCurricularId,
+          componenteSelecionado.codigoComponenteCurricular,
+          dataAula,
           componenteSelecionado.regencia
         )
         .then(respostaGrade => {
           if (respostaGrade.status === 200) {
-            setGrade(respostaGrade.data);
-            if (
-              !editandoAulaExistente &&
-              respostaGrade.data.quantidadeRestante == 1
-            ) {
-              setAula(aulaState => {
-                return {
-                  ...aulaState,
-                  quantidade: 1,
-                };
-              });
+            if (!editandoAulaExistente) {
+              const quantidade = respostaGrade.data.quantidadeAulasRestante;
+              if (quantidade === 1) {
+                setAula(aulaState => {
+                  return {
+                    ...aulaState,
+                    quantidade,
+                  };
+                });
+              }
+              if (quantidade > 0) {
+                setValidacoes(validacoesState => {
+                  return {
+                    ...validacoesState,
+                    quantidade: Yup.number()
+                      .typeError('O valor informado deve ser um número')
+                      .nullable()
+                      .required('Informe a quantidade de aulas')
+                      .max(
+                        quantidade,
+                        `O máximo de aulas permitidas deve ser ${quantidade}.`
+                      ),
+                  };
+                });
+                setGradeAtingida(false);
+              } else {
+                setGradeAtingida(true);
+              }
             }
-          } else setGrade();
+          } else {
+            setGradeAtingida(false);
+            setValidacoes(validacoesState => {
+              return {
+                ...validacoesState,
+                quantidade: Yup.number()
+                  .typeError('O valor informado deve ser um número')
+                  .nullable()
+                  .required('Informe a quantidade de aulas'),
+              };
+            });
+          }
         })
         .catch(e => {
           erros(e);
-        });
+        })
+        .finally(() => setCarregandoDados(false));
     }
+  };
+
+  const onChangeComponente = componenteCurricularId => {
+    const componenteSelecionado = obterComponenteSelecionadoPorId(
+      componenteCurricularId
+    );
+    setAula(aulaState => {
+      return {
+        ...aulaState,
+        disciplinaId: String(componenteSelecionado?.codigoComponenteCurricular),
+        disciplinaCompartilhadaId: componenteSelecionado?.compartilhada
+          ? componenteSelecionado.componenteCurricularId
+          : 0,
+      };
+    });
+    carregarGrade(componenteSelecionado, aula.dataAula);
   };
 
   const salvar = valoresForm => {
@@ -123,16 +168,19 @@ function CadastroDeAula({ match }) {
       valoresForm.disciplinaId
     );
     if (componente) valoresForm.disciplinaNome = componente.nome;
+    setCarregandoDados(true);
     servicoCadastroAula
       .salvar(id, valoresForm)
       .then(resposta => {
+        sucesso(resposta.data.mensagens[0]);
         history.push('/calendario-escolar/calendario-professor');
-        sucesso(resposta.mensagens[0]);
       })
-      .catch(e => erros(e));
+      .catch(e => erros(e))
+      .finally(() => setCarregandoDados(false));
   };
 
   const carregarComponentesCurriculares = useCallback(idTurma => {
+    setCarregandoDados(true);
     servicoDisciplina
       .obterDisciplinasPorTurma(idTurma)
       .then(respostaComponentes => {
@@ -151,6 +199,23 @@ function CadastroDeAula({ match }) {
       .catch(e => erros(e))
       .finally(() => setCarregandoDados(false));
   }, []);
+
+  const onChangeDataAula = data => {
+    setAula(aulaState => {
+      return { ...aulaState, dataAula: data };
+    });
+    const componente = obterComponenteSelecionadoPorId(aula.disciplinaId);
+    carregarGrade(componente, data);
+  };
+
+  const onChangeTipoAula = e => {
+    setControlaGrade(e.target.value === 1);
+    setAula(aulaState => {
+      return { ...aulaState, tipoAula: e.target.value };
+    });
+    const componente = obterComponenteSelecionadoPorId(aula.disciplinaId);
+    carregarGrade(componente, aula.dataAula);
+  };
 
   useEffect(() => {
     if (id) {
@@ -175,13 +240,27 @@ function CadastroDeAula({ match }) {
 
   return (
     <Loader loading={carregandoDados}>
+      <div className="col-md-12">
+        {controlaGrade && gradeAtingida && (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'cadastro-aula-quantidade-maxima',
+              mensagem:
+                'Não é possível criar aula normal porque o limite da grade curricular foi atingido',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-2"
+          />
+        )}
+      </div>
       <Cabecalho pagina="Cadastro de Aula - FORMATAR DATA" />
       <Card>
         <div className="col-xs-12 col-md-12 col-lg-12">
           <Formik
             enableReinitialize
             initialValues={aula}
-            validationSchema={validacoes}
+            validationSchema={Yup.object(validacoes)}
             onSubmit={salvar}
             validateOnChange
             validateOnBlur
@@ -197,6 +276,7 @@ function CadastroDeAula({ match }) {
                       name="dataAula"
                       id="dataAula"
                       form={form}
+                      onChange={onChangeDataAula}
                     />
                   </div>
                   <div className="col-xs-12 col-md-4 col-lg-4">
@@ -212,9 +292,7 @@ function CadastroDeAula({ match }) {
                       disabled={
                         editandoAulaExistente || listaComponentes.length === 1
                       }
-                      onChange={valor => {
-                        carregarGrade(valor);
-                      }}
+                      onChange={onChangeComponente}
                     />
                   </div>
                   <div className="col-md-6 pb-2 d-flex justify-content-end">
@@ -249,6 +327,7 @@ function CadastroDeAula({ match }) {
                       bold
                       className="mr-2"
                       onClick={() => form.handleSubmit()}
+                      disabled={controlaGrade && gradeAtingida}
                     />
                   </div>
                 </div>
@@ -259,9 +338,9 @@ function CadastroDeAula({ match }) {
                       id="quantidade-aula"
                       name="quantidade"
                       form={form}
-                      min={0}
+                      min={1}
                       max={5}
-                      disabled={controlaGrade && grade.quantidadeRestante === 0}
+                      disabled={controlaGrade && gradeAtingida}
                     />
                   </div>
                   <div className="col-xs-12 col-md-4 col-lg-4">
@@ -271,7 +350,8 @@ function CadastroDeAula({ match }) {
                       opcoes={opcoesTipoAula}
                       name="tipoAula"
                       form={form}
-                      onChange={tipo => setControlaGrade(tipo === 1)}
+                      onChange={onChangeTipoAula}
+                      desabilitado={editandoAulaExistente}
                     />
                   </div>
                   <div className="col-xs-12 col-md-4 col-lg-4">
@@ -281,6 +361,7 @@ function CadastroDeAula({ match }) {
                       opcoes={opcoesRecorrencia}
                       name="recorrenciaAula"
                       form={form}
+                      desabilitado={editandoAulaExistente}
                     />
                   </div>
                 </div>
