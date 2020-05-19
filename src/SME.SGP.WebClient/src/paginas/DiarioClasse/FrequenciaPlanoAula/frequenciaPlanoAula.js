@@ -265,7 +265,9 @@ const FrequenciaPlanoAula = () => {
       setTemPeriodoAberto(frequenciaAlunos.data.temPeriodoAberto);
       if (!frequenciaAlunos.data.temPeriodoAberto) {
         setSomenteConsulta(false);
-        erro('Apenas é possível consultar este registro pois o período não está em aberto.');
+        erro(
+          'Apenas é possível consultar este registro pois o período não está em aberto.'
+        );
       }
     }
   };
@@ -313,7 +315,12 @@ const FrequenciaPlanoAula = () => {
         }
       }
 
-      if (disciplinaSelecionada.regencia || ehProfessor || ehProfessorCj) {
+      if (
+        disciplinaSelecionada.regencia ||
+        ehProfessor ||
+        ehProfessorCj ||
+        somenteConsulta
+      ) {
         let disciplinas = {};
         if (disciplinaSelecionada.regencia) {
           setTemObjetivos(true);
