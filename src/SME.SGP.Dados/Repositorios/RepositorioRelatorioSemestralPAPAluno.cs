@@ -75,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<RelatorioSemestralPAPAluno> ObterRelatorioSemestralPorAlunoTurmaSemestreAsync(string alunoCodigo, string turmaCodigo, int semestre)
         {
-            var query = @"select rsa.relatorio_semestral_id,
+            var query = @"select rsa.relatorio_semestral_turma_pap_id,
 	                   rsa.id,
 	                   rsa.criado_em,
 	                   rsa.criado_por,
