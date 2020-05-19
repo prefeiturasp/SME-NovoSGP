@@ -13,11 +13,12 @@ export const ObjetivosList = styled.div`
 
 export const ListItem = styled.li`
   border-color: ${Base.AzulAnakiwa} !important;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
 `;
 
 export const ListItemButton = styled.li`
   border-color: ${Base.AzulAnakiwa} !important;
-  cursor: pointer;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
 `;
 
 export const Corpo = styled.div`
