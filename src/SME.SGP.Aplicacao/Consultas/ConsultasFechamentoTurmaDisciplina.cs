@@ -244,15 +244,18 @@ namespace SME.SGP.Aplicacao
                             else
                                 foreach (var notaConceitoBimestre in notasConceitoBimestre)
                                 {
-                                    var disciplina = disciplinaEOL.Regencia ? disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId) : null;
-                                    var nomeDisciplina = disciplinaEOL.Regencia ? disciplina.Nome : disciplinaEOL.Nome;
+                                    string nomeDisciplina;
+                                    if (disciplinaEOL.Regencia)
+                                        nomeDisciplina = disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
+                                    else nomeDisciplina = disciplinaEOL.Nome;
+
                                     ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(new FechamentoNotaRetornoDto()
                                     {
                                         DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                         Disciplina = nomeDisciplina,
-                                        NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota.Value,
+                                        NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota ?? (default),
                                         ehConceito = notaConceitoBimestre.ConceitoId.HasValue,
-                                        conceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : ""
+                                        conceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty
                                     });
                                 }
                         }
