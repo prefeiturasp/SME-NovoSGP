@@ -13,7 +13,9 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
   const [carregando, setCarregando] = useState(false);
   const [listaTerritorios, setListaTerritorios] = useState([]);
+
   const { turmaSelecionada } = useSelector(state => state.usuario);
+
   useEffect(() => {
     async function buscarTerritorios() {
       setCarregando(true);
@@ -38,7 +40,7 @@ function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
         valueOption="codigoComponenteCurricular"
         valueText="nome"
         onChange={valor => onChangeTerritorio(valor)}
-        // valueSelect={territorioSelecionado}
+        valueSelect={territorioSelecionado || undefined}
         placeholder="Selecione um território"
         //disabled={listaDisciplinas && listaDisciplinas.length === 1}
       />
