@@ -382,47 +382,6 @@ const CalendarioEscolar = () => {
     });
   }, [unidadeEscolarSelecionada]);
 
-  useEffect(() => {
-    let estado = true;
-    if (estado) {
-      // if (tipoCalendarioSelecionado) {
-      //   //setCarregandoMeses(true);
-      //   api
-      //     .get(
-      //       `v1/calendarios/eventos/meses?EhEventoSme=${eventoSme}&${
-      //         dreSelecionada ? `DreId=${dreSelecionada}&` : ''
-      //       }${
-      //         tipoCalendarioSelecionado
-      //           ? `IdTipoCalendario=${tipoCalendarioSelecionado}&`
-      //           : ''
-      //       }${
-      //         unidadeEscolarSelecionada
-      //           ? `UeId=${unidadeEscolarSelecionada}`
-      //           : ''
-      //       }`
-      //     )
-      //     .then(resposta => {
-      //       if (resposta.data) {
-      //         resposta.data.forEach(item => {
-      //           if (item && item.mes > 0) {
-      //             store.dispatch(atribuiEventosMes(item.mes, item.eventos));
-      //           }
-      //         });
-      //       }
-      //       setCarregandoMeses(false);
-      //     });
-      // }
-    }
-    return () => {
-      estado = false;
-    };
-  }, [
-    tipoCalendarioSelecionado,
-    eventoSme,
-    dreSelecionada,
-    unidadeEscolarSelecionada,
-  ]);
-
   return (
     <Div className="col-12">
       <Grid cols={12} className="mb-1 p-0">
