@@ -67,12 +67,12 @@ namespace SME.SGP.Aplicacao
 
         private async Task SalvarRespostasAluno(RecuperacaoParalelaDto recuperacaoParalelaDto, RecuperacaoParalelaAlunoDto item, RecuperacaoParalela recuperacaoParalela)
         {
-            var Aluno = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault(w => w.CodAluno == item.CodAluno);
+            var aluno = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault(w => w.CodAluno == item.CodAluno);
 
-            if (Aluno == null)
+            if (aluno == null || !aluno.Respostas.Any())
                 return;
 
-            var respostasFiltradas = Aluno.Respostas.Where(x => x.RespostaId != 0);
+            var respostasFiltradas = aluno.Respostas.Where(x => x.RespostaId != 0);
 
             foreach (var resposta in respostasFiltradas)
             {
