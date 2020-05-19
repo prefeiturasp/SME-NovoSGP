@@ -52,6 +52,7 @@ const CalendarioEscolar = () => {
   const obterTiposCalendario = useCallback(
     async modalidades => {
       setCarregandoTipos(true);
+      setCarregandoMeses(true);
       const lista = await ServicoCalendarios.obterTiposCalendario(
         turmaSelecionadaStore.anoLetivo
       );
@@ -80,9 +81,11 @@ const CalendarioEscolar = () => {
           });
         }
         setCarregandoTipos(false);
+        setCarregandoMeses(false);
         return tiposCalendarioLista;
       }
       setCarregandoTipos(false);
+      setCarregandoMeses(false);
       return lista;
     },
     [anosLetivosAbrangencia, turmaSelecionadaStore]
@@ -150,6 +153,7 @@ const CalendarioEscolar = () => {
     // Busca os calendarios disponíveis por ano letivo
     const buscarTipos = async () => {
       setCarregandoTipos(true);
+      setCarregandoMeses(true);
       const { data, status } = await ServicoCalendarios.obterTiposCalendario(
         turmaSelecionadaStore.anoLetivo
       );
@@ -163,6 +167,7 @@ const CalendarioEscolar = () => {
           }))
         );
         setCarregandoTipos(false);
+        setCarregandoMeses(false);
       }
     };
     buscarTipos();
@@ -376,47 +381,6 @@ const CalendarioEscolar = () => {
       unidadeEscolarSelecionada,
     });
   }, [unidadeEscolarSelecionada]);
-
-  useEffect(() => {
-    let estado = true;
-    if (estado) {
-      if (tipoCalendarioSelecionado) {
-        setCarregandoMeses(true);
-        api
-          .get(
-            `v1/calendarios/eventos/meses?EhEventoSme=${eventoSme}&${
-              dreSelecionada ? `DreId=${dreSelecionada}&` : ''
-            }${
-              tipoCalendarioSelecionado
-                ? `IdTipoCalendario=${tipoCalendarioSelecionado}&`
-                : ''
-            }${
-              unidadeEscolarSelecionada
-                ? `UeId=${unidadeEscolarSelecionada}`
-                : ''
-            }`
-          )
-          .then(resposta => {
-            if (resposta.data) {
-              resposta.data.forEach(item => {
-                if (item && item.mes > 0) {
-                  store.dispatch(atribuiEventosMes(item.mes, item.eventos));
-                }
-              });
-            }
-            setCarregandoMeses(false);
-          });
-      }
-    }
-    return () => {
-      estado = false;
-    };
-  }, [
-    tipoCalendarioSelecionado,
-    eventoSme,
-    dreSelecionada,
-    unidadeEscolarSelecionada,
-  ]);
 
   return (
     <Div className="col-12">
