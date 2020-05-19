@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
                 await repositorioRecuperacaoParalela.SalvarAsync(recuperacaoParalela);
                 await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.Excluir(item.Id, recuperacaoParalelaDto.Periodo.Id);
-                await SalvarRespostasAluno(recuperacaoParalelaDto, recuperacaoParalelaDto.Periodo.Id, recuperacaoParalela);
+                await SalvarRespostasAluno(recuperacaoParalelaDto, item, recuperacaoParalela);
             }
             unitOfWork.PersistirTransacao();
             return await consultaRecuperacaoParalela.Listar(new Infra.FiltroRecuperacaoParalelaDto
