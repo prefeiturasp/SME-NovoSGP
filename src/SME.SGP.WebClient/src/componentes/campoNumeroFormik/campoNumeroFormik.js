@@ -57,13 +57,15 @@ const CampoNumeroFormik = React.forwardRef((props, ref) => {
                   form.setFieldTouched(name, true);
                   onChange(value);
                 }}
+                className={`form-control campo ${
+                  possuiErro() ? 'is-invalid' : ''
+                } ${className || ''} ${disabled ? 'desabilitado' : ''}`}
                 readOnly={disabled}
                 onKeyDown={onKeyDown}
                 value={value}
                 max={max}
                 min={min}
                 step={step}
-                className={className}
                 disabled={disabled}
                 onBlur={onBlur}
               />
