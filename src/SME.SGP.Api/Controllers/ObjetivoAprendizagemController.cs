@@ -40,10 +40,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> ObterDisciplinasBimestrePlano([FromQuery] DateTime dataAula, long turmaId, long componenteId)
         {
-            var anoLetivo = dataAula.Year;
-            int bimestre = (dataAula.Month + 2) / 3;
-
-            var disciplinas = await consultasObjetivoAprendizagem.ObterDisciplinasDoBimestrePlanoAnual(anoLetivo, bimestre, turmaId, componenteId);
+            var disciplinas = await consultasObjetivoAprendizagem.ObterDisciplinasDoBimestrePlanoAnual(dataAula, turmaId, componenteId);
 
             if (disciplinas.Any())
                 return Ok(disciplinas);

@@ -85,9 +85,11 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        public async Task<IEnumerable<ComponenteCurricularSimplificadoDto>> ObterDisciplinasDoBimestrePlanoAnual(int ano, int bimestre, long turmaId, long componenteCurricularId)
+        public async Task<IEnumerable<ComponenteCurricularSimplificadoDto>> ObterDisciplinasDoBimestrePlanoAnual(DateTime dataReferencia, long turmaId, long componenteCurricularId)
         {
-            return repositorioObjetivosPlano.ObterDisciplinasDoBimestrePlanoAula(ano, bimestre, turmaId, componenteCurricularId);
+            var bimestre = await ObterBimestreAtual(dataReferencia, turmaId.ToString());
+
+            return repositorioObjetivosPlano.ObterDisciplinasDoBimestrePlanoAula(dataReferencia.Year, bimestre, turmaId, componenteCurricularId);
         }
 
         public async Task<long> ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId)
@@ -95,16 +97,12 @@ namespace SME.SGP.Aplicacao
             return repositorioObjetivosPlano.ObterIdPorObjetivoAprendizagemJurema(planoId, objetivoAprendizagemJuremaId);
         }
 
+
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosPlanoDisciplina(DateTime dataReferencia, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaId.ToString());
-
-            if (turma == null)
-                throw new NegocioException("Turma não encontrada para consulta de objetivos de aprendizagem");
-
-            var bimestre = consultasPeriodoEscolar.ObterBimestre(dataReferencia, turma.ModalidadeCodigo, turma.Semestre);
+            var bimestre = await ObterBimestreAtual(dataReferencia, turmaId.ToString());
 
             var filtrarSomenteRegencia = regencia && !usuarioLogado.EhProfessorCj();
             var objetivosPlano = repositorioObjetivosPlano.ObterObjetivosPlanoDisciplina(dataReferencia.Year,
@@ -119,6 +117,17 @@ namespace SME.SGP.Aplicacao
             // filtra objetivos do jurema com os objetivos cadastrados no plano anual nesse bimestre
             return objetivosJurema.
                 Where(c => objetivosPlano.Any(o => o.ObjetivoAprendizagemJuremaId == c.Id));
+        }
+
+
+        private async Task<int> ObterBimestreAtual(DateTime dataReferencia, string turmaId)
+        {
+            var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaId);
+
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada para consulta de objetivos de aprendizagem");
+
+            return consultasPeriodoEscolar.ObterBimestre(dataReferencia, turma.ModalidadeCodigo, turma.Semestre);
         }
 
         private async Task<List<ObjetivoAprendizagemDto>> ListarSemCache()
