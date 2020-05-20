@@ -124,14 +124,16 @@ const PlanoAula = props => {
   };
 
   const selecionarObjetivo = id => {
-    setCarregandoObjetivosSelecionados(true);
-    setModoEdicaoPlano(true);
-    const index = objetivosAprendizagem.findIndex(
-      a => a.id.toString() === id.toString()
-    );
-    objetivosAprendizagem[index].selected = !objetivosAprendizagem[index]
-      .selected;
-    setObjetivos(objetivosAprendizagem);
+    if (!desabilitarCampos) {
+      setCarregandoObjetivosSelecionados(true);
+      setModoEdicaoPlano(true);
+      const index = objetivosAprendizagem.findIndex(
+        a => a.id.toString() === id.toString()
+      );
+      objetivosAprendizagem[index].selected = !objetivosAprendizagem[index]
+        .selected;
+      setObjetivos(objetivosAprendizagem);
+    }
   };
 
   const removerObjetivo = id => {
