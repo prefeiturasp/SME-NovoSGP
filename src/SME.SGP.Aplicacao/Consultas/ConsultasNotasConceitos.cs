@@ -262,7 +262,7 @@ namespace SME.SGP.Aplicacao
                                     if (notaRegencia != null)
                                     {
                                         nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota);
-                                        nota.ehConceito = notaRegencia.ConceitoId.HasValue;
+                                        nota.EhConceito = notaRegencia.ConceitoId.HasValue;
                                     }
 
                                     notaConceitoAluno.NotasBimestre.Add(nota);
@@ -277,7 +277,7 @@ namespace SME.SGP.Aplicacao
                                         NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ?
                                             notaConceitoBimestre.ConceitoId.Value :
                                             notaConceitoBimestre.Nota,
-                                        ehConceito = notaConceitoBimestre.ConceitoId.HasValue
+                                        EhConceito = notaConceitoBimestre.ConceitoId.HasValue
                                     });
                         }
                         else
