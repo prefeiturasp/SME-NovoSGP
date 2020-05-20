@@ -14,7 +14,7 @@ import { Colors } from '~/componentes/colors';
 import PlanoAula from '../PlanoAula/plano-aula';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
-import { confirmar, erros, sucesso, erro } from '~/servicos/alertas';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import Alert from '~/componentes/alert';
@@ -28,6 +28,7 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import Grid from '~/componentes/grid';
 import { store } from '~/redux';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
+import AlertaPeriodoEncerrado from '~/componentes-sgp/Calendario/componentes/MesCompleto/componentes/Dias/componentes/DiaCompleto/componentes/AlertaPeriodoEncerrado';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(state => state.usuario);
@@ -263,12 +264,7 @@ const FrequenciaPlanoAula = () => {
       setFrequencia(frequenciaAlunos.data.listaFrequencia);
       setPermiteRegistroFrequencia(!frequenciaAlunos.data.desabilitado);
       setTemPeriodoAberto(frequenciaAlunos.data.temPeriodoAberto);
-      if (!frequenciaAlunos.data.temPeriodoAberto) {
-        setSomenteConsulta(false);
-        erro(
-          'Apenas é possível consultar este registro pois o período não está em aberto.'
-        );
-      }
+      if (!frequenciaAlunos.data.temPeriodoAberto) setSomenteConsulta(true);
     }
   };
 
@@ -858,6 +854,12 @@ const FrequenciaPlanoAula = () => {
           className="mb-2"
         />
       )}
+      {disciplinaSelecionada &&
+      dataSelecionada &&
+      !temPeriodoAberto &&
+      !carregandoGeral ? (
+        <AlertaPeriodoEncerrado exibir />
+      ) : null}
       {temAvaliacao ? (
         <div className="row">
           <Grid cols={12} className="px-4">
