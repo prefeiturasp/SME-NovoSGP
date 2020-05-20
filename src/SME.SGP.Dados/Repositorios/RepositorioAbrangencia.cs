@@ -99,7 +99,7 @@ namespace SME.SGP.Dados.Repositorios
                                            va.qt_duracao_aula as qtDuracaoAula,
                                            va.tipo_turno as tipoTurno
                            from
-                               { (consideraHistorico ? "v_abrangencia_historica" : "v_abrangencia") } va
+                               { (consideraHistorico ? "v_abrangencia_historica" : "v_abrangencia_usuario") } va
                            inner join ue u
                                on u.ue_id = va.ue_codigo and (upper(va.turma_nome) like @texto OR upper(f_unaccent(va.ue_nome)) LIKE @texto)                           
                            where
@@ -158,7 +158,7 @@ namespace SME.SGP.Dados.Repositorios
                             va.qt_duracao_aula as qtDuracaoAula,
                             va.tipo_turno as tipoTurno from");
 
-            query.AppendLine($"{(consideraHistorico ? "v_abrangencia_historica" : "v_abrangencia")} va");
+            query.AppendLine($"{(consideraHistorico ? "v_abrangencia_historica" : "v_abrangencia_usuario")} va");
 
             query.AppendLine(@"inner join ue u
                             on u.ue_id = va.ue_codigo
@@ -187,7 +187,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("va.dre_nome as nome,");
             query.AppendLine("va.dre_abreviacao as abreviacao");
             query.AppendLine("from");
-            query.AppendLine("v_abrangencia va");
+            query.AppendLine("v_abrangencia_usuario va");
             query.AppendLine("where va.login = @login");
             query.AppendLine("and va.usuario_perfil = @perfil");
             query.AppendLine("and va.dre_codigo is not null");
