@@ -96,25 +96,20 @@ namespace SME.SGP.Dominio.Servicos
                 ehRegistroExistente = fechamentoSMEDre != null;
                 if (fechamentoSMEDre == null)
                 {
-                    if (!usuarioLogado.EhPerfilSME())
-                        return default;
-                    else
+                    fechamentoSMEDre = new PeriodoFechamento(null, null);
+
+                    var tipoCalendario = repositorioTipoCalendario.ObterPorId(tipoCalendarioId);
+                    if (tipoCalendario == null)
+                        throw new NegocioException("Tipo de calendário não encontrado.");
+
+                    var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
+                    if (periodoEscolar == null || !periodoEscolar.Any())
+                        throw new NegocioException("Período escolar não encontrado.");
+
+                    foreach (var periodo in periodoEscolar)
                     {
-                        fechamentoSMEDre = new PeriodoFechamento(null, null);
-
-                        var tipoCalendario = repositorioTipoCalendario.ObterPorId(tipoCalendarioId);
-                        if (tipoCalendario == null)
-                            throw new NegocioException("Tipo de calendário não encontrado.");
-
-                        var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
-                        if (periodoEscolar == null)
-                            throw new NegocioException("Período escolar não encontrado.");
-
-                        foreach (var periodo in periodoEscolar)
-                        {
-                            periodo.AdicionarTipoCalendario(tipoCalendario);
-                            fechamentoSMEDre.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSMEDre.Id, periodo, periodo.PeriodoInicio, periodo.PeriodoFim));
-                        }
+                        periodo.AdicionarTipoCalendario(tipoCalendario);
+                        fechamentoSMEDre.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSMEDre.Id, periodo, periodo.PeriodoInicio, periodo.PeriodoFim));
                     }
                 }
             }
@@ -301,7 +296,7 @@ namespace SME.SGP.Dominio.Servicos
                         Notificacao notificacao = MontaNotificacao(nomeUe, todaRede ? "SME" : "DRE", fechamentosBimestre, null, ue.CodigoUe);
                         var diretores = servicoEol.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.Diretor);
                         if (diretores == null || !diretores.Any())
-                        {                           
+                        {
                             SentrySdk.AddBreadcrumb($"Não foram localizados diretores para Ue {ue.CodigoUe}.");
                             continue;
                         }
