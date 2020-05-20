@@ -106,7 +106,7 @@ namespace SME.SGP.Dados.Repositorios
                                 va.login = @login
                                 and va.usuario_perfil = @perfil
                            order by va.ue_nome
-                           limit 10";                      
+                           limit 10";
 
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { texto, login, perfil })).AsList();
         }
@@ -223,7 +223,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico)
-        {            
+        {
             return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo)
                                                              order by 1", new { login, perfil, consideraHistorico, anoLetivo })).AsList();
         }
@@ -247,7 +247,7 @@ namespace SME.SGP.Dados.Repositorios
 	                             qtDuracaoAula,
 	                             tipoTurno
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
-                          order by 5";            
+                          order by 5";
 
             return (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo })).AsList();
         }
@@ -298,9 +298,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = @"select count(*) from usuario u
                         inner join abrangencia a on a.usuario_id = u.id
-                        where u.login = @login and historico = false and turma_id is not null;";
+                        where u.login = @login and historico = false and turma_id is not null
+                              and a.perfil != @perfilCJ ;";
 
-            var parametros = new { login };
+            var parametros = new { login, perfilCJ = Perfis.PERFIL_CJ };
 
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
