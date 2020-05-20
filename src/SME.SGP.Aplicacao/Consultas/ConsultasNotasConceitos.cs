@@ -168,7 +168,7 @@ namespace SME.SGP.Aplicacao
 
                     var fechamentoTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(filtro.TurmaCodigo, long.Parse(filtro.DisciplinaCodigo), valorBimestreAtual);
 
-                    var alunosForeach = alunos.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido());
+                    var alunosForeach = alunos.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NomeValido()).ThenBy(a => a.NumeroAlunoChamada);
 
                     foreach (var aluno in alunosForeach)
                     {
