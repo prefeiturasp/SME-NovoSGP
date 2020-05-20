@@ -253,7 +253,12 @@ namespace SME.SGP.Dominio
         {
             unitOfWork.IniciarTransacao();
 
-            foreach (var entidade in EntidadesSalvar)
+            foreach (var entidade in EntidadesSalvar.Where(e => e.Id >= 0 && e.ObterNota() == null))
+            {
+                repositorioNotasConceitos.Remover(entidade);
+            }
+
+            foreach (var entidade in EntidadesSalvar.Where(e => e.ObterNota() != null))
             {
                 repositorioNotasConceitos.Salvar(entidade);
             }
@@ -328,7 +333,6 @@ namespace SME.SGP.Dominio
 
                     if (conceitos == null)
                         throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
-                    notaConceito.ValidarConceitos(conceitos, aluno.NomeAluno);
                 }
 
                 notaConceito.TipoNota = (TipoNota)tipoNota.Id;
