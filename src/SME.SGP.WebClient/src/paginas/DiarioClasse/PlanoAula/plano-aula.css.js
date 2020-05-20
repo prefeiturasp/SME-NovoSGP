@@ -53,3 +53,9 @@ export const HabilitaObjetivos = styled.div`
     margin-right: 10px;
   }
 `;
+
+export const Erro = styled.div`
+  color: ${Base.Vermelho};
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+`;
