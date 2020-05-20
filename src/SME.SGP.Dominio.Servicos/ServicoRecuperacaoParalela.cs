@@ -48,7 +48,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 foreach (var codigoAluno in CodigoAlunos)
                 {
-                    if (retorno.Any(x => x.Key.Equals(codigoAluno)))
+                    if (!retorno.Any(x => x.Key.Equals(codigoAluno)))
                         retorno.Add(new KeyValuePair<string, int>(codigoAluno, (int)RecuperacaoParalelaFrequencia.Frequente));
                 }
             }
