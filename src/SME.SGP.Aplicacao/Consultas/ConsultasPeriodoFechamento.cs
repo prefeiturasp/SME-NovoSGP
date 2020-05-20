@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> UeEmReaberturaDeFechamento(TipoCalendario tipoCalendario, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
         {
-            if (dataReferencia.Year == tipoCalendario.AnoLetivo)
+            if (dataReferencia.Year != tipoCalendario.AnoLetivo)
             {
                 var reaberturaPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(
                                                                 bimestre,
