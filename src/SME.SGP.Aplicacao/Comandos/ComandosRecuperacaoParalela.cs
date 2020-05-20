@@ -29,40 +29,61 @@ namespace SME.SGP.Aplicacao
         public async Task<RecuperacaoParalelaListagemDto> Salvar(RecuperacaoParalelaDto recuperacaoParalelaDto)
         {
             var list = new List<RecuperacaoParalelaListagemDto>();
+
             unitOfWork.IniciarTransacao();
+
             foreach (var item in recuperacaoParalelaDto.Periodo.Alunos)
             {
-                var recuperacaoParalela = new RecuperacaoParalela
-                {
-                    Id = item.Id,
-                    TurmaId = item.TurmaId,
-                    TurmaRecuperacaoParalelaId = item.TurmaRecuperacaoParalelaId,
-                    Aluno_id = item.CodAluno,
-                    CriadoEm = recuperacaoParalelaDto.Periodo.CriadoEm ?? default,
-                    CriadoRF = recuperacaoParalelaDto.Periodo.CriadoRF ?? null,
-                    CriadoPor = recuperacaoParalelaDto.Periodo.CriadoPor ?? null
-                };
+                RecuperacaoParalela recuperacaoParalela = MapearEntidade(recuperacaoParalelaDto, item);
 
                 await repositorioRecuperacaoParalela.SalvarAsync(recuperacaoParalela);
                 await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.Excluir(item.Id, recuperacaoParalelaDto.Periodo.Id);
-                foreach (var resposta in recuperacaoParalelaDto.Periodo.Alunos.Where(w => w.CodAluno == item.CodAluno).FirstOrDefault().Respostas)
-                {
-                    await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.SalvarAsync(new RecuperacaoParalelaPeriodoObjetivoResposta
-                    {
-                        ObjetivoId = resposta.ObjetivoId,
-                        PeriodoRecuperacaoParalelaId = recuperacaoParalelaDto.Periodo.Id,
-                        RecuperacaoParalelaId = recuperacaoParalela.Id,
-                        RespostaId = resposta.RespostaId
-                    });
-                }
+                await SalvarRespostasAluno(recuperacaoParalelaDto, item, recuperacaoParalela);
             }
+
             unitOfWork.PersistirTransacao();
+
             return await consultaRecuperacaoParalela.Listar(new Infra.FiltroRecuperacaoParalelaDto
             {
                 Ordenacao = recuperacaoParalelaDto.Ordenacao,
                 PeriodoId = recuperacaoParalelaDto.Periodo.Id,
                 TurmaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId
             });
+        }
+
+        private static RecuperacaoParalela MapearEntidade(RecuperacaoParalelaDto recuperacaoParalelaDto, RecuperacaoParalelaAlunoDto item)
+        {
+            return new RecuperacaoParalela
+            {
+                Id = item.Id,
+                TurmaId = item.TurmaId,
+                TurmaRecuperacaoParalelaId = item.TurmaRecuperacaoParalelaId,
+                Aluno_id = item.CodAluno,
+                CriadoEm = recuperacaoParalelaDto.Periodo.CriadoEm ?? default,
+                CriadoRF = recuperacaoParalelaDto.Periodo.CriadoRF ?? null,
+                CriadoPor = recuperacaoParalelaDto.Periodo.CriadoPor ?? null
+            };
+        }
+
+        private async Task SalvarRespostasAluno(RecuperacaoParalelaDto recuperacaoParalelaDto, RecuperacaoParalelaAlunoDto item, RecuperacaoParalela recuperacaoParalela)
+        {
+            var aluno = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault(w => w.CodAluno == item.CodAluno);
+
+            if (aluno == null || !aluno.Respostas.Any())
+                return;
+
+            var respostasFiltradas = aluno.Respostas.Where(x => x.RespostaId != 0);
+
+            foreach (var resposta in respostasFiltradas)
+            {
+                await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.SalvarAsync(new RecuperacaoParalelaPeriodoObjetivoResposta
+                {
+                    ObjetivoId = resposta.ObjetivoId,
+                    PeriodoRecuperacaoParalelaId = recuperacaoParalelaDto.Periodo.Id,
+                    RecuperacaoParalelaId = recuperacaoParalela.Id,
+                    RespostaId = resposta.RespostaId
+                });
+            }
         }
     }
 }
