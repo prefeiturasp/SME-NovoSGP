@@ -12,6 +12,7 @@ import {
   ListItemButton,
   ObjetivosList,
   QuantidadeBotoes,
+  Erro,
 } from './plano-aula.css';
 import api from '~/servicos/api';
 import { store } from '~/redux';
@@ -432,6 +433,16 @@ const PlanoAula = props => {
                     </Descritivo>
                   ) : null}
                   <fieldset className="mt-3">
+                    {layoutComObjetivos() &&
+                    temObjetivos &&
+                    objetivosAprendizagem &&
+                    !objetivosAprendizagem.filter(obj => obj.selected === true)
+                      .length ? (
+                      <Erro>
+                        Você precisa selecionar objetivos na lista ao lado para
+                        poder inserir a descrição do plano!
+                      </Erro>
+                    ) : null}
                     <Editor
                       desabilitar={
                         desabilitarCampos ||
