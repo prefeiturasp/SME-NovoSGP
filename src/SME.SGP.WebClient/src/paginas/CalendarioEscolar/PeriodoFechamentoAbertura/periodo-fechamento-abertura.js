@@ -139,7 +139,7 @@ const PeriodoFechamentoAbertura = () => {
       ),
   };
 
-  useEffect(() => {    
+  useEffect(() => {
     let periodos = {};
     if (isTipoCalendarioAnual) {
       periodos = Object.assign(
@@ -214,13 +214,6 @@ const PeriodoFechamentoAbertura = () => {
   const carregaDados = () => {
     setModoEdicao(false);
     if (tipoCalendarioSelecionado) {
-      if (
-        !usuarioLogado.possuiPerfilSmeOuDre &&
-        (!dreSelecionada || !ueSelecionada)
-      ) {
-        return;
-      }
-
       setEmprocessamento(true);
       const ue = ueSelecionada === undefined ? '' : ueSelecionada;
       ServicoPeriodoFechamento.obterPorTipoCalendarioDreEUe(
@@ -281,20 +274,22 @@ const PeriodoFechamentoAbertura = () => {
               }
               item.inicioMinimo = obterDataMoment(item.inicioMinimo);
               item.finalMaximo = obterDataMoment(item.finalMaximo);
-            });            
+            });
+            setEhRegistroExistente(resposta.data.ehRegistroExistente);
+            setFechamento(resposta.data);
+            setRegistroMigrado(resposta.data.migrado);
+            setAuditoria({
+              criadoEm: resposta.data.criadoEm,
+              criadoPor: resposta.data.criadoPor,
+              criadoRf: resposta.data.criadoRf,
+              alteradoPor: resposta.data.alteradoPor,
+              alteradoEm: resposta.data.alteradoEm,
+              alteradoRf: resposta.data.alteradoRf,
+            });
+            setIdFechamentoAbertura(resposta.data.id);
+          } else {
+            setFechamento(obtemPeriodosIniciais());
           }
-          setEhRegistroExistente(resposta.data.ehRegistroExistente);
-          setFechamento(resposta.data);
-          setRegistroMigrado(resposta.data.migrado);
-          setAuditoria({
-            criadoEm: resposta.data.criadoEm,
-            criadoPor: resposta.data.criadoPor,
-            criadoRf: resposta.data.criadoRf,
-            alteradoPor: resposta.data.alteradoPor,
-            alteradoEm: resposta.data.alteradoEm,
-            alteradoRf: resposta.data.alteradoRf,
-          });
-          setIdFechamentoAbertura(resposta.data.id);
         })
         .catch(e => {
           setFechamento(obtemPeriodosIniciais());
@@ -482,9 +477,9 @@ const PeriodoFechamentoAbertura = () => {
             formatoData="DD/MM/YYYY"
             name={chaveDataInicial}
             onChange={() => onChangeCamposData(form)}
-            diasParaHabilitar={diasParaHabilitar}            
+            diasParaHabilitar={diasParaHabilitar}
             desabilitado={desabilitarCampos}
-          />          
+          />
         </div>
         <div className="col-md-3 mb-2">
           <CampoData
@@ -495,7 +490,7 @@ const PeriodoFechamentoAbertura = () => {
             onChange={() => onChangeCamposData(form)}
             diasParaHabilitar={diasParaHabilitar}
             desabilitado={desabilitarCampos}
-          />          
+          />
         </div>
       </div>
     );
@@ -638,19 +633,19 @@ const PeriodoFechamentoAbertura = () => {
             )}
           </Formik>
           <div className="col-md-6 d-flex justify-content-start">
-            {tipoCalendarioSelecionado && tipoCalendarioSelecionado !== '' && ehRegistroExistente
+          {tipoCalendarioSelecionado && tipoCalendarioSelecionado !== '' && ehRegistroExistente
               && auditoria && auditoria.criadoEm ? (
-                <Auditoria
-                  criadoEm={auditoria.criadoEm}
-                  criadoPor={auditoria.criadoPor}
-                  criadoRf={auditoria.criadoRf}
-                  alteradoPor={auditoria.alteradoPor}
-                  alteradoEm={auditoria.alteradoEm}
-                  alteradoRf={auditoria.alteradoRf}
-                />
-              ) : (
-                ''
-              )}
+              <Auditoria
+                criadoEm={auditoria.criadoEm}
+                criadoPor={auditoria.criadoPor}
+                criadoRf={auditoria.criadoRf}
+                alteradoPor={auditoria.alteradoPor}
+                alteradoEm={auditoria.alteradoEm}
+                alteradoRf={auditoria.alteradoRf}
+              />
+            ) : (
+              ''
+            )}
           </div>
         </Card>
       </Loader>
