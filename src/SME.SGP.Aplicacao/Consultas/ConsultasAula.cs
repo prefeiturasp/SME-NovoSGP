@@ -76,10 +76,7 @@ namespace SME.SGP.Aplicacao
         {
             var aula = repositorio.ObterPorId(id);
 
-            if (aula == null)
-                throw new NegocioException($"Aula de id {id} não encontrada");
-
-            if (aula.Excluido)
+            if (aula == null || aula.Excluido)
                 throw new NegocioException($"Aula de id {id} não encontrada");
 
             var aberto = await AulaDentroPeriodo(aula);
