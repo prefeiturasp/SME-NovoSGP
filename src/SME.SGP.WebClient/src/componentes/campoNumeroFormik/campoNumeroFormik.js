@@ -55,7 +55,7 @@ const CampoNumeroFormik = React.forwardRef((props, ref) => {
                 onChange={valor => {
                   form.setFieldValue(name, valor);
                   form.setFieldTouched(name, true);
-                  onChange(value);
+                  onChange(valor);
                 }}
                 className={`form-control campo ${
                   possuiErro() ? 'is-invalid' : ''

@@ -30,6 +30,18 @@ class ServicoCadastroAula {
       },
     });
   };
+
+  obterRecorrenciaPorIdAula = id => {
+    return api.get(`v1/calendarios/professores/aulas/${id}/recorrencias/serie`);
+  };
+
+  excluirAula = (id, tipoRecorrencia, nomeComponente) => {
+    return api.delete(
+      `v1/calendarios/professores/aulas/${id}/recorrencias/${tipoRecorrencia}/disciplinaNome/${btoa(
+        nomeComponente
+      )}`
+    );
+  };
 }
 
 export default new ServicoCadastroAula();
