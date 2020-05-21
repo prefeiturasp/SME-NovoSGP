@@ -296,7 +296,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select * from fechamento_reabertura fr 
                         where 
                         @dataReferencia between symmetric fr.inicio::date and fr.fim ::date
-                        and fr.ue_id = @ueId and fr.tipo_calendario_id = @tipoCalendarioId";
+                        and fr.ue_id = @ueId 
+                        and fr.tipo_calendario_id = @tipoCalendarioId
+                        and fr.status = 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoReabertura>(query, new
             {
