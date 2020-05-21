@@ -209,7 +209,6 @@ namespace SME.SGP.Dados.Repositorios
                          inner join fechamento_reabertura fr on fr.id = frb.fechamento_reabertura_id
                          inner join dre on dre.id = fr.dre_id
                          inner join ue on ue.id = fr.ue_id
-                          left join wf_aprovacao w on w.id = fr.wf_aprovacao_id
                          where not fr.excluido 
                           {bimestreWhere}
                            and TO_DATE(fr.inicio::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
@@ -217,7 +216,7 @@ namespace SME.SGP.Dados.Repositorios
                            and fr.tipo_calendario_id = @tipoCalendarioId
                            and dre.dre_id = @dreCodigo
                            and ue.ue_id = @ueCodigo
-                           and (w.id is null or not exists(select 0 from wf_aprovacao_nivel n where n.wf_aprovacao_id = w.id and n.status <> 2)) ";
+                           and fr.status = 1 ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoReabertura>(query, new
             {
