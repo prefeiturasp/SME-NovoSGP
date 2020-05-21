@@ -12,6 +12,7 @@ import {
   ListItemButton,
   ObjetivosList,
   QuantidadeBotoes,
+  Erro,
 } from './plano-aula.css';
 import api from '~/servicos/api';
 import { store } from '~/redux';
@@ -70,7 +71,6 @@ const PlanoAula = props => {
     carregandoObjetivosSelecionados,
     setCarregandoObjetivosSelecionados,
   ] = useState(false);
-  const [carregando, setCarregando] = useState(false);
 
   const setModoEdicaoPlano = ehEdicao => {
     setModoEdicao(ehEdicao);
@@ -113,9 +113,7 @@ const PlanoAula = props => {
   }, [planoAula.objetivosAprendizagemAula]);
 
   useEffect(() => {
-    setCarregando(true);
     setMaterias(listaMaterias);
-    setCarregando(false);
   }, [listaMaterias]);
 
   const setObjetivos = objetivos => {
@@ -169,7 +167,6 @@ const PlanoAula = props => {
   };
 
   const selecionarMateria = async id => {
-    setCarregando(true);
     setCarregandoObjetivos(true);
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
@@ -199,7 +196,6 @@ const PlanoAula = props => {
     }
     setMaterias([...materias]);
     setCarregandoObjetivos(false);
-    setCarregando(false);
   };
 
   const onBlurMeusObjetivos = value => {
@@ -284,7 +280,7 @@ const PlanoAula = props => {
             className="row d-inline-block col-md-12"
             hidden={!ehProfessorCj || ehEja || ehMedio}
           >
-            <Label>Objetivos de Aprendizagem e Desenvolvimento</Label>
+            <Label text="Objetivos de Aprendizagem e Desenvolvimento" />
             <Switch
               onChange={() => habilitaDesabilitaObjetivos(!temObjetivos)}
               checked={habilitaEscolhaObjetivos}
@@ -432,6 +428,16 @@ const PlanoAula = props => {
                     </Descritivo>
                   ) : null}
                   <fieldset className="mt-3">
+                    {layoutComObjetivos() &&
+                    temObjetivos &&
+                    objetivosAprendizagem &&
+                    !objetivosAprendizagem.filter(obj => obj.selected === true)
+                      .length ? (
+                      <Erro>
+                        Você precisa selecionar objetivos na lista ao lado para
+                        poder inserir a descrição do plano!
+                      </Erro>
+                    ) : null}
                     <Editor
                       desabilitar={
                         desabilitarCampos ||

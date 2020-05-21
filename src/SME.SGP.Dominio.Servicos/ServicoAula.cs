@@ -2,7 +2,6 @@
 using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
@@ -148,8 +147,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (!ehRecorrencia)
             {
-                var aulaExistente = await repositorioAula.ObterAulaDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
-                if (aulaExistente != null && !aulaExistente.Id.Equals(aula.Id))
+                var aulasExistentes = await repositorioAula.ObterAulasPorDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
+                if (aulasExistentes != null && aulasExistentes.Any(c => !c.Id.Equals(aula.Id) && c.TipoAula == aula.TipoAula))
                     throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
 
                 var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
@@ -233,7 +232,7 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         // Na alteração tem que considerar que uma aula possa estar mudando de dia na mesma semana, então não soma as aulas do proprio registro
                         var aulasSemana = await repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf, mes: null, semanaAno: semana, disciplinaId: aula.DisciplinaId);
-                        var quantidadeAulasSemana = aulasSemana.Where(a => a.Id != aula.Id).Sum(a => a.Quantidade);
+                        var quantidadeAulasSemana = aulasSemana.Where(a => a.Id != aula.Id && a.TipoAula == TipoAula.Normal).Sum(a => a.Quantidade);
 
                         quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasGrade - quantidadeAulasSemana;
                         if ((gradeAulas != null) && (quantidadeAulasRestantes < aula.Quantidade))
@@ -245,7 +244,7 @@ namespace SME.SGP.Dominio.Servicos
                     if (aula.ComponenteCurricularEol.Regencia)
                     {
                         var aulasNoDia = await repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, usuario.CodigoRf, data: aula.DataAula, aula.DisciplinaId);
-                        if (aulasNoDia != null && aulasNoDia.Any())
+                        if (aulasNoDia != null && aulasNoDia.Any(c => c.TipoAula != TipoAula.Reposicao))
                         {
                             if (aula.Turma.ModalidadeCodigo == Modalidade.EJA)
                                 throw new NegocioException("Para regência de EJA só é permitido a criação de 5 aulas por dia.");
@@ -306,7 +305,7 @@ namespace SME.SGP.Dominio.Servicos
             List<DateTime> diasParaAlterarRecorrencia = new List<DateTime>();
             ObterDiasDaRecorrencia(dataRecorrencia, fimRecorrencia, diasParaAlterarRecorrencia);
             var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaAlterarRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf, aula.AulaPaiId ?? aula.Id);
-            if (datasComRegistro.Count() > 0)
+            if (datasComRegistro != null && datasComRegistro.Any())
                 aulasQueDeramErro.AddRange(
                         datasComRegistro.Select(d =>
                             (d, $"Já existe uma aula criada neste dia para este componente curricular")
@@ -381,9 +380,8 @@ namespace SME.SGP.Dominio.Servicos
         private async Task GerarAulaDeRecorrenciaParaDias(Aula aula, Usuario usuario, IEnumerable<PodePersistirNaDataRetornoEolDto> datasParaPersistencia, IEnumerable<DateTime> datasComRegistro)
         {
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
-            List<DateTime> datasParaGeracao = datasParaPersistencia.Select(a => a.Data).ToList();
 
-            if (datasComRegistro.Count() > 0)
+            if (datasComRegistro.Any())
                 aulasQueDeramErro.AddRange(
                         datasComRegistro.Select(d =>
                             (d, $"Já existe uma aula criada neste dia para este componente curricular")
@@ -434,7 +432,7 @@ namespace SME.SGP.Dominio.Servicos
             ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia, diasParaIncluirRecorrencia);
 
             var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
-            if (datasComRegistro.Count() > 0)
+            if (datasComRegistro != null && datasComRegistro.Any())
                 diasParaIncluirRecorrencia.RemoveAll(d => datasComRegistro.Contains(d));
 
             List<PodePersistirNaDataRetornoEolDto> datasPersistencia = new List<PodePersistirNaDataRetornoEolDto>();

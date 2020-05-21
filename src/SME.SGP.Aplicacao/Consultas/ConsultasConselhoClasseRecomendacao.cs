@@ -89,8 +89,8 @@ namespace SME.SGP.Aplicacao
 
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
-                RecomendacaoAluno = conselhoClasseAluno.RecomendacoesAluno ?? MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
-                RecomendacaoFamilia = conselhoClasseAluno.RecomendacoesFamilia ?? MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
+                RecomendacaoAluno = conselhoClasseAluno?.RecomendacoesAluno ?? MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
+                RecomendacaoFamilia = conselhoClasseAluno?.RecomendacoesFamilia ?? MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
                 AnotacoesAluno = anotacoesAluno,
                 SomenteLeitura = !emFechamento,
                 Auditoria = conselhoClasseAluno != null ? (AuditoriaDto)conselhoClasseAluno : null
