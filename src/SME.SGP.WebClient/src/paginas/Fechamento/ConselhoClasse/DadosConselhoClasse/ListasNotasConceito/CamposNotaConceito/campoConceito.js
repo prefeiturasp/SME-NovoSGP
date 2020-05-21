@@ -44,6 +44,10 @@ const CampoConceito = props => {
     store => store.conselhoClasse.dentroPeriodo
   );
 
+  const podeEditarNota = useSelector(
+    store => store.conselhoClasse.podeEditarNota
+  );
+
   const [notaValorAtual, setNotaValorAtual] = useState(notaPosConselho);
   const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
 
@@ -142,7 +146,11 @@ const CampoConceito = props => {
           showSearch
           placeholder="Conceito"
           className={abaixoMedia ? 'borda-abaixo-media' : ''}
-          desabilitar={alunoDesabilitado || desabilitarCampos || !dentroPeriodo}
+          desabilitar={
+            (alunoDesabilitado && !podeEditarNota) ||
+            desabilitarCampos ||
+            !dentroPeriodo
+          }
         />
       </Combo>
     );
