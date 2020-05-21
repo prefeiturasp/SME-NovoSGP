@@ -58,10 +58,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> ObterObjetivosPorDisciplina([FromQuery] DateTime dataAula, long turmaId, long componenteId, long disciplinaId, bool regencia)
         {
-            var anoLetivo = dataAula.Year;
-            int bimestre = (dataAula.Month + 2) / 3;
 
-            var objetivos = await consultasObjetivoAprendizagem.ObterObjetivosPlanoDisciplina(anoLetivo, bimestre, turmaId, componenteId, disciplinaId, regencia);
+            var objetivos = await consultasObjetivoAprendizagem.ObterObjetivosPlanoDisciplina(dataAula, turmaId, componenteId, disciplinaId, regencia);
 
             if (objetivos.Any())
                 return Ok(objetivos);
