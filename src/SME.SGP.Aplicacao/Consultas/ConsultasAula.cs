@@ -13,14 +13,14 @@ namespace SME.SGP.Aplicacao
     public class ConsultasAula : IConsultasAula
     {
         private readonly IConsultasDisciplina consultasDisciplina;
-        private readonly IConsultasTurma consultasTurma;
-        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioAula repositorio;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
+        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEOL servicoEol;
         private readonly IServicoUsuario servicoUsuario;
 
@@ -49,22 +49,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
-        public async Task<AulaConsultaDto> BuscarPorId(long id)
-        {
-            var aula = repositorio.ObterPorId(id);
-
-            if (aula == null)
-                throw new NegocioException($"Aula de id {id} não encontrada");
-
-            var aberto = await AulaDentroPeriodo(aula);
-
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-
-            string disciplinaId = await ObterDisciplinaIdAulaEOL(usuarioLogado, aula, usuarioLogado.EhProfessorCj());
-
-            return MapearParaDto(aula, disciplinaId, aberto);
-        }
-
         public async Task<bool> AulaDentroPeriodo(Aula aula)
         {
             return await AulaDentroPeriodo(aula.TurmaId, aula.DataAula);
@@ -86,6 +70,25 @@ namespace SME.SGP.Aplicacao
                 return true;
 
             return await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoAula(turma, DateTime.Now, bimestreAtual, bimestreAula);
+        }
+
+        public async Task<AulaConsultaDto> BuscarPorId(long id)
+        {
+            var aula = repositorio.ObterPorId(id);
+
+            if (aula == null)
+                throw new NegocioException($"Aula de id {id} não encontrada");
+
+            if (aula.Excluido)
+                throw new NegocioException($"Aula de id {id} não encontrada");
+
+            var aberto = await AulaDentroPeriodo(aula);
+
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+
+            string disciplinaId = await ObterDisciplinaIdAulaEOL(usuarioLogado, aula, usuarioLogado.EhProfessorCj());
+
+            return MapearParaDto(aula, disciplinaId, aberto);
         }
 
         public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
@@ -143,23 +146,6 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
             return ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplina, usuarioLogado, usuarioRF);
-        }
-
-        private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplina, Usuario usuarioLogado, string usuarioRF)
-        {
-            foreach (var periodoEscolar in periodosEscolares.Periodos)
-            {
-                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, disciplina, usuarioRF))
-                {
-                    yield return new DataAulasProfessorDto
-                    {
-                        Data = aula.DataAula,
-                        IdAula = aula.Id,
-                        AulaCJ = aula.AulaCJ,
-                        Bimestre = periodoEscolar.Bimestre
-                    };
-                }
-            }
         }
 
         public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)
@@ -246,6 +232,23 @@ namespace SME.SGP.Aplicacao
             dto.VerificarSomenteLeitura(disciplinaId);
 
             return dto;
+        }
+
+        private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplina, Usuario usuarioLogado, string usuarioRF)
+        {
+            foreach (var periodoEscolar in periodosEscolares.Periodos)
+            {
+                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, disciplina, usuarioRF))
+                {
+                    yield return new DataAulasProfessorDto
+                    {
+                        Data = aula.DataAula,
+                        IdAula = aula.Id,
+                        AulaCJ = aula.AulaCJ,
+                        Bimestre = periodoEscolar.Bimestre
+                    };
+                }
+            }
         }
 
         private async Task<string> ObterDisciplinaIdAulaEOL(Usuario usuarioLogado, Aula aula, bool ehCJ)
