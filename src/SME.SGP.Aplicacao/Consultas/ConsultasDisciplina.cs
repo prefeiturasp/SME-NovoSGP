@@ -353,7 +353,7 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
-        private IEnumerable<DisciplinaResposta> MapearComponentes(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
+        public IEnumerable<DisciplinaResposta> MapearComponentes(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
         {
             foreach (var componenteCurricular in componentesCurriculares)
                 yield return new DisciplinaResposta()
