@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import shortid from 'shortid';
 import { Switch } from 'antd';
-import { CampoData, Auditoria, Loader } from '~/componentes';
+import { CampoData, Auditoria, Loader, ButtonGroup } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
@@ -887,41 +887,18 @@ const FrequenciaPlanoAula = () => {
       <Card>
         <div className="col-md-12">
           <div className="row">
-            <div className="col-md-12 d-flex justify-content-end pb-4">
-              <Button
-                id={shortid.generate()}
-                label="Voltar"
-                icon="arrow-left"
-                color={Colors.Azul}
-                border
-                className="mr-2"
-                onClick={onClickVoltar}
-              />
-              <Button
-                id={shortid.generate()}
-                label="Cancelar"
-                color={Colors.Roxo}
-                border
-                className="mr-2"
-                onClick={onClickCancelar}
-                disabled={!modoEdicaoFrequencia && !modoEdicaoPlanoAula}
-              />
-              <Loader loading={carregandoSalvar} tip="">
-                <Button
-                  id={shortid.generate()}
-                  label="Salvar"
-                  color={Colors.Roxo}
-                  border
-                  bold
-                  className="mr-2"
-                  onClick={() => onClickSalvar(true)}
-                  disabled={
-                    desabilitarCampos ||
-                    (!modoEdicaoFrequencia && !modoEdicaoPlanoAula)
-                  }
-                />
-              </Loader>
-            </div>
+            <ButtonGroup
+              somenteConsulta={somenteConsulta}
+              permissoesTela={permissoesTela}
+              onClickVoltar={onClickVoltar}
+              onClickBotaoPrincipal={() => onClickSalvar(true)}
+              onClickCancelar={onClickCancelar}
+              labelBotaoPrincipal="Salvar"
+              desabilitarBotaoPrincipal={
+                desabilitarCampos ||
+                (!modoEdicaoFrequencia && !modoEdicaoPlanoAula)
+              }
+            />
           </div>
           <div className="row">
             <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
