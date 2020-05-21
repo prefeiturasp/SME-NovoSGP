@@ -34,6 +34,10 @@ const CampoNota = props => {
     store => store.conselhoClasse.notaConceitoPosConselhoAtual
   );
 
+  const podeEditarNota = useSelector(
+    store => store.conselhoClasse.podeEditarNota
+  );
+
   const desabilitarCampos = useSelector(
     store => store.conselhoClasse.desabilitarCampos
   );
@@ -167,7 +171,11 @@ const CampoNota = props => {
         max={10}
         step={0.5}
         className={abaixoMedia ? 'borda-abaixo-media' : ''}
-        desabilitado={alunoDesabilitado || desabilitarCampos || !dentroPeriodo}
+        desabilitado={
+          (alunoDesabilitado && !podeEditarNota) ||
+          desabilitarCampos ||
+          !dentroPeriodo
+        }
       />
     );
   };
