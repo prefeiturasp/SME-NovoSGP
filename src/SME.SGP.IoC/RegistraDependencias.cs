@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
@@ -260,8 +261,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRequestHandler<ObterPodeCadastrarAulaPorDataQuery, PodeCadastrarAulaPorDataRetornoDto>, ObterPodeCadastrarAulaPorDataQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery, IEnumerable<EventoAulaDiaDto>>, ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery, IEnumerable<EventoAulaDto>>, ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQueryHandler>();
-            services.TryAddScoped<IRequestHandler<ObterUsuarioLogadoQuery, Usuario>, ObterUsuarioLogadoQueryHandler>();            
-
+            services.TryAddScoped<IRequestHandler<ObterUsuarioLogadoQuery, Usuario>, ObterUsuarioLogadoQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterUltimaVersaoQuery, string>, ObterUltimaVersaoQueryHandler>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
