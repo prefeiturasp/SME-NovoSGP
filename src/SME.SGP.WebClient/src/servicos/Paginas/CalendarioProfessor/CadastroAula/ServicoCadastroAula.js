@@ -14,7 +14,6 @@ class ServicoCadastroAula {
       url = `${url}/${id}`;
     }
     return api[metodo](url, aula);
-    // return api.post('v1/calendarios/professores/aulas/', aula);
   };
 
   obterGradePorComponenteETurma = (
