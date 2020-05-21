@@ -305,7 +305,7 @@ namespace SME.SGP.Dominio.Servicos
             List<DateTime> diasParaAlterarRecorrencia = new List<DateTime>();
             ObterDiasDaRecorrencia(dataRecorrencia, fimRecorrencia, diasParaAlterarRecorrencia);
             var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaAlterarRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf, aula.AulaPaiId ?? aula.Id);
-            if (datasComRegistro.Count() > 0)
+            if (datasComRegistro != null && datasComRegistro.Any())
                 aulasQueDeramErro.AddRange(
                         datasComRegistro.Select(d =>
                             (d, $"Já existe uma aula criada neste dia para este componente curricular")
@@ -380,9 +380,8 @@ namespace SME.SGP.Dominio.Servicos
         private async Task GerarAulaDeRecorrenciaParaDias(Aula aula, Usuario usuario, IEnumerable<PodePersistirNaDataRetornoEolDto> datasParaPersistencia, IEnumerable<DateTime> datasComRegistro)
         {
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
-            List<DateTime> datasParaGeracao = datasParaPersistencia.Select(a => a.Data).ToList();
 
-            if (datasComRegistro.Count() > 0)
+            if (datasComRegistro.Any())
                 aulasQueDeramErro.AddRange(
                         datasComRegistro.Select(d =>
                             (d, $"Já existe uma aula criada neste dia para este componente curricular")
@@ -433,7 +432,7 @@ namespace SME.SGP.Dominio.Servicos
             ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia, diasParaIncluirRecorrencia);
 
             var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia, aula.TurmaId, aula.DisciplinaId, usuario.CodigoRf);
-            if (datasComRegistro.Count() > 0)
+            if (datasComRegistro != null && datasComRegistro.Any())
                 diasParaIncluirRecorrencia.RemoveAll(d => datasComRegistro.Contains(d));
 
             List<PodePersistirNaDataRetornoEolDto> datasPersistencia = new List<PodePersistirNaDataRetornoEolDto>();

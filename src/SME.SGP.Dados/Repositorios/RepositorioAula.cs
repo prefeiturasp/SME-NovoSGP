@@ -52,29 +52,6 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf, long? aulaPaiId = null)
-        {
-            var query = @"select DATE(data_aula)
-                 from aula
-                where not excluido
-                  and DATE(data_aula) = ANY(@datas)
-                  and turma_id = @turmaId
-                  and disciplina_id = @disciplinaId
-                  and professor_rf = @professorRf";
-
-            if (aulaPaiId.HasValue)
-                query += " and ((aula_pai_id is null and id <> @aulaPaiId) or (aula_pai_id is not null and aula_pai_id <> @aulaPaiId))";
-
-            return (await database.Conexao.QueryAsync<DateTime>(query.ToString(), new
-            {
-                datas,
-                turmaId,
-                disciplinaId,
-                professorRf,
-                aulaPaiId
-            }));
-        }
-
         public async Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, long atividadeAvaliativaId)
         {
             var query = @"select *
@@ -426,7 +403,7 @@ namespace SME.SGP.Dados.Repositorios
                         }, param: new { id }).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf)
+        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf, long? aulaPaiId = null)
         {
             var query = @"select DATE(data_aula)
                  from aula
@@ -436,12 +413,16 @@ namespace SME.SGP.Dados.Repositorios
                   and disciplina_id = @disciplinaId
                   and professor_rf = @professorRf";
 
+            if (aulaPaiId.HasValue)
+                query += " and ((aula_pai_id is null and id <> @aulaPaiId) or (aula_pai_id is not null and aula_pai_id <> @aulaPaiId))";
+
             return (await database.Conexao.QueryAsync<DateTime>(query.ToString(), new
             {
                 datas,
                 turmaId,
                 disciplinaId,
-                professorRf
+                professorRf,
+                aulaPaiId
             }));
         }
 
