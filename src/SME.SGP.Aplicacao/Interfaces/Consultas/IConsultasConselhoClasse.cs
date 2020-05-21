@@ -11,6 +11,6 @@ namespace SME.SGP.Aplicacao
     {
         ConselhoClasse ObterPorId(long conselhoClasseId);
         Task<(int, bool)> ValidaConselhoClasseUltimoBimestre(Turma turma);
-        Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false);
+        Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false, bool consideraHistorico = false);
     }
 }
