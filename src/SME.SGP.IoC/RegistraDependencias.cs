@@ -262,6 +262,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery, IEnumerable<EventoAulaDiaDto>>, ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery, IEnumerable<EventoAulaDto>>, ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterUsuarioLogadoQuery, Usuario>, ObterUsuarioLogadoQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterRelatorioSemestralPorTurmaSemestreAlunoQuery, RelatorioSemestralAlunoDto>, ObterRelatorioSemestralPorTurmaSemestreAlunoQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterBimestreAtualQuery, int>, ObterBimestreAtualQueryHandler>();
+            services.TryAddScoped<IRequestHandler<ObterListaSemestresRelatorioPAPQuery, List<SemestreAcompanhamentoDto>>, ObterListaSemestresRelatorioPAPQueryHandler>();
             services.TryAddScoped<IRequestHandler<ObterUltimaVersaoQuery, string>, ObterUltimaVersaoQueryHandler>();
         }
 
