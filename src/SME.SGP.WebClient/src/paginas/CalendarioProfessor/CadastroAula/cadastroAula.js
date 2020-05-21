@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import { Form, Formik } from 'formik';
@@ -31,6 +31,8 @@ import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 function CadastroDeAula({ match, location }) {
   const { id, tipoCalendarioId } = match.params;
 
+  const refForm = useRef();
+
   const [validacoes, setValidacoes] = useState({
     disciplinaId: Yup.string().required('Informe o componente curricular'),
     dataAula: Yup.string()
@@ -46,15 +48,10 @@ function CadastroDeAula({ match, location }) {
 
   const turmaSelecionada = useSelector(store => store.usuario.turmaSelecionada);
   const [somenteLeitura, setSomenteLeitura] = useState(false);
-  const [edicao, setEdicao] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [exibirModalExclusao, setExibirModalExclusao] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
   const [controlaGrade, setControlaGrade] = useState(true);
-  const [grade, setGrade] = useState({
-    quantidadeAulasGrade: 0,
-    quantidadeAulasRestante: 0,
-  });
   const [gradeAtingida, setGradeAtingida] = useState(false);
 
   const { diaAula } = queryString.parse(location.search);
@@ -118,25 +115,49 @@ function CadastroDeAula({ match, location }) {
     history.push('/calendario-escolar/calendario-professor');
   };
 
-  const obterAula = useCallback(() => {
+  const obterAula = useCallback(async () => {
+    const carregarComponentesCurriculares = async idTurma => {
+      setCarregandoDados(true);
+      const respostaComponentes = await servicoDisciplina
+        .obterDisciplinasPorTurma(idTurma)
+        .catch(e => erros(e))
+        .finally(() => setCarregandoDados(false));
+
+      if (respostaComponentes && respostaComponentes.status == 200) {
+        setListaComponentes(respostaComponentes.data);
+        return respostaComponentes.data;
+      }
+    };
+    const componentes = await carregarComponentesCurriculares(
+      turmaSelecionada.turma
+    );
     if (id) {
-      setEdicao(true);
       setCarregandoDados(true);
       servicoCadastroAula
         .obterPorId(id)
         .then(resposta => {
-          resposta.data.dataAula = window.moment(resposta.data.dataAula);
-          setAula(resposta.data);
-          const componenteSelecionado = obterComponenteSelecionadoPorId(
-            aula.disciplinaId
-          );
-          if (ehRegenciaEja(componenteSelecionado)) {
-            setAula(aulaState => {
-              return {
-                ...aulaState,
-                quantidade: 5,
-              };
-            });
+          const respostaAula = resposta.data;
+          respostaAula.dataAula = window.moment(respostaAula.dataAula);
+          setAula(respostaAula);
+          if (componentes) {
+            const componenteSelecionado = componentes.find(
+              c => c.codigoComponenteCurricular == respostaAula.disciplinaId
+            );
+            carregarGrade(
+              componenteSelecionado,
+              respostaAula.dataAula,
+              respostaAula.tipoAula,
+              respostaAula.tipoAula == 1,
+              respostaAula.quantidade
+            );
+            if (ehRegenciaEja(componenteSelecionado)) {
+              setAula(aulaState => {
+                return {
+                  ...aulaState,
+                  quantidade: 5,
+                };
+              });
+            }
           }
         })
         .catch(e => {
@@ -144,75 +165,76 @@ function CadastroDeAula({ match, location }) {
           navegarParaCalendarioProfessor();
           setCarregandoDados(false);
         });
-    } else setAula(aulaInicial);
+    } else if (componentes && componentes.length == 1) {
+      setAula({
+        ...aulaInicial,
+        disciplinaId: String(componentes[0].codigoComponenteCurricular),
+      });
+
+      carregarGrade(
+        componentes[0],
+        aulaInicial.dataAula,
+        aulaInicial.tipoAula,
+        aulaInicial.tipoAula == 1,
+        aulaInicial.quantidade
+      );
+    }
   }, [id, turmaSelecionada.turma]);
 
-  const defineGradeRegenteEja = () => {
+  const defineGradeRegenteEja = quantidadeAulasRestantes => {
     setAula(aulaState => {
       return {
         ...aulaState,
         quantidade: 5,
       };
     });
-  };
-
-  const defineGrade = (dadosGrade, componenteSelecionado) => {
-    setGrade(dadosGrade);
-    const quantidade = dadosGrade.quantidadeAulasRestante;
-
-    if (ehRegenciaEja(componenteSelecionado)) {
-      defineGradeRegenteEja();
-    } else if (controlaGrade)
-      setValidacoes(validacoesState => {
-        return {
-          ...validacoesState,
-          quantidade: Yup.number().when('tipoAula', {
-            is: val => val == 1,
-            then: Yup.number().when('id', {
-              is: val => val,
-              then: Yup.number()
-                .typeError('O valor informado deve ser um número')
-                .nullable()
-                .max(
-                  quantidade + aula.quantidade,
-                  `A quantidade máxima de aulas permitidas é ${quantidade +
-                    aula.quantidade}.`
-                ),
-              otherwise: Yup.number()
-                .typeError('O valor informado deve ser um número')
-                .nullable()
-                .max(
-                  quantidade,
-                  `A quantidade máxima de aulas permitidas é ${quantidade}.`
-                ),
-            }),
-            otherwise: Yup.number()
-              .typeError('O valor informado deve ser um número')
-              .nullable()
-              .required('Informe a quantidade de aulas'),
-          }),
-        };
-      });
-
-    if (quantidade === 1) {
-      setAula(aulaState => {
-        return {
-          ...aulaState,
-          quantidade,
-        };
-      });
-    } else if (ehRegenciaEja(componenteSelecionado)) {
-      defineGradeRegenteEja();
+    if (!id) {
+      setQuantidadeBloqueada(true);
+      setGradeAtingida(quantidadeAulasRestantes == 0);
     }
   };
 
-  const removeGrade = () => {
-    setGrade({
-      quantidadeAulasGrade: 0,
-      quantidadeAulasRestante: 0,
+  const defineGradeRegistroNovoComValidacoes = quantidadeAulasRestante => {
+    setValidacoes(validacoesState => {
+      return {
+        ...validacoesState,
+        quantidade: Yup.number()
+          .typeError('O valor informado deve ser um número')
+          .nullable()
+          .required('Informe a quantidade de aulas')
+          .max(
+            quantidadeAulasRestante,
+            `A quantidade máxima de aulas permitidas é ${quantidadeAulasRestante}.`
+          ),
+      };
     });
-    setGradeAtingida(false);
+    if (quantidadeAulasRestante == 0) {
+      setQuantidadeBloqueada(true);
+      setGradeAtingida(true);
+      setControlaGrade(true);
+    }
+  };
+
+  const defineGradeEdicaoComValidacoes = quantidadeAulasRestante => {
+    setValidacoes(validacoesState => {
+      return {
+        ...validacoesState,
+        quantidade: Yup.number()
+          .typeError('O valor informado deve ser um número')
+          .nullable()
+          .required('Informe a quantidade de aulas')
+          .max(
+            quantidadeAulasRestante,
+            `A quantidade máxima de aulas permitidas é ${quantidadeAulasRestante}.`
+          ),
+      };
+    });
+  };
+
+  const removeGrade = () => {
+    refForm.current.handleReset();
     setControlaGrade(false);
+    setQuantidadeBloqueada(false);
     setValidacoes(validacoesState => {
       return {
         ...validacoesState,
@@ -224,8 +246,60 @@ function CadastroDeAula({ match, location }) {
     });
   };
 
+  const defineGrade = useCallback(
+    (
+      dadosGrade,
+      componenteSelecionado,
+      tipoAula,
+      aplicarGrade,
+      quantidadeAula
+    ) => {
+      refForm.current.handleReset();
+      const quantidade = dadosGrade.quantidadeAulasRestante;
+      if (tipoAula == 1) {
+        if (ehRegenciaEja(componenteSelecionado)) {
+          defineGradeRegenteEja(quantidade);
+        } else if (aplicarGrade) {
+          if (!id) {
+            if (quantidade === 1) {
+              //defineGrade limite 1 aula
+              setQuantidadeBloqueada(true);
+              setAula(aulaState => {
+                return {
+                  ...aulaState,
+                  quantidade,
+                };
+              });
+            } else if (ehRegenciaEja(componenteSelecionado)) {
+              defineGradeRegenteEja();
+            } else {
+              //define grade registro novo com validações
+              defineGradeRegistroNovoComValidacoes(
+                dadosGrade.quantidadeAulasRestante
+              );
+            }
+          } else {
+            //define grade para edição
+            defineGradeEdicaoComValidacoes(
+              dadosGrade.quantidadeAulasRestante + quantidadeAula
+            );
+          }
+        } else {
+          removeGrade();
+        }
+      } else removeGrade();
+    },
+    [aula.quantidade, controlaGrade, ehRegenciaEja]
+  );
+
   const carregarGrade = useCallback(
-    (componenteSelecionado, dataAula) => {
+    (
+      componenteSelecionado,
+      dataAula,
+      tipoAula,
+      aplicarGrade,
+      quantidadeAula
+    ) => {
       if (componenteSelecionado && dataAula) {
         setCarregandoDados(true);
         servicoCadastroAula
@@ -237,8 +311,16 @@ function CadastroDeAula({ match, location }) {
           )
           .then(respostaGrade => {
             if (respostaGrade.status === 200) {
-              defineGrade(respostaGrade.data, componenteSelecionado);
-            } else removeGrade();
+              defineGrade(
+                respostaGrade.data,
+                componenteSelecionado,
+                tipoAula,
+                aplicarGrade,
+                quantidadeAula
+              );
+            } else {
+              removeGrade();
+            }
           })
           .catch(e => {
             erros(e);
@@ -246,7 +328,7 @@ function CadastroDeAula({ match, location }) {
           .finally(() => setCarregandoDados(false));
       }
     },
-    [turmaSelecionada.turma, turmaSelecionada.modalidade]
+    [turmaSelecionada.turma, turmaSelecionada.modalidade, defineGrade]
   );
 
   const salvar = valoresForm => {
@@ -264,34 +346,6 @@ function CadastroDeAula({ match, location }) {
       .catch(e => erros(e))
       .finally(() => setCarregandoDados(false));
   };
-
-  const carregarComponentesCurriculares = useCallback(idTurma => {
-    setCarregandoDados(true);
-    servicoDisciplina
-      .obterDisciplinasPorTurma(idTurma)
-      .then(respostaComponentes => {
-        setListaComponentes(respostaComponentes.data);
-        if (respostaComponentes.data.length === 1) {
-          const componenteSelecionado = respostaComponentes.data[0];
-          let { quantidade } = aula;
-          if (ehRegenciaEja(componenteSelecionado)) {
-            quantidade = 5;
-          }
-          setAula(aulaState => {
-            return {
-              ...aulaState,
-              disciplinaId: String(
-                componenteSelecionado.codigoComponenteCurricular
-              ),
-              quantidade,
-            };
-          });
-          if (!id) carregarGrade(componenteSelecionado, aula.dataAula);
-        }
-      })
-      .catch(e => erros(e))
-      .finally(() => setCarregandoDados(false));
-  }, []);
 
   const obterDataFormatada = () => {
     if (aula.dataAula) {
@@ -319,7 +373,13 @@ function CadastroDeAula({ match, location }) {
           : 0,
       };
     });
-    carregarGrade(componenteSelecionado, aula.dataAula);
+    carregarGrade(
+      componenteSelecionado,
+      aula.dataAula,
+      aula.tipoAula,
+      aula.tipoAula == 1,
+      aula.quantidade
+    );
   };
 
   const onClickCancelar = async () => {
@@ -345,7 +405,13 @@ function CadastroDeAula({ match, location }) {
     const componenteSelecionado = obterComponenteSelecionadoPorId(
       aula.disciplinaId
     );
-    carregarGrade(componenteSelecionado, data);
+    carregarGrade(
+      componenteSelecionado,
+      data,
+      aula.tipoAula,
+      controlaGrade,
+      aula.quantidade
+    );
   };
 
   const onChangeTipoAula = e => {
@@ -356,12 +422,17 @@ function CadastroDeAula({ match, location }) {
     let tipoRecorrencia = aula.recorrenciaAula;
     const componente = obterComponenteSelecionadoPorId(aula.disciplinaId);
 
-    if (!ehAulaNormal && !ehRegenciaEja(componente)) {
+    if (!ehAulaNormal) {
       tipoRecorrencia = recorrencia.AULA_UNICA;
-      setControlaGrade(false);
-    } else {
-      carregarGrade(componente, aula.dataAula);
+      setQuantidadeBloqueada(false);
     }
+    carregarGrade(
+      componente,
+      aula.dataAula,
+      e.target.value,
+      ehAulaNormal,
+      aula.quantidade
+    );
     setAula(aulaState => {
       return {
         ...aulaState,
@@ -414,63 +485,6 @@ function CadastroDeAula({ match, location }) {
     );
     obterAula();
   }, [obterAula, match.url]);
-
-  useEffect(() => {
-    carregarComponentesCurriculares(turmaSelecionada.turma);
-  }, [carregarComponentesCurriculares, turmaSelecionada.turma]);
-
-  useEffect(() => {
-    if (aula.id && listaComponentes.length && aula.dataAula) {
-      const componenteSelecionado = obterComponenteSelecionadoPorId(
-        aula.disciplinaId
-      );
-      carregarGrade(componenteSelecionado, aula.dataAula);
-    }
-  }, [
-    listaComponentes,
-    aula.id,
-    aula.disciplinaId,
-    aula.dataAula,
-    carregarGrade,
-    obterComponenteSelecionadoPorId,
-  ]);
-
-  useEffect(() => {
-    if (aula.disciplinaId && !edicao && grade.quantidadeAulasRestante == 0) {
-      setGradeAtingida(true);
-    } else {
-      setGradeAtingida(false);
-    }
-  }, [edicao, grade.quantidadeAulasRestante, aula.disciplinaId]);
-
-  useEffect(() => {
-    let quantidadeBloqueadaParaAlteracao = false;
-    if (!carregandoDados) {
-      if (aula.tipoAula == 1) {
-        if (
-          (gradeAtingida && controlaGrade) ||
-          !aula.disciplinaId ||
-          (!id && grade.quantidadeAulasRestante <= 1 && controlaGrade)
-        ) {
-          quantidadeBloqueadaParaAlteracao = true;
-        } else {
-          const componenteSelecionado = obterComponenteSelecionadoPorId(
-            aula.disciplinaId
-          );
-          if (ehRegenciaEja(componenteSelecionado)) {
-            quantidadeBloqueadaParaAlteracao = true;
-          }
-        }
-        setQuantidadeBloqueada(quantidadeBloqueadaParaAlteracao);
-      } else setQuantidadeBloqueada(false);
-    }
-  }, [
-    carregandoDados,
-    gradeAtingida,
-    controlaGrade,
-    aula.disciplinaId,
-    aula.tipoAula,
-  ]);
 
   useEffect(() => {
     if (!carregandoDados && aula.somenteLeitura) {
@@ -533,6 +547,7 @@ function CadastroDeAula({ match, location }) {
               onSubmit={salvar}
               validateOnChange
               validateOnBlur
+              ref={refForm}
             >
               {form => (
                 <Form className="col-md-12 mb-8">
@@ -660,7 +675,6 @@ function CadastroDeAula({ match, location }) {
           />
         </Card>
       </Loader>
-      {controlaGrade.toString()}
     </Container>
   );
 }
