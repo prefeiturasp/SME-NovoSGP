@@ -96,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
             var retorno = database.Conexao.Query<int?>(query.ToString(),
                 new { tipoCalendarioId, dreId, ueId, data = data.Date });
 
-            return retorno == null || retorno.Sum() == 0;
+            return retorno != null && retorno.Sum() > 0;
         }
         public bool EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
         {
@@ -612,7 +612,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(whereTipoCalendario);
             query.AppendLine("and e.dre_id is null and e.ue_id is null");
             query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
-            query.AppendLine("and e.letivo = 2");
+            query.AppendLine("and e.letivo <> 2");
         }
 
         private static void ObterContadorEventosNaoLetivosUE(string cabecalho, string whereTipoCalendario, StringBuilder query)
@@ -621,7 +621,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(whereTipoCalendario);
             query.AppendLine("and e.ue_id = @ueId");
             query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
-            query.AppendLine("and e.letivo = 2");
+            query.AppendLine("and e.letivo <> 2");
         }
 
         #region Listar
