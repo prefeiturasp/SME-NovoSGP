@@ -20,7 +20,7 @@ namespace SME.SGP.Infra
         public int Id { get; set; }
 
         [Required(ErrorMessage = "A quantidade de aulas deve ser informada")]
-        [Range(1, 99, ErrorMessage = "A quantidade de aulas deve ser maior que zero")]
+        [Range(1, int.MaxValue, ErrorMessage = "A quantidade de aulas deve ser maior que zero")]
         public int Quantidade { get; set; }
 
         [EnumeradoRequirido(ErrorMessage = "A recorrência deve ser informada")]
