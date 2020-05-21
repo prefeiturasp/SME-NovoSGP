@@ -58,5 +58,25 @@ namespace SME.SGP.Infra
         {
             return string.IsNullOrEmpty(NomeSocialAluno) ? NomeAluno : NomeSocialAluno;
         }
+
+        public bool PodeEditarNotaConceito()
+        {
+            if (CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo &&
+                CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
+                CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado &&
+                CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade &&
+                CodigoSituacaoMatricula != SituacaoMatriculaAluno.Concluido)
+                return false;
+
+            return true;
+        }
+        public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar)
+        {
+            if(!PodeEditarNotaConceito())
+            {
+                return DataSituacao >= periodoEscolar.PeriodoFim;
+            }
+            return true;
+        }
     }
 }
