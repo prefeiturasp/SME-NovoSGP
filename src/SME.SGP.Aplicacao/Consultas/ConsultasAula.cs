@@ -250,11 +250,15 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterDisciplinaIdAulaEOL(Usuario usuarioLogado, Aula aula, bool ehCJ)
         {
-            IEnumerable<DisciplinaResposta> disciplinasUsuario;
+            IEnumerable<DisciplinaResposta> disciplinasUsuario = Enumerable.Empty<DisciplinaResposta>();
             if (ehCJ)
                 disciplinasUsuario = await consultasDisciplina.ObterComponentesCJ(null, aula.TurmaId, string.Empty, long.Parse(aula.DisciplinaId), usuarioLogado.CodigoRf);
             else
-                disciplinasUsuario = await servicoEol.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
+            {
+                var componentesEOL = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
+                disciplinasUsuario = consultasDisciplina.MapearComponentes(componentesEOL);
+            }
+
             var disciplina = disciplinasUsuario?.FirstOrDefault(x => x.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
             var disciplinaId = disciplina == null ? null : disciplina.CodigoComponenteCurricular.ToString();
             return disciplinaId;
