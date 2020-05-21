@@ -253,9 +253,9 @@ namespace SME.SGP.Aplicacao
                                     {
                                         DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                         Disciplina = nomeDisciplina,
-                                        NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota ?? (default),
-                                        ehConceito = notaConceitoBimestre.ConceitoId.HasValue,
-                                        conceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty
+                                        NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota,
+                                        EhConceito = notaConceitoBimestre.ConceitoId.HasValue,
+                                        ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty
                                     });
                                 }
                         }
