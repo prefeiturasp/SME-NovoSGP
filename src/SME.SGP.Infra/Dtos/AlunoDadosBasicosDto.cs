@@ -29,7 +29,8 @@ namespace SME.SGP.Infra
             => !(new[] { SituacaoMatriculaAluno.Ativo,
                         SituacaoMatriculaAluno.Rematriculado,
                         SituacaoMatriculaAluno.PendenteRematricula,
-                        SituacaoMatriculaAluno.SemContinuidade
+                        SituacaoMatriculaAluno.SemContinuidade,
+                        SituacaoMatriculaAluno.Concluido
                     }).Contains(SituacaoCodigo);
 
 
