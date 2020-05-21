@@ -95,7 +95,8 @@ const DadosConselhoClasse = props => {
         turmaCodigo,
         ehFinal ? '0' : bimestreConsulta,
         codigoEOL,
-        ehFinal
+        ehFinal,
+        usuario.turmaSelecionada.consideraHistorico
       ).catch(e => {
         erros(e);
         if (e && e.response && e.response.status === 601) {
