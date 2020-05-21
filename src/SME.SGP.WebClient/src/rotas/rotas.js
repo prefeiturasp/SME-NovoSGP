@@ -26,7 +26,7 @@ import TipoEventosLista from '~/paginas/CalendarioEscolar/TipoEventos/tipoEvento
 import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosForm';
 import SemPermissao from '~/paginas/SemPermissao/sem-permissao';
 import RotasDto from '~/dtos/rotasDto';
-import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula';
+import CadastroAula from '~/paginas/CalendarioProfessor/CadastroAula/cadastroAula';
 import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/frequenciaPlanoAula';
 import AvaliacaoForm from '~/paginas/CalendarioEscolar/Avaliacao/avaliacaoForm';
 import Notas from '~/paginas/DiarioClasse/Notas/notas';
