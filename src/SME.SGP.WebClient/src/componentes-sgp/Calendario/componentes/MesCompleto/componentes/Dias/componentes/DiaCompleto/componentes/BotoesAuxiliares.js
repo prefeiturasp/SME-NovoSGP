@@ -43,7 +43,7 @@ const BotoesAuxiliares = ({
         color={Colors.Roxo}
         disabled={
           !permissaoTela?.podeIncluir ||
-          podeCadastrarAula ||
+          !podeCadastrarAula ||
           !dentroPeriodo ||
           desabilitado
         }
