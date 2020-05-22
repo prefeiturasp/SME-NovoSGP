@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             this.servicoDeNotasConceitos = servicoDeNotasConceitos ?? throw new ArgumentNullException(nameof(servicoDeNotasConceitos));
         }
 
-        public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false)
+        public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false, bool consideraHistorico = false)
         {
             var turma = await ObterTurma(turmaCodigo);
 
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             var bimestreFechamento = !ehFinal ? bimestre : (await ObterPeriodoUltimoBimestre(turma)).Bimestre;
             PeriodoFechamentoBimestre periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestreFechamento, fechamentoTurma.PeriodoEscolarId);
 
-            var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre);
+            var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
             var mediaAprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
             return new ConselhoClasseAlunoResumoDto()
@@ -67,13 +67,13 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoBimestre periodoFechamentoBimestre)
+        private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoBimestre periodoFechamentoBimestre, bool consideraHistorico = false)
         {
             var dataReferencia = periodoFechamentoBimestre != null ?
                 periodoFechamentoBimestre.FinalDoFechamento :
                 (await ObterPeriodoUltimoBimestre(turma)).PeriodoFim;
 
-            var tipoNota = await servicoDeNotasConceitos.ObterNotaTipo(turma.CodigoTurma, dataReferencia);
+            var tipoNota = await servicoDeNotasConceitos.ObterNotaTipo(turma.CodigoTurma, dataReferencia, consideraHistorico);
             if (tipoNota == null)
                 throw new NegocioException("Não foi possível identificar o tipo de nota da turma");
 

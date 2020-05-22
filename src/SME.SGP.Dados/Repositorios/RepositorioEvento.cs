@@ -85,18 +85,18 @@ namespace SME.SGP.Dados.Repositorios
 
             StringBuilder query = new StringBuilder();
 
-            ObterContadorEventosNaoLetivosSME(cabecalho, whereTipoCalendario, query);
+            ObterContadorEventosNaoLetivosSME(cabecalho, whereTipoCalendario, query, true);
 
             if (!string.IsNullOrEmpty(ueId))
             {
                 query.AppendLine("UNION");
-                ObterContadorEventosNaoLetivosUE(cabecalho, whereTipoCalendario, query);
+                ObterContadorEventosNaoLetivosUE(cabecalho, whereTipoCalendario, query, true);
             }
 
             var retorno = database.Conexao.Query<int?>(query.ToString(),
                 new { tipoCalendarioId, dreId, ueId, data = data.Date });
 
-            return retorno == null || retorno.Sum() == 0;
+            return retorno != null && retorno.Sum() > 0;
         }
         public bool EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
         {
@@ -105,12 +105,12 @@ namespace SME.SGP.Dados.Repositorios
 
             StringBuilder query = new StringBuilder();
 
-            ObterContadorEventosNaoLetivosSME(cabecalho, whereTipoCalendario, query);
+            ObterContadorEventosNaoLetivosSME(cabecalho, whereTipoCalendario, query, false);
 
             if (!string.IsNullOrEmpty(ueId))
             {
                 query.AppendLine("UNION");
-                ObterContadorEventosNaoLetivosUE(cabecalho, whereTipoCalendario, query);
+                ObterContadorEventosNaoLetivosUE(cabecalho, whereTipoCalendario, query, false);
             }
 
             var retorno = database.Conexao.Query<int?>(query.ToString(),
@@ -606,22 +606,24 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(")");
         }
 
-        private static void ObterContadorEventosNaoLetivosSME(string cabecalho, string whereTipoCalendario, StringBuilder query)
+        private static void ObterContadorEventosNaoLetivosSME(string cabecalho, string whereTipoCalendario, StringBuilder query, bool letivo)
         {
+            var queryLetivo = letivo ? "and e.letivo in (1,3)" : "and e.letivo = 2";
             query.AppendLine(cabecalho);
             query.AppendLine(whereTipoCalendario);
             query.AppendLine("and e.dre_id is null and e.ue_id is null");
             query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
-            query.AppendLine("and e.letivo = 2");
+            query.AppendLine(queryLetivo);
         }
 
-        private static void ObterContadorEventosNaoLetivosUE(string cabecalho, string whereTipoCalendario, StringBuilder query)
+        private static void ObterContadorEventosNaoLetivosUE(string cabecalho, string whereTipoCalendario, StringBuilder query, bool letivo)
         {
+            var queryLetivo = letivo ? "and e.letivo in (1,3)" : "and e.letivo = 2";
             query.AppendLine(cabecalho);
             query.AppendLine(whereTipoCalendario);
             query.AppendLine("and e.ue_id = @ueId");
             query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
-            query.AppendLine("and e.letivo = 2");
+            query.AppendLine(queryLetivo);
         }
 
         #region Listar
