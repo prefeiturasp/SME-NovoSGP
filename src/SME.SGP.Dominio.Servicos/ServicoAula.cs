@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IConsultasTurma consultasTurma;
         private readonly IServicoDiaLetivo servicoDiaLetivo;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
@@ -54,7 +54,7 @@ namespace SME.SGP.Dominio.Servicos
                            IConfiguration configuration,
                            IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-                           IRepositorioTurma repositorioTurma,
+                           IConsultasTurma consultasTurma,
                            IServicoWorkflowAprovacao servicoWorkflowAprovacao,
                            IServicoUsuario servicoUsuario,
                            IUnitOfWork unitOfWork)
@@ -75,7 +75,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.comandosNotificacaoAula = comandosNotificacaoAula ?? throw new ArgumentNullException(nameof(comandosNotificacaoAula));
@@ -145,6 +145,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false)
         {
+            var turma = await ObterTurma(aula.TurmaId);
             if (!ehRecorrencia)
             {
                 var aulasExistentes = await repositorioAula.ObterAulasPorDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
@@ -165,11 +166,6 @@ namespace SME.SGP.Dominio.Servicos
                 if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.ToString() == aula.DisciplinaId))
                     throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
 
-                var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(aula.TurmaId);
-
-                if (turma == null)
-                    throw new NegocioException("Turma não localizada.");
-
                 aula.AtualizaTurma(turma);
             }
 
@@ -177,9 +173,14 @@ namespace SME.SGP.Dominio.Servicos
                 aula.PodeSerAlterada(usuario);
 
             var temLiberacaoExcepcionalNessaData = servicoDiaLetivo.ValidaSeEhLiberacaoExcepcional(aula.DataAula, aula.TipoCalendarioId, aula.UeId);
+            var diaLetivo = temLiberacaoExcepcionalNessaData ? true : servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId);
 
-            if (!temLiberacaoExcepcionalNessaData && !servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId))
-                throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
+            if (!temLiberacaoExcepcionalNessaData && !diaLetivo)
+            {
+                var bimestre = consultasPeriodoEscolar.ObterBimestre(aula.DataAula, turma.ModalidadeCodigo);
+                if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre))
+                    throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
+            }
 
             if (aula.RecorrenciaAula != RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
                 throw new NegocioException("Uma aula do tipo Reposição não pode ser recorrente.");
@@ -284,6 +285,9 @@ namespace SME.SGP.Dominio.Servicos
 
             return "Aula cadastrada com sucesso.";
         }
+
+        private async Task<Turma> ObterTurma(string turmaId)
+            => await consultasTurma.ObterComUeDrePorCodigo(turmaId) ?? throw new NegocioException("Turma não localizada.");
 
         private static bool ReposicaoDeAulaPrecisaDeAprovacao(int quantidadeAulasExistentesNoDia, Turma turma)
         {
