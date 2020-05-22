@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
                 planoAnualLista.Add(await ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
             }
 
-            var periodosEscolares = ObterPeriodoEscolar(filtro.AnoLetivo, filtro.ModalidadePlanoAnual);
+            var periodosEscolares = ObterPeriodoEscolar(filtro.TurmaId, filtro.AnoLetivo);
 
             if (periodosEscolares == null)
                 return null;
@@ -263,7 +263,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Turma não encontrada.");
             }
             var modalidade = turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, turma.Semestre);
             if (tipoCalendario == null)
             {
                 throw new NegocioException("Tipo de calendário não encontrado.");
@@ -275,20 +275,6 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Período escolar não encontrado.");
             }
             return periodos;
-        }
-
-        private IEnumerable<PeriodoEscolar> ObterPeriodoEscolar(int anoLetivo, Modalidade modalidade)
-        {
-            var modalidadeTipoCalendario = ModalidadeParaModalidadeTipoCalendario(modalidade);
-
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeTipoCalendario);
-
-            if (tipoCalendario == null)
-                return null;
-
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
-
-            return periodoEscolar;
         }
 
         private bool VerificaSeBimestreEhExpandido(IEnumerable<PeriodoEscolar> periodosEscolares, int bimestre)

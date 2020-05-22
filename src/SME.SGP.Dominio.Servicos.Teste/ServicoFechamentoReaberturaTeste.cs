@@ -38,6 +38,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IServicoNotificacao> servicoNotificacao;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IUnitOfWork> unitOfWork;
+        private readonly Mock<IRepositorioSupervisorEscolaDre> repositorioSupervisorEscolaDre;
 
         public ServicoFechamentoReaberturaTeste()
         {
@@ -51,8 +52,9 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
             servicoEvento = new Mock<IServicoEvento>();
             repositorioEvento = new Mock<IRepositorioEvento>();
+            repositorioSupervisorEscolaDre = new Mock<IRepositorioSupervisorEscolaDre>();
             servicoFechamentoReabertura = new ServicoFechamentoReabertura(repositorioFechamentoReabertura.Object, unitOfWork.Object, comandosWorkflowAprovacao.Object, servicoUsuario.Object,
-                servicoEOL.Object, servicoNotificacao.Object, repositorioEventoTipo.Object, servicoEvento.Object, repositorioEvento.Object);
+                servicoEOL.Object, servicoNotificacao.Object, repositorioEventoTipo.Object, servicoEvento.Object, repositorioEvento.Object, repositorioSupervisorEscolaDre.Object);
         }
 
         [Theory, ClassData(typeof(DatasParaTestarFechamento))]

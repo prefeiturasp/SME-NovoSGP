@@ -186,9 +186,14 @@ namespace SME.SGP.Dominio.Servicos
                 VerificaNotificacaoBimestralCalendario(tipoCalendario, dataAtual, ModalidadeTipoCalendario.FundamentalMedio);
 
             // Verifica Notificação EJA
-            tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.EJA, dataAtual.Month > 6 ? 2 : 1);
-            if (tipoCalendario != null)
-                VerificaNotificacaoBimestralCalendario(tipoCalendario, dataAtual, ModalidadeTipoCalendario.EJA);
+            var tiposCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.EJA, dataAtual);
+            if (tiposCalendario != null)
+            {
+                foreach (var tipo in tiposCalendario)
+                {
+                    VerificaNotificacaoBimestralCalendario(tipo, dataAtual, ModalidadeTipoCalendario.EJA);
+                }
+            }
         }
 
         public void VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId)
@@ -271,7 +276,7 @@ namespace SME.SGP.Dominio.Servicos
             StringBuilder mensagem = new StringBuilder();
             mensagem.AppendLine($"<p>Abaixo segue a lista de turmas com alunos que tiveram frequência geral abaixo de <b>{percentualCritico}%</b> no <b>{bimestre}º bimestre</b> de <b>{ano}</b> da <b>{tipoEscola.ShortName()} {ueNome} (DRE {dreAbreviacao})</b>.</p>");
 
-            foreach(var turmaAgrupada in turmasAgrupadas)
+            foreach (var turmaAgrupada in turmasAgrupadas)
             {
                 var alunosDaTurma = servicoEOL.ObterAlunosPorTurma(turmaAgrupada.Key).Result;
                 var alunosFaltososTurma = alunosDaTurma.Where(c => turmaAgrupada.Any(a => a.AlunoCodigo == c.CodigoAluno));
@@ -284,7 +289,7 @@ namespace SME.SGP.Dominio.Servicos
                 mensagem.AppendLine("<td style='padding: 5px;'>Percentual de Frequência</td>");
                 mensagem.AppendLine("</tr>");
 
-                foreach(var aluno in alunosFaltososTurma.OrderBy(a => a.NomeAluno))
+                foreach (var aluno in alunosFaltososTurma.OrderBy(a => a.NomeAluno))
                 {
                     var percentualFrequenciaAluno = 100 - turmaAgrupada.FirstOrDefault(c => c.AlunoCodigo == aluno.CodigoAluno).PercentualFaltas;
 
@@ -302,7 +307,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotficarFuncionariosAlunosFaltososBimestre(IEnumerable<(Cargo? Cargo, string Id)> funcionariosEol, string titulo, string mensagem, string ueCodigo, string dreCodigo)
         {
-            foreach(var funcionario in funcionariosEol)
+            foreach (var funcionario in funcionariosEol)
             {
                 var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id);
 
@@ -326,7 +331,7 @@ namespace SME.SGP.Dominio.Servicos
             var alunosFaltosos = repositorioFrequencia.ObterAlunosFaltosos(dataReferencia, tipoCalendarioId);
 
             // Faltou em todas as aulas do dia e tem pelo menos 3 aulas registradas
-            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && (( c.modalidadeCodigo == Modalidade.Fundamental && c.Ano <= 5) ||  c.QuantidadeAulas >= 3 ));
+            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && ((c.modalidadeCodigo == Modalidade.Fundamental && c.Ano <= 5) || c.QuantidadeAulas >= 3));
 
 
             var alunosFaltasTodosOsDias = alunosFaltasTodasAulasDoDia
@@ -367,7 +372,7 @@ namespace SME.SGP.Dominio.Servicos
             mensagem.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
             mensagem.AppendLine("</tr>");
 
-            foreach (var aluno in alunos.OrderBy(a=> a.NomeAluno))
+            foreach (var aluno in alunos.OrderBy(a => a.NomeAluno))
             {
                 mensagem.AppendLine("<tr>");
                 mensagem.Append($"<td style='padding: 5px;'>{aluno.NumeroAlunoChamada}</td>");
@@ -611,12 +616,12 @@ namespace SME.SGP.Dominio.Servicos
                     mensagemUsuario.Append($"<br />Disciplina: <b>{disciplina.Nome}</b>");
                     mensagemUsuario.Append($"<br />Aulas:");
 
-                mensagemUsuario.Append("<ul>");
-                foreach (var aula in turmaSemRegistro.Aulas)
-                {
-                    mensagemUsuario.Append($"<li>Data: {aula.DataAula.ToString("dd/MM/yyyy")}</li>");
-                }
-                mensagemUsuario.Append("</ul>");
+                    mensagemUsuario.Append("<ul>");
+                    foreach (var aula in turmaSemRegistro.Aulas)
+                    {
+                        mensagemUsuario.Append($"<li>Data: {aula.DataAula.ToString("dd/MM/yyyy")}</li>");
+                    }
+                    mensagemUsuario.Append("</ul>");
 
                     var hostAplicacao = configuration["UrlFrontEnd"];
                     var parametros = $"turma={turmaSemRegistro.CodigoTurma}&DataAula={turmaSemRegistro.Aulas.FirstOrDefault().DataAula.ToShortDateString()}&disciplina={turmaSemRegistro.DisciplinaId}";
@@ -802,7 +807,7 @@ namespace SME.SGP.Dominio.Servicos
                                     });
                             }
                         };
-                    }; 
+                    };
                 }
             }
         }
