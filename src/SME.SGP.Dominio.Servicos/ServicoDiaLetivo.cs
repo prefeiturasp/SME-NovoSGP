@@ -23,7 +23,7 @@ namespace SME.SGP.Dominio.Servicos
             if (periodoEscolar == null)
                 return false;
 
-            if (!repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(tipoCalendarioId, data.Local(), dreId, ueId))
+            if (repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(tipoCalendarioId, data.Local(), dreId, ueId))
                 return false;
 
             return data.DayOfWeek != DayOfWeek.Saturday && data.DayOfWeek != DayOfWeek.Sunday;

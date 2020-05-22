@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import { Container } from './auditoria.css';
 
 const Auditoria = ({
   criadoPor,
@@ -10,32 +10,29 @@ const Auditoria = ({
   alteradoRf,
   ignorarMarginTop,
 }) => {
-  const [criado] = useState(
-    criadoEm ? window.moment(criadoEm) : window.moment()
-  );
-  const [alterado] = useState(
-    alteradoEm ? window.moment(alteradoEm) : window.moment()
-  );
+  const [criado, setCriado] = useState(window.moment());
 
-  const Container = styled.div`
-    object-fit: contain;
-    font-family: Roboto;
-    font-size: 9px;
-    font-weight: bold;
-    color: #42474a;
-    margin-top: ${ignorarMarginTop ? '0px' : '16px'};
-    width: 100%;
-  `;
+  const [alterado, setAlterado] = useState(window.moment());
+
+  useEffect(() => {
+    if (criadoEm) setCriado(window.moment(criadoEm));
+    console.log(criado);
+  }, [criadoEm]);
+
+  useEffect(() => {
+    if (alteradoEm) setAlterado(window.moment(alteradoEm));
+    console.log(alterado);
+  }, [alteradoEm]);
 
   return (
-    <Container>
+    <Container ignorarMarginTop={ignorarMarginTop}>
       {criadoPor ? (
         <div
           className={`col-xs-12 col-md-12 col-lg-12 d-flex justify-content-start ${
             ignorarMarginTop ? '' : 'mt-2'
           }`}
         >
-          INSERIDO por {criadoPor} {criadoRf && `(rf: ${criadoRf})`} em{' '}
+          INSERIDO por {criadoPor} {criadoRf && `(${criadoRf})`} em{' '}
           {`${criado.format('DD/MM/YYYY')} às ${criado.format('HH:mm')}`}
         </div>
       ) : (
@@ -43,7 +40,7 @@ const Auditoria = ({
       )}
       {alteradoPor ? (
         <div className="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-start mt-2">
-          ALTERADO por {alteradoPor} {alteradoRf && `(rf: ${alteradoRf})`} em{' '}
+          ALTERADO por {alteradoPor} {alteradoRf && `(${alteradoRf})`} em{' '}
           {`${alterado.format('DD/MM/YYYY')}  às ${alterado.format('HH:mm')}`}
         </div>
       ) : (
