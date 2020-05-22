@@ -351,6 +351,7 @@ const CalendarioEscolar = () => {
 
   const aoSelecionarDre = dre => {
     setDreSelecionada(dre);
+    setUnidadeEscolarSelecionada();
   };
 
   useEffect(() => {
