@@ -643,7 +643,6 @@ function CadastroDeAula({ match, location }) {
                         name="quantidade"
                         form={form}
                         min={1}
-                        max={5}
                         onChange={onChangeQuantidadeAula}
                         disabled={quantidadeBloqueada}
                       />
