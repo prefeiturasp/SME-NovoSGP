@@ -56,7 +56,7 @@ where a.login = $1 and
 	   ($3 = true and 
 	    $2 = '4ee1e074-37d6-e911-abd6-f81654fe895d' and 
 	    act.dre_id in (select dre_id from v_abrangencia_nivel_dre where login = $1 and historico = false) and 
-	   	act.ue_id in (select ue_id from v_abrangencia_nivel_ue where login = '1180827' and historico = false)) or
+	   	act.ue_id in (select ue_id from v_abrangencia_nivel_ue where login = $1 and historico = false)) or
 	   ($3 = false and $2 = '4ee1e074-37d6-e911-abd6-f81654fe895d' and a.historico = false)) and 
       ($4 = 0 or ($4 <> 0 and act.modalidade_codigo = $4)) and
       ($5 = 0 or ($5 <> 0 and act.turma_semestre = $5)) and
@@ -119,7 +119,7 @@ where a.login = $1 and
 	   ($3 = true and 
 	    $2 = '4ee1e074-37d6-e911-abd6-f81654fe895d' and 
 	    act.dre_id in (select dre_id from v_abrangencia_nivel_dre where login = $1 and historico = false) and 
-	   	act.ue_id in (select ue_id from v_abrangencia_nivel_ue where login = '1180827' and historico = false)) or
+	   	act.ue_id in (select ue_id from v_abrangencia_nivel_ue where login = $1 and historico = false)) or
 	   ($3 = false and $2 = '4ee1e074-37d6-e911-abd6-f81654fe895d' and a.historico = false)) and
       ($4 = 0 or ($4 <> 0 and act.modalidade_codigo = $4)) and
       ($5 = 0 or ($5 <> 0 and act.turma_semestre = $5)) and
