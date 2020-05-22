@@ -15,6 +15,7 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IServicoEOL servicoEOL;
@@ -25,7 +26,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public ServicoFechamentoReabertura(IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IUnitOfWork unitOfWork,
             IComandosWorkflowAprovacao comandosWorkflowAprovacao, IServicoUsuario servicoUsuario, IServicoEOL servicoEOL, IServicoNotificacao servicoNotificacao,
-            IRepositorioEventoTipo repositorioEventoTipo, IServicoEvento servicoEvento, IRepositorioEvento repositorioEvento)
+            IRepositorioEventoTipo repositorioEventoTipo, IServicoEvento servicoEvento, IRepositorioEvento repositorioEvento, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
         {
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
@@ -36,6 +37,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
 
         public async Task<string> AlterarAsync(FechamentoReabertura fechamentoReabertura, DateTime dataInicialAnterior, DateTime dataFimAnterior, bool confirmacacaoAlteracaoHierarquica)
@@ -219,20 +221,6 @@ namespace SME.SGP.Dominio.Servicos
         {
             var fechamentoReabertura = fechamentoReaberturaParaAtualizar.Item1;
 
-            var notificacao = new Notificacao()
-            {
-                UeId = fechamentoReabertura.Ue is null ? null : fechamentoReabertura.Ue.CodigoUe,
-                Ano = fechamentoReabertura.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = fechamentoReabertura.Dre.CodigoDre,
-                Titulo = "Alteração em datas de fechamento de bimestre",
-                Tipo = NotificacaoTipo.Calendario,
-                Mensagem = $@"A {(fechamentoReabertura.EhParaDre() ? "SME" : "Dre")} realizou alterações em datas de reabertura do período de fechamento de bimestre e as datas definidas pela {(fechamentoReabertura.EhParaDre() ? fechamentoReabertura.Dre.Nome : fechamentoReabertura.Ue.Nome)} foram ajustadas. As novas datas são: <br />
-                                  { fechamentoReabertura.TipoCalendario.Nome } - { fechamentoReabertura.TipoCalendario.AnoLetivo }
-                                  { (fechamentoReaberturaParaAtualizar.Item2 ? " - Nova data de início do período: " + fechamentoReabertura.Inicio.ToString("dd/MM/yyyy") : string.Empty) }
-                                  { (fechamentoReaberturaParaAtualizar.Item2 ? " - Nova data de fim do período: " + fechamentoReabertura.Fim.ToString("dd/MM/yyyy") : string.Empty) }"
-            };
-
             if (fechamentoReabertura.EhParaDre())
             {
                 var adminsSgpDre = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Dre.CodigoDre).Result;
@@ -241,9 +229,7 @@ namespace SME.SGP.Dominio.Servicos
                     foreach (var adminSgpUe in adminsSgpDre)
                     {
                         var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
-                        notificacao.UsuarioId = usuario.Id;
-
-                        servicoNotificacao.Salvar(notificacao);
+                        var notificacao = CriaNovaNotificacao(fechamentoReaberturaParaAtualizar, fechamentoReabertura, usuario.Id);
                         await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
                     }
                 }
@@ -257,26 +243,97 @@ namespace SME.SGP.Dominio.Servicos
                     foreach (var adminSgpUe in adminsSgpUe)
                     {
                         var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
-                        notificacao.UsuarioId = usuario.Id;
 
-                        servicoNotificacao.Salvar(notificacao);
+                        var notificacao = CriaNovaNotificacao(fechamentoReaberturaParaAtualizar, fechamentoReabertura, usuario.Id);
+
                         await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
                     }
                 }
 
                 var diretores = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor);
-                if (diretores == null || !diretores.Any())
-                    throw new NegocioException($"Não foram localizados diretores para Ue {fechamentoReabertura.Ue.CodigoUe}.");
 
-                foreach (var diretor in diretores)
+                if (diretores != null && diretores.Any())
                 {
-                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
-                    notificacao.UsuarioId = usuario.Id;
+                    foreach (var diretor in diretores)
+                    {
+                        var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
 
-                    servicoNotificacao.Salvar(notificacao);
-                    await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
+                        var notificacao = CriaNovaNotificacao(fechamentoReaberturaParaAtualizar, fechamentoReabertura, usuario.Id);
+
+                        await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
+                    }
                 }
+                else
+                {
+                    var ads = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.AD);
+                    if (ads != null && ads.Any())
+                    {
+                        foreach (var ad in ads)
+                        {
+                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(ad.CodigoRf);
+
+                            var notificacao = CriaNovaNotificacao(fechamentoReaberturaParaAtualizar, fechamentoReabertura, usuario.Id);
+
+                            await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
+                        }
+                    }
+                    else
+                    {
+                        var supervisor = repositorioSupervisorEscolaDre.ObtemPorUe(fechamentoReabertura.Ue.CodigoUe);
+                        if (supervisor != null)
+                        {
+
+                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(supervisor.SupervisorId);
+
+                            var notificacao = CriaNovaNotificacao(fechamentoReaberturaParaAtualizar, fechamentoReabertura, usuario.Id);
+
+                            await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
+
+                        }
+                        else
+                        {
+                            var supervisoresTecnicos = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.SupervisorTecnico);
+                            if (supervisoresTecnicos != null && supervisoresTecnicos.Any())
+                            {
+                                foreach (var supervisoresTecnico in supervisoresTecnicos)
+                                {
+                                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(supervisoresTecnico.CodigoRf);
+
+                                    var notificacao = CriaNovaNotificacao(fechamentoReaberturaParaAtualizar, fechamentoReabertura, usuario.Id);
+
+                                    await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+
+
             }
+        }
+
+        private Notificacao CriaNovaNotificacao((FechamentoReabertura, bool, bool) fechamentoReaberturaParaAtualizar, FechamentoReabertura fechamentoReabertura, long usuarioId)
+        {
+            var notificacao = new Notificacao()
+            {
+                UeId = fechamentoReabertura.Ue is null ? null : fechamentoReabertura.Ue.CodigoUe,
+                Ano = fechamentoReabertura.CriadoEm.Year,
+                Categoria = NotificacaoCategoria.Aviso,
+                DreId = fechamentoReabertura.Dre.CodigoDre,
+                Titulo = "Alteração em datas de fechamento de bimestre",
+                Tipo = NotificacaoTipo.Calendario,
+                UsuarioId = usuarioId,
+                Mensagem = $@"A {(fechamentoReabertura.EhParaDre() ? "SME" : "Dre")} realizou alterações em datas de reabertura do período de fechamento de bimestre e as datas definidas pela {(fechamentoReabertura.EhParaDre() ? fechamentoReabertura.Dre.Nome : fechamentoReabertura.Ue.Nome)} foram ajustadas. As novas datas são: <br />
+                                  { fechamentoReabertura.TipoCalendario.Nome } - { fechamentoReabertura.TipoCalendario.AnoLetivo }
+                                  { (fechamentoReaberturaParaAtualizar.Item2 ? " - Nova data de início do período: " + fechamentoReabertura.Inicio.ToString("dd/MM/yyyy") : string.Empty) }
+                                  { (fechamentoReaberturaParaAtualizar.Item2 ? " - Nova data de fim do período: " + fechamentoReabertura.Fim.ToString("dd/MM/yyyy") : string.Empty) }"
+            };
+
+            servicoNotificacao.Salvar(notificacao);
+
+            return notificacao;
         }
 
         private EventoTipo ObterTipoEvento()
