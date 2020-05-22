@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao
 
             // filtra objetivos do jurema com os objetivos cadastrados no plano anual nesse bimestre
             return objetivosJurema.
-                Where(c => objetivosPlano.Any(o => o.ObjetivoAprendizagemJuremaId == c.Id));
+                Where(c => objetivosPlano.Any(o => o.ObjetivoAprendizagemJuremaId == c.Id)).OrderBy(c=>c.Codigo);
         }
 
 
