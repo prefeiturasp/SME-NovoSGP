@@ -103,7 +103,7 @@ const FrequenciaPlanoAula = () => {
   const dadosAulaFrequencia = useSelector(
     state => state.calendarioProfessor.dadosAulaFrequencia
   );
-  const [temPeriodoAberto, setTemPeriodoAberto] = useState(false);
+  const [temPeriodoAberto, setTemPeriodoAberto] = useState(true);
 
   const obterDatasDeAulasDisponiveis = useCallback(
     async disciplinaId => {
@@ -854,12 +854,15 @@ const FrequenciaPlanoAula = () => {
           className="mb-2"
         />
       )}
-      {disciplinaSelecionada &&
-      dataSelecionada &&
-      !temPeriodoAberto &&
-      !carregandoGeral ? (
-        <AlertaPeriodoEncerrado exibir />
-      ) : null}
+      <AlertaPeriodoEncerrado
+        exibir={
+          disciplinaSelecionada &&
+          dataSelecionada &&
+          !temPeriodoAberto &&
+          !carregandoMaterias &&
+          !carregandoGeral
+        }
+      />
       {temAvaliacao ? (
         <div className="row">
           <Grid cols={12} className="px-4">
@@ -1002,6 +1005,7 @@ const FrequenciaPlanoAula = () => {
                               frequenciaId={frequenciaId}
                               onChangeFrequencia={onChangeFrequencia}
                               permissoesTela={permissoesTela}
+                              temPeriodoAberto={temPeriodoAberto}
                             />
                           </div>
                           {exibirAuditoria && (
