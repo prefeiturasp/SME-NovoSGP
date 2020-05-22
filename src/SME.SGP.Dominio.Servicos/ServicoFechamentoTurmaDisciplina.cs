@@ -224,10 +224,14 @@ namespace SME.SGP.Dominio.Servicos
             await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim);
 
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
+
+            DisciplinaDto disciplinaEOL = await consultasDisciplina.ObterDisciplina(fechamentoTurmaDisciplina.DisciplinaId);
+            if (disciplinaEOL == null)
+                throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
+
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (componenteSemNota && id > 0)
             {
-                var disciplinaEOL = await consultasDisciplina.ObterDisciplina(fechamentoTurmaDisciplina.DisciplinaId);
                 fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoEscolar.PeriodoFim, disciplinaEOL);
             }
             else
@@ -274,8 +278,9 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (alunosComNotaAlterada.Length > 0)
                     Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turmaFechamento, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
-
-                Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota));
+                
+                if (disciplinaEOL.RegistraFrequencia)
+                    Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota));
 
                 return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
             }
