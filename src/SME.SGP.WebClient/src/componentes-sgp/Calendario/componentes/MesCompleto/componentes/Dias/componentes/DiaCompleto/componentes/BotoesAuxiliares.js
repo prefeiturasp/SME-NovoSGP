@@ -40,7 +40,12 @@ const BotoesAuxiliares = ({
         onClick={onClickNovaAula}
         label="Nova Aula"
         color={Colors.Roxo}
-        disabled={!permissaoTela?.podeIncluir || !dentroPeriodo || desabilitado}
+        disabled={
+          !permissaoTela?.podeIncluir ||
+          !podeCadastrarAula ||
+          !dentroPeriodo ||
+          desabilitado
+        }
       />
     </BotoesAuxiliaresEstilo>
   );
