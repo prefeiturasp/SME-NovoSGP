@@ -11,6 +11,7 @@ export const estadoInicial = {
   eventos: {
     meses: [],
   },
+  diaSelecionado: undefined,
 };
 
 export default (state, action) => {
