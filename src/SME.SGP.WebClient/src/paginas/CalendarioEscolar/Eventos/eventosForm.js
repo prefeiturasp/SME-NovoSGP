@@ -742,7 +742,7 @@ const EventosForm = ({ match }) => {
             className="font-weight-bold"
             key={`calendario-${shortid.generate()}`}
           >
-            `- ${calendario.descricaoTipoCalendario}`
+            {`${calendario.descricaoTipoCalendario}`}
           </div>
         );
       }
