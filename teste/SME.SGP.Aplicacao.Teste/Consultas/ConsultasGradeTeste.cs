@@ -1,8 +1,6 @@
 using Moq;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -40,22 +38,22 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             Assert.True(gradeDto.Id == 1);
         }
 
-        [Fact]
-        public async Task DeveObterHorasGradeComponente()
-        {
-            var horasGrade = await consultasGrade.ObterHorasGradeComponente(1, 7, 4);
+        //[Fact]
+        //public async Task DeveObterHorasGradeComponente()
+        //{
+        //    var horasGrade = await consultasGrade.ObterHorasGradeComponente(1, 7, 4);
 
-            Assert.True(horasGrade == 5);
-        }
+        //    Assert.True(horasGrade == 5);
+        //}
 
-        [Fact]
-        public async Task DeveRetornarQuatroAulasGradeParaSRMEAEE()
-        {
-            var semana = (DateTime.Now.DayOfYear / 7) + 1;
-            var aulasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor("123", 1030, semana, DateTime.Now);
+        //[Fact]
+        //public async Task DeveRetornarQuatroAulasGradeParaSRMEAEE()
+        //{
+        //    var semana = (DateTime.Now.DayOfYear / 7) + 1;
+        //    var aulasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor("123", 1030, semana, DateTime.Now);
 
-            Assert.True(aulasGrade.QuantidadeAulasGrade == 4);
-        }
+        //    Assert.True(aulasGrade.QuantidadeAulasGrade == 4);
+        //}
 
         private void Setup()
         {
