@@ -26,70 +26,63 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<PodeCadastrarAulaPorDataRetornoDto> Handle(ObterPodeCadastrarAulaPorDataQuery request, CancellationToken cancellationToken)
         {
-
             var hoje = DateTime.Today;
 
+            // Evento Letivo
             var temEventoLetivoNoDia = repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
-
             if (temEventoLetivoNoDia)
                 return new PodeCadastrarAulaPorDataRetornoDto(true, string.Empty);
 
+            // Periodo Escolar
             var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, request.DataAula);
+            if (periodoEscolar == null)
+                return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula fora do periodo escolar");
 
+            // Domingo
             if (request.DataAula.DayOfWeek == DayOfWeek.Sunday)
                 return new PodeCadastrarAulaPorDataRetornoDto(false, string.Empty);
 
-            else
+            // Evento não letivo
+            var temEventoNaoLetivoNoDia = repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
+            if (temEventoNaoLetivoNoDia)
+                return new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois existe um evento de dia não letivo");
+
+            if (request.DataAula.Year == hoje.Year)
             {
-                var temEventoNaoLetivoNoDia = repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
-
-                if (temEventoNaoLetivoNoDia)
+                if (request.DataAula <= hoje)
                 {
-                    return new PodeCadastrarAulaPorDataRetornoDto(false, string.Empty);
-                }
-
-                if (request.DataAula.Year == hoje.Year)
-                {
-                    if (request.DataAula <= hoje)
+                    // Consultar fechamento só se não for data no bimestre corrente
+                    var periodoEscolarAtual = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, hoje);
+                    if (periodoEscolarAtual == null || periodoEscolar.Id != periodoEscolarAtual.Id)
                     {
-                        if (periodoEscolar != null)
-                            return new PodeCadastrarAulaPorDataRetornoDto(true, string.Empty);
+                        var periodoFechamento = await repositorioPeriodoFechamento.ObterPeriodoPorUeDataBimestreAsync(request.Turma.UeId, request.DataAula, request.Bimestre);
+                        if (periodoFechamento != null)
+                        {
+                            if ( periodoFechamento.ExisteFechamentoEmAberto(hoje))
+                                return new PodeCadastrarAulaPorDataRetornoDto(true);
+                        }
                         else
                         {
+                            FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(request.TipoCalendarioId, request.Turma.UeId, hoje);
 
-                            var periodoFechamento = await repositorioPeriodoFechamento.ObterPeriodoPorUeDataBimestreAsync(request.Turma.UeId, request.DataAula, request.Bimestre);
-
-                            if (periodoFechamento != null)
-                            {
-                                if ( periodoFechamento.ExisteFechamentoEmAberto(hoje))
-                                    return new PodeCadastrarAulaPorDataRetornoDto(true, string.Empty);
-                            }
-                            else
-                            {
-                                FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(request.TipoCalendarioId, request.Turma.UeId, hoje);
-                                if (periodoFechamentoReabertura != null)
-                                    return new PodeCadastrarAulaPorDataRetornoDto(true, string.Empty);
-                                else return new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
-                            }
-
+                            return periodoFechamentoReabertura != null ?
+                                new PodeCadastrarAulaPorDataRetornoDto(true) :
+                                new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
                         }
                     }
-                    else
-                        return new PodeCadastrarAulaPorDataRetornoDto(true, string.Empty);
-
                 }
                 else
-                {
-                    FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(request.TipoCalendarioId, request.Turma.UeId, hoje);
-                    if (periodoFechamentoReabertura != null)
-                        return new PodeCadastrarAulaPorDataRetornoDto(true, string.Empty);
-                    else return new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
-                }
+                    return new PodeCadastrarAulaPorDataRetornoDto(true);
             }
-            return new PodeCadastrarAulaPorDataRetornoDto(true, string.Empty);
+            else
+            {
+                FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(request.TipoCalendarioId, request.Turma.UeId, hoje);
+                return periodoFechamentoReabertura != null ?
+                    new PodeCadastrarAulaPorDataRetornoDto(true) :
+                    new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
+            }
 
-
-
+            return new PodeCadastrarAulaPorDataRetornoDto(true);
         }
 
         private async Task<FechamentoReabertura> ObterPeriodoFechamentoReabertura(long tipoCalendarioId, long ueId, DateTime hoje)
