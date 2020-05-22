@@ -312,7 +312,6 @@ const PlanoAula = props => {
                         return (
                           <Badge
                             role="button"
-                            disabled={desabilitarCampos}
                             onClick={() => selecionarMateria(materia.id)}
                             id={materia.id}
                             alt={materia.descricao}
