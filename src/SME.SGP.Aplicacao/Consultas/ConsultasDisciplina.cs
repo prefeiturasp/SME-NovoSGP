@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
@@ -25,7 +26,8 @@ namespace SME.SGP.Aplicacao
             IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
             IServicoUsuario servicoUsuario,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-            IRepositorioComponenteCurricular repositorioComponenteCurricular)
+            IRepositorioComponenteCurricular repositorioComponenteCurricular,
+            IRepositorioTurma repositorioTurma)
         {
             this.servicoEOL = servicoEOL ??
                 throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -39,6 +41,8 @@ namespace SME.SGP.Aplicacao
                 throw new System.ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ??
                 throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.repositorioTurma = repositorioTurma ??
+                throw new System.ArgumentNullException(nameof(repositorioTurma));
         }
 
         public IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas)
@@ -97,6 +101,10 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
             }
 
+            var turma = repositorioTurma.ObterPorCodigo(codigoTurma);
+            if (turma == null)
+                throw new NegocioException("Não foi possível encontrar a turma");
+
             if (usuarioLogado.EhProfessorCj())
             {
                 var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
@@ -114,7 +122,7 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     Compartilhada = disciplina.Compartilhada,
                     LancaNota = disciplina.LancaNota,
-                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma)
+                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo)
                 })?.ToList();
 
                 if (!usuarioLogado.EhProfessor())
@@ -147,6 +155,10 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
             }
 
+            var turma = repositorioTurma.ObterPorCodigo(codigoTurma);
+            if (turma == null)
+                throw new NegocioException("Não foi possível encontrar a turma");
+
             if (usuario.EhProfessorCj())
             {
                 var componentesCJ = await ObterComponentesCJ(null, codigoTurma,
@@ -167,7 +179,7 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     Compartilhada = disciplina.Compartilhada,
                     LancaNota = disciplina.LancaNota,
-                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma)
+                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo)
                 })?.ToList();
             }
 
