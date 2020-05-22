@@ -15,6 +15,7 @@ function TurmasDropDown({
   modalidadeId,
   valor,
   dados,
+  allowClear,
 }) {
   const [listaTurmas, setListaTurmas] = useState([]);
 
@@ -63,6 +64,7 @@ function TurmasDropDown({
       placeholder="Turma"
       valueSelect={valor}
       disabled={form && (listaTurmas.length === 0 || listaTurmas.length === 1)}
+      allowClear={allowClear}
     />
   );
 }
@@ -75,6 +77,7 @@ TurmasDropDown.propTypes = {
   modalidadeId: t.string,
   valor: t.string,
   dados: t.oneOfType([t.object]),
+  allowClear: t.bool,
 };
 
 TurmasDropDown.defaultProps = {
@@ -85,6 +88,7 @@ TurmasDropDown.defaultProps = {
   modalidadeId: null,
   valor: '',
   dados: null,
+  allowClear: true,
 };
 
 export default TurmasDropDown;
