@@ -6,5 +6,6 @@
         public bool EhEventoSme { get; set; }
         public long IdTipoCalendario { get; set; }
         public string UeId { get; set; }
+        public bool ConsideraHistorico { get; set; }
     }
 }
