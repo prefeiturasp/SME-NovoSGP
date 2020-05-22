@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
 {
     public class PodeCadastrarAulaPorDataRetornoDto
     {
-        public PodeCadastrarAulaPorDataRetornoDto(bool podeCadastrar, string mensagemPeriodo)
+        public PodeCadastrarAulaPorDataRetornoDto(bool podeCadastrar, string mensagemPeriodo = "")
         {
             PodeCadastrar = podeCadastrar;
             MensagemPeriodo = mensagemPeriodo;
