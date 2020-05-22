@@ -1354,66 +1354,91 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<EventosPorDiaRetornoQueryDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes,
               Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor, bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
         {
-            var query = new StringBuilder();
-            query.AppendLine("select distinct a.dia, a.tipoevento from(");
+            //var query = new StringBuilder();
+            //query.AppendLine("select distinct a.dia, a.tipoevento from(");
 
-            MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, true);
-            MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoGeral(calendarioEventosMesesFiltro, query, podeVisualizarEventosLocalOcorrenciaDre,
-                usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, true);
+            //MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, true);
+            //MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoGeral(calendarioEventosMesesFiltro, query, podeVisualizarEventosLocalOcorrenciaDre,
+            //    usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, true);
 
-            query.AppendLine("group by e.id, dia, tipoevento");
-            query.AppendLine("union distinct");
+            //query.AppendLine("group by e.id, dia, tipoevento");
+            //query.AppendLine("union distinct");
 
-            MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, false);
-            MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoGeral(calendarioEventosMesesFiltro, query, podeVisualizarEventosLocalOcorrenciaDre,
-                usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, false);
+            //MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, false);
+            //MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoGeral(calendarioEventosMesesFiltro, query, podeVisualizarEventosLocalOcorrenciaDre,
+            //    usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, false);
 
-            query.AppendLine("group by e.id, dia, tipoevento");
-            query.AppendLine("union distinct");
+            //query.AppendLine("group by e.id, dia, tipoevento");
+            //query.AppendLine("union distinct");
 
-            /////
+            ///////
 
-            MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, true);
-            MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoParaCriador(calendarioEventosMesesFiltro, query, true);
+            //MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, true);
+            //MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoParaCriador(calendarioEventosMesesFiltro, query, true);
 
-            query.AppendLine("group by e.id, dia, tipoevento");
-            query.AppendLine("union distinct");
+            //query.AppendLine("group by e.id, dia, tipoevento");
+            //query.AppendLine("union distinct");
 
-            MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, false);
-            MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoParaCriador(calendarioEventosMesesFiltro, query, false);
+            //MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, false);
+            //MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoParaCriador(calendarioEventosMesesFiltro, query, false);
 
-            query.AppendLine("group by e.id, dia, tipoevento");
+            //query.AppendLine("group by e.id, dia, tipoevento");
 
-            if (calendarioEventosMesesFiltro.EhEventoSme)
-            {
-                query.AppendLine("union distinct");
+            //if (calendarioEventosMesesFiltro.EhEventoSme)
+            //{
+            //    query.AppendLine("union distinct");
 
-                MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, true);
-                MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoSmeDre(calendarioEventosMesesFiltro, query, podeVisualizarEventosLocalOcorrenciaDre, usuarioTemPerfilSupervisorOuDiretor,
-                    podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, true);
+            //    MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, true);
+            //    MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoSmeDre(calendarioEventosMesesFiltro, query, podeVisualizarEventosLocalOcorrenciaDre, usuarioTemPerfilSupervisorOuDiretor,
+            //        podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, true);
 
-                query.AppendLine("group by e.id, dia, tipoevento");
-                query.AppendLine("union distinct");
+            //    query.AppendLine("group by e.id, dia, tipoevento");
+            //    query.AppendLine("union distinct");
 
-                MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, false);
-                MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoSmeDre(calendarioEventosMesesFiltro, query, podeVisualizarEventosLocalOcorrenciaDre, usuarioTemPerfilSupervisorOuDiretor,
-                    podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, false);
+            //    MontaQueryQuantidadeDeEventosPorDiaCabecalho(query, false);
+            //    MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoSmeDre(calendarioEventosMesesFiltro, query, podeVisualizarEventosLocalOcorrenciaDre, usuarioTemPerfilSupervisorOuDiretor,
+            //        podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, false);
 
-                query.AppendLine("group by e.id, dia, tipoevento");
-            }
+            //    query.AppendLine("group by e.id, dia, tipoevento");
+            //}
 
-            query.AppendLine(")a");
-            query.AppendLine("order by a.dia");
+            //query.AppendLine(")a");
+            //query.AppendLine("order by a.dia");
+
+            //return await database.Conexao.QueryAsync<EventosPorDiaRetornoQueryDto>(query.ToString(), new
+            //{
+            //    IdTipoCalendario = calendarioEventosMesesFiltro.IdTipoCalendario,
+            //    DreId = calendarioEventosMesesFiltro.DreId,
+            //    UeId = calendarioEventosMesesFiltro.UeId,
+            //    mes,
+            //    usuarioId = usuario.Id,
+            //    usuarioPerfil,
+            //    usuarioRf = usuario.CodigoRf
+            //});
+
+            var query = @"select dia, 
+                                 tipoEvento 
+                          from f_eventos_dias_pelo_mes(@login, 
+                                                       @perfil_id, 
+                                                       @historico, 
+                                                       @mes, 
+                                                       @tipo_calendario_id, 
+                                                       @considera_evento_aprovado_e_pendente_aprovacao, 
+                                                       @dre_id, 
+                                                       @ue_id, 
+                                                       @desconsidera_local_dre)";
 
             return await database.Conexao.QueryAsync<EventosPorDiaRetornoQueryDto>(query.ToString(), new
             {
-                IdTipoCalendario = calendarioEventosMesesFiltro.IdTipoCalendario,
-                DreId = calendarioEventosMesesFiltro.DreId,
-                UeId = calendarioEventosMesesFiltro.UeId,
+                login = usuario.CodigoRf,
+                perfil_id = usuarioPerfil,
+                historico = false,
                 mes,
-                usuarioId = usuario.Id,
-                usuarioPerfil,
-                usuarioRf = usuario.CodigoRf
+                tipo_calendario_id = calendarioEventosMesesFiltro.IdTipoCalendario,
+                considera_evento_aprovado_e_pendente_aprovacao = usuarioTemPerfilSupervisorOuDiretor || podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme,
+                dre_id = calendarioEventosMesesFiltro.DreId,
+                ue_id = calendarioEventosMesesFiltro.UeId,
+                desconsidera_local_dre = !podeVisualizarEventosLocalOcorrenciaDre
             });
         }
 
