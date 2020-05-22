@@ -323,8 +323,8 @@ const Bimestre = ({
                 criadoEm={bimestre.criadoEm}
                 alteradoPor={bimestre.alteradoPor}
                 alteradoEm={bimestre.alteradoEm}
-                alteradoRf={bimestre.alteradoRF > 0 && bimestre.alteradoRF}
-                criadoRf={bimestre.criadoRF > 0 && bimestre.criadoRF}
+                alteradoRf={bimestre.alteradoRf}
+                criadoRf={bimestre.criadoRf}
               />
             </Grid>
           </div>
