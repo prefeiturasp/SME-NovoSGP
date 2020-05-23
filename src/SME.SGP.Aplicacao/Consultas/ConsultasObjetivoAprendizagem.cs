@@ -22,6 +22,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasTurma consultasTurma;
         private readonly IServicoJurema servicoJurema;
         private readonly IServicoUsuario servicoUsuario;
 
@@ -31,6 +33,8 @@ namespace SME.SGP.Aplicacao
                                                      IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano,
                                                      IConfiguration configuration,
                                                      IServicoUsuario servicoUsuario,
+                                                     IConsultasPeriodoEscolar consultasPeriodoEscolar,
+                                                     IConsultasTurma consultasTurma,
                                                      IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem)
         {
             this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
@@ -38,6 +42,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.repositorioObjetivoAprendizagem = repositorioObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagem));
             this.repositorioObjetivosPlano = repositorioObjetivosPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivosPlano));
         }
@@ -79,9 +85,11 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        public async Task<IEnumerable<ComponenteCurricularSimplificadoDto>> ObterDisciplinasDoBimestrePlanoAnual(int ano, int bimestre, long turmaId, long componenteCurricularId)
+        public async Task<IEnumerable<ComponenteCurricularSimplificadoDto>> ObterDisciplinasDoBimestrePlanoAnual(DateTime dataReferencia, long turmaId, long componenteCurricularId)
         {
-            return repositorioObjetivosPlano.ObterDisciplinasDoBimestrePlanoAula(ano, bimestre, turmaId, componenteCurricularId);
+            var bimestre = await ObterBimestreAtual(dataReferencia, turmaId.ToString());
+
+            return repositorioObjetivosPlano.ObterDisciplinasDoBimestrePlanoAula(dataReferencia.Year, bimestre, turmaId, componenteCurricularId);
         }
 
         public async Task<long> ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId)
@@ -89,12 +97,15 @@ namespace SME.SGP.Aplicacao
             return repositorioObjetivosPlano.ObterIdPorObjetivoAprendizagemJurema(planoId, objetivoAprendizagemJuremaId);
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false)
+
+        public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosPlanoDisciplina(DateTime dataReferencia, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
+            var bimestre = await ObterBimestreAtual(dataReferencia, turmaId.ToString());
+
             var filtrarSomenteRegencia = regencia && !usuarioLogado.EhProfessorCj();
-            var objetivosPlano = repositorioObjetivosPlano.ObterObjetivosPlanoDisciplina(ano,
+            var objetivosPlano = repositorioObjetivosPlano.ObterObjetivosPlanoDisciplina(dataReferencia.Year,
                                                                                          bimestre,
                                                                                          turmaId,
                                                                                          componenteCurricularId,
@@ -106,6 +117,17 @@ namespace SME.SGP.Aplicacao
             // filtra objetivos do jurema com os objetivos cadastrados no plano anual nesse bimestre
             return objetivosJurema.
                 Where(c => objetivosPlano.Any(o => o.ObjetivoAprendizagemJuremaId == c.Id));
+        }
+
+
+        private async Task<int> ObterBimestreAtual(DateTime dataReferencia, string turmaId)
+        {
+            var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaId);
+
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada para consulta de objetivos de aprendizagem");
+
+            return consultasPeriodoEscolar.ObterBimestre(dataReferencia, turma.ModalidadeCodigo, turma.Semestre);
         }
 
         private async Task<List<ObjetivoAprendizagemDto>> ListarSemCache()
