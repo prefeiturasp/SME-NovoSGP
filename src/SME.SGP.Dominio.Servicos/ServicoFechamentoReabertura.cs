@@ -210,7 +210,6 @@ namespace SME.SGP.Dominio.Servicos
                 Status = EntidadeStatus.Aprovado,
                 TipoEventoId = tipoEvento.Id,
                 Migrado = false,
-                Letivo = EventoLetivo.Sim,
             };
 
             await servicoEvento.Salvar(evento, false, false, true);
