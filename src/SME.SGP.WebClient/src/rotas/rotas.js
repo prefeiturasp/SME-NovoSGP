@@ -93,6 +93,8 @@ rotas.set(`${RotasDto.PAP}`, {
   component: ResumosGraficosPAP,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PAP,
 });
 
 rotas.set(RotasDto.CALENDARIO_ESCOLAR, {
@@ -385,7 +387,7 @@ rotas.set('/calendario-escolar/tipo-feriado/editar/:id', {
   chavePermissao: RotasDto.TIPO_FERIADO,
 });
 
-rotas.set('/sem-permissao', {
+rotas.set(RotasDto.SEM_PERMISSAO, {
   breadcrumbName: 'Sem permissão',
   parent: '/',
   component: SemPermissao,
@@ -743,7 +745,8 @@ rotas.set(RotasDto.RELATORIO_PAP_ACOMPANHAMENTO, {
   component: RelatorioPAPAcompanhamento,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false, // chavePermissao: RotasDto.REINICIAR_SENHA,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_PAP_ACOMPANHAMENTO,
 });
 
 rotas.set(RotasDto.CONSELHO_CLASSE, {
