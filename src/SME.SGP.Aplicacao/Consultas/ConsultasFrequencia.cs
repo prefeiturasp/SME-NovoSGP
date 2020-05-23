@@ -265,7 +265,12 @@ namespace SME.SGP.Aplicacao
             var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(aluno.CodigoAluno, disciplinaId, bimestre.Id, TipoFrequenciaAluno.PorDisciplina);
             // Frequencia não calculada
             if (frequenciaAluno == null)
+            {
+                if (aluno.PodeEditarNotaConceito())
+                    return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = 100 };
+
                 return null;
+            }
 
             int percentualFrequencia = (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0);
             // Critico
