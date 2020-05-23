@@ -147,6 +147,14 @@ where a.login = $1 and
       ($7 = 0 or ($7 <> 0 and act.turma_ano_letivo = $7));
 $function$;
 
+CREATE OR REPLACE VIEW public.v_estrutura_eventos_calendario
+AS SELECT evento.id,
+    evento.data_inicio AS data_evento,
+    '(início)'::text AS iniciofimdesc,
+    evento.nome,
+    'aaaa'::text AS tipoevento
+   FROM evento;
+
 CREATE OR REPLACE FUNCTION public.f_eventos_calendario_por_data_inicio_fim(character varying, uuid, boolean, integer, bigint, boolean DEFAULT false, character varying DEFAULT NULL::character varying, character varying DEFAULT NULL::character varying, boolean DEFAULT false, boolean DEFAULT false)
  RETURNS SETOF v_estrutura_eventos_calendario
  LANGUAGE sql
