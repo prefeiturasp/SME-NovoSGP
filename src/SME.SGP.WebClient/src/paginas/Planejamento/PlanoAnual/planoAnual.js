@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Collapse } from 'antd';
 import Row from '~/componentes/row';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import {
   Grid,
@@ -27,10 +28,15 @@ import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import Bimestre from './bimestre';
 import history from '~/servicos/history';
 import ModalErros from './componentes/ModalErros';
+import RotasDto from '~/dtos/rotasDto';
 
 const { Panel } = Collapse;
 
 const PlanoAnual = () => {
+  const permissoesTela = useSelector(state => state.usuario.permissoes);
+  const somenteConsulta = verificaSomenteConsulta(
+    permissoesTela[RotasDto.PLANO_ANUAL]
+  );
   const turmaSelecionada = useSelector(c => c.usuario.turmaSelecionada);
   const [possuiTurmaSelecionada, setPossuiTurmaSelecionada] = useState(false);
   const [ehEja, setEhEja] = useState(false);
@@ -455,7 +461,9 @@ const PlanoAnual = () => {
               className="mr-3"
               border
               onClick={abrirCopiarConteudo}
-              disabled={emEdicao || !possuiTurmasDisponiveisParaCopia}
+              disabled={
+                somenteConsulta || emEdicao || !possuiTurmasDisponiveisParaCopia
+              }
             />
             <Button
               label="Voltar"
@@ -472,7 +480,11 @@ const PlanoAnual = () => {
               bold
               disabled={!emEdicao}
               className="mr-3"
-              disabled={!emEdicao || !Object.entries(turmaSelecionada).length}
+              disabled={
+                somenteConsulta ||
+                !emEdicao ||
+                !Object.entries(turmaSelecionada).length
+              }
               onClick={cancelar}
             />
             <Button
@@ -480,7 +492,7 @@ const PlanoAnual = () => {
               color={Colors.Roxo}
               bold
               onClick={salvar}
-              disabled={!emEdicao}
+              disabled={somenteConsulta || !emEdicao}
             />
           </div>
           <Grid cols={12} className="p-2">
