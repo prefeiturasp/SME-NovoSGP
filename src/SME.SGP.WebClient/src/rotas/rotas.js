@@ -94,6 +94,8 @@ rotas.set(`${RotasDto.PAP}`, {
   component: ResumosGraficosPAP,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PAP,
 });
 
 rotas.set(RotasDto.CALENDARIO_ESCOLAR, {
