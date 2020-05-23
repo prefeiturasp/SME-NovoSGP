@@ -744,7 +744,8 @@ rotas.set(RotasDto.RELATORIO_PAP_ACOMPANHAMENTO, {
   component: RelatorioPAPAcompanhamento,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false, // chavePermissao: RotasDto.REINICIAR_SENHA,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_PAP_ACOMPANHAMENTO,
 });
 
 rotas.set(RotasDto.CONSELHO_CLASSE, {
