@@ -57,7 +57,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
             query.Append(@"select
-	                            count(aluno_id) as total,
+	                            count(distinct aluno_id) as total,
 	                            turma.ano,
 	                            tipo_ciclo.descricao as Ciclo,
                                 tipo_ciclo.id as CicloId,
