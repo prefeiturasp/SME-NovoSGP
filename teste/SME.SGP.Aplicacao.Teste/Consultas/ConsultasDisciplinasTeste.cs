@@ -9,6 +9,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly ConsultasDisciplina consultasDisciplinas;
         private readonly Mock<IConsultasObjetivoAprendizagem> consultasObjetivoAprendizagem;
         private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCJ;
+        private readonly Mock<IRepositorioTurma> repositorioTurma;
         private readonly Mock<IRepositorioCache> repositorioCache;
         private readonly Mock<IRepositorioComponenteCurricular> repositorioComponenteCurricular;
         private readonly Mock<IServicoEOL> servicoEol;
@@ -26,7 +27,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                            consultasObjetivoAprendizagem.Object,
                                                            servicoUsuario.Object,
                                                            repositorioAtribuicaoCJ.Object,
-                                                           repositorioComponenteCurricular.Object);
+                                                           repositorioComponenteCurricular.Object,
+                                                           repositorioTurma.Object);
         }
 
         //[Fact(DisplayName = "DeveObterDisciplinasParaPlanejamento")]
