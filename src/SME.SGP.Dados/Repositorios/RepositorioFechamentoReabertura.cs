@@ -215,7 +215,8 @@ namespace SME.SGP.Dados.Repositorios
                            and TO_DATE(fr.fim::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
                            and fr.tipo_calendario_id = @tipoCalendarioId
                            and dre.dre_id = @dreCodigo
-                           and ue.ue_id = @ueCodigo";
+                           and ue.ue_id = @ueCodigo
+                           and fr.status = 1 ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoReabertura>(query, new
             {

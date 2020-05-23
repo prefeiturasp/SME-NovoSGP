@@ -6,6 +6,7 @@ import {
   setDadosRelatorioSemestral,
   setAlunosRelatorioSemestral,
   setCodigoAlunoSelecionado,
+  SetValoresSecaoRelatorioSemestral,
 } from '~/redux/modulos/relatorioSemestralPAP/actions';
 import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
@@ -65,6 +66,8 @@ class ServicoSalvarRelatorioSemestral {
     };
 
     const salvar = async (limparTodosOsDados = false) => {
+      dispatch(SetValoresSecaoRelatorioSemestral());
+
       const params = {
         relatorioSemestralId: relatorioSemestralId || 0,
         relatorioSemestralAlunoId: relatorioSemestralAlunoId || 0,
