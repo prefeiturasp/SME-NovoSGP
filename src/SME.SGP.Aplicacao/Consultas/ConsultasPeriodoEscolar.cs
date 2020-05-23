@@ -33,9 +33,9 @@ namespace SME.SGP.Aplicacao.Consultas
             return EntidadeParaDto(lista);
         }
 
-        public DateTime ObterFimPeriodoRecorrencia(long tipoCalendarioId, DateTime inicioRecorrencia, RecorrenciaAula recorrencia)
+        public async Task<DateTime> ObterFimPeriodoRecorrencia(long tipoCalendarioId, DateTime inicioRecorrencia, RecorrenciaAula recorrencia)
         {
-            var periodos = repositorio.ObterPorTipoCalendario(tipoCalendarioId);
+            var periodos = await repositorio.ObterPorTipoCalendarioAsync(tipoCalendarioId);
             if (periodos == null || !periodos.Any())
                 throw new NegocioException("Não foi possível obter os períodos deste tipo de calendário.");
 
@@ -48,10 +48,12 @@ namespace SME.SGP.Aplicacao.Consultas
                     .FirstOrDefault().PeriodoFim;
             }
             else
-            if (recorrencia == RecorrenciaAula.RepetirTodosBimestres)
             {
-                // Busca ultimo dia do ultimo periodo
-                fimRecorrencia = periodos.Max(a => a.PeriodoFim);
+                if (recorrencia == RecorrenciaAula.RepetirTodosBimestres)
+                {
+                    // Busca ultimo dia do ultimo periodo
+                    fimRecorrencia = periodos.Max(a => a.PeriodoFim);
+                }
             }
 
             return fimRecorrencia;
