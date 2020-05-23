@@ -146,6 +146,12 @@ namespace SME.SGP.Aplicacao
                     permitePlanoSemObjetivos = !(consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt64(aula.DisciplinaId)));
                 }
 
+                // Caso a turma for de  educação física multisseriadas, os objetivos não devem ser exigidos
+                if (!permitePlanoSemObjetivos)
+                {
+                    permitePlanoSemObjetivos = abrangenciaTurma.Ano.Equals("0");
+                }
+
                 if (!permitePlanoSemObjetivos)
                     throw new NegocioException("A seleção de objetivos de aprendizagem é obrigatória para criação do plano de aula");
             }
