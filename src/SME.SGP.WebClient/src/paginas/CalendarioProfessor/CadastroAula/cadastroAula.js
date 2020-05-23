@@ -7,6 +7,8 @@ import * as Yup from 'yup';
 import Alert from '~/componentes/alert';
 import { Cabecalho } from '~/componentes-sgp';
 import history from '~/servicos/history';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+
 import {
   Card,
   SelectComponent,
@@ -27,10 +29,14 @@ import { Container } from './cadastroAula.css';
 import modalidade from '~/dtos/modalidade';
 import ExcluirAula from './excluirAula';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
+import RotasDto from '~/dtos/rotasDto';
 
 function CadastroDeAula({ match, location }) {
   const { id, tipoCalendarioId } = match.params;
-
+  const permissoesTela = useSelector(state => state.usuario.permissoes);
+  const somenteConsulta = verificaSomenteConsulta(
+    permissoesTela[RotasDto.CADASTRO_DE_AULA]
+  );
   const refForm = useRef();
 
   const [validacoes, setValidacoes] = useState({
@@ -580,7 +586,7 @@ function CadastroDeAula({ match, location }) {
                         border
                         className="mr-2"
                         onClick={onClickCancelar}
-                        disabled={!modoEdicao}
+                        disabled={somenteConsulta || !modoEdicao}
                       />
                       <Button
                         id={shortid.generate()}
@@ -589,7 +595,7 @@ function CadastroDeAula({ match, location }) {
                         border
                         className="mr-2"
                         onClick={() => setExibirModalExclusao(true)}
-                        disabled={!id || somenteLeitura}
+                        disabled={somenteConsulta || !id || somenteLeitura}
                       />
 
                       <Button
@@ -601,6 +607,7 @@ function CadastroDeAula({ match, location }) {
                         className="mr-2"
                         onClick={() => form.handleSubmit()}
                         disabled={
+                          somenteConsulta ||
                           (controlaGrade && gradeAtingida && !id) ||
                           !aula.disciplinaId ||
                           somenteLeitura
