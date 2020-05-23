@@ -4,22 +4,18 @@ using System.Linq;
 
 namespace SME.SGP.Infra
 {
-    public class PlanoAnualCompletoDto
+    public class PlanoAnualCompletoDto : AuditoriaDto
     {
         public PlanoAnualCompletoDto()
         {
             ObjetivosAprendizagem = new List<ObjetivoAprendizagemDto>();
         }
 
-        public DateTime AlteradoEm { get; set; }
-        public string AlteradoPor { get; set; }
-        public string AlteradoRF { get; set; }
+        public string AlteradoRf { get; set; }
         public int? AnoLetivo { get; set; }
 
         public int Bimestre { get; set; }
-        public DateTime CriadoEm { get; set; }
-        public string CriadoPor { get; set; }
-        public string CriadoRF { get; set; }
+        public string CriadoRf { get; set; }
         public string Descricao { get; set; }
 
         public string EscolaId { get; set; }
