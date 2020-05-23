@@ -16,12 +16,10 @@ const Auditoria = ({
 
   useEffect(() => {
     if (criadoEm) setCriado(window.moment(criadoEm));
-    console.log(criado);
   }, [criadoEm]);
 
   useEffect(() => {
     if (alteradoEm) setAlterado(window.moment(alteradoEm));
-    console.log(alterado);
   }, [alteradoEm]);
 
   return (
