@@ -168,14 +168,14 @@ AS $function$
 				on e.tipo_evento_id = et.id
 			inner join tipo_calendario tc
 				on e.tipo_calendario_id = tc.id
-			left join f_abrangencia_dres_teste($1, $2, $3) ad
+			left join f_abrangencia_dres($1, $2, $3) ad
 				on e.dre_id = ad.codigo 
 				-- modalidade 1 (fundamental/médio) do tipo de calendario, considera as modalidades 5 (Fundamental) e 6 (médio)
 				-- modalidade 2 (EJA) do tipo de calendário, considera modalidade 3 (EJA)
 				and ((tc.modalidade = 1 and ad.modalidade_codigo in (5, 6)) or (tc.modalidade = 2 and ad.modalidade_codigo = 3))
 				-- para DREs considera local da ocorrência 2 (DRE) e 5 (Todos)
 				and et.local_ocorrencia in (2, 5)
-			left join f_abrangencia_ues_teste($1, $2, $3) au
+			left join f_abrangencia_ues($1, $2, $3) au
 				on e.ue_id = au.codigo
 				and ((tc.modalidade = 1 and au.modalidade_codigo in (5, 6)) or (tc.modalidade = 2 and au.modalidade_codigo = 3))
 				-- para UEs considera local da ocorrência 1 (UE) e 4 (SME/UE) e 5 (Todos)
@@ -211,11 +211,11 @@ AS $function$
 				on e.tipo_evento_id = et.id
 			inner join tipo_calendario tc
 				on e.tipo_calendario_id = tc.id
-			left join f_abrangencia_dres_teste($1, $2, $3) ad
+			left join f_abrangencia_dres($1, $2, $3) ad
 				on e.dre_id = ad.codigo 
 				and ((tc.modalidade = 1 and ad.modalidade_codigo in (5, 6)) or (tc.modalidade = 2 and ad.modalidade_codigo = 3))
 				and et.local_ocorrencia in (2, 5)
-			left join f_abrangencia_ues_teste($1, $2, $3) au
+			left join f_abrangencia_ues($1, $2, $3) au
 				on e.ue_id = au.codigo
 				and ((tc.modalidade = 1 and au.modalidade_codigo in (5, 6)) or (tc.modalidade = 2 and au.modalidade_codigo = 3))
 				and et.local_ocorrencia in (1, 4, 5)
