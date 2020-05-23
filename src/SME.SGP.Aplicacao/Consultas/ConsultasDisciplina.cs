@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     Compartilhada = disciplina.Compartilhada,
                     LancaNota = disciplina.LancaNota,
-                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo)
+                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano)
                 })?.ToList();
 
                 if (!usuarioLogado.EhProfessor())
@@ -170,7 +170,7 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     Compartilhada = disciplina.Compartilhada,
                     LancaNota = disciplina.LancaNota,
-                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo)
+                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano)
                 })?.ToList();
             }
 
