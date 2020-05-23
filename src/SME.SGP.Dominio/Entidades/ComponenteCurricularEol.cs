@@ -17,9 +17,10 @@ namespace SME.SGP.Dominio
         public bool BaseNacional { get; set; }
         public GrupoMatriz GrupoMatriz { get; set; }
 
-        public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricular> componentesCurricularesJurema, bool turmaPrograma, Modalidade turmaModalidade)
+        public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricular> componentesCurricularesJurema, bool turmaPrograma, Modalidade turmaModalidade, string turmaAno)
         {
-            return componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo) && !turmaPrograma && !new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turmaModalidade);
+            return componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo) && !turmaPrograma && 
+                    !new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turmaModalidade) && turmaAno != "0";
         }
     }
 }
