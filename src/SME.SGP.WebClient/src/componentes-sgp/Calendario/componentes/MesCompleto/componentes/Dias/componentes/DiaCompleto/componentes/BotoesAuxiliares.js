@@ -16,6 +16,7 @@ const BotoesAuxiliares = ({
   permissaoTela,
   dentroPeriodo,
   desabilitado,
+  podeCadastrarAula,
 }) => {
   return (
     <BotoesAuxiliaresEstilo>
@@ -59,6 +60,7 @@ BotoesAuxiliares.propTypes = {
   permissaoTela: t.oneOfType([t.any]).isRequired,
   dentroPeriodo: t.bool.isRequired,
   desabilitado: t.bool.isRequired,
+  podeCadastrarAula: t.bool.isRequired,
 };
 
 export default BotoesAuxiliares;
