@@ -249,6 +249,7 @@ const FrequenciaPlanoAula = () => {
     const frequenciaAlunos = await api
       .get(`v1/calendarios/frequencias`, { params: { aulaId: id } })
       .catch(e => erros(e));
+
     if (frequenciaAlunos && frequenciaAlunos.data) {
       setFrequenciaId(frequenciaAlunos.data.id);
       setAuditoria({
@@ -618,7 +619,8 @@ const FrequenciaPlanoAula = () => {
         );
         temAulas = !!(aulas && aulas.length);
       }
-      if (temAulas) {
+
+      if (temAulas && !frequenciaId) {
         setModoEdicaoFrequencia(true);
       }
     }
