@@ -28,6 +28,8 @@ const Conteudo = () => {
             temPermissionamento={rota.temPermissionamento}
             chavePermissao={rota.chavePermissao}
             exact={rota.exact}
+            temPermissionamento={rota.temPermissionamento}
+            chavePermissao={rota.chavePermissao}
           />
         ))}
       </Switch>
