@@ -173,6 +173,7 @@ const CampoNota = props => {
         className={abaixoMedia ? 'borda-abaixo-media' : ''}
         desabilitado={
           (alunoDesabilitado && !podeEditarNota) ||
+          !podeEditarNota ||
           desabilitarCampos ||
           !dentroPeriodo
         }
