@@ -628,95 +628,169 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim,
             Paginacao paginacao, string dreId, string ueId, bool ehTodasDres, bool ehTodasUes, Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor,
-            bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
+            bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, bool consideraHistorico)
         {
-            StringBuilder query = new StringBuilder();
+            //StringBuilder query = new StringBuilder();
 
             if (paginacao == null)
                 paginacao = new Paginacao(1, 10);
 
-            MontaQueryCabecalho(query);
-            MontaQueryListarFromWhereParaVisualizacaoGeral(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, podeVisualizarEventosLocalOcorrenciaDre);
-            query.AppendLine("union distinct");
-            MontaQueryCabecalho(query);
-            MontaQueryListarFromWhereParaCriador(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
+            //MontaQueryCabecalho(query);
+            //MontaQueryListarFromWhereParaVisualizacaoGeral(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, podeVisualizarEventosLocalOcorrenciaDre);
+            //query.AppendLine("union distinct");
+            //MontaQueryCabecalho(query);
+            //MontaQueryListarFromWhereParaCriador(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
 
-            if (usuarioTemPerfilSupervisorOuDiretor)
-            {
-                query.AppendLine("union distinct");
-                MontaQueryCabecalho(query);
-                MontaQueryListarFromWhereParaSupervisorDiretorVisualizarEmAprovacao(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, ehTodasDres, ehTodasUes, podeVisualizarEventosLocalOcorrenciaDre);
-            }
+            //if (usuarioTemPerfilSupervisorOuDiretor)
+            //{
+            //    query.AppendLine("union distinct");
+            //    MontaQueryCabecalho(query);
+            //MontaQueryListarFromWhereParaSupervisorDiretorVisualizarEmAprovacao(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, ehTodasDres, ehTodasUes, podeVisualizarEventosLocalOcorrenciaDre);
+            //}
 
-            if (podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
-            {
-                query.AppendLine("union distinct");
-                MontaQueryCabecalho(query);
-                MontaQueryListarFromWhereParaVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, ehTodasDres, ehTodasUes);
-            }
+            //if (podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
+            //{
+            //    query.AppendLine("union distinct");
+            //    MontaQueryCabecalho(query);
+            //    MontaQueryListarFromWhereParaVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, ehTodasDres, ehTodasUes);
+            //}
 
-            if (paginacao.QuantidadeRegistros != 0)
-                query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
+            //if (paginacao.QuantidadeRegistros != 0)
+            //    query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
 
-            if (!string.IsNullOrEmpty(nomeEvento))
-            {
-                nomeEvento = $"%{nomeEvento}%";
-            }
+            //if (!string.IsNullOrEmpty(nomeEvento))
+            //{
+            //    nomeEvento = $"%{nomeEvento}%";
+            //}
 
             var retornoPaginado = new PaginacaoResultadoDto<Evento>();
+            long totalRegistros = 0;
 
-            retornoPaginado.Items = await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(query.ToString(), (evento, tipoEvento) =>
+            var query = @"select eventoid,
+                                 eventoid id,
+								 nome,
+								 descricaoevento descricao,
+								 data_inicio,
+								 data_fim,
+								 dre_id,
+								 letivo,
+								 feriado_id,
+								 tipo_calendario_id,
+								 tipo_evento_id,
+								 ue_id,
+								 criado_em,
+								 criado_por,
+							     alterado_em,
+							     alterado_por,
+							     criado_rf,
+								 alterado_rf,
+								 status,	
+								 tipoeventoid,
+                                 tipoeventoid id,
+								 ativo,
+								 tipo_data,
+								 descricaotipoevento descricao,
+								 excluido,
+								 total_registros                            
+                          from f_eventos_listar(@login, 
+                                                @perfil_id, 
+                                                @historico, 
+                                                @tipo_calendario_id/*, 
+                                                @considera_pendente_aprovacao, 
+                                                @dre_id, 
+                                                @ue_id, 
+                                                @desconsidera_liberacao_excep_reposicao_recesso, 
+                                                @data_inico, 
+                                                @data_fim, 
+                                                @qtde_registros_ignorados, 
+                                                @qtde_registros,
+                                                @nome_evento*/)";
+
+            try
             {
-                evento.AdicionarTipoEvento(tipoEvento);
-                return evento;
-            }, new
-            {
-                tipoCalendarioId,
-                tipoEventoId,
-                nomeEvento,
-                dataInicio,
-                dataFim,
-                dreId,
-                ueId,
-                usuarioId = usuario.Id,
-                usuarioPerfil,
-                usuarioRf = usuario.CodigoRf
-            },
-            splitOn: "EventoId,TipoEventoId");
-
-            var queryCountCabecalho = "select count(distinct e.id)";
-            var queryCount = new StringBuilder(queryCountCabecalho);
-            MontaQueryListarFromWhereParaVisualizacaoGeral(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, podeVisualizarEventosLocalOcorrenciaDre);
-
-            queryCount.AppendLine("union distinct");
-            queryCount.AppendLine(queryCountCabecalho);
-            MontaQueryListarFromWhereParaCriador(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
-
-            if (usuarioTemPerfilSupervisorOuDiretor)
-            {
-                queryCount.AppendLine("union distinct");
-                queryCount.AppendLine(queryCountCabecalho);
-                MontaQueryListarFromWhereParaSupervisorDiretorVisualizarEmAprovacao(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, ehTodasDres, ehTodasUes, podeVisualizarEventosLocalOcorrenciaDre);
+                retornoPaginado.Items = await database.Conexao.QueryAsync<Evento, EventoTipo, long, Evento>(query, (evento, tipoEvento, qtdeRegistros) =>
+                {
+                    evento.AdicionarTipoEvento(tipoEvento);
+                    totalRegistros = qtdeRegistros;
+                    return evento;
+                }, new
+                {
+                    login = usuario.CodigoRf,
+                    perfil_id = usuarioPerfil,
+                    historico = consideraHistorico,
+                    tipo_calendario_id = tipoCalendarioId,
+                    considera_pendente_aprovacao = usuarioTemPerfilSupervisorOuDiretor,
+                    dre_id = dreId,
+                    ue_id = ueId,
+                    desconsidera_liberacao_excep_reposicao_recesso = !podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme,
+                    data_inico = dataInicio,
+                    data_fim = dataFim,
+                    qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
+                    qtde_registros = paginacao.QuantidadeRegistros,
+                    nome_evento = nomeEvento
+                },
+            splitOn: "EventoId, TipoEventoId, total_registros");
             }
-            if (podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
+            catch (Exception ex)
             {
-                queryCount.AppendLine("union distinct");
-                queryCount.AppendLine(queryCountCabecalho);
-                MontaQueryListarFromWhereParaVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, ehTodasDres, ehTodasUes);
+                Console.WriteLine(ex.Message);
             }
-            retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), new
-            {
-                tipoCalendarioId,
-                tipoEventoId,
-                nomeEvento,
-                dataInicio,
-                dataFim,
-                dreId,
-                ueId,
-                usuarioId = usuario.Id,
-                usuarioPerfil,
-                usuarioRf = usuario.CodigoRf
-            })).Sum();
+            
+            //Ajustar o tipo
+            retornoPaginado.TotalRegistros = (int)totalRegistros;
+
+            //retornoPaginado.Items = await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(query.ToString(), (evento, tipoEvento) =>
+            //{
+            //    evento.AdicionarTipoEvento(tipoEvento);
+            //    return evento;
+            //}, new
+            //{
+            //    tipoCalendarioId,
+            //    tipoEventoId,
+            //    nomeEvento,
+            //    dataInicio,
+            //    dataFim,
+            //    dreId,
+            //    ueId,
+            //    usuarioId = usuario.Id,
+            //    usuarioPerfil,
+            //    usuarioRf = usuario.CodigoRf
+            //},
+            //splitOn: "EventoId,TipoEventoId");
+
+            //var queryCountCabecalho = "select count(distinct e.id)";
+            //var queryCount = new StringBuilder(queryCountCabecalho);
+            //MontaQueryListarFromWhereParaVisualizacaoGeral(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, podeVisualizarEventosLocalOcorrenciaDre);
+
+            //queryCount.AppendLine("union distinct");
+            //queryCount.AppendLine(queryCountCabecalho);
+            //MontaQueryListarFromWhereParaCriador(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
+
+            //if (usuarioTemPerfilSupervisorOuDiretor)
+            //{
+            //    queryCount.AppendLine("union distinct");
+            //    queryCount.AppendLine(queryCountCabecalho);
+            //    MontaQueryListarFromWhereParaSupervisorDiretorVisualizarEmAprovacao(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, ehTodasDres, ehTodasUes, podeVisualizarEventosLocalOcorrenciaDre);
+            //}
+            //if (podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
+            //{
+            //    queryCount.AppendLine("union distinct");
+            //    queryCount.AppendLine(queryCountCabecalho);
+            //    MontaQueryListarFromWhereParaVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, ehTodasDres, ehTodasUes);
+            //}
+            //retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), new
+            //{
+            //    tipoCalendarioId,
+            //    tipoEventoId,
+            //    nomeEvento,
+            //    dataInicio,
+            //    dataFim,
+            //    dreId,
+            //    ueId,
+            //    usuarioId = usuario.Id,
+            //    usuarioPerfil,
+            //    usuarioRf = usuario.CodigoRf
+            //})).Sum();
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
