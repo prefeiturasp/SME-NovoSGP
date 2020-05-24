@@ -146,8 +146,9 @@ const CampoConceito = props => {
           showSearch
           placeholder="Conceito"
           className={abaixoMedia ? 'borda-abaixo-media' : ''}
-          desabilitar={
+          disabled={
             (alunoDesabilitado && !podeEditarNota) ||
+            !podeEditarNota ||
             desabilitarCampos ||
             !dentroPeriodo
           }
