@@ -177,8 +177,8 @@ namespace SME.SGP.Aplicacao
                     var alunosForeach = from a in alunos
                                         where (a.NumeroAlunoChamada > 0 && a.EstaAtivo(periodoAtual.PeriodoFim)) ||
                                               (a.EstaInativo(periodoAtual.PeriodoFim) && a.DataSituacao.Date >= periodoAtual.PeriodoInicio.Date)
-                                        orderby a.NumeroAlunoChamada,
-                                                a.NomeValido()
+                                        orderby a.NomeValido(), a.NumeroAlunoChamada
+                                                
                                         select a;                   
 
                     foreach (var aluno in alunosForeach)
