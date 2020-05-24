@@ -274,7 +274,9 @@ const Notas = ({ match }) => {
             auditoriaBimestreInserido: '',
           });
         }
-        setCarregandoListaBimestres(false);
+        setTimeout(() => {
+          setCarregandoListaBimestres(false);
+        }, 700);
       } else {
         resetarTela();
       }
