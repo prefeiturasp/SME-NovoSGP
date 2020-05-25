@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import Disciplinas from './disciplinas';
-import { ListItem, ListItemButton, ListaObjetivos } from './bimestre.css';
+import { ListItem, ListItemButton, ListaObjetivos, Erro } from './bimestre.css';
 import { Button, Colors, Grid, Auditoria, Loader } from '~/componentes';
 import Seta from '../../../recursos/Seta.svg';
 import Editor from '~/componentes/editor/editor';
 import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
-import { erros as mostrarErros, erro } from '~/servicos/alertas';
+import { erros as mostrarErros } from '~/servicos/alertas';
 
 const Bimestre = ({
   bimestre,
@@ -31,7 +31,7 @@ const Bimestre = ({
     bimestre.descricao
   );
   const [layoutEspecial, setLayoutEspecial] = useState(false);
-  const [carregandoDados, setCarregandoDados] = useState(false);
+  const [carregandoDados, setCarregandoDados] = useState(true);
 
   const getSelecionados = () => {
     if (objetivosAprendizagem && objetivosAprendizagem.length) {
@@ -50,7 +50,7 @@ const Bimestre = ({
     if (disciplinas) {
       setTimeout(() => {
         setCarregandoDados(carregando);
-      }, 2000);
+      }, 500);
     }
   };
 
@@ -65,9 +65,10 @@ const Bimestre = ({
           if (objetivosSelecionados && objetivosSelecionados.length > 0) {
             resposta.data.forEach(c => {
               const objetivo = objetivosSelecionados.find(o => {
-                if (o.id == c.id) {
+                if (String(o.id) === String(c.id)) {
                   return o;
                 }
+                return false;
               });
               if (objetivo) {
                 c.selecionado = true;
@@ -128,11 +129,6 @@ const Bimestre = ({
   };
 
   useMemo(() => {
-    if (!disciplinaSemObjetivo)
-      erro(
-        'Não foram encontrados objetivos para alguma(s) disciplina(s) selecionada(s)'
-      );
-
     setLayoutEspecial(ehEja || ehMedio || disciplinaSemObjetivo);
   }, [disciplinaSemObjetivo, ehEja, ehMedio]);
 
@@ -147,9 +143,9 @@ const Bimestre = ({
     if (
       objetivosCarregados &&
       bimestre.objetivosAprendizagem &&
-      bimestre.objetivosAprendizagem.length > 0 &&
+      bimestre.objetivosAprendizagem.length &&
       objetivosAprendizagem &&
-      objetivosAprendizagem.length > 0
+      objetivosAprendizagem.length
     ) {
       const componentesCurricularesId = bimestre.objetivosAprendizagem.map(
         c => c.id
@@ -164,7 +160,7 @@ const Bimestre = ({
       );
       setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
     }
-  }, [bimestre.objetivosAprendizagem, objetivosCarregados]);
+  }, [objetivosCarregados, bimestre]);
 
   useEffect(() => {
     setDescricaoObjetivo(bimestre.descricao);
@@ -185,6 +181,9 @@ const Bimestre = ({
               preSelecionadas={disciplinasPreSelecionadas}
               onChange={onChangeDisciplinasSelecionadas}
               layoutEspecial={layoutEspecial}
+              carregandoDisciplinas={carregando =>
+                setCarregandoDados(carregando)
+              }
             />
           </div>
 
@@ -236,6 +235,7 @@ const Bimestre = ({
               objetivosSelecionados.map(selecionado => {
                 return (
                   <Button
+                    id={shortid.generate()}
                     key={selecionado.codigo}
                     label={selecionado.codigo}
                     color={Colors.AzulAnakiwa}
@@ -302,9 +302,22 @@ const Bimestre = ({
               </li>
             </ul>
             <fieldset className="mt-3">
+              {!layoutEspecial &&
+              objetivosSelecionados &&
+              !objetivosSelecionados.length ? (
+                <Erro>
+                  Você precisa selecionar objetivos na lista ao lado para poder
+                  inserir a descrição do plano!
+                </Erro>
+              ) : null}
               <Editor
                 onChange={onChangeDescricaoObjetivos}
                 inicial={descricaoObjetivo}
+                desabilitar={
+                  !layoutEspecial &&
+                  objetivosSelecionados &&
+                  !objetivosSelecionados.length
+                }
               />
             </fieldset>
             <Grid cols={12} className="p-0">
@@ -322,6 +335,17 @@ const Bimestre = ({
       </div>
     </Loader>
   );
+};
+
+Bimestre.propTypes = {
+  bimestre: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  disciplinas: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  ano: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  ehEja: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  ehMedio: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  disciplinaSemObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  selecionarObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  onChangeDescricaoObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
 };
 
 export default Bimestre;
