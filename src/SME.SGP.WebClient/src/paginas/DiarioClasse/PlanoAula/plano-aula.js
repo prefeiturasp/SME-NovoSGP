@@ -12,6 +12,7 @@ import {
   ListItemButton,
   ObjetivosList,
   QuantidadeBotoes,
+  Erro,
 } from './plano-aula.css';
 import api from '~/servicos/api';
 import { store } from '~/redux';
@@ -70,6 +71,7 @@ const PlanoAula = props => {
     carregandoObjetivosSelecionados,
     setCarregandoObjetivosSelecionados,
   ] = useState(false);
+  const [carregando, setCarregando] = useState(false);
 
   const setModoEdicaoPlano = ehEdicao => {
     setModoEdicao(ehEdicao);
@@ -112,7 +114,9 @@ const PlanoAula = props => {
   }, [planoAula.objetivosAprendizagemAula]);
 
   useEffect(() => {
+    setCarregando(true);
     setMaterias(listaMaterias);
+    setCarregando(false);
   }, [listaMaterias]);
 
   const setObjetivos = objetivos => {
@@ -166,6 +170,7 @@ const PlanoAula = props => {
   };
 
   const selecionarMateria = async id => {
+    setCarregando(true);
     setCarregandoObjetivos(true);
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
@@ -195,6 +200,7 @@ const PlanoAula = props => {
     }
     setMaterias([...materias]);
     setCarregandoObjetivos(false);
+    setCarregando(false);
   };
 
   const onBlurMeusObjetivos = value => {
@@ -305,8 +311,9 @@ const PlanoAula = props => {
                   <h6 className="d-inline-block font-weight-bold my-0 fonte-13 w-100">
                     Objetivos de Aprendizagem e Desenvolvimento
                   </h6>
-                  {temObjetivos
-                    ? materias.map(materia => {
+                  {temObjetivos ? (
+                    <Loader loading={carregandoMaterias} tip="">
+                      {materias.map(materia => {
                         return (
                           <Badge
                             role="button"
@@ -321,9 +328,9 @@ const PlanoAula = props => {
                             {materia.descricao}
                           </Badge>
                         );
-                      })
-                    : null}
-
+                      })}
+                    </Loader>
+                  ) : null}
                   <Loader loading={carregandoObjetivos}>
                     <ObjetivosList className="mt-4 overflow-auto">
                       {objetivosAprendizagem.map(objetivo => {
@@ -426,8 +433,25 @@ const PlanoAula = props => {
                     </Descritivo>
                   ) : null}
                   <fieldset className="mt-3">
+                    {layoutComObjetivos() &&
+                    temObjetivos &&
+                    objetivosAprendizagem &&
+                    !objetivosAprendizagem.filter(obj => obj.selected === true)
+                      .length ? (
+                      <Erro>
+                        Você precisa selecionar objetivos na lista ao lado para
+                        poder inserir a descrição do plano!
+                      </Erro>
+                    ) : null}
                     <Editor
-                      desabilitar={desabilitarCampos}
+                      desabilitar={
+                        desabilitarCampos ||
+                        (temObjetivos &&
+                          objetivosAprendizagem &&
+                          !objetivosAprendizagem.filter(
+                            obj => obj.selected === true
+                          ).length)
+                      }
                       onChange={onBlurMeusObjetivos}
                       inicial={planoAula.descricao}
                     />
