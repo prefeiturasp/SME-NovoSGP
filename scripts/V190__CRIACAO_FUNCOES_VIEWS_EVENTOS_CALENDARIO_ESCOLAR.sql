@@ -6,6 +6,8 @@ drop function if exists public.f_eventos_calendario_dias_com_eventos_no_mes;
 drop function if exists public.f_eventos_calendario_eventos_do_dia;
 drop function if exists public.f_eventos_calendario_por_data_inicio_fim;
 drop function if exists public.f_eventos_calendario_por_rf_criador;
+drop view if exists public.v_estrutura_eventos_calendario;
+drop view if exists public.v_estrutura_eventos_calendario_dias_com_eventos_no_mes;
 
 CREATE OR REPLACE VIEW public.v_estrutura_abrangencia_dres
 AS SELECT v_abrangencia_cadeia_turmas.dre_abreviacao AS abreviacao,
@@ -154,6 +156,10 @@ AS SELECT evento.id,
     evento.nome,
     'aaaa'::text AS tipoevento
    FROM evento;
+  
+CREATE OR REPLACE VIEW public.v_estrutura_eventos_calendario_dias_com_eventos_no_mes
+AS SELECT date_part('day'::text, CURRENT_DATE) AS dia,
+    'AAAA'::text AS tipoevento;
 
 CREATE OR REPLACE FUNCTION public.f_eventos_calendario_por_data_inicio_fim(character varying, uuid, boolean, integer, bigint, boolean DEFAULT false, character varying DEFAULT NULL::character varying, character varying DEFAULT NULL::character varying, boolean DEFAULT false, boolean DEFAULT false)
  RETURNS SETOF v_estrutura_eventos_calendario
