@@ -221,7 +221,8 @@ namespace SME.SGP.Aplicacao
                                 AtividadeAvaliativaId = atividadeAvaliativa.Id,
                                 NotaConceito = notaParaVisualizar,
                                 Ausente = ausente,
-                                PodeEditar = aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao)
+                                PodeEditar = aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
+                                             (aluno.EstaInativo(atividadeAvaliativa.DataAvaliacao) && atividadeAvaliativa.DataAvaliacao.Date <= aluno.DataSituacao.Date)
                             };
                             notasAvaliacoes.Add(notaAvaliacao);
                         }
