@@ -148,9 +148,8 @@ const ListaFrequencia = props => {
               <tbody className="tabela-frequencia-tbody">
                 {dataSource.map((aluno, i) => {
                   return (
-                    <>
+                    <React.Fragment key={shortid.generate()}>
                       <tr
-                        key={shortid.generate()}
                         className={
                           desabilitarCampos || aluno.desabilitado
                             ? 'desabilitar-aluno'
@@ -177,7 +176,7 @@ const ListaFrequencia = props => {
                               />
                             </>
                           ) : (
-                            ''
+                            <></>
                           )}
                         </td>
                         {dataSource[0].aulas.length > 1 ? (
@@ -220,20 +219,20 @@ const ListaFrequencia = props => {
                             </td>
                           </>
                         ) : (
-                          ''
+                          <></>
                         )}
 
-                        {aluno.aulas.map((aula, i) => {
+                        {aluno.aulas.map((aula, a) => {
                           return (
                             <td
                               key={shortid.generate()}
                               className={
-                                dataSource[0].aulas.length - 1 === i
+                                dataSource[0].aulas.length - 1 === a
                                   ? 'width-70'
                                   : 'border-right-none width-70'
                               }
                             >
-                              {renderSwitch(i, aula, aluno)}
+                              {renderSwitch(a, aula, aluno)}
                             </td>
                           );
                         })}
@@ -271,9 +270,9 @@ const ListaFrequencia = props => {
                           </tr>
                         </>
                       ) : (
-                        ''
+                        <></>
                       )}
-                    </>
+                    </React.Fragment>
                   );
                 })}
               </tbody>
@@ -281,7 +280,7 @@ const ListaFrequencia = props => {
           </div>
         </Lista>
       ) : (
-        ''
+        <></>
       )}
     </>
   );
@@ -289,12 +288,16 @@ const ListaFrequencia = props => {
 
 ListaFrequencia.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.array]),
-  onChangeFrequencia: PropTypes.func,
+  onChangeFrequencia: PropTypes.oneOfType([PropTypes.func]),
+  permissoesTela: PropTypes.oneOfType([PropTypes.any]),
+  frequenciaId: PropTypes.oneOfType([PropTypes.any]),
 };
 
 ListaFrequencia.defaultProps = {
   dados: [],
   onChangeFrequencia: () => {},
+  permissoesTela: {},
+  frequenciaId: 0,
 };
 
 export default ListaFrequencia;
