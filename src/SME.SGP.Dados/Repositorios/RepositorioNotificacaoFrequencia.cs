@@ -51,6 +51,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        where
 		                        r.aula_id = a.id)
 	                        and a.data_aula < date(now())
+							and extract(year from a.data_aula) = extract(year from now())
                         order by
 	                        dre.dre_id,
 	                        ue.ue_id,
