@@ -146,11 +146,11 @@ namespace SME.SGP.Dominio.Servicos
 
             var dreIdFiltro = !(dre == null) || usuarioLogado.EhPerfilUE() ? dre?.Id : null;
 
-            var fechamentoSMEDre = repositorioFechamento.ObterPorFiltros(tipoCalendarioId, dreIdFiltro, null, null);
+            var fechamentoSMEDre = repositorioPeriodoFechamento.ObterPorFiltros(tipoCalendarioId, dreIdFiltro, null, null);
             var ehRegistroExistente = dre == null && fechamentoSMEDre != null;
             if (fechamentoSMEDre == null)
             {
-                fechamentoSMEDre = repositorioFechamento.ObterPorFiltros(tipoCalendarioId, null, null, null);
+                fechamentoSMEDre = repositorioPeriodoFechamento.ObterPorFiltros(tipoCalendarioId, null, null, null);
                 ehRegistroExistente = fechamentoSMEDre != null;
                 if (fechamentoSMEDre == null)
                 {
