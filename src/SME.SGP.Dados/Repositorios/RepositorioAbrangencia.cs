@@ -203,9 +203,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
         {
-            string query = @"select abreviacao, 
-                                    codigo, 
-                                    nome 
+            string query = @"select distinct abreviacao, 
+                                             codigo, 
+                                             nome 
                              from f_abrangencia_dres(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @anoLetivo)
                              order by 3";
 
@@ -274,9 +274,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
         {
-            var query = @"select codigo,
-	                             nome,
-	                             tipoescola
+            var query = @"select distinct codigo,
+	                                      nome,
+	                                      tipoescola
 	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo)
                           order by 2;";
 

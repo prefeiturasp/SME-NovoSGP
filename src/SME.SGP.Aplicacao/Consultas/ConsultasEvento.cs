@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var usuario = await servicoUsuario.ObterUsuarioLogado();            
 
             return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario);
         }
