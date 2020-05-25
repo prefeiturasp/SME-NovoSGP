@@ -71,7 +71,9 @@ const ListaBimestre = props => {
   const obterValorNotaConceito = valor => {
     const ehNota = Number(notasConceitos.Notas) === tipoNota;
     if (valor && !ehNota && listaTiposConceitos && listaTiposConceitos.length) {
-      const conceito = listaTiposConceitos.find(item => item.id == valor);
+      const conceito = listaTiposConceitos.find(
+        item => String(item.id) === String(valor)
+      );
       return conceito ? conceito.valor : '';
     }
     return valor;
@@ -118,8 +120,8 @@ const ListaBimestre = props => {
               dadosLista.componentesCurriculares &&
               dadosLista.componentesCurriculares.map((item, index) => {
                 return (
-                  <>
-                    <tr key={shortid.generate()}>
+                  <React.Fragment key={shortid.generate()}>
+                    <tr>
                       <BarraLateralLista cor={corBarraLateral} />
                       <td
                         className="coluna-disciplina sombra-direita"
@@ -152,7 +154,7 @@ const ListaBimestre = props => {
                       ehRegencia={false}
                       alunoDesabilitado={alunoDesabilitado}
                     />
-                  </>
+                  </React.Fragment>
                 );
               })}
             {dadosLista &&
@@ -161,8 +163,8 @@ const ListaBimestre = props => {
               dadosLista.componenteRegencia.componentesCurriculares.map(
                 (item, index) => {
                   return (
-                    <>
-                      <tr key={shortid.generate()}>
+                    <React.Fragment key={shortid.generate()}>
+                      <tr>
                         <BarraLateralLista cor={corRegenciaBarraLateral} />
                         <td
                           className="coluna-disciplina sombra-direita"
@@ -204,7 +206,7 @@ const ListaBimestre = props => {
                         idCampo={`${descricaoGrupoMatriz} ${index} regencia`}
                         ehRegencia
                       />
-                    </>
+                    </React.Fragment>
                   );
                 }
               )}
