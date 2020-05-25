@@ -13,6 +13,7 @@ import {
   setNotaConceitoPosConselhoAtual,
   setIdCamposNotasPosConselho,
   setDesabilitarCampos,
+  setConselhoClasseEmEdicao,
 } from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
@@ -211,6 +212,20 @@ const DadosConselhoClasse = props => {
       caregarInformacoes(numeroBimestre, ehFinal);
     }
   };
+
+  const dadosPrincipaisConselhoClasse = useSelector(
+    store => store.conselhoClasse.dadosPrincipaisConselhoClasse
+  );
+
+  useEffect(() => {
+    dispatch(
+      setConselhoClasseEmEdicao(
+        !carregando &&
+          !semDados &&
+          !Object.entries(dadosPrincipaisConselhoClasse).length
+      )
+    );
+  }, [dispatch, carregando, semDados, dadosPrincipaisConselhoClasse]);
 
   const montarDados = () => {
     return (

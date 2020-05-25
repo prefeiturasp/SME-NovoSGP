@@ -45,7 +45,7 @@ const Sintese = props => {
         setDados(resp.data);
       })
       .catch(e => {
-        erro(e);
+        erro(e?.response?.data?.mensagens[0]);
         setDados([]);
       });
   }, [alunoCodigo, conselhoClasseId, fechamentoTurmaId]);
