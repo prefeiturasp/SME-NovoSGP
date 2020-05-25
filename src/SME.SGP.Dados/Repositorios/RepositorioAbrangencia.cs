@@ -174,6 +174,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico)
         {
+            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_anos_letivos(@login, @perfil, @consideraHistorico)
                                                              order by 1", new { login, perfil, consideraHistorico }));
         }
@@ -203,6 +204,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
         {
+            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             string query = @"select distinct abreviacao, 
                                              codigo, 
                                              nome 
@@ -224,12 +226,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico)
         {
+            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo)
                                                              order by 1", new { login, perfil, consideraHistorico, anoLetivo })).AsList();
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)
         {
+            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var parametros = new { login, perfil, consideraHistorico, modalidade, anoLetivo };
 
             return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_semestres(@login, @perfil, @consideraHistorico, @modalidade, @anoLetivo)
@@ -238,6 +242,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
         {
+            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = @"select ano,
 	                             anoLetivo,
 	                             codigo,
@@ -274,6 +279,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
         {
+            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = @"select distinct codigo,
 	                                      nome,
 	                                      tipoescola
