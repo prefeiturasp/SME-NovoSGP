@@ -630,8 +630,8 @@ namespace SME.SGP.Dados.Repositorios
             Paginacao paginacao, string dreId, string ueId, bool ehTodasDres, bool ehTodasUes, Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor,
             bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, bool consideraHistorico)
         {
-            if (paginacao == null)
-                paginacao = new Paginacao(1, 10);
+            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+                paginacao = new Paginacao(1, 10);           
 
             var retornoPaginado = new PaginacaoResultadoDto<Evento>();
             var totalRegistros = 0;
@@ -717,17 +717,21 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia,
             Usuario usuario)
         {
-            var query = @"select * from f_eventos_calendario_eventos_do_dia(@login, 
-                                                                            @perfil_id, 
-                                                                            @historico,
-                                                                            @dia,
-                                                                            @mes,
-                                                                            @tipo_calendario_id,
-                                                                            @considera_evento_aprovado_e_pendente_aprovacao, 
-                                                                            @dre_id, 
-                                                                            @ue_id, 
-                                                                            @desconsidera_local_dre,
-                                                                            @desconsidera_eventos_sme)";
+            var query = @"select id,
+                                 iniciofimdesc,
+                                 nome,
+                                 tipoevento
+                            from f_eventos_calendario_eventos_do_dia(@login, 
+                                                                     @perfil_id, 
+                                                                     @historico,
+                                                                     @dia,
+                                                                     @mes,
+                                                                     @tipo_calendario_id,
+                                                                     @considera_evento_aprovado_e_pendente_aprovacao, 
+                                                                     @dre_id, 
+                                                                     @ue_id, 
+                                                                     @desconsidera_local_dre,
+                                                                     @desconsidera_eventos_sme)";
 
             // Está sendo utilizado a função com intuíto da melhoria de performance
             return await database.Conexao.QueryAsync<CalendarioEventosNoDiaRetornoDto>(query.ToString(), new
