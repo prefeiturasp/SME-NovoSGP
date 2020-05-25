@@ -171,9 +171,10 @@ namespace SME.SGP.Dominio
 
                 foreach (var nota in notasPorAvaliacao)
                 {
+                    var valorConceito = ehTipoNota ? valoresConceito.FirstOrDefault(a => a.Id == nota.ConceitoId):null;
                     quantidadeAlunosSuficientes += ehTipoNota ?
                         nota.Nota >= notaParametro.Media ? 1 : 0 :
-                        valoresConceito.FirstOrDefault(a => a.Id == nota.ConceitoId).Aprovado ? 1 : 0;
+                        valorConceito != null && valorConceito.Aprovado ? 1 : 0;
                 }
                 string mensagemNotasConceitos = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {periodoAtividade.Bimestre} de {turma.AnoLetivo} foram alterados " +
               $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} estão abaixo da média.</p>" +

@@ -29,6 +29,7 @@ import { Container, ContainerAuditoria } from './notas.css';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
+import moment from 'moment';
 
 const { TabPane } = Tabs;
 
@@ -274,7 +275,9 @@ const Notas = ({ match }) => {
             auditoriaBimestreInserido: '',
           });
         }
-        setCarregandoListaBimestres(false);
+        setTimeout(() => {
+          setCarregandoListaBimestres(false);
+        }, 700);
       } else {
         resetarTela();
       }
@@ -379,6 +382,14 @@ const Notas = ({ match }) => {
     bimestreParaMontar.alunos.forEach(aluno => {
       aluno.notasAvaliacoes.forEach(nota => {
         if (nota.modoEdicao) {
+          const avaliacaoNota = bimestreParaMontar.avaliacoes.find(
+            a => a.id === nota.atividadeAvaliativaId
+          );
+          if (
+            window.moment(avaliacaoNota.data) > window.moment(new Date()) &&
+            !nota.notaConceito
+          )
+            return;
           valorParaSalvar.push({
             alunoId: aluno.id,
             atividadeAvaliativaId: nota.atividadeAvaliativaId,
