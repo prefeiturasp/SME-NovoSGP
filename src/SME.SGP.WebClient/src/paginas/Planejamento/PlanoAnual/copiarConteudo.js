@@ -138,7 +138,7 @@ const CopiarConteudo = ({
               <SelectComponent
                 id="turmas"
                 name="turmas"
-                lista={listaTurmas}
+                lista={listaTurmas || []}
                 valueOption="codTurma"
                 valueText="nomeTurma"
                 valueSelect={turmasSelecionadas}
@@ -167,4 +167,5 @@ const CopiarConteudo = ({
     </Formik>
   );
 };
+
 export default memo(CopiarConteudo);
