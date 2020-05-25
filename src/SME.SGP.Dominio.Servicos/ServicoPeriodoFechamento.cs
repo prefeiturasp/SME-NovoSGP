@@ -88,12 +88,14 @@ namespace SME.SGP.Dominio.Servicos
 
             var dreIdFiltro = !(dre == null) || usuarioLogado.EhPerfilUE() ? dre?.Id : null;
 
+            var fechamentoSME = repositorioFechamento.ObterPorFiltros(tipoCalendarioId, null, null, null);
+
             var fechamentoSMEDre = repositorioFechamento.ObterPorFiltros(tipoCalendarioId, dreIdFiltro, null, null);
-            var ehRegistroExistente = dre == null && fechamentoSMEDre != null;
+
             if (fechamentoSMEDre == null)
             {
-                fechamentoSMEDre = repositorioFechamento.ObterPorFiltros(tipoCalendarioId, null, null, null);
-                ehRegistroExistente = fechamentoSMEDre != null;
+                fechamentoSMEDre = fechamentoSME;
+
                 if (fechamentoSMEDre == null)
                 {
                     fechamentoSMEDre = new PeriodoFechamento(null, null);
@@ -123,17 +125,36 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             var fechamentoDto = MapearParaDto(fechamentoDreUe);
+            var fechamentoSMEDto = MapearParaDto(fechamentoSME);
 
             foreach (var bimestreSME in fechamentoSMEDre.FechamentosBimestre)
             {
+                FechamentoBimestreDto bimestreFechamentoSME = null;
+
+                if (fechamentoSMEDto != null)
+                    bimestreFechamentoSME = fechamentoSMEDto.FechamentosBimestres.FirstOrDefault(c => c.Bimestre == bimestreSME.PeriodoEscolar.Bimestre);
+
                 var bimestreDreUe = fechamentoDto.FechamentosBimestres.FirstOrDefault(c => c.Bimestre == bimestreSME.PeriodoEscolar.Bimestre);
                 if (bimestreDreUe != null)
                 {
                     bimestreDreUe.PeriodoEscolar = bimestreSME.PeriodoEscolar;
                     if (fechamentoSMEDre.Id > 0 && !(dre == null) || !(ue == null))
                     {
-                        bimestreDreUe.InicioMinimo = bimestreSME.InicioDoFechamento;
-                        bimestreDreUe.FinalMaximo = bimestreSME.FinalDoFechamento;
+                        if (bimestreFechamentoSME != null)
+                        {
+                            bimestreDreUe.InicioMinimo = 
+                                bimestreFechamentoSME.InicioDoFechamento < bimestreSME.InicioDoFechamento ?
+                                bimestreFechamentoSME.InicioDoFechamento.Value : bimestreSME.InicioDoFechamento;
+
+                            bimestreDreUe.FinalMaximo = 
+                                bimestreFechamentoSME.FinalDoFechamento > bimestreSME.FinalDoFechamento ?
+                                bimestreFechamentoSME.FinalDoFechamento.Value : bimestreSME.FinalDoFechamento; ;
+                        }
+                        else
+                        {
+                            bimestreDreUe.InicioMinimo = bimestreSME.InicioDoFechamento;
+                            bimestreDreUe.FinalMaximo = bimestreSME.FinalDoFechamento;
+                        }
                     }
                     else
                     {
@@ -144,6 +165,7 @@ namespace SME.SGP.Dominio.Servicos
             }
             return fechamentoDto;
         }
+
 
         public async Task Salvar(FechamentoDto fechamentoDto)
         {
