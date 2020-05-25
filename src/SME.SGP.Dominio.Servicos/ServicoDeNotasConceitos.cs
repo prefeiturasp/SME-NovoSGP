@@ -255,7 +255,10 @@ namespace SME.SGP.Dominio
 
             foreach (var entidade in EntidadesSalvar)
             {
-                repositorioNotasConceitos.Salvar(entidade);
+                if (entidade.Id >= 0 && entidade.ObterNota() == null)
+                    repositorioNotasConceitos.Remover(entidade);
+                else if (entidade.ObterNota() != null)
+                    repositorioNotasConceitos.Salvar(entidade);
             }
 
             unitOfWork.PersistirTransacao();
@@ -280,28 +283,28 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Somente o professor que criou a avaliação, pode atribuir e/ou editar notas/conceitos");
         }
 
-        private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId, 
+        private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId,
             Usuario usuario, Turma turma)
         {
             var notasMultidisciplina = new List<NotaConceito>();
             var alunosNotasExtemporaneas = new StringBuilder();
             var nota = notasConceitos.FirstOrDefault();
-            
+
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, atividadeAvaliativa.DataAvaliacao.Year != DateTime.Now.Year);
             var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
-            var dataAtual = DateTime.Now;            
+            var dataAtual = DateTime.Now;
 
             // Verifica Bimestre Atual
             var dataPesquisa = DateTime.Today;
             var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
             var periodoEscolarAtual = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
             var periodoEscolarAvaliacao = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
-            if(periodoEscolarAvaliacao == null)
+            if (periodoEscolarAvaliacao == null)
                 throw new NegocioException("Período escolar da atividade avaliativa não encontrado");
 
             var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
-            var existePeriodoEmAberto = periodoEscolarAtual !=null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
-                || await repositorioPeriodoFechamento.ExistePeriodoPorUeDataBimestre(turma.UeId, DateTime.Today, bimestreAvaliacao); 
+            var existePeriodoEmAberto = periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
+                || await repositorioPeriodoFechamento.ExistePeriodoPorUeDataBimestre(turma.UeId, DateTime.Today, bimestreAvaliacao);
 
             foreach (var notaConceito in notasConceitos)
             {
@@ -328,7 +331,6 @@ namespace SME.SGP.Dominio
 
                     if (conceitos == null)
                         throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
-                    notaConceito.ValidarConceitos(conceitos, aluno.NomeAluno);
                 }
 
                 notaConceito.TipoNota = (TipoNota)tipoNota.Id;
