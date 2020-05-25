@@ -78,6 +78,11 @@ export const setDadosListasNotasConceitos = payload => ({
   payload,
 });
 
+export const setPodeEditarNota = payload => ({
+  type: '@conselhoClasse/setPodeEditarNota',
+  payload,
+});
+
 export const setExpandirLinha = payload => ({
   type: '@conselhoClasse/setExpandirLinha',
   payload,
