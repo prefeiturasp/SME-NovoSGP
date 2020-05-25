@@ -92,13 +92,17 @@ const Bimestre = ({
           mostrarErros(e);
         })
         .finally(() => {
-          setCarregandoDados(false);
+          setCarregandoDisciplinas(false);
         });
     } else {
       const objs = getSelecionados();
       setObjetivosAprendizagem(objs);
       setObjetivosSelecionados(objs);
+      setCarregandoDisciplinas(false);
     }
+
+    if (refDivObjetivos && refDivObjetivos.current)
+      refDivObjetivos.current.scrollTo(0, 0);
   };
 
   const selecionaObjetivo = objetivo => {
@@ -184,7 +188,10 @@ const Bimestre = ({
           </div>
 
           {!layoutEspecial && (
-            <ListaObjetivos className="mt-4 overflow-auto">
+            <ListaObjetivos
+              ref={refDivObjetivos}
+              className="mt-4 overflow-auto"
+            >
               {objetivosAprendizagem &&
                 objetivosAprendizagem.length > 0 &&
                 objetivosAprendizagem.map(objetivo => (

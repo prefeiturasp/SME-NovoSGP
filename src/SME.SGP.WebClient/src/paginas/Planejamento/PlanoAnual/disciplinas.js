@@ -36,7 +36,7 @@ const Disciplinas = ({
   };
 
   useEffect(() => {
-    onChange(undefined);
+    onChange();
   }, [preSelecionadas]);
 
   return (
