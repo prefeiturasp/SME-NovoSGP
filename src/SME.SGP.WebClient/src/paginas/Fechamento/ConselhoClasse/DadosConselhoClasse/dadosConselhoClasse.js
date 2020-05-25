@@ -93,7 +93,7 @@ const DadosConselhoClasse = props => {
       setSemDados(true);
       const retorno = await ServicoConselhoClasse.obterInformacoesPrincipais(
         turmaCodigo,
-        usuario.turmaSelecionada.consideraHistorico
+        usuario.turmaSelecionada.consideraHistorico && bimestreConsulta === 0
           ? '1'
           : ehFinal
           ? '0'

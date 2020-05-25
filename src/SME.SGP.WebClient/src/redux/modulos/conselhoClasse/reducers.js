@@ -21,6 +21,7 @@ const inicial = {
   marcadorParecerConclusivo: {},
   gerandoParecerConclusivo: false,
   desabilitarCampos: false,
+  podeEditarNota: false,
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -180,7 +181,13 @@ export default function ConselhoClasse(state = inicial, action) {
           ...draft,
           desabilitarCampos: action.payload,
         };
-      } 
+      }
+      case '@conselhoClasse/setPodeEditarNota': {
+        return {
+          ...draft,
+          podeEditarNota: action.payload,
+        };
+      }
 
       default:
         return draft;

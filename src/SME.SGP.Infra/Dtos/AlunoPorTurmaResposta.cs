@@ -70,5 +70,13 @@ namespace SME.SGP.Infra
 
             return true;
         }
+        public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar)
+        {
+            if(!PodeEditarNotaConceito())
+            {
+                return DataSituacao >= periodoEscolar.PeriodoFim;
+            }
+            return true;
+        }
     }
 }
