@@ -44,6 +44,7 @@ const PlanoAnual = () => {
   ] = useState(false);
   const [emEdicao, setEmEdicao] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
+  const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
   const [exibirCopiarConteudo, setExibirCopiarConteudo] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [listaBimestresPreenchidos, setListaBimestresPreenchidos] = useState(
@@ -168,7 +169,10 @@ const PlanoAnual = () => {
           setPlanoAnual(resposta.data);
           setEmEdicao(false);
         })
-        .catch(e => erros(e));
+        .catch(e => erros(e))
+        .finally(() => {
+          setCarregandoDados(false);
+        });
     }
   };
 
@@ -213,11 +217,15 @@ const PlanoAnual = () => {
       const erro = err.findIndex(c => !!c.length > 0);
       if (erro > -1) {
         const refBimestre = refsPainel[erro];
-        if (refBimestre && refBimestre.current) {
+        if (
+          refBimestre &&
+          refBimestre.current &&
+          refBimestre.current.offsetTop
+        ) {
           if (erro + 1 !== bimestreExpandido) {
             setBimestreExpandido([erro + 1]);
           }
-          window.scrollTo(0, refsPainel[erro].current.offsetTop);
+          window.scrollTo(0, refBimestre.current.offsetTop);
         }
       }
     }
@@ -239,14 +247,15 @@ const PlanoAnual = () => {
   useEffect(() => {
     if (bimestreExpandido) {
       const refBimestre = refsPainel[bimestreExpandido - 1];
-      if (refBimestre && refBimestre.current) {
-        setTimeout(() => {
-          window.scrollTo(
-            0,
-            refsPainel[bimestreExpandido - 1].current.offsetTop
-          );
-        }, 500);
-      }
+      setTimeout(() => {
+        if (
+          refBimestre &&
+          refBimestre.current &&
+          refBimestre.current.offsetTop
+        ) {
+          window.scrollTo(0, refBimestre.current.offsetTop);
+        }
+      }, 500);
     }
   }, [bimestreExpandido, refsPainel]);
 
@@ -254,8 +263,13 @@ const PlanoAnual = () => {
    *carrega lista de disciplinas
    */
   useEffect(() => {
+    setPlanoAnual([]);
+    setDisciplinaSelecionada();
+    setCodigoDisciplinaSelecionada();
+
     if (turmaSelecionada.turma) {
       setEmEdicao(false);
+      setCarregandoDisciplinas(true);
       setCarregandoDados(true);
       servicoDisciplinas
         .obterDisciplinasPorTurma(turmaSelecionada.turma)
@@ -274,9 +288,10 @@ const PlanoAnual = () => {
         })
         .finally(() => {
           setCarregandoDados(false);
+          setCarregandoDisciplinas(false);
         });
     }
-  }, [turmaSelecionada.ano, turmaSelecionada.turma]);
+  }, [turmaSelecionada.turma]);
 
   /**
    *carrega a lista de planos
@@ -285,6 +300,7 @@ const PlanoAnual = () => {
     setPlanoAnual([]);
 
     if (
+      disciplinaSelecionada &&
       codigoDisciplinaSelecionada &&
       turmaSelecionada &&
       turmaSelecionada.turma
@@ -351,15 +367,16 @@ const PlanoAnual = () => {
   }, [codigoDisciplinaSelecionada, disciplinaSelecionada, turmaSelecionada]);
 
   useEffect(() => {
+    setPlanoAnual([]);
+    setDisciplinaSelecionada();
+    setCodigoDisciplinaSelecionada();
     setEmEdicao(false);
+
     setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     if (turmaSelecionada && turmaSelecionada !== [] && turmaSelecionada.turma) {
       setEhEja(
         turmaSelecionada.modalidade.toString() === modalidade.EJA.toString()
       );
-    } else {
-      setDisciplinaSelecionada(null);
-      setCodigoDisciplinaSelecionada(null);
     }
   }, [turmaSelecionada]);
 
@@ -437,17 +454,22 @@ const PlanoAnual = () => {
         </Grid>
         <Card className="col-md-12 p-0 float-right" mx="mx-0">
           <div className="col-md-4 col-xs-12">
-            <SelectComponent
-              name="disciplinas"
-              id="disciplinas"
-              lista={listaDisciplinas}
-              valueOption="codigoComponenteCurricular"
-              valueText="nome"
-              onChange={onChangeDisciplinas}
-              valueSelect={codigoDisciplinaSelecionada}
-              placeholder="Selecione um componente curricular"
-              disabled={listaDisciplinas && listaDisciplinas.length === 1}
-            />
+            <Loader loading={carregandoDisciplinas} tip="">
+              <SelectComponent
+                name="disciplinas"
+                id="disciplinas"
+                lista={listaDisciplinas || []}
+                valueOption="codigoComponenteCurricular"
+                valueText="nome"
+                onChange={onChangeDisciplinas}
+                valueSelect={codigoDisciplinaSelecionada}
+                placeholder="Selecione um componente curricular"
+                disabled={
+                  (listaDisciplinas && !listaDisciplinas.length) ||
+                  (listaDisciplinas && listaDisciplinas.length === 1)
+                }
+              />
+            </Loader>
           </div>
           <div className="col-md-8 col-sm-2 d-flex justify-content-end">
             <Button
@@ -505,7 +527,10 @@ const PlanoAnual = () => {
                   setBimestreExpandido(c);
                 }}
               >
-                {planoAnual &&
+                {turmaSelecionada &&
+                  disciplinaSelecionada &&
+                  codigoDisciplinaSelecionada &&
+                  planoAnual &&
                   planoAnual.length > 0 &&
                   planoAnual.map(plano => (
                     <Panel
@@ -523,7 +548,7 @@ const PlanoAnual = () => {
                             turmaSelecionada &&
                             turmaSelecionada.modalidade &&
                             turmaSelecionada.modalidade.toString() ===
-                            modalidade.ENSINO_MEDIO.toString()
+                              modalidade.ENSINO_MEDIO.toString()
                           }
                           disciplinaSemObjetivo={
                             disciplinaSelecionada &&

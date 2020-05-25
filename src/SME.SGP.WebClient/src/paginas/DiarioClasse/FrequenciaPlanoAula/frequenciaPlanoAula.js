@@ -317,13 +317,12 @@ const FrequenciaPlanoAula = () => {
       }
 
       if (
-        disciplinaSelecionada.regencia ||
+        (disciplinaSelecionada && disciplinaSelecionada.regencia) ||
         ehProfessor ||
-        ehProfessorCj ||
-        somenteConsulta
+        ehProfessorCj
       ) {
         let disciplinas = {};
-        if (disciplinaSelecionada.regencia) {
+        if (disciplinaSelecionada && disciplinaSelecionada.regencia) {
           setTemObjetivos(true);
           disciplinas = await api.get(
             `v1/professores/turmas/${turmaId}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigoComponenteCurricular}&regencia=true`
@@ -338,7 +337,10 @@ const FrequenciaPlanoAula = () => {
             });
             setMaterias([...disciplinasRegencia]);
           }
-        } else {
+        } else if (
+          disciplinaSelecionada &&
+          disciplinaSelecionada.codigoComponenteCurricular
+        ) {
           const dataAula = dadosAula.data || dadosAula[0].data;
           disciplinas = await api.get(
             `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}?dataAula=${dataAula}`
