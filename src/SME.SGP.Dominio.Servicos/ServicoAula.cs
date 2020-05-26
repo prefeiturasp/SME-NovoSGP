@@ -180,7 +180,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var bimestre = consultasPeriodoEscolar.ObterBimestre(aula.DataAula, turma.ModalidadeCodigo);
             if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre))
-                throw new NegocioException("Não é possível cadastrar essa aula pois o período não esta aberto.");
+                throw new NegocioException("Não é possível cadastrar essa aula pois o período não está aberto.");
 
             if (aula.RecorrenciaAula != RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
                 throw new NegocioException("Uma aula do tipo Reposição não pode ser recorrente.");
