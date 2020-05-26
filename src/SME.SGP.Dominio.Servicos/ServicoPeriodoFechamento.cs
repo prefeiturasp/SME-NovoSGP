@@ -103,6 +103,11 @@ namespace SME.SGP.Dominio.Servicos
                         {
                             AtualizaDatasInicioEFim(periodoFechamentoBimestreDre, periodoFechamentoBimestreUe);
                             await repositorioPeriodoFechamentoBimestre.SalvarAsync(periodoFechamentoBimestreUe);
+
+                            EventoFechamento fechamentoExistente = repositorioEventoFechamento.ObterPorIdFechamento(periodoFechamentoBimestreUe.Id);
+                            if (fechamentoExistente != null)
+                                AtualizaEventoDeFechamento(periodoFechamentoBimestreUe, fechamentoExistente);
+
                         }
                     }
                     catch (Exception e)
@@ -304,7 +309,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void AtualizaEventoDeFechamento(PeriodoFechamentoBimestre bimestre, EventoFechamento fechamentoExistente)
         {
-            var eventoExistente = repositorioEvento.ObterPorId(fechamentoExistente.EventoId);
+            var eventoExistente = fechamentoExistente.Evento ?? repositorioEvento.ObterPorId(fechamentoExistente.EventoId);
             if (eventoExistente != null)
             {
                 eventoExistente.DataInicio = bimestre.InicioDoFechamento;
