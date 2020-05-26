@@ -175,7 +175,7 @@ namespace SME.SGP.Aplicacao
                     var fechamentoTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(filtro.TurmaCodigo, long.Parse(filtro.DisciplinaCodigo), valorBimestreAtual);
 
                     var alunosForeach = from a in alunos
-                                        where (a.NumeroAlunoChamada > 0 && a.EstaAtivo(periodoAtual.PeriodoFim)) ||
+                                        where (a.EstaAtivo(periodoAtual.PeriodoFim)) ||
                                               (a.EstaInativo(periodoAtual.PeriodoFim) && a.DataSituacao.Date >= periodoAtual.PeriodoInicio.Date)
                                         orderby a.NomeValido(), a.NumeroAlunoChamada
                                                 
