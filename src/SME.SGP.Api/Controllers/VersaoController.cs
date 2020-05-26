@@ -8,7 +8,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/versoes")]
-    public class GithubController : ControllerBase
+    public class VersaoController : ControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> ObterUltimaVersao([FromServices]IMediator mediator)
