@@ -229,13 +229,16 @@ namespace SME.SGP.Dominio.Servicos
 
         private void LimparCamposNaoUtilizadosRegistroPai(PeriodoFechamento registroFilho)
         {
-            registroFilho.Id = 0;
-            registroFilho.CriadoEm = DateTime.MinValue;
-            registroFilho.CriadoPor = null;
-            registroFilho.CriadoRF = null;
-            registroFilho.AlteradoEm = DateTime.MinValue;
-            registroFilho.AlteradoPor = null;
-            registroFilho.AlteradoRF = null;
+            if (registroFilho != null && registroFilho.Id > 0)
+            {
+                registroFilho.Id = 0;
+                registroFilho.CriadoEm = DateTime.MinValue;
+                registroFilho.CriadoPor = null;
+                registroFilho.CriadoRF = null;
+                registroFilho.AlteradoEm = DateTime.MinValue;
+                registroFilho.AlteradoPor = null;
+                registroFilho.AlteradoRF = null;
+            }
         }
 
 
