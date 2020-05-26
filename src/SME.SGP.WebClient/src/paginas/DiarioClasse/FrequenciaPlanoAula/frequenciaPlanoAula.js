@@ -11,7 +11,7 @@ import CardCollapse from '~/componentes/cardCollapse';
 import PlanoAula from '../PlanoAula/plano-aula';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import { confirmar, erros, sucesso, erro } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import Alert from '~/componentes/alert';
@@ -285,7 +285,6 @@ const FrequenciaPlanoAula = () => {
         });
 
       const dadosPlano = plano && plano.data;
-
       if (dadosPlano) {
         planoAula.qtdAulas = dadosPlano.qtdAulas;
         if (dadosPlano.id > 0) {
@@ -767,14 +766,18 @@ const FrequenciaPlanoAula = () => {
           turmaSelecionada.turma
         )
         .then(resposta => {
-          setPossuiPlanoAnual(
-            !!(
-              resposta?.data &&
-              resposta.data.filter(
-                plano => plano.id && plano.criadoEm && plano.descricao.length
-              ).length
-            )
-          );
+          const planoAnualCadastrado =
+            resposta?.data &&
+            !!resposta.data.filter(
+              plano => plano.id && plano.criadoEm && plano.descricao.length
+            ).length;
+
+          setPossuiPlanoAnual(planoAnualCadastrado);
+          if (!planoAnualCadastrado) {
+            erro(
+              'Não foi possível carregar o plano de aula porque não há plano anual cadastrado'
+            );
+          }
         })
         .catch(e => erros(e));
 
