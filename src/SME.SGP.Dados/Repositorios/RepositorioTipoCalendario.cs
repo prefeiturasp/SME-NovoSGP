@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select * from periodo_escolar pe");
+            query.AppendLine("select pe.* from periodo_escolar pe");
             query.AppendLine("inner join tipo_calendario tc");
             query.AppendLine("on tc.id = pe.tipo_calendario_id");
             query.AppendLine("where tc.id = @tipoCalendarioId");
