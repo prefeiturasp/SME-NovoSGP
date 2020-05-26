@@ -29,7 +29,7 @@ namespace SME.SGP.Api
 
             services.AddHttpClient<IServicoGithub, SevicoGithub>(c =>
             {
-                c.BaseAddress = new Uri("https://api.github.com/repos/prefeiturasp/SME-NovoSGP/tags");
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiGithub").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
         }
