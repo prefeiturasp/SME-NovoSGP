@@ -5,10 +5,10 @@ import shortid from 'shortid';
 import { Base } from './colors';
 
 const CardHeader = props => {
-  const { indice, children, border, icon, show, onclick, configuracao } = props;
+  const { indice, children, border, icon, show, onClick, configuracao } = props;
 
   const Header = styled.div`
-    height:${configuracao.altura};
+    height: ${configuracao.altura};
     ${border
       ? `
       border-top-width: 0px !important;
@@ -42,7 +42,7 @@ const CardHeader = props => {
     const header = event.target.parentElement.parentElement.classList;
     if (!header.contains('expanded')) header.add('expanded');
     else header.remove('expanded');
-    onclick && onclick();
+    onClick && onClick();
   };
 
   return (
@@ -74,7 +74,8 @@ CardHeader.propTypes = {
   border: PropTypes.bool,
   icon: PropTypes.bool,
   show: PropTypes.bool,
-  configuracao: PropTypes.object,
+  onClick: PropTypes.oneOfType([PropTypes.func]),
+  configuracao: PropTypes.oneOfType([PropTypes.any]),
 };
 
 CardHeader.defaultProps = {
@@ -83,10 +84,11 @@ CardHeader.defaultProps = {
   border: false,
   icon: false,
   show: false,
+  onClick: () => {},
   configuracao: {
     altura: 'auto',
-    corBorda: Base.AzulBordaCard
-  }
+    corBorda: Base.AzulBordaCard,
+  },
 };
 
 export default CardHeader;
