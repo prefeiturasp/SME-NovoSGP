@@ -266,7 +266,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("va.ue_nome as nome,");
             query.AppendLine("u.tipo_escola as tipoEscola");
             query.AppendLine("from");
-            query.AppendLine("v_abrangencia va");
+            query.AppendLine("v_abrangencia_usuario va");
             query.AppendLine("inner join ue u");
             query.AppendLine("on u.ue_id = va.ue_codigo");
             query.AppendLine("where");
