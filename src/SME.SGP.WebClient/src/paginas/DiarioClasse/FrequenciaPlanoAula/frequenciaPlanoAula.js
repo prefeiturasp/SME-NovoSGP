@@ -94,8 +94,6 @@ const FrequenciaPlanoAula = () => {
   const [materias, setMaterias] = useState([]);
   const [mostrarErros, setMostarErros] = useState(false);
 
-  const [, setCarregandoSalvar] = useState(false);
-
   const [planoAulaExpandido, setPlanoAulaExpandido] = useState(false);
 
   const dadosAulaFrequencia = useSelector(
@@ -398,7 +396,6 @@ const FrequenciaPlanoAula = () => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
 
   const onSalvarFrequencia = click => {
-    setCarregandoSalvar(true);
     return new Promise((resolve, reject) => {
       const valorParaSalvar = {
         aulaId,
@@ -412,7 +409,6 @@ const FrequenciaPlanoAula = () => {
             if (click) {
               aposSalvarFrequencia();
             }
-            setCarregandoSalvar(false);
             setTimeout(() => {
               setCarregandoGeral(false);
             }, 1000);
@@ -423,7 +419,6 @@ const FrequenciaPlanoAula = () => {
           return false;
         })
         .catch(e => {
-          setCarregandoSalvar(false);
           setTimeout(() => {
             setCarregandoGeral(false);
           }, 1000);
@@ -849,6 +844,7 @@ const FrequenciaPlanoAula = () => {
 
   const onChangeFrequencia = () => {
     setModoEdicaoFrequencia(true);
+    setExibirCardFrequencia(true);
   };
 
   const LinkAcao = styled.span`
