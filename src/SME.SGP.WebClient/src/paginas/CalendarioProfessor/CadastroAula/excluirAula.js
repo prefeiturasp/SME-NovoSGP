@@ -9,26 +9,23 @@ function ExcluirAula({
   idAula,
   dataAula,
   nomeComponente,
+  recorrencia,
   onFecharModal,
+  onCancelar,
 }) {
-  const opcoesExcluirRecorrencia = [
-    { label: 'Somente o dia', value: 1 },
-    { label: 'Bimestre atual', value: 2 },
-    { label: 'Todos os bimestres', value: 3 },
-  ];
+  const listRecorrenciaInicial = [{ label: 'Somente o dia', value: 1 }];
+
+  const [opcoesExcluirRecorrencia, setOpcoesExcluirRecorrencia] = useState(
+    listRecorrenciaInicial
+  );
 
   const [carregando, setCarregando] = useState(false);
-  const [recorrencia, setRecorrenciaAula] = useState({
-    aulaId: 0,
-    existeFrequenciaOuPlanoAula: false,
-    quantidadeAulasRecorrentes: 0,
-    recorrenciaAula: 1,
-  });
+  const [recorrenciaSelecionada, setRRecorrenciaSelecionada] = useState(1);
 
   const excluirAula = () => {
     const nome = nomeComponente();
     setCarregando(true);
-    ServicoCadastroAula.excluirAula(idAula, recorrencia.recorrenciaAula, nome)
+    ServicoCadastroAula.excluirAula(idAula, recorrenciaSelecionada, nome)
       .then(resposta => {
         sucesso(resposta.data.mensagens[0]);
         onFecharModal();
@@ -39,21 +36,26 @@ function ExcluirAula({
 
   useEffect(() => {
     if (visivel) {
-      setCarregando(true);
-      ServicoCadastroAula.obterRecorrenciaPorIdAula(idAula)
-        .then(resposta => setRecorrenciaAula(resposta.data))
-        .catch(e => erros(e))
-        .finally(() => setCarregando(false));
+      let opcaoAIncluir = { label: 'Bimestre atual', value: 2 };
+
+      if (recorrencia.recorrenciaAula == 3)
+        opcaoAIncluir = { label: 'Todos os bimestres', value: 3 };
+
+      setOpcoesExcluirRecorrencia(opcoes => {
+        return [...opcoes, opcaoAIncluir];
+      });
+    } else {
+      setOpcoesExcluirRecorrencia(listRecorrenciaInicial);
     }
-  }, [idAula, visivel]);
+  }, [visivel]);
 
   return (
     <ModalConteudoHtml
       key="excluirAula"
       visivel={visivel}
       onConfirmacaoPrincipal={excluirAula}
-      onConfirmacaoSecundaria={onFecharModal}
-      onClose={() => {}}
+      onConfirmacaoSecundaria={onCancelar}
+      onClose={onCancelar}
       labelBotaoPrincipal="Confirmar"
       labelBotaoSecundario="Cancelar"
       titulo={`Excluir aula - ${dataAula}`}
@@ -94,11 +96,8 @@ function ExcluirAula({
                     label="Realizar exclusão"
                     opcoes={opcoesExcluirRecorrencia}
                     name="tipoRecorrenciaExclusao"
-                    onChange={e => {
-                      setRecorrenciaAula(r => {
-                        return { ...r, recorrenciaAula: e.target.value };
-                      });
-                    }}
+                    onChange={e => setRRecorrenciaSelecionada(e.target.value)}
+                    desabilitado={false}
                   />
                 </div>
               </div>
