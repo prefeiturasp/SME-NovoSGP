@@ -28,8 +28,13 @@ function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
       }
       setCarregando(false);
     }
-    buscarTerritorios();
-  }, [turmaSelecionada.turma]);
+    if (Object.keys(turmaSelecionada).length > 0) {
+      onChangeTerritorio(undefined);
+      buscarTerritorios();
+    } else {
+      setListaTerritorios([]);
+    }
+  }, [onChangeTerritorio, turmaSelecionada, turmaSelecionada.turma]);
 
   return (
     <Loader tip={false} loading={carregando}>
@@ -42,7 +47,6 @@ function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
         onChange={valor => onChangeTerritorio(valor)}
         valueSelect={territorioSelecionado || undefined}
         placeholder="Selecione um território"
-        //disabled={listaDisciplinas && listaDisciplinas.length === 1}
       />
     </Loader>
   );
