@@ -526,6 +526,7 @@ const PlanoAula = props => {
         onClose={() => setMostrarModalCopiarConteudo(false)}
         disciplina={disciplinaIdSelecionada}
         planoAula={planoAula}
+        dataAula={dataAula}
       />
     </Corpo>
   );
