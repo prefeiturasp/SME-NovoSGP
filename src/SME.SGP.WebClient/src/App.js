@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+
 import { Provider } from 'react-redux';
 import { Router, Switch } from 'react-router-dom';
 import ReactGA from 'react-ga';
@@ -19,6 +20,8 @@ import RotaAutenticadaDesestruturada from './rotas/rotaAutenticadaDesestruturada
 import { rotaAtiva } from './redux/modulos/navegacao/actions';
 import CapturaErros from './captura-erros';
 import { Deslogar } from '~/redux/modulos/usuario/actions';
+
+import VersaoSistema from '~/componentes-sgp/VersaoSistema';
 
 obterTrackingID().then(id => ReactGA.initialize(id));
 
@@ -59,6 +62,7 @@ function App() {
         <Router history={history}>
           <CapturaErros>
             <GlobalStyle />
+            <VersaoSistema />
             <div className="h-100">
               <Switch>
                 <RotaNaoAutenticadaDesestruturada
