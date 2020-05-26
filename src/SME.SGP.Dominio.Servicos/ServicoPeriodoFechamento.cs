@@ -94,6 +94,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (fechamentoSMEDre == null)
             {
+                LimparCamposNaoUtilizadosRegistroPai(fechamentoSME);
                 fechamentoSMEDre = fechamentoSME;
 
                 if (fechamentoSMEDre == null)
@@ -119,6 +120,7 @@ namespace SME.SGP.Dominio.Servicos
             var fechamentoDreUe = repositorioFechamento.ObterPorFiltros(tipoCalendarioId, dre?.Id, ue?.Id, null);
             if (fechamentoDreUe == null)
             {
+                LimparCamposNaoUtilizadosRegistroPai(fechamentoSMEDre);
                 fechamentoDreUe = fechamentoSMEDre;
                 fechamentoDreUe.Dre = dre;
                 fechamentoDreUe.Ue = ue;
@@ -164,6 +166,18 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
             return fechamentoDto;
+        }
+
+
+        private void LimparCamposNaoUtilizadosRegistroPai(PeriodoFechamento registroFilho)
+        {
+            registroFilho.Id = 0;
+            registroFilho.CriadoEm = DateTime.MinValue;
+            registroFilho.CriadoPor = null;
+            registroFilho.CriadoRF = null;
+            registroFilho.AlteradoEm = DateTime.MinValue;
+            registroFilho.AlteradoPor = null;
+            registroFilho.AlteradoRF = null;
         }
 
 
