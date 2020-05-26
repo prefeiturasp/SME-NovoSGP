@@ -126,9 +126,7 @@ const ListaFrequencia = props => {
                         <div className="margin-marcar-todos">F</div>
                       </th>
                     </>
-                  ) : (
-                    ''
-                  )}
+                  ) : null}
                   {dataSource[0].aulas.map((aula, i) => {
                     return (
                       <th

@@ -1,16 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import shortid from 'shortid';
 import { Switch } from 'antd';
 import { CampoData, Auditoria, Loader, ButtonGroup } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
-import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import CardCollapse from '~/componentes/cardCollapse';
-import { Colors } from '~/componentes/colors';
 import PlanoAula from '../PlanoAula/plano-aula';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
@@ -25,6 +22,7 @@ import { stringNulaOuEmBranco } from '~/utils/funcoes/gerais';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import modalidade from '~/dtos/modalidade';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import Grid from '~/componentes/grid';
 import { store } from '~/redux';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
@@ -95,8 +93,6 @@ const FrequenciaPlanoAula = () => {
   const [errosValidacaoPlano, setErrosValidacaoPlano] = useState([]);
   const [materias, setMaterias] = useState([]);
   const [mostrarErros, setMostarErros] = useState(false);
-
-  const [carregandoSalvar, setCarregandoSalvar] = useState(false);
 
   const [planoAulaExpandido, setPlanoAulaExpandido] = useState(false);
 
@@ -271,6 +267,8 @@ const FrequenciaPlanoAula = () => {
 
   const [carregandoMaterias, setCarregandoMaterias] = useState(false);
 
+  const [possuiPlanoAnual, setPossuiPlanoAnual] = useState(true);
+
   const obterPlanoAula = useCallback(
     async dadosAula => {
       setCarregandoMaterias(true);
@@ -398,7 +396,6 @@ const FrequenciaPlanoAula = () => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
 
   const onSalvarFrequencia = click => {
-    setCarregandoSalvar(true);
     return new Promise((resolve, reject) => {
       const valorParaSalvar = {
         aulaId,
@@ -412,7 +409,6 @@ const FrequenciaPlanoAula = () => {
             if (click) {
               aposSalvarFrequencia();
             }
-            setCarregandoSalvar(false);
             setTimeout(() => {
               setCarregandoGeral(false);
             }, 1000);
@@ -423,7 +419,6 @@ const FrequenciaPlanoAula = () => {
           return false;
         })
         .catch(e => {
-          setCarregandoSalvar(false);
           setTimeout(() => {
             setCarregandoGeral(false);
           }, 1000);
@@ -627,8 +622,10 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onClickPlanoAula = useCallback(() => {
-    setPlanoAulaExpandido(!planoAulaExpandido);
-  }, [planoAulaExpandido]);
+    setPlanoAulaExpandido(
+      !possuiPlanoAnual ? possuiPlanoAnual : !planoAulaExpandido
+    );
+  }, [planoAulaExpandido, possuiPlanoAnual]);
 
   useEffect(() => {
     if (!planoAula.aulaId && planoAulaExpandido && aula) {
@@ -761,6 +758,26 @@ const FrequenciaPlanoAula = () => {
       setTemAvaliacao(undefined);
       setAula();
       resetarPlanoAula();
+
+      servicoPlanoAnual
+        .obter(
+          turmaSelecionada.anoLetivo,
+          disciplinaIdSelecionada,
+          turmaSelecionada.unidadeEscolar,
+          turmaSelecionada.turma
+        )
+        .then(resposta => {
+          setPossuiPlanoAnual(
+            !!(
+              resposta?.data &&
+              resposta.data.filter(
+                plano => plano.id && plano.criadoEm && plano.descricao.length
+              ).length
+            )
+          );
+        })
+        .catch(e => erros(e));
+
       if (planoAulaExpandido) onClickPlanoAula();
 
       setCarregandoGeral(true);
@@ -827,6 +844,7 @@ const FrequenciaPlanoAula = () => {
 
   const onChangeFrequencia = () => {
     setModoEdicaoFrequencia(true);
+    setExibirCardFrequencia(true);
   };
 
   const LinkAcao = styled.span`
@@ -858,11 +876,13 @@ const FrequenciaPlanoAula = () => {
       )}
       <AlertaPeriodoEncerrado
         exibir={
-          disciplinaSelecionada &&
-          dataSelecionada &&
-          !temPeriodoAberto &&
-          !carregandoMaterias &&
-          !carregandoGeral
+          !!(
+            disciplinaSelecionada &&
+            dataSelecionada &&
+            !temPeriodoAberto &&
+            !carregandoMaterias &&
+            !carregandoGeral
+          )
         }
       />
       {temAvaliacao ? (
@@ -1025,6 +1045,7 @@ const FrequenciaPlanoAula = () => {
                           ? disciplinaSelecionada.regencia
                           : false
                       }
+                      possuiPlanoAnual={possuiPlanoAnual}
                     />
                   </div>
                 </>
