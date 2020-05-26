@@ -28,19 +28,19 @@ namespace SME.SGP.Aplicacao
         {
             var hoje = DateTime.Today;
 
-            // Evento Letivo
-            var temEventoLetivoNoDia = repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
-            if (temEventoLetivoNoDia)
-                return new PodeCadastrarAulaPorDataRetornoDto(true);
-
             // Periodo Escolar
             var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, request.DataAula);
             if (periodoEscolar == null)
                 return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula fora do periodo escolar");
 
             // Domingo
-            if (request.DataAula.DayOfWeek == DayOfWeek.Sunday)
-                return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no domingo");
+            if (request.DataAula.FimDeSemana())
+            {
+                // Evento Letivo
+                var temEventoLetivoNoDia = repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
+                if (!temEventoLetivoNoDia)
+                    return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no domingo");
+            }
 
             // Evento não letivo
             var temEventoNaoLetivoNoDia = repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
