@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -14,16 +15,19 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoWorkflowAprovacao servicoWorkflowAprovacao;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ComandosEvento(IRepositorioEvento repositorioEvento,
                               IRepositorioEventoTipo repositorioEventoTipo,
                               IServicoEvento servicoEvento,
-                              IServicoWorkflowAprovacao servicoWorkflowAprovacao)
+                              IServicoWorkflowAprovacao servicoWorkflowAprovacao,
+                              IServicoUsuario servicoUsuario)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
@@ -37,6 +41,15 @@ namespace SME.SGP.Aplicacao
 
             if (tipoEvento == null)
                 throw new NegocioException("Não foi possível obter o tipo do evento");
+
+            try
+            {
+                ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(evento);
+            }
+            catch (NegocioException)
+            {
+                throw new NegocioException($"O seu perfil de usuário não permite a alteração desse evento");
+            }            
 
             evento.AdicionarTipoEvento(tipoEvento);
 
@@ -56,12 +69,15 @@ namespace SME.SGP.Aplicacao
         public void Excluir(long[] idsEventos)
         {
             List<long> idsComErroAoExcluir = new List<long>();
+            IList<string> eventoSemPemissaoExclusao = new List<string>();
 
             foreach (var idEvento in idsEventos)
             {
                 try
                 {
                     var evento = repositorioEvento.ObterPorId(idEvento);
+
+                    ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(evento);
 
                     if (evento.WorkflowAprovacaoId.HasValue)
                         servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(evento.WorkflowAprovacaoId.Value);
@@ -70,15 +86,27 @@ namespace SME.SGP.Aplicacao
 
                     repositorioEvento.Salvar(evento);
                 }
+                catch (NegocioException nex)
+                {
+                    eventoSemPemissaoExclusao.Add(nex.Message);
+                }
                 catch (Exception)
                 {
                     idsComErroAoExcluir.Add(idEvento);
                 }
             }
 
+            var mensagensErroRetorno = new StringBuilder();
+
+            if (eventoSemPemissaoExclusao.Any())
+                mensagensErroRetorno.AppendLine($"O seu perfil de usuário não permite a exclusão do(s) evento(s): { string.Join(", ", eventoSemPemissaoExclusao) }");
+
             if (idsComErroAoExcluir.Any())
-                throw new NegocioException($"Não foi possível excluir os eventos de ids {string.Join(",", idsComErroAoExcluir)}");
-        }
+                mensagensErroRetorno.AppendLine($"Não foi possível excluir os eventos de ids {string.Join(",", idsComErroAoExcluir)}");
+
+            if (eventoSemPemissaoExclusao.Any() || idsComErroAoExcluir.Any())
+                throw new NegocioException(mensagensErroRetorno.ToString());
+        }       
 
         public void GravarRecorrencia(EventoDto eventoDto, Evento evento)
         {
@@ -146,6 +174,16 @@ namespace SME.SGP.Aplicacao
             mensagens.AddRange(await CopiarEventos(eventoDto));
 
             return mensagens;
+        }
+
+        private void ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(Evento evento)
+        {
+            var usuario = servicoUsuario.ObterUsuarioLogado().Result;            
+
+            if ((evento.EhEventoSME() && !usuario.EhPerfilSME()) ||
+                (evento.EhEventoDRE() && !usuario.EhPerfilDRE()) ||
+                (evento.EhEventoUE() && !usuario.EhPerfilUE()))
+                throw new NegocioException(evento.Nome);
         }
     }
 }
