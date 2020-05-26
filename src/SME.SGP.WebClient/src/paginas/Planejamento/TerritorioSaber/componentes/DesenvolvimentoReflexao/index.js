@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 import t from 'prop-types';
 
 // Componentes
@@ -8,17 +8,33 @@ import { Grid, Editor } from '~/componentes';
 import { Linha } from '~/componentes/EstilosGlobais';
 
 function DesenvolvimentoReflexao({ bimestre, dadosBimestre, onChange }) {
-  useEffect(() => {
-    console.log('Dados do bimestre', dadosBimestre);
-  }, [dadosBimestre]);
+  const onChangeBimestre = useCallback(
+    (bimestreAtual, campo, valor) => {
+      onChange(bimestreAtual, {
+        ...dadosBimestre,
+        [campo]: valor,
+      });
+    },
+    [dadosBimestre, onChange]
+  );
 
   return (
     <Linha className="row ml-1 mr-1">
       <Grid cols={6}>
-        <Editor label="Desenvolvimento das atividades" />
+        <Editor
+          onChange={valor =>
+            onChangeBimestre(bimestre, 'desenvolvimento', valor)
+          }
+          label="Desenvolvimento das atividades"
+          inicial={dadosBimestre.desenvolvimento}
+        />
       </Grid>
       <Grid cols={6}>
-        <Editor label="Reflexões sobre a participação dos estudantes, parcerias e avaliação" />
+        <Editor
+          onChange={valor => onChangeBimestre(bimestre, 'reflexao', valor)}
+          label="Reflexões sobre a participação dos estudantes, parcerias e avaliação"
+          inicial={dadosBimestre.reflexao}
+        />
       </Grid>
     </Linha>
   );

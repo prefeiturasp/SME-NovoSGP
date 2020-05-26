@@ -5,7 +5,7 @@ const TerritorioSaberServico = {
     return api.get(`/v1/planos/anual/territorio-saber`, { params });
   },
   salvarPlanejamento(params) {
-    return api.get(`/v1/planos/anual/territorio-saber`, { params });
+    return api.post(`/v1/planos/anual/territorio-saber`, params);
   },
 };
 
