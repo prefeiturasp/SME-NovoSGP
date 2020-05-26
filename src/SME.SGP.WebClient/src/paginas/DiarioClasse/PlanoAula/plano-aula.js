@@ -49,6 +49,7 @@ const PlanoAula = props => {
     temAvaliacao,
     ehRegencia,
     onClick,
+    possuiPlanoAnual,
   } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
@@ -247,6 +248,7 @@ const PlanoAula = props => {
         titulo="Plano de aula"
         indice="Plano de aula"
         show={mostrarCardPrincipal}
+        icon={possuiPlanoAnual}
       >
         <Loader loading={mostrarCardPrincipal && carregandoMaterias}>
           <QuantidadeBotoes className="col-md-12">
@@ -460,6 +462,7 @@ const PlanoAula = props => {
             onClick={() => {}}
             titulo="Desenvolvimento da aula"
             indice="desenv-aula"
+            icon
             show
             configCabecalho={configCabecalho}
           >
@@ -547,6 +550,7 @@ PlanoAula.propTypes = {
   temAvaliacao: PropTypes.oneOfType([PropTypes.any]),
   ehRegencia: PropTypes.oneOfType([PropTypes.any]),
   onClick: PropTypes.oneOfType([PropTypes.any]),
+  possuiPlanoAnual: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 PlanoAula.defaultProps = {
@@ -568,6 +572,7 @@ PlanoAula.defaultProps = {
   temAvaliacao: false,
   ehRegencia: false,
   onClick: () => {},
+  possuiPlanoAnual: false,
 };
 
 export default PlanoAula;
