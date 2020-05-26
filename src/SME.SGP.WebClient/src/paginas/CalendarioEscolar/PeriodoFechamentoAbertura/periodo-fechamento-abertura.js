@@ -275,7 +275,7 @@ const PeriodoFechamentoAbertura = () => {
               item.inicioMinimo = obterDataMoment(item.inicioMinimo);
               item.finalMaximo = obterDataMoment(item.finalMaximo);
             });
-            setEhRegistroExistente(resposta.data.ehRegistroExistente);
+            setEhRegistroExistente(resposta.data.id);
             setFechamento(resposta.data);
             setRegistroMigrado(resposta.data.migrado);
             setAuditoria({
@@ -329,12 +329,12 @@ const PeriodoFechamentoAbertura = () => {
     }
   };
 
-  const touchedFields =  form => {
+  const touchedFields = form => {
     const arrayCampos = Object.keys(fechamento);
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
     });
-  }
+  };
 
   const validaAntesDoSubmit = form => {
     touchedFields(form);
@@ -360,7 +360,6 @@ const PeriodoFechamentoAbertura = () => {
         resetarTela(form);
       }
     }
-
   };
 
   const resetarTela = form => {
@@ -368,7 +367,7 @@ const PeriodoFechamentoAbertura = () => {
     setModoEdicao(false);
     setFechamento(obtemPeriodosIniciais());
     carregaDados();
-  }
+  };
 
   const onSubmit = async (form, confirmou = false) => {
     form.fechamentosBimestres.forEach(item => {
@@ -633,8 +632,11 @@ const PeriodoFechamentoAbertura = () => {
             )}
           </Formik>
           <div className="col-md-6 d-flex justify-content-start">
-          {tipoCalendarioSelecionado && tipoCalendarioSelecionado !== '' && ehRegistroExistente
-              && auditoria && auditoria.criadoEm ? (
+            {tipoCalendarioSelecionado &&
+            tipoCalendarioSelecionado !== '' &&
+            ehRegistroExistente &&
+            auditoria &&
+            auditoria.criadoEm ? (
               <Auditoria
                 criadoEm={auditoria.criadoEm}
                 criadoPor={auditoria.criadoPor}
