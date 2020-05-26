@@ -49,6 +49,7 @@ const PlanoAula = props => {
     temAvaliacao,
     ehRegencia,
     onClick,
+    possuiPlanoAnual,
   } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
@@ -71,7 +72,6 @@ const PlanoAula = props => {
     carregandoObjetivosSelecionados,
     setCarregandoObjetivosSelecionados,
   ] = useState(false);
-  const [carregando, setCarregando] = useState(false);
 
   const setModoEdicaoPlano = ehEdicao => {
     setModoEdicao(ehEdicao);
@@ -114,9 +114,7 @@ const PlanoAula = props => {
   }, [planoAula.objetivosAprendizagemAula]);
 
   useEffect(() => {
-    setCarregando(true);
     setMaterias(listaMaterias);
-    setCarregando(false);
   }, [listaMaterias]);
 
   const setObjetivos = objetivos => {
@@ -170,7 +168,6 @@ const PlanoAula = props => {
   };
 
   const selecionarMateria = async id => {
-    setCarregando(true);
     setCarregandoObjetivos(true);
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
@@ -200,7 +197,6 @@ const PlanoAula = props => {
     }
     setMaterias([...materias]);
     setCarregandoObjetivos(false);
-    setCarregando(false);
   };
 
   const onBlurMeusObjetivos = value => {
@@ -252,6 +248,7 @@ const PlanoAula = props => {
         titulo="Plano de aula"
         indice="Plano de aula"
         show={mostrarCardPrincipal}
+        icon={possuiPlanoAnual}
       >
         <Loader loading={mostrarCardPrincipal && carregandoMaterias}>
           <QuantidadeBotoes className="col-md-12">
@@ -317,7 +314,6 @@ const PlanoAula = props => {
                         return (
                           <Badge
                             role="button"
-                            disabled={desabilitarCampos}
                             onClick={() => selecionarMateria(materia.id)}
                             id={materia.id}
                             alt={materia.descricao}
@@ -466,6 +462,7 @@ const PlanoAula = props => {
             onClick={() => {}}
             titulo="Desenvolvimento da aula"
             indice="desenv-aula"
+            icon
             show
             configCabecalho={configCabecalho}
           >
@@ -529,6 +526,7 @@ const PlanoAula = props => {
         onClose={() => setMostrarModalCopiarConteudo(false)}
         disciplina={disciplinaIdSelecionada}
         planoAula={planoAula}
+        dataAula={dataAula}
       />
     </Corpo>
   );
@@ -553,6 +551,7 @@ PlanoAula.propTypes = {
   temAvaliacao: PropTypes.oneOfType([PropTypes.any]),
   ehRegencia: PropTypes.oneOfType([PropTypes.any]),
   onClick: PropTypes.oneOfType([PropTypes.any]),
+  possuiPlanoAnual: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 PlanoAula.defaultProps = {
@@ -574,6 +573,7 @@ PlanoAula.defaultProps = {
   temAvaliacao: false,
   ehRegencia: false,
   onClick: () => {},
+  possuiPlanoAnual: false,
 };
 
 export default PlanoAula;
