@@ -499,9 +499,17 @@ function CadastroDeAula({ match, location }) {
 
   const onClickExcluir = async () => {
     if (recorrenciaAulaEmEdicao.recorrenciaAula == 1) {
+      let mensagem = 'Você tem certeza que deseja excluir esta aula?';
+      if (recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula) {
+        mensagem +=
+          ' Obs: Esta aula ou sua recorrência possui frequência ou plano de aula registrado, ao excluí-la estará excluindo esse registro também';
+      }
       const confirmado = await confirmar(
-        'Atenção',
-        'Você tem certeza que deseja excluir está aula?'
+        `Excluir aula - ${obterDataFormatada()}`,
+        mensagem,
+        'Deseja Continuar?',
+        'Excluir',
+        'Cancelar'
       );
       if (confirmado) {
         const componenteSelecionado = obterComponenteSelecionadoPorId(
