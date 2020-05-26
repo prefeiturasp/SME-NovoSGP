@@ -121,7 +121,8 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     Compartilhada = disciplina.Compartilhada,
                     LancaNota = disciplina.LancaNota,
-                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano)
+                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano),
+                    RegistraFrequencia = disciplina.RegistraFrequencia
                 })?.ToList();
 
                 if (!usuarioLogado.EhProfessor())
