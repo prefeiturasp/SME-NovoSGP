@@ -68,6 +68,14 @@ function CadastroDeAula({ match, location }) {
     ueId: turmaSelecionada.unidadeEscolar,
     tipoCalendarioId,
   };
+
+  const [recorrenciaAulaEmEdicao, setRecorrenciaAulaEmEdicao] = useState({
+    aulaId: id,
+    existeFrequenciaOuPlanoAula: false,
+    quantidadeAulasRecorrentes: 0,
+    recorrenciaAula: 1,
+  });
+
   const [aula, setAula] = useState(aulaInicial);
 
   const [quantidadeBloqueada, setQuantidadeBloqueada] = useState(false);
@@ -145,6 +153,12 @@ function CadastroDeAula({ match, location }) {
           const respostaAula = resposta.data;
           respostaAula.dataAula = window.moment(respostaAula.dataAula);
           setAula(respostaAula);
+          servicoCadastroAula
+            .obterRecorrenciaPorIdAula(id)
+            .then(resposta => {
+              setRecorrenciaAulaEmEdicao(resposta.data);
+            })
+            .catch(e => erros(e));
           if (componentes) {
             const componenteSelecionado = componentes.find(
               c => c.codigoComponenteCurricular == respostaAula.disciplinaId
@@ -483,6 +497,41 @@ function CadastroDeAula({ match, location }) {
     } else navegarParaCalendarioProfessor();
   };
 
+  const onClickExcluir = async () => {
+    if (recorrenciaAulaEmEdicao.recorrenciaAula == 1) {
+      let mensagem = 'Você tem certeza que deseja excluir esta aula?';
+      if (recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula) {
+        mensagem +=
+          ' Obs: Esta aula ou sua recorrência possui frequência ou plano de aula registrado, ao excluí-la estará excluindo esse registro também';
+      }
+      const confirmado = await confirmar(
+        `Excluir aula - ${obterDataFormatada()}`,
+        mensagem,
+        'Deseja Continuar?',
+        'Excluir',
+        'Cancelar'
+      );
+      if (confirmado) {
+        const componenteSelecionado = obterComponenteSelecionadoPorId(
+          aula.disciplinaId
+        );
+        if (componenteSelecionado) {
+          setCarregandoDados(true);
+          servicoCadastroAula
+            .excluirAula(id, aula.recorrenciaAula, componenteSelecionado.nome)
+            .then(resposta => {
+              sucesso(resposta.data.mensagens[0]);
+              navegarParaCalendarioProfessor();
+            })
+            .catch(e => erros(e))
+            .finally(() => setCarregandoDados(false));
+        }
+      }
+    } else {
+      setExibirModalExclusao(true);
+    }
+  };
+
   useEffect(() => {
     setBreadcrumbManual(
       match.url,
@@ -511,10 +560,12 @@ function CadastroDeAula({ match, location }) {
             );
             return componente?.nome;
           }}
+          recorrencia={recorrenciaAulaEmEdicao}
           onFecharModal={() => {
             setExibirModalExclusao(false);
             navegarParaCalendarioProfessor();
           }}
+          onCancelar={() => setExibirModalExclusao(false)}
         />
         <div className="col-md-12">
           {controlaGrade && gradeAtingida && !id && (
@@ -594,7 +645,7 @@ function CadastroDeAula({ match, location }) {
                         color={Colors.Vermelho}
                         border
                         className="mr-2"
-                        onClick={() => setExibirModalExclusao(true)}
+                        onClick={onClickExcluir}
                         disabled={somenteConsulta || !id || somenteLeitura}
                       />
 
@@ -624,7 +675,7 @@ function CadastroDeAula({ match, location }) {
                         name="tipoAula"
                         form={form}
                         onChange={onChangeTipoAula}
-                        desabilitado={id}
+                        desabilitado={!!id}
                       />
                     </div>
                     <div className="col-xs-12 col-md-6 col-lg-6">
@@ -637,7 +688,7 @@ function CadastroDeAula({ match, location }) {
                         valueText="nome"
                         placeholder="Selecione um componente curricular"
                         form={form}
-                        disabled={id || listaComponentes.length === 1}
+                        disabled={!!id || listaComponentes.length === 1}
                         onChange={onChangeComponente}
                       />
                     </div>
@@ -662,7 +713,7 @@ function CadastroDeAula({ match, location }) {
                         name="recorrenciaAula"
                         form={form}
                         onChange={onChangeRecorrencia}
-                        desabilitado={id || aula.tipoAula === 2}
+                        desabilitado={!!id || aula.tipoAula === 2}
                       />
                     </div>
                   </div>
