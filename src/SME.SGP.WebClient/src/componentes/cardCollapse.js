@@ -32,7 +32,7 @@ const CardCollapse = React.forwardRef((props, ref) => {
         border
         icon={icon}
         show={show}
-        onclick={onClick}
+        onClick={onClick}
         configuracao={configCabecalho}
       >
         {titulo}
