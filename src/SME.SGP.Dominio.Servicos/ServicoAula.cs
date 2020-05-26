@@ -176,11 +176,11 @@ namespace SME.SGP.Dominio.Servicos
             var diaLetivo = temLiberacaoExcepcionalNessaData ? true : servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId);
 
             if (!temLiberacaoExcepcionalNessaData && !diaLetivo)
-            {
-                var bimestre = consultasPeriodoEscolar.ObterBimestre(aula.DataAula, turma.ModalidadeCodigo);
-                if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre))
-                    throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
-            }
+                throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
+
+            var bimestre = consultasPeriodoEscolar.ObterBimestre(aula.DataAula, turma.ModalidadeCodigo);
+            if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre))
+                throw new NegocioException("Não é possível cadastrar essa aula pois o período não esta aberto.");
 
             if (aula.RecorrenciaAula != RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
                 throw new NegocioException("Uma aula do tipo Reposição não pode ser recorrente.");
