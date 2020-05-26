@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -9,10 +7,12 @@ namespace SME.SGP.Infra
         public ConselhoClasseAlunoNotasConceitosDto()
         {
             ComponentesCurriculares = new List<ConselhoClasseComponenteFrequenciaDto>();
+            DesabilitarCampos = true;
         }
 
-        public string GrupoMatriz { get; set; }
         public ConselhoClasseComponenteRegenciaFrequenciaDto ComponenteRegencia { get; set; }
         public List<ConselhoClasseComponenteFrequenciaDto> ComponentesCurriculares { get; set; }
+        public bool DesabilitarCampos { get; set; }
+        public string GrupoMatriz { get; set; }
     }
 }
