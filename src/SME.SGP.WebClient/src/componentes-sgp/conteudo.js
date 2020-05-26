@@ -1,4 +1,8 @@
 import React from 'react';
+
+// Redux
+import { useSelector } from 'react-redux';
+
 import { Switch } from 'react-router-dom';
 import shortid from 'shortid';
 import rotasArray from '~/rotas/rotas';
@@ -9,6 +13,7 @@ import ModalConfirmacao from './modalConfirmacao';
 import TempoExpiracaoSessao from './tempoExpiracaoSessao/tempoExpiracaoSessao';
 
 const Conteudo = () => {
+  const { versao } = useSelector(store => store.sistema);
   return (
     <div className="secao-conteudo">
       <TempoExpiracaoSessao />
@@ -33,6 +38,15 @@ const Conteudo = () => {
           />
         ))}
       </Switch>
+      <div
+        className="row"
+        style={{ bottom: 0, position: 'relative', padding: '1rem 0.5rem' }}
+      >
+        <div className="col-md-12">
+          {!versao ? '' : <strong>{versao}&nbsp;</strong>} - Sistema homologado
+          para navegadores: Google Chrome e Firefox
+        </div>
+      </div>
     </div>
   );
 };
