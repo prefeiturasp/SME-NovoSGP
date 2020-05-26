@@ -291,7 +291,6 @@ const FrequenciaPlanoAula = () => {
         });
 
       const dadosPlano = plano && plano.data;
-
       if (dadosPlano) {
         planoAula.qtdAulas = dadosPlano.qtdAulas;
         if (dadosPlano.id > 0) {
@@ -764,6 +763,30 @@ const FrequenciaPlanoAula = () => {
       setTemAvaliacao(undefined);
       setAula();
       resetarPlanoAula();
+
+      servicoPlanoAnual
+        .obter(
+          turmaSelecionada.anoLetivo,
+          disciplinaIdSelecionada,
+          turmaSelecionada.unidadeEscolar,
+          turmaSelecionada.turma
+        )
+        .then(resposta => {
+          const planoAnualCadastrado =
+            resposta?.data &&
+            !!resposta.data.filter(
+              plano => plano.id && plano.criadoEm && plano.descricao.length
+            ).length;
+
+          setPossuiPlanoAnual(planoAnualCadastrado);
+          if (!planoAnualCadastrado) {
+            erro(
+              'Não foi possível carregar o plano de aula porque não há plano anual cadastrado'
+            );
+          }
+        })
+        .catch(e => erros(e));
+
       if (planoAulaExpandido) onClickPlanoAula();
 
       setCarregandoGeral(true);
