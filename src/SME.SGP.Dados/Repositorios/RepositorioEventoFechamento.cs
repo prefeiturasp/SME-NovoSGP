@@ -6,6 +6,7 @@ using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Linq;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -46,10 +47,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public EventoFechamento ObterPorIdFechamento(long fechamentoId)
         {
-            return database.Conexao.QueryFirstOrDefault<EventoFechamento>("select * from evento_fechamento where fechamento_id = @fechamentoId", new
-            {
-                fechamentoId,
-            });
+            var query = @"select ef.*, e.*
+                        from evento_fechamento ef 
+                        inner join evento e on e.id = ef.evento_id
+                        where ef.fechamento_id = @fechamentoId";
+
+            return database.Conexao.Query<EventoFechamento, Evento, EventoFechamento>(query,
+                (eventoFechamento, evento) =>
+                {
+                    eventoFechamento.Evento = evento;
+                    return eventoFechamento;
+                }
+                , new { fechamentoId }).FirstOrDefault();
         }
 
         public async Task<bool> UeEmFechamento(DateTime dataReferencia, string dreCodigo, string ueCodigo, long tipoCalendarioId, int bimestre)
