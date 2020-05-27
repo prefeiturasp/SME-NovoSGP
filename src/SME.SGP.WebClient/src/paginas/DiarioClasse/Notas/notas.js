@@ -549,7 +549,11 @@ const Notas = ({ match }) => {
     return pergutarParaSalvarNotaFinal(bimestresSemAvaliacaoBimestral)
       .then(salvarAvaliacaoFinal => {
         if (salvarAvaliacaoFinal) {
-          var valoresBimestresSalvarComNotas = [valoresBimestresSalvar.find(x => x.notaConceitoAlunos.length > 0)];
+          let valoresBimestresSalvarComNotas = valoresBimestresSalvar.filter(x => x.notaConceitoAlunos.length > 0);
+
+          if (valoresBimestresSalvarComNotas.length < 1)
+            return resolve(false);
+
           return api
             .post(`/v1/fechamentos/turmas`, valoresBimestresSalvarComNotas)
             .then(salvouNotas => {
