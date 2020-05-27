@@ -621,9 +621,15 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onClickPlanoAula = useCallback(() => {
-    setPlanoAulaExpandido(
-      !possuiPlanoAnual ? possuiPlanoAnual : !planoAulaExpandido
-    );
+    if (!possuiPlanoAnual) {
+      erro(
+        'Não foi possível carregar o plano de aula porque não há plano anual cadastrado'
+      );
+    } else {
+      setPlanoAulaExpandido(
+        !possuiPlanoAnual ? possuiPlanoAnual : !planoAulaExpandido
+      );
+    }
   }, [planoAulaExpandido, possuiPlanoAnual]);
 
   useEffect(() => {
@@ -773,11 +779,6 @@ const FrequenciaPlanoAula = () => {
             ).length;
 
           setPossuiPlanoAnual(planoAnualCadastrado);
-          if (!planoAnualCadastrado) {
-            erro(
-              'Não foi possível carregar o plano de aula porque não há plano anual cadastrado'
-            );
-          }
         })
         .catch(e => erros(e));
 
