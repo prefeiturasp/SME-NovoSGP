@@ -16,18 +16,22 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoWorkflowAprovacao servicoWorkflowAprovacao;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IServicoAbrangencia servicoAbrangencia;
 
         public ComandosEvento(IRepositorioEvento repositorioEvento,
                               IRepositorioEventoTipo repositorioEventoTipo,
                               IServicoEvento servicoEvento,
                               IServicoWorkflowAprovacao servicoWorkflowAprovacao,
-                              IServicoUsuario servicoUsuario)
+                              IServicoUsuario servicoUsuario,
+                              IServicoAbrangencia servicoAbrangencia,
+                              IRepositorioAbrangencia repositorioAbrangencia)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
         }
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
@@ -49,7 +53,7 @@ namespace SME.SGP.Aplicacao
             catch (NegocioException)
             {
                 throw new NegocioException($"O seu perfil de usuário não permite a alteração desse evento");
-            }            
+            }
 
             evento.AdicionarTipoEvento(tipoEvento);
 
@@ -106,7 +110,7 @@ namespace SME.SGP.Aplicacao
 
             if (eventoSemPemissaoExclusao.Any() || idsComErroAoExcluir.Any())
                 throw new NegocioException(mensagensErroRetorno.ToString());
-        }       
+        }
 
         public void GravarRecorrencia(EventoDto eventoDto, Evento evento)
         {
@@ -182,9 +186,13 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = servicoUsuario.ObterUsuarioLogado().Result;            
 
-            if ((evento.EhEventoSME() && !usuario.EhPerfilSME()) ||
-                (evento.EhEventoDRE() && !usuario.EhPerfilDRE()) ||
-                (evento.EhEventoUE() && !usuario.EhPerfilUE()))
+            if (evento.EhEventoSME() && !usuario.EhPerfilSME())
+                throw new NegocioException(evento.Nome);
+
+            if (evento.EhEventoDRE() && ((!usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !servicoAbrangencia.DreEstaNaAbrangencia(usuario.Login, usuario.PerfilAtual, evento.DreId)))
+                throw new NegocioException(evento.Nome);
+
+            if (evento.EhEventoUE() && ((!usuario.EhPerfilUE() && !usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !servicoAbrangencia.UeEstaNaAbrangecia(usuario.Login, usuario.PerfilAtual, evento.DreId, evento.UeId)))
                 throw new NegocioException(evento.Nome);
         }
     }
