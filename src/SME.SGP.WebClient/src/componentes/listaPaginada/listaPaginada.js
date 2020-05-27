@@ -98,6 +98,8 @@ const ListaPaginada = props => {
         paramsSerializer(params) {
           return queryString.stringify(params, {
             arrayFormat: paramArrayFormat,
+            skipEmptyString: true,
+            skipNull: true,
           });
         },
       })
