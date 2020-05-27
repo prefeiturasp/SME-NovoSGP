@@ -29,8 +29,10 @@ import {
 import CampoTexto from '~/componentes/campoTexto';
 import { URL_RECUPERARSENHA } from '~/constantes/url';
 import history from '~/servicos/history';
+import api from '~/servicos/api';
 import { Loader } from '~/componentes';
 import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/mensagens/actions';
+import { salvarVersao } from '~/redux/modulos/sistema/actions';
 
 const Login = props => {
   const dispatch = useDispatch();
@@ -48,6 +50,8 @@ const Login = props => {
   const exibirMensagemSessaoExpirou = useSelector(
     store => store.usuario.sessaoExpirou
   );
+
+  const { versao } = useSelector(store => store.sistema);
 
   let redirect = null;
 
@@ -218,6 +222,10 @@ const Login = props => {
                     alt="Cidade de São Paulo - Educação"
                   />
                 </LogoSP>
+              </Row>
+              <Row>
+                {!versao ? '' : <strong>{versao}&nbsp;</strong>} - Sistema
+                homologado para navegadores: Google Chrome e Firefox
               </Row>
             </Centralizar>
           </CorpoCartao>
