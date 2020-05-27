@@ -103,9 +103,9 @@ function ModalCopiarConteudo({
                 ? {
                     ...linha,
                     turmaId: turma,
-                    diasParaHabilitar: data
-                      .filter(c => c.data != dataAula)
-                      .map(y => window.moment(y.data).format('YYYY-MM-DD')),
+                    diasParaHabilitar: data.map(y =>
+                      window.moment(y.data).format('YYYY-MM-DD')
+                    ),
                   }
                 : x
             )
@@ -200,14 +200,14 @@ function ModalCopiarConteudo({
               );
             });
             setAlerta(true);
-          } else copiar();
+          } else await copiar();
           setConfirmado(true);
           setCarregando(false);
         }
       }
 
       if (confirmado) {
-        copiar();
+        await copiar();
       }
     } catch (error) {
       erros(error);
