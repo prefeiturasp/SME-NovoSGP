@@ -425,13 +425,30 @@ const EventosLista = ({ match }) => {
   };
 
   const onClickEditar = evento => {
-    history.push(
-      `/calendario-escolar/eventos/editar/${evento.id}/${filtro.tipoCalendarioId}`
-    );
+    if (
+      !(
+        (!usuario.possuiPerfilSmeOuDre && !evento.dreId) ||
+        (evento.dreId && evento.criadoRF !== usuario.rf)
+      )
+    ) {
+      history.push(
+        `/calendario-escolar/eventos/editar/${evento.id}/${filtro.tipoCalendarioId}`
+      );
+    }
   };
+
+  const [podeAlterarExcluir, setPodeAlterarExcluir] = useState(false);
 
   const onSelecionarItems = items => {
     setEventosSelecionados(items);
+    setPodeAlterarExcluir(
+      !(
+        !usuario.possuiPerfilSmeOuDre &&
+        items.filter(
+          item => !item.dreId || (item.dreId && item.criadoRF !== usuario.rf)
+        ).length
+      )
+    );
   };
 
   return (
@@ -471,7 +488,8 @@ const EventosLista = ({ match }) => {
             disabled={
               !permissoesTela.podeExcluir ||
               !selecionouCalendario ||
-              (eventosSelecionados && eventosSelecionados.length < 1)
+              (eventosSelecionados && eventosSelecionados.length < 1) ||
+              !podeAlterarExcluir
             }
           />
           <Button
