@@ -885,9 +885,10 @@ const EventosForm = ({ match }) => {
                     disabled={
                       desabilitarCampos ||
                       (!novoRegistro &&
-                        (somenteConsulta || !permissoesTela.podeAlterar)) ||
-                      !usuarioPodeAlterar ||
-                      !podeAlterarExcluir
+                        (somenteConsulta ||
+                          !permissoesTela.podeAlterar ||
+                          !podeAlterarExcluir)) ||
+                      !usuarioPodeAlterar
                     }
                   />
                 </div>
