@@ -83,28 +83,29 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
   const { anoLetivo } = filtro;
 
   const onChangeTurma = async (turma, linha) => {
-    try {
-      const { data, status } = await api.get(
-        `v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turma}/disciplinas/${disciplina}`
-      );
-      if (data && status === 200) {
-        setTurmas(
-          turmas.map(x =>
-            x.id === linha.id
-              ? {
-                  ...linha,
-                  turmaId: turma,
-                  diasParaHabilitar: data.map(y =>
-                    window.moment(y.data).format('YYYY-MM-DD')
-                  ),
-                }
-              : x
-          )
+    if (turma)
+      try {
+        const { data, status } = await api.get(
+          `v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turma}/disciplinas/${disciplina}`
         );
+        if (data && status === 200) {
+          setTurmas(
+            turmas.map(x =>
+              x.id === linha.id
+                ? {
+                    ...linha,
+                    turmaId: turma,
+                    diasParaHabilitar: data.map(y =>
+                      window.moment(y.data).format('YYYY-MM-DD')
+                    ),
+                  }
+                : x
+            )
+          );
+        }
+      } catch (error) {
+        erro(error);
       }
-    } catch (error) {
-      erro(error);
-    }
   };
 
   const onChangeData = async (dataSelecionada, linha) => {
@@ -229,6 +230,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
                 valor={linha.turmaId}
                 onChange={turma => onChangeTurma(turma, linha)}
                 dados={listaTurmas}
+                allowClear={false}
               />
             </Grid>
             <Grid cols={5}>
