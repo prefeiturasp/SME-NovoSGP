@@ -68,22 +68,7 @@ export default function RelatorioSemestralPAP(state = inicial, action) {
         }
         break;
       }
-      case '@relatorioSemestralPAP/SetValoresSecaoRelatorioSemestral':
-        if (
-          draft.dadosParaSalvarRelatorioSemestral == null ||
-          draft.dadosParaSalvarRelatorioSemestral.length === 0
-        )
-          return;
 
-        draft.dadosParaSalvarRelatorioSemestral.forEach(element => {
-          let secao = draft.dadosRelatorioSemestral.secoes.find(
-            x => x.id === element.id
-          );
-
-          if (secao != null) secao.valor = element.valor;
-        });
-
-        break;
       case '@relatorioSemestralPAP/limparDadosParaSalvarRelatorioSemestral': {
         return {
           ...draft,
