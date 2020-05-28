@@ -364,10 +364,14 @@ const EventosForm = ({ match }) => {
       setUsuarioPodeAlterar(evento.data.podeAlterar);
 
       setPodeAlterarExcluir(
-        !(
-          (!usuarioStore.possuiPerfilSmeOuDre && !evento.data.dreId) ||
-          (evento.data.dreId && evento.data.criadoRF !== usuarioStore.rf)
-        )
+        (usuarioStore.possuiPerfilSme === true && !evento.data.dreId) ||
+          (usuarioStore.possuiPerfilDre === true &&
+            evento.data.dreId &&
+            ((usuarioStore.turmaSelecionada &&
+              usuarioStore.turmaSelecionada.dre === evento.data.dreId) ||
+              evento.data.criadoRF === usuarioStore.rf)) ||
+          usuarioStore.possuiPerfilSme === true ||
+          evento.data.criadoRF === usuarioStore.rf
       );
 
       setValoresIniciais({
