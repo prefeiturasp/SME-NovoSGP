@@ -65,6 +65,8 @@ class ServicoSalvarRelatorioSemestral {
     };
 
     const atualizarValoresRelatorioSemestral = retorno => {
+      const { auditoria } = retorno.data;
+
       if (!relatorioSemestralId) {
         dadosRelatorioSemestral.relatorioSemestralId =
           retorno.data.relatorioSemestralId;
@@ -87,7 +89,8 @@ class ServicoSalvarRelatorioSemestral {
           }
         });
       }
-
+      dadosRelatorioSemestral.auditoria = auditoria;
+      dispatch(setAuditoriaRelatorioSemestral({ ...auditoria }));
       dispatch(setDadosRelatorioSemestral({ ...dadosRelatorioSemestral }));
     };
 
@@ -111,11 +114,7 @@ class ServicoSalvarRelatorioSemestral {
       ).catch(e => erros(e));
 
       if (retorno && retorno.status === 200) {
-        const { auditoria } = retorno.data;
-
         atualizarValoresRelatorioSemestral(retorno);
-
-        dispatch(setAuditoriaRelatorioSemestral(auditoria));
         dispatch(setRelatorioSemestralEmEdicao(false));
 
         if (limparTodosOsDados) {
