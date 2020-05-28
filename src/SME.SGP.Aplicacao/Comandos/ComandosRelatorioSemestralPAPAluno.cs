@@ -12,6 +12,7 @@ namespace SME.SGP.Aplicacao
     public class ComandosRelatorioSemestralPAPAluno : IComandosRelatorioSemestralPAPAluno
     {
         private readonly IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IComandosRelatorioSemestralTurmaPAP comandosRelatorioSemestral;
         private readonly IConsultasRelatorioSemestralTurmaPAP consultasRelatorioSemestral;
         private readonly IComandosRelatorioSemestralPAPAlunoSecao comandosRelatorioSemestralAlunoSecao;
@@ -19,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IUnitOfWork unitOfWork;
 
         public ComandosRelatorioSemestralPAPAluno(IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno,
+                                               IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                                IComandosRelatorioSemestralTurmaPAP comandosRelatorioSemestral,
                                                IConsultasRelatorioSemestralTurmaPAP consultasRelatorioSemestral,
                                                IComandosRelatorioSemestralPAPAlunoSecao comandosRelatorioSemestralAlunoSecao,
@@ -26,6 +28,7 @@ namespace SME.SGP.Aplicacao
                                                IUnitOfWork unitOfWork)
         {
             this.repositorioRelatorioSemestralAluno = repositorioRelatorioSemestralAluno ?? throw new ArgumentNullException(nameof(repositorioRelatorioSemestralAluno));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.comandosRelatorioSemestral = comandosRelatorioSemestral ?? throw new ArgumentNullException(nameof(comandosRelatorioSemestral));
             this.consultasRelatorioSemestral = consultasRelatorioSemestral ?? throw new ArgumentNullException(nameof(consultasRelatorioSemestral));
             this.comandosRelatorioSemestralAlunoSecao = comandosRelatorioSemestralAlunoSecao ?? throw new ArgumentNullException(nameof(comandosRelatorioSemestralAlunoSecao));
@@ -35,9 +38,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaRelatorioSemestralAlunoDto> Salvar(string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto)
         {
+            var turma = await ObterTurma(turmaCodigo);
+            await ValidarPersistenciaTurmaSemestre(turma, semestre);
+
             var relatorioSemestralAluno = relatorioSemestralAlunoDto.RelatorioSemestralAlunoId > 0 ?
                 await repositorioRelatorioSemestralAluno.ObterCompletoPorIdAsync(relatorioSemestralAlunoDto.RelatorioSemestralAlunoId) :
-                await NovoRelatorioSemestralAluno(relatorioSemestralAlunoDto.RelatorioSemestralId, alunoCodigo, turmaCodigo, semestre, relatorioSemestralAlunoDto);
+                await NovoRelatorioSemestralAluno(relatorioSemestralAlunoDto.RelatorioSemestralId, alunoCodigo, turma, semestre, relatorioSemestralAlunoDto);
 
             using(var transacao = unitOfWork.IniciarTransacao())
             {
@@ -78,6 +84,22 @@ namespace SME.SGP.Aplicacao
             return MapearParaAuditorio(relatorioSemestralAluno);
         }
 
+        private async Task ValidarPersistenciaTurmaSemestre(Turma turma, int semestre)
+        {
+            var bimestre = await ObterBimestreAtual(turma);
+            if ((semestre == 1 && bimestre != 2) || (semestre == 2 && bimestre != 4))
+                throw new NegocioException("Não é possível salvar os dados pois o período não esta em aberto!");
+        }
+
+        private async Task<int> ObterBimestreAtual(Turma turma)
+        {
+            var bimestreAtual = await repositorioPeriodoEscolar.ObterBimestreAtualAsync(turma.CodigoTurma, turma.ModalidadeTipoCalendario, DateTime.Today);
+            if (bimestreAtual == null || bimestreAtual == 0)
+                throw new NegocioException("Não foi possível identificar o bimestre atual");
+
+            return bimestreAtual;
+        }
+
         private AuditoriaRelatorioSemestralAlunoDto MapearParaAuditorio(RelatorioSemestralPAPAluno relatorioSemestralAluno)
             => new AuditoriaRelatorioSemestralAlunoDto()
             {
@@ -86,11 +108,11 @@ namespace SME.SGP.Aplicacao
                 Auditoria = (AuditoriaDto)relatorioSemestralAluno
             };
 
-        private async Task<RelatorioSemestralPAPAluno> NovoRelatorioSemestralAluno(long relatorioSemestralId, string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto)
+        private async Task<RelatorioSemestralPAPAluno> NovoRelatorioSemestralAluno(long relatorioSemestralId, string alunoCodigo, Turma turma, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto)
         {
             var relatorioSemestral = relatorioSemestralId > 0 ?
                 await consultasRelatorioSemestral.ObterPorIdAsync(relatorioSemestralId) :
-                await NovoRelatorioSemestral(turmaCodigo, semestre);
+                await NovoRelatorioSemestral(turma, semestre);
 
             var novoRelatorioAluno = new RelatorioSemestralPAPAluno()
             {
@@ -108,10 +130,8 @@ namespace SME.SGP.Aplicacao
             return novoRelatorioAluno;
         }
 
-        private async Task<RelatorioSemestralTurmaPAP> NovoRelatorioSemestral(string turmaCodigo, int semestre)
+        private async Task<RelatorioSemestralTurmaPAP> NovoRelatorioSemestral(Turma turma, int semestre)
         {
-            var turma = await ObterTurma(turmaCodigo);
-
             return new RelatorioSemestralTurmaPAP()
             {
                 TurmaId = turma.Id,
