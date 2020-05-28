@@ -9,9 +9,6 @@ namespace SME.SGP.Aplicacao
     {
         public ObterListaSemestresRelatorioPAPQuery(int bimestreAtual)
         {
-            if (bimestreAtual <= 0)
-                throw new NegocioException("Para obter a lista de bimestres é necessário informar o bimestre atual");
-
             BimestreAtual = bimestreAtual;
         }
 
