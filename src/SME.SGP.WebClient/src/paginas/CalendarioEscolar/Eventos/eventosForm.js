@@ -345,6 +345,8 @@ const EventosForm = ({ match }) => {
     state => state.calendarioEscolar.eventoCalendarioEdicao
   );
 
+  const [podeAlterarExcluir, setPodeAlterarExcluir] = useState(false);
+
   const consultaPorId = async id => {
     const evento = await servicoEvento.obterPorId(id).catch(e => erros(e));
 
@@ -360,6 +362,13 @@ const EventosForm = ({ match }) => {
 
       montarTipoCalendarioPorId(evento.data.tipoCalendarioId);
       setUsuarioPodeAlterar(evento.data.podeAlterar);
+
+      setPodeAlterarExcluir(
+        !(
+          (!usuarioStore.possuiPerfilSmeOuDre && !evento.data.dreId) ||
+          (evento.data.dreId && evento.data.criadoRF !== usuarioStore.rf)
+        )
+      );
 
       setValoresIniciais({
         dataFim: evento.data.dataFim ? window.moment(evento.data.dataFim) : '',
@@ -861,7 +870,8 @@ const EventosForm = ({ match }) => {
                       somenteConsulta ||
                       !permissoesTela.podeExcluir ||
                       novoRegistro ||
-                      !valoresIniciais.podeAlterar
+                      !valoresIniciais.podeAlterar ||
+                      !podeAlterarExcluir
                     }
                   />
                   <Button
@@ -875,7 +885,9 @@ const EventosForm = ({ match }) => {
                     disabled={
                       desabilitarCampos ||
                       (!novoRegistro &&
-                        (somenteConsulta || !permissoesTela.podeAlterar)) ||
+                        (somenteConsulta ||
+                          !permissoesTela.podeAlterar ||
+                          !podeAlterarExcluir)) ||
                       !usuarioPodeAlterar
                     }
                   />
