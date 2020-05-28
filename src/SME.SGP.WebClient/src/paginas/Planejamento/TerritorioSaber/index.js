@@ -25,9 +25,13 @@ import { Linha } from '~/componentes/EstilosGlobais';
 import { erro, sucesso } from '~/servicos/alertas';
 import TerritorioSaberServico from '~/servicos/Paginas/TerritorioSaber';
 import history from '~/servicos/history';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 // Utils
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+
+// DTOs
+import RotasDto from '~/dtos/rotasDto';
 
 // Componentes internos
 const DesenvolvimentoReflexao = React.lazy(() =>
@@ -37,12 +41,14 @@ const DesenvolvimentoReflexao = React.lazy(() =>
 function TerritorioSaber() {
   const [carregando, setCarregando] = useState(false);
   const [bimestreAberto, setBimestreAberto] = useState(false);
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [territorioSelecionado, setTerritorioSelecionado] = useState('');
   const [dados, setDados] = useState({
     bimestres: [],
     id: undefined,
   });
 
+  const permissoesTela = useSelector(store => store.usuario.permissoes);
   const { turmaSelecionada } = useSelector(estado => estado.usuario);
 
   const habilitaCollapse = useMemo(
@@ -96,6 +102,10 @@ function TerritorioSaber() {
     turmaSelecionada.turma,
     turmaSelecionada.unidadeEscolar,
   ]);
+
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
 
   const salvarPlanejamento = useCallback(() => {
     async function salvar() {
@@ -159,17 +169,12 @@ function TerritorioSaber() {
       <Cabecalho pagina="Planejamento anual do Território do Saber" />
       <Card>
         <ButtonGroup
-          permissoesTela={{
-            podeIncluir: true,
-            podeAlterar: true,
-            podeExcluir: true,
-            podeInserir: true,
-          }}
+          permissoesTela={permissoesTela[RotasDto.TERRITORIO_SABER]}
           onClickVoltar={() => history.push('/')}
           onClickBotaoPrincipal={() => salvarPlanejamento()}
           onClickCancelar={() => null}
           labelBotaoPrincipal="Salvar"
-          somenteConsulta={false}
+          somenteConsulta={somenteConsulta}
           desabilitarBotaoPrincipal={false}
         />
         <Grid cols={12}>

@@ -36,7 +36,7 @@ const RotasDto = {
   PENDENCIAS_FECHAMENTO: '/fechamento/pendencias-fechamento',
   ACOMPANHAMENTO_COMUNICADOS: '/gestao/acompanhamento-escolar/comunicados',
   CONSELHO_CLASSE: '/fechamento/conselho-classe',
-  TERRITORIO_SABER: '/planejamento/territorio-do-saber',
+  TERRITORIO_SABER: '/planejamento/plano-anual-territorio-saber',
 };
 
 export default RotasDto;

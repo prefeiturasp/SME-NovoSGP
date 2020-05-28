@@ -36,6 +36,14 @@ function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
     }
   }, [onChangeTerritorio, turmaSelecionada, turmaSelecionada.turma]);
 
+  useEffect(() => {
+    if (listaTerritorios.length === 1) {
+      onChangeTerritorio(
+        String(listaTerritorios[0].codigoComponenteCurricular)
+      );
+    }
+  }, [listaTerritorios, onChangeTerritorio]);
+
   return (
     <Loader tip={false} loading={carregando}>
       <SelectComponent
