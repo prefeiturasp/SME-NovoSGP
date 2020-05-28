@@ -32,7 +32,7 @@ import { URL_RECUPERARSENHA } from '~/constantes/url';
 import history from '~/servicos/history';
 import { Loader } from '~/componentes';
 import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/mensagens/actions';
-import { BrowserView, MobileView } from 'react-device-detect';
+import { isBrowser } from 'react-device-detect';
 
 const Login = props => {
   const dispatch = useDispatch();
@@ -139,7 +139,7 @@ const Login = props => {
                   id="Formulario"
                   className="col-xl-8 col-md-8 col-sm-8 col-xs-12 p-0"
                 >
-                  <BrowserView>
+                  {isBrowser ? (
                     <Formik
                       enableReinitialize
                       initialValues={{
@@ -212,15 +212,14 @@ const Login = props => {
                         </Form>
                       )}
                     </Formik>
-                  </BrowserView>
-                  <MobileView>
+                  ) : (
                     <MensagemMobile>
                       <span>
                         Para sua melhor experiência recomendamos que o acesso ao
                         sistema seja realizado pelo computador.
                       </span>
                     </MensagemMobile>
-                  </MobileView>
+                  )}
                 </Formulario>
               </Row>
               <Row className="col-md-12 d-flex justify-content-center align-self-end mb-3">
