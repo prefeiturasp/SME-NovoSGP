@@ -23,8 +23,7 @@ namespace SME.SGP.Aplicacao
                               IServicoEvento servicoEvento,
                               IServicoWorkflowAprovacao servicoWorkflowAprovacao,
                               IServicoUsuario servicoUsuario,
-                              IServicoAbrangencia servicoAbrangencia,
-                              IRepositorioAbrangencia repositorioAbrangencia)
+                              IServicoAbrangencia servicoAbrangencia)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
