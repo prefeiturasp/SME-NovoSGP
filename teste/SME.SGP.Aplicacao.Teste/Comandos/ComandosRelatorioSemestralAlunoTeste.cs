@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
     {
         private readonly ComandosRelatorioSemestralPAPAluno comandosRelatorioSemestralAluno;
         private readonly Mock<IRepositorioRelatorioSemestralPAPAluno> repositorioRelatorioSemestralAluno;
+        private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IComandosRelatorioSemestralTurmaPAP> comandosRelatorioSemestral;
         private readonly Mock<IConsultasRelatorioSemestralTurmaPAP> consultasRelatorioSemestral;
         private readonly Mock<IComandosRelatorioSemestralPAPAlunoSecao> comandosRelatorioSemestralAlunoSecao;
@@ -23,6 +24,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         public ComandosRelatorioSemestralAlunoTeste()
         {
             repositorioRelatorioSemestralAluno = new Mock<IRepositorioRelatorioSemestralPAPAluno>();
+            repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             comandosRelatorioSemestral = new Mock<IComandosRelatorioSemestralTurmaPAP>();
             consultasRelatorioSemestral = new Mock<IConsultasRelatorioSemestralTurmaPAP>();
             comandosRelatorioSemestralAlunoSecao = new Mock<IComandosRelatorioSemestralPAPAlunoSecao>();
@@ -30,6 +32,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             unitOfWork = new Mock<IUnitOfWork>();
 
             comandosRelatorioSemestralAluno = new ComandosRelatorioSemestralPAPAluno(repositorioRelatorioSemestralAluno.Object,
+                                                                                  repositorioPeriodoEscolar.Object,
                                                                                   comandosRelatorioSemestral.Object,
                                                                                   consultasRelatorioSemestral.Object,
                                                                                   comandosRelatorioSemestralAlunoSecao.Object,
