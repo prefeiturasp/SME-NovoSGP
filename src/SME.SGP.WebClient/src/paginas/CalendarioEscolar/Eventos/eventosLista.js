@@ -437,12 +437,8 @@ const EventosLista = ({ match }) => {
     setPodeAlterarExcluir(
       items.filter(
         item =>
-          (usuario.possuiPerfilSme === true && !item.dreId) ||
-          (usuario.possuiPerfilDre === true &&
-            item.dreId &&
-            ((turmaSelecionada && turmaSelecionada.dre === item.dreId) ||
-              item.criadoRF === usuario.rf)) ||
           usuario.possuiPerfilSme === true ||
+          (usuario.possuiPerfilDre === true && item.dreId && item.ueId) ||
           item.criadoRF === usuario.rf
       ).length
     );
