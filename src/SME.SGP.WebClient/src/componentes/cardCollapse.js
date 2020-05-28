@@ -51,12 +51,14 @@ CardCollapse.propTypes = {
   show: PropTypes.bool,
   configCabecalho: PropTypes.object,
   icon: PropTypes.bool,
+  onClick: PropTypes.func,
 };
 
 CardCollapse.defaultProps = {
   titulo: '',
   indice: shortid.generate(),
   children: () => {},
+  onClick: () => {},
   show: false,
   icon: true,
 };
