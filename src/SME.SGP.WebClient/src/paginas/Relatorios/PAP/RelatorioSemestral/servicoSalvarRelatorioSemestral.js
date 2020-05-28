@@ -6,7 +6,6 @@ import {
   setDadosRelatorioSemestral,
   setAlunosRelatorioSemestral,
   setCodigoAlunoSelecionado,
-  SetValoresSecaoRelatorioSemestral,
 } from '~/redux/modulos/relatorioSemestralPAP/actions';
 import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
@@ -65,9 +64,34 @@ class ServicoSalvarRelatorioSemestral {
       return true;
     };
 
-    const salvar = async (limparTodosOsDados = false) => {
-      dispatch(SetValoresSecaoRelatorioSemestral());
+    const atualizarValoresRelatorioSemestral = retorno => {
+      if (!relatorioSemestralId) {
+        dadosRelatorioSemestral.relatorioSemestralId =
+          retorno.data.relatorioSemestralId;
+      }
+      if (!relatorioSemestralAlunoId) {
+        dadosRelatorioSemestral.relatorioSemestralAlunoId =
+          retorno.data.relatorioSemestralAlunoId;
+      }
 
+      if (
+        dadosParaSalvarRelatorioSemestral &&
+        dadosParaSalvarRelatorioSemestral.length
+      ) {
+        dadosParaSalvarRelatorioSemestral.forEach(element => {
+          const secao = dadosRelatorioSemestral.secoes.find(
+            item => item.id == element.id
+          );
+          if (secao != null) {
+            secao.valor = element.valor;
+          }
+        });
+      }
+
+      dispatch(setDadosRelatorioSemestral({ ...dadosRelatorioSemestral }));
+    };
+
+    const salvar = async (limparTodosOsDados = false) => {
       const params = {
         relatorioSemestralId: relatorioSemestralId || 0,
         relatorioSemestralAlunoId: relatorioSemestralAlunoId || 0,
@@ -88,6 +112,8 @@ class ServicoSalvarRelatorioSemestral {
 
       if (retorno && retorno.status === 200) {
         const { auditoria } = retorno.data;
+
+        atualizarValoresRelatorioSemestral(retorno);
 
         dispatch(setAuditoriaRelatorioSemestral(auditoria));
         dispatch(setRelatorioSemestralEmEdicao(false));
