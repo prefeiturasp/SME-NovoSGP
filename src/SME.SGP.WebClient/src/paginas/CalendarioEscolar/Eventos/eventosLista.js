@@ -425,16 +425,9 @@ const EventosLista = ({ match }) => {
   };
 
   const onClickEditar = evento => {
-    if (
-      !(
-        (!usuario.possuiPerfilSmeOuDre && !evento.dreId) ||
-        (evento.dreId && evento.criadoRF !== usuario.rf)
-      )
-    ) {
-      history.push(
-        `/calendario-escolar/eventos/editar/${evento.id}/${filtro.tipoCalendarioId}`
-      );
-    }
+    history.push(
+      `/calendario-escolar/eventos/editar/${evento.id}/${filtro.tipoCalendarioId}`
+    );
   };
 
   const [podeAlterarExcluir, setPodeAlterarExcluir] = useState(false);
@@ -442,12 +435,16 @@ const EventosLista = ({ match }) => {
   const onSelecionarItems = items => {
     setEventosSelecionados(items);
     setPodeAlterarExcluir(
-      !(
-        !usuario.possuiPerfilSmeOuDre &&
-        items.filter(
-          item => !item.dreId || (item.dreId && item.criadoRF !== usuario.rf)
-        ).length
-      )
+      items.filter(
+        item =>
+          (usuario.possuiPerfilSme === true && !item.dreId) ||
+          (usuario.possuiPerfilDre === true &&
+            item.dreId &&
+            ((turmaSelecionada && turmaSelecionada.dre === item.dreId) ||
+              item.criadoRF === usuario.rf)) ||
+          usuario.possuiPerfilSme === true ||
+          item.criadoRF === usuario.rf
+      ).length
     );
   };
 
