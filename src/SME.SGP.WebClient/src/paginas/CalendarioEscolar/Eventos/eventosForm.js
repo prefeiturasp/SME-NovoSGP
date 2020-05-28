@@ -364,13 +364,10 @@ const EventosForm = ({ match }) => {
       setUsuarioPodeAlterar(evento.data.podeAlterar);
 
       setPodeAlterarExcluir(
-        (usuarioStore.possuiPerfilSme === true && !evento.data.dreId) ||
+        usuarioStore.possuiPerfilSme === true ||
           (usuarioStore.possuiPerfilDre === true &&
             evento.data.dreId &&
-            ((usuarioStore.turmaSelecionada &&
-              usuarioStore.turmaSelecionada.dre === evento.data.dreId) ||
-              evento.data.criadoRF === usuarioStore.rf)) ||
-          usuarioStore.possuiPerfilSme === true ||
+            evento.data.ueId) ||
           evento.data.criadoRF === usuarioStore.rf
       );
 
@@ -525,16 +522,19 @@ const EventosForm = ({ match }) => {
   const onClickCadastrar = async valoresForm => {
     setCarregandoSalvar(true);
 
-    valoresForm.dataInicio = new Date(valoresForm.dataInicio.year(),
-                                      valoresForm.dataInicio.month(),
-                                      valoresForm.dataInicio.date());
+    valoresForm.dataInicio = new Date(
+      valoresForm.dataInicio.year(),
+      valoresForm.dataInicio.month(),
+      valoresForm.dataInicio.date()
+    );
 
-    if (tipoDataUnico) 
-      valoresForm.dataFim = valoresForm.dataInicio;
+    if (tipoDataUnico) valoresForm.dataFim = valoresForm.dataInicio;
     else
-      valoresForm.dataFim = new Date(valoresForm.dataFim.year(),
-                                     valoresForm.dataFim.month(),
-                                     valoresForm.dataFim.date()); 
+      valoresForm.dataFim = new Date(
+        valoresForm.dataFim.year(),
+        valoresForm.dataFim.month(),
+        valoresForm.dataFim.date()
+      );
 
     const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map(id => {
       const calendario = listaCalendarioEscolar.find(e => e.id === id);
