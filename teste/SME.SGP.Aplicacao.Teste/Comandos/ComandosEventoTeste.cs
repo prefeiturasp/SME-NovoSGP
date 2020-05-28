@@ -12,6 +12,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IServicoEvento> servicoEvento;
         private readonly Mock<IServicoWorkflowAprovacao> servicoWorkflowAprovacao;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IServicoAbrangencia> servicoAbrangencia;
 
         public ComandosEventoTeste()
         {
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
             servicoEvento = new Mock<IServicoEvento>();
             servicoWorkflowAprovacao = new Mock<IServicoWorkflowAprovacao>();
-            comandosEvento = new ComandosEvento(repositorioEvento.Object, repositorioEventoTipo.Object, servicoEvento.Object, servicoWorkflowAprovacao.Object, servicoUsuario.Object);
+            comandosEvento = new ComandosEvento(repositorioEvento.Object, repositorioEventoTipo.Object, servicoEvento.Object, servicoWorkflowAprovacao.Object, servicoUsuario.Object, servicoAbrangencia.Object);
         }
 
         [Fact]
