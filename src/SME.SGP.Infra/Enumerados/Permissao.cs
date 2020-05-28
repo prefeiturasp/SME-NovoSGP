@@ -408,7 +408,7 @@
         [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhAlteracao = true, Url = "/fechamento/conselho-classe")]
         CC_A = 139,
          
-        // TODO - Débto técnico para adicionar submenu!
+        // TODO - Débito técnico para adicionar submenu!
         //[PermissaoMenu(Menu = "Relatório Semestral ", Icone = "", Agrupamento = "Relatórios ", OrdemAgrupamento = 2, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/pap/relatorio-semestral")]
         //RSP_C = 144,
 
