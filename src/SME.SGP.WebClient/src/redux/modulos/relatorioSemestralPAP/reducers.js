@@ -37,7 +37,6 @@ export default function RelatorioSemestralPAP(state = inicial, action) {
           auditoriaRelatorioSemestral: null,
           desabilitarCampos: false,
           codigoAlunoSelecionado: null,
-          dentroPeriodo: true,
         };
       }
       case '@relatorioSemestralPAP/setRelatorioSemestralEmEdicao': {
