@@ -38,6 +38,17 @@ namespace SME.SGP.Aplicacao.Servicos
             this.repositorioCicloEnsino = repositorioCicloEnsino ?? throw new ArgumentNullException(nameof(repositorioCicloEnsino));
         }
 
+        public bool DreEstaNaAbrangencia(string login, Guid perfilId, string codigoDre)
+        {
+            if (string.IsNullOrWhiteSpace(login) || perfilId == Guid.Empty || string.IsNullOrWhiteSpace(codigoDre))
+                throw new NegocioException("É necessário informar login, perfil e código da DRE");
+
+            var dres = repositorioAbrangencia
+                .ObterDres(login, perfilId).Result;
+
+            return dres.Any(dre => dre.Codigo.Equals(codigoDre, StringComparison.InvariantCultureIgnoreCase));            
+        }
+
         public void RemoverAbrangencias(long[] ids)
         {
             repositorioAbrangencia.ExcluirAbrangencias(ids);
@@ -90,6 +101,17 @@ namespace SME.SGP.Aplicacao.Servicos
                 SentrySdk.CaptureException(erro);
                 throw erro;
             }
+        }
+
+        public bool UeEstaNaAbrangecia(string login, Guid perfilId, string codigoDre, string codigoUE)
+        {
+            if (string.IsNullOrWhiteSpace(login) || perfilId == Guid.Empty || string.IsNullOrWhiteSpace(codigoDre) || string.IsNullOrWhiteSpace(codigoUE))
+                throw new NegocioException("É necessário informar login, perfil, código da DRE e da UE");
+
+            var ues = repositorioAbrangencia
+                .ObterUes(codigoDre, login, perfilId).Result;
+
+            return ues.Any(dre => dre.Codigo.Equals(codigoUE, StringComparison.InvariantCultureIgnoreCase));
         }
 
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
