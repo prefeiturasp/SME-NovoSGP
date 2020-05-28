@@ -13,7 +13,9 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
   const [carregando, setCarregando] = useState(false);
   const [listaTerritorios, setListaTerritorios] = useState([]);
+
   const { turmaSelecionada } = useSelector(state => state.usuario);
+
   useEffect(() => {
     async function buscarTerritorios() {
       setCarregando(true);
@@ -26,8 +28,21 @@ function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
       }
       setCarregando(false);
     }
-    buscarTerritorios();
-  }, [turmaSelecionada.turma]);
+    if (Object.keys(turmaSelecionada).length > 0) {
+      onChangeTerritorio(undefined);
+      buscarTerritorios();
+    } else {
+      setListaTerritorios([]);
+    }
+  }, [onChangeTerritorio, turmaSelecionada, turmaSelecionada.turma]);
+
+  useEffect(() => {
+    if (listaTerritorios.length === 1) {
+      onChangeTerritorio(
+        String(listaTerritorios[0].codigoComponenteCurricular)
+      );
+    }
+  }, [listaTerritorios, onChangeTerritorio]);
 
   return (
     <Loader tip={false} loading={carregando}>
@@ -38,9 +53,8 @@ function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
         valueOption="codigoComponenteCurricular"
         valueText="nome"
         onChange={valor => onChangeTerritorio(valor)}
-        // valueSelect={territorioSelecionado}
+        valueSelect={territorioSelecionado || undefined}
         placeholder="Selecione um território"
-        //disabled={listaDisciplinas && listaDisciplinas.length === 1}
       />
     </Loader>
   );
