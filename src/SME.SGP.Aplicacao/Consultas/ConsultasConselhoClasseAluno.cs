@@ -179,12 +179,12 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> VerificaSePodeEditarNota(string alunoCodigo, FechamentoTurma fechamentoTurma)
         {
-            var alunoEol = await servicoEOL.ObterDadosAluno(alunoCodigo, fechamentoTurma.Turma.AnoLetivo);
+            var turmaFechamento = await servicoEOL.ObterAlunosPorTurma(fechamentoTurma.Turma.CodigoTurma, fechamentoTurma.Turma.AnoLetivo);
             
-            if (alunoEol == null || !alunoEol.Any())
-                throw new NegocioException($"Não foi possível obter os dados do aluno {alunoCodigo}");
+            if (turmaFechamento == null || !turmaFechamento.Any())
+                throw new NegocioException($"Não foi possível obter os dados da turma {fechamentoTurma.Turma.CodigoTurma}");
 
-            var aluno = alunoEol.FirstOrDefault(a => a.CodigoTurma == long.Parse(fechamentoTurma.Turma.CodigoTurma));
+            var aluno = turmaFechamento.FirstOrDefault(a => a.CodigoAluno == alunoCodigo);
             if (aluno == null)
                 throw new NegocioException($"Não foi possível obter os dados do aluno {alunoCodigo}");
             return aluno.PodeEditarNotaConceitoNoPeriodo(fechamentoTurma.PeriodoEscolar);            

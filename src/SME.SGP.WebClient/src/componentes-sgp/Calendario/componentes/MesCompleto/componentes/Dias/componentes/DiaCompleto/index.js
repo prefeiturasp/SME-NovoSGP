@@ -152,6 +152,7 @@ function DiaCompleto({
               dadosDia.dados.eventosAulas.filter(evento => evento.ehAula)
                 .length > 0
             }
+            podeCadastrarAula={dadosDia?.dados?.podeCadastrarAula}
             podeCadastrarAvaliacao={
               dadosDia?.dados?.eventosAulas?.filter(
                 evento => evento.ehAula && evento.podeCadastrarAvaliacao
