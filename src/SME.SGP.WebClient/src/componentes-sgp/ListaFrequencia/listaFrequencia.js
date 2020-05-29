@@ -12,7 +12,13 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import tipoIndicativoFrequencia from '~/dtos/tipoIndicativoFrequencia';
 
 const ListaFrequencia = props => {
-  const { dados, onChangeFrequencia, permissoesTela, frequenciaId } = props;
+  const {
+    dados,
+    onChangeFrequencia,
+    permissoesTela,
+    frequenciaId,
+    temPeriodoAberto,
+  } = props;
 
   const [dataSource, setDataSource] = useState(dados);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
@@ -25,7 +31,8 @@ const ListaFrequencia = props => {
         ? somenteConsulta || !permissoesTela.podeAlterar
         : somenteConsulta || !permissoesTela.podeIncluir;
     setDesabilitarCampos(desabilitar);
-  }, [frequenciaId, permissoesTela]);
+    if (!temPeriodoAberto) setDesabilitarCampos(!temPeriodoAberto);
+  }, [frequenciaId, permissoesTela, temPeriodoAberto]);
 
   const renderSwitch = (i, aula, aluno) => {
     return (
@@ -119,9 +126,7 @@ const ListaFrequencia = props => {
                         <div className="margin-marcar-todos">F</div>
                       </th>
                     </>
-                  ) : (
-                    ''
-                  )}
+                  ) : null}
                   {dataSource[0].aulas.map((aula, i) => {
                     return (
                       <th
@@ -291,6 +296,7 @@ ListaFrequencia.propTypes = {
   onChangeFrequencia: PropTypes.oneOfType([PropTypes.func]),
   permissoesTela: PropTypes.oneOfType([PropTypes.any]),
   frequenciaId: PropTypes.oneOfType([PropTypes.any]),
+  temPeriodoAberto: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 ListaFrequencia.defaultProps = {
@@ -298,6 +304,7 @@ ListaFrequencia.defaultProps = {
   onChangeFrequencia: () => {},
   permissoesTela: {},
   frequenciaId: 0,
+  temPeriodoAberto: false,
 };
 
 export default ListaFrequencia;

@@ -13,6 +13,7 @@ import {
   setNotaConceitoPosConselhoAtual,
   setIdCamposNotasPosConselho,
   setDesabilitarCampos,
+  setConselhoClasseEmEdicao,
 } from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
@@ -212,6 +213,20 @@ const DadosConselhoClasse = props => {
     }
   };
 
+  const dadosPrincipaisConselhoClasse = useSelector(
+    store => store.conselhoClasse.dadosPrincipaisConselhoClasse
+  );
+
+  useEffect(() => {
+    dispatch(
+      setConselhoClasseEmEdicao(
+        !carregando &&
+          !semDados &&
+          !Object.entries(dadosPrincipaisConselhoClasse).length
+      )
+    );
+  }, [dispatch, carregando, semDados, dadosPrincipaisConselhoClasse]);
+
   const montarDados = () => {
     return (
       <Loader loading={carregando} className={carregando ? 'text-center' : ''}>
@@ -220,9 +235,7 @@ const DadosConselhoClasse = props => {
             <AlertaDentroPeriodo />
             {bimestreAtual.valor === 'final' ? (
               <MarcadorParecerConclusivo />
-            ) : (
-              ''
-            )}
+            ) : null}
             <MarcadorPeriodoInicioFim />
             <ListasNotasConceitos bimestreSelecionado={bimestreAtual} />
             <Sintese
@@ -233,9 +246,7 @@ const DadosConselhoClasse = props => {
           </>
         ) : semDados && !carregando ? (
           <div className="text-center">Sem dados</div>
-        ) : (
-          ''
-        )}
+        ) : null}
       </Loader>
     );
   };
