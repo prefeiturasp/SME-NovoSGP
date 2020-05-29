@@ -150,9 +150,7 @@ const Filtro = () => {
       const turmaSelecionadaCompleta = turmas.find(
         item => item.valor.toString() === turmaSelecionada
       );
-
       if (!turmaSelecionadaCompleta) return;
-
       const turma = {
         anoLetivo: anoLetivoSelecionado,
         modalidade: modalidadeSelecionada,
@@ -843,7 +841,6 @@ const Filtro = () => {
 
   const selecionaTurmaAutocomplete = resultado => {
     setTextoAutocomplete(resultado.descricaoFiltro);
-
     const turma = {
       anoLetivo: resultado.anoLetivo,
       modalidade: resultado.codigoModalidade,
@@ -853,6 +850,7 @@ const Filtro = () => {
       desc: resultado.descricaoFiltro,
       periodo: resultado.semestre,
       consideraHistorico,
+      ano: resultado.ano,
     };
 
     dispatch(selecionarTurma(turma));
@@ -1025,7 +1023,7 @@ const Filtro = () => {
           <div
             ref={divBuscaRef}
             className="container d-block position-absolute bg-white shadow rounded mt-1 px-3 pt-4 pb-1"
-          >            
+          >
             <div className="form-row">
               <Grid cols={12} className="form-group">
                 <Checkbox
@@ -1035,7 +1033,7 @@ const Filtro = () => {
                   Exibir histórico?
                 </Checkbox>
               </Grid>
-            </div>           
+            </div>
             <div className="form-row">
               <Grid cols={3} className="form-group">
                 <SelectComponent
