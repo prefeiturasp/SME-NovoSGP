@@ -17,8 +17,6 @@ import conselhoClasse from './conselhoClasse/reducers';
 import relatorioSemestralPAP from './relatorioSemestralPAP/reducers';
 import sistema from './sistema/reducers';
 
-import sistema from './sistema/reducers';
-
 const reducers = combineReducers({
   navegacao,
   alertas,
