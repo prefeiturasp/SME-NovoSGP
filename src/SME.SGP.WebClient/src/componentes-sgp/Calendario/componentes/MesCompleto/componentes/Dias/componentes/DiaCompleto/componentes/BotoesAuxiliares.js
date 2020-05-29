@@ -17,7 +17,6 @@ const BotoesAuxiliares = ({
   permissaoTela,
   dentroPeriodo,
   desabilitado,
-  podeCadastrarAula,
 }) => {
   return (
     <BotoesAuxiliaresEstilo>

@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import { Tooltip } from 'antd';
 import { Formik, Form } from 'formik';
 import shortid from 'shortid';
+import { BrowserView, MobileView, isBrowser } from 'react-device-detect';
 import LoginHelper from './loginHelper';
 import Row from '~/componentes/row';
 import LogoDoSgp from '~/recursos/LogoSgpTexto.svg';
@@ -34,7 +35,6 @@ import api from '~/servicos/api';
 import { Loader } from '~/componentes';
 import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/mensagens/actions';
 import { salvarVersao } from '~/redux/modulos/sistema/actions';
-import { BrowserView, MobileView } from 'react-device-detect';
 
 const Login = props => {
   const dispatch = useDispatch();
