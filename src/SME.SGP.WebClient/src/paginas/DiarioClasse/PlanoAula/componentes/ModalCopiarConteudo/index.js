@@ -27,9 +27,15 @@ import PlanoAulaServico from '~/servicos/Paginas/PlanoAula';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, erro, sucesso } from '~/servicos/alertas';
 
-function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
+function ModalCopiarConteudo({
+  show,
+  disciplina,
+  onClose,
+  planoAula,
+  dataAula,
+}) {
   const filtro = useSelector(store => store.usuario.turmaSelecionada);
-  const carregando = useSelector(store => store.loader.loaderModal);
+  const [carregando, setCarregando] = useState(false);
   const dispatch = useDispatch();
   const [confirmado, setConfirmado] = useState(false);
   const [alerta, setAlerta] = useState(false);
@@ -85,9 +91,11 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
   const onChangeTurma = async (turma, linha) => {
     if (turma)
       try {
+        setCarregando(true);
         const { data, status } = await api.get(
           `v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turma}/disciplinas/${disciplina}`
         );
+        setCarregando(false);
         if (data && status === 200) {
           setTurmas(
             turmas.map(x =>
@@ -105,6 +113,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
         }
       } catch (error) {
         erro(error);
+        setCarregando(false);
       }
   };
 
@@ -140,10 +149,33 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
     onClose();
   };
 
+  const copiar = async () => {
+    dispatch(setLoaderModal(true));
+    const {
+      data: dados,
+      status: resposta,
+    } = await PlanoAulaServico.migrarPlano({
+      idsPlanoTurmasDestino: turmas.map(x => ({
+        ...x,
+        sobreescrever: true,
+      })),
+      planoAulaId: planoAula.id,
+      disciplinaId: disciplina,
+      migrarLicaoCasa: valoresCheckbox.licaoCasa,
+      migrarRecuperacaoAula: valoresCheckbox.recuperacaoContinua,
+      migrarObjetivos: valoresCheckbox.objetivosAprendizagem,
+    });
+    if (dados || resposta === 200) {
+      sucesso('Plano de aula copiado com sucesso!');
+      dispatch(setLoaderModal(false));
+      onCloseModal();
+    }
+  };
+
   const onClickSalvar = async () => {
     try {
       if (!confirmado) {
-        dispatch(setLoaderModal(true));
+        setCarregando(true);
         const { data, status } = await PlanoAulaServico.verificarSeExiste({
           planoAulaTurmaDatas: turmas.map(x => ({
             data: x.data,
@@ -151,7 +183,6 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
             disciplinaId: disciplina,
           })),
         });
-
         if (data && status === 200) {
           const temErro = data.filter(x => x.existe === true);
           if (temErro.length > 0) {
@@ -169,33 +200,14 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
               );
             });
             setAlerta(true);
-          }
+          } else await copiar();
           setConfirmado(true);
-          dispatch(setLoaderModal(false));
+          setCarregando(false);
         }
       }
 
       if (confirmado) {
-        dispatch(setLoaderModal(true));
-        const {
-          data: dados,
-          status: resposta,
-        } = await PlanoAulaServico.migrarPlano({
-          idsPlanoTurmasDestino: turmas.map(x => ({
-            ...x,
-            sobreescrever: true,
-          })),
-          planoAulaId: planoAula.id,
-          disciplinaId: disciplina,
-          migrarLicaoCasa: valoresCheckbox.licaoCasa,
-          migrarRecuperacaoAula: valoresCheckbox.recuperacaoContinua,
-          migrarObjetivos: valoresCheckbox.objetivosAprendizagem,
-        });
-        if (dados || resposta === 200) {
-          sucesso('Plano de aula copiado com sucesso!');
-          dispatch(setLoaderModal(false));
-          onCloseModal();
-        }
+        await copiar();
       }
     } catch (error) {
       erros(error);
@@ -206,7 +218,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
   return (
     <ModalConteudoHtml
       titulo="Copiar conteúdo"
-      visivel={show}
+      visivel={show || alerta}
       closable
       onClose={() => onCloseModal()}
       onConfirmacaoSecundaria={() => onCloseModal()}
@@ -247,6 +259,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
             </Grid>
             <Grid cols={2}>
               <Button
+                id={shortid.generate()}
                 label="Excluir"
                 color={Colors.Roxo}
                 border
@@ -282,6 +295,7 @@ ModalCopiarConteudo.propTypes = {
   disciplina: t.string,
   onClose: t.func,
   planoAula: t.oneOfType([t.object]),
+  dataAula: t.string,
 };
 
 ModalCopiarConteudo.defaultProps = {
@@ -289,6 +303,7 @@ ModalCopiarConteudo.defaultProps = {
   disciplina: null,
   onClose: null,
   planoAula: null,
+  dataAula: null,
 };
 
 export default ModalCopiarConteudo;

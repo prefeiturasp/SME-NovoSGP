@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,9 +16,16 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<PeriodoEscolar> ObterPorTipoCalendario(long tipoCalendarioId)
         {
-            string query = "select * from periodo_escolar where tipo_calendario_id = @tipoCalendario";
+            string query = "select * from periodo_escolar where tipo_calendario_id = @tipoCalendarioId";
 
-            return database.Conexao.Query<PeriodoEscolar>(query, new { tipoCalendario = tipoCalendarioId }).ToList();
+            return database.Conexao.Query<PeriodoEscolar>(query, new { tipoCalendarioId });
+        }
+
+        public async Task<IEnumerable<PeriodoEscolar>> ObterPorTipoCalendarioAsync(long tipoCalendarioId)
+        {
+            string query = "select * from periodo_escolar where tipo_calendario_id = @tipoCalendarioId";
+
+            return await database.Conexao.QueryAsync<PeriodoEscolar>(query, new { tipoCalendarioId }, commandTimeout: 20);
         }
 
         public PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime data)
