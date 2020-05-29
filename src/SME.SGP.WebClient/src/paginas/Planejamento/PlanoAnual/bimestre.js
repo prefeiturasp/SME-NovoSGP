@@ -181,6 +181,9 @@ const Bimestre = ({
               preSelecionadas={disciplinasPreSelecionadas}
               onChange={onChangeDisciplinasSelecionadas}
               layoutEspecial={layoutEspecial}
+              carregandoDisciplinas={carregando =>
+                setCarregandoDados(carregando)
+              }
             />
           </div>
 
