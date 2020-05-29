@@ -17,20 +17,17 @@ namespace SME.SGP.Api.Middlewares
         {
             if (configuration == null)
             {
-                throw new System.ArgumentNullException(nameof(configuration));
+                throw new ArgumentNullException(nameof(configuration));
             }
             sentryDSN = configuration.GetValue<string>("Sentry:DSN");
         }
 
         public override void OnException(ExceptionContext context)
         {
-            using (SentrySdk.Init(sentryDSN))
-            {
-                var internalIP = Dns.GetHostEntry(Dns.GetHostName()).AddressList?.Where(c => c.AddressFamily == AddressFamily.InterNetwork).ToString();
-                SentrySdk.AddBreadcrumb($"{Environment.MachineName ?? string.Empty} - {internalIP ?? string.Empty }", "Machine Identification");
+            var internalIP = Dns.GetHostEntry(Dns.GetHostName()).AddressList?.Where(c => c.AddressFamily == AddressFamily.InterNetwork).ToString();
+            SentrySdk.AddBreadcrumb($"{Environment.MachineName ?? string.Empty} - {internalIP ?? string.Empty }", "Machine Identification");
 
-                SentrySdk.CaptureException(context.Exception);
-            }
+            SentrySdk.CaptureException(context.Exception);
 
             context.Result = context.Exception is NegocioException
                 ? new ResultadoBaseResult(context.Exception.Message, ((NegocioException)context.Exception).StatusCode)
