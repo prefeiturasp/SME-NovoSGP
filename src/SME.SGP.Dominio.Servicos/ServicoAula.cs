@@ -107,7 +107,19 @@ namespace SME.SGP.Dominio.Servicos
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
             List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = new List<(DateTime data, bool existeFrequencia, bool existePlanoAula)>();
 
-            foreach (var aulaRecorrente in aulasRecorrencia)
+
+            List<PodePersistirNaDataRetornoEolDto> datasAtribuicao = null;
+
+            if (aulasRecorrencia.Any() && !usuario.EhProfessorCj())
+            {
+                var retornoEol = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, aula.TurmaId, aulasRecorrencia.Select(a => a.DataAula.Date.ToString("s")).ToArray(), long.Parse(aula.DisciplinaId));
+                datasAtribuicao = retornoEol?.ToList();
+                
+                if (datasAtribuicao == null || !datasAtribuicao.Any())
+                    throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+            }
+
+            foreach (var aulaRecorrente in aulasRecorrencia.Where(c => datasAtribuicao == null || datasAtribuicao.Any(x => x.Data == c.DataAula && x.PodePersistir)))
             {
                 try
                 {
@@ -117,7 +129,7 @@ namespace SME.SGP.Dominio.Servicos
                     if (existeFrequencia || existePlanoAula)
                         aulasComFrenciaOuPlano.Add((aulaRecorrente.DataAula, existeFrequencia, existePlanoAula));
 
-                    await ExcluirAula(aulaRecorrente, usuario);
+                    await ExcluirAula(aulaRecorrente, usuario, true);
                 }
                 catch (NegocioException nex)
                 {
@@ -128,6 +140,11 @@ namespace SME.SGP.Dominio.Servicos
                     servicoLog.Registrar(ex);
                     aulasQueDeramErro.Add((aulaRecorrente.DataAula, $"Erro Interno: {ex.Message}"));
                 }
+            }
+
+            if (datasAtribuicao != null && datasAtribuicao.Any(c => !c.PodePersistir))
+            {
+                aulasQueDeramErro.AddRange(datasAtribuicao.Where(c => !c.PodePersistir).Select(c => (c.Data, "Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.")));
             }
 
             await NotificarUsuario(usuario, aula, Operacao.Exclusao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
@@ -352,12 +369,13 @@ namespace SME.SGP.Dominio.Servicos
             await NotificarUsuario(usuario, aula, Operacao.Alteracao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
         }
 
-        private async Task ExcluirAula(Aula aula, Usuario usuario)
+        private async Task ExcluirAula(Aula aula, Usuario usuario, bool persistenciaValidada = false)
         {
             if (await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(aula.DataAula.Date, aula.UeId, aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId))
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
 
-            await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
+            if (!persistenciaValidada)
+                await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
 
             unitOfWork.IniciarTransacao();
             try
