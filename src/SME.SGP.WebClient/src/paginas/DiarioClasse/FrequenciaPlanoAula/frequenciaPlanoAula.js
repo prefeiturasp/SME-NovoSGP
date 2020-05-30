@@ -1,16 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import shortid from 'shortid';
 import { Switch } from 'antd';
-import { CampoData, Auditoria, Loader } from '~/componentes';
+import { CampoData, Auditoria, Loader, ButtonGroup } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
-import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import CardCollapse from '~/componentes/cardCollapse';
-import { Colors } from '~/componentes/colors';
 import PlanoAula from '../PlanoAula/plano-aula';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
@@ -25,9 +22,11 @@ import { stringNulaOuEmBranco } from '~/utils/funcoes/gerais';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import modalidade from '~/dtos/modalidade';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import Grid from '~/componentes/grid';
 import { store } from '~/redux';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
+import AlertaPeriodoEncerrado from '~/componentes-sgp/Calendario/componentes/MesCompleto/componentes/Dias/componentes/DiaCompleto/componentes/AlertaPeriodoEncerrado';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(state => state.usuario);
@@ -95,14 +94,12 @@ const FrequenciaPlanoAula = () => {
   const [materias, setMaterias] = useState([]);
   const [mostrarErros, setMostarErros] = useState(false);
 
-  const [carregandoSalvar, setCarregandoSalvar] = useState(false);
-
   const [planoAulaExpandido, setPlanoAulaExpandido] = useState(false);
 
   const dadosAulaFrequencia = useSelector(
     state => state.calendarioProfessor.dadosAulaFrequencia
   );
-  const [temPeriodoAberto, setTemPeriodoAberto] = useState(false);
+  const [temPeriodoAberto, setTemPeriodoAberto] = useState(true);
 
   const obterDatasDeAulasDisponiveis = useCallback(
     async disciplinaId => {
@@ -249,6 +246,7 @@ const FrequenciaPlanoAula = () => {
     const frequenciaAlunos = await api
       .get(`v1/calendarios/frequencias`, { params: { aulaId: id } })
       .catch(e => erros(e));
+
     if (frequenciaAlunos && frequenciaAlunos.data) {
       setFrequenciaId(frequenciaAlunos.data.id);
       setAuditoria({
@@ -263,14 +261,13 @@ const FrequenciaPlanoAula = () => {
       setFrequencia(frequenciaAlunos.data.listaFrequencia);
       setPermiteRegistroFrequencia(!frequenciaAlunos.data.desabilitado);
       setTemPeriodoAberto(frequenciaAlunos.data.temPeriodoAberto);
-      if (!frequenciaAlunos.data.temPeriodoAberto) {
-        setSomenteConsulta(false);
-        erro('Apenas é possível consultar este registro pois o período não está em aberto.');
-      }
+      if (!frequenciaAlunos.data.temPeriodoAberto) setSomenteConsulta(true);
     }
   };
 
   const [carregandoMaterias, setCarregandoMaterias] = useState(false);
+
+  const [possuiPlanoAnual, setPossuiPlanoAnual] = useState(true);
 
   const obterPlanoAula = useCallback(
     async dadosAula => {
@@ -288,7 +285,6 @@ const FrequenciaPlanoAula = () => {
         });
 
       const dadosPlano = plano && plano.data;
-
       if (dadosPlano) {
         planoAula.qtdAulas = dadosPlano.qtdAulas;
         if (dadosPlano.id > 0) {
@@ -313,9 +309,14 @@ const FrequenciaPlanoAula = () => {
         }
       }
 
-      if (disciplinaSelecionada.regencia || ehProfessor || ehProfessorCj) {
+      if (
+        (disciplinaSelecionada && disciplinaSelecionada.regencia) ||
+        ehProfessor ||
+        ehProfessorCj ||
+        somenteConsulta
+      ) {
         let disciplinas = {};
-        if (disciplinaSelecionada.regencia) {
+        if (disciplinaSelecionada && disciplinaSelecionada.regencia) {
           setTemObjetivos(true);
           disciplinas = await api.get(
             `v1/professores/turmas/${turmaId}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigoComponenteCurricular}&regencia=true`
@@ -330,7 +331,10 @@ const FrequenciaPlanoAula = () => {
             });
             setMaterias([...disciplinasRegencia]);
           }
-        } else {
+        } else if (
+          disciplinaSelecionada &&
+          disciplinaSelecionada.codigoComponenteCurricular
+        ) {
           const dataAula = dadosAula.data || dadosAula[0].data;
           disciplinas = await api.get(
             `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}?dataAula=${dataAula}`
@@ -391,7 +395,6 @@ const FrequenciaPlanoAula = () => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
 
   const onSalvarFrequencia = click => {
-    setCarregandoSalvar(true);
     return new Promise((resolve, reject) => {
       const valorParaSalvar = {
         aulaId,
@@ -405,7 +408,6 @@ const FrequenciaPlanoAula = () => {
             if (click) {
               aposSalvarFrequencia();
             }
-            setCarregandoSalvar(false);
             setTimeout(() => {
               setCarregandoGeral(false);
             }, 1000);
@@ -416,7 +418,6 @@ const FrequenciaPlanoAula = () => {
           return false;
         })
         .catch(e => {
-          setCarregandoSalvar(false);
           setTimeout(() => {
             setCarregandoGeral(false);
           }, 1000);
@@ -611,7 +612,8 @@ const FrequenciaPlanoAula = () => {
         );
         temAulas = !!(aulas && aulas.length);
       }
-      if (temAulas) {
+
+      if (temAulas && !frequenciaId) {
         setModoEdicaoFrequencia(true);
       }
     }
@@ -619,8 +621,16 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onClickPlanoAula = useCallback(() => {
-    setPlanoAulaExpandido(!planoAulaExpandido);
-  }, [planoAulaExpandido]);
+    if (!possuiPlanoAnual) {
+      erro(
+        'Não foi possível carregar o plano de aula porque não há plano anual cadastrado'
+      );
+    } else {
+      setPlanoAulaExpandido(
+        !possuiPlanoAnual ? possuiPlanoAnual : !planoAulaExpandido
+      );
+    }
+  }, [planoAulaExpandido, possuiPlanoAnual]);
 
   useEffect(() => {
     if (!planoAula.aulaId && planoAulaExpandido && aula) {
@@ -753,6 +763,25 @@ const FrequenciaPlanoAula = () => {
       setTemAvaliacao(undefined);
       setAula();
       resetarPlanoAula();
+
+      servicoPlanoAnual
+        .obter(
+          turmaSelecionada.anoLetivo,
+          disciplinaIdSelecionada,
+          turmaSelecionada.unidadeEscolar,
+          turmaSelecionada.turma
+        )
+        .then(resposta => {
+          const planoAnualCadastrado =
+            resposta?.data &&
+            !!resposta.data.filter(
+              plano => plano.id && plano.criadoEm && plano.descricao.length
+            ).length;
+
+          setPossuiPlanoAnual(planoAnualCadastrado);
+        })
+        .catch(e => erros(e));
+
       if (planoAulaExpandido) onClickPlanoAula();
 
       setCarregandoGeral(true);
@@ -819,6 +848,7 @@ const FrequenciaPlanoAula = () => {
 
   const onChangeFrequencia = () => {
     setModoEdicaoFrequencia(true);
+    setExibirCardFrequencia(true);
   };
 
   const LinkAcao = styled.span`
@@ -848,6 +878,17 @@ const FrequenciaPlanoAula = () => {
           className="mb-2"
         />
       )}
+      <AlertaPeriodoEncerrado
+        exibir={
+          !!(
+            disciplinaSelecionada &&
+            dataSelecionada &&
+            !temPeriodoAberto &&
+            !carregandoMaterias &&
+            !carregandoGeral
+          )
+        }
+      />
       {temAvaliacao ? (
         <div className="row">
           <Grid cols={12} className="px-4">
@@ -857,6 +898,7 @@ const FrequenciaPlanoAula = () => {
             >
               Atenção, existe uma avaliação neste dia:
               <LinkAcao onClick={acessarEditarAvaliacao}>
+                {' '}
                 Editar Avaliação
               </LinkAcao>
               {dataVigente && (
@@ -875,41 +917,18 @@ const FrequenciaPlanoAula = () => {
       <Card>
         <div className="col-md-12">
           <div className="row">
-            <div className="col-md-12 d-flex justify-content-end pb-4">
-              <Button
-                id={shortid.generate()}
-                label="Voltar"
-                icon="arrow-left"
-                color={Colors.Azul}
-                border
-                className="mr-2"
-                onClick={onClickVoltar}
-              />
-              <Button
-                id={shortid.generate()}
-                label="Cancelar"
-                color={Colors.Roxo}
-                border
-                className="mr-2"
-                onClick={onClickCancelar}
-                disabled={!modoEdicaoFrequencia && !modoEdicaoPlanoAula}
-              />
-              <Loader loading={carregandoSalvar} tip="">
-                <Button
-                  id={shortid.generate()}
-                  label="Salvar"
-                  color={Colors.Roxo}
-                  border
-                  bold
-                  className="mr-2"
-                  onClick={() => onClickSalvar(true)}
-                  disabled={
-                    desabilitarCampos ||
-                    (!modoEdicaoFrequencia && !modoEdicaoPlanoAula)
-                  }
-                />
-              </Loader>
-            </div>
+            <ButtonGroup
+              somenteConsulta={somenteConsulta}
+              permissoesTela={permissoesTela}
+              onClickVoltar={onClickVoltar}
+              onClickBotaoPrincipal={() => onClickSalvar(true)}
+              onClickCancelar={onClickCancelar}
+              labelBotaoPrincipal="Salvar"
+              desabilitarBotaoPrincipal={
+                desabilitarCampos ||
+                (!modoEdicaoFrequencia && !modoEdicaoPlanoAula)
+              }
+            />
           </div>
           <div className="row">
             <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
@@ -990,6 +1009,7 @@ const FrequenciaPlanoAula = () => {
                               frequenciaId={frequenciaId}
                               onChangeFrequencia={onChangeFrequencia}
                               permissoesTela={permissoesTela}
+                              temPeriodoAberto={temPeriodoAberto}
                             />
                           </div>
                           {exibirAuditoria && (
@@ -1030,6 +1050,7 @@ const FrequenciaPlanoAula = () => {
                           ? disciplinaSelecionada.regencia
                           : false
                       }
+                      possuiPlanoAnual={possuiPlanoAnual}
                     />
                   </div>
                 </>

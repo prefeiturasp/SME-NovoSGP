@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import { Tooltip } from 'antd';
 import { Formik, Form } from 'formik';
 import shortid from 'shortid';
+import { BrowserView, MobileView, isBrowser } from 'react-device-detect';
 import LoginHelper from './loginHelper';
 import Row from '~/componentes/row';
 import LogoDoSgp from '~/recursos/LogoSgpTexto.svg';
@@ -25,12 +26,15 @@ import {
   LabelLink,
   TextoAjuda,
   ErroGeral,
+  MensagemMobile,
 } from './login.css';
 import CampoTexto from '~/componentes/campoTexto';
 import { URL_RECUPERARSENHA } from '~/constantes/url';
 import history from '~/servicos/history';
+import api from '~/servicos/api';
 import { Loader } from '~/componentes';
 import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/mensagens/actions';
+import { salvarVersao } from '~/redux/modulos/sistema/actions';
 
 const Login = props => {
   const dispatch = useDispatch();
@@ -48,6 +52,8 @@ const Login = props => {
   const exibirMensagemSessaoExpirou = useSelector(
     store => store.usuario.sessaoExpirou
   );
+
+  const { versao } = useSelector(store => store.sistema);
 
   let redirect = null;
 
@@ -137,78 +143,87 @@ const Login = props => {
                   id="Formulario"
                   className="col-xl-8 col-md-8 col-sm-8 col-xs-12 p-0"
                 >
-                  <Formik
-                    enableReinitialize
-                    initialValues={{
-                      usuario: login.usuario,
-                      senha: login.senha,
-                    }}
-                    onSubmit={dados => realizarLogin(dados)}
-                    validationSchema={validacoes}
-                    validateOnBlur={false}
-                    validateOnChange={false}
-                  >
-                    {form => (
-                      <Form>
-                        <Rotulo className="d-block" htmlFor="usuario">
-                          Usuário
-                          <Tooltip placement="top" title={TextoAjuda}>
-                            <i className="fas fa-question-circle ml-1" />
-                          </Tooltip>
-                        </Rotulo>
-                        <CampoTexto
-                          form={form}
-                          name="usuario"
-                          id="usuario"
-                          maxlength={50}
-                          classNameCampo="mb-3"
-                          placeholder="Informe o RF ou usuário"
-                          type="input"
-                          ref={inputUsuarioRf}
-                          icon
-                        />
-                        <Rotulo htmlFor="Senha">Senha</Rotulo>
-                        <CampoTexto
-                          form={form}
-                          name="senha"
-                          id="senha"
-                          maxlength={50}
-                          classNameCampo="mb-3"
-                          placeholder="Informe sua senha"
-                          type="input"
-                          maskType="password"
-                          icon
-                        />
-                        <FormGroup>
-                          <Loader loading={carregando} tip="">
-                            <Button
-                              id={shortid.generate()}
-                              className="btn-block d-block"
-                              label="Acessar"
-                              color={Colors.Roxo}
-                              ref={btnAcessar}
-                              onClick={e => aoClicarBotaoAutenticar(form, e)}
-                            />
-                          </Loader>
-                          <Centralizar className="mt-1">
-                            <LabelLink onClick={navegarParaRecuperarSenha}>
-                              Esqueci minha senha
-                            </LabelLink>
-                          </Centralizar>
-                        </FormGroup>
-                        {form.errors.usuario || form.errors.senha ? (
-                          <ErroGeral>
-                            Você precisa informar um usuário e senha para
-                            acessar o sistema.
-                          </ErroGeral>
-                        ) : null}
-                        {erroGeral &&
-                        !(form.errors.usuario || form.errors.senha) ? (
-                          <ErroGeral>{erroGeral}</ErroGeral>
-                        ) : null}
-                      </Form>
-                    )}
-                  </Formik>
+                  {isBrowser ? (
+                    <Formik
+                      enableReinitialize
+                      initialValues={{
+                        usuario: login.usuario,
+                        senha: login.senha,
+                      }}
+                      onSubmit={dados => realizarLogin(dados)}
+                      validationSchema={validacoes}
+                      validateOnBlur={false}
+                      validateOnChange={false}
+                    >
+                      {form => (
+                        <Form>
+                          <Rotulo className="d-block" htmlFor="usuario">
+                            Usuário
+                            <Tooltip placement="top" title={TextoAjuda}>
+                              <i className="fas fa-question-circle ml-1" />
+                            </Tooltip>
+                          </Rotulo>
+                          <CampoTexto
+                            form={form}
+                            name="usuario"
+                            id="usuario"
+                            maxlength={50}
+                            classNameCampo="mb-3"
+                            placeholder="Informe o RF ou usuário"
+                            type="input"
+                            ref={inputUsuarioRf}
+                            icon
+                          />
+                          <Rotulo htmlFor="Senha">Senha</Rotulo>
+                          <CampoTexto
+                            form={form}
+                            name="senha"
+                            id="senha"
+                            maxlength={50}
+                            classNameCampo="mb-3"
+                            placeholder="Informe sua senha"
+                            type="input"
+                            maskType="password"
+                            icon
+                          />
+                          <FormGroup>
+                            <Loader loading={carregando} tip="">
+                              <Button
+                                id={shortid.generate()}
+                                className="btn-block d-block"
+                                label="Acessar"
+                                color={Colors.Roxo}
+                                ref={btnAcessar}
+                                onClick={e => aoClicarBotaoAutenticar(form, e)}
+                              />
+                            </Loader>
+                            <Centralizar className="mt-1">
+                              <LabelLink onClick={navegarParaRecuperarSenha}>
+                                Esqueci minha senha
+                              </LabelLink>
+                            </Centralizar>
+                          </FormGroup>
+                          {form.errors.usuario || form.errors.senha ? (
+                            <ErroGeral>
+                              Você precisa informar um usuário e senha para
+                              acessar o sistema.
+                            </ErroGeral>
+                          ) : null}
+                          {erroGeral &&
+                          !(form.errors.usuario || form.errors.senha) ? (
+                            <ErroGeral>{erroGeral}</ErroGeral>
+                          ) : null}
+                        </Form>
+                      )}
+                    </Formik>
+                  ) : (
+                    <MensagemMobile>
+                      <span>
+                        Para sua melhor experiência recomendamos que o acesso ao
+                        sistema seja realizado pelo computador.
+                      </span>
+                    </MensagemMobile>
+                  )}
                 </Formulario>
               </Row>
               <Row className="col-md-12 d-flex justify-content-center align-self-end mb-3">
@@ -218,6 +233,10 @@ const Login = props => {
                     alt="Cidade de São Paulo - Educação"
                   />
                 </LogoSP>
+              </Row>
+              <Row>
+                {!versao ? '' : <strong>{versao}&nbsp;</strong>} - Sistema
+                homologado para navegadores: Google Chrome e Firefox
               </Row>
             </Centralizar>
           </CorpoCartao>

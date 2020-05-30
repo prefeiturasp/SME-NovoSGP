@@ -54,9 +54,6 @@ namespace SME.SGP.Dominio
 
         public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, string[] componentesCurricularesProfessor)
         {
-
-
-
             if (TemPerfilGestaoUes())
             {
                 return aulas;
@@ -69,7 +66,27 @@ namespace SME.SGP.Dominio
                 }
                 else
                 {
-                    return aulas.Where(a => componentesCurricularesProfessor.Contains(a.DisciplinaId) || a.ProfessorRf == CodigoRf);
+                    return aulas.Where(a => (componentesCurricularesProfessor.Contains(a.DisciplinaId) && !a.AulaCJ) || a.ProfessorRf == CodigoRf);
+                }
+
+            }
+        }
+
+        public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasQuePodeVisualizar(IEnumerable<AtividadeAvaliativa> atividades, string[] componentesCurricularesProfessor)
+        {
+            if (TemPerfilGestaoUes())
+            {
+                return atividades;
+            }
+            else
+            {
+                if (EhProfessorCj())
+                {
+                    return atividades.Where(a => a.ProfessorRf == CodigoRf);
+                }
+                else
+                {
+                    return atividades.Where(a => (componentesCurricularesProfessor.Intersect(a.Disciplinas.Select(d => d.DisciplinaId)).Any() && !a.EhCj) || a.ProfessorRf == CodigoRf);
                 }
 
             }

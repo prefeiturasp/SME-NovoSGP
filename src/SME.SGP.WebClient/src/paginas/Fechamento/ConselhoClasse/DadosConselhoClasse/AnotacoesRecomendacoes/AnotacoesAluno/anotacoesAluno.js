@@ -8,7 +8,7 @@ const AnotacoesAluno = () => {
     store => store.conselhoClasse.anotacoesAluno
   );
 
-  const [exibirCardAnotacaoAluno, setExibirCardAnotacaoAluno] = useState(false);
+  const [exibirCardAnotacaoAluno, setExibirCardAnotacaoAluno] = useState(true);
 
   const onClickAnotacaoAluno = () =>
     setExibirCardAnotacaoAluno(!exibirCardAnotacaoAluno);

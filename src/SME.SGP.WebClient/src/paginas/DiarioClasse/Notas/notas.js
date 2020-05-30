@@ -29,6 +29,7 @@ import { Container, ContainerAuditoria } from './notas.css';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
+import moment from 'moment';
 
 const { TabPane } = Tabs;
 
@@ -274,7 +275,9 @@ const Notas = ({ match }) => {
             auditoriaBimestreInserido: '',
           });
         }
-        setCarregandoListaBimestres(false);
+        setTimeout(() => {
+          setCarregandoListaBimestres(false);
+        }, 700);
       } else {
         resetarTela();
       }
@@ -379,6 +382,14 @@ const Notas = ({ match }) => {
     bimestreParaMontar.alunos.forEach(aluno => {
       aluno.notasAvaliacoes.forEach(nota => {
         if (nota.modoEdicao) {
+          const avaliacaoNota = bimestreParaMontar.avaliacoes.find(
+            a => a.id === nota.atividadeAvaliativaId
+          );
+          if (
+            window.moment(avaliacaoNota.data) > window.moment(new Date()) &&
+            !nota.notaConceito
+          )
+            return;
           valorParaSalvar.push({
             alunoId: aluno.id,
             atividadeAvaliativaId: nota.atividadeAvaliativaId,
@@ -538,8 +549,13 @@ const Notas = ({ match }) => {
     return pergutarParaSalvarNotaFinal(bimestresSemAvaliacaoBimestral)
       .then(salvarAvaliacaoFinal => {
         if (salvarAvaliacaoFinal) {
+          let valoresBimestresSalvarComNotas = valoresBimestresSalvar.filter(x => x.notaConceitoAlunos.length > 0);
+
+          if (valoresBimestresSalvarComNotas.length < 1)
+            return resolve(false);
+
           return api
-            .post(`/v1/fechamentos/turmas`, valoresBimestresSalvar)
+            .post(`/v1/fechamentos/turmas`, valoresBimestresSalvarComNotas)
             .then(salvouNotas => {
               if (salvouNotas && salvouNotas.status === 200) {
                 sucesso('Suas informações foram salvas com sucesso.');
@@ -920,7 +936,7 @@ const Notas = ({ match }) => {
       <ModalConteudoHtml
         key="inserirJutificativa"
         visivel={exibeModalJustificativa}
-        onClose={() => {}}
+        onClose={() => { }}
         titulo="Inserir justificativa"
         esconderBotaoPrincipal
         esconderBotaoSecundario
@@ -947,7 +963,7 @@ const Notas = ({ match }) => {
                     id: 'justificativa-porcentagem',
                     mensagem: `A maioria dos estudantes está com ${
                       notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'
-                    } abaixo do
+                      } abaixo do
                                mínimo considerado para aprovação, por isso é necessário que você insira uma justificativa.`,
                     estiloTitulo: { fontSize: '18px' },
                   }}
@@ -1100,8 +1116,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {segundoBimestre.numero ? (
                         <TabPane
                           tab={segundoBimestre.descricao}
@@ -1117,8 +1133,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {terceiroBimestre.numero ? (
                         <TabPane
                           tab={terceiroBimestre.descricao}
@@ -1134,8 +1150,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {quartoBimestre.numero ? (
                         <TabPane
                           tab={quartoBimestre.descricao}
@@ -1151,8 +1167,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                     </ContainerTabsCard>
                   </div>
                 </div>
@@ -1178,8 +1194,8 @@ const Notas = ({ match }) => {
                 </div>
               </>
             ) : (
-              ''
-            )}
+                ''
+              )}
           </div>
         </Card>
       </Loader>

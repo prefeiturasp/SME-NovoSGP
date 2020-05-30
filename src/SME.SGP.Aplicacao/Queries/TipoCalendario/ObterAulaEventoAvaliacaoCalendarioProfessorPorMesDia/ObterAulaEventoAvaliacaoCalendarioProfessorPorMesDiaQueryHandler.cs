@@ -12,12 +12,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQueryHandler : IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery, IEnumerable<EventoAulaDto>>
     {
-        private readonly IRepositorioFrequencia repositorioFrequencia;
-
-        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQueryHandler(IRepositorioFrequencia repositorioFrequencia)
-        {
-            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
-        }
         public async Task<IEnumerable<EventoAulaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery request, CancellationToken cancellationToken)
         {
             var retorno = new List<EventoAulaDto>();
@@ -31,6 +25,7 @@ namespace SME.SGP.Aplicacao
 
                     var eventoAulaDto = new EventoAulaDto()
                     {
+                        AulaId = aulaParaVisualizar.Id,
                         Titulo = componenteCurricular?.Nome,
                         EhAula = true,
                         EhReposicao = aulaParaVisualizar.TipoAula == TipoAula.Reposicao,
@@ -42,7 +37,9 @@ namespace SME.SGP.Aplicacao
 
                     var atividadesAvaliativasDaAula = (from avaliacao in request.Avaliacoes
                                                        from disciplina in avaliacao.Disciplinas
-                                                       where disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId || avaliacao.ProfessorRf == request.UsuarioCodigoRf
+                                                       where avaliacao.EhCj == aulaParaVisualizar.AulaCJ &&
+                                                             ((!avaliacao.EhCj && disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId) || 
+                                                                avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf)
                                                        select avaliacao);
 
                     if (atividadesAvaliativasDaAula.Any())
@@ -53,7 +50,7 @@ namespace SME.SGP.Aplicacao
                         }
                     }
 
-                    eventoAulaDto.MostrarBotaoFrequencia = await repositorioFrequencia.FrequenciaAulaRegistrada(aulaParaVisualizar.Id);
+                    eventoAulaDto.MostrarBotaoFrequencia = componenteCurricular.RegistraFrequencia;
                     eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
 
                     retorno.Add(eventoAulaDto);

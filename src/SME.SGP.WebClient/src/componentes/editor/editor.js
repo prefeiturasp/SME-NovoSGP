@@ -24,6 +24,14 @@ const Campo = styled.div`
   }
 `;
 
+const Desabilitado = styled.div`
+  .ck-read-only {
+    background: #eee !important;
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+`;
+
 const toolbar = [
   'heading',
   'bold',
@@ -101,31 +109,33 @@ export default function Editor(props) {
 
   const editorSemValidacoes = () => {
     return (
-      <CKEditor
-        disabled={desabilitar || false}
-        editor={ClassicEditor}
-        config={{
-          toolbar: removerToolbar ? [] : toolbar,
-          table: { isEnabled: true },
-          readOnly: desabilitar || false,
-          language: 'pt-br',
-          removePlugins: [
-            'Image',
-            'ImageCaption',
-            'ImageStyle',
-            'ImageToolbar',
-            'Indent',
-            'IndentToolbar',
-            'IndentStyle',
-            'Outdent',
-          ],
-        }}
-        data={inicial || ''}
-        onChange={(event, editor) => {
-          const data = editor.getData();
-          onChange && onChange(data);
-        }}
-      />
+      <Desabilitado>
+        <CKEditor
+          disabled={desabilitar || false}
+          editor={ClassicEditor}
+          config={{
+            toolbar: removerToolbar ? [] : toolbar,
+            table: { isEnabled: true },
+            readOnly: desabilitar || false,
+            language: 'pt-br',
+            removePlugins: [
+              'Image',
+              'ImageCaption',
+              'ImageStyle',
+              'ImageToolbar',
+              'Indent',
+              'IndentToolbar',
+              'IndentStyle',
+              'Outdent',
+            ],
+          }}
+          data={inicial || ''}
+          onChange={(event, editor) => {
+            const data = editor.getData();
+            onChange && onChange(data);
+          }}
+        />
+      </Desabilitado>
     );
   };
 

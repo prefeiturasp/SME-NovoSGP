@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
@@ -25,7 +26,8 @@ namespace SME.SGP.Aplicacao
             IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
             IServicoUsuario servicoUsuario,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-            IRepositorioComponenteCurricular repositorioComponenteCurricular)
+            IRepositorioComponenteCurricular repositorioComponenteCurricular,
+            IRepositorioTurma repositorioTurma)
         {
             this.servicoEOL = servicoEOL ??
                 throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -39,6 +41,14 @@ namespace SME.SGP.Aplicacao
                 throw new System.ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ??
                 throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.repositorioTurma = repositorioTurma ??
+                throw new System.ArgumentNullException(nameof(repositorioTurma));
+        }
+
+        public IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas)
+        {
+            foreach (var disciplina in disciplinas)
+                yield return MapearParaDto(disciplina).Result;
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesCJ(Modalidade? modalidade, string codigoTurma, string ueId, long codigoDisciplina, string rf)
@@ -91,6 +101,10 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
             }
 
+            var turma = repositorioTurma.ObterPorCodigo(codigoTurma);
+            if (turma == null)
+                throw new NegocioException("Não foi possível encontrar a turma");
+
             if (usuarioLogado.EhProfessorCj())
             {
                 var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
@@ -108,7 +122,7 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     Compartilhada = disciplina.Compartilhada,
                     LancaNota = disciplina.LancaNota,
-                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma)
+                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano)
                 })?.ToList();
 
                 if (!usuarioLogado.EhProfessor())
@@ -124,12 +138,15 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var chaveCache = $"Disciplinas-planejamento-{codigoTurma}-{codigoDisciplina}-{usuario.PerfilAtual}";
-            if (!usuario.EhProfessor())
+            if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
             {
                 var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
 
                 if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-                    return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+                {
+                    disciplinasDto = JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+                    return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia);
+                }
             }
 
             var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricular.Listar()));
@@ -137,6 +154,10 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
             }
+
+            var turma = repositorioTurma.ObterPorCodigo(codigoTurma);
+            if (turma == null)
+                throw new NegocioException("Não foi possível encontrar a turma");
 
             if (usuario.EhProfessorCj())
             {
@@ -158,14 +179,27 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     Compartilhada = disciplina.Compartilhada,
                     LancaNota = disciplina.LancaNota,
-                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma)
+                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano)
                 })?.ToList();
             }
 
-            if (!usuario.EhProfessor())
+            if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
                 await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
 
             return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia);
+        }
+
+        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
+        {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            if (usuario.EhProfessorCj())
+                return await ObterComponentesCJ(turma.ModalidadeCodigo, turma.CodigoTurma, turma.Ue.CodigoUe, componenteCurricularCodigo, usuario.CodigoRf);
+            else
+            {
+                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
+
+                return MapearComponentes(componentesCurriculares.Where(c => c.Regencia));
+            }
         }
 
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
@@ -331,20 +365,7 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
-        {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
-            if (usuario.EhProfessorCj())
-                return await ObterComponentesCJ(turma.ModalidadeCodigo, turma.CodigoTurma, turma.Ue.CodigoUe, componenteCurricularCodigo, usuario.CodigoRf);
-            else
-            {
-                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
-
-                return MapearComponentes(componentesCurriculares.Where(c => c.Regencia));
-            }
-        }
-
-        private IEnumerable<DisciplinaResposta> MapearComponentes(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
+        public IEnumerable<DisciplinaResposta> MapearComponentes(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
         {
             foreach (var componenteCurricular in componentesCurriculares)
                 yield return new DisciplinaResposta()
@@ -366,7 +387,8 @@ namespace SME.SGP.Aplicacao
             Nome = disciplinaEol.Nome,
             Regencia = disciplinaEol.Regencia,
             Compartilhada = disciplinaEol.Compartilhada,
-            RegistroFrequencia = disciplinaEol.RegistraFrequencia
+            RegistroFrequencia = disciplinaEol.RegistraFrequencia,
+            LancaNota = disciplinaEol.LancaNota,
         };
 
         private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false)
@@ -414,12 +436,6 @@ namespace SME.SGP.Aplicacao
                 return disciplinas.Where(x => x.Regencia);
 
             return disciplinas.Where(x => x.CodigoComponenteCurricular == codigoDisciplina);
-        }
-
-        public IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas)
-        {
-            foreach (var disciplina in disciplinas)
-                yield return MapearParaDto(disciplina).Result;
         }
     }
 }

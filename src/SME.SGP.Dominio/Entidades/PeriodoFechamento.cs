@@ -11,21 +11,20 @@ namespace SME.SGP.Dominio
             AdicionarDre(dre);
             AdicionarUe(ue);
 
-            fechamentosBimestre = new List<PeriodoFechamentoBimestre>();
+            FechamentosBimestre = new List<PeriodoFechamentoBimestre>();
         }
 
-        protected PeriodoFechamento()
+        public PeriodoFechamento()
         {
-            fechamentosBimestre = new List<PeriodoFechamentoBimestre>();
+            FechamentosBimestre = new List<PeriodoFechamentoBimestre>();
         }
 
         public Dre Dre { get; set; }
         public long? DreId { get; set; }
-        public IEnumerable<PeriodoFechamentoBimestre> FechamentosBimestre => fechamentosBimestre;
         public bool Migrado { get; set; }
         public Ue Ue { get; set; }
         public long? UeId { get; set; }
-        private List<PeriodoFechamentoBimestre> fechamentosBimestre { get; set; }
+        public List<PeriodoFechamentoBimestre> FechamentosBimestre { get; set; }
 
         public void AdicionarDre(Dre dre)
         {
@@ -38,7 +37,7 @@ namespace SME.SGP.Dominio
 
         public void AdicionarFechamentoBimestre(PeriodoFechamentoBimestre fechamentoBimestre)
         {
-            if (fechamentosBimestre.Any(c => c.PeriodoEscolar.Bimestre == fechamentoBimestre.PeriodoEscolar.Bimestre))
+            if (FechamentosBimestre.Any(c => c.PeriodoEscolar.Bimestre == fechamentoBimestre.PeriodoEscolar.Bimestre))
             {
                 throw new NegocioException("Esse período escolar já foi adicionado.");
             }
@@ -46,7 +45,7 @@ namespace SME.SGP.Dominio
             ValidarPeriodoInicioFim(fechamentoBimestre);
             ValidarPeriodoConcomitante(fechamentoBimestre);
  
-            fechamentosBimestre.Add(fechamentoBimestre);
+            FechamentosBimestre.Add(fechamentoBimestre);
         }
 
         public void ValidarPeriodoInicioFim(PeriodoFechamentoBimestre fechamentoBimestre)
@@ -59,7 +58,7 @@ namespace SME.SGP.Dominio
 
         public void ValidarPeriodoConcomitante(PeriodoFechamentoBimestre fechamentoBimestre)
         {
-            var periodoComDataInvalida = fechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolar.Bimestre < fechamentoBimestre.PeriodoEscolar.Bimestre && c.FinalDoFechamento > fechamentoBimestre.InicioDoFechamento);
+            var periodoComDataInvalida = FechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolar.Bimestre < fechamentoBimestre.PeriodoEscolar.Bimestre && c.FinalDoFechamento > fechamentoBimestre.InicioDoFechamento);
             if (periodoComDataInvalida != null)
             {
                 throw new NegocioException($"A data de início do fechamento do {fechamentoBimestre.PeriodoEscolar.Bimestre}º Bimestre deve ser maior que a data final do {periodoComDataInvalida.PeriodoEscolar.Bimestre}º Bimestre.");
@@ -77,7 +76,7 @@ namespace SME.SGP.Dominio
 
         public PeriodoFechamentoBimestre ObterFechamentoBimestre(long periodoEscolarId)
         {
-            return fechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolarId == periodoEscolarId);
+            return FechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolarId == periodoEscolarId);
         }
 
         public void ValidarIntervaloDatasDreEUe(List<PeriodoFechamentoBimestre> periodoFechamentoSMEDRE)
@@ -107,7 +106,7 @@ namespace SME.SGP.Dominio
 
         public bool ExisteFechamentoEmAberto(DateTime hoje)
         {
-            return fechamentosBimestre.Any(a => a.DataDentroPeriodo(hoje));            
+            return FechamentosBimestre.Any(a => a.DataDentroPeriodo(hoje));            
         }
     }
 }
