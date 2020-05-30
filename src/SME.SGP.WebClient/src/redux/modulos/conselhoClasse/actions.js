@@ -78,6 +78,11 @@ export const setDadosListasNotasConceitos = payload => ({
   payload,
 });
 
+export const setPodeEditarNota = payload => ({
+  type: '@conselhoClasse/setPodeEditarNota',
+  payload,
+});
+
 export const setExpandirLinha = payload => ({
   type: '@conselhoClasse/setExpandirLinha',
   payload,
@@ -105,15 +110,5 @@ export const setGerandoParecerConclusivo = payload => ({
 
 export const setDesabilitarCampos = payload => ({
   type: '@conselhoClasse/setDesabilitarCampos',
-  payload,
-});
-
-export const addDisciplinasComNotaPosConselho = payload => ({
-  type: '@conselhoClasse/addDisciplinasComNotaPosConselho',
-  payload,
-});
-
-export const setDisciplinasComNotaPosConselho = payload => ({
-  type: '@conselhoClasse/setDisciplinasComNotaPosConselho',
   payload,
 });

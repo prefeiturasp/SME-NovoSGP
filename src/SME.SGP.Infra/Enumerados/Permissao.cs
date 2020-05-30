@@ -363,7 +363,7 @@
         [PermissaoMenu(Menu = "Compensação de Ausência", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 6, EhAlteracao = true, Url = "/diario-classe/compensacao-ausencia")]
         CA_A = 115,
 
-        [PermissaoMenu(Menu = "Resumos e gráficos PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pap/resumos-e-graficos")]
+        [PermissaoMenu(Menu = "Resumos e gráficos PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 3, EhConsulta = true, Url = "/relatorios/pap/resumos-e-graficos")]
         RGP_C = 120,
 
         [PermissaoMenu(Menu = "Preenchimento PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 1, EhConsulta = true, Url = "/relatorios/pap/acompanhamento")]
@@ -416,5 +416,17 @@
 
         [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhAlteracao = true, Url = "/fechamento/conselho-classe")]
         CC_A = 139,
+
+        [PermissaoMenu(Menu = "Relatório Semestral PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pap/relatorio-semestral")]
+        RSP_C = 144,
+
+        [PermissaoMenu(Menu = "Relatório Semestral PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true, Url = "/relatorios/pap/relatorio-semestral")]
+        RSP_I = 145,
+
+        [PermissaoMenu(Menu = "Relatório Semestral PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true, Url = "/relatorios/pap/relatorio-semestral")]
+        RSP_E = 146,
+
+        [PermissaoMenu(Menu = "Relatório Semestral PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/pap/relatorio-semestral")]
+        RSP_A = 147,
     }
 }

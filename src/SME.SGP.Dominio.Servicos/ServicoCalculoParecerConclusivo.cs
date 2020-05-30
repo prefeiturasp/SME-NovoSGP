@@ -65,26 +65,32 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<ConselhoClasseParecerConclusivo> Calcular(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
         {
+            // Frequencia
             Filtrar(pareceresDaTurma.Where(c => c.Frequencia), "Frequência");
-            if (!await ValidarParecerPorFrequencia(alunoCodigo, turmaCodigo, pareceresDaTurma))
+            if (!await ValidarParecerPorFrequencia(alunoCodigo, turmaCodigo))
                 return ObterParecerValidacao(false);
 
             var parecerFrequencia = ObterParecerValidacao(true);
+
+            // Nota
             if (!Filtrar(pareceresDaTurma.Where(c => c.Nota), "Nota"))
                 return parecerFrequencia;
 
-            if (await ValidarParecerPorNota(alunoCodigo, turmaCodigo, pareceresDaTurma))
-                return ObterParecerValidacao(true);
-            var parecerNota = ObterParecerValidacao(false);
+            var parecerNota = ObterParecerValidacao(await ValidarParecerPorNota(alunoCodigo, turmaCodigo));
 
+            // Conselho
             if (!Filtrar(pareceresDaTurma.Where(c => c.Conselho), "Conselho"))
                 return parecerNota;
 
-            return ObterParecerValidacao(await ValidarParecerPorConselho(alunoCodigo, turmaCodigo, pareceresDaTurma));
+            var validacaoConselho = await ValidarParecerPorConselho(alunoCodigo, turmaCodigo);
+            if (!validacaoConselho.ExisteNotaConselho)
+                return parecerNota;
+
+            return ObterParecerValidacao(validacaoConselho.ValidacaoNotaConselho);
         }
 
         #region Frequência
-        private async Task<bool> ValidarParecerPorFrequencia(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
+        private async Task<bool> ValidarParecerPorFrequencia(string alunoCodigo, string turmaCodigo)
         {
             if (!await ValidarFrequenciaGeralAluno(alunoCodigo, turmaCodigo))
                 return false;
@@ -117,7 +123,7 @@ namespace SME.SGP.Dominio.Servicos
         #endregion
 
         #region Nota
-        private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
+        private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string turmaCodigo)
         {
             var notasFechamentoAluno = await repositorioFechamentoNota.ObterNotasFinaisAlunoAsync(turmaCodigo, alunoCodigo);
             if (notasFechamentoAluno == null || !notasFechamentoAluno.Any())
@@ -154,16 +160,16 @@ namespace SME.SGP.Dominio.Servicos
         #endregion
 
         #region Conselho
-        private async Task<bool> ValidarParecerPorConselho(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
+        private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string turmaCodigo)
         {
-            var notasConselhoClasse = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turmaCodigo, null);
+            var notasConselhoClasse = await repositorioConselhoClasseNota.ObterNotasConselhoAlunoAsync(alunoCodigo, turmaCodigo, null);
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
-                return true;
+                return (false, false);
 
             var tipoNota = notasConselhoClasse.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
-            return tipoNota == TipoNota.Nota ?
+            return (true, tipoNota == TipoNota.Nota ?
                 ValidarParecerConselhoPorNota(notasConselhoClasse) :
-                ValidarParecerConselhoPorConceito(notasConselhoClasse);
+                ValidarParecerConselhoPorConceito(notasConselhoClasse) );
         }
 
         private bool ValidarParecerConselhoPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasse)

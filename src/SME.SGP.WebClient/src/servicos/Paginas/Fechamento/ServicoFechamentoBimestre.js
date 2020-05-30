@@ -16,6 +16,8 @@ const ServicoFechamentoBimestre = {
   },
 
   formatarNotaConceito(valor) {
+    if (valor == null) return valor;
+
     const novoValor = Number(valor).toFixed(1);
     return isNaN(novoValor) ? valor : novoValor;
   },

@@ -90,7 +90,8 @@ namespace SME.SGP.Dominio.Servicos
                 if (componenteCurricular == null)
                 {
                     throw new NegocioException("Componente curricular não encontrado.");
-                }
+                }               
+
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:<br>");
 
                 // Carrega lista de professores

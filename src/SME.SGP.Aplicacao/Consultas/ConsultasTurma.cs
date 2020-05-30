@@ -35,31 +35,34 @@ namespace SME.SGP.Aplicacao
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));            
         }
 
-        public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia, int bimestre = 0)
+        public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia, int bimestre = 0, TipoCalendario tipoCalendario = null)
         {
             var turma = await ObterComUeDrePorCodigo(codigoTurma);
             if (turma == null)
                 throw new NegocioException($"Turma de código {codigoTurma} não localizada!");
 
-            return await TurmaEmPeriodoAberto(turma, dataReferencia, bimestre);
+            return await TurmaEmPeriodoAberto(turma, dataReferencia, bimestre, tipoCalendario: tipoCalendario);
         }
 
-        public async Task<bool> TurmaEmPeriodoAberto(long turmaId, DateTime dataReferencia, int bimestre = 0)
+        public async Task<bool> TurmaEmPeriodoAberto(long turmaId, DateTime dataReferencia, int bimestre = 0, TipoCalendario tipoCalendario = null)
         {
             var turma = await ObterComUeDrePorId(turmaId);
             if (turma == null)
                 throw new NegocioException($"Turma de ID {turmaId} não localizada!");
 
-            return await TurmaEmPeriodoAberto(turma, dataReferencia, bimestre);
+            return await TurmaEmPeriodoAberto(turma, dataReferencia, bimestre, tipoCalendario: tipoCalendario);
         }
 
-        public async Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia, int bimestre = 0, bool ehAnoLteivo = false)
+        public async Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false, TipoCalendario tipoCalendario = null)
         {
-            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             if (tipoCalendario == null)
-                throw new NegocioException($"Tipo de calendário para turma {turma.CodigoTurma} não localizado!");
+            {
+                tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
+                if (tipoCalendario == null)
+                    throw new NegocioException($"Tipo de calendário para turma {turma.CodigoTurma} não localizado!");
+            }
 
-            var periodoEmAberto = await consultasTipoCalendario.PeriodoEmAberto(tipoCalendario, dataReferencia, bimestre, ehAnoLteivo);
+            var periodoEmAberto = await consultasTipoCalendario.PeriodoEmAberto(tipoCalendario, dataReferencia, bimestre, ehAnoLetivo);
 
             return periodoEmAberto || await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, bimestre);
         }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import t from 'prop-types';
 
 // Componentes
@@ -15,6 +15,7 @@ function TurmasDropDown({
   modalidadeId,
   valor,
   dados,
+  allowClear,
 }) {
   const [listaTurmas, setListaTurmas] = useState([]);
 
@@ -63,6 +64,7 @@ function TurmasDropDown({
       placeholder="Turma"
       valueSelect={valor}
       disabled={form && (listaTurmas.length === 0 || listaTurmas.length === 1)}
+      allowClear={allowClear}
     />
   );
 }
@@ -74,7 +76,8 @@ TurmasDropDown.propTypes = {
   ueId: t.string,
   modalidadeId: t.string,
   valor: t.string,
-  dados: t.oneOfType([t.object]),
+  dados: t.oneOfType([t.object, t.array]),
+  allowClear: t.bool,
 };
 
 TurmasDropDown.defaultProps = {
@@ -85,6 +88,7 @@ TurmasDropDown.defaultProps = {
   modalidadeId: null,
   valor: '',
   dados: null,
+  allowClear: true,
 };
 
 export default TurmasDropDown;
