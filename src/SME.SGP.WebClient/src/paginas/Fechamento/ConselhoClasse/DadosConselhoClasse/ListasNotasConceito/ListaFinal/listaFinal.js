@@ -80,7 +80,7 @@ const ListaFinal = props => {
       const conceito = listaTiposConceitos.find(item => item.id == valor);
       return conceito ? conceito.valor : '';
     }
-    return valor || '';
+    return valor;
   };
 
   const montarValoresNotasConceitos = notasFechamentos => {

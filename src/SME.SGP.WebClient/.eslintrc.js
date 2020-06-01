@@ -20,8 +20,8 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     'react/jsx-filename-extension': ['warn', { extensions: ['.jsx', '.js'] }],
-    'no-nested-ternary': 'off',
     'react/no-this-in-sfc': 'off',
+    'no-nested-ternary': 'off',
     'import/prefer-default-export': 'off',
     'import/no-extraneous-dependencies': [
       'error',
@@ -31,6 +31,7 @@ module.exports = {
         peerDependencies: false,
       },
     ],
+    'no-param-reassign': 'off',
     'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     'no-console': ['error', { allow: ['tron'] }],
     'react-hooks/rules-of-hooks': 'error',

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Collapse } from 'antd';
+import shortid from 'shortid';
 import Row from '~/componentes/row';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import {
   Grid,
@@ -14,12 +16,7 @@ import {
 import CopiarConteudo from './copiarConteudo';
 import Alert from '~/componentes/alert';
 import modalidade from '~/dtos/modalidade';
-import {
-  Titulo,
-  TituloAno,
-  Planejamento,
-  ContainerBimestres,
-} from './planoAnual.css';
+import { Titulo, ContainerBimestres } from './planoAnual.css';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 import servicoDisciplinas from '~/servicos/Paginas/ServicoDisciplina';
 import { erros, sucesso, confirmar } from '~/servicos/alertas';
@@ -27,10 +24,15 @@ import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import Bimestre from './bimestre';
 import history from '~/servicos/history';
 import ModalErros from './componentes/ModalErros';
+import RotasDto from '~/dtos/rotasDto';
 
 const { Panel } = Collapse;
 
 const PlanoAnual = () => {
+  const permissoesTela = useSelector(state => state.usuario.permissoes);
+  const somenteConsulta = verificaSomenteConsulta(
+    permissoesTela[RotasDto.PLANO_ANUAL]
+  );
   const turmaSelecionada = useSelector(c => c.usuario.turmaSelecionada);
   const [possuiTurmaSelecionada, setPossuiTurmaSelecionada] = useState(false);
   const [ehEja, setEhEja] = useState(false);
@@ -42,6 +44,7 @@ const PlanoAnual = () => {
   ] = useState(false);
   const [emEdicao, setEmEdicao] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
+  const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
   const [exibirCopiarConteudo, setExibirCopiarConteudo] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [listaBimestresPreenchidos, setListaBimestresPreenchidos] = useState(
@@ -166,7 +169,10 @@ const PlanoAnual = () => {
           setPlanoAnual(resposta.data);
           setEmEdicao(false);
         })
-        .catch(e => erros(e));
+        .catch(e => erros(e))
+        .finally(() => {
+          setCarregandoDados(false);
+        });
     }
   };
 
@@ -191,7 +197,6 @@ const PlanoAnual = () => {
         .salvar(plano)
         .then(resp => {
           setPlanoAnual(resp.data);
-          setCarregandoDados(false);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
           setListaBimestresPreenchidos(
@@ -203,25 +208,31 @@ const PlanoAnual = () => {
           );
         })
         .catch(e => {
-          setCarregandoDados(false);
           erros(e);
+        })
+        .finally(() => {
+          setCarregandoDados(false);
         });
     } else {
       const erro = err.findIndex(c => !!c.length > 0);
       if (erro > -1) {
         const refBimestre = refsPainel[erro];
-        if (refBimestre && refBimestre.current) {
+        if (
+          refBimestre &&
+          refBimestre.current &&
+          refBimestre.current.offsetTop
+        ) {
           if (erro + 1 !== bimestreExpandido) {
             setBimestreExpandido([erro + 1]);
           }
-          window.scrollTo(0, refsPainel[erro].current.offsetTop);
+          window.scrollTo(0, refBimestre.current.offsetTop);
         }
       }
     }
   };
 
   /**
-   * define o bimestre expandido
+   ** Define o bimestre expandido
    */
   useEffect(() => {
     if (planoAnual && planoAnual.length > 0 && !emEdicao) {
@@ -236,14 +247,15 @@ const PlanoAnual = () => {
   useEffect(() => {
     if (bimestreExpandido) {
       const refBimestre = refsPainel[bimestreExpandido - 1];
-      if (refBimestre && refBimestre.current) {
-        setTimeout(() => {
-          window.scrollTo(
-            0,
-            refsPainel[bimestreExpandido - 1].current.offsetTop
-          );
-        }, 500);
-      }
+      setTimeout(() => {
+        if (
+          refBimestre &&
+          refBimestre.current &&
+          refBimestre.current.offsetTop
+        ) {
+          window.scrollTo(0, refBimestre.current.offsetTop);
+        }
+      }, 500);
     }
   }, [bimestreExpandido, refsPainel]);
 
@@ -251,13 +263,17 @@ const PlanoAnual = () => {
    *carrega lista de disciplinas
    */
   useEffect(() => {
+    setPlanoAnual([]);
+    setDisciplinaSelecionada();
+    setCodigoDisciplinaSelecionada();
+
     if (turmaSelecionada.turma) {
       setEmEdicao(false);
+      setCarregandoDisciplinas(true);
       setCarregandoDados(true);
       servicoDisciplinas
         .obterDisciplinasPorTurma(turmaSelecionada.turma)
         .then(resposta => {
-          setCarregandoDados(false);
           setListaDisciplinas(resposta.data);
           if (resposta.data.length === 1) {
             const disciplina = resposta.data[0];
@@ -268,11 +284,14 @@ const PlanoAnual = () => {
           }
         })
         .catch(e => {
-          setCarregandoDados(false);
           erros(e);
+        })
+        .finally(() => {
+          setCarregandoDados(false);
+          setCarregandoDisciplinas(false);
         });
     }
-  }, [turmaSelecionada.ano, turmaSelecionada.turma]);
+  }, [turmaSelecionada.turma]);
 
   /**
    *carrega a lista de planos
@@ -281,6 +300,7 @@ const PlanoAnual = () => {
     setPlanoAnual([]);
 
     if (
+      disciplinaSelecionada &&
       codigoDisciplinaSelecionada &&
       turmaSelecionada &&
       turmaSelecionada.turma
@@ -294,7 +314,6 @@ const PlanoAnual = () => {
           turmaSelecionada.turma
         )
         .then(resposta => {
-          setCarregandoDados(false);
           limparErros();
           setPlanoAnual(resposta.data);
           const migrado = resposta.data.filter(c => c.migrado);
@@ -309,10 +328,12 @@ const PlanoAnual = () => {
           );
         })
         .catch(e => {
-          setCarregandoDados(false);
           setPlanoAnual([]);
           setEmEdicao(false);
           erros(e);
+        })
+        .finally(() => {
+          setCarregandoDados(false);
         });
 
       const turmaPrograma = !!(turmaSelecionada.ano === '0');
@@ -325,7 +346,6 @@ const PlanoAnual = () => {
           disciplinaSelecionada && disciplinaSelecionada.regencia
         )
         .then(resposta => {
-          setCarregandoDados(false);
           setListaDisciplinasPlanejamento(
             resposta.data.map(disciplina => {
               return {
@@ -336,24 +356,27 @@ const PlanoAnual = () => {
           );
         })
         .catch(e => {
-          setCarregandoDados(false);
           setPlanoAnual([]);
           setEmEdicao(false);
           erros(e);
+        })
+        .finally(() => {
+          setCarregandoDados(false);
         });
     }
   }, [codigoDisciplinaSelecionada, disciplinaSelecionada, turmaSelecionada]);
 
   useEffect(() => {
+    setPlanoAnual([]);
+    setDisciplinaSelecionada();
+    setCodigoDisciplinaSelecionada();
     setEmEdicao(false);
+
     setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
     if (turmaSelecionada && turmaSelecionada !== [] && turmaSelecionada.turma) {
       setEhEja(
         turmaSelecionada.modalidade.toString() === modalidade.EJA.toString()
       );
-    } else {
-      setDisciplinaSelecionada(null);
-      setCodigoDisciplinaSelecionada(null);
     }
   }, [turmaSelecionada]);
 
@@ -431,29 +454,38 @@ const PlanoAnual = () => {
         </Grid>
         <Card className="col-md-12 p-0 float-right" mx="mx-0">
           <div className="col-md-4 col-xs-12">
-            <SelectComponent
-              name="disciplinas"
-              id="disciplinas"
-              lista={listaDisciplinas}
-              valueOption="codigoComponenteCurricular"
-              valueText="nome"
-              onChange={onChangeDisciplinas}
-              valueSelect={codigoDisciplinaSelecionada}
-              placeholder="Selecione um componente curricular"
-              disabled={listaDisciplinas && listaDisciplinas.length === 1}
-            />
+            <Loader loading={carregandoDisciplinas} tip="">
+              <SelectComponent
+                name="disciplinas"
+                id="disciplinas"
+                lista={listaDisciplinas || []}
+                valueOption="codigoComponenteCurricular"
+                valueText="nome"
+                onChange={onChangeDisciplinas}
+                valueSelect={codigoDisciplinaSelecionada}
+                placeholder="Selecione um componente curricular"
+                disabled={
+                  (listaDisciplinas && !listaDisciplinas.length) ||
+                  (listaDisciplinas && listaDisciplinas.length === 1)
+                }
+              />
+            </Loader>
           </div>
           <div className="col-md-8 col-sm-2 d-flex justify-content-end">
             <Button
+              id={shortid.generate()}
               label="Copiar Conteúdo"
               icon="share-square"
               color={Colors.Azul}
               className="mr-3"
               border
               onClick={abrirCopiarConteudo}
-              disabled={emEdicao || !possuiTurmasDisponiveisParaCopia}
+              disabled={
+                somenteConsulta || emEdicao || !possuiTurmasDisponiveisParaCopia
+              }
             />
             <Button
+              id={shortid.generate()}
               label="Voltar"
               icon="arrow-left"
               color={Colors.Azul}
@@ -462,21 +494,26 @@ const PlanoAnual = () => {
               onClick={() => history.push('/')}
             />
             <Button
+              id={shortid.generate()}
               label="Cancelar"
               color={Colors.Roxo}
               border
               bold
-              disabled={!emEdicao}
               className="mr-3"
-              disabled={!emEdicao || !Object.entries(turmaSelecionada).length}
+              disabled={
+                somenteConsulta ||
+                !emEdicao ||
+                !Object.entries(turmaSelecionada).length
+              }
               onClick={cancelar}
             />
             <Button
+              id={shortid.generate()}
               label="Salvar"
               color={Colors.Roxo}
               bold
               onClick={salvar}
-              disabled={!emEdicao}
+              disabled={somenteConsulta || !emEdicao}
             />
           </div>
           <Grid cols={12} className="p-2">
@@ -490,7 +527,10 @@ const PlanoAnual = () => {
                   setBimestreExpandido(c);
                 }}
               >
-                {planoAnual &&
+                {turmaSelecionada &&
+                  disciplinaSelecionada &&
+                  codigoDisciplinaSelecionada &&
+                  planoAnual &&
                   planoAnual.length > 0 &&
                   planoAnual.map(plano => (
                     <Panel

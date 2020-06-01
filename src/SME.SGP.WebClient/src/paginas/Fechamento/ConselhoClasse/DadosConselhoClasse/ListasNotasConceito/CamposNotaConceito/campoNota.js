@@ -34,6 +34,10 @@ const CampoNota = props => {
     store => store.conselhoClasse.notaConceitoPosConselhoAtual
   );
 
+  const podeEditarNota = useSelector(
+    store => store.conselhoClasse.podeEditarNota
+  );
+
   const desabilitarCampos = useSelector(
     store => store.conselhoClasse.desabilitarCampos
   );
@@ -130,10 +134,10 @@ const CampoNota = props => {
       const auditoria = {
         criadoEm: dados.data.criadoEm,
         criadoPor: dados.data.criadoPor,
-        criadoRf: dados.data.criadoRf,
+        criadoRf: dados.data.criadoRF,
         alteradoPor: dados.data.alteradoPor,
         alteradoEm: dados.data.alteradoEm,
-        alteradoRf: dados.data.alteradoRf,
+        alteradoRf: dados.data.alteradoRF,
       };
       setNotaPosConselho(nota, false, justificativa, auditoria);
     }
@@ -167,7 +171,12 @@ const CampoNota = props => {
         max={10}
         step={0.5}
         className={abaixoMedia ? 'borda-abaixo-media' : ''}
-        desabilitado={alunoDesabilitado || desabilitarCampos || !dentroPeriodo}
+        desabilitado={
+          (alunoDesabilitado && !podeEditarNota) ||
+          !podeEditarNota ||
+          desabilitarCampos ||
+          !dentroPeriodo
+        }
       />
     );
   };

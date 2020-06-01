@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 case SituacaoMatriculaAluno.Ativo:
                     // Macador "Novo" durante 15 dias se iniciou depois do inicio do bimestre
-                    if ((aluno.DataSituacao > bimestre.PeriodoInicio) && (aluno.DataSituacao.AddDays(15) <= DateTime.Now.Date))
+                    if ((aluno.DataSituacao > bimestre.PeriodoInicio) && (aluno.DataSituacao.AddDays(15) >= DateTime.Now.Date))
                         marcador = new MarcadorFrequenciaDto()
                         {
                             Tipo = TipoMarcadorFrequencia.Novo,

@@ -75,13 +75,13 @@ namespace SME.SGP.Aplicacao
                 anotacoesDoAluno = new List<FechamentoAlunoAnotacaoConselhoDto>();
             
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFechamentoAsync(fechamentoTurma.Id, alunoCodigo);
-            if (conselhoClasseAluno == null)
-                return await ObterRecomendacoesIniciais(anotacoesDoAluno, emFechamento);
+            if (conselhoClasseAluno == null || string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
+                return await ObterRecomendacoesIniciais(conselhoClasseAluno, anotacoesDoAluno, emFechamento);
 
             return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, emFechamento);
         }
 
-        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, bool emFechamento)
+        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(ConselhoClasseAluno conselhoClasseAluno, IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, bool emFechamento)
         {
             var recomendacoes = await repositorioConselhoClasseRecomendacao.ObterTodosAsync();
             if (!recomendacoes.Any())
@@ -89,10 +89,11 @@ namespace SME.SGP.Aplicacao
 
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
-                RecomendacaoAluno = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
-                RecomendacaoFamilia = MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
+                RecomendacaoAluno = conselhoClasseAluno?.RecomendacoesAluno ?? MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
+                RecomendacaoFamilia = conselhoClasseAluno?.RecomendacoesFamilia ?? MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
                 AnotacoesAluno = anotacoesAluno,
-                SomenteLeitura = !emFechamento
+                SomenteLeitura = !emFechamento,
+                Auditoria = conselhoClasseAluno != null ? (AuditoriaDto)conselhoClasseAluno : null
             };
         }
 

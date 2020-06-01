@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio
                                   DateTime? inicioDoFechamento,
                                   DateTime? finalDoFechamento)
         {
-            FechamentoId = fechamentoId;
+            PeriodoFechamentoId = fechamentoId;
             if (inicioDoFechamento.HasValue)
                 InicioDoFechamento = inicioDoFechamento.Value;
             if (finalDoFechamento.HasValue)
@@ -22,8 +22,8 @@ namespace SME.SGP.Dominio
         {
         }
 
-        public PeriodoFechamento Fechamento { get; set; }
-        public long FechamentoId { get; set; }
+        public PeriodoFechamento PeriodoFechamento { get; set; }
+        public long PeriodoFechamentoId { get; set; }
         public DateTime FinalDoFechamento { get; set; }
         public long Id { get; set; }
         public DateTime InicioDoFechamento { get; set; }

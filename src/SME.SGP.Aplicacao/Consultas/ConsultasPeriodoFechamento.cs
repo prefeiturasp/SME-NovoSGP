@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(Turma turma, int bimestre, long? periodoEscolarId)
-            => await repositorioPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma.Ue.Id, turma.Ue.DreId, bimestre, periodoEscolarId);
+            => await repositorioPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma.Ue.Id, turma.Ue.DreId, turma.AnoLetivo, bimestre, periodoEscolarId);
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosComFechamentoEmAberto(long ueId)
             => await repositorioEventoFechamento.ObterPeriodosFechamentoEmAberto(ueId, DateTime.Now.Date);
@@ -94,40 +94,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> UeEmReaberturaDeFechamento(TipoCalendario tipoCalendario, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
         {
-            if (dataReferencia.Year == tipoCalendario.AnoLetivo)
-            {
-                var reaberturaPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(
-                                                                bimestre,
-                                                                dataReferencia,
-                                                                tipoCalendario.Id,
-                                                                dreCodigo,
-                                                                ueCodigo);
-                 if (reaberturaPeriodo != null)
-                    return true;
-            }
-            else
-            {
-                // Busca eventos de fechamento na data atual
-                var eventosFechamento = await repositorioEvento.EventosNosDiasETipo(dataReferencia, dataReferencia,
-                                                TipoEvento.FechamentoBimestre, tipoCalendario.Id, ueCodigo, dreCodigo);
-
-                foreach (var eventoFechamento in eventosFechamento)
-                {
-                    // Verifica existencia de reabertura de fechamento com mesmo inicio e fim do evento de fechamento
-                    var reaberturasPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestre(
-                                                                    bimestre,
-                                                                    eventoFechamento.DataInicio,
-                                                                    eventoFechamento.DataFim,
-                                                                    tipoCalendario.Id,
-                                                                    dreCodigo,
-                                                                    ueCodigo);
-
-                    if (reaberturasPeriodo != null && reaberturasPeriodo.Any())
-                        return true;
-                }
-            }
-
-            return false;
+            var reaberturaPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(
+                                                            bimestre,
+                                                            dataReferencia,
+                                                            tipoCalendario.Id,
+                                                            dreCodigo,
+                                                            ueCodigo);
+            return reaberturaPeriodo != null;
         }
     }
 }

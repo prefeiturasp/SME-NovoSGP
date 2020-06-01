@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public FrequenciaAluno Obter(string codigoAluno, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, TipoFrequenciaAluno tipoFrequencia)
+        public FrequenciaAluno Obter(string codigoAluno, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia)
         {
             var query = @"select
 	                        *
@@ -26,14 +26,12 @@ namespace SME.SGP.Dados.Repositorios
 	                        codigo_aluno = @codigoAluno
 	                        and disciplina_id = @disciplinaId
 	                        and tipo = @tipoFrequencia
-	                        and periodo_inicio = @periodoInicio
-	                        and periodo_fim = @periodoFim";
+	                        and periodo_escolar_id = @periodoEscolarId";
             return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
             {
                 codigoAluno,
                 disciplinaId,
-                periodoInicio,
-                periodoFim,
+                periodoEscolarId,
                 tipoFrequencia
             });
         }

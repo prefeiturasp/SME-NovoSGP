@@ -48,9 +48,10 @@ class ServicoConselhoClasse {
     turmaCodigo,
     bimestre,
     alunoCodigo,
-    ehFinal
+    ehFinal,
+    consideraHistorico
   ) => {
-    const url = `v1/conselhos-classe/turmas/${turmaCodigo}/bimestres/${bimestre}/alunos/${alunoCodigo}/final/${ehFinal}`;
+    const url = `v1/conselhos-classe/turmas/${turmaCodigo}/bimestres/${bimestre}/alunos/${alunoCodigo}/final/${ehFinal}/consideraHistorico/${consideraHistorico}`;
     return api.get(url);
   };
 
