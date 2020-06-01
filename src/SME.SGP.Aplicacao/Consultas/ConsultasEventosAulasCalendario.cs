@@ -148,7 +148,7 @@ namespace SME.SGP.Aplicacao
                         EhRegencia = disciplina.Regencia,
                         EhCompartilhada = disciplina.Compartilhada,
                         PermiteRegistroFrequencia = disciplina.RegistraFrequencia && !x.SomenteConsulta,
-                        podeCadastrarAvaliacao = podeCriarAtividade,
+                        PodeCadastrarAvaliacao = podeCriarAtividade,
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
                         Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",

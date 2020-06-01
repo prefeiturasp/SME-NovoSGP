@@ -356,7 +356,7 @@ namespace SME.SGP.Aplicacao.Servicos
                     };
                 });
             }
-            return null;
+            return Task.FromResult<AbrangenciaCompactaVigenteRetornoEOLDTO>(null);
         }
     }
 }
