@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="Postgres2Go" Version="0.3.0" />
+    <PackageReference Include="Redis2Go.Alpha" Version="1.0.0.4-preview-38" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0-preview.4.20251.6" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="Xunit.Extensions.Ordering" Version="1.4.5" />

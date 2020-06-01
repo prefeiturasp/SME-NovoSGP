@@ -24,6 +24,9 @@ namespace SME.SGP.Integracao.Teste
         [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001401")]
         public async Task DeveObterDisciplinasDoProfessorPorTurma(string login, string rf, string perfil, string codigoTurma)
         {
+
+            //chamar a controller
+
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
