@@ -430,8 +430,18 @@ const EventosLista = ({ match }) => {
     );
   };
 
+  const [podeAlterarExcluir, setPodeAlterarExcluir] = useState(false);
+
   const onSelecionarItems = items => {
     setEventosSelecionados(items);
+    setPodeAlterarExcluir(
+      items.filter(
+        item =>
+          usuario.possuiPerfilSme === true ||
+          (usuario.possuiPerfilDre === true && item.dreId && item.ueId) ||
+          item.criadoRF === usuario.rf
+      ).length
+    );
   };
 
   return (
@@ -471,7 +481,8 @@ const EventosLista = ({ match }) => {
             disabled={
               !permissoesTela.podeExcluir ||
               !selecionouCalendario ||
-              (eventosSelecionados && eventosSelecionados.length < 1)
+              (eventosSelecionados && eventosSelecionados.length < 1) ||
+              !podeAlterarExcluir
             }
           />
           <Button

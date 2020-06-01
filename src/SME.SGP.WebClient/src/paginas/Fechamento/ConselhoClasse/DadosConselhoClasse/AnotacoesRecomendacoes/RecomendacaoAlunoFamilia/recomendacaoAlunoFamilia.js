@@ -20,7 +20,7 @@ const RecomendacaoAlunoFamilia = props => {
     store => store.conselhoClasse.desabilitarCampos
   );
 
-  const [exibirCardRecomendacao, setExibirCardRecomendacao] = useState(false);
+  const [exibirCardRecomendacao, setExibirCardRecomendacao] = useState(true);
 
   const onClickExpandirRecomendacao = () =>
     setExibirCardRecomendacao(!exibirCardRecomendacao);

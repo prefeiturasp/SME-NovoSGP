@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import PropTypes from 'prop-types';
+import shortid from 'shortid';
 import Disciplinas from './disciplinas';
 import { ListItem, ListItemButton, ListaObjetivos, Erro } from './bimestre.css';
 import { Button, Colors, Grid, Auditoria, Loader } from '~/componentes';
@@ -11,7 +13,6 @@ const Bimestre = ({
   bimestre,
   disciplinas,
   ano,
-  erros,
   ehEja,
   ehMedio,
   disciplinaSemObjetivo,
@@ -23,14 +24,14 @@ const Bimestre = ({
   const [objetivosSelecionados, setObjetivosSelecionados] = useState(
     bimestre.objetivosAprendizagem
   );
-  const [disciplinasPreSelecionadas, setDisciplinasPreSelecionadas] = useState(
+  const [disciplinasPreSelecionadas] = useState(
     bimestre.objetivosAprendizagem.map(c => c.componenteCurricularEolId)
   );
   const [descricaoObjetivo, setDescricaoObjetivo] = useState(
     bimestre.descricao
   );
   const [layoutEspecial, setLayoutEspecial] = useState(false);
-  const [carregandoDados, setCarregandoDados] = useState(false);
+  const [carregandoDados, setCarregandoDados] = useState(true);
 
   const getSelecionados = () => {
     if (objetivosAprendizagem && objetivosAprendizagem.length) {
@@ -43,7 +44,17 @@ const Bimestre = ({
       item.selecionado = true;
     });
     return bimestre.objetivosAprendizagem;
-  }
+  };
+
+  const setCarregandoDisciplinas = carregando => {
+    if (disciplinas) {
+      setTimeout(() => {
+        setCarregandoDados(carregando);
+      }, 500);
+    }
+  };
+
+  const refDivObjetivos = useRef();
 
   const onChangeDisciplinasSelecionadas = disciplinasSelecionadas => {
     if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
@@ -54,9 +65,10 @@ const Bimestre = ({
           if (objetivosSelecionados && objetivosSelecionados.length > 0) {
             resposta.data.forEach(c => {
               const objetivo = objetivosSelecionados.find(o => {
-                if (o.id == c.id) {
+                if (String(o.id) === String(c.id)) {
                   return o;
                 }
+                return false;
               });
               if (objetivo) {
                 c.selecionado = true;
@@ -65,7 +77,9 @@ const Bimestre = ({
               }
             });
             objetivosSelecionados.forEach(objetivoSelecionado => {
-              const objetivo = resposta.data.find(o => o.id === objetivoSelecionado.id);
+              const objetivo = resposta.data.find(
+                o => o.id === objetivoSelecionado.id
+              );
               if (!objetivo) {
                 resposta.data.push(objetivoSelecionado);
               }
@@ -73,17 +87,22 @@ const Bimestre = ({
           }
           setObjetivosAprendizagem(resposta.data);
           setObjetivosCarregados(true);
-          setCarregandoDados(false);
         })
         .catch(e => {
           mostrarErros(e);
-          setCarregandoDados(false);
+        })
+        .finally(() => {
+          setCarregandoDisciplinas(false);
         });
     } else {
       const objs = getSelecionados();
       setObjetivosAprendizagem(objs);
       setObjetivosSelecionados(objs);
+      setCarregandoDisciplinas(false);
     }
+
+    if (refDivObjetivos && refDivObjetivos.current)
+      refDivObjetivos.current.scrollTo(0, 0);
   };
 
   const selecionaObjetivo = objetivo => {
@@ -124,9 +143,9 @@ const Bimestre = ({
     if (
       objetivosCarregados &&
       bimestre.objetivosAprendizagem &&
-      bimestre.objetivosAprendizagem.length > 0 &&
+      bimestre.objetivosAprendizagem.length &&
       objetivosAprendizagem &&
-      objetivosAprendizagem.length > 0
+      objetivosAprendizagem.length
     ) {
       const componentesCurricularesId = bimestre.objetivosAprendizagem.map(
         c => c.id
@@ -141,7 +160,7 @@ const Bimestre = ({
       );
       setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
     }
-  }, [objetivosCarregados]);
+  }, [objetivosCarregados, bimestre]);
 
   useEffect(() => {
     setDescricaoObjetivo(bimestre.descricao);
@@ -162,14 +181,20 @@ const Bimestre = ({
               preSelecionadas={disciplinasPreSelecionadas}
               onChange={onChangeDisciplinasSelecionadas}
               layoutEspecial={layoutEspecial}
+              carregandoDisciplinas={carregando =>
+                setCarregandoDados(carregando)
+              }
             />
           </div>
 
           {!layoutEspecial && (
-            <ListaObjetivos className="mt-4 overflow-auto">
+            <ListaObjetivos
+              ref={refDivObjetivos}
+              className="mt-4 overflow-auto"
+            >
               {objetivosAprendizagem &&
                 objetivosAprendizagem.length > 0 &&
-                objetivosAprendizagem.map((objetivo, index) => (
+                objetivosAprendizagem.map(objetivo => (
                   <ul
                     className="list-group list-group-horizontal mt-3"
                     key={objetivo.codigo}
@@ -210,6 +235,7 @@ const Bimestre = ({
               objetivosSelecionados.map(selecionado => {
                 return (
                   <Button
+                    id={shortid.generate()}
                     key={selecionado.codigo}
                     label={selecionado.codigo}
                     color={Colors.AzulAnakiwa}
@@ -276,9 +302,22 @@ const Bimestre = ({
               </li>
             </ul>
             <fieldset className="mt-3">
+              {!layoutEspecial &&
+              objetivosSelecionados &&
+              !objetivosSelecionados.length ? (
+                <Erro>
+                  Você precisa selecionar objetivos na lista ao lado para poder
+                  inserir a descrição do plano!
+                </Erro>
+              ) : null}
               <Editor
                 onChange={onChangeDescricaoObjetivos}
                 inicial={descricaoObjetivo}
+                desabilitar={
+                  !layoutEspecial &&
+                  objetivosSelecionados &&
+                  !objetivosSelecionados.length
+                }
               />
             </fieldset>
             <Grid cols={12} className="p-0">
@@ -287,8 +326,8 @@ const Bimestre = ({
                 criadoEm={bimestre.criadoEm}
                 alteradoPor={bimestre.alteradoPor}
                 alteradoEm={bimestre.alteradoEm}
-                alteradoRf={bimestre.alteradoRF > 0 && bimestre.alteradoRF}
-                criadoRf={bimestre.criadoRF > 0 && bimestre.criadoRF}
+                alteradoRf={bimestre.alteradoRf}
+                criadoRf={bimestre.criadoRf}
               />
             </Grid>
           </div>
@@ -296,6 +335,17 @@ const Bimestre = ({
       </div>
     </Loader>
   );
+};
+
+Bimestre.propTypes = {
+  bimestre: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  disciplinas: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  ano: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  ehEja: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  ehMedio: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  disciplinaSemObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  selecionarObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  onChangeDescricaoObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
 };
 
 export default Bimestre;

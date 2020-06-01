@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 // Formulario
@@ -6,7 +7,7 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
 // Componentes
-import { Grid, Localizador } from '~/componentes';
+import { Grid, Localizador, SelectComponent } from '~/componentes';
 
 // Componentes SGP
 import DreDropDown from '~/componentes-sgp/DreDropDown/';
@@ -18,10 +19,12 @@ import { Linha } from '~/componentes/EstilosGlobais';
 const anoAtual = window.moment().format('YYYY');
 
 function Filtro({ onFiltrar }) {
+  const anosLetivos = useSelector(redux => redux.filtro.anosLetivos);
+
   const [refForm, setRefForm] = useState({});
   const [anoLetivo] = useState(anoAtual);
   const [valoresIniciais] = useState({
-    anoLetivo: '',
+    anoLetivo: anoAtual,
     dreId: '',
     ueId: '',
     professorRf: '',
@@ -52,14 +55,26 @@ function Filtro({ onFiltrar }) {
       {form => (
         <Form className="col-md-12 mb-4">
           <Linha className="row mb-2">
-            <Grid cols={6}>
+            <Grid cols={2}>
+              <SelectComponent
+                name="anoLetivo"
+                placeholder="Ano Letivo"
+                lista={anosLetivos}
+                valueText="desc"
+                valueOption="valor"
+                form={form}
+                onChange={() => {}}
+                allowClear={false}
+              />
+            </Grid>
+            <Grid cols={5}>
               <DreDropDown
                 url="v1/dres/atribuicoes"
                 form={form}
                 onChange={() => null}
               />
             </Grid>
-            <Grid cols={6}>
+            <Grid cols={5}>
               <UeDropDown
                 url="v1/dres"
                 dreId={form.values.dreId}

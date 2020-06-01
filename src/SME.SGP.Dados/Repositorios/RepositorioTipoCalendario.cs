@@ -18,9 +18,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select 1 from periodo_escolar pe");
+            query.AppendLine("select pe.* from periodo_escolar pe");
             query.AppendLine("inner join tipo_calendario tc");
-            query.AppendLine("on tc.periodo = pe.id");
+            query.AppendLine("on tc.id = pe.tipo_calendario_id");
             query.AppendLine("where tc.id = @tipoCalendarioId");
             query.AppendLine("and @dataParaVerificar between symmetric pe.periodo_inicio::date and pe.periodo_fim ::date");
             
@@ -59,6 +59,24 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return database.Conexao.QueryFirstOrDefault<TipoCalendario>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
+        }
+
+        public IEnumerable<TipoCalendario> BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, DateTime dataReferencia)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select *");
+            query.AppendLine("from tipo_calendario t");
+            query.AppendLine("where t.excluido = false");
+            query.AppendLine("and t.ano_letivo = @anoLetivo");
+            query.AppendLine("and t.modalidade = @modalidade");
+
+            if (modalidade == ModalidadeTipoCalendario.EJA)
+            {
+                query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and @dataReferenica BETWEEN p.periodo_inicio and p.periodo_fim)");
+            }
+
+            return database.Conexao.Query<TipoCalendario>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
         }
 
         public IEnumerable<TipoCalendario> ListarPorAnoLetivo(int anoLetivo)

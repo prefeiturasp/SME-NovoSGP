@@ -53,6 +53,8 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = filtroAulasEventosCalendarioDto.AnoLetivo
             });
 
+            avaliacoes = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, componentesCurricularesDoProfessor);
+
             return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
             {
                 Aulas = aulasParaVisualizar,

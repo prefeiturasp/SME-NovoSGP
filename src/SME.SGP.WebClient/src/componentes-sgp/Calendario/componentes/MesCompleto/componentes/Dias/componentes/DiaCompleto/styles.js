@@ -19,11 +19,23 @@ export const DiaCompletoWrapper = styled.div`
   }
 `;
 
-export const LinhaEvento = styled.div`
+export const Linha = styled.div`
   display: flex;
   border-bottom: 1px solid ${Base.CinzaDesabilitado};
+  justify-content: space-between;
+
+  .botoesEventoAula {
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+  }
+`;
+
+export const LinhaEvento = styled.div`
+  display: flex;
+  flex: 1;
   padding: 0.4rem;
-  cursor: pointer;
+  cursor: pointer !important;
   border-radius: 0.2rem;
   transition: all 0.2s;
 
@@ -42,11 +54,6 @@ export const LinhaEvento = styled.div`
     }
   }
 
-  .botoesEventoAula {
-    display: flex;
-    align-items: center;
-  }
-
   &:hover {
     &:not(.evento) {
       background: ${Base.Roxo};
@@ -60,6 +67,7 @@ export const Botao = styled(Button)`
     background: transparent !important;
     border-color: ${Base.Branco} !important;
     color: ${Base.Branco} !important;
+    outline: none;
 
     &:hover {
       background: white !important;

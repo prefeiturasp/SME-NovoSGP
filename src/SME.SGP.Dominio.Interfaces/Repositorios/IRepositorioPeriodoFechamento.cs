@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,7 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioPeriodoFechamento : IRepositorioBase<PeriodoFechamento>
     {
         Task<bool> ExistePeriodoPorUeDataBimestre(long ueId, DateTime dataReferencia, int bimestre);
-        void AlterarPeriodosComHierarquiaInferior(DateTime inicioDoFechamento, DateTime finalDoFechamento, long periodoEscolarId, long? dreId);
 
         PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? dreId, long? ueId, long? turmaId);
 
@@ -16,6 +16,7 @@ namespace SME.SGP.Dominio.Interfaces
         bool ValidaRegistrosForaDoPeriodo(DateTime inicioDoFechamento, DateTime finalDoFechamento, long fechamentoId, long periodoEscolarId, long? dreId);
 
         Task<PeriodoFechamento> ObterPeriodoPorUeDataBimestreAsync(long ueId, DateTime dataReferencia, int bimestre);
-        Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(long ueId, long dreId, int bimestre, long? periodoEscolarId);
+        
+        Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(long ueId, long dreId, int anoLetivo, int bimestre, long? periodoEscolarId);
     }
 }

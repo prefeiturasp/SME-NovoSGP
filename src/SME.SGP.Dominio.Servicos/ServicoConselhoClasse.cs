@@ -195,7 +195,8 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<AuditoriaConselhoClasseAlunoDto> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
         {
             var fechamentoTurma = await ObterFechamentoTurma(conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId);
-            await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId);
+            if (! await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
+                throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");
 
             // Se não existir conselho de classe para o fechamento gera
             if (conselhoClasseAluno.ConselhoClasse.Id == 0)
@@ -211,7 +212,7 @@ namespace SME.SGP.Dominio.Servicos
             return (AuditoriaConselhoClasseAlunoDto)conselhoClasseAluno;
         }
 
-        private async Task VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
+        public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
         {
             var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turma.CodigoTurma, periodoEscolarId);
 
@@ -220,7 +221,9 @@ namespace SME.SGP.Dominio.Servicos
             // Checa se todas as disciplinas da turma receberam nota
             foreach (var componenteCurricular in componentesCurriculares.Where(c => c.LancaNota))
                 if (!notasAluno.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular))
-                    throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");
+                    return false;
+
+            return true;
         }
 
         private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurma(Turma turma)
@@ -246,6 +249,11 @@ namespace SME.SGP.Dominio.Servicos
         {
             var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
+
+            // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
+            if (!await VerificaNotasTodosComponentesCurriculares(alunoCodigo, turma, null))
+                return new ParecerConclusivoDto();
+
             var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
 
             var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma);

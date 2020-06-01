@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useReducer } from 'react';
 
 // Redux
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 // Componentes
 import { Loader, ButtonGroup, Card, Grid } from '~/componentes';
@@ -22,6 +22,7 @@ import {
 // Serviços
 import CalendarioProfessorServico from '~/servicos/Paginas/CalendarioProfessor';
 import { erro } from '~/servicos/alertas';
+import history from '~/servicos/history';
 
 // Reducer
 import Reducer, { estadoInicial } from './reducer';
@@ -35,8 +36,10 @@ import {
 
 // DTOs
 import RotasDTO from '~/dtos/rotasDto';
+import { selecionaDia } from '~/redux/modulos/calendarioProfessor/actions';
 
 function CalendarioProfessor() {
+  const dispatch = useDispatch();
   const { turmaSelecionada, permissoes } = useSelector(
     estado => estado.usuario
   );
@@ -92,6 +95,7 @@ function CalendarioProfessor() {
 
   const onClickDiaHandler = useCallback(
     dia => {
+      dispatch(selecionaDia(dia));
       async function buscarEventosDias() {
         try {
           disparar(setarCarregandoDia(true));
@@ -110,6 +114,19 @@ function CalendarioProfessor() {
 
           if (data && status === 200) {
             disparar(setarCarregandoDia(false));
+            const mes = {
+              estaAberto: false,
+              eventos: 0,
+              nome: "",
+              numeroMes: dia.getMonth() + 1
+            };
+            disparar(
+              setarEventosMes({
+                ...mes,
+                dias: data.eventosAulasMes,
+              })
+            );
+
             disparar(
               setarEventosDia({
                 diaSelecionado: dia,
@@ -151,7 +168,7 @@ function CalendarioProfessor() {
       <Cabecalho pagina="Calendário do professor" />
       <Loader loading={false}>
         <Card>
-          <ButtonGroup />
+          <ButtonGroup onClickVoltar={() => history.push('/')} />
           <Grid cols={4} className="p-0 m-0">
             <DropDownTipoCalendario
               turmaSelecionada={turmaSelecionada.turma}
