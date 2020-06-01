@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.PlatformAbstractions;
 using Npgsql;
 using Postgres2Go;
+using Redis2Go;
 using SME.SGP.Api;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Infra;
@@ -19,17 +20,21 @@ namespace SME.SGP.Integracao.Teste
     public class TestServerFixture : IDisposable
     {
         private readonly TestServer _testServerCliente;
-        private readonly PostgresRunner runner;
+        private readonly PostgresRunner _postgresRunner;
         private readonly ServicoTokenJwt servicoTokenJwt;
+        private readonly RedisRunner _redisRunner;
 
         public TestServerFixture()
         {
             try
             {
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-                runner = PostgresRunner.Start(new PostgresRunnerOptions() { Port = 5434 });
-                MontaBaseDados(runner);
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                
+                _redisRunner = RedisRunner.Start();
+
+                _postgresRunner = PostgresRunner.Start(new PostgresRunnerOptions() { Port = 5434 });
+                MontaBaseDados(_postgresRunner);
 
                 var projectPath = GetContentRootPath("../src/SME.SGP.Api");
 
@@ -56,8 +61,8 @@ namespace SME.SGP.Integracao.Teste
             }
             catch (Exception ex)
             {
-                if (runner != null)
-                    runner.Dispose();
+                if (_postgresRunner != null)
+                    _postgresRunner.Dispose();
                 throw new Exception(ex.Message);
             }
         }
@@ -68,7 +73,8 @@ namespace SME.SGP.Integracao.Teste
         {
             _clientApi.Dispose();
             _testServerCliente.Dispose();
-            runner.Dispose();
+            _redisRunner.Dispose();
+            _postgresRunner.Dispose();
         }
 
         public string GerarToken(Permissao[] permissoes, string login = "teste", string nomeLogin = "teste", string codigoRf = "123", string guidPerfil = "")
@@ -155,7 +161,7 @@ namespace SME.SGP.Integracao.Teste
         private void ExecutarPreScripts()
         {
 
-            using (var conn = new NpgsqlConnection(runner.GetConnectionString()))
+            using (var conn = new NpgsqlConnection(_postgresRunner.GetConnectionString()))
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand("CREATE USER postgres;", conn))
