@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Globalization;
+using MediatR;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -21,9 +22,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<GradeComponenteTurmaAulasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterGradeAulasTurma([FromQuery] DateTime data, string codigoTurma, long codigoDisciplina, [FromServices] IConsultasGrade consultasGrade, [FromQuery]bool ehRegencia = false)
+        public async Task<IActionResult> ObterGradeAulasTurma([FromQuery] DateTime data, string codigoTurma, long codigoDisciplina, [FromServices] IMediator mediator, [FromQuery]bool ehRegencia = false)
         {
-            var horasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor(codigoTurma, codigoDisciplina, UtilData.ObterSemanaDoAno(data), data, ehRegencia: ehRegencia);
+            var horasGrade = await ObterGradeAulasPorTurmaEProfessorUseCase.Executar(mediator, codigoTurma, codigoDisciplina, UtilData.ObterSemanaDoAno(data), data, ehRegencia: ehRegencia);
 
             if (horasGrade == null)
                 return NoContent();
