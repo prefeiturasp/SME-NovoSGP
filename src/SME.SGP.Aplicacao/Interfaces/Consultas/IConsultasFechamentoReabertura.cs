@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
     {
         Task<PaginacaoResultadoDto<FechamentoReaberturaListagemDto>> Listar(long tipoCalendarioId, string dreCodigo, string ueCodigo);
 
-        FechamentoReaberturaRetornoDto ObterPorId(long id);
+        Task<FechamentoReaberturaRetornoDto> ObterPorId(long id);
     }
 }
