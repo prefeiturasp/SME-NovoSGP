@@ -1,12 +1,14 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmaPorCodigoQuery : IRequest<Turma>
+    public class ObterUEPorTurmaCodigoQuery: IRequest<Ue>
     {
-        public ObterTurmaPorCodigoQuery() { }
-        public ObterTurmaPorCodigoQuery(string turmaCodigo)
+        public ObterUEPorTurmaCodigoQuery(string turmaCodigo)
         {
             TurmaCodigo = turmaCodigo;
         }
