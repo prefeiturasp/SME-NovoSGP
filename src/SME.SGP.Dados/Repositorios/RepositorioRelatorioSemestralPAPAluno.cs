@@ -75,13 +75,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<RelatorioSemestralPAPAluno> ObterRelatorioSemestralPorAlunoTurmaSemestreAsync(string alunoCodigo, string turmaCodigo, int semestre)
         {
-            var query = @"select rsa.relatorio_semestral_turma_pap_id,
-	                   rsa.id,
-	                   rsa.criado_em,
-	                   rsa.criado_por,
-	                   rsa.criado_rf,
-	                   rsa.alterado_em,
-	                   rsa.alterado_por
+            var query = @"select rsa.*, rs.*
                   from relatorio_semestral_pap_aluno rsa 
                  inner join relatorio_semestral_turma_pap rs on rs.id = rsa.relatorio_semestral_turma_pap_id 
                  left join turma t on t.id = rs.turma_id
@@ -89,7 +83,14 @@ namespace SME.SGP.Dados.Repositorios
                   and rsa.aluno_codigo = @alunoCodigo
                   and t.turma_id  = @turmaCodigo
                   and rs.semestre  = @semestre";
-            return await database.Conexao.QueryFirstOrDefaultAsync<RelatorioSemestralPAPAluno>(query, new { alunoCodigo, turmaCodigo, semestre});
+
+            return (await database.Conexao.QueryAsync<RelatorioSemestralPAPAluno, RelatorioSemestralTurmaPAP, RelatorioSemestralPAPAluno>(query,
+                (relatorioSemestralAluno, relatorioSemestralTurma) =>
+                {
+                    relatorioSemestralAluno.RelatorioSemestralTurmaPAP = relatorioSemestralTurma;
+                    return relatorioSemestralAluno;
+                },
+                new { alunoCodigo, turmaCodigo, semestre })).FirstOrDefault();
         }
         
         public async Task<IEnumerable<RelatorioSemestralPAPAluno>> ObterRelatoriosAlunosPorTurmaAsync(long turmaId, int semestre)

@@ -28,12 +28,6 @@ export const setDadosParaSalvarRelatorioSemestral = payload => ({
   payload,
 });
 
-export const SetValoresSecaoRelatorioSemestral = () => {
-  return {
-    type: '@relatorioSemestralPAP/SetValoresSecaoRelatorioSemestral',
-  };
-};
-
 export const limparDadosParaSalvarRelatorioSemestral = payload => ({
   type: '@relatorioSemestralPAP/limparDadosParaSalvarRelatorioSemestral',
   payload,
