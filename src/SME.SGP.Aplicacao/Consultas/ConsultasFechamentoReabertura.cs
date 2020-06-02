@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaEntidades = await repositorioFechamentoReabertura.ListarPaginado(tipoCalendarioId, dreCodigo, ueCodigo, Paginacao);
 
-            return MapearListaEntidadeParaDto(listaEntidades);
+            return await MapearListaEntidadeParaDto(listaEntidades);
         }
 
         public async Task<FechamentoReaberturaRetornoDto> ObterPorId(long id)
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             return await TransformaEntidadeEmDto(fechamentoReabertura);
         }
 
-        private static FechamentoReaberturaListagemDto TransformaEntidadeEmDtoListagem(FechamentoReabertura item)
+        private async Task<FechamentoReaberturaListagemDto> TransformaEntidadeEmDtoListagem(FechamentoReabertura item)
         {
             return new FechamentoReaberturaListagemDto()
             {
@@ -43,30 +43,35 @@ namespace SME.SGP.Aplicacao
                 DataInicio = item.Inicio,
                 DataFim = item.Fim,
                 Descricao = item.Descricao,
+                PossuiFilhos = await FechamentoPossuiFilhos(item),
                 Id = item.Id,
                 BimestresQuantidadeTotal = item.TipoCalendario.QuantidadeDeBimestres()
             };
         }
 
-        private IEnumerable<FechamentoReaberturaListagemDto> MapearListaEntidadeParaDto(IEnumerable<FechamentoReabertura> items)
+        private async Task<IEnumerable<FechamentoReaberturaListagemDto>> MapearListaEntidadeParaDto(IEnumerable<FechamentoReabertura> items)
         {
+            var fechamentos = new List<FechamentoReaberturaListagemDto>();
+
             if (items.Any())
             {
                 foreach (var item in items)
                 {
-                    yield return TransformaEntidadeEmDtoListagem(item);
+                   fechamentos.Add(await TransformaEntidadeEmDtoListagem(item));
                 }
             }
+
+            return fechamentos;
         }
 
-        private PaginacaoResultadoDto<FechamentoReaberturaListagemDto> MapearListaEntidadeParaDto(PaginacaoResultadoDto<FechamentoReabertura> listaEntidades)
+        private async Task<PaginacaoResultadoDto<FechamentoReaberturaListagemDto>> MapearListaEntidadeParaDto(PaginacaoResultadoDto<FechamentoReabertura> listaEntidades)
         {
             var retorno = new PaginacaoResultadoDto<FechamentoReaberturaListagemDto>();
 
             retorno.TotalPaginas = listaEntidades.TotalPaginas;
             retorno.TotalRegistros = listaEntidades.TotalRegistros;
 
-            retorno.Items = MapearListaEntidadeParaDto(listaEntidades.Items);
+            retorno.Items = await MapearListaEntidadeParaDto(listaEntidades.Items);
 
             return retorno;
         }
