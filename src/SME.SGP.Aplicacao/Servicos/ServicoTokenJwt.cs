@@ -107,9 +107,7 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             var authorizationHeader = httpContextAccessor.HttpContext.Request.Headers["authorization"];
 
-            return authorizationHeader == StringValues.Empty
-                ? false
-                : true;
+            return authorizationHeader != StringValues.Empty;
         }
 
         private string ObterTokenAtual()
