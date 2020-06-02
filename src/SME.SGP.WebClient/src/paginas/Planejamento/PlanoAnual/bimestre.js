@@ -160,6 +160,8 @@ const Bimestre = ({
       );
       setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
     }
+
+    if (!bimestre?.objetivosAprendizagem?.length) removerTodosObjetivos();
   }, [objetivosCarregados, bimestre]);
 
   useEffect(() => {
