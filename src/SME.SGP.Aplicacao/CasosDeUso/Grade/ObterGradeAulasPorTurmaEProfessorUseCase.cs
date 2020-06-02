@@ -41,34 +41,36 @@ namespace SME.SGP.Aplicacao
             }
 
             var horascadastradas = await ObtenhaHorasCadastradas(disciplina, semana, dataAula, codigoRf, turma, ehRegencia);
+            var aulasRestantes = horasGrade - horascadastradas;
 
             return new GradeComponenteTurmaAulasDto
             {
                 QuantidadeAulasGrade = horasGrade,
-                QuantidadeAulasRestante = horasGrade - horascadastradas
+                QuantidadeAulasRestante = aulasRestantes,
+                PodeEditar = aulasRestantes > 1
             };
         }
 
-        private static async Task<int> TratarHorasGrade(long disciplina, Turma turma, GradeDto grade, bool ehRegencia)
+        private static async Task<int> TratarHorasGrade(long componenteCurricularId, Turma turma, GradeDto grade, bool ehRegencia)
         {
             if (ehRegencia)
-                return turma.ModalidadeCodigo == Modalidade.EJA ? 5 : 1;
+                return turma.ObterHorasGradeRegencia();
 
-            if (disciplina == 1030)
+            if (componenteCurricularId == 1030)
                 return 4;
 
-            return await _mediator.Send(new ObterHorasGradePorComponenteQuery(grade.Id, disciplina, int.Parse(turma.Ano)));
+            return await _mediator.Send(new ObterHorasGradePorComponenteQuery(grade.Id, componenteCurricularId, int.Parse(turma.Ano)));
         }
 
         private static async Task<int> ObtenhaHorasCadastradas(long componenteCurricular, int semana, DateTime dataAula, string codigoRf, Turma turma, bool ehRegencia)
         {
-            var experienciaPedagogica = await _mediator.Send(new AulaDeExperienciaPedagogicaQuery(componenteCurricular.ToString()));
+            var experienciaPedagogica = await _mediator.Send(new AulaDeExperienciaPedagogicaQuery(componenteCurricular));
 
             if (ehRegencia)
-                return await _mediator.Send(new ObterQuantidadeAulasNoDiaPorProfessorComponenteCurricularQuery(turma.CodigoTurma, componenteCurricular.ToString(), dataAula, codigoRf, experienciaPedagogica));
+                return await _mediator.Send(new ObterQuantidadeAulasNoDiaPorProfessorComponenteCurricularQuery(turma.CodigoTurma, componenteCurricular, dataAula, codigoRf, experienciaPedagogica));
 
             // Busca horas aula cadastradas para a disciplina na turma
-            return await _mediator.Send(new ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery(turma.CodigoTurma, componenteCurricular.ToString(), semana, codigoRf, experienciaPedagogica));
+            return await _mediator.Send(new ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery(turma.CodigoTurma, componenteCurricular, semana, codigoRf, experienciaPedagogica));
         }
     }
 }

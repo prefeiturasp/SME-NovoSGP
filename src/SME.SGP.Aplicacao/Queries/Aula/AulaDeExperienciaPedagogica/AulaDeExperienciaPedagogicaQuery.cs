@@ -7,11 +7,11 @@ namespace SME.SGP.Aplicacao
 {
     public class AulaDeExperienciaPedagogicaQuery: IRequest<bool>
     {
-        public AulaDeExperienciaPedagogicaQuery(string componenteCurricular)
+        public AulaDeExperienciaPedagogicaQuery(long componenteCurricular)
         {
             ComponenteCurricular = componenteCurricular;
         }
 
-        public string ComponenteCurricular { get; set; }
+        public long ComponenteCurricular { get; set; }
     }
 }
