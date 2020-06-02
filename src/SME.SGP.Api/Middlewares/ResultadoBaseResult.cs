@@ -11,6 +11,10 @@ namespace SME.SGP.Api.Middlewares
             StatusCode = 601;
         }
 
+        public ResultadoBaseResult(RetornoBaseDto retornoBaseDto) : base(retornoBaseDto)
+        {
+            StatusCode = 601;
+        }
         public ResultadoBaseResult(string mensagem, int statusCode)
             : base(RetornaBaseModel(mensagem))
         {
