@@ -103,6 +103,7 @@ namespace SME.SGP.Api
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AdicionarMediatr();
+            services.AdicionarValidadoresFluentValidation();
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
 
