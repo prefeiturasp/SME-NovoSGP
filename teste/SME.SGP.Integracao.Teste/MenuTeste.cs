@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Api.Controllers;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,18 @@ namespace SME.SGP.Integracao.Teste
         [Fact]
         public async void Deve_Retornar_Menu()
         {
+            try
+            {
+                var conc = new MenuController();
+                conc.Get(null);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+
             fixture._clientApi.DefaultRequestHeaders.Clear();
             fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.N_C, Permissao.PA_I }));
 

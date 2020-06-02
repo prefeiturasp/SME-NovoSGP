@@ -31,10 +31,11 @@ namespace SME.SGP.Integracao.Teste
 
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 
-                _redisRunner = RedisRunner.Start();
-
                 _postgresRunner = PostgresRunner.Start(new PostgresRunnerOptions() { Port = 5434 });
                 MontaBaseDados(_postgresRunner);
+
+
+                _redisRunner = RedisRunner.Start();
 
                 var projectPath = GetContentRootPath("../src/SME.SGP.Api");
 
@@ -63,6 +64,10 @@ namespace SME.SGP.Integracao.Teste
             {
                 if (_postgresRunner != null)
                     _postgresRunner.Dispose();
+
+                if (_redisRunner != null)
+                    _redisRunner.Dispose();
+
                 throw new Exception(ex.Message);
             }
         }
@@ -141,18 +146,22 @@ namespace SME.SGP.Integracao.Teste
                     Encoding enc = null;
 
                     var textoComEncodeCerto = ReadFileAndGetEncoding(b, ref enc);
-                                        
-                    using (var cmd = new NpgsqlCommand(textoComEncodeCerto, conn))
+                    
+                    var scriptsSeparados = textoComEncodeCerto.Split(";");
+                    foreach (var scriptSeparado in scriptsSeparados)
                     {
-                        try
+                        using (var cmd = new NpgsqlCommand(textoComEncodeCerto, conn))
                         {
-                            cmd.ExecuteNonQuery();
+                            try
+                            {
+                                cmd.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception($"Erro ao executar o script {file.FullName}. Erro: {ex.Message}");
+                            }
+
                         }
-                        catch (Exception ex)
-                        {
-                            throw new Exception($"Erro ao executar o script {file.FullName}. Erro: {ex.Message}");
-                        }
-                        
                     }
                 }
             }
