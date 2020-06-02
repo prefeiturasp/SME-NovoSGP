@@ -30,11 +30,12 @@ namespace SME.SGP.Integracao.Teste
             {
 
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                
-                _redisRunner = RedisRunner.Start();
 
                 _postgresRunner = PostgresRunner.Start(new PostgresRunnerOptions() { Port = 5434 });
                 MontaBaseDados(_postgresRunner);
+
+
+                _redisRunner = RedisRunner.Start();
 
                 var projectPath = GetContentRootPath("../src/SME.SGP.Api");
 
@@ -56,13 +57,17 @@ namespace SME.SGP.Integracao.Teste
                     .Build();
 
                 var contextoTesteIntegrado = new ContextoTesteIntegrado("");
-                
+
                 servicoTokenJwt = new ServicoTokenJwt(config, contextoTesteIntegrado);
             }
             catch (Exception ex)
             {
                 if (_postgresRunner != null)
                     _postgresRunner.Dispose();
+
+                if (_redisRunner != null)
+                    _redisRunner.Dispose();
+
                 throw new Exception(ex.Message);
             }
         }
@@ -107,7 +112,7 @@ namespace SME.SGP.Integracao.Teste
         {
             s = s.ToUpper().Replace("V", "");
             var clearStr = s.Split("__");
-            return clearStr[0];            
+            return clearStr[0];
         }
 
         private string GetContentRootPath(string projectName)
@@ -120,7 +125,6 @@ namespace SME.SGP.Integracao.Teste
 
         private void MontaBaseDados(PostgresRunner runner)
         {
-
             ExecutarPreScripts();
 
             var scripts = ObterScripts();
@@ -141,7 +145,7 @@ namespace SME.SGP.Integracao.Teste
                     Encoding enc = null;
 
                     var textoComEncodeCerto = ReadFileAndGetEncoding(b, ref enc);
-                                        
+
                     using (var cmd = new NpgsqlCommand(textoComEncodeCerto, conn))
                     {
                         try
@@ -152,7 +156,7 @@ namespace SME.SGP.Integracao.Teste
                         {
                             throw new Exception($"Erro ao executar o script {file.FullName}. Erro: {ex.Message}");
                         }
-                        
+
                     }
                 }
             }
@@ -263,6 +267,6 @@ namespace SME.SGP.Integracao.Teste
             // Value is greater than the maximum allowed for utf8. Deemed invalid.
             return -1;
         }
-        
+
     }
 }
