@@ -33,7 +33,7 @@ namespace SME.Background.Core.Processors
 
         public void ExecutarPeriodicamente<T>(Expression<Action<T>> metodo, string cron)
         {
-            throw new Exception("O serviço de processamento em segundo plano está desativado");
+            throw new ErroInternoException("O serviço de processamento em segundo plano está desativado");
         }
 
         public void Registrar()

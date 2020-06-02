@@ -160,7 +160,6 @@ namespace SME.SGP.Aplicacao
                 servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
 
             retornoAutenticacaoEol.Item1.DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao();
-            //var fromDate = servicoTokenJwt.ObterDataHoraCriacao();
 
             usuario.AtualizaUltimoLogin();
 
@@ -248,7 +247,6 @@ namespace SME.SGP.Aplicacao
             string nomeLoginAtual = servicoUsuario.ObterNomeLoginAtual();
 
             var dadosUsuario = await servicoEOL.ObterMeusDados(login);
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRfAtual, login, nomeLoginAtual, dadosUsuario.Email);
 
             // Obter Perfil do token atual
             var guidPerfil = servicoTokenJwt.ObterPerfil();

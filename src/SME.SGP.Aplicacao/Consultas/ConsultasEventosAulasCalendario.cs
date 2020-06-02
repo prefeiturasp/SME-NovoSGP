@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEventosAulasCalendario(
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             IComandosDiasLetivos comandosDiasLetivos,
             IRepositorioAula repositorioAula,
             IServicoUsuario servicoUsuario,
-            IServicoEOL servicoEOL,
+            IServicoEol servicoEOL,
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
@@ -267,15 +267,15 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var dia in diasAulas.Select(x => x.Key).Distinct())
             {
-                var qtdEventosAulas = diasAulas.Where(x => x.Key == dia).Count();
+                var qtdEventosAulas = diasAulas.Count(x => x.Key == dia);
                 eventosAulas.Add(new EventosAulasTipoCalendarioDto
                 {
                     Dia = dia,
                     QuantidadeDeEventosAulas = qtdEventosAulas,
-                    TemAtividadeAvaliativa = diasAulas.Where(x => x.Key == dia && x.Value == "Atividade avaliativa").Any(),
-                    TemAula = diasAulas.Where(x => x.Key == dia && x.Value == "Aula").Any(),
-                    TemAulaCJ = diasAulas.Where(x => x.Key == dia && x.Value == "CJ").Any(),
-                    TemEvento = diasAulas.Where(x => x.Key == dia && x.Value == "Evento").Any()
+                    TemAtividadeAvaliativa = diasAulas.Any(x => x.Key == dia && x.Value == "Atividade avaliativa"),
+                    TemAula = diasAulas.Any(x => x.Key == dia && x.Value == "Aula"),
+                    TemAulaCJ = diasAulas.Any(x => x.Key == dia && x.Value == "CJ"),
+                    TemEvento = diasAulas.Any(x => x.Key == dia && x.Value == "Evento")
                 });
             }
 
