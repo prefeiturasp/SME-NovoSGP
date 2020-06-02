@@ -30,7 +30,7 @@ namespace SME.SGP.Integracao.Teste
             {
 
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                
+
                 _postgresRunner = PostgresRunner.Start(new PostgresRunnerOptions() { Port = 5434 });
                 MontaBaseDados(_postgresRunner);
 
@@ -57,7 +57,7 @@ namespace SME.SGP.Integracao.Teste
                     .Build();
 
                 var contextoTesteIntegrado = new ContextoTesteIntegrado("");
-                
+
                 servicoTokenJwt = new ServicoTokenJwt(config, contextoTesteIntegrado);
             }
             catch (Exception ex)
@@ -112,7 +112,7 @@ namespace SME.SGP.Integracao.Teste
         {
             s = s.ToUpper().Replace("V", "");
             var clearStr = s.Split("__");
-            return clearStr[0];            
+            return clearStr[0];
         }
 
         private string GetContentRootPath(string projectName)
@@ -125,7 +125,6 @@ namespace SME.SGP.Integracao.Teste
 
         private void MontaBaseDados(PostgresRunner runner)
         {
-
             ExecutarPreScripts();
 
             var scripts = ObterScripts();
@@ -146,22 +145,18 @@ namespace SME.SGP.Integracao.Teste
                     Encoding enc = null;
 
                     var textoComEncodeCerto = ReadFileAndGetEncoding(b, ref enc);
-                    
-                    var scriptsSeparados = textoComEncodeCerto.Split(";");
-                    foreach (var scriptSeparado in scriptsSeparados)
-                    {
-                        using (var cmd = new NpgsqlCommand(textoComEncodeCerto, conn))
-                        {
-                            try
-                            {
-                                cmd.ExecuteNonQuery();
-                            }
-                            catch (Exception ex)
-                            {
-                                throw new Exception($"Erro ao executar o script {file.FullName}. Erro: {ex.Message}");
-                            }
 
+                    using (var cmd = new NpgsqlCommand(textoComEncodeCerto, conn))
+                    {
+                        try
+                        {
+                            cmd.ExecuteNonQuery();
                         }
+                        catch (Exception ex)
+                        {
+                            throw new Exception($"Erro ao executar o script {file.FullName}. Erro: {ex.Message}");
+                        }
+
                     }
                 }
             }
@@ -272,6 +267,6 @@ namespace SME.SGP.Integracao.Teste
             // Value is greater than the maximum allowed for utf8. Deemed invalid.
             return -1;
         }
-        
+
     }
 }

@@ -29,8 +29,7 @@ namespace SME.SGP.Integracao.Teste
             }
             catch (Exception)
             {
-
-                throw;
+                                
             }
             
 
