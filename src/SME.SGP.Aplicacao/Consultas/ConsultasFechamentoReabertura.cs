@@ -26,13 +26,13 @@ namespace SME.SGP.Aplicacao
             return MapearListaEntidadeParaDto(listaEntidades);
         }
 
-        public FechamentoReaberturaRetornoDto ObterPorId(long id)
+        public async Task<FechamentoReaberturaRetornoDto> ObterPorId(long id)
         {
             var fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(id);
             if (fechamentoReabertura == null)
                 throw new NegocioException("Não foi possível localizar esta reabertura de fechamento.");
 
-            return TransformaEntidadeEmDto(fechamentoReabertura);
+            return await TransformaEntidadeEmDto(fechamentoReabertura);
         }
 
         private static FechamentoReaberturaListagemDto TransformaEntidadeEmDtoListagem(FechamentoReabertura item)
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private FechamentoReaberturaRetornoDto TransformaEntidadeEmDto(FechamentoReabertura fechamentoReabertura)
+        private async Task<FechamentoReaberturaRetornoDto> TransformaEntidadeEmDto(FechamentoReabertura fechamentoReabertura)
         {
             return new FechamentoReaberturaRetornoDto()
             {
@@ -84,6 +84,7 @@ namespace SME.SGP.Aplicacao
                 DreCodigo = fechamentoReabertura.Dre?.CodigoDre,
                 UeCodigo = fechamentoReabertura.Ue?.CodigoUe,
                 TipoCalendarioId = fechamentoReabertura.TipoCalendarioId,
+                PossuiFilhos = await FechamentoPossuiFilhos(fechamentoReabertura),
                 CriadoEm = fechamentoReabertura.CriadoEm,
                 AlteradoEm = fechamentoReabertura.AlteradoEm ?? DateTime.MinValue,
                 CriadoPor = fechamentoReabertura.CriadoPor,
@@ -91,6 +92,24 @@ namespace SME.SGP.Aplicacao
                 AlteradoRF = fechamentoReabertura.AlteradoRF,
                 CriadoRF = fechamentoReabertura.CriadoRF
             };
+        }
+
+        private async Task<bool> FechamentoPossuiFilhos(FechamentoReabertura fechamentoReabertura)
+        {
+            if (fechamentoReabertura.EhParaSme())
+            {
+                var fechamentosSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, null, null, null);
+
+                return fechamentosSME.Any(f => f.EhParaDre() || f.EhParaUe());
+            }
+            else if (fechamentoReabertura.EhParaDre())
+            {
+                var fechamentosDre = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, fechamentoReabertura.DreId, null, null);
+
+                return (fechamentosDre.Any(f => f.EhParaUe()));
+            }
+
+            return false;
         }
     }
 }
