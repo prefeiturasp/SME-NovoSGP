@@ -30,7 +30,7 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -68,7 +68,7 @@ namespace SME.SGP.Dominio
         }
 
         public ServicoDeNotasConceitos(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IServicoEOL servicoEOL, IConsultasAbrangencia consultasAbrangencia,
+            IServicoEol servicoEOL, IConsultasAbrangencia consultasAbrangencia,
             IRepositorioNotaTipoValor repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo,
             IRepositorioConceito repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
             IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,

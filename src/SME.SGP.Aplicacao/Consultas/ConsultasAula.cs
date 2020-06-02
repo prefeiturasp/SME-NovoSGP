@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorio;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IServicoEOL servicoEol;
+        private readonly IServicoEol servicoEol;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasAula(IRepositorioAula repositorio,
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                              IRepositorioPlanoAula repositorioPlanoAula,
                              IRepositorioTurma repositorioTurma,
                              IServicoUsuario servicoUsuario,
-                             IServicoEOL servicoEol,
+                             IServicoEol servicoEol,
                              IConsultasDisciplina consultasDisciplina,
                              IConsultasTurma consultasTurma,
                              IConsultasPeriodoFechamento consultasPeriodoFechamento)
@@ -180,7 +180,7 @@ namespace SME.SGP.Aplicacao
             return aulas.Sum(a => a.Quantidade);
         }
 
-        public async Task<int> ObterRecorrenciaDaSerie(long aulaId)
+        public int ObterRecorrenciaDaSerie(long aulaId)
         {
             var aula = repositorio.ObterPorId(aulaId);
 

@@ -11,7 +11,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosAtividadeAvaliativa : IComandosAtividadeAvaliativa
     {
-        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasProfessor consultasProfessor;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
@@ -25,7 +24,6 @@ namespace SME.SGP.Aplicacao
 
         public ComandosAtividadeAvaliativa(
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IConsultasDisciplina consultasDisciplina,
             IConsultasProfessor consultasProfessor,
             IRepositorioAula repositorioAula,
             IServicoUsuario servicoUsuario,
@@ -38,7 +36,6 @@ namespace SME.SGP.Aplicacao
 
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
-            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentException(nameof(consultasDisciplina));
             this.consultasProfessor = consultasProfessor ?? throw new ArgumentException(nameof(consultasProfessor));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentException(nameof(servicoEOL));
