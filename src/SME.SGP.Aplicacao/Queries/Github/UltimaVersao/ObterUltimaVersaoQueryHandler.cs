@@ -23,8 +23,8 @@ namespace SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease
             var versao = await repositorioCache.ObterAsync("versao", false);
             if (string.IsNullOrWhiteSpace(versao))
             {
-                string numeroVersao = servicoGithub.RecuperarUltimaVersao().Result;
-                await repositorioCache.SalvarAsync("versao", numeroVersao, 720, false);
+                string numeroVersao = await servicoGithub.RecuperarUltimaVersao();
+                await repositorioCache.SalvarAsync("versao", numeroVersao, 1080, false);
                 return numeroVersao;
             }
             return versao;
