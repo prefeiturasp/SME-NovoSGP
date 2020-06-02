@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.Pipelines;
 using System;
@@ -12,14 +11,7 @@ namespace SME.SGP.Api.Configuracoes
         {
             var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
             services.AddMediatR(assembly);
-
-
-            AssemblyScanner
-                .FindValidatorsInAssembly(assembly)
-                .ForEach(result => services.AddScoped(result.InterfaceType, result.ValidatorType));
-
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
-
         }
     }
 }
