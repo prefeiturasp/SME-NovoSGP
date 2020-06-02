@@ -11,12 +11,12 @@ import { BotoesAuxiliaresEstilo, Botao } from '../styles';
 const BotoesAuxiliares = ({
   temAula,
   podeCadastrarAvaliacao,
+  podeCadastrarAula,
   onClickNovaAula,
   onClickNovaAvaliacao,
   permissaoTela,
   dentroPeriodo,
   desabilitado,
-  podeCadastrarAula,
 }) => {
   return (
     <BotoesAuxiliaresEstilo>
@@ -55,6 +55,7 @@ const BotoesAuxiliares = ({
 BotoesAuxiliares.propTypes = {
   temAula: t.bool.isRequired,
   podeCadastrarAvaliacao: t.oneOfType([t.bool, t.number]).isRequired,
+  podeCadastrarAula: t.oneOfType([t.bool, t.number]).isRequired,
   onClickNovaAula: t.func.isRequired,
   onClickNovaAvaliacao: t.func.isRequired,
   permissaoTela: t.oneOfType([t.any]).isRequired,

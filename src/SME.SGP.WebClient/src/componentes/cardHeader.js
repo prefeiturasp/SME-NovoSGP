@@ -75,8 +75,8 @@ CardHeader.propTypes = {
   border: PropTypes.bool,
   icon: PropTypes.bool,
   show: PropTypes.bool,
-  configuracao: PropTypes.object,
-  onClick: PropTypes.func,
+  onClick: PropTypes.oneOfType([PropTypes.func]),
+  configuracao: PropTypes.oneOfType([PropTypes.any]),
 };
 
 CardHeader.defaultProps = {
@@ -86,6 +86,7 @@ CardHeader.defaultProps = {
   border: false,
   icon: false,
   show: false,
+  onClick: () => {},
   configuracao: {
     altura: 'auto',
     corBorda: Base.AzulBordaCard,

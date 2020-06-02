@@ -49,9 +49,9 @@ CardCollapse.propTypes = {
   indice: PropTypes.string,
   children: PropTypes.node,
   show: PropTypes.bool,
-  configCabecalho: PropTypes.object,
+  onClick: PropTypes.oneOfType([PropTypes.func]),
+  configCabecalho: PropTypes.oneOfType([PropTypes.any]),
   icon: PropTypes.bool,
-  onClick: PropTypes.func,
 };
 
 CardCollapse.defaultProps = {
@@ -60,6 +60,11 @@ CardCollapse.defaultProps = {
   children: () => {},
   onClick: () => {},
   show: false,
+  onClick: () => {},
+  configCabecalho: {
+    altura: 'auto',
+    corBorda: Base.AzulBordaCard,
+  },
   icon: true,
 };
 

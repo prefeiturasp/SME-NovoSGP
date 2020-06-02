@@ -122,9 +122,7 @@ namespace SME.SGP.Aplicacao
                 notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
             }
 
-            var professorTitular = await ObterRfProfessorTitularDisciplina(turma.CodigoTurma, filtros.DisciplinaCodigo);
-            if (string.IsNullOrEmpty(professorTitular))
-                throw new NegocioException("Não foi possível localizar o professor titular.");
+            var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, ultimoPeriodoEscolar, turma, filtros.DisciplinaCodigo.ToString(), retorno.EventoData);
 
             foreach (var aluno in alunosDaTurma.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
             {
@@ -175,7 +173,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                fechamentoFinalAluno.PodeEditar = await PodeEditarNotaOuConceito(usuarioAtual, professorTitular, aluno, ultimoPeriodoEscolar, turma);
+                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
                 fechamentoFinalAluno.Codigo = aluno.CodigoAluno;
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
@@ -220,7 +218,7 @@ namespace SME.SGP.Aplicacao
                         foreach (var nota in notasDoBimestre)
                         {
                             var notaParaAdicionar = ehNota ? nota.Nota?.ToString() : nota.ConceitoId?.ToString();
-                            
+
                             listaRetorno.Add(new FechamentoNotaAlunoDto(periodo.Bimestre, notaParaAdicionar, nota.DisciplinaId, nota.FechamentoAluno.AlunoCodigo));
                         }
                     }
@@ -230,22 +228,10 @@ namespace SME.SGP.Aplicacao
             return listaRetorno;
         }
 
-        private async Task<string> ObterRfProfessorTitularDisciplina(string turmaCodigo, long disciplinaCodigo)
+        private async Task<bool> PodeEditarNotaOuConceitoPeriodoUsuario(Usuario usuarioLogado, PeriodoEscolar periodoEscolar, Turma turma, string codigoComponenteCurricular, DateTime data)
         {
-            var professoresTitularesDaTurma = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaCodigo);
-            var professorTitularDaDisciplina = professoresTitularesDaTurma.FirstOrDefault(a => a.DisciplinaId == disciplinaCodigo && a.ProfessorRf != string.Empty);
-            return professorTitularDaDisciplina == null ? string.Empty : professorTitularDaDisciplina.ProfessorRf;
-        }
-
-        private async Task<bool> PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf, AlunoPorTurmaResposta aluno, PeriodoEscolar periodoEscolar, Turma turma)
-        {
-            if (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade)
-                return false;
-
-            if (usuarioLogado.CodigoRf != professorTitularDaTurmaDisciplinaRf)
+            var usuarioPodeEditar = await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turma.CodigoTurma, codigoComponenteCurricular, data);
+            if (!usuarioPodeEditar)
                 return false;
 
             var periodoFechamento = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre, periodoEscolar.Id);
