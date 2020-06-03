@@ -8,6 +8,7 @@ using SME.SGP.Aplicacao.Commands.Aulas;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -33,9 +34,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AulaConsultaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public async Task<IActionResult> BuscarPorId(long id, [FromServices]IConsultasAula consultas)
+        public async Task<IActionResult> BuscarPorId(long id, [FromServices]IMediator mediator)
         {
-            return Ok(await consultas.BuscarPorId(id));
+            return Ok(await ObterAulaPorIdUseCase.Executar(mediator, id));
         }
 
         [HttpDelete("{id}/recorrencias/{recorrencia}/disciplinaNome/{disciplinaNome}")]
@@ -82,7 +83,7 @@ namespace SME.SGP.Api.Controllers
             var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1
                 : await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
             var existeFrequenciaPlanoAula = await consultas.ChecarFrequenciaPlanoNaRecorrencia(aulaId);
-            
+
             var retorno = new AulaRecorrenciaDto()
             {
                 AulaId = aulaId,
@@ -93,5 +94,15 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retorno);
         }
+
+        [HttpGet("{aulaId}/turmas/{turmaCodigo}/componente-curricular/{componenteCurricular}")]
+        [ProducesResponseType(typeof(CadastroAulaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> CadastroAula([FromServices]IMediator mediator, long aulaId, string turmaCodigo, long componenteCurricular, [FromQuery]DateTime dataAula, [FromQuery]bool ehRegencia = false)
+        {
+            return Ok(await PodeCadastrarAulaUseCase.Executar(mediator, aulaId, turmaCodigo, componenteCurricular, dataAula, ehRegencia));
+        }
+
     }
 }

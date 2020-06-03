@@ -47,5 +47,11 @@ namespace SME.SGP.Dominio
             else
                 return ModalidadeCodigo != Modalidade.EJA;
         }
+
+        public bool EhEJA()
+            => ModalidadeCodigo == Modalidade.EJA;
+
+        public int ObterHorasGradeRegencia()
+            => EhEJA() ? 5 : 1;
     }
 }
