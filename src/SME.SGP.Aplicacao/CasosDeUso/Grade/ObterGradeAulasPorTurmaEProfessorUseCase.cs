@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public static async Task<GradeComponenteTurmaAulasDto> Executar(IMediator mediator, string turmaCodigo, long componenteCurricular, DateTime dataAula, string codigoRf = null, bool ehRegencia = false)
         {
             var ehExperienciPedagogica = await mediator.Send(new AulaDeExperienciaPedagogicaQuery(componenteCurricular));
-            return await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, componenteCurricular, dataAula, codigoRf, ehRegencia, ehExperienciPedagogica));
+            return await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, componenteCurricular, dataAula, codigoRf, ehRegencia));
         }
     }
 }
