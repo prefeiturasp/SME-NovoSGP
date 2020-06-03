@@ -18,7 +18,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioNotificacao repositorioNotificacao;
-        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
@@ -27,7 +26,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -35,11 +34,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public ServicoWorkflowAprovacao(IRepositorioNotificacao repositorioNotificacao,
                                         IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao,
-                                        IServicoEOL servicoEOL,
+                                        IServicoEol servicoEOL,
                                         IServicoUsuario servicoUsuario,
                                         IServicoNotificacao servicoNotificacao,
                                         IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel,
-                                        IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
                                         IRepositorioEvento repositorioEvento,
                                         IConfiguration configuration,
                                         IRepositorioAula repositorioAula,
@@ -59,7 +57,6 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.servicoNotificacao = servicoNotificacao ?? throw new System.ArgumentNullException(nameof(servicoNotificacao));
             this.workflowAprovacaoNivel = workflowAprovacaoNivel ?? throw new System.ArgumentNullException(nameof(workflowAprovacaoNivel));
-            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new System.ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioAula = repositorioAula ?? throw new ArgumentException(nameof(repositorioAula));
@@ -87,7 +84,7 @@ namespace SME.SGP.Dominio.Servicos
                 .FirstOrDefault(a => a.Id == notificacaoId).Codigo;
 
             if (aprovar)
-                AprovarNivel(nivel, notificacaoId, workflow, codigoDaNotificacao);
+                AprovarNivel(nivel, workflow, codigoDaNotificacao);
             else ReprovarNivel(workflow, codigoDaNotificacao, observacao, nivel.Cargo, nivel);
         }
 
@@ -130,7 +127,7 @@ namespace SME.SGP.Dominio.Servicos
             await repositorioWorkflowAprovacao.SalvarAsync(workflow);
         }
 
-        private void AprovarNivel(WorkflowAprovacaoNivel nivel, long notificacaoId, WorkflowAprovacao workflow, long codigoDaNotificacao)
+        private void AprovarNivel(WorkflowAprovacaoNivel nivel, WorkflowAprovacao workflow, long codigoDaNotificacao)
         {
             var niveis = workflow.ObtemNiveisParaEnvioPosAprovacao();
             if (niveis != null)

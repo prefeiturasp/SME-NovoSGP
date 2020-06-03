@@ -141,7 +141,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível concluir o cadastro, pois não foi localizado o bimestre da aula.");
 
 
-            var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
+            var planoAnualId = consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
                         aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), periodoEscolar.Bimestre, long.Parse(aula.DisciplinaId));
 
             if (planoAnualId <= 0 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
@@ -197,7 +197,7 @@ namespace SME.SGP.Aplicacao
             if (planoAulaDto.ObjetivosAprendizagemJurema != null)
                 foreach (var objetivoJuremaId in planoAulaDto.ObjetivosAprendizagemJurema)
                 {
-                    var objetivoPlanoAnualId = await consultasObjetivoAprendizagem
+                    var objetivoPlanoAnualId = consultasObjetivoAprendizagem
                         .ObterIdPorObjetivoAprendizagemJurema(planoAnualId, objetivoJuremaId);
 
                     if (objetivoPlanoAnualId <= 0)

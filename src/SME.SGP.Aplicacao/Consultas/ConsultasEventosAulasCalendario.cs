@@ -346,7 +346,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AulaCompletaDto>> ObterAulasDia(FiltroEventosAulasCalendarioDiaDto filtro, DateTime data, Guid perfil, string professorRf, IEnumerable<DisciplinaResposta> disciplinas)
         {
-            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, filtro.TurmaHistorico);
+            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil);
 
             foreach (var aula in aulas)
                 aula.DentroPeriodo = await consultasAula.AulaDentroPeriodo(aula.TurmaId, aula.DataAula);

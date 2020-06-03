@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioObjetivo repositorioObjetivo;
         private readonly IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela;
         private readonly IRepositorioResposta repositorioResposta;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoRecuperacaoParalela servicoRecuperacaoParalela;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioEixo repositorioEixo,
             IRepositorioObjetivo repositorioObjetivo,
             IRepositorioResposta repositorioResposta,
-            IServicoEOL servicoEOL,
+            IServicoEol servicoEOL,
             IServicoRecuperacaoParalela servicoRecuperacaoParalela,
             IContextoAplicacao contextoAplicacao,
             IServicoUsuario servicoUsuario,

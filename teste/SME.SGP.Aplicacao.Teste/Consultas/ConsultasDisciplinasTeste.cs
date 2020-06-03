@@ -12,12 +12,12 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioTurma> repositorioTurma;
         private readonly Mock<IRepositorioCache> repositorioCache;
         private readonly Mock<IRepositorioComponenteCurricular> repositorioComponenteCurricular;
-        private readonly Mock<IServicoEOL> servicoEol;
+        private readonly Mock<IServicoEol> servicoEol;
         private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ConsultasDisciplinasTeste()
         {
-            servicoEol = new Mock<IServicoEOL>();
+            servicoEol = new Mock<IServicoEol>();
             repositorioCache = new Mock<IRepositorioCache>();
             consultasObjetivoAprendizagem = new Mock<IConsultasObjetivoAprendizagem>();
             servicoUsuario = new Mock<IServicoUsuario>();

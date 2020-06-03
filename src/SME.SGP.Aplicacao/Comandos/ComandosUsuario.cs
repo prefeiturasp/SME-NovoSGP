@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
         private readonly IServicoEmail servicoEmail;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoPerfil servicoPerfil;
         private readonly IServicoTokenJwt servicoTokenJwt;
         private readonly IServicoUsuario servicoUsuario;
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             IServicoAutenticacao servicoAutenticacao,
             IServicoUsuario servicoUsuario,
             IServicoPerfil servicoPerfil,
-            IServicoEOL servicoEOL,
+            IServicoEol servicoEOL,
             IServicoTokenJwt servicoTokenJwt,
             IServicoEmail servicoEmail,
             IConfiguration configuration,
