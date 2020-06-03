@@ -21,18 +21,18 @@ namespace SME.SGP.Integracao.Teste
             this._fixture = fixture ?? throw new System.ArgumentNullException(nameof(fixture));
         }
 
-        [Fact, Order(2)]
-        public void Deve_Consultar_Periodo_Escolar()
-        {
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
+        //[Fact, Order(2)]
+        //public void Deve_Consultar_Periodo_Escolar()
+        //{
+        //    _fixture._clientApi.DefaultRequestHeaders.Clear();
 
-            _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PE_I, Permissao.PE_C }));
+        //    _fixture._clientApi.DefaultRequestHeaders.Authorization =
+        //        new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PE_I, Permissao.PE_C }));
 
-            var getResult = _fixture._clientApi.GetAsync("api/v1/periodo-escolar?codigoTipoCalendario=1").Result;
+        //    var getResult = _fixture._clientApi.GetAsync("api/v1/periodo-escolar?codigoTipoCalendario=1").Result;
 
-            Assert.True(getResult.IsSuccessStatusCode);
-        }
+        //    Assert.True(getResult.IsSuccessStatusCode);
+        //}
 
         //[Fact(DisplayName ="Incluir tipo de calendário e período escola e editar o periodo escolar", Skip ="Quebrando os testes na versão v2.0"), Order(2)]
         //public void Deve_Incluir_Tipo_Calendario_e_Periodo_Escolar_e_Editar_Periodo_Escolar()
