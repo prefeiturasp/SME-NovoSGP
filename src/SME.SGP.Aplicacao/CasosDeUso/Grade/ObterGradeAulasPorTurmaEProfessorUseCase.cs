@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,8 +11,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterGradeAulasPorTurmaEProfessorUseCase
     {
-        public static async Task<GradeComponenteTurmaAulasDto> Executar(IMediator mediator, string turmaCodigo, long disciplina, int semana, DateTime dataAula, string codigoRf = null, bool ehRegencia = false)
+        public static async Task<GradeComponenteTurmaAulasDto> Executar(IMediator mediator, string turmaCodigo, long disciplina, DateTime dataAula, string codigoRf = null, bool ehRegencia = false)
         {
+            var semana = UtilData.ObterSemanaDoAno(dataAula);
+
             var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turmaCodigo));
             if (ue == null)
                 throw new NegocioException("Ue não localizada.");
@@ -43,7 +46,7 @@ namespace SME.SGP.Aplicacao
             {
                 QuantidadeAulasGrade = horasGrade,
                 QuantidadeAulasRestante = aulasRestantes,
-                PodeEditar = aulasRestantes > 1
+                PodeEditar = aulasRestantes > 1 && !(ehRegencia && turma.EhEJA())
             };
         }
 
@@ -66,7 +69,7 @@ namespace SME.SGP.Aplicacao
                 return await mediator.Send(new ObterQuantidadeAulasNoDiaPorProfessorComponenteCurricularQuery(turma.CodigoTurma, componenteCurricular, dataAula, codigoRf, experienciaPedagogica));
 
             // Busca horas aula cadastradas para a disciplina na turma
-            return await mediator.Send(new ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery(turma.CodigoTurma, componenteCurricular, semana, codigoRf, experienciaPedagogica));
+            return await mediator.Send(new ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery(turma.CodigoTurma, componenteCurricular, semana, codigoRf, experienciaPedagogica, dataAula));
         }
     }
 }

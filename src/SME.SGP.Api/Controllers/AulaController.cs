@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -68,7 +70,7 @@ namespace SME.SGP.Api.Controllers
             var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1
                 : await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
             var existeFrequenciaPlanoAula = await consultas.ChecarFrequenciaPlanoNaRecorrencia(aulaId);
-            
+
             var retorno = new AulaRecorrenciaDto()
             {
                 AulaId = aulaId,
@@ -79,5 +81,15 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retorno);
         }
+
+        [HttpGet("{aulaId}/turmas/{turmaCodigo}/componente-curricular/{componenteCurricular}")]
+        [ProducesResponseType(typeof(CadastroAulaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> CadastroAula([FromServices]IMediator mediator, long aulaId, string turmaCodigo, long componenteCurricular, [FromQuery]DateTime dataAula, [FromQuery]bool ehRegencia = false)
+        {
+            return Ok(await PodeCadastrarAulaUseCase.Executar(mediator, aulaId, turmaCodigo, componenteCurricular, dataAula, ehRegencia));
+        }
+
     }
 }

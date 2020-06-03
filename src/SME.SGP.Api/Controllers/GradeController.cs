@@ -20,11 +20,11 @@ namespace SME.SGP.Api.Controllers
     {
         [HttpGet("aulas/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}")]
         [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(IEnumerable<GradeComponenteTurmaAulasDto>), 200)]
+        [ProducesResponseType(typeof(GradeComponenteTurmaAulasDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterGradeAulasTurma([FromQuery] DateTime data, string codigoTurma, long codigoDisciplina, [FromServices] IMediator mediator, [FromQuery]bool ehRegencia = false)
         {
-            var horasGrade = await ObterGradeAulasPorTurmaEProfessorUseCase.Executar(mediator, codigoTurma, codigoDisciplina, UtilData.ObterSemanaDoAno(data), data, ehRegencia: ehRegencia);
+            var horasGrade = await ObterGradeAulasPorTurmaEProfessorUseCase.Executar(mediator, codigoTurma, codigoDisciplina, data, ehRegencia: ehRegencia);
 
             if (horasGrade == null)
                 return NoContent();

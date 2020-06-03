@@ -33,6 +33,23 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<bool> ExisteAulaNaDataAsync(DateTime data, string turmaCodigo, string componenteCurricular)
+        {
+            var query = @"select 1
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = @data
+                  and turma_id = @turmaCodigo
+                  and disciplina_id = @componenteCurricular";
+
+            return (await database.Conexao.QueryAsync<int>(query, new
+            {
+                data = data.Date,
+                turmaCodigo,
+                componenteCurricular
+            })).Count() > 0;
+        }
+
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplinaProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf)
         {
             var query = @"select *
@@ -374,7 +391,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<int> ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(string turma, string componenteCurricular, int semana, string codigoRf)
+        public async Task<int> ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(string turma, string componenteCurricular, int semana, string codigoRf, DateTime dataExcecao)
         {
             StringBuilder query = new StringBuilder();
 
@@ -388,6 +405,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and turma_id = @turma ");
             query.AppendLine("and disciplina_id = @componenteCurricular ");
             query.AppendLine("and extract('week' from data_aula) = @semana ");
+            query.AppendLine("and Date(data_aula) <> @dataExcecao");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
             {
@@ -395,7 +413,8 @@ namespace SME.SGP.Dados.Repositorios
                 turma,
                 componenteCurricular,
                 semana,
-                aulaNomal = TipoAula.Normal
+                aulaNomal = TipoAula.Normal,
+                dataExcecao
             }) ?? 0;
         }
 
