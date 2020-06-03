@@ -74,6 +74,7 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = aula.CriadoEm,
                 CriadoPor = aula.CriadoPor,
                 CriadoRF = aula.CriadoRF,
+                Migrado = aula.Migrado,
                 SomenteLeitura = !usuarioAcessoAoComponente
             };
 
