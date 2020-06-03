@@ -8,6 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<PeriodoEscolar> ObterPeriodoEscolarPorCalendarioEData(long tipoCalendarioId, DateTime dataParaVerificar);
         TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0);
+        Task<long> ObterIdPorAnoLetivoEModalidadeAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0);
 
         IEnumerable<TipoCalendario> ListarPorAnoLetivo(int anoLetivo);
 
