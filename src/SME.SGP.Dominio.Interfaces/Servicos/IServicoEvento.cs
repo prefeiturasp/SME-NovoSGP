@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false);
 
-        Task Excluir(Evento evento);
+        void Excluir(Evento evento);
 
         void SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario);
 

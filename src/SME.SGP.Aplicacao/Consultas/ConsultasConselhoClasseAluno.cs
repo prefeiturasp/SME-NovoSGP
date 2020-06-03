@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IServicoConselhoClasse servicoConselhoClasse;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                                             IConsultasConselhoClasseNota consultasConselhoClasseNota,
                                             IConsultasFechamentoNota consultasFechamentoNota,
                                             IConsultasDisciplina consultasDisciplina,
-                                            IServicoEOL servicoEOL,
+                                            IServicoEol servicoEOL,
                                             IServicoUsuario servicoUsuario,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
                                             IRepositorioAula repositorioAula,

@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             IConsultasProfessor consultasProfessor,
             IRepositorioAula repositorioAula,
             IServicoUsuario servicoUsuario,
-            IServicoEOL servicoEOL,
+            IServicoEol servicoEOL,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IUnitOfWork unitOfWork,

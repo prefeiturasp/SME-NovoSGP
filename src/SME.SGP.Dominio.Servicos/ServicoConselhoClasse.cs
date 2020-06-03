@@ -24,7 +24,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
 
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
@@ -37,7 +37,7 @@ namespace SME.SGP.Dominio.Servicos
                                      IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                      IUnitOfWork unitOfWork,
                                      IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo,
-                                     IServicoEOL servicoEOL)
+                                     IServicoEol servicoEOL)
 
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));

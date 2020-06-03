@@ -21,10 +21,10 @@ namespace SME.SGP.Aplicacao
         private readonly IContextoAplicacao contextoAplicacao;
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IRepositorioCache repositorioCache;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         public ObterUsuarioLogadoQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioUsuario repositorioUsuario, 
-            IRepositorioCache repositorioCache, IServicoEOL servicoEOL, IRepositorioPrioridadePerfil repositorioPrioridadePerfil)
+            IRepositorioCache repositorioCache, IServicoEol servicoEOL, IRepositorioPrioridadePerfil repositorioPrioridadePerfil)
         {
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));

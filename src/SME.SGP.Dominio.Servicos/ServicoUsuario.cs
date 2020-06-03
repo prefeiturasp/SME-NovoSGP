@@ -21,11 +21,11 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
         public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
-                                      IServicoEOL servicoEOL,
+                              IServicoEol servicoEOL,
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
                               IUnitOfWork unitOfWork,
                               IContextoAplicacao contextoAplicacao,

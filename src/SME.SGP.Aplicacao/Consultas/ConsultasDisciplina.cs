@@ -18,10 +18,10 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasDisciplina(IServicoEOL servicoEOL,
+        public ConsultasDisciplina(IServicoEol servicoEOL,
             IRepositorioCache repositorioCache,
             IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
             IServicoUsuario servicoUsuario,

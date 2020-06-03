@@ -209,7 +209,7 @@ namespace SME.SGP.Dados.Repositorios
         public bool ExisteEventoPorEventoTipoId(long eventoTipoId)
         {
             var query = "select 1 from evento where tipo_evento_id = @eventoTipoId;";
-            return database.Conexao.QueryFirstOrDefault<bool>(query, new { eventoTipoId }); ;
+            return database.Conexao.QueryFirstOrDefault<bool>(query, new { eventoTipoId });
         }
 
         public bool ExisteEventoPorFeriadoId(long feriadoId)
