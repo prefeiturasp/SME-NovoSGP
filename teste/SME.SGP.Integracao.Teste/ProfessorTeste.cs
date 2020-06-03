@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Api.Controllers;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,17 @@ namespace SME.SGP.Integracao.Teste
         [InlineData("5512557", "095346", "2019")]
         public void DeveObterTurmasAtribuidasAoProfessorPorEscolaEAno(string rf, string escola, string ano)
         {
+
+            try
+            {
+                var controller = new ProfessorController(null);
+                controller.Get(null);
+            }
+            catch (Exception)
+            {
+
+            }
+
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
