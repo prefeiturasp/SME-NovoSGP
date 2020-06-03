@@ -68,8 +68,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> Post([FromBody] InserirAulaCommand inserirAulaCommand,[FromServices]IMediator mediator)
         {
-            await new InserirAulaUseCase().Executar(mediator, inserirAulaCommand);
-            return Ok();
+            return Ok(await new InserirAulaUseCase().Executar(mediator, inserirAulaCommand));
         }
 
         [HttpGet("{aulaId}/recorrencias/serie")]
