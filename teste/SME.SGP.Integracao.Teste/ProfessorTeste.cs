@@ -3,7 +3,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Extensions.Ordering;
 
@@ -19,25 +18,25 @@ namespace SME.SGP.Integracao.Teste
             this._fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
         }
 
-        [Theory, Order(5)]
-        [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001395")]
-        [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001401")]
-        public async Task DeveObterDisciplinasDoProfessorPorTurma(string login, string rf, string perfil, string codigoTurma)
-        {
+        //[Theory, Order(5)]
+        //[InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001395")]
+        //[InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001401")]
+        //public async Task DeveObterDisciplinasDoProfessorPorTurma(string login, string rf, string perfil, string codigoTurma)
+        //{
 
-            //chamar a controller
+        //    //chamar a controller
 
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
+        //    _fixture._clientApi.DefaultRequestHeaders.Clear();
 
-            _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_A, Permissao.PA_C }, login, rf, perfil));
+        //    _fixture._clientApi.DefaultRequestHeaders.Authorization =
+        //        new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_A, Permissao.PA_C }, login, rf, perfil));
 
-            var getResult = await _fixture._clientApi.GetAsync($"api/v1/professores/{login}/turmas/{codigoTurma}/disciplinas/");
+        //    var getResult = await _fixture._clientApi.GetAsync($"api/v1/professores/{login}/turmas/{codigoTurma}/disciplinas/");
 
-            Assert.True(getResult.IsSuccessStatusCode);
-            var disciplinas = JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(await getResult.Content.ReadAsStringAsync());
-            Assert.True(disciplinas != null);
-        }
+        //    Assert.True(getResult.IsSuccessStatusCode);
+        //    var disciplinas = JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(await getResult.Content.ReadAsStringAsync());
+        //    Assert.True(disciplinas != null);
+        //}
 
         [Theory, Order(6)]
         [InlineData("6082840", "095346", "2019")]
