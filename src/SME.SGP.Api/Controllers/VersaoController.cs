@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -11,7 +10,7 @@ namespace SME.SGP.Api.Controllers
     public class VersaoController : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> ObterUltimaVersao([FromServices]IMediator mediator)
+        public async Task<IActionResult> ObterUltimaVersao([FromServices] IMediator mediator)
         {
             return Ok(await ObterUltimaVersaoUseCase.Executar(mediator));
         }

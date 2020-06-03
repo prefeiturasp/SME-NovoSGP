@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Commands.Aula.InserirAula
+namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 {
     public class InserirAulaUnicaCommandHandler : IRequestHandler<InserirAulaUnicaCommand, RetornoBaseDto>
     {
@@ -25,17 +25,30 @@ namespace SME.SGP.Aplicacao.Commands.Aula.InserirAula
         {
             var retorno = new RetornoBaseDto();
 
-            var aulasExistentes = await repositorioAula.ObterAulasPorDataTurmaDisciplinaProfessorRf(request.DataAula, request.Turma.CodigoTurma, request.ComponenteCurricularId, request.CodigoRfProfessor);
-            if (aulasExistentes != null)
-                throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
-
-            var temLiberacaoExcepcionalNessaData = servicoDiaLetivo.ValidaSeEhLiberacaoExcepcional(request.DataAula, request.TipoCalendario.Id, request.UeId);
             
+            var temLiberacaoExcepcionalNessaData = servicoDiaLetivo.ValidaSeEhLiberacaoExcepcional(request.DataAula, request.TipoCalendario.Id, request.UeId);
+
             var diaLetivo = servicoDiaLetivo.ValidarSeEhDiaLetivo(request.DataAula, request.TipoCalendario.Id, null, request.UeId);
 
             if (!temLiberacaoExcepcionalNessaData && !diaLetivo)
                 throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
 
+
+            var aula = new Aula
+            {
+                ProfessorRf = request.Usuario.CodigoRf,
+                UeId = request.UeId,
+                DisciplinaId = request.ComponenteCurricularId.ToString(),
+                DisciplinaNome = request.NomeComponenteCurricular,
+                TurmaId = request.Turma.CodigoTurma,
+                TipoCalendarioId = request.TipoCalendario.Id,
+                DataAula = request.DataAula,
+                Quantidade = request.Quantidade,
+                TipoAula = request.TipoAula,
+                AulaCJ = request.Usuario.EhProfessorCj()
+            };
+
+            repositorioAula.Salvar(aula);
             return retorno;
         }
     }

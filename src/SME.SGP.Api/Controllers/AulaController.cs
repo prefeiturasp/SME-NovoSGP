@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso.Aula;
-using SME.SGP.Aplicacao.Commands.Aula;
+using SME.SGP.Aplicacao.Commands.Aulas;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
@@ -67,7 +67,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> Post([FromBody] InserirAulaCommand inserirAulaCommand,[FromServices]IMediator mediator)
         {
-            await InserirAulaUseCase.Executar(mediator, inserirAulaCommand);
+            await new InserirAulaUseCase().Executar(mediator, inserirAulaCommand);
             return Ok();
         }
 

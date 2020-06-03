@@ -631,7 +631,7 @@ namespace SME.SGP.Dados.Repositorios
             bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, bool consideraHistorico)
         {
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
-                paginacao = new Paginacao(1, 10);           
+                paginacao = new Paginacao(1, 10);
 
             var retornoPaginado = new PaginacaoResultadoDto<Evento>();
             var totalRegistros = 0;
@@ -1037,6 +1037,36 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return query.ToString();
+        }
+
+
+        public async Task<bool> DataPossuiEventoLiberacaoExcepcionalAsync(long tipoCalendarioId, DateTime dataAula, string ueId)
+        {
+            var query = @"SELECT
+	                        1
+                        FROM
+	                        evento e
+                        INNER JOIN evento_tipo et ON
+	                        e.tipo_evento_id = et.id
+                        INNER JOIN tipo_calendario tc ON
+	                        e.tipo_calendario_id = tc.id
+                        WHERE
+	                        e.excluido = false
+	                        AND e.tipo_calendario_id = @tipoCalendarioId
+	                        AND e.ue_id = @ueId
+	                        AND e.data_inicio <= @dataAula
+	                        AND (e.data_fim  IS NULL OR e.data_fim >= @dataAula)
+	                        AND et.codigo <> @codigoLiberacaoExcepcional
+	                        AND e.letivo = @eventoLetivo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new
+            {
+                tipoCalendarioId,
+                dataAula = dataAula.Date,
+                ueId,
+                codigoLiberacaoExcepcional = TipoEvento.LiberacaoExcepcional,
+                eventoLetivo = EventoLetivo.Sim
+            });
         }
     }
 }

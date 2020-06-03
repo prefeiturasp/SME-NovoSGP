@@ -24,6 +24,8 @@ namespace SME.SGP.IoC
     {
         public static void Registrar(IServiceCollection services)
         {
+            //TODO VERIFICAR AddTransient
+            services.TryAddScoped<HangfireMediator>();
             RegistrarRepositorios(services);
             RegistrarContextos(services);
             RegistrarComandos(services);
