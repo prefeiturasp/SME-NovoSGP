@@ -28,9 +28,10 @@ namespace SME.SGP.Aplicacao.Commands.Aulas
 
         public string CodigoTurma { get; set; }
 
-        public string UeId { get; set; }
+        public string CodigoUe { get; set; }
 
         public bool AulaCJ { get; set; }
+        public bool EhRegencia { get; set; }
     }
 
     public class InserirAulaCommandValidator : AbstractValidator<InserirAulaCommand>
@@ -72,7 +73,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas
                .NotEmpty()
                .WithMessage("O código da turma deve ser informado.");
 
-            RuleFor(c => c.UeId)
+            RuleFor(c => c.CodigoUe)
               .NotEmpty()
               .WithMessage("A UE deve ser informada.");
         }

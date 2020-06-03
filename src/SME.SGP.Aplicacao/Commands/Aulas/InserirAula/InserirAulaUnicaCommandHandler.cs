@@ -25,19 +25,10 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         {
             var retorno = new RetornoBaseDto();
 
-            
-            var temLiberacaoExcepcionalNessaData = servicoDiaLetivo.ValidaSeEhLiberacaoExcepcional(request.DataAula, request.TipoCalendario.Id, request.UeId);
-
-            var diaLetivo = servicoDiaLetivo.ValidarSeEhDiaLetivo(request.DataAula, request.TipoCalendario.Id, null, request.UeId);
-
-            if (!temLiberacaoExcepcionalNessaData && !diaLetivo)
-                throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
-
-
             var aula = new Aula
             {
                 ProfessorRf = request.Usuario.CodigoRf,
-                UeId = request.UeId,
+                UeId = request.CodigoUe,
                 DisciplinaId = request.ComponenteCurricularId.ToString(),
                 DisciplinaNome = request.NomeComponenteCurricular,
                 TurmaId = request.Turma.CodigoTurma,
@@ -49,6 +40,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             };
 
             repositorioAula.Salvar(aula);
+            retorno.Mensagens.Add("Aula cadastrada com sucesso.");
             return retorno;
         }
     }
