@@ -17,11 +17,10 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Não é possível cadastrar aula pois já existe aula cadastrada no dia para esse componente curricular!");
             }
 
-            var ehExperienciaPedagogica = await mediator.Send(new AulaDeExperienciaPedagogicaQuery(componenteCurricular));
             return new CadastroAulaDto()
             {
                 PodeCadastrarAula = true,
-                Grade = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, componenteCurricular, dataAula, null, ehRegencia, ehExperienciaPedagogica))
+                Grade = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, componenteCurricular, dataAula, ehRegencia: ehRegencia))
             };
         }
     }

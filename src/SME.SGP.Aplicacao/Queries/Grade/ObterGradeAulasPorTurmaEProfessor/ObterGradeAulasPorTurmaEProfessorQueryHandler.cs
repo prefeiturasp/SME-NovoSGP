@@ -17,13 +17,19 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioGrade repositorioGrade;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
-        public ObterGradeAulasPorTurmaEProfessorQueryHandler(IRepositorioTurma repositorioTurma, IRepositorioAula repositorioAula, IRepositorioGrade repositorioGrade, IServicoUsuario servicoUsuario)
+        public ObterGradeAulasPorTurmaEProfessorQueryHandler(IRepositorioTurma repositorioTurma,
+                                                             IRepositorioAula repositorioAula,
+                                                             IRepositorioGrade repositorioGrade,
+                                                             IServicoUsuario servicoUsuario,
+                                                             IMediator mediator)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioGrade = repositorioGrade ?? throw new ArgumentNullException(nameof(repositorioGrade));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<GradeComponenteTurmaAulasDto> Handle(ObterGradeAulasPorTurmaEProfessorQuery request, CancellationToken cancellationToken)
@@ -50,7 +56,7 @@ namespace SME.SGP.Aplicacao
                 request.CodigoRf = usuario.CodigoRf;
             }
 
-            var horascadastradas = await ObtenhaHorasCadastradas(request.ComponenteCurricular, semana, request.DataAula, request.CodigoRf, turma, request.EhRegencia, request.EhExperienciaPedagogica);
+            var horascadastradas = await ObtenhaHorasCadastradas(request.ComponenteCurricular, semana, request.DataAula, request.CodigoRf, turma, request.EhRegencia);
             var aulasRestantes = horasGrade - horascadastradas;
 
             return new GradeComponenteTurmaAulasDto
@@ -72,8 +78,9 @@ namespace SME.SGP.Aplicacao
             return await repositorioGrade.ObterHorasComponente(grade.Id, componenteCurricularId, int.Parse(turma.Ano));
         }
 
-        private async Task<int> ObtenhaHorasCadastradas(long componenteCurricular, int semana, DateTime dataAula, string codigoRf, Turma turma, bool ehRegencia, bool ehExperienciaPedagogica)
+        private async Task<int> ObtenhaHorasCadastradas(long componenteCurricular, int semana, DateTime dataAula, string codigoRf, Turma turma, bool ehRegencia)
         {
+            var ehExperienciaPedagogica = await mediator.Send(new AulaDeExperienciaPedagogicaQuery(componenteCurricular));
             if (ehRegencia)
                 return ehExperienciaPedagogica ?
                     await repositorioAula.ObterQuantidadeAulasTurmaExperienciasPedagogicasDia(turma.CodigoTurma, dataAula) :
