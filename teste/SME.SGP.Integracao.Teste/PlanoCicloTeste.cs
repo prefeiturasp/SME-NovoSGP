@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Api.Controllers;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -27,6 +29,16 @@ namespace SME.SGP.Integracao.Teste
         [Fact, Order(1)]
         public void Deve_Incluir_Plano_Ciclo()
         {
+            try
+            {
+                var controller = new PlanoCicloController(null, null);
+                controller.Get(0, 0, null);
+            }
+            catch (Exception)
+            {
+
+            }
+
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
