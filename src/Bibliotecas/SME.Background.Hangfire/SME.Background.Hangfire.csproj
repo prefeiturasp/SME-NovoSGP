@@ -9,6 +9,8 @@
     <PackageReference Include="Hangfire.Core" Version="1.7.7" />
     <PackageReference Include="Hangfire.Dashboard.BasicAuthorization" Version="1.0.2" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.6.3" />
+    <PackageReference Include="MediatR" Version="8.0.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
@@ -17,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
     <ProjectReference Include="..\SME.Background.Core\SME.Background.Core.csproj" />
     <ProjectReference Include="..\SME.SGP.Background\SME.SGP.Background.csproj" />
   </ItemGroup>

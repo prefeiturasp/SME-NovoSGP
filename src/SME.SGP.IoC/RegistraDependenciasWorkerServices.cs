@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
@@ -21,6 +22,8 @@ namespace SME.SGP.IoC
     {
         public static void Registrar(IServiceCollection services)
         {
+            //TODO VERIFICAR AddTransient
+            services.TryAddSingleton<HangfireMediator>();
             ResgistraDependenciaHttp(services);
             RegistrarRepositorios(services);
             RegistrarContextos(services);

@@ -25,7 +25,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AulaCompletaDto>> ObterAulasCompleto(long tipoCalendarioId, string turmaId, string ueId, DateTime data, Guid perfil, bool turmaHistorica = false);
 
-        Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaDisciplinaProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf);
+        Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf);
 
         Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorData(long tipoCalendarioId, string turmaCodigo, string ueCodigo, DateTime dataDaAula);
 

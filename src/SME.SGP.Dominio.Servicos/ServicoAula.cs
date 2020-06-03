@@ -148,7 +148,7 @@ namespace SME.SGP.Dominio.Servicos
             var turma = await ObterTurma(aula.TurmaId);
             if (!ehRecorrencia)
             {
-                var aulasExistentes = await repositorioAula.ObterAulasPorDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
+                var aulasExistentes = await repositorioAula.ObterAulasPorDataTurmaComponenteCurricularProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
                 if (aulasExistentes != null && aulasExistentes.Any(c => !c.Id.Equals(aula.Id) && c.TipoAula == aula.TipoAula))
                     throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
 

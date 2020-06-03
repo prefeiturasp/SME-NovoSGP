@@ -144,7 +144,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AulaCompletaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, data, perfil }));
         }
 
-        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaDisciplinaProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf)
+        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf)
         {
             var query = @"select *
                  from aula
