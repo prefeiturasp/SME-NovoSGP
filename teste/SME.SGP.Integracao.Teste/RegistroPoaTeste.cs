@@ -21,46 +21,46 @@ namespace SME.SGP.Integracao.Teste
             this.fixture = fixture;
         }
 
-        [Fact(DisplayName = "Deve_Cadastrar_Registro_POA"), Order(1)]
-        public void Deve_Cadastrar_Registro_POA()
-        {
-            fixture = ObtenhaCabecalho(inclusao: true);
+        //[Fact(DisplayName = "Deve_Cadastrar_Registro_POA"), Order(1)]
+        //public void Deve_Cadastrar_Registro_POA()
+        //{
+        //    fixture = ObtenhaCabecalho(inclusao: true);
 
-            var postResult = TesteBase.ExecutePostAsync(fixture, obterUrlPost(), ObtenhaObjetoEnvio());
+        //    var postResult = TesteBase.ExecutePostAsync(fixture, obterUrlPost(), ObtenhaObjetoEnvio());
 
-            Assert.True(postResult.IsSuccessStatusCode, postResult.Content.ReadAsStringAsync().Result);
-        }
+        //    Assert.True(postResult.IsSuccessStatusCode, postResult.Content.ReadAsStringAsync().Result);
+        //}
 
-        [Fact(DisplayName = "Deve_Editar_Registro_POA"), Order(3)]
-        public void Deve_Editar_Registro_POA()
-        {
-            fixture = ObtenhaCabecalho(alteracao: true);
+        //[Fact(DisplayName = "Deve_Editar_Registro_POA"), Order(3)]
+        //public void Deve_Editar_Registro_POA()
+        //{
+        //    fixture = ObtenhaCabecalho(alteracao: true);
 
-            var postResult = TesteBase.ExecutePutAsync(fixture, obterUrlPut(1), ObtenhaObjetoEnvio());
+        //    var postResult = TesteBase.ExecutePutAsync(fixture, obterUrlPut(1), ObtenhaObjetoEnvio());
 
-            Assert.True(postResult.IsSuccessStatusCode, postResult.Content.ReadAsStringAsync().Result);
-        }
+        //    Assert.True(postResult.IsSuccessStatusCode, postResult.Content.ReadAsStringAsync().Result);
+        //}
 
-        [Fact(DisplayName = "Deve_Excluir_Registro_POA"), Order(4)]
-        public void Deve_Excluir_Registro_POA()
-        {
-            fixture = ObtenhaCabecalho(exclusao: true);
+        //[Fact(DisplayName = "Deve_Excluir_Registro_POA"), Order(4)]
+        //public void Deve_Excluir_Registro_POA()
+        //{
+        //    fixture = ObtenhaCabecalho(exclusao: true);
 
-            var postResult = TesteBase.ExecuteDeleteAsync(fixture, obterUrlDelete(1));
+        //    var postResult = TesteBase.ExecuteDeleteAsync(fixture, obterUrlDelete(1));
 
-            Assert.True(postResult.IsSuccessStatusCode, postResult.Content.ReadAsStringAsync().Result);
-        }
+        //    Assert.True(postResult.IsSuccessStatusCode, postResult.Content.ReadAsStringAsync().Result);
+        //}
 
-        [Fact(DisplayName = "Deve_Obter_Registro_Por_Id"), Order(2)]
-        public void Deve_Obter_Registro_Por_Id()
-        {
-            fixture = ObtenhaCabecalho(consulta: true);
+        //[Fact(DisplayName = "Deve_Obter_Registro_Por_Id"), Order(2)]
+        //public void Deve_Obter_Registro_Por_Id()
+        //{
+        //    fixture = ObtenhaCabecalho(consulta: true);
 
-            var postResult = TesteBase.ExecutePostAsync(fixture, obterUrlGet(1), ObtenhaObjetoEnvio());
+        //    var postResult = TesteBase.ExecutePostAsync(fixture, obterUrlGet(1), ObtenhaObjetoEnvio());
 
-            Assert.True(postResult.IsSuccessStatusCode, postResult.Content.ReadAsStringAsync().Result);
-            Assert.Equal(HttpStatusCode.OK, postResult.StatusCode);
-        }
+        //    Assert.True(postResult.IsSuccessStatusCode, postResult.Content.ReadAsStringAsync().Result);
+        //    Assert.Equal(HttpStatusCode.OK, postResult.StatusCode);
+        //}
 
         private TestServerFixture ObtenhaCabecalho(bool inclusao = false, bool alteracao = false, bool consulta = false, bool exclusao = false)
         {
