@@ -33,6 +33,23 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<bool> ExisteAulaNaDataAsync(DateTime data, string turmaCodigo, string componenteCurricular)
+        {
+            var query = @"select 1
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = @data
+                  and turma_id = @turmaCodigo
+                  and disciplina_id = @componenteCurricular";
+
+            return (await database.Conexao.QueryAsync<int>(query, new
+            {
+                data = data.Date,
+                turmaCodigo,
+                componenteCurricular
+            })).Count() > 0;
+        }
+
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplinaProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf)
         {
             var query = @"select *
@@ -324,6 +341,31 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<int> ObterQuantidadeAulasTurmaComponenteCurricularDiaProfessor(string turma, string componenteCurricular, DateTime dataAula, string codigoRf)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select sum(quantidade) ");
+            query.AppendLine("from aula ");
+            query.AppendLine("where not excluido and tipo_aula = @aulaNomal ");
+
+            if (!string.IsNullOrEmpty(codigoRf))
+                query.AppendLine("and professor_rf = @codigoRf");
+
+            query.AppendLine("and turma_id = @turma ");
+            query.AppendLine("and disciplina_id = @componenteCurricular ");
+            query.AppendLine("and date(data_aula) = @dataAula ");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
+            {
+                codigoRf,
+                turma,
+                componenteCurricular,
+                dataAula = dataAula.Date,
+                aulaNomal = TipoAula.Normal
+            }) ?? 0;
+        }
+
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaSemanaProfessor(string turma, string disciplina, int semana, string codigoRf)
         {
             StringBuilder query = new StringBuilder();
@@ -349,6 +391,33 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<int> ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(string turma, string componenteCurricular, int semana, string codigoRf, DateTime dataExcecao)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select sum(quantidade)");
+            query.AppendLine("from aula ");
+            query.AppendLine("where not excluido and tipo_aula = @aulaNomal ");
+
+            if (!string.IsNullOrEmpty(codigoRf))
+                query.AppendLine("and professor_rf = @codigoRf");
+
+            query.AppendLine("and turma_id = @turma ");
+            query.AppendLine("and disciplina_id = @componenteCurricular ");
+            query.AppendLine("and extract('week' from data_aula) = @semana ");
+            query.AppendLine("and Date(data_aula) <> @dataExcecao");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
+            {
+                codigoRf,
+                turma,
+                componenteCurricular,
+                semana,
+                aulaNomal = TipoAula.Normal,
+                dataExcecao
+            }) ?? 0;
+        }
+
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaExperienciasPedagogicasDia(string turma, DateTime dataAula)
         {
             var query = @"select professor_rf, quantidade, data_aula
@@ -365,6 +434,22 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasDia(string turma, DateTime dataAula)
+        {
+            var query = @"select sum(quantidade)
+                 from aula
+                where not excluido
+                  and turma_id = @turma
+                  and disciplina_id in ('1214','1215','1216','1217','1218','1219','1220','1221','1222','1223')
+                  and date(data_aula) = @dataAula";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
+            {
+                turma,
+                dataAula = dataAula.Date
+            }) ?? 0;
+        }
+
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaExperienciasPedagogicasSemana(string turma, int semana)
         {
             var query = @"select professor_rf, quantidade, data_aula
@@ -379,6 +464,22 @@ namespace SME.SGP.Dados.Repositorios
                 turma,
                 semana
             });
+        }
+
+        public async Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(string turma, int semana)
+        {
+            var query = @"select sum(quantidade)
+                 from aula
+                where not excluido
+                  and turma_id = @turma
+                  and disciplina_id in ('1214','1215','1216','1217','1218','1219','1220','1221','1222','1223')
+                  and extract('week' from data_aula) = @semana";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
+            {
+                turma,
+                semana
+            }) ?? 0;
         }
 
         public Aula ObterCompletoPorId(long id)
@@ -505,13 +606,13 @@ namespace SME.SGP.Dados.Repositorios
                           and disciplina_id = @disciplinaId
                           and data_aula between @inicio and @fim";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new
+            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
             {
                 turmaId,
                 disciplinaId,
                 inicio,
                 fim
-            });
+            }) ?? 0;
         }
 
         public IEnumerable<DateTime> ObterUltimosDiasLetivos(DateTime dataReferencia, int quantidadeDias, long tipoCalendarioId)

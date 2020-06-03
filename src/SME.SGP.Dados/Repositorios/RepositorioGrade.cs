@@ -36,17 +36,17 @@ namespace SME.SGP.Dados.Repositorios
             return filtro.FirstOrDefault();
         }
 
-        public async Task<int> ObterHorasComponente(long grade, long componenteCurricular, int ano)
+        public async Task<int> ObterHorasComponente(long gradeId, long componenteCurricular, int ano)
         {
             var query = @"select gd.quantidade_aulas
                       from grade_disciplina gd
-                     where gd.grade_id = @grade
+                     where gd.grade_id = @gradeId
                        and gd.componente_curricular_id = @componenteCurricular
                        and gd.ano = @ano";
 
             var consulta = await database.Conexao.QueryAsync<int>(query, new
             {
-                grade,
+                gradeId,
                 componenteCurricular,
                 ano
             });
