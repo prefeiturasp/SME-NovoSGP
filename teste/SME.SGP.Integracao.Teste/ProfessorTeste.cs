@@ -45,17 +45,7 @@ namespace SME.SGP.Integracao.Teste
         public void DeveObterTurmasAtribuidasAoProfessorPorEscolaEAno(string rf, string escola, string ano)
         {
 
-            try
-            {
-                var controller = new ProfessorController(null);
-                controller.Get(null);
-            }
-            catch (Exception)
-            {
-
-            }
-
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
+         _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_A, Permissao.PA_C }));

@@ -26,17 +26,7 @@ namespace SME.SGP.Integracao.Teste
         [Fact, Order(5)]
         public void Deve_Consultar_Notificacao_Basica_Lista()
         {
-            try
-            {
-                var controller = new NotificacaoController(null, null);
-                controller.Get(null);
-            }
-            catch (Exception)
-            {
-
-            }
-
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
+           _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.N_C }));
