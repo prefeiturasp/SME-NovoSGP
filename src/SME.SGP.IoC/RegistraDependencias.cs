@@ -322,7 +322,7 @@ namespace SME.SGP.IoC
         private static void RegistrarCasosDeUso(IServiceCollection services)
         {
             services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
-           
+            services.TryAddScoped<IInserirAulaUseCase, InserirAulaUseCase>();
         }
     }
 }

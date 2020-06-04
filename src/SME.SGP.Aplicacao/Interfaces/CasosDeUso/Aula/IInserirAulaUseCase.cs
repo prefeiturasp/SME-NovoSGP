@@ -3,7 +3,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Aula;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.Aulas
+namespace SME.SGP.Aplicacao
 {
     public interface IInserirAulaUseCase
     {
