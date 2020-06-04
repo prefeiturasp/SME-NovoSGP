@@ -168,8 +168,8 @@ rotas.set(RotasDto.TERRITORIO_SABER, {
   component: TerritorioSaber,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.TERRITORIO_SABER,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.TERRITORIO_SABER,
 });
 
 rotas.set(RotasDto.ATRIBUICAO_SUPERVISOR_LISTA, {
