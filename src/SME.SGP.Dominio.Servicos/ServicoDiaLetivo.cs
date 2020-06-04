@@ -43,21 +43,14 @@ namespace SME.SGP.Dominio.Servicos
 
         public bool ValidaSeEhLiberacaoExcepcional(DateTime data, long tipoCalendarioId, string ueId)
         {
-            try
+            List<Evento> eventos = repositorioEvento.EhEventoLetivoPorLiberacaoExcepcional(tipoCalendarioId, data, ueId);
+            // EventoLetivo
+            if (eventos.Exists(x => x.TipoEvento.Codigo == Convert.ToInt32(TipoEvento.LiberacaoExcepcional)))
             {
-                List<Evento> eventos = repositorioEvento.EhEventoLetivoPorLiberacaoExcepcional(tipoCalendarioId, data, ueId);
-                // EventoLetivo
-                if (eventos.Exists(x => x.TipoEvento.Codigo == Convert.ToInt32(TipoEvento.LiberacaoExcepcional)))
-                {
-                    if (eventos.Exists(x => (x.TipoEvento.Codigo != 6) && (x.Letivo == EventoLetivo.Sim)))
-                        return true;
-                }
-                return false;
+                if (eventos.Exists(x => (x.TipoEvento.Codigo != 6) && (x.Letivo == EventoLetivo.Sim)))
+                    return true;
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return false;
         }
 
         private bool ValidaSeEhFinalSemana(DateTime inicio, DateTime fim)
