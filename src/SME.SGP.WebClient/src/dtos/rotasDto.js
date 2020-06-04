@@ -38,6 +38,7 @@ const RotasDto = {
   CONSELHO_CLASSE: '/fechamento/conselho-classe',
   RELATORIO_SEMESTRAL: '/relatorios/pap/relatorio-semestral',
   SEM_PERMISSAO: '/sem-permissao',
+  ATA_FINAL_RESULTADOS: '/relatorios/atas/ata-final-resultados',
 };
 
 export default RotasDto;
