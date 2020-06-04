@@ -13,6 +13,7 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
   const [carregando, setCarregando] = useState(false);
   const [listaTerritorios, setListaTerritorios] = useState([]);
+  const [possuiUmUnicoTerritorio, setPossuiUmUnicoTerritorio] = useState(false);
 
   const { turmaSelecionada } = useSelector(state => state.usuario);
 
@@ -24,6 +25,9 @@ function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
       );
       if (data) {
         const lista = data.filter(x => x.territorioSaber === true);
+
+        setPossuiUmUnicoTerritorio(lista.length <= 1);
+
         setListaTerritorios(lista);
       }
       setCarregando(false);
@@ -55,6 +59,7 @@ function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
         onChange={valor => onChangeTerritorio(valor)}
         valueSelect={territorioSelecionado || undefined}
         placeholder="Selecione um território"
+        disabled={possuiUmUnicoTerritorio}
       />
     </Loader>
   );
