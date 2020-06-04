@@ -393,16 +393,16 @@
         [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhAlteracao = true, Url = "/fechamento/pendencias-fechamento")]
         PF_A = 131,
 
-        [PermissaoMenu(Menu = "Planejamento do Território do Saber", Icone = "", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhConsulta = true, Url = "/planejamento/plano-anual-territorio-saber")]
+        [PermissaoMenu(Menu = "Território do Saber", Icone = "", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhConsulta = true, Url = "/planejamento/plano-anual-territorio-saber")]
         PT_C = 132,
 
-        [PermissaoMenu(Menu = "Planejamento do Território do Saber", Icone = "", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhInclusao = true, Url = "/planejamento/plano-anual-territorio-saber")]
+        [PermissaoMenu(Menu = "Território do Saber", Icone = "", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhInclusao = true, Url = "/planejamento/plano-anual-territorio-saber")]
         PT_I = 133,
 
-        [PermissaoMenu(Menu = "Planejamento do Território do Saber", Icone = "", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhExclusao = true, Url = "/planejamento/plano-anual-territorio-saber")]
+        [PermissaoMenu(Menu = "Território do Saber", Icone = "", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhExclusao = true, Url = "/planejamento/plano-anual-territorio-saber")]
         PT_E = 134,
 
-        [PermissaoMenu(Menu = "Planejamento do Território do Saber", Icone = "", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhAlteracao = true, Url = "/planejamento/plano-anual-territorio-saber")]
+        [PermissaoMenu(Menu = "Território do Saber", Icone = "", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhAlteracao = true, Url = "/planejamento/plano-anual-territorio-saber")]
         PT_A = 135,
 
         [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhConsulta = true, Url = "/fechamento/conselho-classe")]
