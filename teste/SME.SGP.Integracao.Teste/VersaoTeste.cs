@@ -18,7 +18,7 @@ namespace SME.SGP.Integracao.Teste
         }
 
         [Fact(DisplayName = "Retornar a última versão da release")]
-        [Trait("Versionamento", "Github api")]
+        [Trait("Versionamento", "Última versão da release")]
         public async void Versionamento_Retornar_Ultima_Versao()
         {
             // Arrange & Act
