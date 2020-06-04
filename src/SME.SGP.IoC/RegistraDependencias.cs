@@ -30,6 +30,7 @@ namespace SME.SGP.IoC
             RegistrarConsultas(services);
             RegistrarServicos(services);
             RegistararQueries(services);
+            RegistrarCasosDeUso(services);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -314,6 +315,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScoped<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
+        }
+
+        private static void RegistrarCasosDeUso(IServiceCollection services)
+        {
+            services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
+           
         }
     }
 }
