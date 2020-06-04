@@ -1,12 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class TurmaEmPeriodoAbertoQuery: IRequest<bool>
+    public class TurmaEmPeriodoAbertoQuery : IRequest<bool>
     {
         public TurmaEmPeriodoAbertoQuery(Turma turma, DateTime dataReferencia, int bimestre, bool ehAnoLetivo)
         {

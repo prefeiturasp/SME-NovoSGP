@@ -915,7 +915,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var resposta = await httpClient.GetAsync(url);
 
-            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            if (!resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 await RegistrarLogSentryAsync(resposta, "ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", url);
                 throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
