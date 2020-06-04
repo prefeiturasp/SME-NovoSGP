@@ -7,9 +7,9 @@ namespace SME.SGP.Aplicacao
     {
         public static void Enfileirar<T>(this IMediator mediator, IRequest<T> request)
         {
-            Cliente.Executar<HangfireMediator>(m => m.SendCommand(request));
+            Cliente.Executar<HangfireMediator>(mediatr => mediatr.SendCommand(request));
         }
     }
 
-    
+
 }

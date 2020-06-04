@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Hangfire;
+﻿using Hangfire;
+using System;
 
 namespace SME.Background.Hangfire
 {
@@ -14,9 +12,9 @@ namespace SME.Background.Hangfire
             _serviceProvider = serviceProvider;
         }
 
-        public override object ActivateJob(Type type)
+        public override object ActivateJob(Type jobType)
         {
-            return _serviceProvider.GetService(type);
+            return _serviceProvider.GetService(jobType);
         }
     }
 }

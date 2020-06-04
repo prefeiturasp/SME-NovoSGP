@@ -601,6 +601,7 @@ namespace SME.SGP.Dominio.Servicos
                 Cargo = Cargo.CP,
                 Nivel = 1
             });
+
             wfAprovacaoAula.Niveis.Add(new WorkflowAprovacaoNivelDto()
             {
                 Cargo = Cargo.Diretor,

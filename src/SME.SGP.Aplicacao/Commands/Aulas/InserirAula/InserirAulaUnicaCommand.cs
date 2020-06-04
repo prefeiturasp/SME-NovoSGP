@@ -8,28 +8,39 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 {
     public class InserirAulaUnicaCommand : IRequest<RetornoBaseDto>
     {
-        public InserirAulaUnicaCommand(Usuario usuario, DateTime dataAula, int quantidade, Turma turma, long componenteCurricularId, string nomeComponenteCurricular, TipoCalendario tipoCalendario, TipoAula tipoAula, string codigoUe)
+        public InserirAulaUnicaCommand(Usuario usuario,
+                                       DateTime dataAula,
+                                       int quantidade,
+                                       string codigoTurma,
+                                       long componenteCurricularId,
+                                       string nomeComponenteCurricular,
+                                       long tipoCalendarioId,
+                                       TipoAula tipoAula,
+                                       string codigoUe,
+                                       bool ehRegencia)
         {
             Usuario = usuario;
             DataAula = dataAula;
             Quantidade = quantidade;
-            Turma = turma;
-            ComponenteCurricularId = componenteCurricularId;
+            CodigoComponenteCurricular = componenteCurricularId;
             NomeComponenteCurricular = nomeComponenteCurricular;
-            TipoCalendario = tipoCalendario;
+            TipoCalendarioId = tipoCalendarioId;
             TipoAula = tipoAula;
             CodigoUe = codigoUe;
+            EhRegencia = ehRegencia;
+            CodigoTurma = codigoTurma;
         }
 
         public DateTime DataAula { get; private set; }
-        public Turma Turma { get; private set; }
-        public long ComponenteCurricularId { get; private set; }
+        public long CodigoComponenteCurricular { get; private set; }
         public string CodigoUe { get; private set; }
         public Usuario Usuario { get; private set; }
-        public TipoCalendario TipoCalendario { get; private set; }
         public string NomeComponenteCurricular { get; private set; }
+        public long TipoCalendarioId { get; }
         public int Quantidade { get; private set; }
         public TipoAula TipoAula { get; private set; }
+        public string CodigoTurma { get; private set; }
+        public bool EhRegencia { get; internal set; }
     }
 
 
@@ -41,12 +52,12 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             .NotEmpty()
             .WithMessage("A data da aula deve ser informada.");
 
-            RuleFor(c => c.Turma)
+            RuleFor(c => c.CodigoTurma)
             .NotEmpty()
-            .WithMessage("A turma deve ser informada.");
+            .WithMessage("O código da turma deve ser informado.");
 
 
-            RuleFor(c => c.ComponenteCurricularId)
+            RuleFor(c => c.CodigoComponenteCurricular)
             .NotEmpty()
             .WithMessage("O código do componente curricular deve ser informado.");
 
@@ -60,9 +71,9 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
            .WithMessage("O usuário deve ser informado.");
 
 
-            RuleFor(c => c.TipoCalendario)
+            RuleFor(c => c.TipoCalendarioId)
             .NotEmpty()
-            .WithMessage("O tipo de calendário deve ser informado.");
+            .WithMessage("O código do tipo de calendário deve ser informado.");
 
 
             RuleFor(c => c.NomeComponenteCurricular)

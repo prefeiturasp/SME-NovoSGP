@@ -16,8 +16,6 @@ namespace SME.SGP.Aplicacao
         }
         public Task<bool> Handle(ObterTemEventoNaoLetivoPorCalendarioEDiaQuery request, CancellationToken cancellationToken)
         {
-            //var taskSync = new Task<bool>(() => repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataParaVerificar, request.DreCodigo, request.UeCodigo));
-
             return Task.FromResult(repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataParaVerificar.Date, request.DreCodigo, request.UeCodigo));
         }
     }

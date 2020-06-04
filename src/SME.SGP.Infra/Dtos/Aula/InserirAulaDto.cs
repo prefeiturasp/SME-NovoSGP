@@ -1,12 +1,10 @@
 ﻿using FluentValidation;
-using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using System;
 
-namespace SME.SGP.Aplicacao.Commands.Aulas
+namespace SME.SGP.Infra.Dtos.Aula
 {
-    public class InserirAulaCommand : IRequest<RetornoBaseDto>
+    public class InserirAulaDto
     {
         public DateTime DataAula { get; set; }
 
@@ -34,13 +32,13 @@ namespace SME.SGP.Aplicacao.Commands.Aulas
         public bool EhRegencia { get; set; }
     }
 
-    public class InserirAulaCommandValidator : AbstractValidator<InserirAulaCommand>
+    public class InserirAulaDtoValidator : AbstractValidator<InserirAulaDto>
     {
-        public InserirAulaCommandValidator()
+        public InserirAulaDtoValidator()
         {
             RuleFor(c => c.DataAula)
-                .NotEmpty()
-                .WithMessage("A data deve ser informada.");
+               .NotEmpty()
+               .WithMessage("A data deve ser informada.");
 
             RuleFor(c => c.CodigoComponenteCurricular)
                 .NotEmpty()
@@ -78,4 +76,5 @@ namespace SME.SGP.Aplicacao.Commands.Aulas
               .WithMessage("A UE deve ser informada.");
         }
     }
+
 }
