@@ -19,7 +19,7 @@ namespace SME.SGP.Integracao.Teste
         }
 
         [Fact(DisplayName = "Retornar os ciclos")]
-        [Trait("Ciclo", "Ciclos")]
+        [Trait("Ciclos", "Retornar os ciclos")]
         public async void Ciclos_Retornar_Ciclos()
         {
             // Arrange            
