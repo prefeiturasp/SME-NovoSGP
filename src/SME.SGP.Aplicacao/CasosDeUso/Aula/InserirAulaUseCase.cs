@@ -1,21 +1,20 @@
 ﻿using MediatR;
 using Sentry;
 using SME.SGP.Aplicacao.Commands.Aulas.InserirAula;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Aulas;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Aula;
 using System;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.Aula
+namespace SME.SGP.Aplicacao
 {
     public class InserirAulaUseCase : IInserirAulaUseCase
     {
         public async Task<RetornoBaseDto> Executar(IMediator mediator, InserirAulaDto inserirAulaDto)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            
+
             if (inserirAulaDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {
                 return await mediator.Send(new InserirAulaUnicaCommand(usuarioLogado, inserirAulaDto.DataAula, inserirAulaDto.Quantidade, inserirAulaDto.CodigoTurma, inserirAulaDto.CodigoComponenteCurricular, inserirAulaDto.NomeComponenteCurricular, inserirAulaDto.TipoCalendarioId, inserirAulaDto.TipoAula, inserirAulaDto.CodigoUe, inserirAulaDto.EhRegencia));
