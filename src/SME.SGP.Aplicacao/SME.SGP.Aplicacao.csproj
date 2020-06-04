@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\" />
     <Folder Include="Queries\Turma\ObterTurmaComUeEDrePorCodigo\" />
     <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
