@@ -273,6 +273,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioCorrelacaoRelatorio, RepositorioCorrelacaoRelatorio>();
             services.TryAddScopedWorkerService<IRepositorioCorrelacaoRelatorioJasper, RepositorioRelatorioCorrelacaoJasper>();
             services.TryAddScopedWorkerService<IRepositorioTestePostgre, RepositorioTestePostgre>();
+            services.TryAddScopedWorkerService<IRepositorioFechamentoReaberturaBimestre, RepositorioFechamentoReaberturaBimestre>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
