@@ -22,7 +22,7 @@ import DropDownTerritorios from './componentes/DropDownTerritorios';
 import { Linha } from '~/componentes/EstilosGlobais';
 
 // Serviços
-import { erro, sucesso } from '~/servicos/alertas';
+import { erro, sucesso, confirmar } from '~/servicos/alertas';
 import TerritorioSaberServico from '~/servicos/Paginas/TerritorioSaber';
 import history from '~/servicos/history';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
@@ -110,26 +110,33 @@ function TerritorioSaber() {
   const salvarPlanejamento = useCallback(() => {
     async function salvar() {
       try {
-        setCarregando(true);
-        const {
-          data,
-          status,
-        } = await TerritorioSaberServico.salvarPlanejamento({
-          turmaId: turmaSelecionada.turma,
-          escolaId: turmaSelecionada.unidadeEscolar,
-          anoLetivo: turmaSelecionada.anoLetivo,
-          territorioExperienciaId: territorioSelecionado,
-          bimestres: dados.bimestres.filter(
-            x =>
-              !valorNuloOuVazio(x.desenvolvimento) ||
-              !valorNuloOuVazio(x.reflexao)
-          ),
-          id: dados.id,
-        });
+        const confirmado = await confirmar(
+          'Atenção',
+          'Suas alterações não foram salvas, deseja salvar agora?'
+        );
 
-        if (data || status === 200) {
-          setCarregando(false);
-          sucesso('Planejamento salvo com sucesso.');
+        if (confirmado) {
+          setCarregando(true);
+          const {
+            data,
+            status,
+          } = await TerritorioSaberServico.salvarPlanejamento({
+            turmaId: turmaSelecionada.turma,
+            escolaId: turmaSelecionada.unidadeEscolar,
+            anoLetivo: turmaSelecionada.anoLetivo,
+            territorioExperienciaId: territorioSelecionado,
+            bimestres: dados.bimestres.filter(
+              x =>
+                !valorNuloOuVazio(x.desenvolvimento) ||
+                !valorNuloOuVazio(x.reflexao)
+            ),
+            id: dados.id,
+          });
+
+          if (data || status === 200) {
+            setCarregando(false);
+            sucesso('Planejamento salvo com sucesso.');
+          }
         }
       } catch (error) {
         setCarregando(false);
@@ -179,7 +186,7 @@ function TerritorioSaber() {
         />
         <Grid cols={12}>
           <Linha className="row mb-0">
-            <Grid cols={4}>
+            <Grid cols={12}>
               <DropDownTerritorios
                 territorioSelecionado={territorioSelecionado}
                 onChangeTerritorio={useCallback(
