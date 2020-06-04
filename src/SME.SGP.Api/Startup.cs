@@ -21,6 +21,7 @@ using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using System.Threading.Tasks;
 using SME.SGP.Api.Configuracoes;
+using RabbitMQ.Client;
 
 namespace SME.SGP.Api
 {
@@ -131,7 +132,22 @@ namespace SME.SGP.Api
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
-            }); 
+            });
+
+
+            //TODO: RETIRAR DAQUI!
+            //TODO: VARIAVEIS PARA CONFIGURACOES!
+
+            var factory = new ConnectionFactory { HostName = "localhost" };
+            var conexaoRabbit = factory.CreateConnection();
+            IModel _channel = conexaoRabbit.CreateModel() ;
+            _channel.ExchangeDeclare("sme.sr.workers", ExchangeType.Topic);
+            _channel.QueueDeclare("sme.sr.workers.sgp", false, false, false, null);
+
+
+            services.AddSingleton(conexaoRabbit);
+            services.AddSingleton(_channel);
+
 
         }
     }
