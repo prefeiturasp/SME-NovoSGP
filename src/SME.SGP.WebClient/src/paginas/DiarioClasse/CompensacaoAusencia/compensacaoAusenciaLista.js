@@ -35,6 +35,7 @@ const CompensacaoAusenciaLista = () => {
   const [filtro, setFiltro] = useState({});
   const [nomeAtividade, setNomeAtividade] = useState('');
   const [nomeAluno, setNomeAluno] = useState('');
+  const [componenteSemFrequencia, setComponenteSemFrequencia] = useState(false);
   const [listaBimestres, setListaBimestres] = useState([]);
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(
     undefined
@@ -43,6 +44,20 @@ const CompensacaoAusenciaLista = () => {
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [permissoesTela]);
+
+  useEffect(() => {
+    if (!disciplinaIdSelecionada || disciplinaIdSelecionada === 0) return;
+
+    const disciplinaSelecionada = listaDisciplinas.find(
+      x =>
+        toString(x.codigoComponenteCurricular) ===
+        toString(disciplinaIdSelecionada)
+    );
+
+    setComponenteSemFrequencia(
+      disciplinaSelecionada && !disciplinaSelecionada.registraFrequencia
+    );
+  }, [disciplinaIdSelecionada, listaDisciplinas]);
 
   const montaExibicaoAlunos = dados => {
     return (
@@ -269,6 +284,18 @@ const CompensacaoAusenciaLista = () => {
           className="mb-2"
         />
       )}
+      {componenteSemFrequencia && (
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'componenteSemFrequencia-alerta',
+            mensagem:
+              'Não é possível cadastrar compensação de ausência para componente curricular que não controla frequência.',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-2"
+        />
+      )}
       <Cabecalho pagina="Compensação de Ausência" />
       <Card>
         <div className="col-md-12">
@@ -303,6 +330,7 @@ const CompensacaoAusenciaLista = () => {
                 onClick={onClickNovo}
                 disabled={
                   somenteConsulta ||
+                  componenteSemFrequencia ||
                   !permissoesTela.podeIncluir ||
                   !turmaSelecionada.turma ||
                   (turmaSelecionada.turma && listaDisciplinas.length < 1)
