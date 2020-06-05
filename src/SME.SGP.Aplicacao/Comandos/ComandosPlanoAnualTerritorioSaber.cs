@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,8 +21,10 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public void Salvar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
+        public IEnumerable<EntidadeBase> Salvar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
         {
+            var listaAuditoria = new List<EntidadeBase>();
+
             unitOfWork.IniciarTransacao();
 
             var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
@@ -39,9 +42,13 @@ namespace SME.SGP.Aplicacao
                 }
                 planoAnualTerritorioSaber = MapearParaDominio(planoAnualTerritorioSaberDto, planoAnualTerritorioSaber, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Desenvolvimento, bimestrePlanoAnual.Reflexao);
                 repositorioPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaber);
+
+                listaAuditoria.Add(planoAnualTerritorioSaber as EntidadeBase);
             }
 
             unitOfWork.PersistirTransacao();
+
+            return listaAuditoria;
         }
 
         private PlanoAnualTerritorioSaber ObterPlanoAnualTerritorioSaberSimplificado(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, int bimestre)
