@@ -268,5 +268,10 @@ namespace SME.SGP.Integracao.Teste
             return -1;
         }
 
+        public bool ValidarStatusCodeComSucesso(HttpResponseMessage response)
+        {
+            return response.IsSuccessStatusCode || (int)response.StatusCode == 601  || (int)response.StatusCode == 602;
+        }
+
     }
 }

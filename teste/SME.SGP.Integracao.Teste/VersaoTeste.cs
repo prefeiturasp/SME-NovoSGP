@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json;
-using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using Xunit;
 
 namespace SME.SGP.Integracao.Teste
@@ -24,11 +20,9 @@ namespace SME.SGP.Integracao.Teste
             // Arrange & Act
             fixture._clientApi.DefaultRequestHeaders.Clear();
             var result = await fixture._clientApi.GetAsync("api/v1/versoes/");
-            var versao = await result.Content.ReadAsStringAsync();
 
             // Assert
-            Assert.True(result.IsSuccessStatusCode);
-            //Assert.StartsWith("Versão: ", versao);
+            Assert.True(fixture.ValidarStatusCodeComSucesso(result));
         }
     }
 }

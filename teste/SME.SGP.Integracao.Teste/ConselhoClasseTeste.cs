@@ -11,6 +11,8 @@ namespace SME.SGP.Integracao.Teste
         private readonly TestServerFixture fixture;
         private readonly long _id = 1;
 
+
+
         public ConselhoClasseTeste(TestServerFixture fixture)
         {
             this.fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
@@ -26,7 +28,7 @@ namespace SME.SGP.Integracao.Teste
             var result = await fixture._clientApi.GetAsync($"api/v1/conselhos-classe/detalhamento/{_id}");
 
             // Assert
-            Assert.True(result.IsSuccessStatusCode);
+            Assert.True(fixture.ValidarStatusCodeComSucesso(result));
         }
     }
 }
