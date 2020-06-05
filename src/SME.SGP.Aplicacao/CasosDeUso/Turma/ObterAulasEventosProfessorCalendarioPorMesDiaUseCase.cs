@@ -88,6 +88,7 @@ namespace SME.SGP.Aplicacao
                     DataReferencia = dataConsulta
                 });
 
+                atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor);
             }
 
             retorno.EventosAulas = await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery()

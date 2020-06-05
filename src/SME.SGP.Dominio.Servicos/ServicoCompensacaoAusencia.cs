@@ -18,6 +18,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
@@ -30,6 +31,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia,
                                           IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequencia,
                                           IConsultasPeriodoEscolar consultasPeriodoEscolar,
+                                          IConsultasTurma consultasTurma,
                                           IRepositorioTipoCalendario repositorioTipoCalendario,
                                           IServicoEOL servicoEOL,
                                           IServicoUsuario servicoUsuario,
@@ -42,6 +44,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioCompensacaoAusenciaDisciplinaRegencia = repositorioCompensacaoAusenciaDisciplinaRegencia ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusenciaDisciplinaRegencia));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.consultasTurma = consultasTurma ?? throw new System.ArgumentNullException(nameof(consultasTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
@@ -56,7 +59,7 @@ namespace SME.SGP.Dominio.Servicos
             var turma = BuscaTurma(compensacaoDto.TurmaId);
 
             // Consiste periodo
-            var periodo = BuscaPeriodo(turma.AnoLetivo, turma.ModalidadeCodigo, compensacaoDto.Bimestre, turma.Semestre);
+            var periodo = await BuscaPeriodo(turma, compensacaoDto.Bimestre);
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
@@ -117,27 +120,26 @@ namespace SME.SGP.Dominio.Servicos
 
         }
 
-        private PeriodoEscolarDto BuscaPeriodo(int anoLetivo, Modalidade modalidadeCodigo, int bimestre, int semestre)
+        private async Task<PeriodoEscolarDto> BuscaPeriodo(Turma turma, int bimestre)
         {
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio);
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio);
 
             PeriodoEscolarDto periodo = null;
             // Eja possui 2 calendarios por ano
-            if (modalidadeCodigo == Modalidade.EJA)
+            if (turma.ModalidadeCodigo == Modalidade.EJA)
             {
-                if (semestre == 1)
+                if (turma.Semestre == 1)
                     periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
-                        .FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoInicio < new DateTime(anoLetivo, 6, 1));
+                        .FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoInicio < new DateTime(turma.AnoLetivo, 6, 1));
                 else
                     periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
-                        .FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoFim > new DateTime(anoLetivo, 6, 1));
+                        .FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoFim > new DateTime(turma.AnoLetivo, 6, 1));
             }
             else
                 periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
                     .FirstOrDefault(p => p.Bimestre == bimestre);
 
-            // TODO alterar verificação para checagem de periodo de fechamento e reabertura do fechamento depois de implementado
-            if (DateTime.Now < periodo.PeriodoInicio || DateTime.Now > periodo.PeriodoFim)
+            if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre, tipoCalendario: tipoCalendario))
                 throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto.");
 
             return periodo;
@@ -145,7 +147,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private Turma BuscaTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 
@@ -315,8 +317,8 @@ namespace SME.SGP.Dominio.Servicos
             // Excluir lista carregada
             foreach (var compensacaoExcluir in compensacoesExcluir)
             {
-                var turma = repositorioTurma.ObterPorId(compensacaoExcluir.TurmaId);
-                var periodo = BuscaPeriodo(turma.AnoLetivo, turma.ModalidadeCodigo, compensacaoExcluir.Bimestre, turma.Semestre);
+                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(compensacaoExcluir.TurmaId);
+                var periodo = await BuscaPeriodo(turma, compensacaoExcluir.Bimestre);
 
                 unitOfWork.IniciarTransacao();
                 try

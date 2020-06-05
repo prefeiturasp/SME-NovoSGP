@@ -107,6 +107,7 @@ const ModalConteudoHtml = props => {
                       hidden={esconderBotoes}
                     >
                       <Button
+                        id={shortid.generate()}
                         key="btn-sim-confirmacao"
                         label={labelBotaoSecundario}
                         color={Colors.Roxo}
@@ -116,6 +117,7 @@ const ModalConteudoHtml = props => {
                         onClick={onConfirmacaoSecundaria}
                       />
                       <Button
+                        id={shortid.generate()}
                         key="btn-nao-confirmacao"
                         label={labelBotaoPrincipal}
                         color={Colors.Roxo}

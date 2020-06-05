@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api
 {
@@ -42,6 +44,7 @@ namespace SME.SGP.Api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseRequestLocalization();
 
             app.UseHttpsRedirection();
             app.UseSwagger();
@@ -85,24 +88,10 @@ namespace SME.SGP.Api
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
+            RegistraDocumentacaoSwagger.Registrar(services);
+
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "SGP v1", Version = "v1" });
-                c.AddSecurityDefinition("Bearer",
-                    new ApiKeyScheme
-                    {
-                        In = "header",
-                        Description = "Para autenticação, incluir 'Bearer' seguido do token JWT",
-                        Name = "Authorization",
-                        Type = "apiKey"
-                    });
-                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
-                    { "Bearer", Enumerable.Empty<string>() },
-                            });
-            });
 
             services.AddDistributedRedisCache(options =>
             {
@@ -141,7 +130,8 @@ namespace SME.SGP.Api
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
-            });
+            }); 
+
         }
     }
 }

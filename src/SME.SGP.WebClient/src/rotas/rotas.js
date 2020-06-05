@@ -26,7 +26,7 @@ import TipoEventosLista from '~/paginas/CalendarioEscolar/TipoEventos/tipoEvento
 import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosForm';
 import SemPermissao from '~/paginas/SemPermissao/sem-permissao';
 import RotasDto from '~/dtos/rotasDto';
-import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula';
+import CadastroAula from '~/paginas/CalendarioProfessor/CadastroAula/cadastroAula';
 import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/frequenciaPlanoAula';
 import AvaliacaoForm from '~/paginas/CalendarioEscolar/Avaliacao/avaliacaoForm';
 import Notas from '~/paginas/DiarioClasse/Notas/notas';
@@ -49,6 +49,7 @@ import PendenciasFechamentoForm from '~/paginas/Fechamento/PendenciasFechamento/
 import ComunicadosLista from '~/paginas/AcompanhamentoEscolar/Comunicados/Lista';
 import ComunicadosCadastro from '~/paginas/AcompanhamentoEscolar/Comunicados/Cadastro';
 import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselhoClasse';
+import RelatorioSemestral from '~/paginas/Relatorios/PAP/RelatorioSemestral/relatorioSemestral';
 
 import CalendarioProfessor from '~/paginas/CalendarioEscolar/CalendarioProfessor';
 
@@ -93,6 +94,8 @@ rotas.set(`${RotasDto.PAP}`, {
   component: ResumosGraficosPAP,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PAP,
 });
 
 rotas.set(RotasDto.CALENDARIO_ESCOLAR, {
@@ -385,7 +388,7 @@ rotas.set('/calendario-escolar/tipo-feriado/editar/:id', {
   chavePermissao: RotasDto.TIPO_FERIADO,
 });
 
-rotas.set('/sem-permissao', {
+rotas.set(RotasDto.SEM_PERMISSAO, {
   breadcrumbName: 'Sem permissão',
   parent: '/',
   component: SemPermissao,
@@ -743,7 +746,8 @@ rotas.set(RotasDto.RELATORIO_PAP_ACOMPANHAMENTO, {
   component: RelatorioPAPAcompanhamento,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false, // chavePermissao: RotasDto.REINICIAR_SENHA,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_PAP_ACOMPANHAMENTO,
 });
 
 rotas.set(RotasDto.CONSELHO_CLASSE, {
@@ -755,6 +759,17 @@ rotas.set(RotasDto.CONSELHO_CLASSE, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.CONSELHO_CLASSE,
+});
+
+rotas.set(RotasDto.RELATORIO_SEMESTRAL, {
+  breadcrumbName: 'Relatório Semestral',
+  menu: ['Relatórios', 'PAP'],
+  parent: '/',
+  component: RelatorioSemestral,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_SEMESTRAL,
 });
 
 const rotasArray = [];

@@ -11,6 +11,7 @@ import { BotoesAuxiliaresEstilo, Botao } from '../styles';
 const BotoesAuxiliares = ({
   temAula,
   podeCadastrarAvaliacao,
+  podeCadastrarAula,
   onClickNovaAula,
   onClickNovaAvaliacao,
   permissaoTela,
@@ -40,7 +41,12 @@ const BotoesAuxiliares = ({
         onClick={onClickNovaAula}
         label="Nova Aula"
         color={Colors.Roxo}
-        disabled={!permissaoTela?.podeIncluir || !dentroPeriodo || desabilitado}
+        disabled={
+          !permissaoTela?.podeIncluir ||
+          !podeCadastrarAula ||
+          !dentroPeriodo ||
+          desabilitado
+        }
       />
     </BotoesAuxiliaresEstilo>
   );
@@ -49,11 +55,13 @@ const BotoesAuxiliares = ({
 BotoesAuxiliares.propTypes = {
   temAula: t.bool.isRequired,
   podeCadastrarAvaliacao: t.oneOfType([t.bool, t.number]).isRequired,
+  podeCadastrarAula: t.oneOfType([t.bool, t.number]).isRequired,
   onClickNovaAula: t.func.isRequired,
   onClickNovaAvaliacao: t.func.isRequired,
   permissaoTela: t.oneOfType([t.any]).isRequired,
   dentroPeriodo: t.bool.isRequired,
   desabilitado: t.bool.isRequired,
+  podeCadastrarAula: t.bool.isRequired,
 };
 
 export default BotoesAuxiliares;

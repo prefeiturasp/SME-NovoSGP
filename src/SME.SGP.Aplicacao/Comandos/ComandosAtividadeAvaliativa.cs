@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
             var disciplina = ObterDisciplina(dto.DisciplinasId[0]);
             ValidaDisciplinaNaAvaliacao(disciplina);
 
-            var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, disciplina.Regencia);
+            var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
 
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
 
@@ -176,7 +176,7 @@ namespace SME.SGP.Aplicacao
             var disciplina = ObterDisciplina(dto.DisciplinasId[0]);
             ValidaDisciplinaNaAvaliacao(disciplina);
 
-            var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia);
+            var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
             mensagens.AddRange(await Salvar(atividadeAvaliativa, dto));
             mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf));
 
@@ -257,7 +257,7 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
-        private AtividadeAvaliativa MapearDtoParaEntidade(AtividadeAvaliativaDto dto, long id, string usuarioRf, bool ehRegencia)
+        private AtividadeAvaliativa MapearDtoParaEntidade(AtividadeAvaliativaDto dto, long id, string usuarioRf, bool ehRegencia, bool ehCj)
         {
             AtividadeAvaliativa atividadeAvaliativa = new AtividadeAvaliativa();
             if (id > 0L)
@@ -277,6 +277,7 @@ namespace SME.SGP.Aplicacao
             atividadeAvaliativa.DescricaoAvaliacao = dto.Descricao;
             atividadeAvaliativa.DataAvaliacao = dto.DataAvaliacao.Local();
             atividadeAvaliativa.EhRegencia = ehRegencia;
+            atividadeAvaliativa.EhCj = ehCj;
             return atividadeAvaliativa;
         }
 

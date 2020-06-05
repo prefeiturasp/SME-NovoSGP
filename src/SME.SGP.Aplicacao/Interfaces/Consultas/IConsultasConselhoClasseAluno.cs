@@ -13,6 +13,6 @@ namespace SME.SGP.Aplicacao
         Task<bool> ExisteConselhoClasseUltimoBimestreAsync(Turma turma, string alunoCodigo);
         Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo);
         Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo);
-        Task<IEnumerable<ConselhoClasseAlunoNotasConceitosDto>> ObterNotasFrequencia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo);
+        Task<ConselhoClasseAlunoNotasConceitosRetornoDto> ObterNotasFrequencia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo);
     }
 }

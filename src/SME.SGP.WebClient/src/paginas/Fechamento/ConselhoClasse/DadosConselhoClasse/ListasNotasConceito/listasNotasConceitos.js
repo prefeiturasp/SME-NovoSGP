@@ -2,7 +2,10 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
-import { setDadosListasNotasConceitos } from '~/redux/modulos/conselhoClasse/actions';
+import {
+  setDadosListasNotasConceitos,
+  setPodeEditarNota,
+} from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import ListasCarregar from './listasCarregar';
@@ -41,7 +44,8 @@ const ListasNotasConceitos = props => {
     ).catch(e => erros(e));
 
     if (resultado && resultado.data) {
-      dispatch(setDadosListasNotasConceitos(resultado.data));
+      dispatch(setDadosListasNotasConceitos(resultado.data.notasConceitos));
+      dispatch(setPodeEditarNota(resultado.data.podeEditarNota));
       setExibir(true);
     } else {
       setExibir(false);

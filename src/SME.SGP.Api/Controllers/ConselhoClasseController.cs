@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -57,13 +58,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultasConselhoClasseNota.ObterPorId(id));
         }
 
-        [HttpGet("turmas/{turmaCodigo}/bimestres/{bimestre}/alunos/{alunoCodigo}/final/{ehFinal}")]
+        [HttpGet("turmas/{turmaCodigo}/bimestres/{bimestre}/alunos/{alunoCodigo}/final/{ehFinal}/consideraHistorico/{consideraHistorico}")]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ConselhoClasseAlunoResumoDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterConselhoClasseTurma(string turmaCodigo, int bimestre, string alunoCodigo, bool ehFinal, [FromServices]IConsultasConselhoClasse consultasConselhoClasse)
-            => Ok(await consultasConselhoClasse.ObterConselhoClasseTurma(turmaCodigo, alunoCodigo, bimestre, ehFinal));
+        public async Task<IActionResult> ObterConselhoClasseTurma(string turmaCodigo, int bimestre, string alunoCodigo, bool ehFinal, bool consideraHistorico, [FromServices]IConsultasConselhoClasse consultasConselhoClasse)
+            => Ok(await consultasConselhoClasse.ObterConselhoClasseTurma(turmaCodigo, alunoCodigo, bimestre, ehFinal, consideraHistorico));
 
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/parecer")]
         [ProducesResponseType(401)]
@@ -98,5 +99,21 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterNotasAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices]IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
             => Ok(await consultasConselhoClasseAluno.ObterNotasFrequencia(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
+
+        [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/imprimir")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(bool), 200)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ImprimirConselhoTurma(long conselhoClasseId, long fechamentoTurmaId, [FromServices] IMediator mediator)
+          => Ok(await ObterImpressaoConselhoClasseTurmaUseCase.Executar(mediator, conselhoClasseId, fechamentoTurmaId));
+
+        [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/imprimir")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(bool), 200)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ImprimirConselhoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices] IMediator mediator)
+          => Ok(await ObterImpressaoConselhoClasseAlunoUseCase.Executar(mediator, conselhoClasseId, fechamentoTurmaId, alunoCodigo));
     }
 }

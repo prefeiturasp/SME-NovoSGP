@@ -34,63 +34,69 @@ namespace SME.SGP.Dominio.Servicos
                 var parametroDataUltimaAtualizacao = parametrosDataUltimaAtualizacao.FirstOrDefault();
                 var dataUltimaAtualizacao = DateTime.Parse(parametroDataUltimaAtualizacao.Value);
 
-                var objetivosJuremaResposta = await servicoJurema.ObterListaObjetivosAprendizagem();
-                var objetivosBase = await repositorioObjetivoAprendizagem.ListarAsync();
-
-                var objetivosAIncluir = objetivosJuremaResposta?.Where(c => !objetivosBase.Any(b => b.CodigoCompleto == c.Codigo));
-                var objetivosADesativar = objetivosBase?.Where(c => !c.Excluido)?.Where(c => !objetivosJuremaResposta.Any(b => b.Codigo == c.CodigoCompleto));
-                var objetivosAReativar = objetivosJuremaResposta?.Where(c => objetivosBase.Any(b => b.CodigoCompleto == c.Codigo && b.Excluido));
-                var objetivosAAtualizar = objetivosJuremaResposta?.Where(c => c.AtualizadoEm > dataUltimaAtualizacao);
-
-                var atualizarUltimaDataAtualizacao = false;
-                var houveAlteracaoNosDados = false;
-
-                if (objetivosAAtualizar != null && objetivosAAtualizar.Any())
+                var objetivosJuremaRespostaApi = await servicoJurema.ObterListaObjetivosAprendizagem();
+                if (objetivosJuremaRespostaApi != null)
                 {
-                    foreach (var objetivo in objetivosAAtualizar)
+
+                    var objetivosBase = await repositorioObjetivoAprendizagem.ListarAsync();
+
+                    var objetivosJuremaResposta = objetivosJuremaRespostaApi.Where(c => c.Codigo.Length <= 20);
+
+                    var objetivosAIncluir = objetivosJuremaResposta?.Where(c => !objetivosBase.Any(b => b.CodigoCompleto == c.Codigo));
+                    var objetivosADesativar = objetivosBase?.Where(c => !c.Excluido)?.Where(c => !objetivosJuremaResposta.Any(b => b.Codigo == c.CodigoCompleto));
+                    var objetivosAReativar = objetivosJuremaResposta?.Where(c => objetivosBase.Any(b => b.CodigoCompleto == c.Codigo && b.Excluido));
+                    var objetivosAAtualizar = objetivosJuremaResposta?.Where(c => c.AtualizadoEm > dataUltimaAtualizacao);
+
+                    var atualizarUltimaDataAtualizacao = false;
+                    var houveAlteracaoNosDados = false;
+
+                    if (objetivosAAtualizar != null && objetivosAAtualizar.Any())
                     {
-                        await AtualizarObjetivoBase(objetivo);
+                        foreach (var objetivo in objetivosAAtualizar)
+                        {
+                            await AtualizarObjetivoBase(objetivo);
+                        }
+                        atualizarUltimaDataAtualizacao = true;
+                        houveAlteracaoNosDados = true;
                     }
-                    atualizarUltimaDataAtualizacao = true;
-                    houveAlteracaoNosDados = true;
-                }
 
-                if (objetivosAIncluir != null && objetivosAIncluir.Any())
-                {
-                    foreach (var objetivo in objetivosAIncluir)
+                    if (objetivosAIncluir != null && objetivosAIncluir.Any())
                     {
-                        await repositorioObjetivoAprendizagem.SalvarAsync(MapearObjetivoRespostaParaDominio(objetivo));
+                        foreach (var objetivo in objetivosAIncluir)
+                        {
+                            await repositorioObjetivoAprendizagem.SalvarAsync(MapearObjetivoRespostaParaDominio(objetivo));
+                        }
+                        houveAlteracaoNosDados = true;
                     }
-                    houveAlteracaoNosDados = true;
-                }
 
-                if (objetivosAReativar != null && objetivosAReativar.Any())
-                {
-                    foreach (var objetivo in objetivosAReativar)
+                    if (objetivosAReativar != null && objetivosAReativar.Any())
                     {
-                        await repositorioObjetivoAprendizagem.ReativarAsync(objetivo.Id);
+                        foreach (var objetivo in objetivosAReativar)
+                        {
+                            await repositorioObjetivoAprendizagem.ReativarAsync(objetivo.Id);
+                        }
+                        houveAlteracaoNosDados = true;
                     }
-                    houveAlteracaoNosDados = true;
-                }
 
-                if (objetivosADesativar != null && objetivosADesativar.Any())
-                {
-                    foreach (var objetivo in objetivosADesativar)
+                    if (objetivosADesativar != null && objetivosADesativar.Any())
                     {
-                        objetivo.Desativar();
-                        await repositorioObjetivoAprendizagem.AtualizarAsync(objetivo);
+                        foreach (var objetivo in objetivosADesativar)
+                        {
+                            objetivo.Desativar();
+                            await repositorioObjetivoAprendizagem.AtualizarAsync(objetivo);
+                        }
+                        houveAlteracaoNosDados = true;
                     }
-                    houveAlteracaoNosDados = true;
-                }
 
-                if (atualizarUltimaDataAtualizacao)
-                {
-                    dataUltimaAtualizacao = objetivosJuremaResposta.Max(c => c.AtualizadoEm);
-                    await repositorioParametrosSistema.AtualizarValorPorTipoAsync(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema, dataUltimaAtualizacao.ToString("yyyy-MM-dd HH:mm:ss.fff tt"));
-                }
+                    if (atualizarUltimaDataAtualizacao)
+                    {
+                        dataUltimaAtualizacao = objetivosJuremaResposta.Max(c => c.AtualizadoEm);
+                        await repositorioParametrosSistema.AtualizarValorPorTipoAsync(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema, dataUltimaAtualizacao.ToString("yyyy-MM-dd HH:mm:ss.fff tt"));
+                    }
 
-                if (houveAlteracaoNosDados)
-                    await repositorioCache.RemoverAsync("ObjetivosAprendizagem");
+                    if (houveAlteracaoNosDados)
+                        await repositorioCache.RemoverAsync("ObjetivosAprendizagem");
+                }
             }
             else
                 SentrySdk.CaptureException(new NegocioException("Parâmetro 'DataUltimaAtualizacaoObjetivosJurema' não encontrado na base de dados, os objetivos de aprendizagem não serão atualizados."));

@@ -13,11 +13,12 @@ export const ObjetivosList = styled.div`
 
 export const ListItem = styled.li`
   border-color: ${Base.AzulAnakiwa} !important;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
 `;
 
 export const ListItemButton = styled.li`
   border-color: ${Base.AzulAnakiwa} !important;
-  cursor: pointer;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
 `;
 
 export const Corpo = styled.div`
@@ -51,4 +52,10 @@ export const HabilitaObjetivos = styled.div`
   label {
     margin-right: 10px;
   }
+`;
+
+export const Erro = styled.div`
+  color: ${Base.Vermelho};
+  font-size: 0.8rem;
+  margin-bottom: 10px;
 `;

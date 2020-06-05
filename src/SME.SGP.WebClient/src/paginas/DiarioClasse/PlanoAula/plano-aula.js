@@ -12,6 +12,7 @@ import {
   ListItemButton,
   ObjetivosList,
   QuantidadeBotoes,
+  Erro,
 } from './plano-aula.css';
 import api from '~/servicos/api';
 import { store } from '~/redux';
@@ -48,6 +49,7 @@ const PlanoAula = props => {
     temAvaliacao,
     ehRegencia,
     onClick,
+    possuiPlanoAnual,
   } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
@@ -121,14 +123,16 @@ const PlanoAula = props => {
   };
 
   const selecionarObjetivo = id => {
-    setCarregandoObjetivosSelecionados(true);
-    setModoEdicaoPlano(true);
-    const index = objetivosAprendizagem.findIndex(
-      a => a.id.toString() === id.toString()
-    );
-    objetivosAprendizagem[index].selected = !objetivosAprendizagem[index]
-      .selected;
-    setObjetivos(objetivosAprendizagem);
+    if (!desabilitarCampos) {
+      setCarregandoObjetivosSelecionados(true);
+      setModoEdicaoPlano(true);
+      const index = objetivosAprendizagem.findIndex(
+        a => a.id.toString() === id.toString()
+      );
+      objetivosAprendizagem[index].selected = !objetivosAprendizagem[index]
+        .selected;
+      setObjetivos(objetivosAprendizagem);
+    }
   };
 
   const removerObjetivo = id => {
@@ -244,6 +248,7 @@ const PlanoAula = props => {
         titulo="Plano de aula"
         indice="Plano de aula"
         show={mostrarCardPrincipal}
+        icon={possuiPlanoAnual}
       >
         <Loader loading={mostrarCardPrincipal && carregandoMaterias}>
           <QuantidadeBotoes className="col-md-12">
@@ -277,7 +282,7 @@ const PlanoAula = props => {
             className="row d-inline-block col-md-12"
             hidden={!ehProfessorCj || ehEja || ehMedio}
           >
-            <Label>Objetivos de Aprendizagem e Desenvolvimento</Label>
+            <Label text="Objetivos de Aprendizagem e Desenvolvimento" />
             <Switch
               onChange={() => habilitaDesabilitaObjetivos(!temObjetivos)}
               checked={habilitaEscolhaObjetivos}
@@ -291,7 +296,7 @@ const PlanoAula = props => {
           </HabilitaObjetivos>
           <CardCollapse
             key="objetivos-aprendizagem"
-            onClick={() => { }}
+            onClick={() => {}}
             titulo="Objetivos de Aprendizagem e Desenvolvimento e meus objetivos (Currículo da Cidade)"
             indice="objetivos-aprendizagem"
             show
@@ -303,25 +308,25 @@ const PlanoAula = props => {
                   <h6 className="d-inline-block font-weight-bold my-0 fonte-13 w-100">
                     Objetivos de Aprendizagem e Desenvolvimento
                   </h6>
-                  {temObjetivos
-                    ? materias.map(materia => {
-                      return (
-                        <Badge
-                          role="button"
-                          disabled={desabilitarCampos}
-                          onClick={() => selecionarMateria(materia.id)}
-                          id={materia.id}
-                          alt={materia.descricao}
-                          key={materia.id}
-                          className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
+                  {temObjetivos ? (
+                    <Loader loading={carregandoMaterias} tip="">
+                      {materias.map(materia => {
+                        return (
+                          <Badge
+                            role="button"
+                            onClick={() => selecionarMateria(materia.id)}
+                            id={materia.id}
+                            alt={materia.descricao}
+                            key={materia.id}
+                            className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
                       ${materia.selecionada ? ' badge-selecionado' : ''}`}
-                        >
-                          {materia.descricao}
-                        </Badge>
-                      );
-                    })
-                    : null}
-
+                          >
+                            {materia.descricao}
+                          </Badge>
+                        );
+                      })}
+                    </Loader>
+                  ) : null}
                   <Loader loading={carregandoObjetivos}>
                     <ObjetivosList className="mt-4 overflow-auto">
                       {objetivosAprendizagem.map(objetivo => {
@@ -333,7 +338,7 @@ const PlanoAula = props => {
                             <ListItemButton
                               className={`${
                                 objetivo.selected ? 'objetivo-selecionado ' : ''
-                                } list-group-item d-flex align-items-center font-weight-bold fonte-14`}
+                              } list-group-item d-flex align-items-center font-weight-bold fonte-14`}
                               role="button"
                               id={objetivo.id}
                               aria-pressed={!!objetivo.selected}
@@ -387,26 +392,26 @@ const PlanoAula = props => {
                             );
                           })}
                         {objetivosAprendizagem.filter(x => x.selected).length >
-                          1 ? (
-                            <Button
-                              key="removerTodos"
-                              label="Remover Todos"
-                              color={Colors.CinzaBotao}
-                              bold
-                              alt="Remover todos os objetivos selecionados"
-                              id="removerTodos"
-                              height="38px"
-                              width="92px"
-                              fontSize="12px"
-                              padding="0px 5px"
-                              lineHeight="1.2"
-                              steady
-                              disabled={desabilitarCampos}
-                              border
-                              className="text-dark mt-3 mr-2 stretched-link"
-                              onClick={() => removerTodosObjetivos()}
-                            />
-                          ) : null}
+                        1 ? (
+                          <Button
+                            key="removerTodos"
+                            label="Remover Todos"
+                            color={Colors.CinzaBotao}
+                            bold
+                            alt="Remover todos os objetivos selecionados"
+                            id="removerTodos"
+                            height="38px"
+                            width="92px"
+                            fontSize="12px"
+                            padding="0px 5px"
+                            lineHeight="1.2"
+                            steady
+                            disabled={desabilitarCampos}
+                            border
+                            className="text-dark mt-3 mr-2 stretched-link"
+                            onClick={() => removerTodosObjetivos()}
+                          />
+                        ) : null}
                       </div>
                     </Grid>
                   </Loader>
@@ -424,8 +429,25 @@ const PlanoAula = props => {
                     </Descritivo>
                   ) : null}
                   <fieldset className="mt-3">
+                    {layoutComObjetivos() &&
+                    temObjetivos &&
+                    objetivosAprendizagem &&
+                    !objetivosAprendizagem.filter(obj => obj.selected === true)
+                      .length ? (
+                      <Erro>
+                        Você precisa selecionar objetivos na lista ao lado para
+                        poder inserir a descrição do plano!
+                      </Erro>
+                    ) : null}
                     <Editor
-                      desabilitar={desabilitarCampos}
+                      desabilitar={
+                        desabilitarCampos ||
+                        (temObjetivos &&
+                          objetivosAprendizagem &&
+                          !objetivosAprendizagem.filter(
+                            obj => obj.selected === true
+                          ).length)
+                      }
                       onChange={onBlurMeusObjetivos}
                       inicial={planoAula.descricao}
                     />
@@ -437,9 +459,10 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="desenv-aula"
-            onClick={() => { }}
+            onClick={() => {}}
             titulo="Desenvolvimento da aula"
             indice="desenv-aula"
+            icon
             show
             configCabecalho={configCabecalho}
           >
@@ -454,7 +477,7 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="rec-continua"
-            onClick={() => { }}
+            onClick={() => {}}
             titulo="Recuperação contínua"
             indice="rec-continua"
             show={false}
@@ -471,7 +494,7 @@ const PlanoAula = props => {
 
           <CardCollapse
             key="licao-casa"
-            onClick={() => { }}
+            onClick={() => {}}
             titulo="Lição de casa"
             indice="licao-casa"
             show={false}
@@ -494,8 +517,8 @@ const PlanoAula = props => {
               alteradoEm={auditoria.alteradoEm}
             />
           ) : (
-              ''
-            )}
+            ''
+          )}
         </Loader>
       </CardCollapse>
       <ModalCopiarConteudo
@@ -503,6 +526,7 @@ const PlanoAula = props => {
         onClose={() => setMostrarModalCopiarConteudo(false)}
         disciplina={disciplinaIdSelecionada}
         planoAula={planoAula}
+        dataAula={dataAula}
       />
     </Corpo>
   );
@@ -527,6 +551,7 @@ PlanoAula.propTypes = {
   temAvaliacao: PropTypes.oneOfType([PropTypes.any]),
   ehRegencia: PropTypes.oneOfType([PropTypes.any]),
   onClick: PropTypes.oneOfType([PropTypes.any]),
+  possuiPlanoAnual: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 PlanoAula.defaultProps = {
@@ -547,7 +572,8 @@ PlanoAula.defaultProps = {
   auditoria: {},
   temAvaliacao: false,
   ehRegencia: false,
-  onClick: () => { },
+  onClick: () => {},
+  possuiPlanoAnual: false,
 };
 
 export default PlanoAula;
