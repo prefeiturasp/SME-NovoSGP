@@ -17,6 +17,12 @@ namespace SME.SGP.Infra
         public DateTime DataSituacao { get; set; }
         public double Frequencia { get; set; }
         public MarcadorFrequenciaDto Marcador { get; set; }
+
+        /// <summary>
+        /// Refere-se ao processo que a tela executa, se já foi realizado ou não
+        /// </summary>
+        public bool ProcessoConcluido { get; set; }
+
         public bool Desabilitado { get => EstaInativo() || TemMarcadorInativo(); }
 
         public bool TemMarcadorInativo()
@@ -29,7 +35,8 @@ namespace SME.SGP.Infra
             => !(new[] { SituacaoMatriculaAluno.Ativo,
                         SituacaoMatriculaAluno.Rematriculado,
                         SituacaoMatriculaAluno.PendenteRematricula,
-                        SituacaoMatriculaAluno.SemContinuidade
+                        SituacaoMatriculaAluno.SemContinuidade,
+                        SituacaoMatriculaAluno.Concluido
                     }).Contains(SituacaoCodigo);
 
 

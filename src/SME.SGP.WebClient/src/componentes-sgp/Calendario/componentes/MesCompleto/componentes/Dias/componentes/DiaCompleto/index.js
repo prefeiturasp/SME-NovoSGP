@@ -10,7 +10,7 @@ import { store } from '~/redux';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
 
 // Estilos
-import { DiaCompletoWrapper, LinhaEvento, Pilula } from './styles';
+import { DiaCompletoWrapper, LinhaEvento, Pilula, Linha } from './styles';
 
 // Componentes
 import { Loader, Base } from '~/componentes';
@@ -75,8 +75,9 @@ function DiaCompleto({
     []
   );
 
-  const onClickAula = useCallback(() => {
-    // TODO: Ao modificar o reorno do backend encaminhar o usuario aos detalhes da aula
+  const onClickAula = useCallback(item => {
+    if (item.ehAula)
+      history.push(`${RotasDTO.CADASTRO_DE_AULA}/editar/${item.aulaId}`);
   }, []);
 
   return (
@@ -88,42 +89,43 @@ function DiaCompleto({
           />
           {dadosDia?.dados?.eventosAulas.length > 0
             ? dadosDia.dados.eventosAulas.map(eventoAula => (
-                <LinhaEvento
-                  key={shortid.generate()}
-                  className={`${!eventoAula.ehAula && `evento`}`}
-                  onClick={() => onClickAula(eventoAula)}
-                >
-                  <div className="labelEventoAula">
-                    <LabelAulaEvento dadosEvento={eventoAula} />
-                  </div>
-                  <div className="tituloEventoAula">
-                    <div>
-                      <Tooltip title={eventoAula.descricao}>
-                        {eventoAula.titulo}
-                      </Tooltip>
+                <Linha key={shortid.generate()}>
+                  <LinhaEvento
+                    className={`${!eventoAula.ehAula && `evento`}`}
+                    onClick={() => onClickAula(eventoAula)}
+                  >
+                    <div className="labelEventoAula">
+                      <LabelAulaEvento dadosEvento={eventoAula} />
                     </div>
-                    <div className="detalhesEvento">
-                      {eventoAula.quantidade > 0 && (
-                        <span>
-                          Quantidade: <strong>{eventoAula.quantidade}</strong>
-                        </span>
-                      )}
-                      {eventoAula.estaAguardandoAprovacao && (
-                        <Pilula cor={Base.Branco} fundo={Base.AzulCalendario}>
-                          Aguardando aprovação
-                        </Pilula>
-                      )}
-                      {eventoAula.ehReposicao && (
-                        <Pilula cor={Base.Branco} fundo={Base.RoxoClaro}>
-                          Reposição
-                        </Pilula>
-                      )}
-                      <DataInicioFim dadosAula={eventoAula} />
+                    <div className="tituloEventoAula">
+                      <div>
+                        <Tooltip title={eventoAula.descricao}>
+                          {eventoAula.titulo}
+                        </Tooltip>
+                      </div>
+                      <div className="detalhesEvento">
+                        {eventoAula.quantidade > 0 && (
+                          <span>
+                            Quantidade: <strong>{eventoAula.quantidade}</strong>
+                          </span>
+                        )}
+                        {eventoAula.estaAguardandoAprovacao && (
+                          <Pilula cor={Base.Branco} fundo={Base.AzulCalendario}>
+                            Aguardando aprovação
+                          </Pilula>
+                        )}
+                        {eventoAula.ehReposicao && (
+                          <Pilula cor={Base.Branco} fundo={Base.RoxoClaro}>
+                            Reposição
+                          </Pilula>
+                        )}
+                        <DataInicioFim dadosAula={eventoAula} />
+                      </div>
                     </div>
-                  </div>
+                  </LinhaEvento>
                   <div className="botoesEventoAula">
-                    {eventoAula?.ehAula &&
-                      !eventoAula?.mostrarBotaoFrequencia && (
+                    {eventoAula?.ehAula && eventoAula?.mostrarBotaoFrequencia && (
+                      <Tooltip title="Ir para frequência">
                         <BotaoFrequencia
                           onClickFrequencia={() =>
                             onClickFrequenciaHandler(
@@ -132,7 +134,8 @@ function DiaCompleto({
                             )
                           }
                         />
-                      )}
+                      </Tooltip>
+                    )}
                     {eventoAula?.atividadesAvaliativas.length > 0 && (
                       <BotaoAvaliacoes
                         atividadesAvaliativas={eventoAula.atividadesAvaliativas}
@@ -140,7 +143,7 @@ function DiaCompleto({
                       />
                     )}
                   </div>
-                </LinhaEvento>
+                </Linha>
               ))
             : !carregandoDia && <SemEventos />}
           <BotoesAuxiliares
@@ -149,6 +152,7 @@ function DiaCompleto({
               dadosDia.dados.eventosAulas.filter(evento => evento.ehAula)
                 .length > 0
             }
+            podeCadastrarAula={dadosDia?.dados?.podeCadastrarAula}
             podeCadastrarAvaliacao={
               dadosDia?.dados?.eventosAulas?.filter(
                 evento => evento.ehAula && evento.podeCadastrarAvaliacao

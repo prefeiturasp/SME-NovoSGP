@@ -15,7 +15,7 @@ const AnotacoesPedagogicas = props => {
     store => store.conselhoClasse.desabilitarCampos
   );
 
-  const [exibirCardAnotacao, setExibirCardAnotacao] = useState(false);
+  const [exibirCardAnotacao, setExibirCardAnotacao] = useState(true);
 
   const onClickExpandirAnotacao = async () =>
     setExibirCardAnotacao(!exibirCardAnotacao);

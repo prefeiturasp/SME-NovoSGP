@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.InicioDoFechamento).ToColumn("inicio_fechamento");
             Map(c => c.FinalDoFechamento).ToColumn("final_fechamento");
             Map(c => c.PeriodoEscolarId).ToColumn("periodo_escolar_id");
-            Map(c => c.FechamentoId).ToColumn("periodo_fechamento_id");
+            Map(c => c.PeriodoFechamentoId).ToColumn("periodo_fechamento_id");
             Map(c => c.PeriodoEscolar).Ignore();
         }
     }

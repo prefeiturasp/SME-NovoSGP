@@ -12,7 +12,13 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import tipoIndicativoFrequencia from '~/dtos/tipoIndicativoFrequencia';
 
 const ListaFrequencia = props => {
-  const { dados, onChangeFrequencia, permissoesTela, frequenciaId } = props;
+  const {
+    dados,
+    onChangeFrequencia,
+    permissoesTela,
+    frequenciaId,
+    temPeriodoAberto,
+  } = props;
 
   const [dataSource, setDataSource] = useState(dados);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
@@ -25,7 +31,8 @@ const ListaFrequencia = props => {
         ? somenteConsulta || !permissoesTela.podeAlterar
         : somenteConsulta || !permissoesTela.podeIncluir;
     setDesabilitarCampos(desabilitar);
-  }, [frequenciaId, permissoesTela]);
+    if (!temPeriodoAberto) setDesabilitarCampos(!temPeriodoAberto);
+  }, [frequenciaId, permissoesTela, temPeriodoAberto]);
 
   const renderSwitch = (i, aula, aluno) => {
     return (
@@ -119,9 +126,7 @@ const ListaFrequencia = props => {
                         <div className="margin-marcar-todos">F</div>
                       </th>
                     </>
-                  ) : (
-                    ''
-                  )}
+                  ) : null}
                   {dataSource[0].aulas.map((aula, i) => {
                     return (
                       <th
@@ -148,9 +153,8 @@ const ListaFrequencia = props => {
               <tbody className="tabela-frequencia-tbody">
                 {dataSource.map((aluno, i) => {
                   return (
-                    <>
+                    <React.Fragment key={shortid.generate()}>
                       <tr
-                        key={shortid.generate()}
                         className={
                           desabilitarCampos || aluno.desabilitado
                             ? 'desabilitar-aluno'
@@ -177,7 +181,7 @@ const ListaFrequencia = props => {
                               />
                             </>
                           ) : (
-                            ''
+                            <></>
                           )}
                         </td>
                         {dataSource[0].aulas.length > 1 ? (
@@ -220,20 +224,20 @@ const ListaFrequencia = props => {
                             </td>
                           </>
                         ) : (
-                          ''
+                          <></>
                         )}
 
-                        {aluno.aulas.map((aula, i) => {
+                        {aluno.aulas.map((aula, a) => {
                           return (
                             <td
                               key={shortid.generate()}
                               className={
-                                dataSource[0].aulas.length - 1 === i
+                                dataSource[0].aulas.length - 1 === a
                                   ? 'width-70'
                                   : 'border-right-none width-70'
                               }
                             >
-                              {renderSwitch(i, aula, aluno)}
+                              {renderSwitch(a, aula, aluno)}
                             </td>
                           );
                         })}
@@ -271,9 +275,9 @@ const ListaFrequencia = props => {
                           </tr>
                         </>
                       ) : (
-                        ''
+                        <></>
                       )}
-                    </>
+                    </React.Fragment>
                   );
                 })}
               </tbody>
@@ -281,7 +285,7 @@ const ListaFrequencia = props => {
           </div>
         </Lista>
       ) : (
-        ''
+        <></>
       )}
     </>
   );
@@ -289,12 +293,18 @@ const ListaFrequencia = props => {
 
 ListaFrequencia.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.array]),
-  onChangeFrequencia: PropTypes.func,
+  onChangeFrequencia: PropTypes.oneOfType([PropTypes.func]),
+  permissoesTela: PropTypes.oneOfType([PropTypes.any]),
+  frequenciaId: PropTypes.oneOfType([PropTypes.any]),
+  temPeriodoAberto: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 ListaFrequencia.defaultProps = {
   dados: [],
   onChangeFrequencia: () => {},
+  permissoesTela: {},
+  frequenciaId: 0,
+  temPeriodoAberto: false,
 };
 
 export default ListaFrequencia;

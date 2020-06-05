@@ -46,12 +46,13 @@ namespace SME.SGP.Aplicacao
                         usuario.PerfilAtual,
                         usuario.TemPerfilSupervisorOuDiretor(),
                         usuario.PodeVisualizarEventosOcorrenciaDre(),
-                        usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme()));
+                        usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(),
+                        filtroEventosDto.ConsideraHistorico));
         }
 
         public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var usuario = await servicoUsuario.ObterUsuarioLogado();            
 
             return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario);
         }

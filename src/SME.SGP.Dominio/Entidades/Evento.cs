@@ -264,6 +264,15 @@ namespace SME.SGP.Dominio
             }
         }
 
+        public bool EhEventoSME() =>
+            string.IsNullOrWhiteSpace(DreId) && string.IsNullOrWhiteSpace(UeId);
+
+        public bool EhEventoDRE() =>
+            !string.IsNullOrWhiteSpace(DreId) && string.IsNullOrWhiteSpace(UeId);
+
+        public bool EhEventoUE() =>
+            !string.IsNullOrWhiteSpace(DreId) && !string.IsNullOrWhiteSpace(UeId);
+
         private static DateTime ObterPrimeiroDiaDoMes(DateTime dataAtual)
         {
             return new DateTime(dataAtual.Year, dataAtual.Month, 1);

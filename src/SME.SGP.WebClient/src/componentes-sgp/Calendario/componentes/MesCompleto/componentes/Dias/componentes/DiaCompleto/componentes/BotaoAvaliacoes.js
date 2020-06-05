@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import styled from 'styled-components';
 import shortid from 'shortid';
 import t from 'prop-types';
 
@@ -17,6 +18,13 @@ import RotasDTO from '~/dtos/rotasDto';
 // Serviços
 import history from '~/servicos/history';
 
+const Wrapper = styled.div`
+  padding-right: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  z-index: 99999 !important;
+`;
+
 function BotaoAvaliacoes({ atividadesAvaliativas, permissaoTela }) {
   const onClickAvaliacaoHandler = useCallback(
     avaliacao => {
@@ -28,14 +36,14 @@ function BotaoAvaliacoes({ atividadesAvaliativas, permissaoTela }) {
   );
 
   return (
-    <div className="pr-0 d-flex align-items-center px-2 p-x-md-3 zIndex">
+    <Wrapper className="px-2 p-x-md-3">
       {atividadesAvaliativas?.length > 1 ? (
         <SelectComponent
           lista={atividadesAvaliativas}
           classNameContainer="w-100"
           className="fonte-14"
           onChange={avaliacaoAtual => onClickAvaliacaoHandler(avaliacaoAtual)}
-          valueSelect={atividadesAvaliativas[0].id}
+          valueSelect="Avaliação"
           valueOption="id"
           valueText="descricao"
           placeholder="Avaliação"
@@ -64,7 +72,7 @@ function BotaoAvaliacoes({ atividadesAvaliativas, permissaoTela }) {
           </Tooltip>
         )
       )}
-    </div>
+    </Wrapper>
   );
 }
 

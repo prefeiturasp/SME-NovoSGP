@@ -58,6 +58,11 @@ namespace SME.SGP.Aplicacao
             var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, false, false);
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(filtro.TipoCalendarioId);
 
+            if(filtro.DreId != null && filtro.UeId == null)
+            {
+                eventos = eventos.Where(e => e.DreId == null);
+            }
+
             if (tipoCalendario == null)
                 throw new NegocioException("Tipo de calendario não encontrado");
 

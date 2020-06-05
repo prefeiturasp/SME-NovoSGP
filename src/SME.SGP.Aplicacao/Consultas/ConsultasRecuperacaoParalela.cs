@@ -173,13 +173,9 @@ namespace SME.SGP.Aplicacao
                         }));
 
             if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento && alunos.Any())
-            {
-                //pegar o dados daquela turma pap
-                var dadosTurma = alunos.FirstOrDefault(w => w.CodigoComponenteCurricular.HasValue);
-                var codigoDisciplina = alunos.FirstOrDefault().CodigoComponenteCurricular.ToString();
-
+            {   
                 //pegar as frequencias de acordo com os critérios
-                var frequencias = await servicoRecuperacaoParalela.ObterFrequencias(alunosEol.Select(w => w.CodigoAluno).ToArray(), codigoDisciplina, dadosTurma.Ano, (PeriodoRecuperacaoParalela)periodoId);
+                var frequencias = await servicoRecuperacaoParalela.ObterFrequencias(alunosEol.Select(w => w.CodigoAluno).ToArray(), string.Empty, alunos.First().Ano, (PeriodoRecuperacaoParalela)periodoId);
 
                 recuperacaoRetorno.Periodo.Alunos.ForEach(aluno =>
                 {
@@ -219,12 +215,7 @@ namespace SME.SGP.Aplicacao
             }
 
             switch (ordenacao)
-            {
-                case RecuperacaoParalelaOrdenacao.AlfabeticoCrescente:
-                default:
-                    recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderBy(w => w.Nome).ToList();
-                    break;
-
+            {               
                 case RecuperacaoParalelaOrdenacao.AlfabeticoDecrescente:
                     recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderByDescending(w => w.Nome).ToList();
                     break;
@@ -235,6 +226,9 @@ namespace SME.SGP.Aplicacao
 
                 case RecuperacaoParalelaOrdenacao.NumericoDecrescente:
                     recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderByDescending(w => w.NumeroChamada).ToList();
+                    break;
+                default:
+                    recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderBy(w => w.Nome).ToList();
                     break;
             }
 

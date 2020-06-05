@@ -30,6 +30,10 @@ const Justificativa = props => {
     store => store.conselhoClasse.dentroPeriodo
   );
 
+  const podeEditarNota = useSelector(
+    store => store.conselhoClasse.podeEditarNota
+  );
+
   const {
     id,
     justificativa,
@@ -102,7 +106,8 @@ const Justificativa = props => {
                       name="justificativa"
                       id="justificativa"
                       desabilitar={
-                        alunoDesabilitado ||
+                        (alunoDesabilitado && !podeEditarNota) ||
+                        !podeEditarNota ||
                         desabilitarCampos ||
                         !dentroPeriodo ||
                         !ehEdicao
@@ -111,20 +116,20 @@ const Justificativa = props => {
                     />
                     <div className="d-flex justify-content-end pt-2">
                       {notaConceitoPosConselhoAtual &&
-                      notaConceitoPosConselhoAtual.id &&
-                      auditoria ? (
-                        <Auditoria
-                          criadoEm={auditoria.criadoEm}
-                          criadoPor={auditoria.criadoPor}
-                          criadoRf={auditoria.criadoRf}
-                          alteradoPor={auditoria.alteradoPor}
-                          alteradoEm={auditoria.alteradoEm}
-                          alteradoRf={auditoria.alteradoRf}
-                          ignorarMarginTop
-                        />
-                      ) : (
-                        ''
-                      )}
+                        notaConceitoPosConselhoAtual.id &&
+                        auditoria ? (
+                          <Auditoria
+                            criadoEm={auditoria.criadoEm}
+                            criadoPor={auditoria.criadoPor}
+                            criadoRf={auditoria.criadoRf}
+                            alteradoPor={auditoria.alteradoPor}
+                            alteradoEm={auditoria.alteradoEm}
+                            alteradoRf={auditoria.alteradoRf}
+                            ignorarMarginTop
+                          />
+                        ) : (
+                          ''
+                        )}
                       <Button
                         label="Salvar"
                         color={Colors.Roxo}
@@ -132,7 +137,8 @@ const Justificativa = props => {
                           clicouBotaoSalvar(form, e);
                         }}
                         disabled={
-                          alunoDesabilitado ||
+                          (alunoDesabilitado && !podeEditarNota) ||
+                          !podeEditarNota ||
                           desabilitarCampos ||
                           !dentroPeriodo ||
                           !ehEdicao
@@ -147,8 +153,8 @@ const Justificativa = props => {
           </div>
         </div>
       ) : (
-        ''
-      )}
+          ''
+        )}
     </>
   );
 };

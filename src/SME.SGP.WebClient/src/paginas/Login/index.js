@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import { Tooltip } from 'antd';
 import { Formik, Form } from 'formik';
 import shortid from 'shortid';
+import { BrowserView, MobileView, isBrowser } from 'react-device-detect';
 import LoginHelper from './loginHelper';
 import Row from '~/componentes/row';
 import LogoDoSgp from '~/recursos/LogoSgpTexto.svg';
@@ -30,9 +31,10 @@ import {
 import CampoTexto from '~/componentes/campoTexto';
 import { URL_RECUPERARSENHA } from '~/constantes/url';
 import history from '~/servicos/history';
+import api from '~/servicos/api';
 import { Loader } from '~/componentes';
 import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/mensagens/actions';
-import { BrowserView, MobileView } from 'react-device-detect';
+import { salvarVersao } from '~/redux/modulos/sistema/actions';
 
 const Login = props => {
   const dispatch = useDispatch();
@@ -50,6 +52,8 @@ const Login = props => {
   const exibirMensagemSessaoExpirou = useSelector(
     store => store.usuario.sessaoExpirou
   );
+
+  const { versao } = useSelector(store => store.sistema);
 
   let redirect = null;
 
@@ -139,7 +143,7 @@ const Login = props => {
                   id="Formulario"
                   className="col-xl-8 col-md-8 col-sm-8 col-xs-12 p-0"
                 >
-                  <BrowserView>
+                  {isBrowser ? (
                     <Formik
                       enableReinitialize
                       initialValues={{
@@ -212,15 +216,14 @@ const Login = props => {
                         </Form>
                       )}
                     </Formik>
-                  </BrowserView>
-                  <MobileView>
+                  ) : (
                     <MensagemMobile>
                       <span>
                         Para sua melhor experiência recomendamos que o acesso ao
                         sistema seja realizado pelo computador.
                       </span>
                     </MensagemMobile>
-                  </MobileView>
+                  )}
                 </Formulario>
               </Row>
               <Row className="col-md-12 d-flex justify-content-center align-self-end mb-3">
@@ -230,6 +233,10 @@ const Login = props => {
                     alt="Cidade de São Paulo - Educação"
                   />
                 </LogoSP>
+              </Row>
+              <Row>
+                {!versao ? '' : <strong>{versao}&nbsp;</strong>} - Sistema
+                homologado para navegadores: Google Chrome e Firefox
               </Row>
             </Centralizar>
           </CorpoCartao>
