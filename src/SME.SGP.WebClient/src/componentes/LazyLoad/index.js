@@ -4,8 +4,14 @@ import t from 'prop-types';
 // Componentes
 import { Loader } from '~/componentes';
 
+const ComponenteLoader = () => (
+  <Loader loading tip="Carregando...">
+    <br />
+  </Loader>
+);
+
 function LazyLoad({ children }) {
-  return <Suspense fallback={Loader}>{children}</Suspense>;
+  return <Suspense fallback={ComponenteLoader}>{children}</Suspense>;
 }
 
 LazyLoad.propTypes = {
