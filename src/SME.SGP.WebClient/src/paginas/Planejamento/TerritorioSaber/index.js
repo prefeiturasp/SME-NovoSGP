@@ -32,6 +32,7 @@ import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 
 // DTOs
 import RotasDto from '~/dtos/rotasDto';
+import { URL_HOME } from '~/constantes/url';
 
 // Componentes internos
 const DesenvolvimentoReflexao = React.lazy(() =>
@@ -39,6 +40,7 @@ const DesenvolvimentoReflexao = React.lazy(() =>
 );
 
 function TerritorioSaber() {
+  const [modoEdicao, setModoEdicao] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [bimestreAberto, setBimestreAberto] = useState(false);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -65,57 +67,45 @@ function TerritorioSaber() {
     ]
   );
 
-  useEffect(() => {
-    async function buscarPlanejamento() {
-      try {
-        setCarregando(true);
-        const {
-          data,
-          status,
-        } = await TerritorioSaberServico.buscarPlanejamento({
-          turmaId: turmaSelecionada.turma,
-          ueId: turmaSelecionada.unidadeEscolar,
-          anoLetivo: turmaSelecionada.anoLetivo,
-          territorioExperienciaId: territorioSelecionado,
-        });
+  const buscarPlanejamento = useCallback(async () => {
+    try {
+      setCarregando(true);
+      const { data, status } = await TerritorioSaberServico.buscarPlanejamento({
+        turmaId: turmaSelecionada.turma,
+        ueId: turmaSelecionada.unidadeEscolar,
+        anoLetivo: turmaSelecionada.anoLetivo,
+        territorioExperienciaId: territorioSelecionado,
+      });
 
-        if (data && status === 200) {
-          setDados(estado => ({ ...estado, bimestres: data }));
-          setCarregando(false);
-        }
-      } catch (error) {
-        erro('Não foi possível buscar planejamento.');
+      if (data && status === 200) {
+        // TODO Back não envia o id!
+        setDados(estado => ({ ...estado, bimestres: data }));
         setCarregando(false);
+      } else {
+        setDados({ bimestres: [], id: undefined });
       }
+    } catch (error) {
+      erro('Não foi possível buscar planejamento.');
+      setCarregando(false);
     }
+  }, [territorioSelecionado, turmaSelecionada]);
 
+  useEffect(() => {
     if (habilitaCollapse) buscarPlanejamento();
 
     if (Object.keys(turmaSelecionada).length === 0) {
       setTerritorioSelecionado('');
     }
-  }, [
-    habilitaCollapse,
-    territorioSelecionado,
-    turmaSelecionada,
-    turmaSelecionada.anoLetivo,
-    turmaSelecionada.turma,
-    turmaSelecionada.unidadeEscolar,
-  ]);
+  }, [buscarPlanejamento, habilitaCollapse, turmaSelecionada]);
 
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [permissoesTela]);
 
-  const salvarPlanejamento = useCallback(() => {
-    async function salvar() {
-      try {
-        const confirmado = await confirmar(
-          'Atenção',
-          'Suas alterações não foram salvas, deseja salvar agora?'
-        );
-
-        if (confirmado) {
+  const salvarPlanejamento = useCallback(
+    (irParaHome = false) => {
+      async function salvar() {
+        try {
           setCarregando(true);
           const {
             data,
@@ -130,29 +120,34 @@ function TerritorioSaber() {
                 !valorNuloOuVazio(x.desenvolvimento) ||
                 !valorNuloOuVazio(x.reflexao)
             ),
-            id: dados.id,
+            // id: dados.id,
           });
 
           if (data || status === 200) {
             setCarregando(false);
             sucesso('Planejamento salvo com sucesso.');
+            setBimestreAberto(false);
+            if (irParaHome) {
+              history.push(URL_HOME);
+            }
           }
+        } catch (error) {
+          setCarregando(false);
+          erro('Não foi possível salvar planejamento.');
         }
-      } catch (error) {
-        setCarregando(false);
-        erro('Não foi possível salvar planejamento.');
       }
-    }
 
-    salvar();
-  }, [
-    dados.bimestres,
-    dados.id,
-    territorioSelecionado,
-    turmaSelecionada.anoLetivo,
-    turmaSelecionada.turma,
-    turmaSelecionada.unidadeEscolar,
-  ]);
+      salvar();
+    },
+    [
+      dados.bimestres,
+      // dados.id,
+      territorioSelecionado,
+      turmaSelecionada.anoLetivo,
+      turmaSelecionada.turma,
+      turmaSelecionada.unidadeEscolar,
+    ]
+  );
 
   const onChangeBimestre = useCallback(
     (bimestre, dadosBimestre) => {
@@ -166,9 +161,41 @@ function TerritorioSaber() {
             : item
         ),
       }));
+      setModoEdicao(true);
     },
     [territorioSelecionado]
   );
+
+  const onClickCancelar = async () => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        setBimestreAberto(false);
+        setDados({ id: undefined, bimestres: [] });
+        buscarPlanejamento();
+      }
+    }
+  };
+
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmado = await confirmar(
+        'Atenção',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmado) {
+        salvarPlanejamento(true);
+      } else {
+        history.push(URL_HOME);
+      }
+    } else {
+      history.push(URL_HOME);
+    }
+  };
 
   return (
     <>
@@ -177,12 +204,13 @@ function TerritorioSaber() {
       <Card>
         <ButtonGroup
           permissoesTela={permissoesTela[RotasDto.TERRITORIO_SABER]}
-          onClickVoltar={() => history.push('/')}
+          onClickVoltar={onClickVoltar}
           onClickBotaoPrincipal={() => salvarPlanejamento()}
-          onClickCancelar={() => null}
+          onClickCancelar={onClickCancelar}
           labelBotaoPrincipal="Salvar"
           somenteConsulta={somenteConsulta}
           desabilitarBotaoPrincipal={false}
+          modoEdicao={modoEdicao}
         />
         <Grid cols={12}>
           <Linha className="row mb-0">
@@ -209,15 +237,19 @@ function TerritorioSaber() {
                 header="Primeiro Bimestre"
                 key="1"
               >
-                <LazyLoad>
-                  <DesenvolvimentoReflexao
-                    bimestre={1}
-                    onChange={onChangeBimestre}
-                    dadosBimestre={
-                      dados?.bimestres?.filter(item => item.bimestre === 1)[0]
-                    }
-                  />
-                </LazyLoad>
+                {carregando ? (
+                  ''
+                ) : (
+                  <LazyLoad>
+                    <DesenvolvimentoReflexao
+                      bimestre={1}
+                      onChange={onChangeBimestre}
+                      dadosBimestre={
+                        dados?.bimestres?.filter(item => item.bimestre === 1)[0]
+                      }
+                    />
+                  </LazyLoad>
+                )}
               </PainelCollapse.Painel>
               <PainelCollapse.Painel
                 disabled={!habilitaCollapse}
@@ -225,13 +257,19 @@ function TerritorioSaber() {
                 header="Segundo Bimestre"
                 key="2"
               >
-                <DesenvolvimentoReflexao
-                  bimestre={2}
-                  onChange={onChangeBimestre}
-                  dadosBimestre={
-                    dados?.bimestres?.filter(item => item.bimestre === 2)[0]
-                  }
-                />
+                {carregando ? (
+                  ''
+                ) : (
+                  <LazyLoad>
+                    <DesenvolvimentoReflexao
+                      bimestre={2}
+                      onChange={onChangeBimestre}
+                      dadosBimestre={
+                        dados?.bimestres?.filter(item => item.bimestre === 2)[0]
+                      }
+                    />
+                  </LazyLoad>
+                )}
               </PainelCollapse.Painel>
               <PainelCollapse.Painel
                 disabled={!habilitaCollapse}
@@ -239,13 +277,19 @@ function TerritorioSaber() {
                 header="Terceiro Bimestre"
                 key="3"
               >
-                <DesenvolvimentoReflexao
-                  bimestre={3}
-                  onChange={onChangeBimestre}
-                  dadosBimestre={
-                    dados?.bimestres?.filter(item => item.bimestre === 3)[0]
-                  }
-                />
+                {carregando ? (
+                  ''
+                ) : (
+                  <LazyLoad>
+                    <DesenvolvimentoReflexao
+                      bimestre={3}
+                      onChange={onChangeBimestre}
+                      dadosBimestre={
+                        dados?.bimestres?.filter(item => item.bimestre === 3)[0]
+                      }
+                    />
+                  </LazyLoad>
+                )}
               </PainelCollapse.Painel>
               <PainelCollapse.Painel
                 disabled={!habilitaCollapse}
@@ -253,13 +297,19 @@ function TerritorioSaber() {
                 header="Quarto Bimestre"
                 key="4"
               >
-                <DesenvolvimentoReflexao
-                  bimestre={4}
-                  onChange={onChangeBimestre}
-                  dadosBimestre={
-                    dados?.bimestres?.filter(item => item.bimestre === 4)[0]
-                  }
-                />
+                {carregando ? (
+                  ''
+                ) : (
+                  <LazyLoad>
+                    <DesenvolvimentoReflexao
+                      bimestre={4}
+                      onChange={onChangeBimestre}
+                      dadosBimestre={
+                        dados?.bimestres?.filter(item => item.bimestre === 4)[0]
+                      }
+                    />
+                  </LazyLoad>
+                )}
               </PainelCollapse.Painel>
             </PainelCollapse>
           </Loader>
