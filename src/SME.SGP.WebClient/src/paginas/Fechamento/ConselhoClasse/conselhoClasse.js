@@ -30,6 +30,15 @@ const ConselhoClasse = () => {
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [exibirListas, setExibirListas] = useState(false);
+  const [podeImprimir, setPodeImprimir] = useState(false);
+
+  const conselhoClasseId = useSelector(
+    store => store.conselhoClasse.dadosPrincipaisConselhoClasse.conselhoClasseId
+  );
+
+  useEffect(() => {
+    setPodeImprimir(conselhoClasseId);
+  }, [conselhoClasseId]);
 
   const obterListaAlunos = useCallback(async () => {
     setCarregandoGeral(true);
@@ -86,6 +95,8 @@ const ConselhoClasse = () => {
     return false;
   };
 
+  const imprimirConselhosClasse = () => {};
+
   return (
     <Container>
       {!turmaSelecionada.turma ? (
@@ -125,8 +136,8 @@ const ConselhoClasse = () => {
                       icon="print"
                       color={Colors.Azul}
                       border
-                      onClick={() => {}}
-                      disabled
+                      onClick={() => imprimirConselhosClasse}
+                      disabled={!podeImprimir}
                       id="btn-imprimir-conselho-classe"
                     />
                   </div>
