@@ -19,31 +19,31 @@ namespace SME.SGP.Integracao.Teste
             _fixture = fixture;
         }
 
-        [Fact]
-        public void DeveSalvarRelatorioSemestralAluno()
-        {
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
-            _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
+        //[Fact]
+        //public void DeveSalvarRelatorioSemestralAluno()
+        //{
+        //    _fixture._clientApi.DefaultRequestHeaders.Clear();
+        //    _fixture._clientApi.DefaultRequestHeaders.Authorization =
+        //        new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
 
-            var dto = new RelatorioSemestralAlunoPersistenciaDto()
-            {
-                RelatorioSemestralAlunoId = 0,
-                RelatorioSemestralId = 0,
-                Secoes = new List<RelatorioSemestralAlunoSecaoDto>()
-                {
-                    new RelatorioSemestralAlunoSecaoDto(1, "", "", true, "Teste 1"),
-                    new RelatorioSemestralAlunoSecaoDto(2, "", "", true, "Teste 2"),
-                    new RelatorioSemestralAlunoSecaoDto(3, "", "", true, "Teste 3"),
-                    new RelatorioSemestralAlunoSecaoDto(4, "", "", true, "Teste 4"),
-                    new RelatorioSemestralAlunoSecaoDto(5, "", "", false, "Teste 5"),
-                }
-            };
+        //    var dto = new RelatorioSemestralAlunoPersistenciaDto()
+        //    {
+        //        RelatorioSemestralAlunoId = 0,
+        //        RelatorioSemestralId = 0,
+        //        Secoes = new List<RelatorioSemestralAlunoSecaoDto>()
+        //        {
+        //            new RelatorioSemestralAlunoSecaoDto(1, "", "", true, "Teste 1"),
+        //            new RelatorioSemestralAlunoSecaoDto(2, "", "", true, "Teste 2"),
+        //            new RelatorioSemestralAlunoSecaoDto(3, "", "", true, "Teste 3"),
+        //            new RelatorioSemestralAlunoSecaoDto(4, "", "", true, "Teste 4"),
+        //            new RelatorioSemestralAlunoSecaoDto(5, "", "", false, "Teste 5"),
+        //        }
+        //    };
 
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
-            var postResult = _fixture._clientApi.PostAsync($"api/v1/relatorios/pap/semestral/turmas/321/semestres/1/alunos/123", jsonParaPost).Result;
+        //    var jsonParaPost = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
+        //    var postResult = _fixture._clientApi.PostAsync($"api/v1/relatorios/pap/semestral/turmas/321/semestres/1/alunos/123", jsonParaPost).Result;
 
-            Assert.True(postResult.IsSuccessStatusCode);
-        }
+        //    Assert.True(postResult.IsSuccessStatusCode);
+        //}
     }
 }

@@ -27,7 +27,7 @@ pipeline {
                 sh 'echo Analise SonarQube API'
                 sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.host.url="http://automation.educacao.intranet:9000" /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs"'
                 sh 'dotnet build'
-                sh 'dotnet test --filter FullyQualifiedName!~SME.SGP.Integracao.Teste /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
                 sh 'dotnet-sonarscanner end /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b"'
             // anlise codigo frontend
                 sh 'echo Analise SonarQube FRONTEND'
@@ -50,7 +50,7 @@ pipeline {
         stage('Testes') {
             steps {
             //Executa os testes
-            sh 'dotnet test --filter FullyQualifiedName\\!~SME.SGP.Integracao.Teste'
+            sh 'dotnet test'
             }
         }
         
