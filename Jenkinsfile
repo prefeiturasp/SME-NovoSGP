@@ -167,7 +167,7 @@ pipeline {
                  timeout(time: 24, unit: "HOURS") {
                
                  telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
-                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira,marlon_goncalves'
+                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marlon_goncalves, allan_santos, everton_nogueira, marcos_costa, bruno_alevato, robson_silva'
             }
                  sh 'echo Deploying homologacao'
                 
@@ -221,11 +221,11 @@ pipeline {
                 branch 'release-r2'
             }
             steps {
-                 timeout(time: 24, unit: "HOURS") {
+            //     timeout(time: 24, unit: "HOURS") {
                
-                 telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
-                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira,marlon_goncalves'
-            }
+            //    telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
+            //     input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira,marlon_goncalves'
+            //}
                  sh 'echo Deploying homologacao'
                 
         // Start JOB Rundeck para build das imagens Docker e push registry SME
@@ -283,7 +283,7 @@ pipeline {
                  timeout(time: 24, unit: "HOURS") {
                
                  telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
-                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira,marlon_goncalves'
+                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marlon_goncalves, allan_santos, everton_nogueira, marcos_costa, bruno_alevato, robson_silva'
             }
                  sh 'echo Deploy produção'
                 
