@@ -1,17 +1,16 @@
-﻿using System;
-using System.Diagnostics;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
+using System;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
 {
     public class FilaRabbit : IServicoFila
     {
-        
+
         private readonly IModel rabbitChannel;
 
         public FilaRabbit(IModel rabbitChannel)
@@ -22,14 +21,14 @@ namespace SME.SGP.Infra
         {
             try
             {
-
-            
-            var mensagem = JsonConvert.SerializeObject(adicionaFilaDto.Dados);
-
-            var body = Encoding.UTF8.GetBytes(mensagem);
-            
-            //TODO PENSAR NA EXCHANGE
-            rabbitChannel.BasicPublish("sme.sr.workers", adicionaFilaDto.Fila, null, body);
+                var request = new { action = adicionaFilaDto.Endpoint, adicionaFilaDto.Dados };
+                var mensagem = JsonConvert.SerializeObject(request);
+                var body = Encoding.UTF8.GetBytes(mensagem);
+                //TODO PENSAR NA EXCHANGE
+                var properties = rabbitChannel.CreateBasicProperties();
+                properties.Persistent = false;
+                properties.Persistent = false;
+                rabbitChannel.BasicPublish("sme.sr.workers", adicionaFilaDto.Fila, properties, body);
 
             }
             catch (Exception ex)
@@ -42,4 +41,4 @@ namespace SME.SGP.Infra
 }
 
 
-            
+

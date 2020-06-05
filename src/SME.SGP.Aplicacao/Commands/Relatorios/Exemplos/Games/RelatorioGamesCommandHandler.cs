@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Threading;
@@ -17,8 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(RelatorioGamesCommand request, CancellationToken cancellationToken)
         {
-
-            await servicoFila.AdicionaFila(new Infra.Dtos.AdicionaFilaDto("relatorios", new { Teste = "Ronaldo" }));
+            await servicoFila.AdicionaFila(new AdicionaFilaDto("relatorios", new { ano = 25 }, "relatorios/alunos"));
             return true;
         }
     }
