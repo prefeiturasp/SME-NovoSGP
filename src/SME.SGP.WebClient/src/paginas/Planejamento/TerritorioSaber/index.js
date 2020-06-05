@@ -95,7 +95,6 @@ function TerritorioSaber() {
   }, [buscarPlanejamento, habilitaCollapse, turmaSelecionada]);
 
   useEffect(() => {
-    debugger;
     const permissoes = permissoesTela[RotasDto.TERRITORIO_SABER];
     setSomenteConsulta(verificaSomenteConsulta(permissoes));
   }, [permissoesTela]);
