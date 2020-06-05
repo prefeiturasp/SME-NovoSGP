@@ -15,6 +15,8 @@ import notasConceitos from './notasConceitos/reducer';
 import mensagens from './mensagens/reducers';
 import conselhoClasse from './conselhoClasse/reducers';
 
+import sistema from './sistema/reducers';
+
 const reducers = combineReducers({
   navegacao,
   alertas,
@@ -30,6 +32,7 @@ const reducers = combineReducers({
   notasConceitos,
   mensagens,
   conselhoClasse,
+  sistema,
 });
 
 const rootReducer = (state, action) => {

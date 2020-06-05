@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.Integracoes;
 using System;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace SME.SGP.Api
 {
@@ -22,6 +24,12 @@ namespace SME.SGP.Api
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            services.AddHttpClient<IServicoGithub, SevicoGithub>(c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiGithub").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
         }

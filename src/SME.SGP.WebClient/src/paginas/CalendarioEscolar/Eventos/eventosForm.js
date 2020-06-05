@@ -345,6 +345,8 @@ const EventosForm = ({ match }) => {
     state => state.calendarioEscolar.eventoCalendarioEdicao
   );
 
+  const [podeAlterarExcluir, setPodeAlterarExcluir] = useState(false);
+
   const consultaPorId = async id => {
     const evento = await servicoEvento.obterPorId(id).catch(e => erros(e));
 
@@ -360,6 +362,14 @@ const EventosForm = ({ match }) => {
 
       montarTipoCalendarioPorId(evento.data.tipoCalendarioId);
       setUsuarioPodeAlterar(evento.data.podeAlterar);
+
+      setPodeAlterarExcluir(
+        usuarioStore.possuiPerfilSme === true ||
+          (usuarioStore.possuiPerfilDre === true &&
+            evento.data.dreId &&
+            evento.data.ueId) ||
+          evento.data.criadoRF === usuarioStore.rf
+      );
 
       setValoresIniciais({
         dataFim: evento.data.dataFim ? window.moment(evento.data.dataFim) : '',
@@ -512,7 +522,19 @@ const EventosForm = ({ match }) => {
   const onClickCadastrar = async valoresForm => {
     setCarregandoSalvar(true);
 
+    valoresForm.dataInicio = new Date(
+      valoresForm.dataInicio.year(),
+      valoresForm.dataInicio.month(),
+      valoresForm.dataInicio.date()
+    );
+
     if (tipoDataUnico) valoresForm.dataFim = valoresForm.dataInicio;
+    else
+      valoresForm.dataFim = new Date(
+        valoresForm.dataFim.year(),
+        valoresForm.dataFim.month(),
+        valoresForm.dataFim.date()
+      );
 
     const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map(id => {
       const calendario = listaCalendarioEscolar.find(e => e.id === id);
@@ -861,7 +883,8 @@ const EventosForm = ({ match }) => {
                       somenteConsulta ||
                       !permissoesTela.podeExcluir ||
                       novoRegistro ||
-                      !valoresIniciais.podeAlterar
+                      !valoresIniciais.podeAlterar ||
+                      !podeAlterarExcluir
                     }
                   />
                   <Button
@@ -875,7 +898,9 @@ const EventosForm = ({ match }) => {
                     disabled={
                       desabilitarCampos ||
                       (!novoRegistro &&
-                        (somenteConsulta || !permissoesTela.podeAlterar)) ||
+                        (somenteConsulta ||
+                          !permissoesTela.podeAlterar ||
+                          !podeAlterarExcluir)) ||
                       !usuarioPodeAlterar
                     }
                   />

@@ -248,7 +248,6 @@ const PlanoAula = props => {
         titulo="Plano de aula"
         indice="Plano de aula"
         show={mostrarCardPrincipal}
-        icon={possuiPlanoAnual}
       >
         <Loader loading={mostrarCardPrincipal && carregandoMaterias}>
           <QuantidadeBotoes className="col-md-12">
