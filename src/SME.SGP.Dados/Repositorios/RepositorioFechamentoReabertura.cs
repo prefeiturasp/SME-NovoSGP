@@ -70,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
 
             MontaQueryCabecalhoSemBimestres(query);
             MontaQueryFromSemBimestres(query);
-            MontaQueryListarWhere(query, tipoCalendarioId, 0, 0, dreCodigo, ueCodigo);
+            MontaQueryListarWherePaginado(query, tipoCalendarioId, dreCodigo, ueCodigo);
 
             var retornoPaginado = new PaginacaoResultadoDto<FechamentoReabertura>();
 
@@ -305,6 +305,24 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ids != null && ids.Any())
                 query.AppendLine("and fr.id = ANY(@ids)");
+        }
+
+        private void MontaQueryListarWherePaginado(StringBuilder query, long tipoCalendarioId, string dreCodigo = "", string ueCodigo = "")
+        {
+            query.AppendLine("where fr.excluido = false and fr.status <> 3");
+
+            if (tipoCalendarioId > 0)
+                query.AppendLine("and fr.tipo_calendario_id = @tipoCalendarioId");
+
+            if (!string.IsNullOrEmpty(dreCodigo))
+                query.AppendLine("and dre.dre_id = @dreCodigo");
+            else
+                query.AppendLine("and fr.dre_id is null");
+
+            if (!string.IsNullOrEmpty(ueCodigo))
+                query.AppendLine("and ue.ue_id = @ueCodigo");
+            else
+                query.AppendLine("and fr.ue_id is null");
         }
 
         public async Task<FechamentoReabertura> ObterPorDataTurmaCalendarioAsync(long ueId, DateTime dataReferencia, long tipoCalendarioId)
