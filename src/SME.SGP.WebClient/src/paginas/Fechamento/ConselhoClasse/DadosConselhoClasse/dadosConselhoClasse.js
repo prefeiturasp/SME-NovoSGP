@@ -107,6 +107,7 @@ const DadosConselhoClasse = props => {
         if (e && e.response && e.response.status === 601) {
           dispatch(setBimestreAtual(bimestreConsulta || '1'));
         }
+        dispatch(setDadosPrincipaisConselhoClasse({}));
         setSemDados(true);
       });
       if (retorno && retorno.data) {
