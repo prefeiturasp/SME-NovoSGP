@@ -88,6 +88,7 @@ const FrequenciaPlanoAula = () => {
     licaoCasa: null,
     objetivosAprendizagemAula: [],
     migrado: false,
+    possuiPlanoAnual: false
   });
   const [temObjetivos, setTemObjetivos] = useState(false);
   const [errosValidacaoPlano, setErrosValidacaoPlano] = useState([]);
@@ -305,6 +306,7 @@ const FrequenciaPlanoAula = () => {
           };
           setAuditoriaPlano(audPlano);
         } else {
+          setPlanoAula(dadosPlano);
           setModoEdicaoPlanoAula(false);
         }
       }
