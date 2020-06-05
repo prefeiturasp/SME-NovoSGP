@@ -1,7 +1,8 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Commands.Relatorios.GerarRelatorio;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -14,9 +15,9 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public async Task Executar()
+        public async Task<bool> Executar(FiltroRelatorioGamesDto filtroRelatorioGamesDto)
         {
-            await mediator.Send(new RelatorioGamesCommand());
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Games, filtroRelatorioGamesDto));
         }
     }
 }

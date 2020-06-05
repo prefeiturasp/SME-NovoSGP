@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -9,12 +10,10 @@ namespace SME.SGP.Api.Controllers
 
     public class ExemploRelatorioController : ControllerBase
     {
-
-        [HttpGet("games/anos/{ano}")]
-        public async Task<IActionResult> ExemploGames(int ano, [FromServices] IGamesUseCase gamesUseCase)
+        [HttpPost("games")]
+        public async Task<IActionResult> ExemploGames([FromBody] FiltroRelatorioGamesDto filtroRelatorioGamesDto, [FromServices] IGamesUseCase gamesUseCase)
         {
-            await gamesUseCase.Executar();
-            return Ok("");
+            return Ok(await gamesUseCase.Executar(filtroRelatorioGamesDto));
         }
     }
 }

@@ -2,15 +2,15 @@
 {
     public class AdicionaFilaDto
     {
-        public AdicionaFilaDto(string fila, object dados, string endpoint)
+        public AdicionaFilaDto(string fila, object filtros, string endpoint)
         {
             Fila = fila;
-            Dados = dados;
+            Filtros = filtros;
             Endpoint = endpoint;
         }
 
         public string Fila { get; set; }
-        public object Dados { get; set; }
+        public object Filtros { get; set; }
         //TODO: PENSAR EM NOME MELHOR
         public string Endpoint { get; set; }
     }

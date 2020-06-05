@@ -21,7 +21,7 @@ namespace SME.SGP.Infra
         {
             try
             {
-                var request = new { action = adicionaFilaDto.Endpoint, adicionaFilaDto.Dados };
+                var request = new { action = adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros };
                 var mensagem = JsonConvert.SerializeObject(request);
                 var body = Encoding.UTF8.GetBytes(mensagem);
                 //TODO PENSAR NA EXCHANGE
