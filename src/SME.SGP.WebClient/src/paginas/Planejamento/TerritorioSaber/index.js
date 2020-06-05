@@ -22,7 +22,7 @@ import DropDownTerritorios from './componentes/DropDownTerritorios';
 import { Linha } from '~/componentes/EstilosGlobais';
 
 // Serviços
-import { erro, sucesso, confirmar } from '~/servicos/alertas';
+import { erro, sucesso, confirmar, erros } from '~/servicos/alertas';
 import TerritorioSaberServico from '~/servicos/Paginas/TerritorioSaber';
 import history from '~/servicos/history';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
@@ -45,10 +45,7 @@ function TerritorioSaber() {
   const [bimestreAberto, setBimestreAberto] = useState(false);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [territorioSelecionado, setTerritorioSelecionado] = useState('');
-  const [dados, setDados] = useState({
-    bimestres: [],
-    id: undefined,
-  });
+  const [dados, setDados] = useState({ bimestres: [] });
 
   const permissoesTela = useSelector(store => store.usuario.permissoes);
   const { turmaSelecionada } = useSelector(estado => estado.usuario);
@@ -78,11 +75,10 @@ function TerritorioSaber() {
       });
 
       if (data && status === 200) {
-        // TODO Back não envia o id!
         setDados(estado => ({ ...estado, bimestres: data }));
         setCarregando(false);
       } else {
-        setDados({ bimestres: [], id: undefined });
+        setDados({ bimestres: [] });
       }
     } catch (error) {
       erro('Não foi possível buscar planejamento.');
@@ -99,53 +95,49 @@ function TerritorioSaber() {
   }, [buscarPlanejamento, habilitaCollapse, turmaSelecionada]);
 
   useEffect(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+    debugger;
+    const permissoes = permissoesTela[RotasDto.TERRITORIO_SABER];
+    setSomenteConsulta(verificaSomenteConsulta(permissoes));
   }, [permissoesTela]);
 
   const salvarPlanejamento = useCallback(
     (irParaHome = false) => {
       async function salvar() {
-        try {
-          setCarregando(true);
-          const {
-            data,
-            status,
-          } = await TerritorioSaberServico.salvarPlanejamento({
-            turmaId: turmaSelecionada.turma,
-            escolaId: turmaSelecionada.unidadeEscolar,
-            anoLetivo: turmaSelecionada.anoLetivo,
-            territorioExperienciaId: territorioSelecionado,
-            bimestres: dados.bimestres.filter(
-              x =>
-                !valorNuloOuVazio(x.desenvolvimento) ||
-                !valorNuloOuVazio(x.reflexao)
-            ),
-            // id: dados.id,
-          });
-
-          if (data || status === 200) {
-            setCarregando(false);
-            sucesso('Planejamento salvo com sucesso.');
+        setCarregando(true);
+        const retorno = await TerritorioSaberServico.salvarPlanejamento({
+          turmaId: turmaSelecionada.turma,
+          escolaId: turmaSelecionada.unidadeEscolar,
+          anoLetivo: turmaSelecionada.anoLetivo,
+          territorioExperienciaId: territorioSelecionado,
+          bimestres: dados.bimestres.filter(
+            x =>
+              !valorNuloOuVazio(x.desenvolvimento) ||
+              !valorNuloOuVazio(x.reflexao)
+          ),
+        }).catch(e => erros(e));
+        if (retorno && retorno.status === 200) {
+          sucesso('Planejamento salvo com sucesso.');
+          if (irParaHome) {
+            history.push(URL_HOME);
+          } else {
             setBimestreAberto(false);
-            if (irParaHome) {
-              history.push(URL_HOME);
-            }
+            buscarPlanejamento();
+            setModoEdicao(false);
           }
-        } catch (error) {
-          setCarregando(false);
-          erro('Não foi possível salvar planejamento.');
         }
+
+        setCarregando(false);
       }
 
       salvar();
     },
     [
       dados.bimestres,
-      // dados.id,
       territorioSelecionado,
       turmaSelecionada.anoLetivo,
       turmaSelecionada.turma,
       turmaSelecionada.unidadeEscolar,
+      buscarPlanejamento,
     ]
   );
 
@@ -175,7 +167,7 @@ function TerritorioSaber() {
       );
       if (confirmou) {
         setBimestreAberto(false);
-        setDados({ id: undefined, bimestres: [] });
+        setDados({ bimestres: [] });
         buscarPlanejamento();
       }
     }
