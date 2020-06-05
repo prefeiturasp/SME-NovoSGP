@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra.Interfaces;
+using SME.SGP.Aplicacao.Commands.Relatorios.GerarRelatorio;
+using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,17 +9,16 @@ namespace SME.SGP.Aplicacao
 {
     public class RelatorioGamesCommandHandler : IRequestHandler<RelatorioGamesCommand, bool>
     {
-        private readonly IServicoFila servicoFila;
+        private readonly IMediator mediator;
 
-        public RelatorioGamesCommandHandler(IServicoFila servicoFila)
+        public RelatorioGamesCommandHandler(IMediator mediator)
         {
-            this.servicoFila = servicoFila ?? throw new ArgumentNullException(nameof(servicoFila));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(RelatorioGamesCommand request, CancellationToken cancellationToken)
         {
-            await servicoFila.AdicionaFila(new AdicionaFilaDto("relatorios", new { ano = 25 }, "relatorios/alunos"));
-            return true;
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Games, request));
         }
     }
 }
