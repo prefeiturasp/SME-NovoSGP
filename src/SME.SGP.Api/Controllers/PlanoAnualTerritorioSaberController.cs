@@ -29,8 +29,14 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PT_I, Permissao.PT_A, Policy = "Bearer")]
         public IActionResult Post(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, [FromServices]IComandosPlanoAnualTerritorioSaber comandosPlanoAnualTerritorioSaber)
         {
-            comandosPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaberDto);
-            return Ok();
+            var resultado = comandosPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaberDto);
+
+            if (planoAnualTerritorioSaberDto.Id == default(int))
+            {
+                return Ok();
+            }
+
+            return Ok(resultado);
         }
     }
 }
