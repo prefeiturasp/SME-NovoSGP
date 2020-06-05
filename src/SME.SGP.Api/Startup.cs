@@ -143,7 +143,7 @@ namespace SME.SGP.Api
             IModel _channel = conexaoRabbit.CreateModel() ;
             _channel.ExchangeDeclare("sme.sr.workers", ExchangeType.Topic);
             _channel.QueueDeclare("sme.sr.workers.sgp", false, false, false, null);
-
+            _channel.QueueBind("sme.sr.workers.sgp", "sme.sr.workers", "relatorios");
 
             services.AddSingleton(conexaoRabbit);
             services.AddSingleton(_channel);
