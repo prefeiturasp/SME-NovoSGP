@@ -11,7 +11,7 @@ import {
   setDadosAlunoObjectCard,
   limparDadosConselhoClasse,
 } from '~/redux/modulos/conselhoClasse/actions';
-import { erros } from '~/servicos/alertas';
+import { erros, erro } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import { Container } from './conselhoClasse.css';
 import BotaoOrdenarListaAlunos from './DadosConselhoClasse/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
@@ -29,11 +29,17 @@ const ConselhoClasse = () => {
   const { turma, anoLetivo, periodo } = turmaSelecionada;
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
+  const [imprimindo, setImprimindo] = useState(false);
   const [exibirListas, setExibirListas] = useState(false);
   const [podeImprimir, setPodeImprimir] = useState(false);
 
   const conselhoClasseId = useSelector(
     store => store.conselhoClasse.dadosPrincipaisConselhoClasse.conselhoClasseId
+  );
+
+  const fechamentoTurmaId = useSelector(
+    store =>
+      store.conselhoClasse.dadosPrincipaisConselhoClasse.fechamentoTurmaId
   );
 
   useEffect(() => {
@@ -95,7 +101,15 @@ const ConselhoClasse = () => {
     return false;
   };
 
-  const imprimirConselhosClasse = () => {};
+  const imprimirTurma = async () => {
+    setImprimindo(true);
+    await ServicoConselhoClasse.imprimirTurma(
+      conselhoClasseId,
+      fechamentoTurmaId
+    )
+      .finally(setImprimindo(false))
+      .catch(e => erro(e));
+  };
 
   return (
     <Container>
@@ -130,16 +144,17 @@ const ConselhoClasse = () => {
                 <>
                   <div className="col-md-12 mb-2 d-flex">
                     <BotaoOrdenarListaAlunos />
-
-                    <Button
-                      className="btn-imprimir"
-                      icon="print"
-                      color={Colors.Azul}
-                      border
-                      onClick={() => imprimirConselhosClasse}
-                      disabled={!podeImprimir}
-                      id="btn-imprimir-conselho-classe"
-                    />
+                    <Loader loading={imprimindo}>
+                      <Button
+                        className="btn-imprimir"
+                        icon="print"
+                        color={Colors.Azul}
+                        border
+                        onClick={() => imprimirTurma()}
+                        disabled={!podeImprimir}
+                        id="btn-imprimir-conselho-classe"
+                      />
+                    </Loader>
                   </div>
                   <div className="col-md-12 mb-2">
                     <TabelaRetratilConselhoClasse
