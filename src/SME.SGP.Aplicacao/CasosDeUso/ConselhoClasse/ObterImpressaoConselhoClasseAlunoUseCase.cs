@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterImpressaoConselhoClasseAlunoUseCase
     {
-        public static async Task<bool> Executar(IMediator mediator, long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
+        public static async Task<bool> Executar(IMediator mediator, long conselhoClasseAlunoId, string alunoCodigo)
         {
             return default;
         }
