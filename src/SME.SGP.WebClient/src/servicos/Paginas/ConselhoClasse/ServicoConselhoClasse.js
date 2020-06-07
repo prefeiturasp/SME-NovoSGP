@@ -134,9 +134,15 @@ class ServicoConselhoClasse {
     dispatch(setMarcadorParecerConclusivo(parecerAtual));
   };
 
-  imprimirTurma = (conselhoClasseId, fechamentoTurmaId) => {
+  gerarConselhoClasseTurma = (conselhoClasseId, fechamentoTurmaId) => {
     return api.get(
       `v1/conselhos-classe/${conselhoClasseId}/fechamentos/${fechamentoTurmaId}/imprimir`
+    );
+  };
+
+  gerarConselhoClasseAluno = (conselhoClasseAlunoId, alunoCodigo) => {
+    return api.get(
+      `/v1/conselhos-classe/${conselhoClasseAlunoId}/alunos/${alunoCodigo}/imprimir`
     );
   };
 }

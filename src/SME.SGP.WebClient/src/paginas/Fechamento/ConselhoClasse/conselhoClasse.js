@@ -11,7 +11,7 @@ import {
   setDadosAlunoObjectCard,
   limparDadosConselhoClasse,
 } from '~/redux/modulos/conselhoClasse/actions';
-import { erros, erro } from '~/servicos/alertas';
+import { erros, erro, sucesso } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import { Container } from './conselhoClasse.css';
 import BotaoOrdenarListaAlunos from './DadosConselhoClasse/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
@@ -101,12 +101,15 @@ const ConselhoClasse = () => {
     return false;
   };
 
-  const imprimirTurma = async () => {
+  const gerarConselhoClasseTurma = async () => {
     setImprimindo(true);
-    await ServicoConselhoClasse.imprimirTurma(
+    await ServicoConselhoClasse.gerarConselhoClasseTurma(
       conselhoClasseId,
       fechamentoTurmaId
     )
+      .then(resp => {
+        sucesso('Gerando conselho de classe da turma');
+      })
       .finally(setImprimindo(false))
       .catch(e => erro(e));
   };
@@ -150,7 +153,7 @@ const ConselhoClasse = () => {
                         icon="print"
                         color={Colors.Azul}
                         border
-                        onClick={() => imprimirTurma()}
+                        onClick={() => gerarConselhoClasseTurma()}
                         disabled={!podeImprimir}
                         id="btn-imprimir-conselho-classe"
                       />
