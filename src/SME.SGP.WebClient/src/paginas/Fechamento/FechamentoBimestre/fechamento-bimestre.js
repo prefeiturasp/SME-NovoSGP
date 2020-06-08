@@ -37,6 +37,7 @@ const FechamentoBismestre = () => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [permissoesTela]);
 
+  const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
   const [carregandoBimestres, setCarregandoBimestres] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(null);
@@ -55,12 +56,34 @@ const FechamentoBismestre = () => {
   const [situacaoFechamento, setSituacaoFechamento] = useState(0);
   const [registraFrequencia, setRegistraFrequencia] = useState(true);
 
+  const resetarTela = () => {
+    setBimestreCorrente('1Bimestre');
+    setDadosBimestre1(undefined);
+    setDadosBimestre2(undefined);
+    setDadosBimestre3(undefined);
+    setDadosBimestre4(undefined);
+    setEhRegencia(false);
+    setEhSintese(false);
+    setPeriodoFechamento(periodo.Anual);
+    setSituacaoFechamento(0);
+    setRegistraFrequencia(true);
+    setModoEdicao(false);
+  };
+
   const onChangeDisciplinas = id => {
-    const disciplina = listaDisciplinas.find(
-      c => String(c.codigoComponenteCurricular) === id
-    );
-    setEhRegencia(disciplina.regencia);
     setDisciplinaIdSelecionada(id);
+    if (id) {
+      const disciplina = listaDisciplinas.find(
+        c => String(c.codigoComponenteCurricular) === id
+      );
+      if (disciplina && disciplina.regencia) {
+        setEhRegencia(true);
+      } else {
+        setEhRegencia(false);
+      }
+    } else {
+      resetarTela();
+    }
   };
 
   const onClickVoltar = async () => {
@@ -91,20 +114,29 @@ const FechamentoBismestre = () => {
   useEffect(() => {
     const obterDisciplinas = async () => {
       if (turmaSelecionada && turmaSelecionada.turma) {
+        setCarregandoDisciplinas(true);
         const lista = await ServicoDisciplina.obterDisciplinasPorTurma(
           turmaSelecionada.turma
-        );
-        setListaDisciplinas([...lista.data]);
-        if (lista.data.length === 1) {
-          setDisciplinaIdSelecionada(undefined);
-          setDisciplinaIdSelecionada(
-            String(lista.data[0].codigoComponenteCurricular)
-          );
-          setEhRegencia(lista.data[0].regencia);
-          setDesabilitarDisciplina(true);
+        ).catch(e => erros(e));
+        if (lista && lista.data) {
+          setListaDisciplinas([...lista.data]);
+          if (lista.data.length === 1) {
+            setDisciplinaIdSelecionada(undefined);
+            setDisciplinaIdSelecionada(
+              String(lista.data[0].codigoComponenteCurricular)
+            );
+            setEhRegencia(lista.data[0].regencia);
+            setDesabilitarDisciplina(true);
+          }
+        } else {
+          setListaDisciplinas([]);
         }
+        setCarregandoDisciplinas(false);
       }
     };
+    setDisciplinaIdSelecionada(undefined);
+    setListaDisciplinas([]);
+    resetarTela();
     obterDisciplinas();
   }, [turmaSelecionada]);
 
@@ -265,6 +297,7 @@ const FechamentoBismestre = () => {
             <div className="row">
               <div className="col-md-12 d-flex justify-content-end pb-4">
                 <Button
+                  id="btn-volta-fechamento-bimestre"
                   label="Voltar"
                   icon="arrow-left"
                   color={Colors.Azul}
@@ -273,6 +306,7 @@ const FechamentoBismestre = () => {
                   onClick={onClickVoltar}
                 />
                 <Button
+                  id="btn-cancelar-fechamento-bimestre"
                   label="Cancelar"
                   color={Colors.Roxo}
                   border
@@ -282,6 +316,7 @@ const FechamentoBismestre = () => {
                   hidden={ehSintese}
                 />
                 <Button
+                  id="btn-salvar-fechamento-bimestre"
                   label="Salvar"
                   color={Colors.Roxo}
                   border
@@ -297,17 +332,19 @@ const FechamentoBismestre = () => {
           <div className="col-md-12">
             <div className="row">
               <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-4">
-                <SelectComponent
-                  id="disciplina"
-                  name="disciplinaId"
-                  lista={listaDisciplinas}
-                  valueOption="codigoComponenteCurricular"
-                  valueText="nome"
-                  valueSelect={disciplinaIdSelecionada}
-                  onChange={onChangeDisciplinas}
-                  placeholder="Selecione um componente curricular"
-                  disabled={desabilitarDisciplina || !turmaSelecionada.turma}
-                />
+                <Loader loading={carregandoDisciplinas}>
+                  <SelectComponent
+                    id="disciplina"
+                    name="disciplinaId"
+                    lista={listaDisciplinas}
+                    valueOption="codigoComponenteCurricular"
+                    valueText="nome"
+                    valueSelect={disciplinaIdSelecionada}
+                    onChange={onChangeDisciplinas}
+                    placeholder="Selecione um componente curricular"
+                    disabled={desabilitarDisciplina || !turmaSelecionada.turma}
+                  />
+                </Loader>
               </div>
             </div>
           </div>
