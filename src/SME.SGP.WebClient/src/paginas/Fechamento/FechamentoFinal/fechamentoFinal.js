@@ -17,6 +17,7 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { ContainerAuditoria, Lista } from './fechamentoFinal.css';
 import LinhaAluno from './linhaAluno';
 import { setExpandirLinha } from '~/redux/modulos/notasConceitos/actions';
+import Alert from '~/componentes/alert';
 
 const FechamentoFinal = forwardRef((props, ref) => {
   const {
@@ -75,6 +76,15 @@ const FechamentoFinal = forwardRef((props, ref) => {
       .catch(e => erros(e));
   };
 
+  const resetarTela = () => {
+    setDadosFechamentoFinal({});
+    setAlunos([]);
+    setEhNota(true);
+    setEhSintese(false);
+    setAuditoria({});
+    setDisciplinaSelecionada();
+  };
+
   const obterFechamentoFinal = useCallback(() => {
     setNotasEmEdicao([]);
     dispatch(setExpandirLinha([]));
@@ -103,6 +113,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
         carregandoFechamentoFinal(false);
       })
       .catch(e => {
+        resetarTela();
         erros(e);
         carregandoFechamentoFinal(false);
       });
@@ -118,10 +129,12 @@ const FechamentoFinal = forwardRef((props, ref) => {
   }));
 
   useEffect(() => {
-    if (bimestreCorrente == 'final') {
+    if (bimestreCorrente == 'final' && turmaCodigo && disciplinaCodigo) {
       obterFechamentoFinal();
+    } else {
+      resetarTela();
     }
-  }, [obterFechamentoFinal, bimestreCorrente]);
+  }, [bimestreCorrente, disciplinaCodigo]);
 
   const setDisciplinaAtiva = disciplina => {
     const disciplinas = disciplinasRegencia.map(c => {
@@ -191,6 +204,22 @@ const FechamentoFinal = forwardRef((props, ref) => {
         ) : (
             ''
           )}
+        {disciplinasRegencia &&
+        disciplinasRegencia.length &&
+        !disciplinaSelecionada ? (
+          <div className="col-md-12">
+            <Alert
+              alerta={{
+                tipo: 'warning',
+                id: 'AlertaTurmaFechamentoFinal',
+                mensagem:
+                  'Selecione um componente para consultar as notas ou conceitos dos bimestre',
+                estiloTitulo: { fontSize: '18px' },
+              }}
+              className="mb-2"
+            />
+          </div>
+        ) : null}
         {exibirLista && (
           <>
             <div className="table-responsive">
