@@ -114,6 +114,7 @@ const DadosConselhoClasse = props => {
         const {
           conselhoClasseId,
           fechamentoTurmaId,
+          conselhoClasseAlunoId,
           bimestre,
           periodoFechamentoInicio,
           periodoFechamentoFim,
@@ -142,6 +143,7 @@ const DadosConselhoClasse = props => {
         const valores = {
           fechamentoTurmaId,
           conselhoClasseId: conselhoClasseId || 0,
+          conselhoClasseAlunoId,
           alunoCodigo: codigoEOL,
           turmaCodigo,
           alunoDesabilitado: desabilitado,
