@@ -1,3 +1,4 @@
+import shortid from 'shortid';
 import React from 'react';
 import {
   CampoNotaRegencia,
@@ -19,7 +20,7 @@ const FechamentoRegencia = props => {
         <LinhaNotaRegencia>
           {dados
             ? dados.map(item => (
-                <CampoNotaRegencia>
+                <CampoNotaRegencia key={shortid.generate()}>
                   <span className="centro disciplina">{item.disciplina}</span>
                   <span className="centro nota">
                     {item.ehConceito
