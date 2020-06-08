@@ -24,7 +24,7 @@ import ModalAnotacaoAluno from '../../FechamentoModalAnotacaoAluno/modal-anotaca
 
 const FechamentoBimestreLista = props => {
 
-  const { dados, ehRegencia, ehSintese, codigoComponenteCurricular, turmaId, anoLetivo } = props;  
+  const { dados, ehRegencia, ehSintese, codigoComponenteCurricular, turmaId, anoLetivo, registraFrequencia } = props;
   const [dadosLista, setDadosLista] = useState(
     dados ? dados.alunos : undefined
   );
@@ -87,7 +87,7 @@ const FechamentoBimestreLista = props => {
     setAlunoModalAnotacao(aluno);
     setExibirModalAnotacao(true);
   };
-  
+
   const onCloseModalAnotacao = (salvou, excluiu) => {
     if (salvou) {
       alunoModalAnotacao.temAnotacao = true;
@@ -167,10 +167,10 @@ const FechamentoBimestreLista = props => {
             ''
           )}
         </div>
-        <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">          
+        <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
           <SituacaoProcessadoComPendencias>
             <span>{ situacaoFechamento ? situacaosituacaoNomeFechamento : 'Não executado' }</span>
-          </SituacaoProcessadoComPendencias> 
+          </SituacaoProcessadoComPendencias>
           <MarcadorAulas className="ml-2">
             <span>Aulas previstas </span>
             <span className="numero">
@@ -203,7 +203,11 @@ const FechamentoBimestreLista = props => {
               </th>
               <th className="text-center fundo-cinza">Faltas no Bimestre</th>
               <th className="text-center fundo-cinza">Ausências Compensadas</th>
-              <th className="text-center fundo-cinza">Frequência</th>
+              {registraFrequencia ? (
+                <th className="text-center fundo-cinza">Frequência</th>
+              ) : (
+                ''
+              )}
             </tr>
           </thead>
           <tbody>
@@ -240,7 +244,7 @@ const FechamentoBimestreLista = props => {
                               <div className=" d-flex justify-content-end">
                                 <BtbAnotacao className={item.temAnotacao ? 'btn-com-anotacao' : ''} onClick={() => onClickAnotacao(item)}>
                                   <i class="fas fa-pen" />
-                                </BtbAnotacao> 
+                                </BtbAnotacao>
                               </div>
                             </Tooltip> : ''
                           }
@@ -282,15 +286,19 @@ const FechamentoBimestreLista = props => {
                       >
                         {item.quantidadeCompensacoes}
                       </td>
-                      <td
-                        className={`text-center ${
-                          !item.ativo ? 'fundo-cinza' : ''
-                        }`}
-                      >
-                        {item.percentualFrequencia
-                          ? `${item.percentualFrequencia} %`
-                          : '0%'}
-                      </td>
+                      {registraFrequencia ? (
+                        <td
+                          className={`text-center ${
+                            !item.ativo ? 'fundo-cinza' : ''
+                          }`}
+                        >
+                          {item.percentualFrequencia
+                            ? `${item.percentualFrequencia} %`
+                            : '0%'}
+                        </td>
+                      ) : (
+                        ''
+                      )}
                     </tr>
                     {!ehSintese && ehRegencia ? (
                       <FechamentoRegencia
