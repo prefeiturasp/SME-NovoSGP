@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
         {
             var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf);
             if (atribuicaoEsporadica != null && atribuicaoEsporadica.DreId == codigoDre
-                && (codigosUes == null || !codigosUes.Any() || codigosUes.Any(a => a != atribuicaoEsporadica.UeId)))
+                && (codigosUes != null || !codigosUes.Any() || codigosUes.Any(a => a != atribuicaoEsporadica.UeId)))
             {
                 codigosUes.Add(atribuicaoEsporadica.UeId);
             }

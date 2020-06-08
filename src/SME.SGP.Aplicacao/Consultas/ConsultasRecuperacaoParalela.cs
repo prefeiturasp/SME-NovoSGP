@@ -264,7 +264,7 @@ namespace SME.SGP.Aplicacao
                 Frequencia = items.GroupBy(fg => new { fg.RespostaId, fg.Frequencia }).Select(freq => new RecuperacaoParalelaTotalEstudanteFrequenciaDto
                 {
                     FrequenciaDescricao = freq.Key.Frequencia,
-                    PorcentagemTotalFrequencia = (freq.Sum(x => x.Total) * 100) / total,
+                    PorcentagemTotalFrequencia = (double)(freq.Sum(x => x.Total) * 100) / total,
                     QuantidadeTotalFrequencia = freq.Sum(x => x.Total),
                     Linhas = items.Where(wlinha => wlinha.RespostaId == freq.Key.RespostaId).GroupBy(glinha => new { glinha.RespostaId }).Select(lin => new RecuperacaoParalelaResumoFrequenciaDto
                     {
