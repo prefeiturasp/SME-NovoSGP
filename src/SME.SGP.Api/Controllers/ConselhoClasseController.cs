@@ -108,7 +108,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ImprimirConselhoTurma(long conselhoClasseId, long fechamentoTurmaId, [FromServices] IMediator mediator)
           => Ok(await ObterImpressaoConselhoClasseTurmaUseCase.Executar(mediator, conselhoClasseId, fechamentoTurmaId));
 
-        [HttpGet("{conselhoClasseAlunoId}/alunos/{alunoCodigo}/imprimir")]
+        [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/imprimir")]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(bool), 200)]
