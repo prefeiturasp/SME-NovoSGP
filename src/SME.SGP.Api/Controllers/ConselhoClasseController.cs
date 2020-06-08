@@ -113,7 +113,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(bool), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ImprimirConselhoAluno(long conselhoClasseAlunoId, string alunoCodigo, [FromServices] IMediator mediator)
-          => Ok(await ObterImpressaoConselhoClasseAlunoUseCase.Executar(mediator, conselhoClasseAlunoId, alunoCodigo));
+        public async Task<IActionResult> ImprimirConselhoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices] IMediator mediator)
+          => Ok(await ObterImpressaoConselhoClasseAlunoUseCase.Executar(mediator, conselhoClasseId, fechamentoTurmaId, alunoCodigo));
     }
 }
