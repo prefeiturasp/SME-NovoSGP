@@ -140,9 +140,13 @@ class ServicoConselhoClasse {
     );
   };
 
-  gerarConselhoClasseAluno = (conselhoClasseAlunoId, alunoCodigo) => {
+  gerarConselhoClasseAluno = (
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo
+  ) => {
     return api.get(
-      `/v1/conselhos-classe/${conselhoClasseAlunoId}/alunos/${alunoCodigo}/imprimir`
+      `/v1/conselhos-classe/${conselhoClasseId}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/imprimir`
     );
   };
 }

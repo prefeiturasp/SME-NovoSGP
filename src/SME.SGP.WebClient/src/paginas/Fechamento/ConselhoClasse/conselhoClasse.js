@@ -165,7 +165,10 @@ const ConselhoClasse = () => {
                       permiteOnChangeAluno={permiteOnChangeAluno}
                     >
                       <>
-                        <ObjectCardConselhoClasse />
+                        <ObjectCardConselhoClasse
+                          conselhoClasseId={conselhoClasseId}
+                          fechamentoTurmaId={fechamentoTurmaId}
+                        />
                         <DadosConselhoClasse
                           turmaCodigo={turmaSelecionada.turma}
                           modalidade={turmaSelecionada.modalidade}
