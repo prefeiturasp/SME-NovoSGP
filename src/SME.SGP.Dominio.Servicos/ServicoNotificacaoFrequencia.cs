@@ -199,36 +199,42 @@ namespace SME.SGP.Dominio.Servicos
         public void VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId)
         {
             // Parametro do sistema de dias para notificacao
-            var qtdDiasParametro = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
+            string qtdDiasParametroString = repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.QuantidadeDiasNotificarAlteracaoChamadaEfetivada,
-                                                    DateTime.Now.Year));
+                                                    DateTime.Now.Year);
+
+            var parseado = int.TryParse(qtdDiasParametroString, out int qtdDiasParametro);
+
+            if (!parseado)
+                return;
 
             var qtdDiasAlteracao = (alteradoEm.Date - criadoEm.Date).TotalDays;
 
             // Verifica se ultrapassou o limite de dias para alteração
-            if (qtdDiasAlteracao >= qtdDiasParametro)
+            if (qtdDiasAlteracao < qtdDiasParametro)
+                return;
+
+            var usuariosNotificacao = new List<(Cargo?, Usuario)>();
+
+            // Dados da Aula
+            var registroFrequencia = repositorioFrequencia.ObterAulaDaFrequencia(registroFrequenciaId);
+            MeusDadosDto professor = servicoEOL.ObterMeusDados(registroFrequencia.ProfessorRf).Result;
+
+            // Gestores
+            var usuarios = BuscaGestoresUe(registroFrequencia.CodigoUe);
+            if (usuarios != null)
+                usuariosNotificacao.AddRange(usuarios);
+
+            // Supervisores
+            usuarios = BuscaSupervisoresUe(registroFrequencia.CodigoUe, usuariosNotificacao.Select(u => u.Item1));
+            if (usuarios != null)
+                usuariosNotificacao.AddRange(usuarios);
+
+            foreach (var usuario in usuariosNotificacao)
             {
-                var usuariosNotificacao = new List<(Cargo?, Usuario)>();
-
-                // Dados da Aula
-                var registroFrequencia = repositorioFrequencia.ObterAulaDaFrequencia(registroFrequenciaId);
-                MeusDadosDto professor = servicoEOL.ObterMeusDados(registroFrequencia.ProfessorRf).Result;
-
-                // Gestores
-                var usuarios = BuscaGestoresUe(registroFrequencia.CodigoUe);
-                if (usuarios != null)
-                    usuariosNotificacao.AddRange(usuarios);
-
-                // Supervisores
-                usuarios = BuscaSupervisoresUe(registroFrequencia.CodigoUe, usuariosNotificacao.Select(u => u.Item1));
-                if (usuarios != null)
-                    usuariosNotificacao.AddRange(usuarios);
-
-                foreach (var usuario in usuariosNotificacao)
-                {
-                    NotificaAlteracaoFrequencia(usuario.Item2, registroFrequencia, professor.Nome);
-                }
+                NotificaAlteracaoFrequencia(usuario.Item2, registroFrequencia, professor.Nome);
             }
+
         }
 
         public void NotificarAlunosFaltososBimestre()
