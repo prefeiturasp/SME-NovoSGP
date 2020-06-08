@@ -198,10 +198,20 @@ namespace SME.SGP.Dominio.Servicos
 
         public void VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId)
         {
+            int anoAtual = DateTime.Now.Year;
+
             // Parametro do sistema de dias para notificacao
             var qtdDiasParametro = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.QuantidadeDiasNotificarAlteracaoChamadaEfetivada,
-                                                    DateTime.Now.Year));
+                                                   anoAtual);
+
+            var parseado = int.TryParse(qtdDiasParametroString, out int qtdDiasParametro);
+
+            if (!parseado)
+            {
+                SentrySdk.CaptureEvent(new SentryEvent(new Exception($"Não foi encontrado parametro ativo para o tipo 'QuantidadeDiasNotificarAlteracaoChamadaEfetivada' para o ano de {anoAtual}")));
+                return;
+            }
 
             var qtdDiasAlteracao = (alteradoEm.Date - criadoEm.Date).TotalDays;
 
