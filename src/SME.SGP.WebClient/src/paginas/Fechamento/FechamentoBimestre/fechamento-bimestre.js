@@ -52,8 +52,8 @@ const FechamentoBismestre = () => {
   const [ehRegencia, setEhRegencia] = useState(false);
   const [ehSintese, setEhSintese] = useState(false);
   const [periodoFechamento, setPeriodoFechamento] = useState(periodo.Anual);
-  const [desabilitaAbaFinal, setDesabilitaAbaFinal] = useState(false);
   const [situacaoFechamento, setSituacaoFechamento] = useState(0);
+  const [registraFrequencia, setRegistraFrequencia] = useState(true);
 
   const onChangeDisciplinas = id => {
     const disciplina = listaDisciplinas.find(
@@ -156,6 +156,17 @@ const FechamentoBismestre = () => {
   useEffect(() => {
     if (disciplinaIdSelecionada) obterDados();
   }, [disciplinaIdSelecionada]);
+
+  useEffect(() => {
+    if (disciplinaIdSelecionada) {
+      const disciplina = listaDisciplinas.find(
+        item => item.codigoComponenteCurricular == disciplinaIdSelecionada
+      );
+      if (disciplina) {
+        setRegistraFrequencia(disciplina.registraFrequencia);
+      }
+    }
+  }, [disciplinaIdSelecionada, listaDisciplinas]);
 
   const onConfirmouTrocarTab = numeroBimestre => {
     setBimestreCorrente(numeroBimestre);
@@ -308,7 +319,11 @@ const FechamentoBismestre = () => {
                   onChange={onChangeTab}
                   activeKey={bimestreCorrente}
                 >
-                  <TabPane tab="1º Bimestre" key="1">
+                  <TabPane
+                    tab="1º Bimestre"
+                    key="1"
+                    disabled={!disciplinaIdSelecionada}
+                  >
                     {dadosBimestre1 ? (
                       <FechamentoBimestreLista
                         dados={dadosBimestre1}
@@ -318,11 +333,16 @@ const FechamentoBismestre = () => {
                         codigoComponenteCurricular={disciplinaIdSelecionada}
                         turmaId={turmaSelecionada.turma}
                         anoLetivo={turmaSelecionada.anoLetivo}
+                        registraFrequencia={registraFrequencia}
                       />
                     ) : null}
                   </TabPane>
 
-                  <TabPane tab="2º Bimestre" key="2">
+                  <TabPane
+                    tab="2º Bimestre"
+                    key="2"
+                    disabled={!disciplinaIdSelecionada}
+                  >
                     {dadosBimestre2 ? (
                       <FechamentoBimestreLista
                         dados={dadosBimestre2}
@@ -332,11 +352,16 @@ const FechamentoBismestre = () => {
                         codigoComponenteCurricular={disciplinaIdSelecionada}
                         turmaId={turmaSelecionada.turma}
                         anoLetivo={turmaSelecionada.anoLetivo}
+                        registraFrequencia={registraFrequencia}
                       />
                     ) : null}
                   </TabPane>
                   {periodoFechamento === periodo.Anual ? (
-                    <TabPane tab="3º Bimestre" key="3">
+                    <TabPane
+                      tab="3º Bimestre"
+                      key="3"
+                      disabled={!disciplinaIdSelecionada}
+                    >
                       {dadosBimestre3 ? (
                         <FechamentoBimestreLista
                           dados={dadosBimestre3}
@@ -346,12 +371,17 @@ const FechamentoBismestre = () => {
                           codigoComponenteCurricular={disciplinaIdSelecionada}
                           turmaId={turmaSelecionada.turma}
                           anoLetivo={turmaSelecionada.anoLetivo}
+                          registraFrequencia={registraFrequencia}
                         />
                       ) : null}
                     </TabPane>
                   ) : null}
                   {periodoFechamento === periodo.Anual ? (
-                    <TabPane tab="4º Bimestre" key="4">
+                    <TabPane
+                      tab="4º Bimestre"
+                      key="4"
+                      disabled={!disciplinaIdSelecionada}
+                    >
                       {dadosBimestre4 ? (
                         <FechamentoBimestreLista
                           dados={dadosBimestre4}
@@ -361,6 +391,7 @@ const FechamentoBismestre = () => {
                           codigoComponenteCurricular={disciplinaIdSelecionada}
                           turmaId={turmaSelecionada.turma}
                           anoLetivo={turmaSelecionada.anoLetivo}
+                          registraFrequencia={registraFrequencia}
                         />
                       ) : null}
                     </TabPane>
@@ -368,7 +399,7 @@ const FechamentoBismestre = () => {
                   <TabPane
                     tab="Final"
                     key="final"
-                    disabled={desabilitaAbaFinal}
+                    disabled={!disciplinaIdSelecionada}
                   >
                     <FechamentoFinal
                       turmaCodigo={turmaSelecionada.turma}
@@ -385,6 +416,7 @@ const FechamentoBismestre = () => {
                         setCarregandoBimestres(carregando)
                       }
                       bimestreCorrente={bimestreCorrente}
+                      registraFrequencia={registraFrequencia}
                     />
                   </TabPane>
                 </ContainerTabsCard>
