@@ -138,6 +138,7 @@ const FechamentoBimestreLista = props => {
           {!ehSintese && podeProcessarReprocessar && situacaoFechamento == situacaoFechamentoDto.ProcessadoComPendencias ? (
             <>
               <Button
+                id="btn-reprocessar"
                 label="Reprocessar"
                 color={Colors.Azul}
                 border
@@ -145,6 +146,7 @@ const FechamentoBimestreLista = props => {
                 onClick={onClickReprocessarNotasConceitos}
               />
               <Button
+                id="btn-pendencias"
                 label="Ver pendências"
                 color={Colors.Azul}
                 border
@@ -243,7 +245,7 @@ const FechamentoBimestreLista = props => {
                             <Tooltip title={item.temAnotacao ? 'Estudante com anotação' : ''} placement="top">
                               <div className=" d-flex justify-content-end">
                                 <BtbAnotacao className={item.temAnotacao ? 'btn-com-anotacao' : ''} onClick={() => onClickAnotacao(item)}>
-                                  <i class="fas fa-pen" />
+                                  <i className="fas fa-pen" />
                                 </BtbAnotacao>
                               </div>
                             </Tooltip> : ''
