@@ -28,6 +28,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
     desabilitarCampo,
     carregandoFechamentoFinal,
     bimestreCorrente,
+    registraFrequencia,
   } = props;
 
   const dispatch = useDispatch();
@@ -211,7 +212,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
                           {ehNota ? 'Nota Final' : 'Conceito Final'}
                         </th>
                       )}
-                    <th>%Freq.</th>
+                    {registraFrequencia ? <th>%Freq.</th> : ''}
                   </tr>
                 </thead>
                 <tbody className="tabela-fechamento-final-tbody">
@@ -232,6 +233,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
                             indexAluno={i}
                             desabilitarCampo={desabilitarCampo}
                             ehSintese={ehSintese}
+                            registraFrequencia={registraFrequencia}
                           />
                         </>
                       );
@@ -251,8 +253,8 @@ const FechamentoFinal = forwardRef((props, ref) => {
                 <div className="col-md-12">
                   <ContainerAuditoria style={{ float: 'left' }}>
                     <span>
-                      <p>{auditoria.auditoriaAlteracao || ''}</p>
                       <p>{auditoria.auditoriaInclusao || ''}</p>
+                      <p>{auditoria.auditoriaAlteracao || ''}</p>
                     </span>
                   </ContainerAuditoria>
                 </div>
@@ -276,6 +278,7 @@ FechamentoFinal.propTypes = {
   desabilitarCampo: PropTypes.bool,
   carregandoFechamentoFinal: PropTypes.func,
   bimestreCorrente: PropTypes.string,
+  registraFrequencia: PropTypes.bool,
 };
 
 FechamentoFinal.defaultProps = {
@@ -287,6 +290,7 @@ FechamentoFinal.defaultProps = {
   desabilitarCampo: false,
   carregandoFechamentoFinal: () => { },
   bimestreCorrente: '',
+  registraFrequencia: true,
 };
 
 export default FechamentoFinal;
