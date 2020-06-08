@@ -88,6 +88,7 @@ const FrequenciaPlanoAula = () => {
     licaoCasa: null,
     objetivosAprendizagemAula: [],
     migrado: false,
+    possuiPlanoAnual: false,
   });
   const [temObjetivos, setTemObjetivos] = useState(false);
   const [errosValidacaoPlano, setErrosValidacaoPlano] = useState([]);
@@ -305,6 +306,7 @@ const FrequenciaPlanoAula = () => {
           };
           setAuditoriaPlano(audPlano);
         } else {
+          setPlanoAula(dadosPlano);
           setModoEdicaoPlanoAula(false);
         }
       }
@@ -621,10 +623,12 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onClickPlanoAula = useCallback(() => {
-    if (!possuiPlanoAnual) {
+    if (!possuiPlanoAnual && !ehProfessorCj) {
       erro(
         'Não foi possível carregar o plano de aula porque não há plano anual cadastrado'
       );
+    } else if (ehProfessorCj) {
+      setPlanoAulaExpandido(!planoAulaExpandido);
     } else {
       setPlanoAulaExpandido(
         !possuiPlanoAnual ? possuiPlanoAnual : !planoAulaExpandido
