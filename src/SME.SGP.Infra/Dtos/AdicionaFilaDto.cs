@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra.Dtos
+﻿namespace SME.SGP.Infra.Dtos
 {
-  public  class AdicionaFilaDto
+    public  class AdicionaFilaDto
     {
         public AdicionaFilaDto(string fila, object filtros, string endpoint)
         {
