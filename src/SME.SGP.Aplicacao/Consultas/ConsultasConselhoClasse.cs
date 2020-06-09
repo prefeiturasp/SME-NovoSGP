@@ -10,7 +10,8 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;        
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
@@ -19,7 +20,8 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                        IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                       IRepositorioParametrosSistema repositorioParametrosSistema,                                       
+                                       IRepositorioParametrosSistema repositorioParametrosSistema,
+                                       IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                        IConsultasTurma consultasTurma,
                                        IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                        IConsultasPeriodoFechamento consultasPeriodoFechamento,
@@ -28,7 +30,8 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));            
+            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
+            this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
@@ -55,10 +58,13 @@ namespace SME.SGP.Aplicacao
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
             var mediaAprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
+            var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
+
             return new ConselhoClasseAlunoResumoDto()
             {
                 FechamentoTurmaId = fechamentoTurma.Id,
                 ConselhoClasseId = conselhoClasse?.Id,
+                ConselhoClasseAlunoId = conselhoClasseAluno?.Id,
                 Bimestre = bimestre,
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
@@ -77,7 +83,7 @@ namespace SME.SGP.Aplicacao
             if (tipoNota == null)
                 throw new NegocioException("Não foi possível identificar o tipo de nota da turma");
 
-            return tipoNota.TipoNota; 
+            return tipoNota.TipoNota;
         }
 
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)

@@ -38,6 +38,7 @@ const RotasDto = {
   CONSELHO_CLASSE: '/fechamento/conselho-classe',
   RELATORIO_SEMESTRAL: '/relatorios/pap/relatorio-semestral',
   SEM_PERMISSAO: '/sem-permissao',
+  TERRITORIO_SABER: '/planejamento/plano-anual-territorio-saber',
 };
 
 export default RotasDto;

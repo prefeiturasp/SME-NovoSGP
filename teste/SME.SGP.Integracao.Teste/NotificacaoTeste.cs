@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Api.Controllers;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -25,7 +26,7 @@ namespace SME.SGP.Integracao.Teste
         [Fact, Order(5)]
         public void Deve_Consultar_Notificacao_Basica_Lista()
         {
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
+           _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.N_C }));
