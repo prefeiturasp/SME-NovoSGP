@@ -27,6 +27,19 @@ const AbrangenciaServico = {
       params,
     });
   },
+  buscarDisciplinas(codigoTurma, params) {
+    return api.get(`v1/professores/turmas/${codigoTurma}/disciplinas`, {
+      params,
+    });
+  },
+  buscarDisciplinasPlanejamento(codigoTurma, params) {
+    return api.get(
+      `v1/professores/turmas/${codigoTurma}/disciplinas/planejamento`,
+      {
+        params,
+      }
+    );
+  },
 };
 
 export default AbrangenciaServico;
