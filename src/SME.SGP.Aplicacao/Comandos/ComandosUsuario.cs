@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
                 .ToList();
 
             // Revoga token atual para geração de um novo
-            await servicoTokenJwt.RevogarToken(login);
+            //await servicoTokenJwt.RevogarToken(login);
 
             // Gera novo token e guarda em cache
             retornoAutenticacaoEol.Item1.Token =
@@ -197,7 +197,7 @@ namespace SME.SGP.Aplicacao
 
                 usuario.DefinirPerfilAtual(perfil);
 
-                await servicoTokenJwt.RevogarToken(loginAtual);
+                //await servicoTokenJwt.RevogarToken(loginAtual);
                 var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes);
 
                 return new TrocaPerfilDto
@@ -263,7 +263,7 @@ namespace SME.SGP.Aplicacao
                 .Select(a => (Permissao)a)
                 .ToList();
 
-            await servicoTokenJwt.RevogarToken(login);
+            //await servicoTokenJwt.RevogarToken(login);
 
             return new RevalidacaoTokenDto()
             {
