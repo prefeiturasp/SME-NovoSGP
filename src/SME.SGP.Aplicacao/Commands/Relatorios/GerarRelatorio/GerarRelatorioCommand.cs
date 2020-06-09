@@ -1,14 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Infra.Enumerados;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao.Commands
 {
-    public class GerarRelatorioComand : IRequest<bool>
+    public class GerarRelatorioCommand : IRequest<bool>
     {
-        public GerarRelatorioComand(TipoRelatorio tipoRelatorio, object filtros)
+        public GerarRelatorioCommand(TipoRelatorio tipoRelatorio, object filtros)
         {
             TipoRelatorio = tipoRelatorio;
             Filtros = filtros;

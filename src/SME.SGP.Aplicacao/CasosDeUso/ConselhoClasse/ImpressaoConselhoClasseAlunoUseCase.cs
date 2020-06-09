@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<bool> Executar(FiltroRelatorioConselhoClasseAlunoDto filtroRelatorioConselhoClasseAlunoDto)
         {
-            return mediator.Send(new GerarRelatorioComand(TipoRelatorio.ConselhoClasseAluno, filtroRelatorioConselhoClasseAlunoDto));
+            return mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAluno, filtroRelatorioConselhoClasseAlunoDto));
         }
     }
 }

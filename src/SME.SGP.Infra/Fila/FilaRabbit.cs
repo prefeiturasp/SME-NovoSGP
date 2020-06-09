@@ -3,7 +3,6 @@ using RabbitMQ.Client;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
