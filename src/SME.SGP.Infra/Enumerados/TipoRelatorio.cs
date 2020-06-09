@@ -10,7 +10,7 @@ namespace SME.SGP.Infra.Enumerados
         [Display(Name = "relatorio/conselhoclassealuno")]
         ConselhoClasseAluno = 1,
 
-        [Display(Name = "relatorio/conselhoclassealuno")]
+        [Display(Name = "relatorio/conselhoclasseturma")]
         ConselhoClasseTurma = 2
     }
 }
