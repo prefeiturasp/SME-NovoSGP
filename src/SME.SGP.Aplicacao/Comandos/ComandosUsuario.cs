@@ -126,10 +126,7 @@ namespace SME.SGP.Aplicacao
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(login, senha);
 
             if (!retornoAutenticacaoEol.Item1.Autenticado)
-                return retornoAutenticacaoEol.Item1;
-
-            if (!retornoAutenticacaoEol.Item4 && retornoAutenticacaoEol.Item5)
-                retornoAutenticacaoEol.Item3 = ValidarPerfilCJ(retornoAutenticacaoEol.Item2, retornoAutenticacaoEol.Item1.UsuarioId, retornoAutenticacaoEol.Item3, login).Result;
+                return retornoAutenticacaoEol.Item1;            
 
             var dadosUsuario = await servicoEOL.ObterMeusDados(login);
 
