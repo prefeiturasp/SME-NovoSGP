@@ -1,9 +1,5 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using SME.SGP.Aplicacao.Queries.Aula.ObterAulasPorDataTurmaDisciplinaProfessorRf;
-using SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurricularesDoProfessorNaTurma;
-using SME.SGP.Aplicacao.Queries.Evento.ObterEhDiaLetivo;
-using SME.SGP.Aplicacao.Queries.Usuario.ObterUsuarioPossuiPermissaoNaTurmaEDisciplina;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -60,7 +56,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         {
             if (request.TipoAula == TipoAula.Reposicao)
             {
-                var quantidadeDeAulasExistentes = aulasExistentes.ToList().FindAll(x => x.DataAula.Date == request.DataAula.Date).Sum(x => x.Quantidade);
+                var quantidadeDeAulasExistentes = aulasExistentes.Where(x => x.DataAula.Date == request.DataAula.Date).Sum(x => x.Quantidade);
 
                 if (turma.AulasReposicaoPrecisamAprovacao(quantidadeDeAulasExistentes + request.Quantidade))
                 {
@@ -111,28 +107,30 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             {
                 var gradeAulas = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(inserirAulaUnicaCommand.CodigoTurma, inserirAulaUnicaCommand.CodigoComponenteCurricular, inserirAulaUnicaCommand.DataAula, usuarioLogado.CodigoRf, inserirAulaUnicaCommand.EhRegencia));
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
-                if ((gradeAulas != null) && (quantidadeAulasRestantes < inserirAulaUnicaCommand.Quantidade))
-                    throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
+
+                if (gradeAulas != null) 
+                {
+                    if (quantidadeAulasRestantes < inserirAulaUnicaCommand.Quantidade)
+                        throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
+                    if (!gradeAulas.PodeEditar && (inserirAulaUnicaCommand.Quantidade != gradeAulas.QuantidadeAulasRestante))
+                        throw new NegocioException("Quantidade de aulas não pode ser diferente do valor da grade curricular."); ;
+                }
             }
         }
 
         private async Task ValidarSeEhDiaLetivo(InserirAulaUnicaCommand inserirAulaUnicaCommand, Turma turma)
         {
-            var ehDiaLetivo = await mediator.Send(new ObterDataEhDiaLetivoPorTipoCalendarioQuery(inserirAulaUnicaCommand.TipoCalendarioId, inserirAulaUnicaCommand.DataAula, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
-            if (!ehDiaLetivo)
-                throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
-
-            var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery()
+            var consultaPodeCadastrarAula = await mediator.Send(new ObterPodeCadastrarAulaPorDataQuery()
             {
-                Turma = turma,
-                DataReferencia = inserirAulaUnicaCommand.DataAula
+                UeCodigo = turma.Ue.CodigoUe,
+                DreCodigo = turma.Ue.Dre.CodigoDre,
+                TipoCalendarioId = inserirAulaUnicaCommand.TipoCalendarioId,
+                DataAula = inserirAulaUnicaCommand.DataAula,
+                Turma = turma
             });
 
-            var aulaNoAnoLetivoAtual = inserirAulaUnicaCommand.DataAula.Year == DateTime.Now.Year;
-
-            var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, inserirAulaUnicaCommand.DataAula, bimestreAula, aulaNoAnoLetivoAtual));
-            if (!periodoAberto)
-                throw new NegocioException("Não é possível cadastrar essa aula pois o período não está aberto.");
+            if (!consultaPodeCadastrarAula.PodeCadastrar)
+                throw new NegocioException(consultaPodeCadastrarAula.MensagemPeriodo);
         }
 
         private async Task ValidarComponentesDoProfessor(InserirAulaUnicaCommand inserirAulaUnicaCommand, Usuario usuarioLogado)
@@ -179,17 +177,8 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                 NotificacaoMensagem = $"Foram criadas {command.Quantidade} aula(s) de reposição de {command.NomeComponenteCurricular} na turma {turma.Nome} da {turma.Ue.Nome} ({turma.Ue.Dre.Nome}). Para que esta aula seja considerada válida você precisa aceitar esta notificação. Para visualizar a aula clique  <a href='{linkParaReposicaoAula}'>aqui</a>."
             };
 
-            wfAprovacaoAula.Niveis.Add(new WorkflowAprovacaoNivelDto()
-            {
-                Cargo = Cargo.CP,
-                Nivel = 1
-            });
-
-            wfAprovacaoAula.Niveis.Add(new WorkflowAprovacaoNivelDto()
-            {
-                Cargo = Cargo.Diretor,
-                Nivel = 2
-            });
+            wfAprovacaoAula.AdicionarNivel(Cargo.CP);
+            wfAprovacaoAula.AdicionarNivel(Cargo.Diretor);
 
             return comandosWorkflowAprovacao.Salvar(wfAprovacaoAula);
         }

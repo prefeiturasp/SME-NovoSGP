@@ -9,9 +9,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirAulaUseCase : IInserirAulaUseCase
+    public class InserirAulaUseCase : AbstractUseCase, IInserirAulaUseCase
     {
-        public async Task<RetornoBaseDto> Executar(IMediator mediator, InserirAulaDto inserirAulaDto)
+        public InserirAulaUseCase(IMediator mediator): base(mediator)
+        {
+        }
+
+        public async Task<RetornoBaseDto> Executar(InserirAulaDto inserirAulaDto)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -23,9 +27,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    //TODO TESTAR TRATAMENTO DE ERRO COM ASYNC
-                    //TODO IMPLEMENTAR HANDLER DE AULAS RECORRENTES
-                    mediator.Enfileirar(new InserirAulaRecorrenteCommand());
+                    mediator.Enfileirar(new InserirAulaRecorrenteCommand(usuarioLogado, inserirAulaDto.DataAula, inserirAulaDto.Quantidade, inserirAulaDto.CodigoTurma, inserirAulaDto.CodigoComponenteCurricular, inserirAulaDto.NomeComponenteCurricular, inserirAulaDto.TipoCalendarioId, inserirAulaDto.TipoAula, inserirAulaDto.CodigoUe, inserirAulaDto.EhRegencia, inserirAulaDto.RecorrenciaAula));
                     return new RetornoBaseDto("Serão cadastradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
                 }
                 catch (Exception ex)

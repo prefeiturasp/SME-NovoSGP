@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Aula.ObterAulasPorDataTurmaDisciplinaProfessorRf
+namespace SME.SGP.Aplicacao
 {
     public class ObterAulasPorDataTurmaComponenteCurricularEProfessorQueryHandler : IRequestHandler<ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery, IEnumerable<AulaConsultaDto>>
     {

@@ -3,7 +3,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Usuario.ObterUsuarioPossuiPermissaoNaTurmaEDisciplina
+namespace SME.SGP.Aplicacao
 {
     public class ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandler : IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>
     {
