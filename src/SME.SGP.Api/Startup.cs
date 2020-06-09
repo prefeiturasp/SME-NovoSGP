@@ -22,12 +22,15 @@ namespace SME.SGP.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
+
         }
 
         public IConfiguration Configuration { get; }
+        private IHostingEnvironment _env;
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -130,25 +133,28 @@ namespace SME.SGP.Api
             });
 
 
-            //TODO: RETIRAR DAQUI!
-            var factory = new ConnectionFactory
+            if (_env.EnvironmentName != "teste-integrado")
             {
-                HostName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Hostname"),
-                UserName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Username"),
-                Password = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Password")
-            };
+                //TODO: RETIRAR DAQUI!
+                var factory = new ConnectionFactory
+                {
+                    HostName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Hostname"),
+                    UserName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Username"),
+                    Password = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Password")
+                };
 
-            var conexaoRabbit = factory.CreateConnection();
-            IModel _channel = conexaoRabbit.CreateModel();
-            
-            //TODO: VARIAVEIS PARA CONFIGURACOES!
-            _channel.ExchangeDeclare("sme.sr.workers", ExchangeType.Topic);
-            _channel.QueueDeclare("sme.sr.workers.sgp", false, false, false, null);
-            _channel.QueueBind("sme.sr.workers.sgp", "sme.sr.workers", "relatorios");
 
-            services.AddSingleton(conexaoRabbit);
-            services.AddSingleton(_channel);
+                var conexaoRabbit = factory.CreateConnection();
+                IModel _channel = conexaoRabbit.CreateModel();
 
+                //TODO: VARIAVEIS PARA CONFIGURACOES!
+                _channel.ExchangeDeclare("sme.sr.workers", ExchangeType.Topic);
+                _channel.QueueDeclare("sme.sr.workers.sgp", false, false, false, null);
+                _channel.QueueBind("sme.sr.workers.sgp", "sme.sr.workers", "relatorios");
+
+                services.AddSingleton(conexaoRabbit);
+                services.AddSingleton(_channel);
+            }
 
         }
     }
