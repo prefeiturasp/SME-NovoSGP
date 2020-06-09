@@ -221,6 +221,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioCicloEnsino, RepositorioCicloEnsino>();
             services.TryAddScopedWorkerService<IRepositorioTipoEscola, RepositorioTipoEscola>();
             services.TryAddScopedWorkerService<IRepositorioObjetivoAprendizagem, RepositorioObjetivoAprendizagem>();
+            services.TryAddScopedWorkerService<IRepositorioFechamentoReaberturaBimestre, RepositorioFechamentoReaberturaBimestre>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
