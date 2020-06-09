@@ -325,14 +325,9 @@ namespace SME.SGP.IoC
 
         private static void RegistrarCasosDeUso(IServiceCollection services)
         {
+            services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseAlunoUseCase, ImpressaoConselhoClasseAlunoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseTurmaUseCase, ImpressaoConselhoClasseTurmaUseCase>();
-        }
-
-        private static void RegistrarCasosDeUso(IServiceCollection services)
-        {
-            services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
-           
         }
     }
 }
