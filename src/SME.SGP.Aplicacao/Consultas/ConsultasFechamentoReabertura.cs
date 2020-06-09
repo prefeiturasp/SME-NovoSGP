@@ -12,17 +12,25 @@ namespace SME.SGP.Aplicacao
     public class ConsultasFechamentoReabertura : ConsultasBase, IConsultasFechamentoReabertura
     {
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
+        private readonly IRepositorioFechamentoReaberturaBimestre repositorioFechamentoReaberturaBimestre;
 
         public ConsultasFechamentoReabertura(IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
+            IRepositorioFechamentoReaberturaBimestre repositorioFechamentoReaberturaBimestre,
             IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
         {
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
+            this.repositorioFechamentoReaberturaBimestre = repositorioFechamentoReaberturaBimestre ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReaberturaBimestre));
         }
 
         public async Task<PaginacaoResultadoDto<FechamentoReaberturaListagemDto>> Listar(long tipoCalendarioId, string dreCodigo, string ueCodigo)
         {
             var listaEntidades = await repositorioFechamentoReabertura.ListarPaginado(tipoCalendarioId, dreCodigo, ueCodigo, Paginacao);
 
+            foreach(FechamentoReabertura fechamentoReabertura in listaEntidades.Items)
+            {
+                var bimestres = await repositorioFechamentoReaberturaBimestre.ObterPorFechamentoReaberturaIdAsync(fechamentoReabertura.Id);
+                fechamentoReabertura.AdicionarBimestres(bimestres);
+            }
             return MapearListaEntidadeParaDto(listaEntidades);
         }
 
