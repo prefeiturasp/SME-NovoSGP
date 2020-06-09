@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IInserirAulaUseCase
+    public interface IInserirAulaUseCase: IUseCase<InserirAulaDto, RetornoBaseDto>
     {
-        Task<RetornoBaseDto> Executar(IMediator mediator, InserirAulaDto inserirAulaDto);
     }
 }

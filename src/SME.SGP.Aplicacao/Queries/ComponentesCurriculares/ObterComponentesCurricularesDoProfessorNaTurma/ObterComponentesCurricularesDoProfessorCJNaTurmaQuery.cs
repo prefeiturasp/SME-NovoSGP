@@ -3,7 +3,7 @@ using MediatR;
 using SME.SGP.Dominio;
 using System.Collections.Generic;
 
-namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurricularesDoProfessorNaTurma
+namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesDoProfessorCJNaTurmaQuery : IRequest<IEnumerable<AtribuicaoCJ>>
     {

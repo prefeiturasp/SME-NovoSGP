@@ -2,7 +2,7 @@
 using MediatR;
 using System;
 
-namespace SME.SGP.Aplicacao.Queries.Usuario.ObterUsuarioPossuiPermissaoNaTurmaEDisciplina
+namespace SME.SGP.Aplicacao
 {
     public class ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery : IRequest<bool>
     {
