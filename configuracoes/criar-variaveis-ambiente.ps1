@@ -20,3 +20,6 @@
 [Environment]::SetEnvironmentVariable("AE_ChaveIntegracao", "xxxxxxxxxxxxx", "Machine")
 [Environment]::SetEnvironmentVariable("HangfireUser_Admin", "admin:Sgp@dev", "Machine")
 [Environment]::SetEnvironmentVariable("HangfireUser_Basic", "user:Sgp@dev", "Machine")
+[Environment]::SetEnvironmentVariable("ConfiguracaoRabbit__Hostname", "localhost", "Machine")
+[Environment]::SetEnvironmentVariable("ConfiguracaoRabbit__Username", "user", "Machine")
+[Environment]::SetEnvironmentVariable("ConfiguracaoRabbit__Password", "bitnami", "Machine")
