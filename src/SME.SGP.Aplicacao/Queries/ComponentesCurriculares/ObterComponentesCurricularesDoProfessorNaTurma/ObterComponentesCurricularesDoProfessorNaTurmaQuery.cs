@@ -4,7 +4,7 @@ using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 
-namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurricularesDoProfessorNaTurma
+namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesDoProfessorNaTurmaQuery : IRequest<IEnumerable<ComponenteCurricularEol>>
     {

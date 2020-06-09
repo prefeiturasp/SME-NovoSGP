@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurricularesDoProfessorNaTurma
+namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesDoProfessorCJNaTurmaQueryHandler : IRequestHandler<ObterComponentesCurricularesDoProfessorCJNaTurmaQuery, IEnumerable<AtribuicaoCJ>>
     {

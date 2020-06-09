@@ -53,21 +53,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> Inserir([FromBody] AulaDto dto, [FromServices] IComandosAula comandos)
+        public async Task<IActionResult> Inserir([FromBody] InserirAulaDto inserirAulaDto, [FromServices] IInserirAulaUseCase inserirAulaUseCase)
         {
-            var retorno = new RetornoBaseDto();
-            retorno.Mensagens.Add(await comandos.Inserir(dto));
-            return Ok(retorno);
-        }
-
-
-        [HttpPost("inserir")]
-        [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> Post([FromBody] InserirAulaDto inserirAulaDto, [FromServices] IMediator mediator, [FromServices] IInserirAulaUseCase inserirAulaUseCase)
-        {
-            return Ok(await inserirAulaUseCase.Executar(mediator, inserirAulaDto));
+            return Ok(await inserirAulaUseCase.Executar(inserirAulaDto));
         }
 
         [HttpGet("{aulaId}/recorrencias/serie")]
