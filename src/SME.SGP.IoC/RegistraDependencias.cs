@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
@@ -30,6 +31,7 @@ namespace SME.SGP.IoC
             RegistrarConsultas(services);
             RegistrarServicos(services);
             RegistararQueries(services);
+            RegistrarCasosDeUso(services);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -80,6 +82,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosRelatorioSemestralTurmaPAP, ComandosRelatorioSemestralTurmaPAP>();
             services.TryAddScoped<IComandosRelatorioSemestralPAPAluno, ComandosRelatorioSemestralPAPAluno>();
             services.TryAddScoped<IComandosRelatorioSemestralPAPAlunoSecao, ComandosRelatorioSemestralPAPAlunoSecao>();
+            services.TryAddScoped<IComandosPlanoAnualTerritorioSaber, ComandosPlanoAnualTerritorioSaber>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -146,6 +149,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasRelatorioSemestralPAPAlunoSecao, ConsultasRelatorioSemestralPAPAlunoSecao>();
             services.TryAddScoped<IConsultasSecaoRelatorioSemestralPAP, ConsultasSecaoRelatorioSemestralPAP>();
             services.TryAddScoped<IConsultaRecuperacaoParalelaPeriodo, ConsultaRecuperacaoParalelaPeriodo>();
+            services.TryAddScoped<IConsultaRecuperacaoParalelaPeriodo, ConsultaRecuperacaoParalelaPeriodo>();            
+            services.TryAddScoped<IConsultasPlanoAnualTerritorioSaber, ConsultasPlanoAnualTerritorioSaber>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -252,6 +257,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioSecaoRelatorioSemestralPAP, RepositorioSecaoRelatorioSemestralPAP>();
             services.TryAddScoped<IRepositorioObjetivoAprendizagem, RepositorioObjetivoAprendizagem>();
             services.TryAddScoped<IRepositorioConselhoClasseParecerConclusivo, RepositorioConselhoClasseParecerConclusivo>();
+            services.TryAddScoped<IRepositorioPlanoAnualTerritorioSaber, RepositorioPlanoAnualTerritorioSaber>();
         }
 
         private static void RegistararQueries(IServiceCollection services)
@@ -314,6 +320,19 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScoped<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
+            services.TryAddScoped<IServicoFila, FilaRabbit>();
+        }
+
+        private static void RegistrarCasosDeUso(IServiceCollection services)
+        {
+            services.TryAddScoped<IImpressaoConselhoClasseAlunoUseCase, ImpressaoConselhoClasseAlunoUseCase>();
+            services.TryAddScoped<IImpressaoConselhoClasseTurmaUseCase, ImpressaoConselhoClasseTurmaUseCase>();
+        }
+
+        private static void RegistrarCasosDeUso(IServiceCollection services)
+        {
+            services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
+           
         }
     }
 }
