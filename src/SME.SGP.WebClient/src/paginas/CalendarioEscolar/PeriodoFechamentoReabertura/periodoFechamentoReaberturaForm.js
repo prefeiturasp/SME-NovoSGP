@@ -124,17 +124,23 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
         usuarioStore.turmaSelecionada.modalidade
       ) {
         const ehEja =
-          usuarioStore.turmaSelecionada.modalidade == modalidade.EJA;
+          String(usuarioStore.turmaSelecionada.modalidade) ===
+          String(modalidade.EJA);
         const listaPorAnoLetivoModalidade = lista.filter(item => {
           if (ehEja) {
-            return item.modalidade == modalidadeTipoCalendario.EJA;
+            return (
+              String(item.modalidade) === String(modalidadeTipoCalendario.EJA)
+            );
           }
-          return item.modalidade == modalidadeTipoCalendario.FUNDAMENTAL_MEDIO;
+          return (
+            String(item.modalidade) ===
+            String(modalidadeTipoCalendario.FUNDAMENTAL_MEDIO)
+          );
         });
         return listaPorAnoLetivoModalidade;
       }
 
-      return lista.filter(item => item.anoLetivo == anoLetivo);
+      return lista.filter(item => String(item.anoLetivo) === String(anoLetivo));
     },
     [usuarioStore.turmaSelecionada]
   );
@@ -191,6 +197,8 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     consultaTipos();
   }, [match, obterListaTiposCalAnoLetivo]);
 
+  const [podeExcluir, setPodeExcluir] = useState(false);
+
   useEffect(() => {
     const consultaPorId = async () => {
       if (
@@ -210,6 +218,8 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
         setIdFechamentoReabertura(match.params.id);
 
         if (cadastrado && cadastrado.data) {
+          setPodeExcluir(!cadastrado.data.possuiFilhos);
+
           const bimestres = [];
           for (var i = 0; i < cadastrado.data.bimestres.length; i++) {
             const bimestre = cadastrado.data.bimestres[i];
@@ -479,6 +489,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                       onClick={onClickExcluir}
                       disabled={
                         somenteConsulta ||
+                        podeExcluir ||
                         !permissoesTela.podeExcluir ||
                         novoRegistro
                       }

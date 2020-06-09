@@ -146,17 +146,24 @@ const PeriodoFechamentoReaberturaLista = () => {
   const obterListaTiposCalAnoLetivo = useCallback(
     lista => {
       if (usuario.turmaSelecionada && usuario.turmaSelecionada.modalidade) {
-        const ehEja = usuario.turmaSelecionada.modalidade == modalidade.EJA;
+        const ehEja =
+          String(usuario.turmaSelecionada.modalidade) ===
+          String(modalidade.EJA);
         const listaPorAnoLetivoModalidade = lista.filter(item => {
           if (ehEja) {
-            return item.modalidade == modalidadeTipoCalendario.EJA;
+            return (
+              String(item.modalidade) === String(modalidadeTipoCalendario.EJA)
+            );
           }
-          return item.modalidade == modalidadeTipoCalendario.FUNDAMENTAL_MEDIO;
+          return (
+            String(item.modalidade) ===
+            String(modalidadeTipoCalendario.FUNDAMENTAL_MEDIO)
+          );
         });
         return listaPorAnoLetivoModalidade;
       }
 
-      return lista.filter(item => item.anoLetivo == anoLetivo);
+      return lista.filter(item => String(item.anoLetivo) === String(anoLetivo));
     },
     [usuario.turmaSelecionada]
   );
@@ -210,7 +217,7 @@ const PeriodoFechamentoReaberturaLista = () => {
         idsDeletar
       ).catch(e => erros(e));
 
-      if (excluir && excluir.status == 200) {
+      if (excluir && excluir.status === 200) {
         setIdsReaberturasSelecionadas([]);
         sucesso(excluir.data);
         onFiltrar();
@@ -227,8 +234,11 @@ const PeriodoFechamentoReaberturaLista = () => {
     );
   };
 
+  const [podeExcluir, setPodeExcluir] = useState(false);
+
   const onSelecionarItems = ids => {
     setIdsReaberturasSelecionadas(ids);
+    setPodeExcluir(ids.filter(id => id.possuiFilhos).length);
   };
 
   const formatarCampoDataGrid = data => {
@@ -311,8 +321,9 @@ const PeriodoFechamentoReaberturaLista = () => {
                     onClick={onClickExcluir}
                     disabled={
                       !permissoesTela.podeExcluir ||
+                      podeExcluir ||
                       (idsReaberturasSelecionadas &&
-                        idsReaberturasSelecionadas.length < 1)
+                        !idsReaberturasSelecionadas.length)
                     }
                   />
                   <Button
