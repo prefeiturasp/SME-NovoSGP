@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Commands;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra.Dtos.Relatorios;
 using SME.SGP.Infra.Enumerados;
@@ -20,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<bool> Executar(FiltroRelatorioConselhoClasseDto filtroRelatorioConselhoClasseAlunoDto)
         {
-            return mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAluno, filtroRelatorioConselhoClasseAlunoDto));
+            return mediator.Send(new GerarRelatorioComand(TipoRelatorio.ConselhoClasseAluno, filtroRelatorioConselhoClasseAlunoDto));
         }
     }
 }

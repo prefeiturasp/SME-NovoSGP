@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,7 +21,7 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.GerarRelatorio
 
         public async Task<bool> Handle(GerarRelatorioComand request, CancellationToken cancellationToken)
         {
-            await servicoFila.AdicionaFila(new AdicionarFilaDto("relatorios", request.Filtros, request.TipoRelatorio.Name));
+            await servicoFila.AdicionaFila(new AdicionaFilaDto("relatorios", request.Filtros, request.TipoRelatorio.Name()));
             return true;
         }
     }
