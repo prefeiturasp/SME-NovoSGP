@@ -19,9 +19,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<bool> Executar(FiltroRelatorioConselhoClasseDto filtroRelatorioConselhoClasseAlunoDto)
+        public Task<bool> Executar(FiltroRelatorioConselhoClasseDto filtroRelatorioConselhoClasseDto)
         {
-            return mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAluno, filtroRelatorioConselhoClasseAlunoDto));
+            return mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseTurma, filtroRelatorioConselhoClasseDto));
         }
     }
 }
