@@ -27,8 +27,6 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    //TODO TESTAR TRATAMENTO DE ERRO COM ASYNC
-                    //TODO IMPLEMENTAR HANDLER DE AULAS RECORRENTES
                     mediator.Enfileirar(new InserirAulaRecorrenteCommand(usuarioLogado, inserirAulaDto.DataAula, inserirAulaDto.Quantidade, inserirAulaDto.CodigoTurma, inserirAulaDto.CodigoComponenteCurricular, inserirAulaDto.NomeComponenteCurricular, inserirAulaDto.TipoCalendarioId, inserirAulaDto.TipoAula, inserirAulaDto.CodigoUe, inserirAulaDto.EhRegencia, inserirAulaDto.RecorrenciaAula));
                     return new RetornoBaseDto("Serão cadastradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
                 }
