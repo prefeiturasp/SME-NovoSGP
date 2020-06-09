@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class FechamentoReaberturaBimestre
+    public class FechamentoReaberturaBimestre : EntidadeBase
     {
         public int Bimestre { get; set; }
         public FechamentoReabertura FechamentoAbertura { get; set; }
