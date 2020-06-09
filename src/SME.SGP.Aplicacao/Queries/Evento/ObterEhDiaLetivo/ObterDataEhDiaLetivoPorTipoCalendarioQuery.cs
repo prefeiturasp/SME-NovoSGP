@@ -2,7 +2,7 @@
 using MediatR;
 using System;
 
-namespace SME.SGP.Aplicacao.Queries.Evento.ObterEhDiaLetivo
+namespace SME.SGP.Aplicacao
 {
     public class ObterDataEhDiaLetivoPorTipoCalendarioQuery : IRequest<bool>
     {
