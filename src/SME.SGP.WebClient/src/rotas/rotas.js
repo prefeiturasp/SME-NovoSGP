@@ -52,6 +52,8 @@ import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselhoClasse';
 import RelatorioSemestral from '~/paginas/Relatorios/PAP/RelatorioSemestral/relatorioSemestral';
 
 import CalendarioProfessor from '~/paginas/CalendarioEscolar/CalendarioProfessor';
+import CalendarioProfessorNovo from '~/paginas/CalendarioEscolar/CalendarioProfessor';
+import TerritorioSaber from '~/paginas/Planejamento/TerritorioSaber';
 
 const rotas = new Map();
 
@@ -157,6 +159,17 @@ rotas.set(RotasDto.PLANO_ANUAL, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.PLANO_ANUAL,
+});
+
+rotas.set(RotasDto.TERRITORIO_SABER, {
+  breadcrumbName: 'Território do Saber',
+  menu: ['Planejamento'],
+  parent: '/',
+  component: TerritorioSaber,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.TERRITORIO_SABER,
 });
 
 rotas.set(RotasDto.ATRIBUICAO_SUPERVISOR_LISTA, {

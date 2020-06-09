@@ -90,7 +90,7 @@ namespace SME.SGP.Api
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
-
+            
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
@@ -102,8 +102,8 @@ namespace SME.SGP.Api
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
-            services.AddMediatR(assembly);
+            services.AdicionarMediatr();
+            services.AdicionarValidadoresFluentValidation();
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
 
