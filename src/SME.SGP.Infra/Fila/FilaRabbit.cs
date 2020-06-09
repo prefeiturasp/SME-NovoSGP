@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using RabbitMQ.Client;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
