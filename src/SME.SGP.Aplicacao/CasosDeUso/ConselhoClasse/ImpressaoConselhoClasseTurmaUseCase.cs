@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ImpressaoConselhoClasseTurmaUseCase : IImpressaoConselhoClassTurmaUseCase
+    public class ImpressaoConselhoClasseTurmaUseCase : IImpressaoConselhoClasseTurmaUseCase
     {
         private readonly IMediator mediator;
 

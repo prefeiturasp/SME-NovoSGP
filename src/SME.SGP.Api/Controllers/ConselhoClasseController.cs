@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -105,15 +107,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(bool), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ImprimirConselhoTurma(long conselhoClasseId, long fechamentoTurmaId, [FromServices] IMediator mediator)
-          => Ok(await ImpressaoConselhoClasseTurmaUseCase.Executar(mediator, conselhoClasseId, fechamentoTurmaId));
+        public async Task<IActionResult> ImprimirConselhoTurma([FromBody] FiltroRelatorioConselhoClasseAlunoDto filtroRelatorioConselhoClasseAlunoDto, [FromServices] IImpressaoConselhoClasseTurmaUseCase impressaoConselhoClasseTurmaUseCase)
+          => Ok(await impressaoConselhoClasseTurmaUseCase.Executar(filtroRelatorioConselhoClasseAlunoDto));
 
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/imprimir")]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(bool), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ImprimirConselhoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices] IMediator mediator)
-          => Ok(await ImpressaoConselhoClasseAlunoUseCase.Executar(mediator, conselhoClasseId, fechamentoTurmaId, alunoCodigo));
+        public async Task<IActionResult> ImprimirConselhoAluno([FromBody] FiltroRelatorioConselhoClasseAlunoDto filtroRelatorioConselhoClasseAlunoDto, [FromServices] IImpressaoConselhoClasseAlunoUseCase impressaoConselhoClasseAlunoUseCase)
+          => Ok(await impressaoConselhoClasseAlunoUseCase.Executar(filtroRelatorioConselhoClasseAlunoDto));
     }
 }
