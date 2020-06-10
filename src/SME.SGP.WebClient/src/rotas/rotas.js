@@ -54,6 +54,7 @@ import RelatorioSemestral from '~/paginas/Relatorios/PAP/RelatorioSemestral/rela
 import CalendarioProfessor from '~/paginas/CalendarioEscolar/CalendarioProfessor';
 import CalendarioProfessorNovo from '~/paginas/CalendarioEscolar/CalendarioProfessor';
 import TerritorioSaber from '~/paginas/Planejamento/TerritorioSaber';
+import HistoricoEscolar from '~/paginas/Relatorios/HistoricoEscolar/historicoEscolar';
 
 const rotas = new Map();
 
@@ -783,6 +784,17 @@ rotas.set(RotasDto.RELATORIO_SEMESTRAL, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_SEMESTRAL,
+});
+
+rotas.set(RotasDto.HISTORICO_ESCOLAR, {
+  breadcrumbName: 'Histórico Escolar',
+  menu: ['Relatórios'],
+  parent: '/',
+  component: HistoricoEscolar,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.HISTORICO_ESCOLAR,
 });
 
 const rotasArray = [];
