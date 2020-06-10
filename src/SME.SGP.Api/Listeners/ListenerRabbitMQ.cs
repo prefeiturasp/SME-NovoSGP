@@ -16,17 +16,20 @@ namespace SME.SGP.Api
     public class ListenerRabbitMQ : IHostedService
     {
         private readonly IModel canalRabbit;
+        private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
+
         /// <summary>
         /// configuração da lista de tipos para a fila do rabbit instanciar, seguindo a ordem de propriedades:
-        /// rota do rabbit, usaMediatr, tipo
+        /// rota do rabbit, usaMediatr?, tipo
         /// </summary>
         private readonly Dictionary<string, (bool, Type)> comandos;
 
 
-        public ListenerRabbitMQ(IModel canalRabbit, IServiceScopeFactory serviceScopeFactory)
+        public ListenerRabbitMQ(IModel canalRabbit, IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory)
         {
             this.canalRabbit = canalRabbit ?? throw new ArgumentNullException(nameof(canalRabbit));
+            this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeListenerWorkerRelatorios, ExchangeType.Topic);
             canalRabbit.QueueDeclare(RotasRabbit.FilaListenerSgp, false, false, false, null);
@@ -35,11 +38,7 @@ namespace SME.SGP.Api
             comandos = new Dictionary<string, (bool, Type)>();
             comandos.Add(RotasRabbit.RotaRelatoriosProntos, (false, typeof(IReceberRelatorioProntoUseCase)));
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+
         public Task StartAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -51,16 +50,10 @@ namespace SME.SGP.Api
                 TratarMensagem(content, ea.RoutingKey);
                 canalRabbit.BasicAck(ea.DeliveryTag, false);
             };
-
-            //consumer.Shutdown += OnConsumerShutdown;
-            //consumer.Registered += OnConsumerRegistered;
-            //consumer.Unregistered += OnConsumerUnregistered;
-            //consumer.ConsumerCancelled += OnConsumerConsumerCancelled;
-
+            
             canalRabbit.BasicConsume(RotasRabbit.FilaListenerSgp, false, consumer);
             return Task.CompletedTask;
         }
-        //relatorios.prontos
         private void TratarMensagem(string mensagem, string rota)
         {
             if (comandos.ContainsKey(rota))
@@ -70,17 +63,18 @@ namespace SME.SGP.Api
                     var tipoComando = comandos[rota];
                     var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
 
+                    //usar mediatr?
                     if (tipoComando.Item1)
                     {
-                    var comando = JsonConvert.DeserializeObject(mensagemRabbit.Filtros.ToString(), tipoComando.Item2);
+                        var comando = JsonConvert.DeserializeObject(mensagemRabbit.Filtros.ToString(), tipoComando.Item2);
                         var mediatr = scope.ServiceProvider.GetService<IMediator>();
                         mediatr.Send(comando);
                     }
                     else
                     {
-                        var casoDeUsoConcreto = typeof(ICasoDeUso<>).MakeGenericType(tipoComando.Item2);
+                        var casoDeUso = scope.ServiceProvider.GetService(tipoComando.Item2);
 
-                        comando.GetMethod("Executar").Invoke(casoDeUso, new object[] { comando });
+                        tipoComando.Item2.GetMethod("Executar").Invoke(casoDeUso, new object[] { mensagemRabbit });
                     }
 
                 }
@@ -89,7 +83,9 @@ namespace SME.SGP.Api
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            canalRabbit.Close();
+            conexaoRabbit.Close();
+            return Task.CompletedTask;
         }
     }
 }

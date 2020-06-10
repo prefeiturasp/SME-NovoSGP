@@ -301,6 +301,7 @@ namespace SME.SGP.IoC
         {
             services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
             services.TryAddScoped<IGamesUseCase, GamesUseCase>();
+            services.TryAddScoped<IReceberRelatorioProntoUseCase, ReceberRelatorioProntoUseCase>();
         }
     }
 }

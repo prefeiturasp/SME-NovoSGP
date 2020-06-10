@@ -1,9 +1,10 @@
 ﻿using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IReceberRelatorioProntoUseCase
     {
-        void Executar(DadosRelatorioDto dadosRelatorioDto);
+        Task<bool> Executar(MensagemRabbit mensagemRabbit);
     }
 }
