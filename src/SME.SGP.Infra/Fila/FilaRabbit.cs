@@ -4,7 +4,6 @@ using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
 {
@@ -17,7 +16,8 @@ namespace SME.SGP.Infra
         {
             this.rabbitChannel = rabbitChannel ?? throw new ArgumentNullException(nameof(rabbitChannel));
         }
-        public async Task AdicionaFila(AdicionaFilaDto adicionaFilaDto)
+        
+        public void AdicionaFilaWorkerRelatorios(AdicionaFilaDto adicionaFilaDto)
         {
             var request = new { action = adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros };
             var mensagem = JsonConvert.SerializeObject(request);
@@ -27,7 +27,8 @@ namespace SME.SGP.Infra
             properties.Persistent = false;
             properties.Persistent = false;
 
-            rabbitChannel.BasicPublish("sme.sr.workers", adicionaFilaDto.Fila, properties, body);
+            rabbitChannel.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeListenerWorkerRelatorios, RotasRabbit.RotaRelatoriosSolicitados);
+            rabbitChannel.BasicPublish(RotasRabbit.ExchangeListenerWorkerRelatorios, adicionaFilaDto.Fila, properties, body);
         }
     }
 }
