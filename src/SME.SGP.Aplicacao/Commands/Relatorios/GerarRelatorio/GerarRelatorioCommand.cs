@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao.Commands.Relatorios.GerarRelatorio
+namespace SME.SGP.Aplicacao
 {
     public class GerarRelatorioCommand: IRequest<bool>
     {

@@ -16,6 +16,7 @@ using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.IoC
