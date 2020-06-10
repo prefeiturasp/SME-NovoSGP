@@ -11,8 +11,8 @@ namespace SME.SGP.Api
         {
             var factory = new ConnectionFactory
             {
-                HostName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Hostname"),
-                UserName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Username"),
+                HostName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__HostName"),
+                UserName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__UserName"),
                 Password = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Password")
             };
 
@@ -23,9 +23,6 @@ namespace SME.SGP.Api
 
             _channel.ExchangeDeclare(RotasRabbit.ExchangeListenerWorkerRelatorios, ExchangeType.Topic);
             _channel.QueueDeclare(RotasRabbit.FilaListenerSgp, false, false, false, null);
-
-            //_channel.QueueBind(RotasRabbit.FilaWorkerRelatorios, RotasRabbit.Exchange, RotasRabbit.FilaRelatoriosSolicitados);
-
         }
     }
 }

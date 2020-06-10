@@ -5,11 +5,11 @@ namespace SME.SGP.Aplicacao
 {
 
 
-    public class ReceberRelatorioProntoUseCase : IReceberRelatorioProntoUseCase, IUseCase<DadosRelatorioDto, bool>
+    public class ReceberRelatorioProntoUseCase : IReceberRelatorioProntoUseCase
     {
-        public Task<bool> Executar(DadosRelatorioDto param)
+        public Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            throw new System.NotImplementedException();
+            return Task.FromResult(true);
         }
     }
 }
