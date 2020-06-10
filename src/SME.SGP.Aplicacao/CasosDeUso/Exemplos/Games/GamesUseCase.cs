@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Commands.Relatorios.GerarRelatorio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
