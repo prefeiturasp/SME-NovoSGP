@@ -13,11 +13,12 @@ namespace SME.SGP.Dominio.Entidades
         public RelatorioCorrelacao RelatorioCorrelacao { get; private set; }
         public long RelatorioCorrelacaoId { get; set; }
 
-        public RelatorioCorrelacaoJasper()
+        public RelatorioCorrelacaoJasper(RelatorioCorrelacao relatorioCorrelacao, Guid jSessionId, Guid exportId, Guid requestId)
         {
-            JSessionId = Guid.NewGuid();
-            ExportId = Guid.NewGuid();
-            RequestId = Guid.NewGuid();
+            JSessionId = jSessionId;
+            ExportId = exportId;
+            RequestId = requestId;
+            RelatorioCorrelacao = relatorioCorrelacao;
         }
     }
 }

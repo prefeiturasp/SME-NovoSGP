@@ -13,10 +13,11 @@ namespace SME.SGP.Dominio.Entidades
 
         public long UsuarioSolicitanteId { get; private set; }
 
-        public RelatorioCorrelacao(TipoRelatorioEnum tipoRelatorio)
+        public RelatorioCorrelacao(TipoRelatorioEnum tipoRelatorio, Usuario usuarioSolicitante)
         {
             Codigo = Guid.NewGuid();
             TipoRelatorio = tipoRelatorio;
+            UsuarioSolicitante = usuarioSolicitante;
         }
     }
 }
