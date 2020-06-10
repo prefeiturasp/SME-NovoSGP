@@ -6,26 +6,26 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioRelatorioCorrelacao : IRepositorioRelatorioCorrelacao
+    public class RepositorioRelatorioCorrelacaoJasper : IRepositorioRelatorioCorrelacaoJasper
     {
         private readonly ISgpContext contexto;
 
-        public RepositorioRelatorioCorrelacao(ISgpContext contexto)
+        public RepositorioRelatorioCorrelacaoJasper(ISgpContext contexto)
         {
             this.contexto = contexto;
         }
 
-        public IEnumerable<RelatorioCorrelacao> Listar()
+        public IEnumerable<RelatorioCorrelacaoJasper> Listar()
         {
             throw new System.NotImplementedException();
         }
 
-        public RelatorioCorrelacao ObterPorId(long id)
+        public RelatorioCorrelacaoJasper ObterPorId(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<RelatorioCorrelacao> ObterPorIdAsync(long id)
+        public Task<RelatorioCorrelacaoJasper> ObterPorIdAsync(long id)
         {
             throw new System.NotImplementedException();
         }
@@ -35,17 +35,17 @@ namespace SME.SGP.Dados.Repositorios
             throw new System.NotImplementedException();
         }
 
-        public void Remover(RelatorioCorrelacao entidade)
+        public void Remover(RelatorioCorrelacaoJasper entidade)
         {
             throw new System.NotImplementedException();
         }
 
-        public long Salvar(RelatorioCorrelacao entidade)
+        public long Salvar(RelatorioCorrelacaoJasper entidade)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<long> SalvarAsync(RelatorioCorrelacao entidade)
+        public Task<long> SalvarAsync(RelatorioCorrelacaoJasper entidade)
         {
             throw new System.NotImplementedException();
         }
