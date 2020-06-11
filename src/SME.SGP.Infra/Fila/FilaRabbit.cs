@@ -16,10 +16,10 @@ namespace SME.SGP.Infra
         {
             this.rabbitChannel = rabbitChannel ?? throw new ArgumentNullException(nameof(rabbitChannel));
         }
-        
+
         public void AdicionaFilaWorkerRelatorios(AdicionaFilaDto adicionaFilaDto)
         {
-            var request = new { action = adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros };
+            var request = new MensagemRabbit(adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros, adicionaFilaDto.CodigoCorrelacao);
             var mensagem = JsonConvert.SerializeObject(request);
             var body = Encoding.UTF8.GetBytes(mensagem);
             //TODO PENSAR NA EXCHANGE

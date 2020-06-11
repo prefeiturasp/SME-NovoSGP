@@ -31,9 +31,9 @@ namespace SME.SGP.Infra.Contexto
             Variaveis.Add("UsuarioLogado", httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Sistema");
             Variaveis.Add("NomeUsuario", httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema");            
             
-            var authorizationHeader = httpContextAccessor.HttpContext.Request.Headers["authorization"];
+            var authorizationHeader = httpContextAccessor.HttpContext?.Request?.Headers["authorization"];
 
-            if (authorizationHeader == StringValues.Empty)
+            if (!authorizationHeader.HasValue || authorizationHeader.Value == StringValues.Empty)
             {
                 Variaveis.Add("TemAuthorizationHeader", false);
                 Variaveis.Add("TokenAtual", string.Empty);
@@ -41,7 +41,7 @@ namespace SME.SGP.Infra.Contexto
             else
             {
                 Variaveis.Add("TemAuthorizationHeader", true);
-                Variaveis.Add("TokenAtual", authorizationHeader.Single().Split(' ').Last());
+                Variaveis.Add("TokenAtual", authorizationHeader.Value.Single().Split(' ').Last());
             }
         }
 

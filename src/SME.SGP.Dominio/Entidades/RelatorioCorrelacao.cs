@@ -1,28 +1,27 @@
-﻿using SME.SGP.Dominio.Enumerados;
-using System;
+﻿using System;
 
 namespace SME.SGP.Dominio.Entidades
 {
     public class RelatorioCorrelacao : EntidadeBase
     {
-        public RelatorioCorrelacao(TipoRelatorioEnum tipoRelatorio, Usuario usuarioSolicitante)
+        public RelatorioCorrelacao(TipoRelatorio tipoRelatorio, long usuarioSolicitanteId)
         {
             Codigo = Guid.NewGuid();
             TipoRelatorio = tipoRelatorio;
-            UsuarioSolicitante = usuarioSolicitante;
+            UsuarioSolicitanteId = usuarioSolicitanteId;
         }
 
-        protected RelatorioCorrelacao()
+        public RelatorioCorrelacao()
         {
 
         }
 
-        public Guid Codigo { get; private set; }
+        public Guid Codigo { get; set; }
 
-        public TipoRelatorioEnum TipoRelatorio { get; private set; }
+        public TipoRelatorio TipoRelatorio { get; set; }
 
-        public Usuario UsuarioSolicitante { get; private set; }
+        public Usuario UsuarioSolicitante { get; set; }
 
-        public long UsuarioSolicitanteId { get; private set; }
+        public long UsuarioSolicitanteId { get; set; }
     }
 }

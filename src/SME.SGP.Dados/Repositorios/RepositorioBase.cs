@@ -1,5 +1,4 @@
 ﻿using Dommel;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -82,7 +81,16 @@ namespace SME.SGP.Dados.Repositorios
             {
                 entidade.CriadoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.CriadoRF = database.UsuarioLogadoRF;
-                entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
+                try
+                {
+                    entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
                 await AuditarAsync(entidade.Id, "I");
             }
 

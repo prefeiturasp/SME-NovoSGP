@@ -43,6 +43,9 @@ namespace SME.SGP.Aplicacao
         public async Task<Usuario> Handle(ObterUsuarioLogadoQuery request, CancellationToken cancellationToken)
         {
             var login = ObterLoginAtual();
+            if (string.IsNullOrWhiteSpace(login))
+                throw new NegocioException("Usuário não encontrado.");
+
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
 
             if (usuario == null)
