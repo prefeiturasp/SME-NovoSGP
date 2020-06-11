@@ -48,9 +48,10 @@ namespace SME.SGP.Api
                 var body = ea.Body.Span;
                 var content = System.Text.Encoding.UTF8.GetString(body);
                 TratarMensagem(content, ea.RoutingKey);
+
                 canalRabbit.BasicAck(ea.DeliveryTag, false);
             };
-            
+
             canalRabbit.BasicConsume(RotasRabbit.FilaListenerSgp, false, consumer);
             return Task.CompletedTask;
         }
@@ -58,25 +59,32 @@ namespace SME.SGP.Api
         {
             if (comandos.ContainsKey(rota))
             {
-                using (var scope = serviceScopeFactory.CreateScope())
+                try
                 {
-                    var tipoComando = comandos[rota];
-                    var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-
-                    //usar mediatr?
-                    if (tipoComando.Item1)
+                    using (var scope = serviceScopeFactory.CreateScope())
                     {
-                        var comando = JsonConvert.DeserializeObject(mensagemRabbit.Filtros.ToString(), tipoComando.Item2);
-                        var mediatr = scope.ServiceProvider.GetService<IMediator>();
-                        mediatr.Send(comando);
-                    }
-                    else
-                    {
-                        var casoDeUso = scope.ServiceProvider.GetService(tipoComando.Item2);
+                        var tipoComando = comandos[rota];
+                        var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
 
-                        tipoComando.Item2.GetMethod("Executar").Invoke(casoDeUso, new object[] { mensagemRabbit });
-                    }
+                        //usar mediatr?
+                        if (tipoComando.Item1)
+                        {
+                            var comando = JsonConvert.DeserializeObject(mensagemRabbit.Filtros.ToString(), tipoComando.Item2);
+                            var mediatr = scope.ServiceProvider.GetService<IMediator>();
+                            mediatr.Send(comando);
+                        }
+                        else
+                        {
+                            var casoDeUso = scope.ServiceProvider.GetService(tipoComando.Item2);
 
+                            tipoComando.Item2.GetMethod("Executar").Invoke(casoDeUso, new object[] { mensagemRabbit });
+                        }
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //TODO
                 }
             }
         }
