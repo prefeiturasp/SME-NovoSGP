@@ -7,6 +7,6 @@ namespace SME.SGP.Infra
         public Guid RequisicaoId { get; set; }
         public Guid ExportacaoId { get; set; }
         public Guid CorrelacaoId { get; set; }
-        public string JSessionId { get; }
+        public string JSessionId { get; set; }
     }
 }
