@@ -24,7 +24,9 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         {
             // Arrange
             var relatorioCorrelacao = new RelatorioCorrelacao(Dominio.Enumerados.TipoRelatorioEnum.RelatorioExemplo, new Usuario());
-            var relatorioCorrelacaoJasper = new RelatorioCorrelacaoJasper(relatorioCorrelacao, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+            var relatorioCorrelacaoJasper = new RelatorioCorrelacaoJasper(relatorioCorrelacao, "123", Guid.NewGuid(), Guid.NewGuid());
+            repositorioRelatorioCorrelacaoJasper.Setup(c => c.Salvar(It.IsAny<RelatorioCorrelacaoJasper>()))
+                .Returns(1);
 
             // Act
             var result = await comandoRelatorioCorrelacaoJasper.Salvar(relatorioCorrelacaoJasper);

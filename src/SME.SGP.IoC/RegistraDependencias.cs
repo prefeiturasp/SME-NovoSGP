@@ -257,6 +257,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioObjetivoAprendizagem, RepositorioObjetivoAprendizagem>();
             services.TryAddScoped<IRepositorioConselhoClasseParecerConclusivo, RepositorioConselhoClasseParecerConclusivo>();
             services.TryAddScoped<IRepositorioPlanoAnualTerritorioSaber, RepositorioPlanoAnualTerritorioSaber>();
+            services.TryAddScoped<IRepositorioCorrelacaoRelatorio, RepositorioCorrelacaoRelatorio>();
+            services.TryAddScoped<IRepositorioRelatorioCorrelacaoJasper, RepositorioRelatorioCorrelacaoJasper>();
         }
 
         private static void RegistararQueries(IServiceCollection services)
