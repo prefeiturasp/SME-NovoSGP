@@ -26,11 +26,12 @@ namespace SME.SGP.Api
         private readonly Dictionary<string, (bool, Type)> comandos;
 
 
-        public ListenerRabbitMQ(IModel canalRabbit, IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory)
+        public ListenerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory)
         {
-            this.canalRabbit = canalRabbit ?? throw new ArgumentNullException(nameof(canalRabbit));
             this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+            
+            canalRabbit = conexaoRabbit.CreateModel();
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeListenerWorkerRelatorios, ExchangeType.Topic);
             canalRabbit.QueueDeclare(RotasRabbit.FilaListenerSgp, false, false, false, null);
             canalRabbit.QueueBind(RotasRabbit.FilaListenerSgp, RotasRabbit.ExchangeListenerWorkerRelatorios, "*", null);
