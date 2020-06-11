@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SME.SGP.Infra
+namespace SME.SGP.Dominio
 {
     public enum TipoRelatorio
     {
         [Display(Name = "relatorios/alunos")]
-        Games = 1,
+        RelatorioExemplo = 1,
 
         [Display(Name = "relatorios/boletim")]
         Boletim = 4
