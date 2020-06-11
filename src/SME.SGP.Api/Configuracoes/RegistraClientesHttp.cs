@@ -2,8 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.Integracoes;
 using System;
-using System.Net.Http.Headers;
-using System.Text;
 
 namespace SME.SGP.Api
 {

@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Infra;
+using SME.SGP.Dominio;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +17,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(RelatorioGamesCommand request, CancellationToken cancellationToken)
         {
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Games, request));
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioExemplo, request, usuarioLogado.Id));
         }
     }
 }
