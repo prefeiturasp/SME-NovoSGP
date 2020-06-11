@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Entidades
         {
 
         }
-
+        public RelatorioCorrelacaoJasper CorrelacaoJasper { get; private set; }
         public Guid Codigo { get; set; }
 
         public TipoRelatorio TipoRelatorio { get; set; }
@@ -23,5 +23,10 @@ namespace SME.SGP.Dominio.Entidades
         public Usuario UsuarioSolicitante { get; set; }
 
         public long UsuarioSolicitanteId { get; set; }
+
+        public void AdicionarCorrelacaoJasper(RelatorioCorrelacaoJasper relatorioCorrelacaoJasper)
+        {
+            CorrelacaoJasper = relatorioCorrelacaoJasper;
+        }
     }
 }
