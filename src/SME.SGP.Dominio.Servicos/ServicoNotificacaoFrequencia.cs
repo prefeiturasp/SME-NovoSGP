@@ -201,7 +201,7 @@ namespace SME.SGP.Dominio.Servicos
             int anoAtual = DateTime.Now.Year;
 
             // Parametro do sistema de dias para notificacao
-            var qtdDiasParametro = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
+            var qtdDiasParametroString = repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.QuantidadeDiasNotificarAlteracaoChamadaEfetivada,
                                                    anoAtual);
 
