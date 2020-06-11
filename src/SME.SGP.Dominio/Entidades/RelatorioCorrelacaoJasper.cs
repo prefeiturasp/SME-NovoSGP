@@ -4,7 +4,19 @@ namespace SME.SGP.Dominio.Entidades
 {
     public class RelatorioCorrelacaoJasper : EntidadeBase
     {
-        public Guid JSessionId { get; private set; }
+        public RelatorioCorrelacaoJasper(RelatorioCorrelacao relatorioCorrelacao, string jSessionId, Guid exportId, Guid requestId)
+        {
+            JSessionId = jSessionId;
+            ExportId = exportId;
+            RequestId = requestId;
+            RelatorioCorrelacao = relatorioCorrelacao;
+        }
+
+        protected RelatorioCorrelacaoJasper()
+        {
+
+        }
+        public string JSessionId { get; private set; }
 
         public Guid ExportId { get; private set; }
 
@@ -12,13 +24,5 @@ namespace SME.SGP.Dominio.Entidades
 
         public RelatorioCorrelacao RelatorioCorrelacao { get; private set; }
         public long RelatorioCorrelacaoId { get; set; }
-
-        public RelatorioCorrelacaoJasper(RelatorioCorrelacao relatorioCorrelacao, Guid jSessionId, Guid exportId, Guid requestId)
-        {
-            JSessionId = jSessionId;
-            ExportId = exportId;
-            RequestId = requestId;
-            RelatorioCorrelacao = relatorioCorrelacao;
-        }
     }
 }
