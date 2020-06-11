@@ -20,12 +20,15 @@ namespace SME.SGP.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
+
         }
 
         public IConfiguration Configuration { get; }
+        private IHostingEnvironment _env;
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -127,8 +130,11 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
-            services.AddRabbit();
-            services.AddHostedService<ListenerRabbitMQ>();
+            if (_env.EnvironmentName != "teste-integrado")
+            {
+                services.AddRabbit();
+                services.AddHostedService<ListenerRabbitMQ>();
+            }
         }
     }
 }
