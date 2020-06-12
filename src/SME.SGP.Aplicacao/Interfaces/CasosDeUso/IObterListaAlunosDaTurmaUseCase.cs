@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IObterListaAlunosDaTurmaUseCase: IUseCase<FiltroListagemAlunosDto, IEnumerable<AlunoSimplesDto>>
+    public interface IObterListaAlunosDaTurmaUseCase: IUseCase<string, IEnumerable<AlunoSimplesDto>>
     {
     }
 }
