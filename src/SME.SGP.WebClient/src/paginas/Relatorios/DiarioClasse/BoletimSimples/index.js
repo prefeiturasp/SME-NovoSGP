@@ -10,11 +10,21 @@ import RotasDto from '~/dtos/rotasDto';
 
 import Filtro from './componentes/Filtro';
 import ServicoBoletimSimples from '~/servicos/Paginas/Relatorios/DiarioClasse/BoletimSimples/ServicoBoletimSimples';
+import { sucesso, erro } from '~/servicos/alertas';
 
 const BoletimSimples = () => {
   const [loaderSecao] = useState(false);
   const [somenteConsulta] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
+
+  const [filtro, setFiltro] = useState({
+    anoLetivo: '',
+    modalidade: '',
+    semestre: '',
+    dreCodigo: '',
+    ueCodigo: '',
+    turmaCodigo: '',
+  });
 
   const [itensSelecionados, setItensSelecionados] = useState([]);
 
@@ -22,21 +32,39 @@ const BoletimSimples = () => {
     setItensSelecionados([...items.map(item => String(item.id))]);
   };
 
-  const [filtro, setFiltro] = useState({});
+  const [selecionarAlunos, setSelecionarAlunos] = useState(false);
 
   const onChangeFiltro = valoresFiltro => {
-    setFiltro(valoresFiltro);
+    setFiltro({
+      anoLetivo: valoresFiltro.anoLetivo,
+      modalidade: valoresFiltro.modalidadeId,
+      semestre: valoresFiltro.periodoId,
+      dreCodigo: valoresFiltro.dreId,
+      ueCodigo: valoresFiltro.ueId,
+      turmaCodigo: valoresFiltro.turmaId,
+    });
+    setSelecionarAlunos(valoresFiltro.opcaoAlunoId === '1');
   };
 
   const onClickVoltar = () => {
     history.push('/');
   };
 
-  const onClickBotaoPrincipal = () => {
-    ServicoBoletimSimples.imprimirBoletim({
+  const [resetForm, setResetForm] = useState(false);
+
+  const onClickCancelar = () => {
+    setResetForm(true);
+  };
+
+  const onClickBotaoPrincipal = async () => {
+    const resultado = await ServicoBoletimSimples.imprimirBoletim({
       ...filtro,
-      alunosId: itensSelecionados,
+      periodoEscolarId: filtro.semestre,
+      alunosCodigo: itensSelecionados,
     });
+    if (resultado.erro)
+      erro('Não foi possível socilitar a impressão do Boletim');
+    else sucesso('Impressão de Boletim solicitada com sucesso');
   };
 
   const colunas = [
@@ -60,11 +88,14 @@ const BoletimSimples = () => {
             permissoesTela={permissoesTela[RotasDto.RELATORIO_BOLETIM_SIMPLES]}
             temItemSelecionado={itensSelecionados && itensSelecionados.length}
             onClickVoltar={onClickVoltar}
+            onClickCancelar={onClickCancelar}
             onClickBotaoPrincipal={onClickBotaoPrincipal}
+            desabilitarBotaoPrincipal={false}
+            botoesEstadoVariavel
             labelBotaoPrincipal="Imprimir"
           />
-          <Filtro onFiltrar={onChangeFiltro} />
-          {filtro && filtro.opcaoAlunoId === '1' ? (
+          <Filtro onFiltrar={onChangeFiltro} resetForm={resetForm} />
+          {filtro && selecionarAlunos ? (
             <div className="col-md-12 pt-2 py-0 px-0">
               <ListaPaginada
                 id="lista-alunos"
