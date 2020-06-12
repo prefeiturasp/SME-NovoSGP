@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Relatorios.Comuns.ObterCorrelacaoRelatorio
+namespace SME.SGP.Aplicacao
 {
     public class ObterCorrelacaoRelatorioQueryHandler : IRequestHandler<ObterCorrelacaoRelatorioQuery, RelatorioCorrelacao>
     {
