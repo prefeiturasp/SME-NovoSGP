@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Queries.Relatorios.Comuns.ObterCorrelacaoRelatorio;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
