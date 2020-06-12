@@ -4,7 +4,6 @@ using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
 {
@@ -17,26 +16,22 @@ namespace SME.SGP.Infra
         {
             this.rabbitChannel = rabbitChannel ?? throw new ArgumentNullException(nameof(rabbitChannel));
         }
-        public async Task AdicionaFila(AdicionaFilaDto adicionaFilaDto)
+
+        public void AdicionaFilaWorkerRelatorios(AdicionaFilaDto adicionaFilaDto)
         {
-            try
-            {
-                var request = new { action = adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros };
-                var mensagem = JsonConvert.SerializeObject(request);
-                var body = Encoding.UTF8.GetBytes(mensagem);
-                //TODO PENSAR NA EXCHANGE
-                var properties = rabbitChannel.CreateBasicProperties();
-                properties.Persistent = false;
-                properties.Persistent = false;
-                rabbitChannel.BasicPublish("sme.sr.workers", adicionaFilaDto.Fila, properties, body);
+            var request = new MensagemRabbit(adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros, adicionaFilaDto.CodigoCorrelacao);
+            var mensagem = JsonConvert.SerializeObject(request);
+            var body = Encoding.UTF8.GetBytes(mensagem);
+            //TODO PENSAR NA EXCHANGE
+            var properties = rabbitChannel.CreateBasicProperties();
+            properties.Persistent = false;
+            properties.Persistent = false;
 
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
+            rabbitChannel.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeListenerWorkerRelatorios, RotasRabbit.RotaRelatoriosSolicitados);
+            rabbitChannel.BasicPublish(RotasRabbit.ExchangeListenerWorkerRelatorios, adicionaFilaDto.Fila, properties, body);
         }
     }
 }
+
+
 
