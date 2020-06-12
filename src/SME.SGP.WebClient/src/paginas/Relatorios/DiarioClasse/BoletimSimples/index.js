@@ -70,7 +70,7 @@ const BoletimSimples = () => {
   const colunas = [
     {
       title: 'Número',
-      dataIndex: 'numero',
+      dataIndex: 'numeroChamada',
     },
     {
       title: 'Nome',
@@ -100,8 +100,8 @@ const BoletimSimples = () => {
               <ListaPaginada
                 id="lista-alunos"
                 url="v1/boletim/alunos"
-                idLinha="id"
-                colunaChave="id"
+                idLinha="numeroChamada"
+                colunaChave="numeroChamada"
                 colunas={colunas}
                 multiSelecao
                 filtro={filtro}
