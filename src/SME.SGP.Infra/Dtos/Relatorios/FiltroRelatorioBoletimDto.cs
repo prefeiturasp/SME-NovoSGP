@@ -7,16 +7,20 @@ namespace SME.SGP.Infra.Dtos.Relatorios
 {
     public class FiltroRelatorioBoletimDto
     {
-        public string CodigoUe { get; set; }
+        public string DreCodigo { get; set; }
 
-        public long? CodCicloEnsino { get; set; }
+        public string UeCodigo { get; set; }
 
-        public string CodigoTurma { get; set; }
+        public long? CicloId { get; set; }
+
+        public long? PeriodoEscolarId { get; set; }
+
+        public string TurmaCodigo { get; set; }
+
+        public int? AnoLetivo { get; set; }
 
         public Modalidade? Modalidade { get; set; }
 
-        public int? SemestreEJA { get; set; }
-
-        public string[] CodigosAluno { get; set; }
+        public string[] AlunosCodigo { get; set; }
     }
 }

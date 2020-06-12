@@ -12,34 +12,47 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioCicloEnsino repositorioCicloEnsino;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTurma repositorioTurma;
 
         public BoletimUseCase(IMediator mediator,
                               IUnitOfWork unitOfWork,
                               IRepositorioUe repositorioUe,
+                               IRepositorioDre repositorioDre,
+                               IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                               IRepositorioCicloEnsino repositorioCicloEnsino,
                               IRepositorioTurma repositorioTurma)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioCicloEnsino = repositorioCicloEnsino ?? throw new ArgumentNullException(nameof(repositorioCicloEnsino));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
 
         public async Task<bool> Executar(FiltroRelatorioBoletimDto filtroRelatorioBoletimDto)
         {
-            if (repositorioUe.ObterPorCodigo(filtroRelatorioBoletimDto.CodigoUe) == null)
-                throw new NegocioException("Não foi possível encontrar a Ue");
+            if (repositorioDre.ObterPorCodigo(filtroRelatorioBoletimDto.DreCodigo) == null)
+                throw new NegocioException("Não foi possível encontrar a DRE");
 
-            if (filtroRelatorioBoletimDto.CodCicloEnsino.HasValue &&
-                repositorioCicloEnsino.ObterPorId(filtroRelatorioBoletimDto.CodCicloEnsino.Value) == null)
+            if (repositorioUe.ObterPorCodigo(filtroRelatorioBoletimDto.UeCodigo) == null)
+                throw new NegocioException("Não foi possível encontrar a UE");
+
+            if (filtroRelatorioBoletimDto.PeriodoEscolarId.HasValue && 
+                repositorioPeriodoEscolar.ObterPorId(filtroRelatorioBoletimDto.PeriodoEscolarId.Value) == null)
+                throw new NegocioException("Não foi possível encontrar o periodo escolar");
+
+            if (filtroRelatorioBoletimDto.CicloId.HasValue &&
+                repositorioCicloEnsino.ObterPorId(filtroRelatorioBoletimDto.CicloId.Value) == null)
                 throw new NegocioException("Não foi possível encontrar o ciclo");
 
-            if (!string.IsNullOrEmpty(filtroRelatorioBoletimDto.CodigoTurma) && 
-                repositorioTurma.ObterPorCodigo(filtroRelatorioBoletimDto.CodigoTurma) == null)
+            if (!string.IsNullOrEmpty(filtroRelatorioBoletimDto.TurmaCodigo) && 
+                repositorioTurma.ObterPorCodigo(filtroRelatorioBoletimDto.TurmaCodigo) == null)
                 throw new NegocioException("Não foi possível encontrar a turma");
 
             unitOfWork.IniciarTransacao();
