@@ -52,10 +52,22 @@ import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselhoClasse';
 import RelatorioSemestral from '~/paginas/Relatorios/PAP/RelatorioSemestral/relatorioSemestral';
 
 import CalendarioProfessor from '~/paginas/CalendarioEscolar/CalendarioProfessor';
-import CalendarioProfessorNovo from '~/paginas/CalendarioEscolar/CalendarioProfessor';
 import TerritorioSaber from '~/paginas/Planejamento/TerritorioSaber';
 
+import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
+
 const rotas = new Map();
+
+rotas.set(RotasDto.RELATORIO_BOLETIM_SIMPLES, {
+  breadcrumbName: ['Notas'],
+  menu: ['Relatórios', 'Diário de Classe'],
+  parent: '/',
+  component: BoletimSimples,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_BOLETIM_SIMPLES,
+});
 
 rotas.set(RotasDto.ACOMPANHAMENTO_COMUNICADOS, {
   breadcrumbName: 'Comunicados',
