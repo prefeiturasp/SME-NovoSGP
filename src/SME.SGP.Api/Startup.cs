@@ -20,6 +20,7 @@ using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
+using SME.SGP.Api.Configuracoes;
 
 namespace SME.SGP.Api
 {

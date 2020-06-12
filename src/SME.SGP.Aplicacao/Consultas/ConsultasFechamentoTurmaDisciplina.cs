@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAluno servicoAluno;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             IConsultasAulaPrevista consultasAulaPrevista,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IConsultasFechamentoNota consultasFechamentoNota,
-            IServicoEOL servicoEOL,
+            IServicoEol servicoEOL,
             IServicoUsuario servicoUsuario,
             IServicoAluno servicoAluno,
             IRepositorioConceito repositorioConceito,
