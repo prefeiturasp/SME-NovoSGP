@@ -163,12 +163,6 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<bool> MapearPodeAlterarEventoSMEAsync(Evento evento)
-        {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
-            return !EhEventoSME(evento) || (EhEventoSME(evento) && usuario.EhPerfilSME());
-        }
-
         private EventoTipoDto MapearTipoEvento(EventoTipo tipoEvento)
         {
             return tipoEvento == null ? null : new EventoTipoDto

@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 entidade.AlteradoEm = DateTime.Now;
                 if (string.IsNullOrWhiteSpace(database.UsuarioLogadoNomeCompleto))
-                    throw new ArgumentNullException("Contexto não pegou usuário logado.");
+                    throw new ErroInternoException("Contexto não pegou usuário logado.");
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 database.Conexao.Update(entidade);

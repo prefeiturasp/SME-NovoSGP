@@ -10,8 +10,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosDiasLetivos : IComandosDiasLetivos
     {
-        private const string ChaveDiasLetivosEja = "EjaDiasLetivos";
-        private const string ChaveDiasLetivosFundMedio = "FundamentalMedioDiasLetivos";
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
