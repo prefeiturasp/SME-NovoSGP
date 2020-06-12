@@ -4,11 +4,11 @@ class ServicoBoletimSimples {
   imprimirBoletim = async dados => {
     let retorno = {};
 
-    const metodo = 'post';
+    const metodo = 'get';
     const url = 'v1/boletim/imprimir';
 
     try {
-      const requisicao = await api[metodo](url, dados);
+      const requisicao = await api[metodo](url, { params: dados });
       if (requisicao.data) retorno = requisicao;
     } catch (erro) {
       retorno = {
