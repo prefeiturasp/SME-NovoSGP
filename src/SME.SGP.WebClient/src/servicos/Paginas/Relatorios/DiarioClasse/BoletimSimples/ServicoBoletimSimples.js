@@ -11,7 +11,9 @@ class ServicoBoletimSimples {
       const requisicao = await api[metodo](url, dados);
       if (requisicao.data) retorno = requisicao;
     } catch (erro) {
-      retorno = [...erro.response.data.mensagens];
+      retorno = {
+        erro: true,
+      };
     }
 
     return retorno;

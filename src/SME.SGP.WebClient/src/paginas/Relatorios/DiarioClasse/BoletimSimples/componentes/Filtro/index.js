@@ -13,7 +13,7 @@ import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import { DreDropDown, UeDropDown } from '~/componentes-sgp';
 import TurmasDropDown from './componentes/TurmasDropDown';
 
-function Filtro({ onFiltrar }) {
+function Filtro({ onFiltrar, resetForm }) {
   const [refForm, setRefForm] = useState({});
 
   const [valoresIniciais] = useState({
@@ -42,9 +42,21 @@ function Filtro({ onFiltrar }) {
     setCarregandoModalidades(false);
   }, [modalidades.length, modalidadesStore]);
 
-  const [anoLetivo, setAnoLetivo] = useState(undefined);
   const [modalidadeId, setModalidadeId] = useState(undefined);
+
+  useEffect(() => {
+    if (modalidades && modalidades.length === 1 && refForm) {
+      refForm.setFieldValue('modalidadeId', String(modalidades[0].valor));
+      setModalidadeId(String(modalidades[0].valor));
+    }
+  }, [modalidades, refForm, resetForm]);
+
+  const [anoLetivo, setAnoLetivo] = useState(undefined);
   const [dreId, setDreId] = useState(undefined);
+
+  useEffect(() => {
+    if (refForm && resetForm) refForm.resetForm();
+  }, [refForm, resetForm]);
 
   const obterPeriodosPorModalidadeId = useCallback(async () => {
     if (anoLetivo && modalidadeId) {
@@ -214,10 +226,12 @@ function Filtro({ onFiltrar }) {
 
 Filtro.propTypes = {
   onFiltrar: PropTypes.func,
+  resetForm: PropTypes.bool,
 };
 
 Filtro.defaultProps = {
   onFiltrar: () => null,
+  resetForm: false,
 };
 
 export default Filtro;
