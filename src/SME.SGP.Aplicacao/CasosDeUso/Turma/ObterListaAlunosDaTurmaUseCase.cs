@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.Turma
+namespace SME.SGP.Aplicacao
 {
     public class ObterListaAlunosDaTurmaUseCase : AbstractUseCase, IObterListaAlunosDaTurmaUseCase
     {
@@ -14,9 +15,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Turma
         {
         }
 
-        public Task<IEnumerable<AlunoSimplesDto>> Executar(FiltroListagemAlunosDto param)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IEnumerable<AlunoSimplesDto>> Executar(string turmaCodigo)
+            => await mediator.Send(new ObterAlunosSimplesDaTurmaQuery(turmaCodigo));
     }
 }

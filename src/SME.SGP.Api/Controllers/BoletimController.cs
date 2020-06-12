@@ -22,20 +22,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("alunos")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(IEnumerable<AlunoSimplesDto>), 500)]
-        public async Task<IActionResult> ListarAlunos([FromQuery] FiltroListagemAlunosDto filtroListagemAlunosDto, [FromServices] IObterListaAlunosDaTurmaUseCase obterListaAlunosDaTurmaUseCase)
+        public async Task<IActionResult> ListarAlunos([FromQuery] string turmaCodigo, [FromServices] IObterListaAlunosDaTurmaUseCase obterListaAlunosDaTurmaUseCase)
         {
-
-            return Ok(new List<AlunoSimplesDto>()
-            {
-                new AlunoSimplesDto() { NumeroChamada = 1, Nome = "Alvaro Ramos Grassi"},
-                new AlunoSimplesDto() { NumeroChamada = 1, Nome = "Aline Grassi"},
-                new AlunoSimplesDto() { NumeroChamada = 1, Nome = "Bianca Grassi"},
-                new AlunoSimplesDto() { NumeroChamada = 1, Nome = "José Ramos Grassi"},
-                new AlunoSimplesDto() { NumeroChamada = 1, Nome = "Valentina Grassi"},
-                new AlunoSimplesDto() { NumeroChamada = 1, Nome = "Laura Ramos Grassi"},
-                new AlunoSimplesDto() { NumeroChamada = 1, Nome = "Angela Ramos Grassi"},
-                new AlunoSimplesDto() { NumeroChamada = 1, Nome = "Marcos Ramos Grassi"},
-            });
+            return Ok(await obterListaAlunosDaTurmaUseCase.Executar(turmaCodigo));
         }
     }
 }
