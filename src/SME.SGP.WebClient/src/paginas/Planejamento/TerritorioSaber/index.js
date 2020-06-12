@@ -225,7 +225,7 @@ function TerritorioSaber() {
               <PainelCollapse.Painel
                 disabled={!habilitaCollapse}
                 temBorda
-                header="Primeiro Bimestre"
+                header="1º Bimestre"
                 key="1"
               >
                 {carregando ? (
@@ -245,7 +245,7 @@ function TerritorioSaber() {
               <PainelCollapse.Painel
                 disabled={!habilitaCollapse}
                 temBorda
-                header="Segundo Bimestre"
+                header="2º Bimestre"
                 key="2"
               >
                 {carregando ? (
@@ -265,7 +265,7 @@ function TerritorioSaber() {
               <PainelCollapse.Painel
                 disabled={!habilitaCollapse}
                 temBorda
-                header="Terceiro Bimestre"
+                header="3º Bimestre"
                 key="3"
               >
                 {carregando ? (
@@ -285,7 +285,7 @@ function TerritorioSaber() {
               <PainelCollapse.Painel
                 disabled={!habilitaCollapse}
                 temBorda
-                header="Quarto Bimestre"
+                header="4º Bimestre"
                 key="4"
               >
                 {carregando ? (
