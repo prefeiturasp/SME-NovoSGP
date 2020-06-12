@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -66,6 +67,17 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine($"  AND modalidade = {filtroCicloDto.Modalidade} ");
             query.AppendLine($"ORDER BY Selecionado DESC");
             return database.Conexao.Query<CicloDto>(query.ToString()).ToList();
+        }
+
+        public async Task<IEnumerable<CicloDto>> ObterCiclosPorModalidade(string codigoUe, Modalidade modalidade)
+        {
+            var sql = @"select tc.id, tc.descricao from tipo_ciclo tc
+                        inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id
+                        where tca.ano = @ano and tca.modalidade = @modalidade";
+
+            var parametros = new { codigoUe, modalidade };
+
+            return await database.QueryAsync<CicloDto>(sql, parametros);
         }
     }
 }

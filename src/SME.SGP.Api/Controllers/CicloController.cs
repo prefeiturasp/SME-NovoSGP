@@ -27,5 +27,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(consultasCiclo.Listar(filtroCicloDto));
         }
+
+        [HttpPost("ues/{codigoUe}/modalidades/{modalidadeId}")]
+        [ProducesResponseType(typeof(IEnumerable<CicloDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult Filtrar(FiltroCicloDto filtroCicloDto)
+        {
+            return Ok(consultasCiclo.Listar(filtroCicloDto));
+        }
     }
 }
