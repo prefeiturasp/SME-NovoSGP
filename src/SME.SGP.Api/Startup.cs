@@ -8,12 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
+using SME.SGP.Api.Configuracoes;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
-using Swashbuckle.AspNetCore.Swagger;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -26,12 +25,15 @@ namespace SME.SGP.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
+
         }
 
         public IConfiguration Configuration { get; }
+        private IHostingEnvironment _env;
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -90,7 +92,7 @@ namespace SME.SGP.Api
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
-            
+
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
@@ -133,26 +135,11 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
-            //TODO: RETIRAR DAQUI!
-            var factory = new ConnectionFactory
+            if (_env.EnvironmentName != "teste-integrado")
             {
-                HostName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Hostname"),
-                UserName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Username"),
-                Password = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Password")
-            };
-
-            var conexaoRabbit = factory.CreateConnection();
-            IModel _channel = conexaoRabbit.CreateModel();
-
-            //TODO: VARIAVEIS PARA CONFIGURACOES!
-            _channel.ExchangeDeclare("sme.sr.workers", ExchangeType.Topic);
-            _channel.QueueDeclare("sme.sr.workers.sgp", false, false, false, null);
-            _channel.QueueBind("sme.sr.workers.sgp", "sme.sr.workers", "relatorios");
-
-            services.AddSingleton(conexaoRabbit);
-            services.AddSingleton(_channel);
-
-
+                services.AddRabbit();
+                services.AddHostedService<ListenerRabbitMQ>();
+            }
         }
     }
 }

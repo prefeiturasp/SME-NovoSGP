@@ -5,6 +5,6 @@ namespace SME.SGP.Infra.Interfaces
 {
     public interface IServicoFila
     {
-        Task AdicionaFila(AdicionaFilaDto adicionaFilaDto);
+        void AdicionaFilaWorkerRelatorios(AdicionaFilaDto adicionaFilaDto);
     }
 }
