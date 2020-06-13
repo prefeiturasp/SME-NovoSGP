@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -98,5 +99,14 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterNotasAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices]IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
             => Ok(await consultasConselhoClasseAluno.ObterNotasFrequencia(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
+
+        [HttpGet("pareceres-conclusivos/vigentes")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(IEnumerable<ConselhoClasseAlunoNotasConceitosDto>), 200)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterListaPareceresVigentes(string turmaCodigo, [FromServices]IObterListaPareceresConclusivosUseCase useCase)
+            => Ok(await useCase.Executar(turmaCodigo));
+
     }
 }
