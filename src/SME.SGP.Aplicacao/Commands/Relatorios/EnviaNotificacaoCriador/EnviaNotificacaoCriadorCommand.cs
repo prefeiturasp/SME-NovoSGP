@@ -5,9 +5,10 @@ namespace SME.SGP.Aplicacao
 {
     public class EnviaNotificacaoCriadorCommand : IRequest<bool>
     {
-        public EnviaNotificacaoCriadorCommand(RelatorioCorrelacao relatorioCorrelacao)
+        public EnviaNotificacaoCriadorCommand(RelatorioCorrelacao relatorioCorrelacao, string urlRedirecionamentoBase)
         {
             RelatorioCorrelacao = relatorioCorrelacao;
+            UrlRedirecionamentoBase = urlRedirecionamentoBase;
         }
 
         public RelatorioCorrelacao RelatorioCorrelacao { get; set; }

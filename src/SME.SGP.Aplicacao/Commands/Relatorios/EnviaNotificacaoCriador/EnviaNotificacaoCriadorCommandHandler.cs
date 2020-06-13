@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public Task<bool> Handle(EnviaNotificacaoCriadorCommand request, CancellationToken cancellationToken)
         {
 
-            var urlNotificacao = $"{request.UrlRedirecionamentoBase}/api/v1/relatorios/download/{request.RelatorioCorrelacao.Codigo}"; 
+            var urlNotificacao = $"{request.UrlRedirecionamentoBase}api/v1/relatorios/download/{request.RelatorioCorrelacao.Codigo}"; 
 
             var notificacao = new Notificacao()
             {
