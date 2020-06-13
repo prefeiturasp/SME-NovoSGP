@@ -29,7 +29,6 @@ const BoletimSimples = () => {
   const [itensSelecionados, setItensSelecionados] = useState([]);
 
   const onSelecionarItems = items => {
-    console.log(items);
     setItensSelecionados([...items.map(item => String(item.id))]);
   };
 
@@ -60,7 +59,6 @@ const BoletimSimples = () => {
   const onClickBotaoPrincipal = async () => {
     const resultado = await ServicoBoletimSimples.imprimirBoletim({
       ...filtro,
-      periodoEscolarId: filtro.semestre,
       alunosCodigo: itensSelecionados,
     });
     if (resultado.erro)
