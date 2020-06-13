@@ -29,6 +29,7 @@ const BoletimSimples = () => {
   const [itensSelecionados, setItensSelecionados] = useState([]);
 
   const onSelecionarItems = items => {
+    console.log(items);
     setItensSelecionados([...items.map(item => String(item.id))]);
   };
 
@@ -103,10 +104,11 @@ const BoletimSimples = () => {
                 idLinha="numeroChamada"
                 colunaChave="numeroChamada"
                 colunas={colunas}
-                multiSelecao
                 filtro={filtro}
                 paramArrayFormat="repeat"
                 selecionarItems={onSelecionarItems}
+                temPaginacao={false}
+                multiSelecao
                 filtroEhValido
               />
             </div>
