@@ -12,6 +12,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.TipoRelatorio).ToColumn("tipo_relatorio");
             Map(c => c.UsuarioSolicitanteId).ToColumn("usuario_solicitante_id");
             Map(c => c.UsuarioSolicitante).Ignore();
+            Map(c => c.CorrelacaoJasper).Ignore();
         }
     }
 }
