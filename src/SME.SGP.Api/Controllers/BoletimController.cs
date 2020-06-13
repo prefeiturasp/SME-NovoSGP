@@ -21,7 +21,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet("alunos")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(IEnumerable<AlunoSimplesDto>), 500)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<AlunoSimplesDto>), 500)]
         public async Task<IActionResult> ListarAlunos([FromQuery] string turmaCodigo, [FromServices] IObterListaAlunosDaTurmaUseCase obterListaAlunosDaTurmaUseCase)
         {
             return Ok(await obterListaAlunosDaTurmaUseCase.Executar(turmaCodigo));
