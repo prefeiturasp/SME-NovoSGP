@@ -16,14 +16,14 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta repositorioRecuperacaoParalelaPeriodoObjetivoResposta;
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
 
         public ComandosRecuperacaoParalela(IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
             IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta repositorioRecuperacaoParalelaPeriodoObjetivo,
             IConsultaRecuperacaoParalela consultaRecuperacaoParalela,
             IUnitOfWork unitOfWork,
             IServicoUsuario servicoUsuario,
-            IServicoEOL servicoEOL
+            IServicoEol servicoEOL
             )
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));

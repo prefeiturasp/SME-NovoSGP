@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasUnidadesEscolares : IConsultasUnidadesEscolares
     {
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
 
-        public ConsultasUnidadesEscolares(IServicoEOL servicoEOL)
+        public ConsultasUnidadesEscolares(IServicoEol servicoEOL)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }

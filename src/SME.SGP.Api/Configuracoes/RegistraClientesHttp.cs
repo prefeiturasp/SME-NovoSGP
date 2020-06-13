@@ -16,7 +16,7 @@ namespace SME.SGP.Api
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiJurema").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
-            services.AddHttpClient<IServicoEOL, ServicoEOL>(c =>
+            services.AddHttpClient<IServicoEol, ServicoEOL>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
