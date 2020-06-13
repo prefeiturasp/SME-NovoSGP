@@ -30,8 +30,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<Dre> MaterializarCodigosDre(string[] idDres, out string[] naoEncontradas)
         {
-            List<Dre> resultado = new List<Dre>();
-
             var armazenados = contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", idDres.Select(x => $"'{x}'"))));
 
             naoEncontradas = idDres.Where(x => !armazenados.Select(y => y.CodigoDre).Contains(x)).ToArray();

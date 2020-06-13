@@ -39,7 +39,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoFechamentoReabertura servicoFechamentoReabertura;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
@@ -69,7 +69,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 IConsultasFrequencia consultasFrequencia,
                                                 IServicoNotificacao servicoNotificacao,
                                                 IServicoPendenciaFechamento servicoPendenciaFechamento,
-                                                IServicoEOL servicoEOL,
+                                                IServicoEol servicoEOL,
                                                 IServicoUsuario servicoUsuario,
                                                 IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                                                 IUnitOfWork unitOfWork,

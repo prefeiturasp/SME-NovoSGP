@@ -143,8 +143,6 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<AulaPrevistaBimestreQuantidade> MapearPeriodoParaBimestreDto(IEnumerable<PeriodoEscolar> periodoEscolares)
         {
-            IEnumerable<AulaPrevistaBimestreQuantidade> bimestreQuantidades = new List<AulaPrevistaBimestreQuantidade>();
-
             return periodoEscolares?.Select(x => new AulaPrevistaBimestreQuantidade
             {
                 Bimestre = x.Bimestre,
