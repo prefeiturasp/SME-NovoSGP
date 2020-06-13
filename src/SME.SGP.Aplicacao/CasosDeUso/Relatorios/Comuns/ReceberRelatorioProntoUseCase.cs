@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
@@ -13,11 +14,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IConfiguration configuration;
 
-        public ReceberRelatorioProntoUseCase(IMediator mediator, IUnitOfWork unitOfWork)
+        public ReceberRelatorioProntoUseCase(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
@@ -53,9 +56,11 @@ namespace SME.SGP.Aplicacao
             return await Task.FromResult(true);
         }
 
-        private void EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao)
+        private async void EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao)
         {
-            //mediator.Send()   
+            var urlRedirecionamentoBase = configuration.GetValue<string>("UrlFrontEnd");
+
+            await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase));
         }
     }
 }
