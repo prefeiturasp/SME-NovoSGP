@@ -16,7 +16,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoLog servicoLog;
@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio.Servicos
                                       IRepositorioFechamentoNota repositorioFechamentoNota,
                                       IRepositorioTipoCalendario repositorioTipoCalendario,
                                       IRepositorioEvento repositorioEvento,
-                                      IServicoEOL servicoEOL,
+                                      IServicoEol servicoEOL,
                                       IServicoUsuario servicoUsuario,
                                       IUnitOfWork unitOfWork,
                                       IServicoLog servicoLog)

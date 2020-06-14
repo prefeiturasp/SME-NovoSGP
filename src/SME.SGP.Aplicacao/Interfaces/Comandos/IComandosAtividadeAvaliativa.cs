@@ -12,6 +12,6 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Inserir(AtividadeAvaliativaDto dto);
 
-        Task Validar(FiltroAtividadeAvaliativaDto dto);
+        Task Validar(FiltroAtividadeAvaliativaDto filtro);
     }
 }

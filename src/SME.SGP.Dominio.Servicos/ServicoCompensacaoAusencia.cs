@@ -22,7 +22,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                           IConsultasTurma consultasTurma,
                                           IRepositorioTipoCalendario repositorioTipoCalendario,
-                                          IServicoEOL servicoEOL,
+                                          IServicoEol servicoEOL,
                                           IServicoUsuario servicoUsuario,
                                           IRepositorioTurma repositorioTurma,
                                           IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
