@@ -14,7 +14,6 @@ namespace SME.SGP.Dominio
 {
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly IConfiguration configuration;
         private readonly IConsultasAbrangencia consultasAbrangencia;
 
         private readonly string hostAplicacao;
@@ -30,7 +29,7 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -68,7 +67,7 @@ namespace SME.SGP.Dominio
         }
 
         public ServicoDeNotasConceitos(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IServicoEOL servicoEOL, IConsultasAbrangencia consultasAbrangencia,
+            IServicoEol servicoEOL, IConsultasAbrangencia consultasAbrangencia,
             IRepositorioNotaTipoValor repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo,
             IRepositorioConceito repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
             IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
@@ -95,7 +94,6 @@ namespace SME.SGP.Dominio
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.hostAplicacao = configuration["UrlFrontEnd"];
         }
 
@@ -327,7 +325,6 @@ namespace SME.SGP.Dominio
                 else
                 {
                     var conceitos = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
-                    var conceito = conceitos.FirstOrDefault(c => c.Id.Equals(nota.ConceitoId));
 
                     if (conceitos == null)
                         throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");

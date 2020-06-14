@@ -16,14 +16,14 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoAluno servicoAluno;        
 
         public ConsultasTurma(IRepositorioTurma repositorioTurma,
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                IServicoEOL servicoEOL,
+                                IServicoEol servicoEOL,
                                 IServicoAluno servicoAluno                                
             )
         {

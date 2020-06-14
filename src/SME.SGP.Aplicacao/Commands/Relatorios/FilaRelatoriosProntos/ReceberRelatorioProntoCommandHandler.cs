@@ -1,31 +1,26 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ReceberRelatorioProntoCommandHandler : IRequestHandler<ReceberRelatorioProntoCommand, bool>
+    public class ReceberRelatorioProntoCommandHandler : IRequestHandler<ReceberRelatorioProntoCommand, RelatorioCorrelacaoJasper>
     {
-        private readonly IRepositorioCorrelacaoRelatorio repositorioCorrelacaoRelatorio;
         private readonly IRepositorioCorrelacaoRelatorioJasper repositorioCorrelacaoRelatorioJasper;
 
-        public ReceberRelatorioProntoCommandHandler(IRepositorioCorrelacaoRelatorio repositorioCorrelacaoRelatorio,
-                                                    IRepositorioCorrelacaoRelatorioJasper repositorioCorrelacaoRelatorioJasper)
+        public ReceberRelatorioProntoCommandHandler(IRepositorioCorrelacaoRelatorioJasper repositorioCorrelacaoRelatorioJasper)
         {
-            this.repositorioCorrelacaoRelatorio = repositorioCorrelacaoRelatorio ?? throw new System.ArgumentNullException(nameof(repositorioCorrelacaoRelatorio));
             this.repositorioCorrelacaoRelatorioJasper = repositorioCorrelacaoRelatorioJasper ?? throw new System.ArgumentNullException(nameof(repositorioCorrelacaoRelatorioJasper));
         }
-        public async Task<bool> Handle(ReceberRelatorioProntoCommand request, CancellationToken cancellationToken)
+        public Task<RelatorioCorrelacaoJasper> Handle(ReceberRelatorioProntoCommand request, CancellationToken cancellationToken)
         {
-            var correlacaoRelatorio = repositorioCorrelacaoRelatorio.ObterPorCodigoCorrelacao(request.CodigoCorrelacao);
-            if (correlacaoRelatorio == null)
-                throw new NegocioException("Correlação com relatório não encontrada.");
+            var correlacao = new RelatorioCorrelacaoJasper(request.RelatorioCorrelacao, request.JSessionId, request.ExportacaoId, request.RequisicaoId);
 
-            repositorioCorrelacaoRelatorioJasper.Salvar(new RelatorioCorrelacaoJasper(correlacaoRelatorio, request.JSessionId, request.ExportacaoId, request.RequisicaoId));
-            return await Task.FromResult(true);
+            repositorioCorrelacaoRelatorioJasper.Salvar(correlacao);
+
+            return Task.FromResult(correlacao);
         }
     }
 }

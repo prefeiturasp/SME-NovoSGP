@@ -14,9 +14,9 @@ namespace SME.Background.Hangfire
             _serviceProvider = serviceProvider;
         }
 
-        public override object ActivateJob(Type type)
+        public override object ActivateJob(Type jobType)
         {
-            return _serviceProvider.GetService(type);
+            return _serviceProvider.GetService(jobType);
         }
     }
 }

@@ -129,11 +129,6 @@ namespace SME.SGP.Dominio
             {
                 throw new NegocioException("Não é permitido cadastrar esse evento pois não existe período escolar cadastrado para o calendário informado.");
             }
-
-            //if (!periodos.Any(c => c.PeriodoInicio.Date <= DataInicio.Date && c.PeriodoFim.Date >= DataFim.Date))
-            //{
-            //    throw new NegocioException("Não é permitido cadastrar um evento nesta data pois essa data não está dentro do 'Período Letivo'.");
-            //}
         }
 
         public bool EstaNoRangeDeDatas(IEnumerable<(DateTime, DateTime)> datas)
@@ -201,11 +196,9 @@ namespace SME.SGP.Dominio
 
         public void PodeCriarEventoOrganizacaoEscolarComPerfilSme(Usuario usuario)
         {
-            if (this.TipoEvento.Codigo == (long)Dominio.TipoEvento.OrganizacaoEscolar)
-            {
-                if (usuario.ObterTipoPerfilAtual() != TipoPerfil.SME)
-                    throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
-            }
+            if ((this.TipoEvento.Codigo == (long)Dominio.TipoEvento.OrganizacaoEscolar) &&
+                (usuario.ObterTipoPerfilAtual() != TipoPerfil.SME))
+                throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
         }
 
         public void PodeSerEnviadoParaAprovacao()
