@@ -16,10 +16,12 @@ import TurmasDropDown from './componentes/TurmasDropDown';
 function Filtro({ onFiltrar, resetForm }) {
   const [refForm, setRefForm] = useState({});
 
-  const [valoresIniciais] = useState({
-    anoLetivo: '',
+  const filtro = useSelector(store => store.filtro);
+
+  const [valoresIniciais, setValoresIniciais] = useState({
+    anoLetivo: filtro.anosLetivos.length ? filtro.anosLetivos[0].valor : '',
     modalidadeId: '',
-    periodoId: '',
+    semestre: '',
     dreId: '',
     ueId: '',
     turmaId: '',
@@ -29,8 +31,8 @@ function Filtro({ onFiltrar, resetForm }) {
   const [carregandoModalidades, setCarregandoModalidades] = useState(false);
   const [carregandoPeriodos, setCarregandoPeriodos] = useState(false);
 
-  const modalidadesStore = useSelector(store => store.filtro.modalidades);
-  const periodosStore = useSelector(store => store.filtro.periodos);
+  const modalidadesStore = filtro.modalidades;
+  const periodosStore = filtro.periodos;
 
   const [modalidades, setModalidades] = useState([]);
   const [periodos, setPeriodos] = useState([]);
@@ -48,8 +50,12 @@ function Filtro({ onFiltrar, resetForm }) {
     if (modalidades && modalidades.length === 1 && refForm) {
       refForm.setFieldValue('modalidadeId', String(modalidades[0].valor));
       setModalidadeId(String(modalidades[0].valor));
+      setValoresIniciais({
+        ...valoresIniciais,
+        modalidadeId: String(modalidades[0].valor),
+      });
     }
-  }, [modalidades, refForm, resetForm]);
+  }, [modalidades, refForm]);
 
   const [anoLetivo, setAnoLetivo] = useState(undefined);
   const [dreId, setDreId] = useState(undefined);
@@ -78,7 +84,12 @@ function Filtro({ onFiltrar, resetForm }) {
         setPeriodos(periodosLista);
 
         if (periodosLista && periodosLista.length === 1) {
-          refForm.setFieldValue('periodoId', periodosLista[0].valor);
+          refForm.setFieldValue('semestre', String(periodosLista[0].valor));
+          setValoresIniciais({
+            ...valoresIniciais,
+            modalidadeId,
+            semestre: String(periodosLista[0].valor),
+          });
         }
       };
       obterPeriodos();
@@ -93,7 +104,7 @@ function Filtro({ onFiltrar, resetForm }) {
   ]);
 
   const aoTrocarModalidadeId = id => {
-    if (!id) refForm.setFieldValue('periodoId', undefined);
+    if (!id) refForm.setFieldValue('semestre', undefined);
     setModalidadeId(id);
   };
 
@@ -104,6 +115,10 @@ function Filtro({ onFiltrar, resetForm }) {
 
   const aoTrocarUeId = id => {
     if (!id) refForm.setFieldValue('turmaId', undefined);
+  };
+
+  const aoTrocarTurma = () => {
+    refForm.setFieldValue('opcaoAlunoId', '0');
   };
 
   const opcoesAlunos = [
@@ -162,13 +177,13 @@ function Filtro({ onFiltrar, resetForm }) {
                 <Loader loading={carregandoPeriodos} tip="">
                   <SelectComponent
                     form={form}
-                    name="periodoId"
+                    name="semestre"
                     className="fonte-14"
                     lista={periodos}
                     valueOption="valor"
                     valueText="desc"
-                    placeholder="Período"
-                    label="Período"
+                    placeholder="Semestre"
+                    label="Semestre"
                     disabled={
                       !modalidadeId || (periodos && periodos.length === 1)
                     }
@@ -197,7 +212,11 @@ function Filtro({ onFiltrar, resetForm }) {
           </Linha>
           <Linha className="row mb-2">
             <Grid cols={6}>
-              <TurmasDropDown form={form} label="Turma" />
+              <TurmasDropDown
+                form={form}
+                onChange={aoTrocarTurma}
+                label="Turma"
+              />
             </Grid>
             <Grid cols={6}>
               <SelectComponent

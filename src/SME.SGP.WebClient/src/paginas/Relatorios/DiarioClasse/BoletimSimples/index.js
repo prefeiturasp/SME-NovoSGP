@@ -29,7 +29,7 @@ const BoletimSimples = () => {
   const [itensSelecionados, setItensSelecionados] = useState([]);
 
   const onSelecionarItems = items => {
-    setItensSelecionados([...items.map(item => String(item.id))]);
+    setItensSelecionados([...items.map(item => String(item.codigo))]);
   };
 
   const [selecionarAlunos, setSelecionarAlunos] = useState(false);
@@ -38,12 +38,13 @@ const BoletimSimples = () => {
     setFiltro({
       anoLetivo: valoresFiltro.anoLetivo,
       modalidade: valoresFiltro.modalidadeId,
-      semestre: valoresFiltro.periodoId,
       dreCodigo: valoresFiltro.dreId,
       ueCodigo: valoresFiltro.ueId,
       turmaCodigo: valoresFiltro.turmaId,
     });
-    setSelecionarAlunos(valoresFiltro.opcaoAlunoId === '1');
+    setSelecionarAlunos(
+      valoresFiltro.turmaId && valoresFiltro.opcaoAlunoId === '1'
+    );
   };
 
   const onClickVoltar = () => {
@@ -94,13 +95,13 @@ const BoletimSimples = () => {
             labelBotaoPrincipal="Imprimir"
           />
           <Filtro onFiltrar={onChangeFiltro} resetForm={resetForm} />
-          {filtro && selecionarAlunos ? (
+          {filtro && filtro.turmaCodigo > 0 && selecionarAlunos ? (
             <div className="col-md-12 pt-2 py-0 px-0">
               <ListaPaginada
                 id="lista-alunos"
                 url="v1/boletim/alunos"
-                idLinha="numeroChamada"
-                colunaChave="numeroChamada"
+                idLinha="codigo"
+                colunaChave="codigo"
                 colunas={colunas}
                 filtro={filtro}
                 paramArrayFormat="repeat"
