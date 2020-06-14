@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -13,11 +15,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IServicoFila servicoFila;
         private readonly IRepositorioCorrelacaoRelatorio repositorioCorrelacaoRelatorio;
+        private readonly IConfiguration configuration;
 
-        public GerarRelatorioCommandHandler(IServicoFila servicoFila, IRepositorioCorrelacaoRelatorio repositorioCorrelacaoRelatorio)
+        public GerarRelatorioCommandHandler(IServicoFila servicoFila, IRepositorioCorrelacaoRelatorio repositorioCorrelacaoRelatorio, IConfiguration configuration)
         {
             this.servicoFila = servicoFila ?? throw new System.ArgumentNullException(nameof(servicoFila));
             this.repositorioCorrelacaoRelatorio = repositorioCorrelacaoRelatorio ?? throw new System.ArgumentNullException(nameof(repositorioCorrelacaoRelatorio));
+            this.configuration = configuration;
         }
 
         public Task<bool> Handle(GerarRelatorioCommand request, CancellationToken cancellationToken)
@@ -25,6 +29,14 @@ namespace SME.SGP.Aplicacao
             var correlacao = new RelatorioCorrelacao(request.TipoRelatorio, request.IdUsuarioLogado);
             repositorioCorrelacaoRelatorio.Salvar(correlacao);
             servicoFila.AdicionaFilaWorkerRelatorios(new AdicionaFilaDto(RotasRabbit.RotaRelatoriosSolicitados, request.Filtros, request.TipoRelatorio.Name(), correlacao.Codigo));
+
+
+            using (SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN")))
+            {
+                SentrySdk.CaptureMessage("2 - GerarRelatorioCommandHandler");
+            }
+
+
             return Task.FromResult(true);
         }
     }
