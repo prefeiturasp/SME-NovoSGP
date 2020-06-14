@@ -306,6 +306,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IReceberRelatorioProntoUseCase, ReceberRelatorioProntoUseCase>();
             services.TryAddScoped<IReceberDadosDownloadRelatorioUseCase, ReceberDadosDownloadRelatorioUseCase>();
             services.TryAddScoped<IObterListaPareceresConclusivosUseCase, ObterListaPareceresConclusivosUseCase>();
+            services.TryAddScoped<IObterListaAlunosAtivosNaTurmaUseCase, ObterListaAlunosAtivosNaTurmaUseCase>();
             services.TryAddScoped<IImpressaoRelatorioParecerConclusivoUseCase, ImpressaoRelatorioParecerConclusivoUseCase>();
         }
     }
