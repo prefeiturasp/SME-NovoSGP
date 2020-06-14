@@ -39,9 +39,9 @@ namespace SME.SGP.Api
 
             services.AddSingleton(jasperCookieHandler);
 
-            var basicAuth = $"{Environment.GetEnvironmentVariable("ConfiguracaoJasper__Username")}:{Environment.GetEnvironmentVariable("ConfiguracaoJasper__Password")}".EncodeTo64();
+            var basicAuth = $"{configuration.GetValue<string>("ConfiguracaoJasper:Username")}:{configuration.GetValue<string>("ConfiguracaoJasper:Password")}".EncodeTo64();
 
-            var jasperUrl = Environment.GetEnvironmentVariable("ConfiguracaoJasper__Hostname");
+            var jasperUrl = configuration.GetValue<string>("ConfiguracaoJasper:Hostname");
             
             services.AddHttpClient<ISevicoJasper, SevicoJasper>(c =>
             {
