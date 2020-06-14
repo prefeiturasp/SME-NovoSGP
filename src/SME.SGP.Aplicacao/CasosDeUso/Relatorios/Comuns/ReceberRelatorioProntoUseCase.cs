@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
@@ -24,37 +25,50 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-
-            var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
-            unitOfWork.IniciarTransacao();
-
-            var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoFiltro<ReceberRelatorioProntoCommand>();
-            receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao ?? throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
-
-            var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
-
-            relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
-
-            switch (relatorioCorrelacao.TipoRelatorio)
+            using (SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN")))
             {
-                case TipoRelatorio.RelatorioExemplo:
-                    break;
-                case TipoRelatorio.ConselhoClasseAluno:
-                case TipoRelatorio.ConselhoClasseTurma:
-                    EnviaNotificacaoCriador(relatorioCorrelacao);
-                    break;
-                default:
-                    break;
+
+
+                var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
+
+                SentrySdk.AddBreadcrumb($"Correlação obtida com sucesso {relatorioCorrelacao.Codigo}", "9 - ReceberRelatorioProntoUseCase");
+
+                unitOfWork.IniciarTransacao();
+
+                var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoFiltro<ReceberRelatorioProntoCommand>();
+                receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao ?? throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
+
+                var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
+
+                SentrySdk.AddBreadcrumb("Salvando Correlação Relatório Jasper de retorno", "9 - ReceberRelatorioProntoUseCase");
+
+                relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
+
+                switch (relatorioCorrelacao.TipoRelatorio)
+                {
+                    case TipoRelatorio.RelatorioExemplo:
+                        break;
+                    case TipoRelatorio.ConselhoClasseAluno:
+                    case TipoRelatorio.ConselhoClasseTurma:
+                        SentrySdk.AddBreadcrumb("Enviando notificação..", "9 - ReceberRelatorioProntoUseCase");
+                        await EnviaNotificacaoCriador(relatorioCorrelacao);
+                        break;
+                    default:
+                        break;
+                }
+
+
+                unitOfWork.PersistirTransacao();
+                SentrySdk.CaptureMessage("9 - ReceberRelatorioProntoUseCase -> Finalizado Fluxo de relatórios");
+
             }
-
-
-            unitOfWork.PersistirTransacao();
             return await Task.FromResult(true);
         }
 
         private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao)
         {
-            var urlRedirecionamentoBase = configuration.GetValue<string>("UrlBackEnd");
+            //TODO: Remover Hard Code!!
+            var urlRedirecionamentoBase = "https://dev-novosgp.sme.prefeitura.sp.gov.br/";
 
             await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase));
         }
