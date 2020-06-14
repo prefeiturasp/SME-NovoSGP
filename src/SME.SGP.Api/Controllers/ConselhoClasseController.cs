@@ -108,5 +108,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterListaPareceresVigentes(string turmaCodigo, [FromServices]IObterListaPareceresConclusivosUseCase useCase)
             => Ok(await useCase.Executar(turmaCodigo));
 
+
+        [HttpGet("alunos/ativos")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(IEnumerable<ConselhoClasseAlunoNotasConceitosDto>), 200)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterAlunosAtivos(string turmaCodigo, [FromServices]IObterListaAlunosAtivosNaTurmaUseCase obterListaAlunosAtivosNaTurma)
+            => Ok(await obterListaAlunosAtivosNaTurma.Executar(turmaCodigo));
+
     }
 }
