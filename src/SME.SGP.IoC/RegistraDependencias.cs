@@ -305,6 +305,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IGamesUseCase, GamesUseCase>();
             services.TryAddScoped<IReceberRelatorioProntoUseCase, ReceberRelatorioProntoUseCase>();
             services.TryAddScoped<IReceberDadosDownloadRelatorioUseCase, ReceberDadosDownloadRelatorioUseCase>();
+            services.TryAddScoped<IObterListaPareceresConclusivosUseCase, ObterListaPareceresConclusivosUseCase>();
             services.TryAddScoped<IObterListaAlunosAtivosNaTurmaUseCase, ObterListaAlunosAtivosNaTurmaUseCase>();
         }
     }
