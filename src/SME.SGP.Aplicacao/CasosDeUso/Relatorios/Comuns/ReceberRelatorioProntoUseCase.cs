@@ -26,14 +26,10 @@ namespace SME.SGP.Aplicacao
         {
 
             var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
-
-            if (relatorioCorrelacao == null)
-                throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
-
             unitOfWork.IniciarTransacao();
 
             var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoFiltro<ReceberRelatorioProntoCommand>();
-            receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao;
+            receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao ?? throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
 
             var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
 

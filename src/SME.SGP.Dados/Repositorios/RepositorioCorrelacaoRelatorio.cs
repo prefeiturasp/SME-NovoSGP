@@ -27,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        rc.*,rcj.*
                         from
 	                        relatorio_correlacao rc
-                        inner join relatorio_correlacao_jasper rcj on
+                        left join relatorio_correlacao_jasper rcj on
 	                        rc.id = rcj.relatorio_correlacao_id
                         where
 	                        rc.codigo = @codigoCorrelacao";
