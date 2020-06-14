@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Commands\Notificacao\" />
     <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
 </Project>

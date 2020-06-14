@@ -298,17 +298,19 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScoped<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
-            services.TryAddScoped<IServicoFila, FilaRabbit>();
+            services.TryAddScoped<IServicoFila, FilaRabbit>();            
         }
 
         private static void RegistrarCasosDeUso(IServiceCollection services)
         {
             services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
-            services.TryAddScoped<IGamesUseCase, GamesUseCase>();
+            services.TryAddScoped<IImpressaoConselhoClasseAlunoUseCase, ImpressaoConselhoClasseAlunoUseCase>();
+            services.TryAddScoped<IImpressaoConselhoClasseTurmaUseCase, ImpressaoConselhoClasseTurmaUseCase>();
             services.TryAddScoped<IReceberRelatorioProntoUseCase, ReceberRelatorioProntoUseCase>();
             services.TryAddScoped<IBoletimUseCase, BoletimUseCase>();
             services.TryAddScoped<IObterListaAlunosDaTurmaUseCase, ObterListaAlunosDaTurmaUseCase>();
             services.TryAddScoped<IReceberDadosDownloadRelatorioUseCase, ReceberDadosDownloadRelatorioUseCase>();
+            services.TryAddScoped<IGamesUseCase, GamesUseCase>();
         }
     }
 }

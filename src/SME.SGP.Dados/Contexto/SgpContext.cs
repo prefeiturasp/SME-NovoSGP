@@ -71,10 +71,15 @@ namespace SME.SGP.Dados.Contexto
             return Conexao.CreateCommand();
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            Conexao.Close();
+        }
+
         public void Dispose()
         {
-            if (Conexao != null && Conexao.State == ConnectionState.Open)
-                Conexao?.Close();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public void Open()

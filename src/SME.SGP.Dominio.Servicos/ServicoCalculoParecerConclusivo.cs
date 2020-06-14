@@ -22,14 +22,14 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioConceito repositorioConceito;
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IConsultasFrequencia consultasFrequencia;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
 
         public ServicoCalculoParecerConclusivo(IRepositorioParametrosSistema repositorioParametrosSistema,
                                                IRepositorioFechamentoNota repositorioFechamentoNota,
                                                IRepositorioConceito repositorioConceito,
                                                IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                                IConsultasFrequencia consultasFrequencia,
-                                               IServicoEOL servicoEOL)
+                                               IServicoEol servicoEOL)
         {
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
