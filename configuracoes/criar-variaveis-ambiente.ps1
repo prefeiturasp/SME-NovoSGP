@@ -23,3 +23,4 @@
 [Environment]::SetEnvironmentVariable("ConfiguracaoRabbit__Hostname", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("ConfiguracaoRabbit__Username", "user", "Machine")
 [Environment]::SetEnvironmentVariable("ConfiguracaoRabbit__Password", "bitnami", "Machine")
+[Environment]::SetEnvironmentVariable("UrlBackEnd", "http://localhost:5001/", "Machine")

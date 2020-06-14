@@ -21,10 +21,10 @@ namespace SME.SGP.Aplicacao.Servicos
         private readonly IRepositorioTipoEscola repositorioTipoEscola;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
-        public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEOL servicoEOL, IConsultasSupervisor consultasSupervisor,
+        public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEol servicoEOL, IConsultasSupervisor consultasSupervisor,
             IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma, IRepositorioCicloEnsino repositorioCicloEnsino, IRepositorioTipoEscola repositorioTipoEscola)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.Servicos
             var dres = repositorioAbrangencia
                 .ObterDres(login, perfilId).Result;
 
-            return dres.Any(dre => dre.Codigo.Equals(codigoDre, StringComparison.InvariantCultureIgnoreCase));            
+            return dres.Any(dre => dre.Codigo.Equals(codigoDre, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public void RemoverAbrangencias(long[] ids)
@@ -163,14 +163,12 @@ namespace SME.SGP.Aplicacao.Servicos
             catch (Exception ex)
             {
                 SentrySdk.CaptureException(ex);
-                throw ex;
+                throw;
             }
         }
 
         private IEnumerable<Turma> ImportarTurmasNaoEncontradas(string[] codigosNaoEncontrados)
         {
-            IEnumerable<Turma> resultado = Enumerable.Empty<Turma>();
-
             if (codigosNaoEncontrados != null && codigosNaoEncontrados.Length > 0)
             {
                 var turmasEol = servicoEOL.ObterEstruturaInstuticionalVigentePorTurma(codigosTurma: codigosNaoEncontrados);
@@ -291,25 +289,21 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private void SincronizarEstruturaInstitucional(EstruturaInstitucionalRetornoEolDTO estrutura)
         {
-            IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
-            IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
-            IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
-
-            dres = estrutura.Dres.Select(x => new Dre() { Abreviacao = x.Abreviacao, CodigoDre = x.Codigo, Nome = x.Nome });
-            ues = estrutura.Dres.SelectMany(x => x.Ues.Select(y => new Ue { CodigoUe = y.Codigo, TipoEscola = y.CodTipoEscola, Nome = y.Nome, Dre = new Dre() { CodigoDre = x.Codigo } }));
-            turmas = estrutura.Dres.SelectMany(x => x.Ues.SelectMany(y => y.Turmas.Select(z =>
-            new Turma
-            {
-                Ano = z.Ano,
-                AnoLetivo = z.AnoLetivo,
-                CodigoTurma = z.Codigo,
-                ModalidadeCodigo = (Modalidade)Convert.ToInt32(z.CodigoModalidade),
-                QuantidadeDuracaoAula = z.DuracaoTurno,
-                Nome = z.NomeTurma,
-                Semestre = z.Semestre,
-                TipoTurno = z.TipoTurno,
-                Ue = new Ue() { CodigoUe = y.Codigo }
-            })));
+            var dres = estrutura.Dres.Select(x => new Dre() { Abreviacao = x.Abreviacao, CodigoDre = x.Codigo, Nome = x.Nome });
+            var ues = estrutura.Dres.SelectMany(x => x.Ues.Select(y => new Ue { CodigoUe = y.Codigo, TipoEscola = y.CodTipoEscola, Nome = y.Nome, Dre = new Dre() { CodigoDre = x.Codigo } }));
+            var turmas = estrutura.Dres.SelectMany(x => x.Ues.SelectMany(y => y.Turmas.Select(z =>
+             new Turma
+             {
+                 Ano = z.Ano,
+                 AnoLetivo = z.AnoLetivo,
+                 CodigoTurma = z.Codigo,
+                 ModalidadeCodigo = (Modalidade)Convert.ToInt32(z.CodigoModalidade),
+                 QuantidadeDuracaoAula = z.DuracaoTurno,
+                 Nome = z.NomeTurma,
+                 Semestre = z.Semestre,
+                 TipoTurno = z.TipoTurno,
+                 Ue = new Ue() { CodigoUe = y.Codigo }
+             })));
 
             dres = repositorioDre.Sincronizar(dres);
             ues = repositorioUe.Sincronizar(ues, dres);
@@ -356,7 +350,7 @@ namespace SME.SGP.Aplicacao.Servicos
                     };
                 });
             }
-            return null;
+            return Task.FromResult<AbrangenciaCompactaVigenteRetornoEOLDTO>(null);
         }
     }
 }
