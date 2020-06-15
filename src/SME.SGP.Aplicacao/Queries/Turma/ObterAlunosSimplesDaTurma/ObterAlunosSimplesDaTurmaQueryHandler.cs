@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosSimplesDaTurmaQueryHandler : IRequestHandler<ObterAlunosSimplesDaTurmaQuery, IEnumerable<AlunoSimplesDto>>
     {
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
 
-        public ObterAlunosSimplesDaTurmaQueryHandler(IServicoEOL servicoEOL)
+        public ObterAlunosSimplesDaTurmaQueryHandler(IServicoEol servicoEOL)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }

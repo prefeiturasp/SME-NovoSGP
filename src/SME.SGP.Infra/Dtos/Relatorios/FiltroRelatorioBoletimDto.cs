@@ -11,9 +11,7 @@ namespace SME.SGP.Infra.Dtos.Relatorios
 
         public string UeCodigo { get; set; }
 
-        public long? CicloId { get; set; }
-
-        public long? PeriodoEscolarId { get; set; }
+        public long? Semestre { get; set; }
 
         public string TurmaCodigo { get; set; }
 
