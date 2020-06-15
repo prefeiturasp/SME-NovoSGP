@@ -92,7 +92,7 @@ const BoletimSimples = () => {
             onClickBotaoPrincipal={onClickBotaoPrincipal}
             desabilitarBotaoPrincipal={false}
             botoesEstadoVariavel
-            labelBotaoPrincipal="Imprimir"
+            labelBotaoPrincipal="Gerar"
           />
           <Filtro onFiltrar={onChangeFiltro} resetForm={resetForm} />
           {filtro && filtro.turmaCodigo > 0 && selecionarAlunos ? (
