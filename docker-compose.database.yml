@@ -28,16 +28,3 @@ services:
       - ./scripts:/opt/scripts
     depends_on:
       - sme-db
-  rabbitmq:
-    container_name: rabbitmq
-    image: rabbitmq:3.7-alpine
-    networks:
-      - default
-    environment:
-      RABBITMQ_DEFAULT_USER: user
-      RABBITMQ_DEFAULT_PASS: bitnami
-    ports:
-      - "25672:25672"
-      - "4369:4369"
-      - "5671:5671"
-      - "5672:5672"
