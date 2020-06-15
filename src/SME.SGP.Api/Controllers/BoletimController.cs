@@ -13,8 +13,8 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/boletim")]
     public class BoletimController : ControllerBase
     {
-        [HttpGet("imprimir")]
-        public async Task<IActionResult> Imprimir([FromQuery] FiltroRelatorioBoletimDto filtroRelatorioBoletimDto, [FromServices] IBoletimUseCase boletimUseCase)
+        [HttpPost("imprimir")]
+        public async Task<IActionResult> Imprimir([FromBody] FiltroRelatorioBoletimDto filtroRelatorioBoletimDto, [FromServices] IBoletimUseCase boletimUseCase)
         {
             return Ok(await boletimUseCase.Executar(filtroRelatorioBoletimDto));
         }
