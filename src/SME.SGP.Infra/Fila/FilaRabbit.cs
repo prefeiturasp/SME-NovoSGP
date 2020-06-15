@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
+using Sentry;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -11,10 +13,12 @@ namespace SME.SGP.Infra
     {
 
         private readonly IModel rabbitChannel;
+        private readonly IConfiguration configuration;
 
-        public FilaRabbit(IModel rabbitChannel)
+        public FilaRabbit(IModel rabbitChannel, IConfiguration configuration)
         {
             this.rabbitChannel = rabbitChannel ?? throw new ArgumentNullException(nameof(rabbitChannel));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public void AdicionaFilaWorkerRelatorios(AdicionaFilaDto adicionaFilaDto)
@@ -29,6 +33,12 @@ namespace SME.SGP.Infra
 
             rabbitChannel.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeListenerWorkerRelatorios, RotasRabbit.RotaRelatoriosSolicitados);
             rabbitChannel.BasicPublish(RotasRabbit.ExchangeListenerWorkerRelatorios, adicionaFilaDto.Fila, properties, body);
+
+            using (SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN")))
+            {
+                SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
+            }
+
         }
     }
 }
