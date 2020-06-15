@@ -59,13 +59,13 @@ import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 const rotas = new Map();
 
 rotas.set(RotasDto.RELATORIO_BOLETIM_SIMPLES, {
-  breadcrumbName: ['Notas'],
-  menu: ['Relatórios', 'Diário de Classe'],
+  breadcrumbName: ['Fechamento'],
+  menu: ['Boletim'],
   parent: '/',
   component: BoletimSimples,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_BOLETIM_SIMPLES,
 });
 
