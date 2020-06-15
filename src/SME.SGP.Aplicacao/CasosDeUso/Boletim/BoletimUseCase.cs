@@ -43,14 +43,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (repositorioUe.ObterPorCodigo(filtroRelatorioBoletimDto.UeCodigo) == null)
                 throw new NegocioException("Não foi possível encontrar a UE");
 
-            if (filtroRelatorioBoletimDto.PeriodoEscolarId.HasValue && 
-                repositorioPeriodoEscolar.ObterPorId(filtroRelatorioBoletimDto.PeriodoEscolarId.Value) == null)
-                throw new NegocioException("Não foi possível encontrar o periodo escolar");
-
-            if (filtroRelatorioBoletimDto.CicloId.HasValue &&
-                repositorioCicloEnsino.ObterPorId(filtroRelatorioBoletimDto.CicloId.Value) == null)
-                throw new NegocioException("Não foi possível encontrar o ciclo");
-
             if (!string.IsNullOrEmpty(filtroRelatorioBoletimDto.TurmaCodigo) && 
                 repositorioTurma.ObterPorCodigo(filtroRelatorioBoletimDto.TurmaCodigo) == null)
                 throw new NegocioException("Não foi possível encontrar a turma");
