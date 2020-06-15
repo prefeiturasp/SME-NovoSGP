@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Sentry;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -48,12 +47,14 @@ namespace SME.SGP.Aplicacao
                 {
                     case TipoRelatorio.RelatorioExemplo:
                         break;
+                    case TipoRelatorio.Boletim:
                     case TipoRelatorio.ConselhoClasseAluno:
                     case TipoRelatorio.ConselhoClasseTurma:
                         SentrySdk.AddBreadcrumb("Enviando notificação..", "9 - ReceberRelatorioProntoUseCase");
                         await EnviaNotificacaoCriador(relatorioCorrelacao);
                         break;
                     default:
+                        await EnviaNotificacaoCriador(relatorioCorrelacao);
                         break;
                 }
 
