@@ -25,9 +25,10 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var alunosEOL = await servicoEOL.ObterAlunosPorTurma(request.TurmaCodigo);
+                alunosEOL = alunosEOL.OrderBy(a => a.NomeAluno);
                 return MapearParaDto(alunosEOL);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
@@ -35,10 +36,10 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<AlunoSimplesDto> MapearParaDto(IEnumerable<AlunoPorTurmaResposta> alunosEOL)
         {
-            foreach(var alunoEOL in alunosEOL)
+            foreach (var alunoEOL in alunosEOL)
             {
                 yield return new AlunoSimplesDto()
-                { 
+                {
                     Codigo = alunoEOL.CodigoAluno,
                     NumeroChamada = alunoEOL.NumeroAlunoChamada,
                     Nome = alunoEOL.NomeAluno
