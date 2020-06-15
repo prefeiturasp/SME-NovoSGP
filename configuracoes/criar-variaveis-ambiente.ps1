@@ -17,7 +17,6 @@
 [Environment]::SetEnvironmentVariable("JwtTokenSettings__Issuer", "Novo SGP", "Machine")
 [Environment]::SetEnvironmentVariable("JwtTokenSettings__ExpiresInMinutes", "720", "Machine")
 [Environment]::SetEnvironmentVariable("FF_BackgroundEnabled", "true", "Machine")
-[Environment]::SetEnvironmentVariable("AE_ChaveIntegracao", "xxxxxxxxxxxxx", "Machine")
 [Environment]::SetEnvironmentVariable("HangfireUser_Admin", "admin:Sgp@dev", "Machine")
 [Environment]::SetEnvironmentVariable("HangfireUser_Basic", "user:Sgp@dev", "Machine")
 [Environment]::SetEnvironmentVariable("ConfiguracaoRabbit__Hostname", "localhost", "Machine")

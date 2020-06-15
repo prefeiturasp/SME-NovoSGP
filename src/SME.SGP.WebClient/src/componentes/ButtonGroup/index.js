@@ -21,6 +21,7 @@ function ButtonGroup({
   onClickBotaoPrincipal,
   onClickCancelar,
   somenteConsulta,
+  botoesEstadoVariavel,
 }) {
   const desabilitarExcluir = () => {
     const { podeExcluir } = permissoesTela;
@@ -54,10 +55,11 @@ function ButtonGroup({
           className="btnGroupItem"
           onClick={() => onClickCancelar(form)}
           disabled={
-            somenteConsulta ||
-            !modoEdicao ||
-            !permissoesTela.podeIncluir ||
-            !permissoesTela.podeAlterar
+            !botoesEstadoVariavel &&
+            (somenteConsulta ||
+              !modoEdicao ||
+              !permissoesTela.podeIncluir ||
+              !permissoesTela.podeAlterar)
           }
         />
       )}
@@ -82,9 +84,8 @@ function ButtonGroup({
           className="btnGroupItem"
           onClick={onClickBotaoPrincipal}
           disabled={
-            somenteConsulta ||
-            !permissoesTela.podeIncluir ||
-            desabilitarBotaoPrincipal
+            (!botoesEstadoVariavel || desabilitarBotaoPrincipal) &&
+            (somenteConsulta || !permissoesTela.podeIncluir)
           }
         />
       )}
@@ -104,6 +105,8 @@ ButtonGroup.propTypes = {
   onClickExcluir: PropTypes.func,
   onClickCancelar: PropTypes.func,
   onClickBotaoPrincipal: PropTypes.func,
+  somenteConsulta: PropTypes.bool,
+  botoesEstadoVariavel: PropTypes.bool,
 };
 
 ButtonGroup.defaultProps = {
@@ -118,6 +121,8 @@ ButtonGroup.defaultProps = {
   onClickExcluir: null,
   onClickCancelar: null,
   onClickBotaoPrincipal: null,
+  somenteConsulta: false,
+  botoesEstadoVariavel: false,
 };
 
 export default ButtonGroup;
