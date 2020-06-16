@@ -13,16 +13,29 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class UnidadesEscolaresController : ControllerBase
     {
-        [Route("{ueId}/funcionarios")]
+        //[Route("{ueId}/funcionarios")]
+        //[HttpPost]
+        //[Permissao(Permissao.AS_C, Policy = "Bearer")]
+        //public async Task<IActionResult> ObterFuncionariosPorUe([FromServices]IConsultasUnidadesEscolares consultasUnidadesEscolares,
+        //    BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto, string ueId)
+        //{
+        //    if (string.IsNullOrEmpty(ueId))
+        //        throw new NegocioException("É necessário informar o código da UE.");
+        //    buscaFuncionariosFiltroDto.AtualizaCodigoUe(ueId);
+        //    return Ok(await consultasUnidadesEscolares.ObtemFuncionariosPorUe(buscaFuncionariosFiltroDto));
+        //}
+
+
+        [Route("dres/{dresId}/ues/{ueId}/funcionarios")]
         [HttpPost]
         [Permissao(Permissao.AS_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFuncionariosPorUe([FromServices]IConsultasUnidadesEscolares consultasUnidadesEscolares,
-            BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto, string ueId)
+        public async Task<IActionResult> ObterFuncionariosPorDreEUe([FromServices] IReiniciarSenhaUseCase reiniciarSenhaUseCase, 
+            FiltroFuncionariosDto filtroFuncionariosDto, string dreId, string ueId)
         {
-            if (string.IsNullOrEmpty(ueId))
-                throw new NegocioException("É necessário informar o código da UE.");
-            buscaFuncionariosFiltroDto.AtualizaCodigoUe(ueId);
-            return Ok(await consultasUnidadesEscolares.ObtemFuncionariosPorUe(buscaFuncionariosFiltroDto));
+            filtroFuncionariosDto.AtualizaCodigoDre(dreId);
+            filtroFuncionariosDto.AtualizaCodigoUe(ueId);
+
+            return Ok(await reiniciarSenhaUseCase.Executar(filtroFuncionariosDto));
         }
     }
 }
