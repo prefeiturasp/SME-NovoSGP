@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -23,6 +24,8 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<EntidadeBase> Salvar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
         {
+            Validar(planoAnualTerritorioSaberDto);
+
             var listaAuditoria = new List<EntidadeBase>();
 
             unitOfWork.IniciarTransacao();
@@ -49,6 +52,16 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
 
             return listaAuditoria;
+        }
+
+        private void Validar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
+        {
+            var bimestresDescricaoVazia = planoAnualTerritorioSaberDto.Bimestres.Where(b =>
+                   string.IsNullOrEmpty(b.Desenvolvimento) && string.IsNullOrEmpty(b.Reflexao));
+
+            if (bimestresDescricaoVazia.Any())
+                throw new NegocioException($@"É necessário preencher o desenvolvimento e/ou reflexão do 
+                                            {string.Join(", ", bimestresDescricaoVazia.Select(b => $"{b.Bimestre}º"))} bimestre");
         }
 
         private PlanoAnualTerritorioSaber ObterPlanoAnualTerritorioSaberSimplificado(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, int bimestre)
