@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosPlanoAnual
     {
-        Task Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto);
+        void Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto);
 
         Task<IEnumerable<PlanoAnualCompletoDto>> Salvar(PlanoAnualDto planoAnualDto);
     }

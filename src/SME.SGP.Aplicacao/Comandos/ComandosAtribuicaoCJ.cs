@@ -12,11 +12,11 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
         private readonly IServicoAtribuicaoCJ servicoAtribuicaoCJ;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ComandosAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAtribuicaoCJ servicoAtribuicaoCJ,
-            IServicoEOL servicoEOL, IServicoUsuario servicoUsuario, IRepositorioCache repositorioCache)
+            IServicoEol servicoEOL, IServicoUsuario servicoUsuario, IRepositorioCache repositorioCache)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAtribuicaoCJ = servicoAtribuicaoCJ ?? throw new ArgumentNullException(nameof(servicoAtribuicaoCJ));

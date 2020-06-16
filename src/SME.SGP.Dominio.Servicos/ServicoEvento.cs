@@ -80,8 +80,6 @@ namespace SME.SGP.Dominio.Servicos
         {
             ObterTipoEvento(evento);
 
-            TipoCalendario tipoCalendario = ObterTipoCalendario(evento);
-
             evento.ValidaPeriodoEvento();
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
@@ -510,13 +508,7 @@ namespace SME.SGP.Dominio.Servicos
             return devePassarPorWorkflow;
         }
 
-        private async Task VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(Evento evento, Usuario usuario)
-        {
-            var eventos = await repositorioEvento.ObterEventosPorTipoETipoCalendario((long)TipoEvento.OrganizacaoEscolar, evento.TipoCalendarioId);
-            evento.VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(eventos, usuario);
-        }
-
-        public async Task Excluir(Evento evento)
+        public void Excluir(Evento evento)
         {
             evento.Excluir();
             repositorioEvento.Salvar(evento);

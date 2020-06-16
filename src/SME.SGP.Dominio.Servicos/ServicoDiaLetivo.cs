@@ -47,16 +47,15 @@ namespace SME.SGP.Dominio.Servicos
             {
                 List<Evento> eventos = repositorioEvento.EhEventoLetivoPorLiberacaoExcepcional(tipoCalendarioId, data, ueId);
                 // EventoLetivo
-                if (eventos.Exists(x => x.TipoEvento.Codigo == Convert.ToInt32(TipoEvento.LiberacaoExcepcional)))
-                {
-                    if (eventos.Exists(x => (x.TipoEvento.Codigo != 6) && (x.Letivo == EventoLetivo.Sim)))
+                if (eventos.Exists(x => x.TipoEvento.Codigo == Convert.ToInt32(TipoEvento.LiberacaoExcepcional)) &&
+                    eventos.Exists(x => (x.TipoEvento.Codigo != 6) && (x.Letivo == EventoLetivo.Sim)))
                         return true;
-                }
+                
                 return false;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

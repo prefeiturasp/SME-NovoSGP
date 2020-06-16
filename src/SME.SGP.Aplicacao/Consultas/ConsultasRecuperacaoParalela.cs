@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioObjetivo repositorioObjetivo;
         private readonly IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela;
         private readonly IRepositorioResposta repositorioResposta;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoRecuperacaoParalela servicoRecuperacaoParalela;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioEixo repositorioEixo,
             IRepositorioObjetivo repositorioObjetivo,
             IRepositorioResposta repositorioResposta,
-            IServicoEOL servicoEOL,
+            IServicoEol servicoEOL,
             IServicoRecuperacaoParalela servicoRecuperacaoParalela,
             IContextoAplicacao contextoAplicacao,
             IServicoUsuario servicoUsuario,
@@ -264,7 +264,7 @@ namespace SME.SGP.Aplicacao
                 Frequencia = items.GroupBy(fg => new { fg.RespostaId, fg.Frequencia }).Select(freq => new RecuperacaoParalelaTotalEstudanteFrequenciaDto
                 {
                     FrequenciaDescricao = freq.Key.Frequencia,
-                    PorcentagemTotalFrequencia = (freq.Sum(x => x.Total) * 100) / total,
+                    PorcentagemTotalFrequencia = (double)(freq.Sum(x => x.Total) * 100) / total,
                     QuantidadeTotalFrequencia = freq.Sum(x => x.Total),
                     Linhas = items.Where(wlinha => wlinha.RespostaId == freq.Key.RespostaId).GroupBy(glinha => new { glinha.RespostaId }).Select(lin => new RecuperacaoParalelaResumoFrequenciaDto
                     {

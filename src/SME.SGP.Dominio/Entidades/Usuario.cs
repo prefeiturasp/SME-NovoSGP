@@ -13,19 +13,11 @@ namespace SME.SGP.Dominio
         public DateTime? ExpiracaoRecuperacaoSenha { get; set; }
         public string Login { get; set; }
         public string Nome { get; set; }
-        public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
         public Guid PerfilAtual { get; set; }
         public IEnumerable<PrioridadePerfil> Perfis { get; private set; }
         public Guid? TokenRecuperacaoSenha { get; set; }
         public DateTime UltimoLogin { get; set; }
         private string Email { get; set; }
-        private IList<Notificacao> notificacoes { get; set; }
-
-        public void Adicionar(Notificacao notificacao)
-        {
-            if (notificacao != null)
-                notificacoes.Add(notificacao);
-        }
 
         public void AtualizaUltimoLogin()
         {
@@ -210,11 +202,9 @@ namespace SME.SGP.Dominio
 
         public void PodeCriarEventoComDataPassada(Evento evento)
         {
-            if (evento.DataInicio.Date < DateTime.Today)
-            {
-                if (ObterTipoPerfilAtual() != TipoPerfil.SME && ObterTipoPerfilAtual() != TipoPerfil.DRE)
+            if ((evento.DataInicio.Date < DateTime.Today) &&
+                (ObterTipoPerfilAtual() != TipoPerfil.SME && ObterTipoPerfilAtual() != TipoPerfil.DRE))
                     throw new NegocioException("Não é possível criar evento com data passada.");
-            }
         }
 
         public bool PodeRegistrarFrequencia(Aula aula)

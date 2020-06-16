@@ -25,7 +25,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioEventoTipo repositorioTipoEvento;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IServicoEOL servicoEol;
+        private readonly IServicoEol servicoEol;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -40,7 +40,7 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioEventoFechamento repositorioEventoFechamento,
                                  IRepositorioEvento repositorioEvento,
                                  IRepositorioEventoTipo repositorioTipoEvento,
-                                 IServicoEOL servicoEol,
+                                 IServicoEol servicoEol,
                                  IServicoNotificacao servicoNotificacao,
                                  IUnitOfWork unitOfWork)
         {
