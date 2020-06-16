@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
+import shortid from 'shortid';
 import { CampoData, Loader, momentSchema } from '~/componentes';
 import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
 import Auditoria from '~/componentes/auditoria';
@@ -466,6 +467,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                 <div className="row mb-4">
                   <div className="col-md-12 d-flex justify-content-end pb-4">
                     <Button
+                      id={shortid.generate()}
                       label="Voltar"
                       icon="arrow-left"
                       color={Colors.Azul}
@@ -474,6 +476,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                       onClick={() => onClickVoltar(form)}
                     />
                     <Button
+                      id={shortid.generate()}
                       label="Cancelar"
                       color={Colors.Roxo}
                       border
@@ -482,6 +485,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                       disabled={!modoEdicao}
                     />
                     <Button
+                      id={shortid.generate()}
                       label="Excluir"
                       color={Colors.Vermelho}
                       border
@@ -495,6 +499,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                       }
                     />
                     <Button
+                      id={shortid.generate()}
                       label={`${
                         idFechamentoReabertura > 0 ? 'Alterar' : 'Cadastrar'
                       }`}
@@ -591,17 +596,80 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                       desabilitado={desabilitarCampos}
                     />
                   </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
-                    <SelectComponent
-                      form={form}
-                      label="Bimestre"
-                      name="bimestres"
-                      id="bimestres"
-                      lista={listaBimestres}
-                      onChange={valor => {
-                        if (valor.includes('5')) {
-                          form.setFieldValue('bimestres', ['5']);
-                          onChangeCampos();
+                  <Loader loading={carregandoTipos} tip="">
+                    <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
+                      <SelectComponent
+                        form={form}
+                        label="Bimestre"
+                        name="bimestres"
+                        id="bimestres"
+                        lista={listaBimestres}
+                        onChange={valor => {
+                          if (valor.includes('5')) {
+                            form.setFieldValue('bimestres', ['5']);
+                            onChangeCampos();
+                          }
+                          onChangeTipoCalendario(valor, form);
+                        }}
+                        placeholder="Selecione um tipo de calendário"
+                      />
+                    </div>
+                  </Loader>
+                </div>
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
+                  <DreDropDown
+                    name="dreId"
+                    label="Diretoria Regional de Educação (DRE)"
+                    form={form}
+                    desabilitado={desabilitarCampos || !novoRegistro}
+                    onChange={() => {
+                      if (novoRegistro) {
+                        onChangeCampos();
+                      }
+                    }}
+                  />
+                </div>
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
+                  <UeDropDown
+                    name="ueId"
+                    dreId={form.values.dreId}
+                    label="Unidade Escolar (UE)"
+                    form={form}
+                    url="v1/dres"
+                    desabilitado={desabilitarCampos || !novoRegistro}
+                    onChange={() => {
+                      if (novoRegistro) {
+                        onChangeCampos();
+                      }
+                    }}
+                  />
+                  <Button
+                    label={`${
+                      idFechamentoReabertura > 0 ? 'Alterar' : 'Cadastrar'
+                    }`}
+                    color={Colors.Roxo}
+                    border
+                    bold
+                    className="mr-2"
+                    onClick={() => validaAntesDoSubmit(form)}
+                    disabled={desabilitarCampos}
+                  />
+                </div>
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                  <Loader loading={carregandoTipos} tip="">
+                    <div style={{ maxWidth: '300px' }}>
+                      <SelectComponent
+                        label="Calendário"
+                        form={form}
+                        name="tipoCalendarioId"
+                        id="tipoCalendarioId"
+                        lista={listaTipoCalendarioEscolar}
+                        valueOption="id"
+                        valueText="descricaoTipoCalendario"
+                        disabled={
+                          desabilitarCampos ||
+                          !novoRegistro ||
+                          desabilitarTipoCalendario
                         }
                         placeholder="Selecione um tipo de calendário"
                         onChange={valor => onChangeTipoCalendario(valor, form)}
@@ -634,135 +702,72 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                       if (novoRegistro) {
                         onChangeCampos();
                       }
-                    />
-                    <Button
-                      label={`${
-                        idFechamentoReabertura > 0 ? 'Alterar' : 'Cadastrar'
-                      }`}
-                      color={Colors.Roxo}
-                      border
-                      bold
-                      className="mr-2"
-                      onClick={() => validaAntesDoSubmit(form)}
-                      disabled={desabilitarCampos}
-                    />
-                  </div>
-                  <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                    <Loader loading={carregandoTipos} tip="">
-                      <div style={{ maxWidth: '300px' }}>
-                        <SelectComponent
-                          label="Calendário"
-                          form={form}
-                          name="tipoCalendarioId"
-                          id="tipoCalendarioId"
-                          lista={listaTipoCalendarioEscolar}
-                          valueOption="id"
-                          valueText="descricaoTipoCalendario"
-                          disabled={
-                            desabilitarCampos ||
-                            !novoRegistro ||
-                            desabilitarTipoCalendario
-                          }
-                          placeholder="Selecione um tipo de calendário"
-                          onChange={valor =>
-                            onChangeTipoCalendario(valor, form)
-                          }
-                        />
-                      </div>
-                    </Loader>
-                  </div>
-                  <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
-                    <DreDropDown
-                      name="dreId"
-                      label="Diretoria Regional de Educação (DRE)"
-                      form={form}
-                      desabilitado={desabilitarCampos || !novoRegistro}
-                      onChange={() => {
-                        if (novoRegistro) {
-                          onChangeCampos();
-                        }
-                      }}
-                    />
-                  </div>
-                  <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
-                    <UeDropDown
-                      name="ueId"
-                      dreId={form.values.dreId}
-                      label="Unidade Escolar (UE)"
-                      form={form}
-                      url="v1/dres"
-                      desabilitado={desabilitarCampos || !novoRegistro}
-                      onChange={() => {
-                        if (novoRegistro) {
-                          onChangeCampos();
-                        }
-                      }}
-                    />
-                  </div>
-                  <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                    <CampoTexto
-                      label="Descrição"
-                      name="descricao"
-                      id="descricao"
-                      type="textarea"
-                      form={form}
-                      onChange={onChangeCampos}
-                      desabilitado={desabilitarCampos || !novoRegistro}
-                    />
-                  </div>
-                  <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
-                    <CampoData
-                      label="Início"
-                      form={form}
-                      name="dataInicio"
-                      placeholder="DD/MM/AAAA"
-                      formatoData="DD/MM/YYYY"
-                      onChange={onChangeCampos}
-                      desabilitado={desabilitarCampos}
-                    />
-                  </div>
-                  <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
-                    <CampoData
-                      label="Fim"
-                      form={form}
-                      name="dataFim"
-                      placeholder="DD/MM/AAAA"
-                      formatoData="DD/MM/YYYY"
-                      onChange={onChangeCampos}
-                      desabilitado={desabilitarCampos}
-                    />
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
-                    <SelectComponent
-                      form={form}
-                      label="Bimestre"
-                      name="bimestres"
-                      id="bimestres"
-                      lista={listaBimestres}
-                      onChange={valor => {
-                        if (valor.includes('5')) {
-                          form.setFieldValue('bimestres', ['5']);
-                          onChangeCampos();
-                        }
-                      }}
-                      valueOption="valor"
-                      valueText="descricao"
-                      placeholder="Selecione bimestre(s)"
-                      multiple
-                      disabled={desabilitarCampos || !novoRegistro}
-                    />
-                  </div>
-                  {exibirAuditoria ? (
-                    <Auditoria
-                      criadoEm={auditoria.criadoEm}
-                      criadoPor={auditoria.criadoPor}
-                      alteradoPor={auditoria.alteradoPor}
-                      alteradoEm={auditoria.alteradoEm}
-                    />
-                  ) : (
-                    ''
-                  )}
+                    }}
+                  />
                 </div>
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                  <CampoTexto
+                    label="Descrição"
+                    name="descricao"
+                    id="descricao"
+                    type="textarea"
+                    form={form}
+                    onChange={onChangeCampos}
+                    desabilitado={desabilitarCampos || !novoRegistro}
+                  />
+                </div>
+                <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
+                  <CampoData
+                    label="Início"
+                    form={form}
+                    name="dataInicio"
+                    placeholder="DD/MM/AAAA"
+                    formatoData="DD/MM/YYYY"
+                    onChange={onChangeCampos}
+                    desabilitado={desabilitarCampos}
+                  />
+                </div>
+                <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
+                  <CampoData
+                    label="Fim"
+                    form={form}
+                    name="dataFim"
+                    placeholder="DD/MM/AAAA"
+                    formatoData="DD/MM/YYYY"
+                    onChange={onChangeCampos}
+                    desabilitado={desabilitarCampos}
+                  />
+                </div>
+                <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
+                  <SelectComponent
+                    form={form}
+                    label="Bimestre"
+                    name="bimestres"
+                    id="bimestres"
+                    lista={listaBimestres}
+                    onChange={valor => {
+                      if (valor.includes('5')) {
+                        form.setFieldValue('bimestres', ['5']);
+                        onChangeCampos();
+                      }
+                    }}
+                    valueOption="valor"
+                    valueText="descricao"
+                    placeholder="Selecione bimestre(s)"
+                    multiple
+                    disabled={desabilitarCampos || !novoRegistro}
+                  />
+                </div>
+                {exibirAuditoria ? (
+                  <Auditoria
+                    criadoEm={auditoria.criadoEm}
+                    criadoPor={auditoria.criadoPor}
+                    alteradoPor={auditoria.alteradoPor}
+                    alteradoEm={auditoria.alteradoEm}
+                  />
+                ) : (
+                  ''
+                )}
               </Form>
             )}
           </Formik>
