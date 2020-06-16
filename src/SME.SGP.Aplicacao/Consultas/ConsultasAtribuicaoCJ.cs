@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
 
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
 
-        public ConsultasAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoEOL servicoEOL)
+        public ConsultasAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoEol servicoEOL)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
                     DisciplinaId = disciplinaProfessorTitular.DisciplinaId,
                     ProfessorTitular = disciplinaProfessorTitular.ProfessorNome,
                     ProfessorTitularRf = disciplinaProfessorTitular.ProfessorRf,
-                    Substituir = atribuicao == null ? false : atribuicao.Substituir
+                    Substituir = atribuicao != null && atribuicao.Substituir
                 });
             }
 

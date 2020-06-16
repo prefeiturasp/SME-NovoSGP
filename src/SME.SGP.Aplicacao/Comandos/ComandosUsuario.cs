@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
         private readonly IServicoEmail servicoEmail;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoPerfil servicoPerfil;
         private readonly IServicoTokenJwt servicoTokenJwt;
         private readonly IServicoUsuario servicoUsuario;
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             IServicoAutenticacao servicoAutenticacao,
             IServicoUsuario servicoUsuario,
             IServicoPerfil servicoPerfil,
-            IServicoEOL servicoEOL,
+            IServicoEol servicoEOL,
             IServicoTokenJwt servicoTokenJwt,
             IServicoEmail servicoEmail,
             IConfiguration configuration,
@@ -153,14 +153,13 @@ namespace SME.SGP.Aplicacao
                 .ToList();
 
             // Revoga token atual para geração de um novo
-            await servicoTokenJwt.RevogarToken(login);
+            //await servicoTokenJwt.RevogarToken(login);
 
             // Gera novo token e guarda em cache
             retornoAutenticacaoEol.Item1.Token =
                 servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
 
             retornoAutenticacaoEol.Item1.DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao();
-            //var fromDate = servicoTokenJwt.ObterDataHoraCriacao();
 
             usuario.AtualizaUltimoLogin();
 
@@ -197,7 +196,7 @@ namespace SME.SGP.Aplicacao
 
                 usuario.DefinirPerfilAtual(perfil);
 
-                await servicoTokenJwt.RevogarToken(loginAtual);
+                //await servicoTokenJwt.RevogarToken(loginAtual);
                 var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes);
 
                 return new TrocaPerfilDto
@@ -248,7 +247,6 @@ namespace SME.SGP.Aplicacao
             string nomeLoginAtual = servicoUsuario.ObterNomeLoginAtual();
 
             var dadosUsuario = await servicoEOL.ObterMeusDados(login);
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRfAtual, login, nomeLoginAtual, dadosUsuario.Email);
 
             // Obter Perfil do token atual
             var guidPerfil = servicoTokenJwt.ObterPerfil();
@@ -263,7 +261,7 @@ namespace SME.SGP.Aplicacao
                 .Select(a => (Permissao)a)
                 .ToList();
 
-            await servicoTokenJwt.RevogarToken(login);
+            //await servicoTokenJwt.RevogarToken(login);
 
             return new RevalidacaoTokenDto()
             {

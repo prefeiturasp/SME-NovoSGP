@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IServicoConselhoClasse servicoConselhoClasse;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                                             IConsultasConselhoClasseNota consultasConselhoClasseNota,
                                             IConsultasFechamentoNota consultasFechamentoNota,
                                             IConsultasDisciplina consultasDisciplina,
-                                            IServicoEOL servicoEOL,
+                                            IServicoEol servicoEOL,
                                             IServicoUsuario servicoUsuario,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
                                             IRepositorioAula repositorioAula,
@@ -196,7 +196,7 @@ namespace SME.SGP.Aplicacao
             if (!await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurma.Turma, alunoCodigo))
                 throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
 
-            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
+            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
             if (conselhoClasseAluno == null || !conselhoClasseAluno.ConselhoClasseParecerId.HasValue)
                 return await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
 
@@ -208,7 +208,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<ConselhoClasseAluno> ObterPorConselhoClasseAsync(long conselhoClasseId, string alunoCodigo)
-            => await repositorioConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
+            => await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
 
         private static DisciplinaDto MapeaderDisciplinasDto(DisciplinaResposta componenteCurricular)
         {

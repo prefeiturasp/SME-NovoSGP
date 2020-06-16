@@ -29,15 +29,15 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<string> Alterar(AulaPrevistaDto aulaPrevistaDto, long id)
+        public async Task<string> Alterar(AulaPrevistaDto dto, long id)
         {
             IEnumerable<AulaPrevistaBimestre> aulasPrevistasBimestre = await repositorioBimestre.ObterBimestresAulasPrevistasPorId(id);
 
             unitOfWork.IniciarTransacao();
 
-            foreach (var bimestre in aulaPrevistaDto.BimestresQuantidade)
+            foreach (var bimestre in dto.BimestresQuantidade)
             {
-                AulaPrevistaBimestre aulaPrevistaBimestre = aulasPrevistasBimestre.Where(b => b.Bimestre == bimestre.Bimestre).FirstOrDefault();
+                AulaPrevistaBimestre aulaPrevistaBimestre = aulasPrevistasBimestre.FirstOrDefault(b => b.Bimestre == bimestre.Bimestre);
                 aulaPrevistaBimestre = MapearParaDominio(id, bimestre, aulaPrevistaBimestre);
                 repositorioBimestre.Salvar(aulaPrevistaBimestre);
             }
@@ -47,20 +47,20 @@ namespace SME.SGP.Aplicacao
             return "Alteração realizada com sucesso";
         }
 
-        public async Task<long> Inserir(AulaPrevistaDto aulaPrevistaDto)
+        public async Task<long> Inserir(AulaPrevistaDto dto)
         {
-            var turma = ObterTurma(aulaPrevistaDto.TurmaId);
+            var turma = ObterTurma(dto.TurmaId);
 
             var tipoCalendario = ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo);
 
             long id;
 
             AulaPrevista aulaPrevista = null;
-            aulaPrevista = MapearParaDominio(aulaPrevistaDto, aulaPrevista, tipoCalendario.Id);
+            aulaPrevista = MapearParaDominio(dto, aulaPrevista, tipoCalendario.Id);
 
             unitOfWork.IniciarTransacao();
 
-            id = await Inserir(aulaPrevistaDto, aulaPrevista);
+            id = await Inserir(dto, aulaPrevista);
 
             unitOfWork.PersistirTransacao();
 
