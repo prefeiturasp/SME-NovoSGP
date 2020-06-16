@@ -200,7 +200,7 @@ function TerritorioSaber() {
           onClickCancelar={onClickCancelar}
           labelBotaoPrincipal="Salvar"
           somenteConsulta={somenteConsulta}
-          desabilitarBotaoPrincipal={false}
+          desabilitarBotaoPrincipal={!territorioSelecionado}
           modoEdicao={modoEdicao}
         />
         <Grid cols={12}>
