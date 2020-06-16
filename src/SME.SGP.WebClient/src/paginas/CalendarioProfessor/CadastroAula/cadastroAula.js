@@ -30,6 +30,7 @@ import modalidade from '~/dtos/modalidade';
 import ExcluirAula from './excluirAula';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import RotasDto from '~/dtos/rotasDto';
+import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 
 function CadastroDeAula({ match, location }) {
   const { id, tipoCalendarioId } = match.params;
@@ -59,6 +60,8 @@ function CadastroDeAula({ match, location }) {
   const [carregandoDados, setCarregandoDados] = useState(false);
   const [controlaGrade, setControlaGrade] = useState(true);
   const [gradeAtingida, setGradeAtingida] = useState(false);
+  const [registroMigrado, setRegistroMigrado] = useState(false);
+  const [emManutencao, setEmManutencao] = useState(false);
 
   const { diaAula } = queryString.parse(location.search);
   const aulaInicial = {
@@ -153,6 +156,8 @@ function CadastroDeAula({ match, location }) {
           const respostaAula = resposta.data;
           respostaAula.dataAula = window.moment(respostaAula.dataAula);
           setAula(respostaAula);
+          setRegistroMigrado(respostaAula.migrado);
+          setEmManutencao(respostaAula.emManutencao);
           servicoCadastroAula
             .obterRecorrenciaPorIdAula(id)
             .then(resposta => {
@@ -336,7 +341,7 @@ function CadastroDeAula({ match, location }) {
     servicoCadastroAula
       .salvar(id, valoresForm, valoresForm.regencia || false)
       .then(resposta => {
-        sucesso(resposta.data.mensagens[0]);
+        resposta.data.mensagens.forEach(mensagem => sucesso(mensagem));
         navegarParaCalendarioProfessor();
       })
       .catch(e => erros(e))
@@ -570,7 +575,26 @@ function CadastroDeAula({ match, location }) {
             />
           )}
         </div>
-        <Cabecalho pagina={`Cadastro de Aula - ${obterDataFormatada()}`} />
+        <Cabecalho pagina={`Cadastro de Aula - ${obterDataFormatada()}`}>
+          {registroMigrado && (
+            <div className="col-md-2 float-right">
+              <RegistroMigrado>Registro Migrado</RegistroMigrado>
+            </div>
+          )}
+        </Cabecalho>
+        <div className="col-md-12">
+          {emManutencao && (
+            <Alert
+              alerta={{
+                tipo: 'warning',
+                id: 'em-manutencao',
+                mensagem: 'Registro em manutenção',
+                estiloTitulo: { fontSize: '18px' },
+              }}
+              className="mb-2"
+            />
+          )}
+        </div>
         <Card>
           <div className="col-xs-12 col-md-12 col-lg-12">
             <Formik
