@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasUe consultasUe;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia, 
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                                             IConsultasFrequencia consultasFrequencia,
                                             IRepositorioTurma repositorioTurma,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
-                                            IServicoEOL servicoEOL, 
+                                            IServicoEol servicoEOL, 
                                             IServicoUsuario servicoUsuario,
                                             IContextoAplicacao contextoAplicacao, 
                                             IConsultasProfessor consultasProfessor, 

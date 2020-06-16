@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
             return repositorioObjetivosPlano.ObterDisciplinasDoBimestrePlanoAula(dataReferencia.Year, bimestre, turmaId, componenteCurricularId);
         }
 
-        public async Task<long> ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId)
+        public long ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId)
         {
             return repositorioObjetivosPlano.ObterIdPorObjetivoAprendizagemJurema(planoId, objetivoAprendizagemJuremaId);
         }
@@ -152,15 +152,6 @@ namespace SME.SGP.Aplicacao
                     };
                 }
             }
-        }
-
-        private ObjetivoAprendizagemSimplificadoDto MapearParaDto(ObjetivoAprendizagemPlano objetivo)
-        {
-            return new ObjetivoAprendizagemSimplificadoDto()
-            {
-                Id = objetivo.Id,
-                IdComponenteCurricular = objetivo.ComponenteCurricularId
-            };
         }
 
         private IEnumerable<ComponenteCurricular> ObterComponentesCurriculares()
