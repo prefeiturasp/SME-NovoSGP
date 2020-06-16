@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 var bimestres = await repositorioFechamentoReaberturaBimestre.ObterPorFechamentoReaberturaIdAsync(fechamentoReabertura.Id);
                 fechamentoReabertura.AdicionarBimestres(bimestres);
             }
-            return MapearListaEntidadeParaDto(listaEntidades);
+            return await MapearListaEntidadeParaDto(listaEntidades);
         }
 
         public async Task<FechamentoReaberturaRetornoDto> ObterPorId(long id)
