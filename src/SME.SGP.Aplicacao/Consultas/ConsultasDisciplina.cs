@@ -95,12 +95,6 @@ namespace SME.SGP.Aplicacao
                     return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
             }
 
-            var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricular.Listar()));
-            if (componentesCurricularesJurema == null)
-            {
-                throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
-            }
-
             var turma = repositorioTurma.ObterPorCodigo(codigoTurma);
             if (turma == null)
                 throw new NegocioException("Não foi possível encontrar a turma");
@@ -113,6 +107,13 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
+                
+                var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricular.Listar()));
+                if (componentesCurricularesJurema == null)
+                {
+                    throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
+                }
+                
                 disciplinasDto = componentesCurriculares?.Select(disciplina => new DisciplinaDto()
                 {
                     CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
