@@ -13,11 +13,11 @@ namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultaRecuperacaoParalelaPeriodo : IConsultaRecuperacaoParalelaPeriodo
     {
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo;        
 
-        public ConsultaRecuperacaoParalelaPeriodo(IServicoEOL servicoEOL, IServicoUsuario servicoUsuario,
+        public ConsultaRecuperacaoParalelaPeriodo(IServicoEol servicoEOL, IServicoUsuario servicoUsuario,
             IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));

@@ -11,6 +11,6 @@ namespace SME.SGP.Infra
         public int Bimestre { get; set; }
         public List<ObjetivoAprendizagemDto> ObjetivosAprendizagem { get; set; }
         public IEnumerable<long> IdsObjetivosAprendizagem => ObjetivosAprendizagemPlano?.Split(',').Select(c => Convert.ToInt64(c));
-        public string ObjetivosAprendizagemPlano;
+        public string ObjetivosAprendizagemPlano { get; set; }
     }
 }
