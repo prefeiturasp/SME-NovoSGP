@@ -201,19 +201,6 @@ function CadastroDeAula({ match, location }) {
     }
   }, [id, turmaSelecionada.turma]);
 
-  const defineGradeRegenteEja = quantidadeAulasRestantes => {
-    setAula(aulaState => {
-      return {
-        ...aulaState,
-        quantidade: 5,
-      };
-    });
-    if (!id) {
-      setQuantidadeBloqueada(true);
-      setGradeAtingida(quantidadeAulasRestantes == 0);
-    }
-  };
-
   const defineGradeRegistroNovoComValidacoes = quantidadeAulasRestante => {
     setValidacoes(validacoesState => {
       return {
@@ -267,41 +254,31 @@ function CadastroDeAula({ match, location }) {
   };
 
   const defineGrade = useCallback(
-    (
-      dadosGrade,
-      componenteSelecionado,
-      tipoAula,
-      aplicarGrade,
-      quantidadeAula
-    ) => {
+    (dadosGrade, tipoAula, aplicarGrade, quantidadeAula) => {
       refForm.current.handleReset();
-      const quantidade = dadosGrade.quantidadeAulasRestante;
+      const { quantidadeAulasRestante, podeEditar } = dadosGrade;
+
+      setGradeAtingida(quantidadeAulasRestante == 0);
       if (tipoAula == 1) {
-        if (ehRegenciaEja(componenteSelecionado)) {
-          defineGradeRegenteEja(quantidade);
-        } else if (aplicarGrade) {
+        if (aplicarGrade) {
           if (!id) {
-            if (quantidade === 1) {
-              //defineGrade limite 1 aula
+            setQuantidadeBloqueada(!podeEditar);
+            if (quantidadeAulasRestante === 1) {
+              // defineGrade limite 1 aula
               setQuantidadeBloqueada(true);
               setAula(aulaState => {
                 return {
                   ...aulaState,
-                  quantidade,
+                  quantidade: quantidadeAulasRestante,
                 };
               });
-            } else if (ehRegenciaEja(componenteSelecionado)) {
-              defineGradeRegenteEja();
-            } else {
-              //define grade registro novo com validações
-              defineGradeRegistroNovoComValidacoes(
-                dadosGrade.quantidadeAulasRestante
-              );
             }
+            // define grade registro novo com validações
+            defineGradeRegistroNovoComValidacoes(quantidadeAulasRestante);
           } else {
-            //define grade para edição
+            // define grade para edição
             defineGradeEdicaoComValidacoes(
-              dadosGrade.quantidadeAulasRestante + quantidadeAula
+              quantidadeAulasRestante + quantidadeAula
             );
           }
         } else {
@@ -309,7 +286,7 @@ function CadastroDeAula({ match, location }) {
         }
       } else removeGrade();
     },
-    [aula.quantidade, controlaGrade, ehRegenciaEja]
+    [id]
   );
 
   const carregarGrade = useCallback(
@@ -327,17 +304,16 @@ function CadastroDeAula({ match, location }) {
             turmaSelecionada.turma,
             componenteSelecionado.codigoComponenteCurricular,
             dataAula,
-            componenteSelecionado.regencia
+            id || 0
           )
           .then(respostaGrade => {
             if (respostaGrade.status === 200) {
-              defineGrade(
-                respostaGrade.data,
-                componenteSelecionado,
-                tipoAula,
-                aplicarGrade,
-                quantidadeAula
-              );
+              const { grade } = respostaGrade.data;
+              if (grade) {
+                defineGrade(grade, tipoAula, aplicarGrade, quantidadeAula);
+              } else {
+                removeGrade();
+              }
             } else {
               removeGrade();
             }
@@ -348,7 +324,7 @@ function CadastroDeAula({ match, location }) {
           .finally(() => setCarregandoDados(false));
       }
     },
-    [turmaSelecionada.turma, turmaSelecionada.modalidade, defineGrade]
+    [turmaSelecionada.turma, defineGrade, id]
   );
 
   const salvar = valoresForm => {
@@ -358,7 +334,7 @@ function CadastroDeAula({ match, location }) {
     if (componente) valoresForm.disciplinaNome = componente.nome;
     setCarregandoDados(true);
     servicoCadastroAula
-      .salvar(id, valoresForm)
+      .salvar(id, valoresForm, valoresForm.regencia || false)
       .then(resposta => {
         sucesso(resposta.data.mensagens[0]);
         navegarParaCalendarioProfessor();
