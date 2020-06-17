@@ -80,6 +80,7 @@ function CadastroDeAula({ match, location }) {
   });
 
   const [aula, setAula] = useState(aulaInicial);
+  const [dataAulaOriginal] = useState(window.moment(diaAula));
 
   const [quantidadeBloqueada, setQuantidadeBloqueada] = useState(false);
   const [listaComponentes, setListaComponentes] = useState([]);
@@ -309,7 +310,9 @@ function CadastroDeAula({ match, location }) {
             turmaSelecionada.turma,
             componenteSelecionado.codigoComponenteCurricular,
             dataAula,
-            id || 0
+            id || 0,
+            dataAulaOriginal,
+            componenteSelecionado.regencia
           )
           .then(respostaGrade => {
             if (respostaGrade.status === 200) {

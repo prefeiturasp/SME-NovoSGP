@@ -83,7 +83,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(CadastroAulaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> CadastroAula([FromServices] IMediator mediator, long aulaId, string turmaCodigo, long componenteCurricular, [FromQuery] DateTime dataAula, [FromQuery] bool ehRegencia = false)
+        public async Task<IActionResult> CadastroAula([FromServices] IMediator mediator, long aulaId, string turmaCodigo, long componenteCurricular, [FromQuery] DateTime dataAula, [FromQuery] DateTime dataAulaOriginal, [FromQuery] bool ehRegencia = false)
         {
             return Ok(await PodeCadastrarAulaUseCase.Executar(mediator, aulaId, turmaCodigo, componenteCurricular, dataAula, ehRegencia));
         }
