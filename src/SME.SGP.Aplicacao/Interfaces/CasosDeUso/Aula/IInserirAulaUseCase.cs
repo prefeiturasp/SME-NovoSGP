@@ -1,11 +1,8 @@
-﻿using MediatR;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Aula;
-using System.Threading.Tasks;
+﻿using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IInserirAulaUseCase: IUseCase<InserirAulaDto, RetornoBaseDto>
+    public interface IInserirAulaUseCase: IUseCase<PersistirAulaDto, RetornoBaseDto>
     {
     }
 }
