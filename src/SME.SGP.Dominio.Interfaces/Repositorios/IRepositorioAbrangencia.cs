@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         void ExcluirAbrangencias(IEnumerable<long> ids);
 
-        void InserirAbrangencias(IEnumerable<Abrangencia> enumerable, string login);
+        void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login);
 
         Task<bool> JaExisteAbrangencia(string login, Guid perfil);
 
@@ -40,6 +40,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool PossuiAbrangenciaTurmaAtivaPorLogin(string login);
 
-        void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia porTurma);
+        void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia escopo);
     }
 }

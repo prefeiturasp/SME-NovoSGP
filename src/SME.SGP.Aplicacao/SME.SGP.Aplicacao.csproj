@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Queries\Turma\ObterTurmaComUeEDrePorCodigo\" />
+    <Folder Include="Commands\Notificacao\" />
     <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
 </Project>

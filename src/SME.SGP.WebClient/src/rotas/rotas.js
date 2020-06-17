@@ -52,8 +52,22 @@ import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselhoClasse';
 import RelatorioSemestral from '~/paginas/Relatorios/PAP/RelatorioSemestral/relatorioSemestral';
 
 import CalendarioProfessor from '~/paginas/CalendarioEscolar/CalendarioProfessor';
+import TerritorioSaber from '~/paginas/Planejamento/TerritorioSaber';
+
+import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 
 const rotas = new Map();
+
+rotas.set(RotasDto.RELATORIO_BOLETIM_SIMPLES, {
+  breadcrumbName: ['Boletim'],
+  menu: ['Fechamento'],
+  parent: '/',
+  component: BoletimSimples,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_BOLETIM_SIMPLES,
+});
 
 rotas.set(RotasDto.ACOMPANHAMENTO_COMUNICADOS, {
   breadcrumbName: 'Comunicados',
@@ -157,6 +171,17 @@ rotas.set(RotasDto.PLANO_ANUAL, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.PLANO_ANUAL,
+});
+
+rotas.set(RotasDto.TERRITORIO_SABER, {
+  breadcrumbName: 'Território do Saber',
+  menu: ['Planejamento'],
+  parent: '/',
+  component: TerritorioSaber,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.TERRITORIO_SABER,
 });
 
 rotas.set(RotasDto.ATRIBUICAO_SUPERVISOR_LISTA, {

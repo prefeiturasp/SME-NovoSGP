@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
                 ano
             });
 
-            return consulta.Count() > 0 ? consulta.Single() : 0;
+            return consulta.Any() ? consulta.Single() : 0;
         }
     }
 }

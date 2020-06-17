@@ -13,11 +13,11 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
 
         public ServicoNotificacao(IRepositorioNotificacao repositorioNotificacao,
                                   IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
-                                  IServicoEOL servicoEOL)
+                                  IServicoEol servicoEOL)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
@@ -64,7 +64,7 @@ namespace SME.SGP.Dominio.Servicos
                 Cargo? cargoProximoNivel = ObterProximoNivel(cargo, primeiroNivel);
 
                 if (!cargoProximoNivel.HasValue)
-                    return null;
+                    return Enumerable.Empty<(Cargo?, string)>();
 
                 return ObterFuncionariosPorNivel(codigoUe, cargoProximoNivel, false);
             }
