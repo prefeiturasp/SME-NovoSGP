@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using Sentry;
 using SME.SGP.Aplicacao.Commands.Aulas.InserirAula;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Aula;
 using System;
 using System.Threading.Tasks;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<RetornoBaseDto> Executar(InserirAulaDto inserirAulaDto)
+        public async Task<RetornoBaseDto> Executar(PersistirAulaDto inserirAulaDto)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 

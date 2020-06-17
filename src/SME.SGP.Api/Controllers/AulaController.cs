@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Aula;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Threading.Tasks;
@@ -22,11 +22,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar([FromBody] AulaDto dto, long id, [FromServices] IComandosAula comandos)
+        public async Task<IActionResult> Alterar([FromBody] PersistirAulaDto dto, long id, [FromServices] IAlterarAulaUseCase alterarAulaUseCase)
         {
-            var retorno = new RetornoBaseDto();
-            retorno.Mensagens.Add(await comandos.Alterar(dto, id));
-            return Ok(retorno);
+            return Ok(await alterarAulaUseCase.Executar(dto));
         }
 
         [HttpGet("{id}")]
@@ -53,7 +51,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> Inserir([FromBody] InserirAulaDto inserirAulaDto, [FromServices] IInserirAulaUseCase inserirAulaUseCase)
+        public async Task<IActionResult> Inserir([FromBody] PersistirAulaDto inserirAulaDto, [FromServices] IInserirAulaUseCase inserirAulaUseCase)
         {
             return Ok(await inserirAulaUseCase.Executar(inserirAulaDto));
         }
