@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -15,24 +16,18 @@ namespace SME.SGP.Aplicacao
     public class AlterarAulaRecorrenteCommandHandler : IRequestHandler<AlterarAulaRecorrenteCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEOL servicoEOL;
-        private readonly IServicoLog servicoLog;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IUnitOfWork unitOfWork;
 
         public AlterarAulaRecorrenteCommandHandler(IMediator mediator,
-                                                   IServicoEOL servicoEOL,
-                                                   IServicoLog servicoLog,
                                                    IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
                                                    IServicoNotificacao servicoNotificacao,
                                                    IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
@@ -91,18 +86,56 @@ namespace SME.SGP.Aplicacao
             var dataAula = request.DataAula;
             var aulaPaiIdOrigem = aulaOrigem.AulaPaiId ?? aulaOrigem.Id;
 
-            listaAlteracoes.Add(await TratarAlteracaoAula(request, aulaOrigem, dataAula, turma));
-
             var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(request.TipoCalendarioId, aulaOrigem.DataAula.Date, request.RecorrenciaAula));
             var aulasDaRecorrencia = await repositorioAula.ObterAulasRecorrencia(aulaPaiIdOrigem, aulaOrigem.Id, fimRecorrencia);
-            foreach(var aulaDaRecorrencia in aulasDaRecorrencia)
-            {
-                dataAula = dataAula.AddDays(7);
+            var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasDaRecorrencia);
 
-                listaAlteracoes.Add(await TratarAlteracaoAula(request, aulaDaRecorrencia, dataAula, turma));
+            try
+            {
+                listaAlteracoes.Add(await TratarAlteracaoAula(request, aulaOrigem, dataAula, turma));
+
+                foreach(var aulaDaRecorrencia in aulasDaRecorrencia)
+                {
+                    dataAula = dataAula.AddDays(7);
+
+                    listaAlteracoes.Add(await TratarAlteracaoAula(request, aulaDaRecorrencia, dataAula, turma));
+                }
+            }
+            finally
+            {
+                await RemoverAulasEmManutencao(listaProcessos);
             }
 
             await NotificarUsuario(request.AulaId, listaAlteracoes, request.Usuario, request.NomeComponenteCurricular, turma);
+        }
+
+        private async Task RemoverAulasEmManutencao(IEnumerable<ProcessoExecutando> listaProcessos)
+        {
+            foreach(var processo in listaProcessos)
+            {
+                try
+                {
+                    await mediator.Send(new RemoverProcessoEmExecucaoCommand(processo));
+                }
+                catch (Exception ex)
+                {
+                    SentrySdk.AddBreadcrumb("Exclusao de Registro em Manutenção da Aula", "Alteração de Aula Recorrente");
+                    SentrySdk.CaptureException(ex);
+                }            
+            }
+        }
+
+        private async Task<IEnumerable<ProcessoExecutando>> IncluirAulasEmManutencao(Aula aulaOrigem, IEnumerable<Aula> aulasDaRecorrencia)
+        {
+            var listaProcessos = new List<ProcessoExecutando>();
+
+            listaProcessos.Add(await mediator.Send(new InserirAulaEmManutencaoCommand(aulaOrigem.Id)));
+            foreach(var aulaRecorrente in aulasDaRecorrencia)
+            {
+                listaProcessos.Add(await mediator.Send(new InserirAulaEmManutencaoCommand(aulaRecorrente.Id)));
+            }
+
+            return listaProcessos;
         }
 
         private async Task<(bool sucesso, bool erro, DateTime data, string mensagem)> TratarAlteracaoAula(AlterarAulaRecorrenteCommand request, Aula aula, DateTime dataAula, Turma turma)
@@ -120,6 +153,8 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception e)
             {
+                SentrySdk.AddBreadcrumb("Erro alterando aula recorrente", "Alteração de Aula Recorrente");
+                SentrySdk.CaptureException(e);
                 // retorna erro = true
                 return (false, true, dataAula, e.Message);
             }
