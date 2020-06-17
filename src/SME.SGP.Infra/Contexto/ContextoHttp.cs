@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,20 @@ namespace SME.SGP.Infra.Contexto
             Variaveis.Add("NumeroRegistros", httpContextAccessor.HttpContext?.Request?.Query["NumeroRegistros"].FirstOrDefault() ?? "0");
 
             Variaveis.Add("UsuarioLogado", httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Sistema");
-            Variaveis.Add("NomeUsuario", httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema");
+            Variaveis.Add("NomeUsuario", httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema");            
+            
+            var authorizationHeader = httpContextAccessor.HttpContext?.Request?.Headers["authorization"];
+
+            if (!authorizationHeader.HasValue || authorizationHeader.Value == StringValues.Empty)
+            {
+                Variaveis.Add("TemAuthorizationHeader", false);
+                Variaveis.Add("TokenAtual", string.Empty);
+            }
+            else
+            {
+                Variaveis.Add("TemAuthorizationHeader", true);
+                Variaveis.Add("TokenAtual", authorizationHeader.Value.Single().Split(' ').Last());
+            }
         }
 
         private IEnumerable<InternalClaim> GetInternalClaim()

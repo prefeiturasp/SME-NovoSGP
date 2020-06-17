@@ -23,12 +23,11 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioAula repositorioAula;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
 
@@ -36,7 +35,6 @@ namespace SME.SGP.Dominio.Servicos
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IRepositorioFrequencia repositorioFrequencia,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
-                                            IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
                                             IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                             IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
                                             IRepositorioTurma repositorioTurma,
@@ -48,7 +46,7 @@ namespace SME.SGP.Dominio.Servicos
                                             IRepositorioAula repositorioAula,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
-                                            IServicoEOL servicoEOL,
+                                            IServicoEol servicoEOL,
                                             IConfiguration configuration)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
@@ -57,7 +55,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.repositorioFrequenciaAluno = repositorioFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAluno));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -198,10 +195,20 @@ namespace SME.SGP.Dominio.Servicos
 
         public void VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId)
         {
+            int anoAtual = DateTime.Now.Year;
+
             // Parametro do sistema de dias para notificacao
-            var qtdDiasParametro = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
+            var qtdDiasParametroString = repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.QuantidadeDiasNotificarAlteracaoChamadaEfetivada,
-                                                    DateTime.Now.Year));
+                                                   anoAtual);
+
+            var parseado = int.TryParse(qtdDiasParametroString, out int qtdDiasParametro);
+
+            if (!parseado)
+            {
+                SentrySdk.CaptureEvent(new SentryEvent(new Exception($"Não foi encontrado parametro ativo para o tipo 'QuantidadeDiasNotificarAlteracaoChamadaEfetivada' para o ano de {anoAtual}")));
+                return;
+            }
 
             var qtdDiasAlteracao = (alteradoEm.Date - criadoEm.Date).TotalDays;
 
@@ -406,7 +413,7 @@ namespace SME.SGP.Dominio.Servicos
             var funcionariosRetornoEol = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, cargo);
 
             if (funcionariosRetornoEol == null)
-                return null;
+                return Enumerable.Empty<(Cargo?, Usuario)>();
 
             var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var usuarioEol in funcionariosRetornoEol)
@@ -447,7 +454,7 @@ namespace SME.SGP.Dominio.Servicos
             var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.Supervisor);
 
             if (funcionariosRetorno == null || cargosNotificados.Any(c => funcionariosRetorno.Any(f => f.Cargo == c)))
-                return null;
+                return Enumerable.Empty<(Cargo?, Usuario)>();
 
             var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var funcionario in funcionariosRetorno)
@@ -708,11 +715,16 @@ namespace SME.SGP.Dominio.Servicos
 
         private int? QuantidadeAulasParaNotificacao(TipoNotificacaoFrequencia tipo)
         {
-            var qtdDias = repositorioParametrosSistema.ObterValorPorTipoEAno(
-                                        tipo == TipoNotificacaoFrequencia.Professor ? TipoParametroSistema.QuantidadeAulasNotificarProfessor
-                                            : tipo == TipoNotificacaoFrequencia.GestorUe ? TipoParametroSistema.QuantidadeAulasNotificarGestorUE
-                                            : TipoParametroSistema.QuantidadeAulasNotificarSupervisorUE,
-                                        DateTime.Now.Year);
+            TipoParametroSistema tipoParametroSistema;
+
+            if (tipo == TipoNotificacaoFrequencia.Professor)
+                tipoParametroSistema = TipoParametroSistema.QuantidadeAulasNotificarProfessor;
+            else if (tipo == TipoNotificacaoFrequencia.GestorUe)
+                tipoParametroSistema = TipoParametroSistema.QuantidadeAulasNotificarGestorUE;
+            else
+                tipoParametroSistema = TipoParametroSistema.QuantidadeAulasNotificarSupervisorUE;
+
+            var qtdDias = repositorioParametrosSistema.ObterValorPorTipoEAno(tipoParametroSistema, DateTime.Now.Year);
 
             return !string.IsNullOrEmpty(qtdDias) ? int.Parse(qtdDias) : (int?)null;
         }

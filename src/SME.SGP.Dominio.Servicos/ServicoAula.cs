@@ -29,7 +29,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IConsultasTurma consultasTurma;
         private readonly IServicoDiaLetivo servicoDiaLetivo;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
         private readonly IServicoLog servicoLog;
         private readonly IServicoNotificacao servicoNotificacao;
@@ -38,7 +38,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IUnitOfWork unitOfWork;
 
         public ServicoAula(IRepositorioAula repositorioAula,
-                           IServicoEOL servicoEOL,
+                           IServicoEol servicoEOL,
                            IRepositorioTipoCalendario repositorioTipoCalendario,
                            IServicoDiaLetivo servicoDiaLetivo,
                            IConsultasGrade consultasGrade,
@@ -260,9 +260,9 @@ namespace SME.SGP.Dominio.Servicos
             repositorioAula.Salvar(aula);
 
             // Na alteração de quantidade de aulas deve 0r a frequencia se registrada
-            if (!ehInclusao && quantidadeOriginal != 0 && quantidadeOriginal != aula.Quantidade)
-                if (consultasFrequencia.FrequenciaAulaRegistrada(aula.Id).Result)
-                    await servicoFrequencia.AtualizarQuantidadeFrequencia(aula.Id, quantidadeOriginal, aula.Quantidade);
+            if ((!ehInclusao && quantidadeOriginal != 0 && quantidadeOriginal != aula.Quantidade)
+                && (consultasFrequencia.FrequenciaAulaRegistrada(aula.Id).Result))
+                    servicoFrequencia.AtualizarQuantidadeFrequencia(aula.Id, quantidadeOriginal, aula.Quantidade);
 
             // Verifica recorrencia da gravação
             if (recorrencia != RecorrenciaAula.AulaUnica)
@@ -472,12 +472,28 @@ namespace SME.SGP.Dominio.Servicos
             if (perfilAtual == Guid.Empty)
                 throw new NegocioException($"Não foi encontrado o perfil do usuário informado.");
 
-            var operacaoStr = operacao == Operacao.Inclusao ? "Criação" : operacao == Operacao.Alteracao ? "Alteração" : "Exclusão";
-            var tituloMensagem = $"{operacaoStr} de Aulas de {aula.DisciplinaNome} na turma {aula.Turma.Nome}";
+            string operacaoStrTitulo, operacaoStrDesc;
+
+            if (operacao == Operacao.Inclusao)
+            {
+                operacaoStrTitulo = "Criação";
+                operacaoStrDesc = "criadas";
+            }
+            else if (operacao == Operacao.Alteracao)
+            {
+                operacaoStrTitulo = "Alteração";
+                operacaoStrDesc = "alteradas";
+            }
+            else
+            {
+                operacaoStrTitulo = "Exclusão";
+                operacaoStrDesc = "excluídas";
+            }
+
+            var tituloMensagem = $"{operacaoStrTitulo} de Aulas de {aula.DisciplinaNome} na turma {aula.Turma.Nome}";
             StringBuilder mensagemUsuario = new StringBuilder();
 
-            operacaoStr = operacao == Operacao.Inclusao ? "criadas" : operacao == Operacao.Alteracao ? "alteradas" : "excluídas";
-            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {aula.DisciplinaNome} para a turma {aula.Turma.Nome} da {aula.Turma.Ue?.Nome} ({aula.Turma.Ue?.Dre?.Nome}).");
+            mensagemUsuario.Append($"Foram {operacaoStrDesc} {quantidade} aulas da disciplina {aula.DisciplinaNome} para a turma {aula.Turma.Nome} da {aula.Turma.Ue?.Nome} ({aula.Turma.Ue?.Dre?.Nome}).");
 
             if (aulasComFrenciaOuPlano != null && aulasComFrenciaOuPlano.Any())
             {
@@ -485,8 +501,10 @@ namespace SME.SGP.Dominio.Servicos
 
                 foreach (var aulaFrequenciaOuPlano in aulasComFrenciaOuPlano)
                 {
+                    var planoAula = aulaFrequenciaOuPlano.existePlanoAula ? " e Plano de Aula" : "";
+
                     var frequenciaPlano = aulaFrequenciaOuPlano.existeFrequencia ?
-                                            $"Frequência{(aulaFrequenciaOuPlano.existePlanoAula ? " e Plano de Aula" : "")}"
+                                            $"Frequência{planoAula}"
                                             : "Plano de Aula";
                     mensagemUsuario.Append($"<br /> {aulaFrequenciaOuPlano.data.ToString("dd/MM/yyyy")} - {frequenciaPlano}");
                 }
@@ -494,8 +512,14 @@ namespace SME.SGP.Dominio.Servicos
 
             if (aulasQueDeramErro.Any())
             {
-                operacaoStr = operacao == Operacao.Inclusao ? "criar" : operacao == Operacao.Alteracao ? "alterar" : "excluir";
-                mensagemUsuario.Append($"<br><br>Não foi possível {operacaoStr} aulas nas seguintes datas:<br>");
+                if (operacao == Operacao.Inclusao)
+                    operacaoStrDesc = "criar";
+                else if (operacao == Operacao.Alteracao)
+                    operacaoStrDesc = "alterar";
+                else
+                    operacaoStrDesc = "excluir";
+
+                mensagemUsuario.Append($"<br><br>Não foi possível {operacaoStrDesc} aulas nas seguintes datas:<br>");
                 foreach (var aulaComErro in aulasQueDeramErro)
                 {
                     mensagemUsuario.AppendFormat("<br /> {0} - {1}", $"{aulaComErro.data.Day}/{aulaComErro.data.Month}/{aulaComErro.data.Year}", aulaComErro.erro);

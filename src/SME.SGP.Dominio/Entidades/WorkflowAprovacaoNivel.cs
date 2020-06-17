@@ -26,11 +26,8 @@ namespace SME.SGP.Dominio
 
         public void Adicionar(Notificacao notificacao)
         {
-            if (notificacao != null)
-            {
-                if (!notificacoes.Any(a => a.Id == notificacao.Id))
-                    notificacoes.Add(notificacao);
-            }
+            if (notificacao != null && !notificacoes.Any(a => a.Id == notificacao.Id))
+                notificacoes.Add(notificacao);
         }
 
         public void Adicionar(Usuario usuario)
@@ -47,11 +44,10 @@ namespace SME.SGP.Dominio
 
         internal void ModificaStatus(WorkflowAprovacaoNivelStatus status, string observacao)
         {
-            if (status == WorkflowAprovacaoNivelStatus.Reprovado)
-            {
-                if (string.IsNullOrEmpty(observacao))
+            if ((status == WorkflowAprovacaoNivelStatus.Reprovado) &&
+                (string.IsNullOrEmpty(observacao)))
                     throw new NegocioException("Para recusar é obrigatório informar uma observação.");
-            }
+
             this.Observacao = observacao;
             this.Status = status;
         }

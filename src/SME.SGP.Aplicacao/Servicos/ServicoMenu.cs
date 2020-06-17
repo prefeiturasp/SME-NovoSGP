@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var agrupamentos = permissoes.Where(c => Enum.IsDefined(typeof(Permissao), c)).GroupBy(item => new
             {
                 Descricao = item.GetAttribute<PermissaoMenuAttribute>().Agrupamento,
-                Ordem = (int)item.GetAttribute<PermissaoMenuAttribute>().OrdemAgrupamento
+                Ordem = item.GetAttribute<PermissaoMenuAttribute>().OrdemAgrupamento
             }).OrderBy(a => a.Key.Ordem)
             .ToList();
 
@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 var permissoesMenu = agrupamento.GroupBy(item => new
                 {
                     item.GetAttribute<PermissaoMenuAttribute>().Menu,
-                    Ordem = (int)item.GetAttribute<PermissaoMenuAttribute>().OrdemMenu
+                    Ordem = item.GetAttribute<PermissaoMenuAttribute>().OrdemMenu
                 }).OrderBy(a => a.Key.Ordem)
                     .ToList();
 

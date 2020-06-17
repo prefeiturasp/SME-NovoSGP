@@ -13,7 +13,7 @@ export const IconeEstilizado = styled.i`
 
 export const CollapseEstilizado = styled(Collapse)`
   box-shadow: 0px 0px 4px -2px grey;
-  margin: 0.4rem;
+  //margin: 0.4rem;
 `;
 
 export const PainelEstilizado = styled(Collapse.Panel)`

@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<EventoMatricula> ObterUltimoEventoAluno(string codigoAluno, DateTime dataLimite)
+        public EventoMatricula ObterUltimoEventoAluno(string codigoAluno, DateTime dataLimite)
         {
             var query = @"select * 
                           from evento_matricula 

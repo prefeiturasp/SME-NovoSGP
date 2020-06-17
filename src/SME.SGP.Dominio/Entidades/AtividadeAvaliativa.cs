@@ -49,12 +49,8 @@ namespace SME.SGP.Dominio
 
         public void PodeSerAlterada(Usuario usuario)
         {
-            if (EhCj)
-            {
-                if (usuario.EhProfessor() || usuario.EhProfessorCj())
-                    if (usuario.CodigoRf != this.CriadoRF)
-                        throw new NegocioException("Você não pode alterar esta Atividade Avaliativa.");
-            }
+            if (EhCj && (usuario.EhProfessor() || usuario.EhProfessorCj()) && (usuario.CodigoRf != this.CriadoRF))
+                throw new NegocioException("Você não pode alterar esta Atividade Avaliativa.");
         }
     }
 }

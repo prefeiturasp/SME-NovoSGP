@@ -63,7 +63,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices] IConsultasAula consultas)
         {
-            var recorrencia = await consultas.ObterRecorrenciaDaSerie(aulaId);
+            var recorrencia = consultas.ObterRecorrenciaDaSerie(aulaId);
             var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1
                 : await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
             var existeFrequenciaPlanoAula = await consultas.ChecarFrequenciaPlanoNaRecorrencia(aulaId);

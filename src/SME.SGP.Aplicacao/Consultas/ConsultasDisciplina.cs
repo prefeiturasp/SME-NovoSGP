@@ -18,10 +18,10 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasDisciplina(IServicoEOL servicoEOL,
+        public ConsultasDisciplina(IServicoEol servicoEOL,
             IRepositorioCache repositorioCache,
             IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
             IServicoUsuario servicoUsuario,
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 yield return MapearParaDto(disciplina).Result;
         }
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesCJ(Modalidade? modalidade, string codigoTurma, string ueId, long codigoDisciplina, string rf)
+        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesCJ(Modalidade? modalidade, string codigoTurma, string ueId, long codigoDisciplina, string rf, bool ignorarDeParaRegencia = false)
         {
             IEnumerable<DisciplinaResposta> componentes = null;
             var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidade,
@@ -68,14 +68,13 @@ namespace SME.SGP.Aplicacao
             var disciplinasEol = await servicoEOL.ObterDisciplinasPorIdsAsync(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
             var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
-            if (componenteRegencia != null)
-            {
-                var componentesRegencia = await servicoEOL.ObterDisciplinasPorIdsAsync(IDS_COMPONENTES_REGENCIA);
-                if (componentesRegencia != null)
-                    componentes = TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
-            }
-            else
-                componentes = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
+            if (componenteRegencia == null || ignorarDeParaRegencia)
+                return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
+
+            var componentesRegencia = await servicoEOL.ObterDisciplinasPorIdsAsync(IDS_COMPONENTES_REGENCIA);
+            if (componentesRegencia != null)
+                return TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
+
             return componentes;
         }
 

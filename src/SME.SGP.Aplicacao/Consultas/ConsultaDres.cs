@@ -12,10 +12,10 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultaDres(IServicoEOL servicoEOL,
+        public ConsultaDres(IServicoEol servicoEOL,
             IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
             IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario)
 

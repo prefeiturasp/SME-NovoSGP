@@ -107,6 +107,9 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConselhoClasseParecerAnoMap());
                config.AddMap(new ConselhoClasseParecerConclusivoMap());
                config.AddMap(new ObjetivoAprendizagemMap());
+               config.AddMap(new PlanoAnualTerritorioSaberMap());
+               config.AddMap(new RelatorioCorrelacaoMap());
+               config.AddMap(new RelatorioCorrelacaoJasperMap());
                config.ForDommel();
            });
         }

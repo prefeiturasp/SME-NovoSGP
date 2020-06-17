@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         {
             if (string.IsNullOrEmpty(turmaCodigo))
                 throw new NegocioException("Para obter o bimestre atual é necessário informar o código da turma");
-            if (dataReferencia == null)
+            if (dataReferencia == DateTime.MinValue)
                 throw new NegocioException("Para obter o bimestre atual é necessário informar a data de referência");
 
             TurmaCodigo = turmaCodigo;
