@@ -59,6 +59,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Aula ObterCompletoPorId(long id);
 
+        Task<DateTime> ObterDataAula(long aulaId);
+
         Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf, long? aulaPaiId = null);
 
         IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehDiretorOuSupervisor = false);
