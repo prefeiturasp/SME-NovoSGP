@@ -26,6 +26,7 @@ namespace SME.SGP.Infra
         public string UeId { get; set; }
         public bool DentroPeriodo { get; set; }
         public bool Migrado { get; set; }
+        public bool EmManutencao { get; set; }
 
         public void VerificarSomenteLeitura(string disciplinaId)
         {

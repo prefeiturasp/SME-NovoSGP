@@ -19,8 +19,9 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var usuarioAcessoAoComponente = await UsuarioComAcessoAoComponente(mediator, usuarioLogado, aula, usuarioLogado.EhProfessorCj());
+            var aulaEmManutencao = await mediator.Send(new ObterAulaEmManutencaoQuery(aula.Id));
 
-            return MapearParaDto(aula, aberto, usuarioAcessoAoComponente);
+            return MapearParaDto(aula, aberto, usuarioAcessoAoComponente, aulaEmManutencao);
         }
 
         private static async Task<bool> AulaDentroDoPeriodo(IMediator mediator, string turmaCodigo, DateTime dataAula)
@@ -49,7 +50,7 @@ namespace SME.SGP.Aplicacao
             return disciplina != null;
         }
 
-        private static AulaConsultaDto MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente)
+        private static AulaConsultaDto MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao)
         {
             AulaConsultaDto dto = new AulaConsultaDto()
             {
@@ -72,7 +73,8 @@ namespace SME.SGP.Aplicacao
                 CriadoPor = aula.CriadoPor,
                 CriadoRF = aula.CriadoRF,
                 Migrado = aula.Migrado,
-                SomenteLeitura = !usuarioAcessoAoComponente
+                SomenteLeitura = !usuarioAcessoAoComponente,
+                EmManutencao = aulaEmManutencao
             };
 
             return dto;
