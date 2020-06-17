@@ -86,6 +86,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                 DataAula = inserirAulaUnicaCommand.DataAula,
                 Quantidade = inserirAulaUnicaCommand.Quantidade,
                 TipoAula = inserirAulaUnicaCommand.TipoAula,
+                RecorrenciaAula = RecorrenciaAula.AulaUnica,
                 AulaCJ = inserirAulaUnicaCommand.Usuario.EhProfessorCj()
             };
         }
