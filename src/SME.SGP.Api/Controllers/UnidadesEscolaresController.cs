@@ -30,7 +30,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [Permissao(Permissao.AS_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFuncionariosPorDreEUe([FromServices] IReiniciarSenhaUseCase reiniciarSenhaUseCase, 
-            FiltroFuncionariosDto filtroFuncionariosDto, string dreId, string ueId)
+            FiltroFuncionarioDto filtroFuncionariosDto, string dreId, string ueId)
         {
             filtroFuncionariosDto.AtualizaCodigoDre(dreId);
             filtroFuncionariosDto.AtualizaCodigoUe(ueId);

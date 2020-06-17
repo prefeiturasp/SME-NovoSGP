@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class FiltroFuncionariosDto
+    public class FiltroFuncionarioDto
     {
         public string CodigoRF { get; set; }
         public string CodigoDRE { get; set; }

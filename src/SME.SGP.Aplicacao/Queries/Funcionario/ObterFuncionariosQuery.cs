@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries.Funcionario
 {
-    public class ObterFuncionariosQuery : IRequest<FiltroFuncionariosDto>
+    public class ObterFuncionariosQuery : IRequest<IEnumerable<UsuarioEolRetornoDto>>
     {
         public string CodigoDre { get; set; }
 
@@ -13,7 +14,7 @@ namespace SME.SGP.Aplicacao.Queries.Funcionario
         public ObterFuncionariosQuery(string codigoDre, string codigoUe)
         {
             CodigoDre = codigoDre;
-            CodigoUe = CodigoUe;
+            CodigoUe = codigoUe;
         }
     }
 

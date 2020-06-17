@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IReiniciarSenhaUseCase
     {
-        Task<IEnumerable<UsuarioEolRetornoDto>> Executar(FiltroFuncionariosDto filtroFuncionariosDto);
+        Task<IEnumerable<UsuarioEolRetornoDto>> Executar(FiltroFuncionarioDto filtroFuncionariosDto);
     }
 }
