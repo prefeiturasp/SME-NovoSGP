@@ -296,7 +296,6 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                     var aulaParaAdicionar = (Aula)aula.Clone();
                     aulaParaAdicionar.DataAula = dia;
                     aulaParaAdicionar.AdicionarAulaPai(aula);
-                    aulaParaAdicionar.RecorrenciaAula = RecorrenciaAula.AulaUnica;
 
                     try
                     {
