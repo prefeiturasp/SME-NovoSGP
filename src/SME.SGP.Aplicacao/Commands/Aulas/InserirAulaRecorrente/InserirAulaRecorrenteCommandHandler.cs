@@ -10,12 +10,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
+namespace SME.SGP.Aplicacao
 {
     public class InserirAulaRecorrenteCommandHandler : IRequestHandler<InserirAulaRecorrenteCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoLog servicoLog;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         private readonly IUnitOfWork unitOfWork;
 
         public InserirAulaRecorrenteCommandHandler(IMediator mediator,
-                                                   IServicoEOL servicoEOL,
+                                                   IServicoEol servicoEOL,
                                                    IServicoLog servicoLog,
                                                    IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,

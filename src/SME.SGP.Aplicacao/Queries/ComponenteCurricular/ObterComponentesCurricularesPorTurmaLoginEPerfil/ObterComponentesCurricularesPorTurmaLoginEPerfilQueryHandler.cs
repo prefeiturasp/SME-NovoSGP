@@ -11,8 +11,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesPorTurmaLoginEPerfilQueryHandler : IRequestHandler<ObterComponentesCurricularesPorTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>
     {
-        private readonly IServicoEOL servicoEOL;
-        public ObterComponentesCurricularesPorTurmaLoginEPerfilQueryHandler(IServicoEOL servicoEOL)
+        private readonly IServicoEol servicoEOL;
+        public ObterComponentesCurricularesPorTurmaLoginEPerfilQueryHandler(IServicoEol servicoEOL)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
