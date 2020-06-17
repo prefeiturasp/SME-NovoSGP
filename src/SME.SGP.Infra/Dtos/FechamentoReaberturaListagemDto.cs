@@ -9,6 +9,7 @@ namespace SME.SGP.Infra
         public DateTime DataFim { get; set; }
         public DateTime DataInicio { get; set; }
         public string Descricao { get; set; }
+        public bool PossuiFilhos { get; set; }
         public long Id { get; set; }
     }
 }
