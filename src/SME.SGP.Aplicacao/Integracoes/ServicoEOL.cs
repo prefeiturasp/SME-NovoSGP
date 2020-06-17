@@ -965,5 +965,17 @@ namespace SME.SGP.Aplicacao.Integracoes
                 servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
             }
         }
+
+        public Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorDre(FiltroFuncionarioDto filtroFuncionariosDto)
+        {
+            var resposta = httpClient.GetAsync($"funcionarios/dres/{filtroFuncionariosDto.CodigoDRE}").Result;
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return (Task<IEnumerable<UsuarioEolRetornoDto>>)JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
+            }
+            return (Task<IEnumerable<UsuarioEolRetornoDto>>)Enumerable.Empty<UsuarioEolRetornoDto>();
+        }
     }
 }

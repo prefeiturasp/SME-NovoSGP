@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> Executar(FiltroFuncionariosDto filtroFuncionariosDto)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> Executar(FiltroFuncionarioDto filtroFuncionariosDto)
         {
             return (IEnumerable<UsuarioEolRetornoDto>) await mediator.Send(new ObterFuncionariosQuery(filtroFuncionariosDto.CodigoDRE, filtroFuncionariosDto.CodigoUE));
         }

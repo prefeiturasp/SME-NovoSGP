@@ -10,8 +10,8 @@ namespace SME.SGP.Integracao.Teste
     public class UnidadesEscolaresTeste
     {
         private readonly TestServerFixture fixture;
-        private string codigoDRE = "000892";
-        private string codigoUE = "";
+        private string codigoDRE = "18100";
+        private string codigoUE = "000892";
 
         public UnidadesEscolaresTeste(TestServerFixture fixture)
         {
@@ -27,7 +27,7 @@ namespace SME.SGP.Integracao.Teste
             fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }));
 
             // Act
-            var result = await fixture._clientApi.GetAsync($"api/v1/unidades-escolares/dresId/{codigoDRE}/ueId/{codigoUE}/functionarios");
+            var result = await fixture._clientApi.GetAsync($"api/v1/unidades-escolares/dres/{codigoDRE}/ues/{codigoUE}/functionarios");
 
             // Assert
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));
