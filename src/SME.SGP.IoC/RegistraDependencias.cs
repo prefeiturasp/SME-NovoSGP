@@ -323,6 +323,7 @@ namespace SME.SGP.IoC
         {
             services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
             services.TryAddScoped<IInserirAulaUseCase, InserirAulaUseCase>();
+            services.TryAddScoped<IAlterarAulaUseCase, AlterarAulaUseCase>();
         }
     }
 }
