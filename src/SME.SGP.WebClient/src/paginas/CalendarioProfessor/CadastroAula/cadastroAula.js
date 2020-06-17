@@ -62,6 +62,7 @@ function CadastroDeAula({ match, location }) {
   const [gradeAtingida, setGradeAtingida] = useState(false);
   const [registroMigrado, setRegistroMigrado] = useState(false);
   const [emManutencao, setEmManutencao] = useState(false);
+  const [desabilitarBtnSalvar, setDesabilitarBtnSalvar] = useState(false);
 
   const { diaAula } = queryString.parse(location.search);
   const aulaInicial = {
@@ -309,9 +310,11 @@ function CadastroDeAula({ match, location }) {
             turmaSelecionada.turma,
             componenteSelecionado.codigoComponenteCurricular,
             dataAula,
-            id || 0
+            id || 0,
+            componenteSelecionado.regencia
           )
           .then(respostaGrade => {
+            setDesabilitarBtnSalvar(false);
             if (respostaGrade.status === 200) {
               const { grade } = respostaGrade.data;
               if (grade) {
@@ -324,6 +327,7 @@ function CadastroDeAula({ match, location }) {
             }
           })
           .catch(e => {
+            setDesabilitarBtnSalvar(true);
             erros(e);
           })
           .finally(() => setCarregandoDados(false));
@@ -661,7 +665,8 @@ function CadastroDeAula({ match, location }) {
                           somenteConsulta ||
                           (controlaGrade && gradeAtingida && !id) ||
                           !aula.disciplinaId ||
-                          somenteLeitura
+                          somenteLeitura ||
+                          desabilitarBtnSalvar
                         }
                       />
                     </div>

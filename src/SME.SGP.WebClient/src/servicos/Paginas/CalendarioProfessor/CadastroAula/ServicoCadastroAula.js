@@ -25,10 +25,16 @@ class ServicoCadastroAula {
     return api[metodo](url, parms);
   };
 
-  obterGradePorComponenteETurma = (turmaId, componenteId, dataAula, aulaId) => {
+  obterGradePorComponenteETurma = (
+    turmaId,
+    componenteId,
+    dataAula,
+    aulaId,
+    ehRegencia
+  ) => {
     const url = `v1/calendarios/professores/aulas/${aulaId}/turmas/${turmaId}/componente-curricular/${componenteId}?dataAula=${dataAula.format(
       'YYYY-MM-DD'
-    )}`;
+    )}&ehRegencia=${ehRegencia}`;
     return api.get(url);
   };
 
