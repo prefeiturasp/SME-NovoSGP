@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Dominio;
 using System;
 
@@ -42,5 +43,52 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         public string CodigoUe { get; set; }
         public bool EhRegencia { get; set; }
         public RecorrenciaAula RecorrenciaAula  { get; set; }
+    }
+
+    public class InserirAulaRecorrenteCommandValidator : AbstractValidator<InserirAulaRecorrenteCommand>
+    {
+        public InserirAulaRecorrenteCommandValidator()
+        {
+            RuleFor(c => c.DataAula)
+            .NotEmpty()
+            .WithMessage("A data da aula deve ser informada.");
+
+            RuleFor(c => c.CodigoTurma)
+            .NotEmpty()
+            .WithMessage("O código da turma deve ser informado.");
+
+            RuleFor(c => c.ComponenteCurricularId)
+            .NotEmpty()
+            .WithMessage("O código do componente curricular deve ser informado.");
+
+            RuleFor(c => c.CodigoUe)
+            .NotEmpty()
+            .WithMessage("O código da UE deve ser informado.");
+
+            RuleFor(c => c.Usuario)
+           .NotEmpty()
+           .WithMessage("O usuário deve ser informado.");
+
+            RuleFor(c => c.TipoCalendarioId)
+            .NotEmpty()
+            .WithMessage("O código do tipo de calendário deve ser informado.");
+
+            RuleFor(c => c.NomeComponenteCurricular)
+            .NotEmpty()
+            .WithMessage("O nome do componente curricular deve ser informado.");
+
+            RuleFor(c => c.Quantidade)
+            .NotEmpty()
+            .WithMessage("A quantidade de aulas deve ser informada.");
+
+            RuleFor(c => c.EhRegencia)
+            .NotEmpty()
+            .WithMessage("A opção de regência de classe deve ser informada.");
+
+            RuleFor(c => c.TipoAula)
+                .IsInEnum()
+                .WithMessage("O tipo de aula deve ser informado.");
+
+        }
     }
 }
