@@ -43,7 +43,6 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         public bool EhRegencia { get; internal set; }
     }
 
-
     public class InserirAulaUnicaCommandValidator : AbstractValidator<InserirAulaUnicaCommand>
     {
         public InserirAulaUnicaCommandValidator()
@@ -91,5 +90,4 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
         }
     }
-
 }

@@ -2,9 +2,9 @@
 using SME.SGP.Dominio;
 using System;
 
-namespace SME.SGP.Infra.Dtos.Aula
+namespace SME.SGP.Infra
 {
-    public class InserirAulaDto
+    public class PersistirAulaDto
     {
         public DateTime DataAula { get; set; }
 
@@ -32,9 +32,9 @@ namespace SME.SGP.Infra.Dtos.Aula
         public bool EhRegencia { get; set; }
     }
 
-    public class InserirAulaDtoValidator : AbstractValidator<InserirAulaDto>
+    public class PersistirAulaDtoValidator : AbstractValidator<PersistirAulaDto>
     {
-        public InserirAulaDtoValidator()
+        public PersistirAulaDtoValidator()
         {
             RuleFor(c => c.DataAula)
                .NotEmpty()
