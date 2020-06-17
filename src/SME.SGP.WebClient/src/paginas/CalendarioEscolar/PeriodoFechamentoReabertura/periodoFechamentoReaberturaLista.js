@@ -2,6 +2,7 @@ import { Form, Formik } from 'formik';
 import * as moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import shortid from 'shortid';
 import { ListaPaginada, Loader } from '~/componentes';
 import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
 import Button from '~/componentes/button';
@@ -59,8 +60,8 @@ const PeriodoFechamentoReaberturaLista = () => {
         <i className="fas fa-check" />
       </CampoBimestre>
     ) : (
-        <></>
-      );
+      <></>
+    );
   };
 
   const getColunasBimestreAnual = () => {
@@ -290,7 +291,7 @@ const PeriodoFechamentoReaberturaLista = () => {
   const onChangeDre = dreId => {
     setUeSelecionada('');
     setDreSelecionada(dreId);
-  }
+  };
 
   return (
     <>
@@ -311,6 +312,7 @@ const PeriodoFechamentoReaberturaLista = () => {
               <div className="row mb-4">
                 <div className="col-md-12 d-flex justify-content-end pb-4">
                   <Button
+                    id={shortid.generate()}
                     label="Voltar"
                     icon="arrow-left"
                     color={Colors.Azul}
@@ -319,6 +321,7 @@ const PeriodoFechamentoReaberturaLista = () => {
                     onClick={onClickVoltar}
                   />
                   <Button
+                    id={shortid.generate()}
                     label="Excluir"
                     color={Colors.Vermelho}
                     border
@@ -332,6 +335,7 @@ const PeriodoFechamentoReaberturaLista = () => {
                     }
                   />
                   <Button
+                    id={shortid.generate()}
                     label="Novo"
                     color={Colors.Roxo}
                     border
@@ -394,8 +398,8 @@ const PeriodoFechamentoReaberturaLista = () => {
                       filtroEhValido={filtroValido}
                     />
                   ) : (
-                      ''
-                    )}
+                    ''
+                  )}
                 </div>
               </div>
             </Form>
