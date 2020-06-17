@@ -36,7 +36,7 @@ namespace SME.SGP.Dominio
             if (bimestre != null)
             {
                 bimestre.FechamentoAbertura = this;
-                bimestre.FechamentoAberturaId = this.Id;
+                bimestre.FechamentoAberturaId = this.Id;                
                 bimestres.Add(bimestre);
             }
         }
@@ -116,7 +116,7 @@ namespace SME.SGP.Dominio
 
         public object ObterBimestresNumeral()
         {
-            var bimestresOrdenados = bimestres.OrderBy(a => a);
+            var bimestresOrdenados = bimestres.OrderBy(a => a.Bimestre);
             return string.Join(",", bimestresOrdenados.Select(a => $"{a.Bimestre.ToString()}º").ToArray());
         }
 
