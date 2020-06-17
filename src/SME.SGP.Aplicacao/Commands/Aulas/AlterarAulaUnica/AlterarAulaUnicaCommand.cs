@@ -84,10 +84,6 @@ namespace SME.SGP.Aplicacao
             .NotEmpty()
             .WithMessage("A quantidade de aulas deve ser informada.");
 
-            RuleFor(c => c.EhRegencia)
-            .NotEmpty()
-            .WithMessage("A opção de regência de classe deve ser informada.");
-
             RuleFor(c => c.TipoAula)
                 .IsInEnum()
                 .WithMessage("O tipo de aula deve ser informado.");
