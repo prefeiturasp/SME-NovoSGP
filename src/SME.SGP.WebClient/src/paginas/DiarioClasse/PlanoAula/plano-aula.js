@@ -269,6 +269,7 @@ const PlanoAula = props => {
                 color={Colors.Roxo}
                 className="ml-auto mr-3"
                 onClick={aoClicarBotaoNovaAvaliacao}
+                disabled={desabilitarCampos}
               />
             ) : null}
             <Button
@@ -279,7 +280,7 @@ const PlanoAula = props => {
               border
               className="btnGroupItem"
               onClick={() => setMostrarModalCopiarConteudo(true)}
-              disabled={!planoAula.id}
+              disabled={!planoAula.id || desabilitarCampos}
             />
             {planoAula.migrado && (
               <RegistroMigrado className="ml-3 align-self-center float-right">
