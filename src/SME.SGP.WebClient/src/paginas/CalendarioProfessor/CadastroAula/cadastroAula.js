@@ -309,7 +309,8 @@ function CadastroDeAula({ match, location }) {
             turmaSelecionada.turma,
             componenteSelecionado.codigoComponenteCurricular,
             dataAula,
-            id || 0
+            id || 0,
+            componenteSelecionado.regencia
           )
           .then(respostaGrade => {
             if (respostaGrade.status === 200) {
