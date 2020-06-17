@@ -34,7 +34,6 @@ namespace SME.SGP.IoC
             RegistrarComandos(services);
             RegistrarConsultas(services);
             RegistrarServicos(services);
-            RegistararQueries(services);
             RegistrarCasosDeUso(services);
         }
 
@@ -314,11 +313,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterListaAlunosDaTurmaUseCase, ObterListaAlunosDaTurmaUseCase>();
             services.TryAddScoped<IReceberDadosDownloadRelatorioUseCase, ReceberDadosDownloadRelatorioUseCase>();
             services.TryAddScoped<IGamesUseCase, GamesUseCase>();
-        }
-
-        private static void RegistrarCasosDeUso(IServiceCollection services)
-        {
-            services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
             services.TryAddScoped<IInserirAulaUseCase, InserirAulaUseCase>();
             services.TryAddScoped<IAlterarAulaUseCase, AlterarAulaUseCase>();
         }

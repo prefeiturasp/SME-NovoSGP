@@ -3,7 +3,7 @@ using MediatR;
 using SME.SGP.Dominio;
 using System;
 
-namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
+namespace SME.SGP.Aplicacao
 {
     public class InserirAulaRecorrenteCommand : IRequest<bool>
     {
