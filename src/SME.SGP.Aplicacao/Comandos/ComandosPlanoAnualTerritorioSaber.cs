@@ -80,8 +80,8 @@ namespace SME.SGP.Aplicacao
             }
             planoAnualTerritorioSaber.Ano = planoAnualTerritorioSaberDto.AnoLetivo.Value;
             planoAnualTerritorioSaber.Bimestre = bimestre;
-            planoAnualTerritorioSaber.Reflexao = reflexao;
-            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento;
+            planoAnualTerritorioSaber.Reflexao = reflexao ?? string.Empty;
+            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento ?? string.Empty;
             planoAnualTerritorioSaber.EscolaId = planoAnualTerritorioSaberDto.EscolaId;
             planoAnualTerritorioSaber.TurmaId = planoAnualTerritorioSaberDto.TurmaId.Value;
             planoAnualTerritorioSaber.TerritorioExperienciaId = planoAnualTerritorioSaberDto.TerritorioExperienciaId;
