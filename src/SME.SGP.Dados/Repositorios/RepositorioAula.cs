@@ -722,5 +722,12 @@ namespace SME.SGP.Dados.Repositorios
             if (disciplinasId != null && disciplinasId.Length > 0)
                 query.AppendLine("AND a.disciplina_id = ANY(@disciplinasId)");
         }
+
+        public async Task<DateTime> ObterDataAula(long aulaId)
+        {
+            var query = "select data_aula from aula where id = @aulaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<DateTime>(query, new { aulaId });
+        }
     }
 }
