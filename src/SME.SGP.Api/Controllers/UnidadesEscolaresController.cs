@@ -10,31 +10,16 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/unidades-escolares")]
-    [Authorize("Bearer")]
     public class UnidadesEscolaresController : ControllerBase
     {
-        //[Route("{ueId}/funcionarios")]
-        //[HttpPost]
-        //[Permissao(Permissao.AS_C, Policy = "Bearer")]
-        //public async Task<IActionResult> ObterFuncionariosPorUe([FromServices]IConsultasUnidadesEscolares consultasUnidadesEscolares,
-        //    BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto, string ueId)
-        //{
-        //    if (string.IsNullOrEmpty(ueId))
-        //        throw new NegocioException("É necessário informar o código da UE.");
-        //    buscaFuncionariosFiltroDto.AtualizaCodigoUe(ueId);
-        //    return Ok(await consultasUnidadesEscolares.ObtemFuncionariosPorUe(buscaFuncionariosFiltroDto));
-        //}
-
-
-        [Route("dres/{dresId}/ues/{ueId}/funcionarios")]
+        [Route("funcionarios")]
         [HttpPost]
-        [Permissao(Permissao.AS_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFuncionariosPorDreEUe([FromServices] IReiniciarSenhaUseCase reiniciarSenhaUseCase, 
-            FiltroFuncionarioDto filtroFuncionariosDto, string dreId, string ueId)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.AS_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFuncionarios([FromServices] IReiniciarSenhaUseCase reiniciarSenhaUseCase,
+                                                                          FiltroFuncionarioDto filtroFuncionariosDto)
         {
-            filtroFuncionariosDto.AtualizaCodigoDre(dreId);
-            filtroFuncionariosDto.AtualizaCodigoUe(ueId);
-
             return Ok(await reiniciarSenhaUseCase.Executar(filtroFuncionariosDto));
         }
     }

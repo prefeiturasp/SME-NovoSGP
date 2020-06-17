@@ -966,16 +966,21 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
         }
 
-        public Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorDre(FiltroFuncionarioDto filtroFuncionariosDto)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorDre(FiltroFuncionarioDto filtroFuncionariosDto)
         {
-            var resposta = httpClient.GetAsync($"funcionarios/dres/{filtroFuncionariosDto.CodigoDRE}").Result;
+            var resposta = httpClient.GetAsync($"funcionarios/dres/{filtroFuncionariosDto.CodigoDRE}" +
+                $"?CodigoUe={filtroFuncionariosDto.CodigoUE}" +
+                $"&CodigoRf={filtroFuncionariosDto.CodigoRF}" +
+                $"&NomeServidor={filtroFuncionariosDto.NomeServidor}").Result;
 
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return (Task<IEnumerable<UsuarioEolRetornoDto>>)JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
+                return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
+
             }
-            return (Task<IEnumerable<UsuarioEolRetornoDto>>)Enumerable.Empty<UsuarioEolRetornoDto>();
+            return Enumerable.Empty<UsuarioEolRetornoDto>();
         }
+
     }
 }
