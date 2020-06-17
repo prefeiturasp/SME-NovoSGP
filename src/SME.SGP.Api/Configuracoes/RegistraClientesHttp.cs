@@ -39,12 +39,8 @@ namespace SME.SGP.Api
 
             services.AddSingleton(jasperCookieHandler);
 
-            //var basicAuth = $"{configuration.GetValue<string>("ConfiguracaoJasper:Username")}:{configuration.GetValue<string>("ConfiguracaoJasper:Password")}".EncodeTo64();
-            var basicAuth = $"ebufaino:AMcom20anos".EncodeTo64();
-
+            var basicAuth = $"{configuration.GetValue<string>("ConfiguracaoJasper:Username")}:{configuration.GetValue<string>("ConfiguracaoJasper:Password")}".EncodeTo64();            
             var jasperUrl = configuration.GetValue<string>("ConfiguracaoJasper:Hostname");
-            //var jasperUrl = "http://dev-jasper.sme.prefeitura.sp.gov.br";
-
 
             services.AddHttpClient<ISevicoJasper, SevicoJasper>(c =>
             {
