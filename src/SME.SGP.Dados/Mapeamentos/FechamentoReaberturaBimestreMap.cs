@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class FechamentoReaberturaBimestreMap : DommelEntityMap<FechamentoReaberturaBimestre>
+    public class FechamentoReaberturaBimestreMap : BaseMap<FechamentoReaberturaBimestre>
     {
         public FechamentoReaberturaBimestreMap()
         {
