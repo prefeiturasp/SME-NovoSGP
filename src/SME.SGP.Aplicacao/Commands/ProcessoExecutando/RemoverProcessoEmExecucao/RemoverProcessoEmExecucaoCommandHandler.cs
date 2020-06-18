@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(RemoverProcessoEmExecucaoCommand request, CancellationToken cancellationToken)
         {
-            await repositorio.RemoverAsync(request.ProcessosExecutando);
+            await repositorio.RemoverIdsAsync(request.ProcessosExecutandoIds);
             return true;
         }
     }

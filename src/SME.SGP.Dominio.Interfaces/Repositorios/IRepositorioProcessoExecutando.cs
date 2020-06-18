@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long> SalvarAsync(ProcessoExecutando processo);
         void Remover(ProcessoExecutando processo);
         Task RemoverAsync(ProcessoExecutando processo);
-        Task RemoverAsync(IEnumerable<ProcessoExecutando> processos);
+        Task RemoverIdsAsync(long[] ids);
         Task<ProcessoExecutando> ObterProcessoCalculoFrequencia(string turmaId, string disciplinaId, int bimestre);
         Task<bool> ObterAulaEmManutencaoAsync(long aulaId);
     }

@@ -48,8 +48,15 @@ namespace SME.SGP.Dados
         public async Task RemoverAsync(ProcessoExecutando processo)
             => await database.Conexao.DeleteAsync(processo);
 
-        public async Task RemoverAsync(IEnumerable<ProcessoExecutando> processos)
-           => await database.Conexao.DeleteAsync(processos);
+        public async Task RemoverIdsAsync(long[] ids)
+        {
+
+            var query = @"delete
+                            from processo_executando
+                           where id IN (#ids)";
+
+            await database.Conexao.ExecuteAsync(query.Replace("#ids", string.Join(",", ids)));
+        }
 
         public async Task<long> SalvarAsync(ProcessoExecutando entidade)
         {
