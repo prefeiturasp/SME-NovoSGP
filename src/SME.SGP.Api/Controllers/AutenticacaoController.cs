@@ -105,8 +105,11 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> RecuperarSenha([FromForm]RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
-            await comandosUsuario.AlterarSenhaComTokenRecuperacao(recuperacaoSenhaDto);
-            return Ok();
+           var retorno = await comandosUsuario.AlterarSenhaComTokenRecuperacao(recuperacaoSenhaDto);
+            if (!retorno.Autenticado)
+                return StatusCode(401);
+
+            return Ok(retorno);
         }
 
         [HttpPut("{codigoRf}/reiniciar-senha")]
