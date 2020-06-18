@@ -68,6 +68,7 @@ const FechamentoBismestre = () => {
     setSituacaoFechamento(0);
     setRegistraFrequencia(true);
     setModoEdicao(false);
+    setDesabilitarDisciplina(false);
   };
 
   const onChangeDisciplinas = id => {
@@ -342,7 +343,11 @@ const FechamentoBismestre = () => {
                     valueSelect={disciplinaIdSelecionada}
                     onChange={onChangeDisciplinas}
                     placeholder="Selecione um componente curricular"
-                    disabled={desabilitarDisciplina || !turmaSelecionada.turma}
+                    disabled={
+                      desabilitarDisciplina ||
+                      !turmaSelecionada.turma ||
+                      (listaDisciplinas && listaDisciplinas.length === 1)
+                    }
                   />
                 </Loader>
               </div>
