@@ -6,7 +6,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,8 +40,10 @@ namespace SME.SGP.Aplicacao
             var disciplinasEol = await servicoEOL.ObterDisciplinasPorIdsAsync(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
             IEnumerable<ComponenteCurricularEol> componentes = null;
+
             var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
-            if (componenteRegencia != null)
+
+            if (request.ListarComponentesPlanejamento && componenteRegencia != null)
             {
                 var componentesRegencia = await servicoEOL.ObterDisciplinasPorIdsAsync(IDS_COMPONENTES_REGENCIA);
                 if (componentesRegencia != null)

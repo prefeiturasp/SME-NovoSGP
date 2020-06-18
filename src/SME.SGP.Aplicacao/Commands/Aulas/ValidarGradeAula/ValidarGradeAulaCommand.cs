@@ -63,10 +63,6 @@ namespace SME.SGP.Aplicacao
             .NotEmpty()
             .WithMessage("O usuário deve ser informado para validação de grade da matriz curricular");
 
-            RuleFor(c => c.Quantidade)
-            .NotEmpty()
-            .WithMessage("A quantidade deve ser informada para validação de grade da matriz curricular");
-
             RuleFor(c => c.AulasExistentes)
             .NotNull()
             .WithMessage("A lista de aulas existentes é necessária para validação de grade da matriz curricular");
