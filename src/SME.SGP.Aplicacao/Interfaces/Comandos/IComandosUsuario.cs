@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         Task AlterarSenha(AlterarSenhaDto alterarSenhaDto);
 
-        Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto);
+        Task<UsuarioAutenticacaoRetornoDto> AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto);
 
         Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto);
 
