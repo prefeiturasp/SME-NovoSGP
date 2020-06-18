@@ -10,19 +10,17 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/unidades-escolares")]
-    [Authorize("Bearer")]
     public class UnidadesEscolaresController : ControllerBase
     {
-        [Route("{ueId}/funcionarios")]
+        [Route("funcionarios")]
         [HttpPost]
-        [Permissao(Permissao.AS_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFuncionariosPorUe([FromServices]IConsultasUnidadesEscolares consultasUnidadesEscolares,
-            BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto, string ueId)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.AS_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFuncionarios([FromServices] IReiniciarSenhaUseCase reiniciarSenhaUseCase,
+                                                                          FiltroFuncionarioDto filtroFuncionariosDto)
         {
-            if (string.IsNullOrEmpty(ueId))
-                throw new NegocioException("É necessário informar o código da UE.");
-            buscaFuncionariosFiltroDto.AtualizaCodigoUe(ueId);
-            return Ok(await consultasUnidadesEscolares.ObtemFuncionariosPorUe(buscaFuncionariosFiltroDto));
+            return Ok(await reiniciarSenhaUseCase.Executar(filtroFuncionariosDto));
         }
     }
 }
