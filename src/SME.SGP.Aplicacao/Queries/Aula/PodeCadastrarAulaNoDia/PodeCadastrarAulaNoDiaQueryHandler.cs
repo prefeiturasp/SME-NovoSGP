@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Handle(PodeCadastrarAulaNoDiaQuery request, CancellationToken cancellationToken)
-            => !await repositorioAula.ExisteAulaNaDataAsync(request.DataAula, request.TurmaCodigo, request.ComponenteCurricular.ToString());
+            => !await repositorioAula.ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(request.DataAula, request.TurmaCodigo, request.ComponenteCurricular.ToString(), request.ProfessorRf);
     }
 }

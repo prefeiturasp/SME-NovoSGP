@@ -9,21 +9,21 @@ namespace SME.SGP.Aplicacao
 {
     public class RemoverProcessoEmExecucaoCommand: IRequest<bool>
     {
-        public RemoverProcessoEmExecucaoCommand(ProcessoExecutando processoExecutando)
+        public RemoverProcessoEmExecucaoCommand(IEnumerable<ProcessoExecutando> processosExecutando)
         {
-            ProcessoExecutando = processoExecutando;
+            ProcessosExecutando = processosExecutando;
         }
 
-        public ProcessoExecutando ProcessoExecutando { get; set; }
+        public IEnumerable<ProcessoExecutando> ProcessosExecutando { get; set; }
     }
 
     public class RemoverProcessoEmExecucaoCommandValidator: AbstractValidator<RemoverProcessoEmExecucaoCommand>
     {
         public RemoverProcessoEmExecucaoCommandValidator()
         {
-            RuleFor(a => a.ProcessoExecutando)
-                .NotNull()
-                .WithMessage("Necessário informar o processo a ser removido de execução.");
+            RuleFor(a => a.ProcessosExecutando)
+                .NotEmpty()
+                .WithMessage("Necessário informar os processos a serem removidos de execução.");
         }
     }
 }

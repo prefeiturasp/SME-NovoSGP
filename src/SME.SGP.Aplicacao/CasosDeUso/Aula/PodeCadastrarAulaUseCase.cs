@@ -18,8 +18,11 @@ namespace SME.SGP.Aplicacao
                 podeCadastrarAula = dataAula.Date == dataAulaExistente.Date;
             }
             else
-                podeCadastrarAula = await mediator.Send(new PodeCadastrarAulaNoDiaQuery(dataAula, turmaCodigo, componenteCurricular));
-             
+            {
+                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                podeCadastrarAula = await mediator.Send(new PodeCadastrarAulaNoDiaQuery(dataAula, turmaCodigo, componenteCurricular, usuarioLogado.CodigoRf));
+            }
+
             if (!podeCadastrarAula)
                     throw new NegocioException("Não é possível cadastrar aula pois já existe aula cadastrada no dia para esse componente curricular!");
 

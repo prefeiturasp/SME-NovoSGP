@@ -48,6 +48,9 @@ namespace SME.SGP.Dados
         public async Task RemoverAsync(ProcessoExecutando processo)
             => await database.Conexao.DeleteAsync(processo);
 
+        public async Task RemoverAsync(IEnumerable<ProcessoExecutando> processos)
+           => await database.Conexao.DeleteAsync(processos);
+
         public async Task<long> SalvarAsync(ProcessoExecutando entidade)
         {
             if (entidade.Id > 0)
