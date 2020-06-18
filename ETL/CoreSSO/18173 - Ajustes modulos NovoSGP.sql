@@ -9,27 +9,27 @@ BEGIN TRY
 	end
 
 	-- exclui grupopermissao
-	if exists(select * from SYS_GrupoPermissao where sis_id = 1000 and mod_id in (18,21,27))
+	if exists(select * from SYS_GrupoPermissao where sis_id = 1000 and mod_id in (38,21,27))
 	begin
-		delete from SYS_GrupoPermissao where sis_id = 1000 and mod_id in (18,21,27)
+		delete from SYS_GrupoPermissao where sis_id = 1000 and mod_id in (38,21,27)
 	end
 
 	-- exclui visaomodulomenu
-	if exists(select * from SYS_VisaoModuloMenu where sis_id = 1000 and mod_id in (18,21,27))
+	if exists(select * from SYS_VisaoModuloMenu where sis_id = 1000 and mod_id in (38,21,27))
 	begin
-		delete from SYS_VisaoModuloMenu where sis_id = 1000 and mod_id in (18,21,27)
+		delete from SYS_VisaoModuloMenu where sis_id = 1000 and mod_id in (38,21,27)
 	end
 
 	-- exclui visaomodulo
-	if exists(select * from SYS_VisaoModulo where sis_id = 1000 and mod_id in (18,21,27))
+	if exists(select * from SYS_VisaoModulo where sis_id = 1000 and mod_id in (38,21,27))
 	begin
-		delete from SYS_VisaoModulo where sis_id = 1000 and mod_id in (18,21,27)
+		delete from SYS_VisaoModulo where sis_id = 1000 and mod_id in (38,21,27)
 	end
 
 	-- exclui modulos
-	if exists(select * from SYS_Modulo where sis_id = 1000 and mod_id in (18,21,27))
+	if exists(select * from SYS_Modulo where sis_id = 1000 and mod_id in (38,21,27))
 	begin
-		delete from SYS_Modulo where sis_id = 1000 and mod_id in (18,21,27)
+		delete from SYS_Modulo where sis_id = 1000 and mod_id in (38,21,27)
 	end
 
      PRINT 'Módulos do NovoSGP ajustados'
