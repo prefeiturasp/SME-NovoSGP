@@ -22,7 +22,7 @@ class LoginHelper {
       salvarDadosLogin({
         token: autenticacao.dados.token,
         rf,
-        usuario: login.usuario,
+        usuario: login.UsuarioLogin,
         modificarSenha: autenticacao.dados.modificarSenha,
         perfisUsuario: autenticacao.dados.perfisUsuario,
         possuiPerfilSmeOuDre:
