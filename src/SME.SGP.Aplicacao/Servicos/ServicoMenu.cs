@@ -61,22 +61,24 @@ namespace SME.SGP.Aplicacao
 
                         };
 
-                        foreach (var subMenu in permissaoMenu)
+                        foreach (var subMenu in permissaoMenu.GroupBy( a => a.GetAttribute<PermissaoMenuAttribute>().Url))
                         {
                             if (menuEnumerado.EhSubMenu)
                             {
-                                var menuSubEnumerado = subMenu.GetAttribute<PermissaoMenuAttribute>();
+                                var menuSubEnumerado = subMenu.FirstOrDefault();
+                                var menuSubEnumeradoComAtributo = menuSubEnumerado.GetAttribute<PermissaoMenuAttribute>();
 
                                 menuPai.SubMenus.Add(new MenuPermissaoDto()
                                 {
-                                    Codigo = (int)subMenu,
-                                    Url = menuSubEnumerado.Url,
-                                    Descricao = menuSubEnumerado.SubMenu,
-                                    //PodeAlterar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
-                                    //PodeIncluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
-                                    //PodeExcluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhExclusao),
-                                    //PodeConsultar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhConsulta),
-                                });
+                                    Codigo = (int)menuSubEnumerado,
+                                    Url = menuSubEnumeradoComAtributo.Url,
+                                    Descricao = menuSubEnumeradoComAtributo.SubMenu,
+                                    Ordem = menuSubEnumeradoComAtributo.OrdemSubMenu,                                    
+                                    PodeConsultar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhConsulta),
+                                    PodeAlterar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
+                                    PodeIncluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
+                                    PodeExcluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhExclusao)
+                                }) ;
                             }
                         }
 
@@ -96,7 +98,7 @@ namespace SME.SGP.Aplicacao
                         });
                     }
                 }
-
+                menuRetornoDto.Menus = menuRetornoDto.Menus.OrderBy(a => a.Ordem).ToList();
                 listaRetorno.Add(menuRetornoDto);
             }
             return listaRetorno;
