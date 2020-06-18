@@ -100,17 +100,14 @@ namespace SME.SGP.Aplicacao
 
         private async Task RemoverAulasEmManutencao(IEnumerable<ProcessoExecutando> listaProcessos)
         {
-            foreach (var processo in listaProcessos)
+            try
             {
-                try
-                {
-                    await mediator.Send(new RemoverProcessoEmExecucaoCommand(processo));
-                }
-                catch (Exception ex)
-                {
-                    SentrySdk.AddBreadcrumb("Exclusao de Registro em Manutenção da Aula", "Alteração de Aula Recorrente");
-                    SentrySdk.CaptureException(ex);
-                }
+                await mediator.Send(new RemoverProcessoEmExecucaoCommand(listaProcessos));
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.AddBreadcrumb("Exclusao de Registro em Manutenção da Aula", "Alteração de Aula Recorrente");
+                SentrySdk.CaptureException(ex);
             }
         }
 
