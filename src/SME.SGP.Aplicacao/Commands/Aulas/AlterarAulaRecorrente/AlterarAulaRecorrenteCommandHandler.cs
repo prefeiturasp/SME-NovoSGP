@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Sentry;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -84,7 +83,7 @@ namespace SME.SGP.Aplicacao
             {
                 listaAlteracoes.Add(await TratarAlteracaoAula(request, aulaOrigem, dataAula, turma));
 
-                foreach(var aulaDaRecorrencia in aulasDaRecorrencia)
+                foreach (var aulaDaRecorrencia in aulasDaRecorrencia)
                 {
                     dataAula = dataAula.AddDays(7);
 
@@ -101,7 +100,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task RemoverAulasEmManutencao(IEnumerable<ProcessoExecutando> listaProcessos)
         {
-            foreach(var processo in listaProcessos)
+            foreach (var processo in listaProcessos)
             {
                 try
                 {
@@ -111,7 +110,7 @@ namespace SME.SGP.Aplicacao
                 {
                     SentrySdk.AddBreadcrumb("Exclusao de Registro em Manutenção da Aula", "Alteração de Aula Recorrente");
                     SentrySdk.CaptureException(ex);
-                }            
+                }
             }
         }
 
@@ -120,7 +119,7 @@ namespace SME.SGP.Aplicacao
             var listaProcessos = new List<ProcessoExecutando>();
 
             listaProcessos.Add(await mediator.Send(new InserirAulaEmManutencaoCommand(aulaOrigem.Id)));
-            foreach(var aulaRecorrente in aulasDaRecorrencia)
+            foreach (var aulaRecorrente in aulasDaRecorrencia)
             {
                 listaProcessos.Add(await mediator.Send(new InserirAulaEmManutencaoCommand(aulaRecorrente.Id)));
             }
@@ -132,7 +131,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                await AplicarValidacoes(request, dataAula, turma);
+                await AplicarValidacoes(request, dataAula, turma, aula);
 
                 await AlterarAula(request, aula, dataAula, turma);
             }
@@ -161,13 +160,13 @@ namespace SME.SGP.Aplicacao
 
             if (request.AulaId == aula.Id)
                 aula.AulaPaiId = null;
-            else 
+            else
                 aula.AulaPaiId = request.AulaId;
 
             await repositorioAula.SalvarAsync(aula);
         }
 
-        private async Task AplicarValidacoes(AlterarAulaRecorrenteCommand request, DateTime dataAula, Turma turma)
+        private async Task AplicarValidacoes(AlterarAulaRecorrenteCommand request, DateTime dataAula, Turma turma, Aula aula)
         {
             await ValidarSeEhDiaLetivo(request.TipoCalendarioId, dataAula, turma);
 
@@ -176,7 +175,7 @@ namespace SME.SGP.Aplicacao
             if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
                 throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
 
-            await ValidarGrade(request, dataAula, aulasExistentes, turma);
+            await ValidarGrade(request, dataAula, aulasExistentes, turma, request.Quantidade - aula.Quantidade);
         }
 
         private async Task ValidarSeEhDiaLetivo(long tipoCalendarioId, DateTime dataAula, Turma turma)
@@ -194,7 +193,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(consultaPodeCadastrarAula.MensagemPeriodo);
         }
 
-        private async Task ValidarGrade(AlterarAulaRecorrenteCommand request, DateTime dataAula, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma)
+        private async Task ValidarGrade(AlterarAulaRecorrenteCommand request, DateTime dataAula, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma, int quantidadeAdicional)
         {
             var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
                                                                                    turma.ModalidadeCodigo,
