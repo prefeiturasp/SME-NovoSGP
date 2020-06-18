@@ -84,6 +84,7 @@ function CadastroDeAula({ match, location }) {
 
   const [quantidadeBloqueada, setQuantidadeBloqueada] = useState(false);
   const [listaComponentes, setListaComponentes] = useState([]);
+  const [recorrenciaAulaOriginal, setRecorrenciaAulaOriginal] = useState();
 
   const opcoesTipoAula = [
     { label: 'Normal', value: 1 },
@@ -101,10 +102,12 @@ function CadastroDeAula({ match, location }) {
     {
       label: 'Repetir no Bimestre atual',
       value: recorrencia.REPETIR_BIMESTRE_ATUAL,
+      disabled: id && recorrenciaAulaOriginal === 3,
     },
     {
       label: 'Repetir em todos os Bimestres',
       value: recorrencia.REPETIR_TODOS_BIMESTRES,
+      disabled: id && recorrenciaAulaOriginal === 2,
     },
   ];
 
@@ -156,6 +159,7 @@ function CadastroDeAula({ match, location }) {
         .then(resposta => {
           const respostaAula = resposta.data;
           respostaAula.dataAula = window.moment(respostaAula.dataAula);
+          setRecorrenciaAulaOriginal(respostaAula.recorrenciaAula);
           setAula(respostaAula);
           setRegistroMigrado(respostaAula.migrado);
           setEmManutencao(respostaAula.emManutencao);
@@ -328,7 +332,14 @@ function CadastroDeAula({ match, location }) {
           })
           .catch(e => {
             setDesabilitarBtnSalvar(true);
-            erros(e);
+            if (
+              e &&
+              e.response &&
+              e.response.data &&
+              e.response.data.mensagens
+            ) {
+              erros(e);
+            }
           })
           .finally(() => setCarregandoDados(false));
       }
@@ -336,20 +347,40 @@ function CadastroDeAula({ match, location }) {
     [turmaSelecionada.turma, defineGrade, id]
   );
 
-  const salvar = valoresForm => {
-    const componente = obterComponenteSelecionadoPorId(
-      valoresForm.disciplinaId
+  const validaPerguntaAntesSalvar = async () => {
+    const quantidade = recorrenciaAulaEmEdicao.quantidadeAulasRecorrentes;
+    return confirmar(
+      'Atenção',
+      '',
+      `Você tem certeza que deseja alterar ${quantidade} ocorrências desta aula a partir desta data?`
     );
-    if (componente) valoresForm.disciplinaNome = componente.nome;
-    setCarregandoDados(true);
-    servicoCadastroAula
-      .salvar(id, valoresForm, valoresForm.regencia || false)
-      .then(resposta => {
-        resposta.data.mensagens.forEach(mensagem => sucesso(mensagem));
-        navegarParaCalendarioProfessor();
-      })
-      .catch(e => erros(e))
-      .finally(() => setCarregandoDados(false));
+  };
+
+  const salvar = async valoresForm => {
+    let salvarRegistro = true;
+    if (
+      id &&
+      aula.tipoAula === 1 &&
+      (aula.recorrenciaAula === 2 || aula.recorrenciaAula === 3)
+    ) {
+      salvarRegistro = await validaPerguntaAntesSalvar();
+    }
+
+    if (salvarRegistro) {
+      const componente = obterComponenteSelecionadoPorId(
+        valoresForm.disciplinaId
+      );
+      if (componente) valoresForm.disciplinaNome = componente.nome;
+      setCarregandoDados(true);
+      servicoCadastroAula
+        .salvar(id, valoresForm, valoresForm.regencia || false)
+        .then(resposta => {
+          resposta.data.mensagens.forEach(mensagem => sucesso(mensagem));
+          navegarParaCalendarioProfessor();
+        })
+        .catch(e => erros(e))
+        .finally(() => setCarregandoDados(false));
+    }
   };
 
   const obterDataFormatada = () => {
@@ -666,7 +697,8 @@ function CadastroDeAula({ match, location }) {
                           (controlaGrade && gradeAtingida && !id) ||
                           !aula.disciplinaId ||
                           somenteLeitura ||
-                          desabilitarBtnSalvar
+                          desabilitarBtnSalvar ||
+                          !modoEdicao
                         }
                       />
                     </div>
@@ -718,7 +750,7 @@ function CadastroDeAula({ match, location }) {
                         name="recorrenciaAula"
                         form={form}
                         onChange={onChangeRecorrencia}
-                        desabilitado={!!id || aula.tipoAula === 2}
+                        desabilitado={aula.tipoAula === 2}
                       />
                     </div>
                   </div>
