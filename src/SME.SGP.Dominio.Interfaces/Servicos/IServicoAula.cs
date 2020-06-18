@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia);
 
-        Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario);
+        Task ExcluirRecorrencia(long aulaId, RecorrenciaAula recorrencia, long usuarioId);
 
         Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0, bool ehRecorrencia = false);
     }

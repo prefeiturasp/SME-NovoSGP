@@ -96,12 +96,21 @@ namespace SME.SGP.Dominio.Servicos
             if (recorrencia == RecorrenciaAula.AulaUnica)
                 return "Aula e suas dependencias excluídas com sucesso!";
 
-            Cliente.Executar<IServicoAula>(s => s.ExcluirRecorrencia(aula, recorrencia, usuario));
+            Cliente.Executar<IServicoAula>(s => s.ExcluirRecorrencia(aula.Id, recorrencia, usuario.Id));
             return "Aula excluida com sucesso. Serão excluidas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
         }
 
-        public async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
+        public async Task ExcluirRecorrencia(long aulaId, RecorrenciaAula recorrencia, long usuarioId)
         {
+
+            var aula = repositorioAula.ObterPorId(aulaId);
+            if (aula == null)
+                throw new NegocioException("Não foi possível obter a aula");
+
+            var usuario = await servicoUsuario.ObterPorIdAsync(usuarioId);
+            if (usuario == null)
+                throw new NegocioException("Não foi possível obter a aula");
+
             var fimRecorrencia = await consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
             var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
