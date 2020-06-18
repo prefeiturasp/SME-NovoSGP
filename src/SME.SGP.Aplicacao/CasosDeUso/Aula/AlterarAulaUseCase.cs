@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     mediator.Enfileirar(new AlterarAulaRecorrenteCommand(usuarioLogado, aulaDto.Id, aulaDto.DataAula, aulaDto.Quantidade, aulaDto.CodigoTurma, aulaDto.CodigoComponenteCurricular, aulaDto.NomeComponenteCurricular, aulaDto.TipoCalendarioId, aulaDto.TipoAula, aulaDto.CodigoUe, aulaDto.EhRegencia, aulaDto.RecorrenciaAula));
-                    return new RetornoBaseDto("Serão cadastradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
+                    return new RetornoBaseDto("Serão alteradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
                 }
                 catch (Exception ex)
                 {
