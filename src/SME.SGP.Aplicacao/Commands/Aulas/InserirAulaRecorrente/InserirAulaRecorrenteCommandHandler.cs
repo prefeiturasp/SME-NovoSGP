@@ -51,9 +51,6 @@ namespace SME.SGP.Aplicacao
         {
             if (usuarioLogado.EhProfessorCj())
             {
-                if (usuarioLogado.EhProfessorCj() && aulaRecorrente.Quantidade > 2)
-                    throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
-
                 var componentesCurricularesDoProfessorCJ = await mediator.Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
                 if (componentesCurricularesDoProfessorCJ == null || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == aulaRecorrente.CodigoTurma && c.DisciplinaId == aulaRecorrente.ComponenteCurricularId))
                 {

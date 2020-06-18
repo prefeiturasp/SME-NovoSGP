@@ -36,7 +36,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(AlterarAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
-            ValidarQuantidadeAulasCJ(request);
             await ValidarComponentesProfessor(request);
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
@@ -47,19 +46,10 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private void ValidarQuantidadeAulasCJ(AlterarAulaRecorrenteCommand request)
-        {
-            if (request.Usuario.EhProfessorCj() && request.Quantidade > 2)
-                throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
-        }
-
         private async Task ValidarComponentesProfessor(AlterarAulaRecorrenteCommand aulaRecorrente)
         {
             if (aulaRecorrente.Usuario.EhProfessorCj())
             {
-                if (aulaRecorrente.Usuario.EhProfessorCj() && aulaRecorrente.Quantidade > 2)
-                    throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
-
                 var componentesCurricularesDoProfessorCJ = await mediator.Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(aulaRecorrente.Usuario.Login));
                 if (componentesCurricularesDoProfessorCJ == null || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == aulaRecorrente.CodigoTurma && c.DisciplinaId == aulaRecorrente.ComponenteCurricularId))
                 {
