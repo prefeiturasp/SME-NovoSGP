@@ -611,6 +611,7 @@ const EventosLista = ({ match }) => {
               multiSelecao
               selecionarItems={onSelecionarItems}
               filtroEhValido={filtroValido.valido}
+              cancelarRequisicoes
             />
           ) : (
             ''
