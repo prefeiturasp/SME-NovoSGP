@@ -9,6 +9,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<bool> ExisteAulaNaDataAsync(DateTime data, string turmaCodigo, string componenteCurricular);
 
+        Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaId, string disciplinaId, string professorRf);
+
         Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId);
 
         Task<AulaConsultaDto> ObterAulaDataTurmaDisciplinaProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf);
