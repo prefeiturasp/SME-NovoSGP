@@ -80,20 +80,15 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
 
         private async Task AplicarValidacoes(AlterarAulaUnicaCommand request, Aula aula, Turma turma, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes)
         {
-            ValidarQuantidadeAulasCJ(request, usuarioLogado);
-
             await ValidarComponentesDoProfessor(request, usuarioLogado);
 
             await ValidarSeEhDiaLetivo(request, turma);
 
-            // Valida a diferença do numero de aulas pois a validação de grade já conta com a aula existente
-            await ValidarGrade(request, usuarioLogado, aulasExistentes, turma, request.Quantidade - aula.Quantidade);
-        }
-
-        private void ValidarQuantidadeAulasCJ(AlterarAulaUnicaCommand request, Usuario usuarioLogado)
-        {
-            if (usuarioLogado.EhProfessorCj() && request.Quantidade > 2)
-                throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
+            if (request.Quantidade > aula.Quantidade)
+            {
+                // Valida a diferença do numero de aulas pois a validação de grade já conta com a aula existente
+                await ValidarGrade(request, usuarioLogado, aulasExistentes, turma, request.Quantidade - aula.Quantidade);
+            }
         }
 
         private async Task ValidarGrade(AlterarAulaUnicaCommand request, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma, int quantidadeAdicional)

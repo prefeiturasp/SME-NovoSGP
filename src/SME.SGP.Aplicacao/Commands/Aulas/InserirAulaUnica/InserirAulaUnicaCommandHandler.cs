@@ -64,8 +64,6 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
         private async Task AplicarValidacoes(InserirAulaUnicaCommand inserirAulaUnicaCommand, Turma turma, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes)
         {
-            ValidarQuantidadeAulasCJ(inserirAulaUnicaCommand, usuarioLogado);
-
             await ValidarComponentesDoProfessor(inserirAulaUnicaCommand, usuarioLogado);
 
             await ValidarSeEhDiaLetivo(inserirAulaUnicaCommand, turma);
@@ -89,12 +87,6 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
                 AulaCJ = inserirAulaUnicaCommand.Usuario.EhProfessorCj()
             };
-        }
-
-        private void ValidarQuantidadeAulasCJ(InserirAulaUnicaCommand inserirAulaUnicaCommand, Usuario usuarioLogado)
-        {
-            if (usuarioLogado.EhProfessorCj() && inserirAulaUnicaCommand.Quantidade > 2)
-                throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
         }
 
         private async Task ValidarGrade(InserirAulaUnicaCommand inserirAulaUnicaCommand, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma)
