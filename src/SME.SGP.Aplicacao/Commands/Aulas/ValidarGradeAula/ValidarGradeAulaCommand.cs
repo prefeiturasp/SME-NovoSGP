@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
                                        IEnumerable<AulaConsultaDto> aulasExistentes)
         {
             TurmaCodigo = turmaCodigo;
-            turmaModalidade = turmaModalidade;
+            TurmaModalidade = turmaModalidade;
             ComponenteCurricularCodigo = componenteCurricularCodigo;
             Data = data;
             UsuarioRf = usuarioRf;
