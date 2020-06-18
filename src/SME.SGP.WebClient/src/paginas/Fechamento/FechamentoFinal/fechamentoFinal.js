@@ -76,7 +76,18 @@ const FechamentoFinal = forwardRef((props, ref) => {
       .catch(e => erros(e));
   };
 
+  const resetarComponenteAtivo = () => {
+    if (disciplinasRegencia && disciplinasRegencia.length) {
+      const lista = disciplinasRegencia.map(c => {
+        c.ativa = false;
+        return c;
+      });
+      setDisciplinasRegencia([...lista]);
+    }
+  };
+
   const resetarTela = () => {
+    resetarComponenteAtivo();
     setDadosFechamentoFinal({});
     setAlunos([]);
     setEhNota(true);
