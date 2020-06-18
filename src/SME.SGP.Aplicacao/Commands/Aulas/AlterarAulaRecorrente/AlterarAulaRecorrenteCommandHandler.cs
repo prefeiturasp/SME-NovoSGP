@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,7 +77,8 @@ namespace SME.SGP.Aplicacao
             var dataAula = request.DataAula;
             var aulaPaiIdOrigem = aulaOrigem.AulaPaiId ?? aulaOrigem.Id;
 
-            var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(request.TipoCalendarioId, aulaOrigem.DataAula.Date, request.RecorrenciaAula));
+            var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(request.TipoCalendarioId, dataAula, request.RecorrenciaAula));
+
             var aulasDaRecorrencia = await repositorioAula.ObterAulasRecorrencia(aulaPaiIdOrigem, aulaOrigem.Id, fimRecorrencia);
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasDaRecorrencia);
 
@@ -84,11 +86,17 @@ namespace SME.SGP.Aplicacao
             {
                 listaAlteracoes.Add(await TratarAlteracaoAula(request, aulaOrigem, dataAula, turma));
 
-                foreach(var aulaDaRecorrencia in aulasDaRecorrencia)
+                var diasRecorrencia = ObterDiasDaRecorrencia(dataAula.AddDays(7), fimRecorrencia);
+                foreach(var diaAula in diasRecorrencia)
                 {
-                    dataAula = dataAula.AddDays(7);
+                    // Obter a aula na mesma semana da nova data
+                    var aulaRecorrente = aulasDaRecorrencia.FirstOrDefault(c => UtilData.ObterSemanaDoAno(c.DataAula) == UtilData.ObterSemanaDoAno(diaAula));
 
-                    listaAlteracoes.Add(await TratarAlteracaoAula(request, aulaDaRecorrencia, dataAula, turma));
+                    // Se não existir aula da recorrencia na semana cria uma nova
+                    if (aulaRecorrente != null)
+                        listaAlteracoes.Add(await TratarAlteracaoAula(request, aulaRecorrente, diaAula, turma));
+                    else
+                        listaAlteracoes.Add(await TratarAlteracaoAula(request, (Aula)aulaOrigem.Clone(), diaAula, turma));
                 }
             }
             finally
@@ -97,6 +105,22 @@ namespace SME.SGP.Aplicacao
             }
 
             await NotificarUsuario(request.AulaId, listaAlteracoes, request.Usuario, request.NomeComponenteCurricular, turma);
+        }
+
+        private IEnumerable<DateTime> ObterDiasDaRecorrencia(DateTime inicioRecorrencia, DateTime fimRecorrencia)
+        {
+            if (inicioRecorrencia.Date == fimRecorrencia.Date)
+                return new List<DateTime>() { inicioRecorrencia };
+
+            return ObterDiaEntreDatas(inicioRecorrencia, fimRecorrencia);
+        }
+
+        private IEnumerable<DateTime> ObterDiaEntreDatas(DateTime inicio, DateTime fim)
+        {
+            for (DateTime i = inicio; i <= fim; i = i.AddDays(7))
+            {
+                yield return i;
+            }
         }
 
         private async Task RemoverAulasEmManutencao(IEnumerable<ProcessoExecutando> listaProcessos)
