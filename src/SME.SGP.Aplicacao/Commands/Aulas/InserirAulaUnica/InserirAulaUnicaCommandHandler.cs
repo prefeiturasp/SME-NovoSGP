@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
             var aula = MapearEntidade(request);
 
-            aula.Id = repositorioAula.Salvar(aula);
+            aula.Id = await repositorioAula.SalvarAsync(aula);
 
             await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens);
 
@@ -56,6 +56,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                 {
                     var idWorkflow = await PersistirWorkflowReposicaoAula(request, turma, aula);
                     aula.EnviarParaWorkflowDeAprovacao(idWorkflow);
+                    await repositorioAula.SalvarAsync(aula);
 
                     mensagens.Add("Aula enviada para aprovação de workflow.");
                 }
