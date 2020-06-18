@@ -180,14 +180,14 @@ function CadastroDeAula({ match, location }) {
               respostaAula.tipoAula == 1,
               respostaAula.quantidade
             );
-            if (ehRegenciaEja(componenteSelecionado)) {
-              setAula(aulaState => {
-                return {
-                  ...aulaState,
-                  quantidade: 5,
-                };
-              });
-            }
+            // if (ehRegenciaEja(componenteSelecionado)) {
+            //   setAula(aulaState => {
+            //     return {
+            //       ...aulaState,
+            //       quantidade: 5,
+            //     };
+            //   });
+            // }
           }
         })
         .catch(e => {
@@ -225,6 +225,7 @@ function CadastroDeAula({ match, location }) {
           ),
       };
     });
+
     if (quantidadeAulasRestante == 0) {
       setQuantidadeBloqueada(true);
       setGradeAtingida(true);
@@ -267,13 +268,12 @@ function CadastroDeAula({ match, location }) {
     (dadosGrade, tipoAula, aplicarGrade, quantidadeAula) => {
       refForm.current.handleReset();
       const { quantidadeAulasRestante, podeEditar } = dadosGrade;
-
       setGradeAtingida(quantidadeAulasRestante == 0);
       if (tipoAula == 1) {
         if (aplicarGrade) {
           if (!id) {
             setQuantidadeBloqueada(!podeEditar);
-            if (quantidadeAulasRestante === 1) {
+            if (quantidadeAulasRestante === 1 || !podeEditar) {
               // defineGrade limite 1 aula
               setQuantidadeBloqueada(true);
               setAula(aulaState => {
