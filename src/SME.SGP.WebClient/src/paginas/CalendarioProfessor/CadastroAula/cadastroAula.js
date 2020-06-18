@@ -180,14 +180,6 @@ function CadastroDeAula({ match, location }) {
               respostaAula.tipoAula == 1,
               respostaAula.quantidade
             );
-            // if (ehRegenciaEja(componenteSelecionado)) {
-            //   setAula(aulaState => {
-            //     return {
-            //       ...aulaState,
-            //       quantidade: 5,
-            //     };
-            //   });
-            // }
           }
         })
         .catch(e => {
