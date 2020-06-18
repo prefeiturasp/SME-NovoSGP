@@ -52,15 +52,20 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             {
                 var quantidadeDeAulasExistentes = aulasExistentes.Where(x => x.DataAula.Date == request.DataAula.Date).Sum(x => x.Quantidade);
 
-                if (turma.AulasReposicaoPrecisamAprovacao(quantidadeDeAulasExistentes + request.Quantidade))
+                if (AulasReposicaoPrecisamAprovacao(quantidadeDeAulasExistentes + request.Quantidade, request.EhRegencia))
                 {
                     var idWorkflow = await PersistirWorkflowReposicaoAula(request, turma, aula);
                     aula.EnviarParaWorkflowDeAprovacao(idWorkflow);
                     await repositorioAula.SalvarAsync(aula);
 
-                    mensagens.Add("Aula enviada para aprovação de workflow.");
+                    mensagens.Add("Aula cadastrada e enviada para aprovação com sucesso.");
                 }
             }
+        }
+
+        public bool AulasReposicaoPrecisamAprovacao(int qtdAulas, bool ehRegencia)
+        {
+            return qtdAulas >= 3 || (ehRegencia && qtdAulas >= 2);
         }
 
         private async Task AplicarValidacoes(InserirAulaUnicaCommand inserirAulaUnicaCommand, Turma turma, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes)
@@ -69,7 +74,8 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
             await ValidarSeEhDiaLetivo(inserirAulaUnicaCommand, turma);
 
-            await ValidarGrade(inserirAulaUnicaCommand, usuarioLogado, aulasExistentes, turma);
+            if (inserirAulaUnicaCommand.TipoAula != TipoAula.Reposicao)
+                await ValidarGrade(inserirAulaUnicaCommand, usuarioLogado, aulasExistentes, turma);
         }
 
         private Aula MapearEntidade(InserirAulaUnicaCommand inserirAulaUnicaCommand)
