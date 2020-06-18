@@ -105,11 +105,11 @@ namespace SME.SGP.Dominio.Servicos
 
             var aula = repositorioAula.ObterPorId(aulaId);
             if (aula == null)
-                throw new NegocioException("Não foi possível obter a aula");
+                throw new NegocioException("Não foi possível obter a aula.");
 
             var usuario = await servicoUsuario.ObterPorIdAsync(usuarioId);
             if (usuario == null)
-                throw new NegocioException("Não foi possível obter a aula");
+                throw new NegocioException("Não foi possível obter o usuário.");
 
             var fimRecorrencia = await consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
             var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
