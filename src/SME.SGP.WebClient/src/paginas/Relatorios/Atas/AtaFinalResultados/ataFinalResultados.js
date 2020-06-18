@@ -11,7 +11,8 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
-import { sucesso } from '~/servicos/alertas';
+import { sucesso, erros } from '~/servicos/alertas';
+import ServicoConselhoAtaFinal from '~/servicos/Paginas/Relatorios/ConselhoAtaFinal/ServicoConselhoAtaFinal';
 
 const AtaFinalResultados = () => {
   const anoAtual = window.moment().format('YYYY');
@@ -261,10 +262,13 @@ const AtaFinalResultados = () => {
       turmaId,
       formato,
     };
-    console.log(params);
-    // TODO Chamar endpoint para gerar!
-
-    sucesso('Registro excluído com sucesso');
+    ServicoConselhoAtaFinal.gerar(params)
+      .then(c => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
+      })
+      .catch(e => erros(e));
     setDesabilitarBtnGerar(true);
   };
 
