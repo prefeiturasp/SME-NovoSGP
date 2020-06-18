@@ -374,7 +374,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and disciplina_id = @componenteCurricular ");
             query.AppendLine("and date(data_aula) = @dataAula ");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
+            var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
             {
                 codigoRf,
                 turma,
@@ -382,6 +382,9 @@ namespace SME.SGP.Dados.Repositorios
                 dataAula = dataAula.Date,
                 aulaNomal = TipoAula.Normal
             }) ?? 0;
+            database.Conexao.Close();
+
+            return qtd;
         }
 
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaSemanaProfessor(string turma, string disciplina, int semana, string codigoRf)
@@ -425,7 +428,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and extract('week' from data_aula) = @semana ");
             query.AppendLine("and Date(data_aula) <> @dataExcecao");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
+            var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
             {
                 codigoRf,
                 turma,
@@ -434,6 +437,9 @@ namespace SME.SGP.Dados.Repositorios
                 aulaNomal = TipoAula.Normal,
                 dataExcecao
             }) ?? 0;
+            database.Conexao.Close();
+
+            return qtd;
         }
 
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaExperienciasPedagogicasDia(string turma, DateTime dataAula)
@@ -461,11 +467,14 @@ namespace SME.SGP.Dados.Repositorios
                   and disciplina_id in ('1214','1215','1216','1217','1218','1219','1220','1221','1222','1223')
                   and date(data_aula) = @dataAula";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
+            var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
             {
                 turma,
                 dataAula = dataAula.Date
             }) ?? 0;
+            database.Conexao.Close();
+
+            return qtd;
         }
 
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaExperienciasPedagogicasSemana(string turma, int semana)
@@ -493,11 +502,14 @@ namespace SME.SGP.Dados.Repositorios
                   and disciplina_id in ('1214','1215','1216','1217','1218','1219','1220','1221','1222','1223')
                   and extract('week' from data_aula) = @semana";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
+            var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
             {
                 turma,
                 semana
             }) ?? 0;
+            database.Conexao.Close();
+
+            return qtd;
         }
 
         public Aula ObterCompletoPorId(long id)
