@@ -38,9 +38,9 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
             var aula = MapearEntidade(request);
 
-            await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens);
+            aula.Id = repositorioAula.Salvar(aula);
 
-            repositorioAula.Salvar(aula);
+            await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens);
 
             retorno.Mensagens.Add("Aula cadastrada com sucesso.");
             return retorno;
