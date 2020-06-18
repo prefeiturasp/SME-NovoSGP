@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
             }
             finally
             {
-                await RemoverAulasEmManutencao(listaProcessos);
+                await RemoverAulasEmManutencao(listaProcessos.Select(p => p.Id).ToArray());
             }
 
             await NotificarUsuario(request.AulaId, listaAlteracoes, request.Usuario, request.NomeComponenteCurricular, turma);
@@ -122,11 +122,11 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task RemoverAulasEmManutencao(IEnumerable<ProcessoExecutando> listaProcessos)
+        private async Task RemoverAulasEmManutencao(long[] listaProcessosId)
         {
             try
             {
-                await mediator.Send(new RemoverProcessoEmExecucaoCommand(listaProcessos));
+                await mediator.Send(new RemoverProcessoEmExecucaoCommand(listaProcessosId));
             }
             catch (Exception ex)
             {
