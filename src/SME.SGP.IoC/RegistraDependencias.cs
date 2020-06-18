@@ -316,6 +316,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IGamesUseCase, GamesUseCase>();
             services.TryAddScoped<IInserirAulaUseCase, InserirAulaUseCase>();
             services.TryAddScoped<IAlterarAulaUseCase, AlterarAulaUseCase>();
+            services.TryAddScoped<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
         }
     }
 }
