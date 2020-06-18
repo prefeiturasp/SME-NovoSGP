@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
         private static async Task<bool> UsuarioComAcessoAoComponente(IMediator mediator, Usuario usuarioLogado, Aula aula, bool ehCJ)
         {
             var componentesUsuario = ehCJ ?
-                await mediator.Send(new ObterComponentesCJQuery(null, aula.TurmaId, string.Empty, long.Parse(aula.DisciplinaId), usuarioLogado.CodigoRf)) :
+                await mediator.Send(new ObterComponentesCJQuery(null, aula.TurmaId, string.Empty, long.Parse(aula.DisciplinaId), usuarioLogado.CodigoRf, false)) :
                 await mediator.Send(new ObterComponentesCurricularesPorTurmaLoginEPerfilQuery(aula.TurmaId, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual));
 
             var disciplina = componentesUsuario?.FirstOrDefault(x => x.Codigo.ToString().Equals(aula.DisciplinaId));
