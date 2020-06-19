@@ -22,8 +22,8 @@ namespace SME.SGP.Api.Controllers
         {
             await RemoverChaves();
 
-            var i = 1000000;
-            while (i != 1000800)
+            var i = 1111111;
+            while (i != 88888888)
             {
                 string randomValoresRandomicos = ObterValor();
                 var chave = $"teste-redis-{i}";
@@ -43,8 +43,8 @@ namespace SME.SGP.Api.Controllers
         }
         private async Task RemoverChaves()
         {
-            var i = 1000000;
-            while (i != 1000800)
+            var i = 1111111;
+            while (i != 88888888)
             {
                 var chave = $"teste-redis-{i}";
                 await repositorioCache.RemoverAsync(chave);
