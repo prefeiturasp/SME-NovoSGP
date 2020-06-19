@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     // TODO Excluir Recorrencia
-                    //mediator.Enfileirar(new AlterarAulaRecorrenteCommand(usuarioLogado, aulaDto.Id, aulaDto.DataAula, aulaDto.Quantidade, aulaDto.CodigoTurma, aulaDto.CodigoComponenteCurricular, aulaDto.NomeComponenteCurricular, aulaDto.TipoCalendarioId, aulaDto.TipoAula, aulaDto.CodigoUe, aulaDto.EhRegencia, aulaDto.RecorrenciaAula));
+                    //mediator.Enfileirar(new ExcluirAulaUnicaCommand(usuarioLogado, aulaDto.Id, aulaDto.DataAula, aulaDto.Quantidade, aulaDto.CodigoTurma, aulaDto.CodigoComponenteCurricular, aulaDto.NomeComponenteCurricular, aulaDto.TipoCalendarioId, aulaDto.TipoAula, aulaDto.CodigoUe, aulaDto.EhRegencia, aulaDto.RecorrenciaAula));
                     return new RetornoBaseDto("Serão excluidas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
                 }
                 catch (Exception ex)

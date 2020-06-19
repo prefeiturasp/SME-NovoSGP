@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Commands.Aulas.Excluir
+namespace SME.SGP.Aplicacao
 {
     public class ExcluirAulaWorkerUseCase : IExcluirAulaWorkerUseCase
     {
