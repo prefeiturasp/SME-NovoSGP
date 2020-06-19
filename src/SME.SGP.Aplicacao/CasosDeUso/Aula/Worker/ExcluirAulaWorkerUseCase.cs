@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             }
 
 
-            return await Task.FromResult(true);
+            return true;
         }
     }
 }
