@@ -40,9 +40,15 @@ namespace SME.SGP.Aplicacao
         {
             using (SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN")))
             {
-                //var command = new ComandosAula(repositorioAula, servicoAula, servicoUsuario);
-
                 SentrySdk.AddBreadcrumb($"Mensagem ExcluirAulaWorkerUseCase", "Rabbit - ExcluirAulaWorkerUseCase");
+
+                var filtro = mensagemRabbit.ObterObjetoFiltro<ExcluirAulaUnicaCommand>();
+
+                var aula = repositorioAula.ObterCompletoPorId(filtro.AulaId);
+
+                aula.DisciplinaNome = filtro.ComponenteCurricularNome;
+
+                //await servicoAula.Excluir(aula, filtro.reco, usuario)
             }
 
 
