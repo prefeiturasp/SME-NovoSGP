@@ -84,8 +84,10 @@ function ButtonGroup({
           className="btnGroupItem"
           onClick={onClickBotaoPrincipal}
           disabled={
-            (!botoesEstadoVariavel || desabilitarBotaoPrincipal) &&
-            (somenteConsulta || !permissoesTela.podeIncluir)
+            botoesEstadoVariavel ||
+            desabilitarBotaoPrincipal ||
+            somenteConsulta ||
+            !permissoesTela.podeIncluir
           }
         />
       )}

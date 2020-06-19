@@ -96,12 +96,23 @@ namespace SME.SGP.Dominio.Servicos
             if (recorrencia == RecorrenciaAula.AulaUnica)
                 return "Aula e suas dependencias excluídas com sucesso!";
 
-            Cliente.Executar<IServicoAula>(s => s.ExcluirRecorrencia(aula, recorrencia, usuario));
+            Cliente.Executar<IServicoAula>(s => s.ExcluirRecorrencia(aula.Id, (int)recorrencia, usuario.Id, usuario.PerfilAtual));
             return "Aula excluida com sucesso. Serão excluidas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
         }
 
-        public async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
+        public async Task ExcluirRecorrencia(long aulaId, int idRecorrencia, long usuarioId, Guid perfilSelecionado)
         {
+
+            var recorrencia = (RecorrenciaAula)idRecorrencia;
+
+            var aula = repositorioAula.ObterCompletoPorId(aulaId);
+            if (aula == null)
+                throw new NegocioException("Não foi possível obter a aula.");
+
+            var usuario = await servicoUsuario.ObterPorIdAsync(usuarioId);
+            if (usuario == null)
+                throw new NegocioException("Não foi possível obter o usuário.");
+
             var fimRecorrencia = await consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
             var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
@@ -129,7 +140,7 @@ namespace SME.SGP.Dominio.Servicos
                     aulasQueDeramErro.Add((aulaRecorrente.DataAula, $"Erro Interno: {ex.Message}"));
                 }
             }
-
+            usuario.PerfilAtual = perfilSelecionado;
             await NotificarUsuario(usuario, aula, Operacao.Exclusao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
         }
 
@@ -148,7 +159,7 @@ namespace SME.SGP.Dominio.Servicos
             var turma = await ObterTurma(aula.TurmaId);
             if (!ehRecorrencia)
             {
-                var aulasExistentes = await repositorioAula.ObterAulasPorDataTurmaDisciplinaProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
+                var aulasExistentes = await repositorioAula.ObterAulasPorDataTurmaComponenteCurricularProfessorRf(aula.DataAula, aula.TurmaId, aula.DisciplinaId, aula.ProfessorRf);
                 if (aulasExistentes != null && aulasExistentes.Any(c => !c.Id.Equals(aula.Id) && c.TipoAula == aula.TipoAula))
                     throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
 
@@ -489,8 +500,8 @@ namespace SME.SGP.Dominio.Servicos
                 operacaoStrTitulo = "Exclusão";
                 operacaoStrDesc = "excluídas";
             }
-
-            var tituloMensagem = $"{operacaoStrTitulo} de Aulas de {aula.DisciplinaNome} na turma {aula.Turma.Nome}";
+            var teste = "teste!!";
+            var tituloMensagem = $"{operacaoStrTitulo} de Aulas de {teste} na turma {aula.Turma.Nome}";
             StringBuilder mensagemUsuario = new StringBuilder();
 
             mensagemUsuario.Append($"Foram {operacaoStrDesc} {quantidade} aulas da disciplina {aula.DisciplinaNome} para a turma {aula.Turma.Nome} da {aula.Turma.Ue?.Nome} ({aula.Turma.Ue?.Dre?.Nome}).");
@@ -625,6 +636,7 @@ namespace SME.SGP.Dominio.Servicos
                 Cargo = Cargo.CP,
                 Nivel = 1
             });
+
             wfAprovacaoAula.Niveis.Add(new WorkflowAprovacaoNivelDto()
             {
                 Cargo = Cargo.Diretor,
