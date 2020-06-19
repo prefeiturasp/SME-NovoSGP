@@ -140,8 +140,8 @@ export default function ReiniciarSenha() {
 
   const onChangeDre = dre => {
     setDreSelecionada(dre);
-    setUeSelecionada([]);
-    setListaUes([]);
+    setUeSelecionada();
+    setListaUes();
   };
 
   const onChangeUe = ue => {
@@ -182,15 +182,16 @@ export default function ReiniciarSenha() {
   const onClickFiltrar = async () => {
     if (!permissoesTela.podeConsultar) return;
 
-    if (ueSelecionada) {
+    if (dreSelecionada) {
       const parametrosPost = {
-        codigoUE: ueSelecionada,
+        codigoDRE: dreSelecionada,
+		codigoUE: ueSelecionada,
         nomeServidor: nomeUsuarioSelecionado,
         codigoRF: rfSelecionado,
       };
       const lista = await api
         .post(
-          `v1/unidades-escolares/${ueSelecionada}/funcionarios`,
+          `v1/unidades-escolares/funcionarios`,
           parametrosPost
         )
         .catch(() => {
