@@ -7,7 +7,7 @@ using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Aula;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
@@ -18,8 +18,6 @@ using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
-using System;
-using System.Collections.Generic;
 
 namespace SME.SGP.IoC
 {
@@ -317,6 +315,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IInserirAulaUseCase, InserirAulaUseCase>();
             services.TryAddScoped<IAlterarAulaUseCase, AlterarAulaUseCase>();
             services.TryAddScoped<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
+
+            services.TryAddScoped<IExcluirAulaWorkerUseCase, ExcluirAulaWorkerUseCase>();
             services.TryAddScoped<IExcluirAulaUseCase, ExcluirAulaUseCase>();
         }
     }
