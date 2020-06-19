@@ -15,9 +15,15 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
+
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Executar(FiltroFuncionarioDto filtroFuncionariosDto)
         {
-            return (IEnumerable<UsuarioEolRetornoDto>) await mediator.Send(new ObterFuncionariosQuery(filtroFuncionariosDto.CodigoDRE, filtroFuncionariosDto.CodigoUE));
+            return await mediator.Send(new ObterFuncionariosQuery(filtroFuncionariosDto.CodigoDRE, filtroFuncionariosDto.CodigoUE));
+        }
+
+        public async Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf)
+        {
+            return await mediator.Send(new ReiniciarSenhaCommand(codigoRf));
         }
     }
 }
