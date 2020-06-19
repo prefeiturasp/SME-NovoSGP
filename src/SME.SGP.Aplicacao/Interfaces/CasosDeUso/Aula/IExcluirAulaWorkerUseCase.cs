@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.Aula
 {
-    public interface IExcluirAulaWorkerUseCase
+    public interface IExcluirAulaWorkerUseCase: IUseCase<MensagemRabbit, bool>
     {
-        Task<bool> Executar(MensagemRabbit mensagemRabbit);
     }
 }
