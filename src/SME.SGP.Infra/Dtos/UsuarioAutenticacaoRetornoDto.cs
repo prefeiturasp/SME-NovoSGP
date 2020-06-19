@@ -16,5 +16,7 @@ namespace SME.SGP.Infra
         public DateTime DataHoraExpiracao { get; set; }
         public string Token { get; set; }
         public Guid UsuarioId { get; set; }
+        public string UsuarioRf { get; set; }
+        public string UsuarioLogin { get; set; }
     }
 }

@@ -27,6 +27,8 @@ namespace SME.SGP.IoC
     {
         public static void Registrar(IServiceCollection services)
         {
+            //TODO VERIFICAR AddTransient
+            services.TryAddScoped<HangfireMediator>();
             RegistrarRepositorios(services);
             RegistrarContextos(services);
             RegistrarComandos(services);
@@ -310,8 +312,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IBoletimUseCase, BoletimUseCase>();
             services.TryAddScoped<IObterListaAlunosDaTurmaUseCase, ObterListaAlunosDaTurmaUseCase>();
             services.TryAddScoped<IReceberDadosDownloadRelatorioUseCase, ReceberDadosDownloadRelatorioUseCase>();
+            services.TryAddScoped<IRelatorioConselhoClasseAtaFinalUseCase, RelatorioConselhoClasseAtaFinalUseCase>();
             services.TryAddScoped<IGamesUseCase, GamesUseCase>();
             services.TryAddScoped<IReiniciarSenhaUseCase, ReiniciarSenhaUseCase>();
+            services.TryAddScoped<IInserirAulaUseCase, InserirAulaUseCase>();
+            services.TryAddScoped<IAlterarAulaUseCase, AlterarAulaUseCase>();
+            services.TryAddScoped<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
         }
     }
 }

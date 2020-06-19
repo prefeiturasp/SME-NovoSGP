@@ -99,7 +99,8 @@ namespace SME.SGP.Api
 
             services.AddDistributedRedisCache(options =>
             {
-                options.Configuration = Configuration.GetConnectionString("SGP-Redis");
+                //options.Configuration = Configuration.GetConnectionString("SGP-Redis");
+                options.Configuration = "10.50.1.174:6380";
                 options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
             });
 

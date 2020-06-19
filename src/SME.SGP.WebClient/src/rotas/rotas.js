@@ -53,6 +53,7 @@ import RelatorioSemestral from '~/paginas/Relatorios/PAP/RelatorioSemestral/rela
 
 import CalendarioProfessor from '~/paginas/CalendarioEscolar/CalendarioProfessor';
 import TerritorioSaber from '~/paginas/Planejamento/TerritorioSaber';
+import AtaFinalResultados from '~/paginas/Relatorios/Atas/AtaFinalResultados/ataFinalResultados';
 
 import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 
@@ -174,7 +175,7 @@ rotas.set(RotasDto.PLANO_ANUAL, {
 });
 
 rotas.set(RotasDto.TERRITORIO_SABER, {
-  breadcrumbName: 'Território do Saber',
+  breadcrumbName: 'Territórios do Saber',
   menu: ['Planejamento'],
   parent: '/',
   component: TerritorioSaber,
@@ -795,6 +796,16 @@ rotas.set(RotasDto.RELATORIO_SEMESTRAL, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_SEMESTRAL,
+});
+rotas.set(RotasDto.ATA_FINAL_RESULTADOS, {
+  breadcrumbName: 'Ata final de resultados',
+  menu: ['Relatórios', 'Atas'],
+  parent: '/',
+  component: AtaFinalResultados,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.ATA_FINAL_RESULTADOS,
 });
 
 const rotasArray = [];
