@@ -318,6 +318,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
 
             services.TryAddScoped<IExcluirAulaWorkerUseCase, ExcluirAulaWorkerUseCase>();
+            services.TryAddScoped<IExcluirAulaUseCase, ExcluirAulaUseCase>();
         }
     }
 }
