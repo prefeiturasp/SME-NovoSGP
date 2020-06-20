@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-
-
     public class ReceberRelatorioProntoUseCase : IReceberRelatorioProntoUseCase
     {
         private readonly IMediator mediator;
@@ -50,6 +48,7 @@ namespace SME.SGP.Aplicacao
                     case TipoRelatorio.Boletim:
                     case TipoRelatorio.ConselhoClasseAluno:
                     case TipoRelatorio.ConselhoClasseTurma:
+                    case TipoRelatorio.ConselhoClasseAtaFinal:
                         SentrySdk.AddBreadcrumb("Enviando notificação..", "9 - ReceberRelatorioProntoUseCase");
                         await EnviaNotificacaoCriador(relatorioCorrelacao);
                         break;
@@ -69,7 +68,7 @@ namespace SME.SGP.Aplicacao
         private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao)
         {
             //TODO: Remover Hard Code!!
-            var urlRedirecionamentoBase = "https://dev-novosgp.sme.prefeitura.sp.gov.br/";
+            var urlRedirecionamentoBase = configuration.GetValue<string>("UrlBackEnd");             
 
             await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase));
         }
