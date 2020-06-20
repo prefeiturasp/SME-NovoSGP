@@ -49,6 +49,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             unitOfWork.IniciarTransacao();
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            filtroRelatorioBoletimDto.Usuario = usuarioLogado;
             var retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado.Id));
             unitOfWork.PersistirTransacao();
             return retorno;
