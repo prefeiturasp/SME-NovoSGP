@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.CodigoRf)
                 .NotEmpty()
-                .WithMessage("O código da Rf é obrigatório.");
+                .WithMessage("O código Rf é obrigatório.");
         }
     }
 }
