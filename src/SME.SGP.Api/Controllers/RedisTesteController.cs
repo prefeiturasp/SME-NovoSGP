@@ -20,13 +20,13 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> InserirDados()
         {
-            await RemoverChaves();
+            
 
             var i = 1111111;
             while (i != 4444444)
             {
                 string randomValoresRandomicos = ObterValor();
-                var chave = $"teste-redis-{i}";
+                var chave = $"teste-redis-teste-redis-{ObterNumeroRandomico()}";
                 await repositorioCache.SalvarAsync(chave, randomValoresRandomicos);
                 i++;
             }
@@ -46,15 +46,19 @@ namespace SME.SGP.Api.Controllers
             var i = 1111111;
             while (i != 4444444)
             {
-                var chave = $"teste-redis-{i}";
+                var chave = $"teste-redis-teste-redis-{i}";
                 await repositorioCache.RemoverAsync(chave);
                 i++;
             }
         }
+        public long ObterNumeroRandomico()
+        {
+            return new Random().Next(1000000, 8888888);
+        }
         [HttpGet("id")]
         public async Task<IActionResult> BuscarDados(int id)
         {
-            var chave = $"teste-redis-{id}";
+            var chave = $"teste-redis-teste-redis-{id}";
             var retorno = await repositorioCache.ObterAsync(chave);
             return Ok(retorno);
         }
