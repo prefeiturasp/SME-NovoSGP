@@ -446,5 +446,10 @@
             Url = "/relatorios/pap/relatorio-preenchimento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Preenchimento")]
         RGP_A = 119,
 
+        [PermissaoMenu(Menu = "Relatório Semestral PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/pap/relatorio-semestral")]
+        RSP_A = 147,
+        
+        [PermissaoMenu(Menu = "Ata Final de Resultados", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 3, EhConsulta = true, Url = "/relatorios/atas/ata-final-resultados")]
+        AFR_C = 148,
     }
 }
