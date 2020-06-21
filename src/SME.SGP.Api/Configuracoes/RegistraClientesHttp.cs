@@ -33,7 +33,6 @@ namespace SME.SGP.Api
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
 
-
             var cookieContainer = new CookieContainer();
             var jasperCookieHandler = new JasperCookieHandler() { CookieContainer = cookieContainer };
 
