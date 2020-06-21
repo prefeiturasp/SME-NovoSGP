@@ -57,7 +57,11 @@ namespace SME.SGP.Api.Controllers
             var chave = $"teste-redis-{id}";
             var retorno = await repositorioCache.ObterAsync(chave);
             if (string.IsNullOrEmpty(retorno))
-                  await repositorioCache.SalvarAsync(chave, ObterValor());
+            {
+                retorno = ObterValor();
+                await repositorioCache.SalvarAsync(chave, retorno);
+            }
+                  
 
             return Ok(retorno);
         }
