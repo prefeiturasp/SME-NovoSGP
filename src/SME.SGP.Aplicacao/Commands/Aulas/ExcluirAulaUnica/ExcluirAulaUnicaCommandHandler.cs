@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
@@ -8,38 +10,60 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirAulaUnicaCommandHandler : IRequestHandler<ExcluirAulaUnicaCommand, RetornoBaseDto>
     {
-        public ExcluirAulaUnicaCommandHandler()
+        private readonly IMediator mediator;
+        private readonly IRepositorioAula repositorioAula;
+        private readonly IUnitOfWork unitOfWork;
+
+        public ExcluirAulaUnicaCommandHandler(IMediator mediator,
+                                              IRepositorioAula repositorioAula,
+                                              IUnitOfWork unitOfWork)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<RetornoBaseDto> Handle(ExcluirAulaUnicaCommand request, CancellationToken cancellationToken)
         {
-            //if (await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(aula.DataAula.Date, aula.UeId, aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId))
-            //    throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
+            var aula = await repositorioAula.ObterPorIdAsync(request.AulaId);
 
-            //await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
+            if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, request.Usuario.CodigoRf)))
+                throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
 
-            //unitOfWork.IniciarTransacao();
-            //try
-            //{
-            //    if (aula.WorkflowAprovacaoId.HasValue)
-            //        await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(aula.WorkflowAprovacaoId.Value);
+            await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, request.Usuario);
 
-            //    await comandosNotificacaoAula.Excluir(aula.Id);
-            //    await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
-            //    await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
+            unitOfWork.IniciarTransacao();
+            try
+            {
+                // TODO validar transações das conexões
+                if (aula.WorkflowAprovacaoId.HasValue)
+                    await mediator.Send(new ExcluirWorkflowCommand(aula.WorkflowAprovacaoId.Value));
 
-            //    aula.Excluido = true;
-            //    await repositorioAula.SalvarAsync(aula);
+                await mediator.Send(new ExcluirNotificacoesDaAulaCommand(aula.Id));
+                await mediator.Send(new ExcluirFrequenciaDaAulaCommand(aula.Id));
+                await mediator.Send(new ExcluirPlanoAulaDaAulaCommand(aula.Id));
 
-            //    unitOfWork.PersistirTransacao();
-            //}
-            //catch (Exception)
-            //{
-            //    unitOfWork.Rollback();
-            //    throw;
-            //}
-            return null;
+                aula.Excluido = true;
+                await repositorioAula.SalvarAsync(aula);
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
+            var retorno = new RetornoBaseDto();
+            retorno.Mensagens.Add("Aula excluída com sucesso.");
+            return retorno;
         }
+
+        private async Task ValidarComponentesDoProfessor(string codigoTurma, long componenteCurricularCodigo, DateTime dataAula, Usuario usuario)
+        {
+            var resultadoValidacao = await mediator.Send(new ValidarComponentesDoProfessorCommand(usuario, codigoTurma, componenteCurricularCodigo, dataAula));
+            if (!resultadoValidacao.resultado)
+                throw new NegocioException(resultadoValidacao.mensagem);
+        }
+
     }
 }
