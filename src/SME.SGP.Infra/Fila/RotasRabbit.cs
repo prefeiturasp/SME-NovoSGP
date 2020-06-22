@@ -11,6 +11,7 @@
         public static string RotaRelatoriosProntos => "relatorios.prontos";
 
         public static string RotaExcluirAulaRecorrencia => "aula.excluir.recorrencia";
-        public static string RotaInserirAulaRecorrencia => "aula.cadastrar";
+        public static string RotaInserirAulaRecorrencia => "aula.cadastrar.recorrencia";
+        public static string RotaAlterarAulaRecorrencia => "aula.excluir.recorrencia";
     }
 }
