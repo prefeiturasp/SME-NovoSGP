@@ -38,6 +38,7 @@ namespace SME.SGP.Api
 
             comandos = new Dictionary<string, (bool, Type)>();
             comandos.Add(RotasRabbit.RotaRelatoriosProntos, (false, typeof(IReceberRelatorioProntoUseCase)));
+            comandos.Add(RotasRabbit.RotaExcluirAulaRecorrencia, (false, typeof(IExcluirAulaRecorrenteUseCase)));
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
