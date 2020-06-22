@@ -85,13 +85,18 @@ const BoletimSimples = () => {
         <Card mx="mx-0">
           <ButtonGroup
             somenteConsulta={somenteConsulta}
-            permissoesTela={permissoesTela[RotasDto.RELATORIO_BOLETIM_SIMPLES]}
+            permissoesTela={{
+              podeAlterar: false,
+              podeConsultar: true,
+              podeExcluir: false,
+              podeIncluir: true,
+            }}
             temItemSelecionado={itensSelecionados && itensSelecionados.length}
             onClickVoltar={onClickVoltar}
             onClickCancelar={onClickCancelar}
             onClickBotaoPrincipal={onClickBotaoPrincipal}
             desabilitarBotaoPrincipal={false}
-            botoesEstadoVariavel
+            botoesEstadoVariavel={false}
             labelBotaoPrincipal="Gerar"
           />
           <Filtro onFiltrar={onChangeFiltro} resetForm={resetForm} />
