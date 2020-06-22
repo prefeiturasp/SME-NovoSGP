@@ -7,23 +7,23 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirAulaEmManutencaoCommand: IRequest<ProcessoExecutando>
+    public class InserirAulaEmManutencaoCommand: IRequest<IEnumerable<ProcessoExecutando>>
     {
-        public InserirAulaEmManutencaoCommand(long aulaId)
+        public InserirAulaEmManutencaoCommand(IEnumerable<long> aulasIds)
         {
-            AulaId = aulaId;
+            AulasIds = aulasIds;
         }
 
-        public long AulaId { get; set; }
+        public IEnumerable<long> AulasIds { get; set; }
     }
 
     public class InserirAulaEmManutencaoCommandValidator: AbstractValidator<InserirAulaEmManutencaoCommand>
     {
         public InserirAulaEmManutencaoCommandValidator()
         {
-            RuleFor(c => c.AulaId)
+            RuleFor(c => c.AulasIds)
                 .NotEmpty()
-                .WithMessage("Necessário informar o id da aula para incluir o registro em manutenção.");
+                .WithMessage("Necessário informar os ids das aulas para incluir os registros em manutenção.");
         }
     }
 }

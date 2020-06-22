@@ -35,7 +35,6 @@ namespace SME.SGP.Aplicacao
             unitOfWork.IniciarTransacao();
             try
             {
-                // TODO validar transações das conexões
                 if (aula.WorkflowAprovacaoId.HasValue)
                     await mediator.Send(new ExcluirWorkflowCommand(aula.WorkflowAprovacaoId.Value));
 
