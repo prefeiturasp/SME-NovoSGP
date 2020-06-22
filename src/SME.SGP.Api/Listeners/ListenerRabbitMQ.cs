@@ -1,9 +1,12 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Sentry;
+using Sentry.Protocol;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System;
@@ -16,6 +19,7 @@ namespace SME.SGP.Api
     public class ListenerRabbitMQ : IHostedService
     {
         private readonly IModel canalRabbit;
+        private readonly string sentryDSN;
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
 
@@ -26,11 +30,11 @@ namespace SME.SGP.Api
         private readonly Dictionary<string, (bool, Type)> comandos;
 
 
-        public ListenerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory)
+        public ListenerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
+            sentryDSN = configuration.GetValue<string>("Sentry:DSN");
             this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
-            
             canalRabbit = conexaoRabbit.CreateModel();
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeListenerWorkerRelatorios, ExchangeType.Topic);
             canalRabbit.QueueDeclare(RotasRabbit.FilaListenerSgp, false, false, false, null);
@@ -40,52 +44,57 @@ namespace SME.SGP.Api
             comandos.Add(RotasRabbit.RotaRelatoriosProntos, (false, typeof(IReceberRelatorioProntoUseCase)));
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var consumer = new EventingBasicConsumer(canalRabbit);
-            consumer.Received += (ch, ea) =>
+            consumer.Received += async (ch, ea) =>
             {
-                var body = ea.Body.Span;
-                var content = System.Text.Encoding.UTF8.GetString(body);
-                TratarMensagem(content, ea.RoutingKey);
 
-                canalRabbit.BasicAck(ea.DeliveryTag, false);
+                await TratarMensagem(ea);
             };
 
             canalRabbit.BasicConsume(RotasRabbit.FilaListenerSgp, false, consumer);
-            return Task.CompletedTask;
         }
-        private void TratarMensagem(string mensagem, string rota)
+        private async Task TratarMensagem(BasicDeliverEventArgs ea)
         {
+            var mensagem = System.Text.Encoding.UTF8.GetString(ea.Body.Span);
+            var rota = ea.RoutingKey;
             if (comandos.ContainsKey(rota))
             {
-                try
+                using (SentrySdk.Init(sentryDSN))
                 {
-                    using (var scope = serviceScopeFactory.CreateScope())
+                    var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
+                    try
                     {
-                        var tipoComando = comandos[rota];
-                        var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-
-                        //usar mediatr?
-                        if (tipoComando.Item1)
+                        using (var scope = serviceScopeFactory.CreateScope())
                         {
-                            var comando = JsonConvert.DeserializeObject(mensagemRabbit.Filtros.ToString(), tipoComando.Item2);
-                            var mediatr = scope.ServiceProvider.GetService<IMediator>();
-                            mediatr.Send(comando);
-                        }
-                        else
-                        {
-                            var casoDeUso = scope.ServiceProvider.GetService(tipoComando.Item2);
+                            var tipoComando = comandos[rota];
 
-                            tipoComando.Item2.GetMethod("Executar").Invoke(casoDeUso, new object[] { mensagemRabbit });
-                        }
+                            //usar mediatr?
+                            if (tipoComando.Item1)
+                            {
+                                var comando = JsonConvert.DeserializeObject(mensagemRabbit.Filtros.ToString(), tipoComando.Item2);
+                                var mediatr = scope.ServiceProvider.GetService<IMediator>();
+                                await mediatr.Send(comando);
+                            }
+                            else
+                            {
+                                var casoDeUso = scope.ServiceProvider.GetService(tipoComando.Item2);
 
+                                await tipoComando.Item2.GetMethod("Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
+                            }
+                            canalRabbit.BasicAck(ea.DeliveryTag, false);
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    //TODO
+                    catch (Exception ex)
+                    {
+                        SentrySdk.CaptureMessage($"Erro ao consumir a fila - {ea.RoutingKey}", SentryLevel.Error);
+                        SentrySdk.CaptureException(ex);
+                        //canalRabbit.QueueDeclare("filadeerro",false);
+                        //canalRabbit.BasicPublish(RotasRabbit.ExchangeListenerWorkerRelatorios, "filadeerro", null, ea.Body);
+                        //canalRabbit.BasicNack(ea.DeliveryTag, false, true);
+                    }
                 }
             }
         }
