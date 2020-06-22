@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirAulaRecorrenteUseCase : IExcluirAulaRecorrenteUseCase
+    public class InserirAulaRecorrenteUseCase : IInserirAulaRecorrenteUseCase
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         private readonly IRepositorioAula repositorioAula;
 
-        public ExcluirAulaRecorrenteUseCase(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration, IRepositorioAula repositorio)
+        public InserirAulaRecorrenteUseCase(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration, IRepositorioAula repositorio)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -28,13 +28,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            SentrySdk.AddBreadcrumb($"Mensagem ExcluirAulaRecorrenteUseCase", "Rabbit - ExcluirAulaRecorrenteUseCase");
+            SentrySdk.AddBreadcrumb($"Mensagem InserirAulaRecorrenteUseCase", "Rabbit - InserirAulaRecorrenteUseCase");
 
-            ExcluirAulaUnicaCommand filtro = mensagemRabbit.ObterObjetoFiltro<ExcluirAulaUnicaCommand>();
-
-            Aula aula = repositorioAula.ObterCompletoPorId(filtro.AulaId);
-
-            aula.DisciplinaNome = filtro.ComponenteCurricularNome;
+            InserirAulaRecorrenteCommand filtro = mensagemRabbit.ObterObjetoFiltro<InserirAulaRecorrenteCommand>();
 
             // TODO chamar command
 
