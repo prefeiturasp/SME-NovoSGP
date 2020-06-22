@@ -9,12 +9,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ReiniciarSenhaCommandHandler : IRequestHandler<ReiniciarSenhaCommand, UsuarioReinicioSenhaDto>
     {
-        public readonly IComandosUsuario comandosUsuario;
         private readonly IServicoEol servicoEOL;
 
-        public ReiniciarSenhaCommandHandler(IComandosUsuario comandosUsuario, IServicoEol servicoEOL)
+        public ReiniciarSenhaCommandHandler(IServicoEol servicoEOL)
         {
-            this.comandosUsuario = comandosUsuario ?? throw new ArgumentNullException(nameof(comandosUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
