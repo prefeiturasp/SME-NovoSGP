@@ -25,7 +25,9 @@ const ObjectCardConselhoClasse = props => {
       dadosAlunoObjectCard.codigoEOL
     )
       .then(() => {
-        sucesso('Gerando conselho de classe do aluno');
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
       })
       .finally(setGerandoConselhoClasse(false))
       .catch(e => erro(e));
