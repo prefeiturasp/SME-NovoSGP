@@ -1,4 +1,3 @@
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
@@ -7,7 +6,6 @@ using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Aula;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
@@ -150,7 +148,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasRelatorioSemestralPAPAlunoSecao, ConsultasRelatorioSemestralPAPAlunoSecao>();
             services.TryAddScoped<IConsultasSecaoRelatorioSemestralPAP, ConsultasSecaoRelatorioSemestralPAP>();
             services.TryAddScoped<IConsultaRecuperacaoParalelaPeriodo, ConsultaRecuperacaoParalelaPeriodo>();
-            services.TryAddScoped<IConsultaRecuperacaoParalelaPeriodo, ConsultaRecuperacaoParalelaPeriodo>();            
+            services.TryAddScoped<IConsultaRecuperacaoParalelaPeriodo, ConsultaRecuperacaoParalelaPeriodo>();
             services.TryAddScoped<IConsultasPlanoAnualTerritorioSaber, ConsultasPlanoAnualTerritorioSaber>();
         }
 
@@ -298,7 +296,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScoped<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
-            services.TryAddScoped<IServicoFila, FilaRabbit>();            
+            services.TryAddScoped<IServicoFila, FilaRabbit>();
         }
 
         private static void RegistrarCasosDeUso(IServiceCollection services)
@@ -316,7 +314,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAlterarAulaUseCase, AlterarAulaUseCase>();
             services.TryAddScoped<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
 
-            services.TryAddScoped<IExcluirAulaWorkerUseCase, ExcluirAulaWorkerUseCase>();
+            services.TryAddScoped<IExcluirAulaRecorrenteUseCase, ExcluirAulaRecorrenteUseCase>();
             services.TryAddScoped<IExcluirAulaUseCase, ExcluirAulaUseCase>();
         }
     }
