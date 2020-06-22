@@ -17,8 +17,8 @@ pipeline {
         steps {
           checkout scm  
         }
-      }
-      
+       }
+       
       stage('Início Análise Código') {
           when {
             branch 'development'
@@ -35,10 +35,9 @@ pipeline {
                 -Dsonar.host.url=http://sonar.sme.prefeitura.sp.gov.br \
                 -Dsonar.login=1ab3b0eb51a0f51c846c13f2f5a0255fd5d7583e'
             }
-       }
-    }
+       } 
          
-        stage('Build projeto') {
+      stage('Build projeto') {
             steps {
             sh "echo executando build de projeto"
             sh 'dotnet build'
@@ -53,7 +52,7 @@ pipeline {
             }
         }
         
-        stage('Fim Análise Código') {
+              stage('Fim Análise Código') {
           when {
             branch 'development'
           }
@@ -61,7 +60,7 @@ pipeline {
                 sh 'echo Fim SonarQube API'
                 sh 'dotnet-sonarscanner end /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b"'
             }
-       
+       }
 
       stage('Deploy DEV') {
         when {
@@ -114,7 +113,7 @@ pipeline {
             }
         }
 		
-		stage('Deploy DEV-rc2') {
+		  stage('Deploy DEV-rc2') {
             when {
                 branch 'development-r2'
             }
@@ -225,7 +224,7 @@ pipeline {
             }
         }
 	    
-	stage('Deploy HOM-R2') {
+	    stage('Deploy HOM-R2') {
             when {
                 branch 'release-r2'
             }
