@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ComunicadoCompletoDto> BuscarPorIdAsync(long id)
         {
-            var comunicado = await repositorio.ObterPorIdAsync(id);
+            var comunicado = await repositorio.ObterResultadoPorComunicadoIdAsync(id);
             return MapearPorIdParaDto(comunicado);
         }
 

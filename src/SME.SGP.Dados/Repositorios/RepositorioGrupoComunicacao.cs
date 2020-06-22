@@ -66,7 +66,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<GrupoComunicacaoCompletoRespostaDto>(query, new { filtro.Nome });
         }
 
-        public async Task<IEnumerable<GrupoComunicacaoCompletoRespostaDto>> ObterPorIdAsync(long id)
+        public async Task<IEnumerable<GrupoComunicacaoCompletoRespostaDto>> ObterCompletoPorIdAsync(long id)
         {
             var where = "AND gc.id = @id";
             var query = string.Format(queryGrupo, where);

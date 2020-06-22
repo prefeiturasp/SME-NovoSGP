@@ -22,11 +22,12 @@ namespace SME.SGP.Aplicacao.Servicos
         private string tokenGerado;
 
         public ServicoTokenJwt(IConfiguration configuration,
-                               IContextoAplicacao  contextoAplicacao)
+                               IContextoAplicacao  contextoAplicacao,
+                               IRepositorioCache cache)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));            
-            
+            this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
+            this.cache = cache ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }
 
         public string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos)

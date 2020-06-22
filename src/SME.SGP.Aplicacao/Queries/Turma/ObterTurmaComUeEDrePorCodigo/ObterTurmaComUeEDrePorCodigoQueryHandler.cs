@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
-        public Task<Turma> Handle(ObterTurmaComUeEDrePorCodigoQuery request, CancellationToken cancellationToken)
-            => Task.FromResult(repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo));
+        public async Task<Turma> Handle(ObterTurmaComUeEDrePorCodigoQuery request, CancellationToken cancellationToken)
+            => await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
     }
 }

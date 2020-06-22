@@ -44,19 +44,19 @@ namespace SME.SGP.Aplicacao
             await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(idWorkflowAprovacao);
         }
 
-        public long Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
+        public async Task<long> Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
         {
             if (workflowAprovacaoNiveisDto.Tipo != WorkflowAprovacaoTipo.Basica && workflowAprovacaoNiveisDto.EntidadeParaAprovarId == 0)
                 throw new NegocioException("Para um workflow diferente de básico, é necessário informar o Id da entidade para Aprovar.");
 
             WorkflowAprovacao workflowAprovacao = MapearDtoParaEntidade(workflowAprovacaoNiveisDto);
 
-            repositorioWorkflowAprovacao.Salvar(workflowAprovacao);
+            await repositorioWorkflowAprovacao.SalvarAsync(workflowAprovacao);
 
             foreach (var workflowAprovacaoNivel in workflowAprovacao.Niveis)
             {
                 workflowAprovacaoNivel.WorkflowId = workflowAprovacao.Id;
-                repositorioWorkflowAprovacaoNivel.Salvar(workflowAprovacaoNivel);
+                await repositorioWorkflowAprovacaoNivel.SalvarAsync(workflowAprovacaoNivel);
 
                 foreach (var usuario in workflowAprovacaoNivel.Usuarios)
                 {

@@ -53,7 +53,7 @@ namespace SME.SGP.Dominio.Servicos
                 
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

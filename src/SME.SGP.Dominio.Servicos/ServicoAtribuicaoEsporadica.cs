@@ -26,7 +26,7 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public void Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo)
+        public async Task Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo)
         {
             var atribuicoesConflitantes = repositorioAtribuicaoEsporadica.ObterAtribuicoesDatasConflitantes(atribuicaoEsporadica.DataInicio, atribuicaoEsporadica.DataFim, atribuicaoEsporadica.ProfessorRf, atribuicaoEsporadica.Id);
 
@@ -38,7 +38,7 @@ namespace SME.SGP.Dominio.Servicos
             if (tipoCalendario == null)
                 throw new NegocioException("Nenhum tipo de calendario para o ano letivo vigente encontrado");
 
-            var periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+            var periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Nenhum periodo escolar encontrado para o ano letivo vigente");

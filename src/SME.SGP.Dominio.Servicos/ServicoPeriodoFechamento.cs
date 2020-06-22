@@ -110,7 +110,7 @@ namespace SME.SGP.Dominio.Servicos
 
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
 
                         throw;
@@ -164,11 +164,11 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     fechamentoSMEDre = new PeriodoFechamento(null, null);
 
-                    var tipoCalendario = repositorioTipoCalendario.ObterPorId(tipoCalendarioId);
+                    var tipoCalendario = await repositorioTipoCalendario.ObterPorIdAsync(tipoCalendarioId);
                     if (tipoCalendario == null)
                         throw new NegocioException("Tipo de calendário não encontrado.");
 
-                    var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
+                    var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
                     if (periodoEscolar == null || !periodoEscolar.Any())
                         throw new NegocioException("Período escolar não encontrado.");
 
@@ -303,7 +303,7 @@ namespace SME.SGP.Dominio.Servicos
                 return notificacao;
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
                 throw;
@@ -388,7 +388,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
 
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
 
                     throw;

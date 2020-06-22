@@ -56,14 +56,14 @@ namespace SME.SGP.Dominio.Servicos
         public async Task Salvar(long id, CompensacaoAusenciaDto compensacaoDto)
         {
             // Busca dados da turma
-            var turma = BuscaTurma(compensacaoDto.TurmaId);
+            var turma = await BuscaTurma(compensacaoDto.TurmaId);
 
             // Consiste periodo
             var periodo = await BuscaPeriodo(turma, compensacaoDto.Bimestre);
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario.CodigoRf, periodo.PeriodoFim);
+            await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario.CodigoRf, periodo.PeriodoFim);
 
             // Valida mesma compensação no ano
             var compensacaoExistente = await repositorioCompensacaoAusencia.ObterPorAnoTurmaENome(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id);
@@ -122,21 +122,21 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<PeriodoEscolarDto> BuscaPeriodo(Turma turma, int bimestre)
         {
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio);
 
             PeriodoEscolarDto periodo = null;
             // Eja possui 2 calendarios por ano
             if (turma.ModalidadeCodigo == Modalidade.EJA)
             {
                 if (turma.Semestre == 1)
-                    periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
+                    periodo = (await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id)).Periodos
                         .FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoInicio < new DateTime(turma.AnoLetivo, 6, 1));
                 else
-                    periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
+                    periodo = (await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id)).Periodos
                         .FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoFim > new DateTime(turma.AnoLetivo, 6, 1));
             }
             else
-                periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
+                periodo = (await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id)).Periodos
                     .FirstOrDefault(p => p.Bimestre == bimestre);
 
             if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre, tipoCalendario: tipoCalendario))
@@ -145,9 +145,9 @@ namespace SME.SGP.Dominio.Servicos
             return periodo;
         }
 
-        private Turma BuscaTurma(string turmaId)
+        private async Task<Turma> BuscaTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId);
+            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 
@@ -317,7 +317,7 @@ namespace SME.SGP.Dominio.Servicos
             // Excluir lista carregada
             foreach (var compensacaoExcluir in compensacoesExcluir)
             {
-                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(compensacaoExcluir.TurmaId);
+                var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(compensacaoExcluir.TurmaId);
                 var periodo = await BuscaPeriodo(turma, compensacaoExcluir.Bimestre);
 
                 unitOfWork.IniciarTransacao();
@@ -351,7 +351,7 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não foi possível excluir as compensações de ids {string.Join(",", idsComErroAoExcluir)}");
         }
 
-        private async void ValidaProfessorPodePersistirTurma(string turmaId, string codigoRf, DateTime dataAula)
+        private async Task ValidaProfessorPodePersistirTurma(string turmaId, string codigoRf, DateTime dataAula)
         {
             if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula.Local()))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
@@ -367,7 +367,7 @@ namespace SME.SGP.Dominio.Servicos
             var turmasComErro = new StringBuilder("");
             foreach (var turmaId in compensacaoCopia.TurmasIds)
             {
-                var turma = repositorioTurma.ObterPorCodigo(turmaId);
+                var turma = await repositorioTurma.ObterPorCodigo(turmaId);
                 CompensacaoAusenciaDto compensacaoDto = new CompensacaoAusenciaDto()
                 {
                     TurmaId = turmaId,
