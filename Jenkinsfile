@@ -36,6 +36,7 @@ pipeline {
                 -Dsonar.login=1ab3b0eb51a0f51c846c13f2f5a0255fd5d7583e'
             }
        }
+    }
          
         stage('Build projeto') {
             steps {
@@ -52,7 +53,7 @@ pipeline {
             }
         }
         
-              stage('Fim Análise Código') {
+        stage('Fim Análise Código') {
           when {
             branch 'development'
           }
@@ -60,7 +61,7 @@ pipeline {
                 sh 'echo Fim SonarQube API'
                 sh 'dotnet-sonarscanner end /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b"'
             }
-       }
+       
 
       stage('Deploy DEV') {
         when {
