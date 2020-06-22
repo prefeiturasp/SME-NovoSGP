@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return retorno.AsEnumerable();
+            return await Task.FromResult(retorno.AsEnumerable());
         }
 
         private bool ObterPodeCadastrarAvaliacao(IEnumerable<AtividadeAvaliativa> atividadesAvaliativasDaAula, DisciplinaDto componenteCurricular)
