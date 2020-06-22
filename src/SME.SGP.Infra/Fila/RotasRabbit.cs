@@ -8,6 +8,7 @@
         
         public static string WorkerRelatoriosSgp => "sme.sr.workers.sgp";
         public static string RotaRelatoriosSolicitados => "relatorios.solicitados";
-        public static string RotaRelatoriosProntos=> "relatorios.prontos";
+        public static string RotaRelatoriosProntos => "relatorios.prontos";
+        public static string RotaExcluirAulaRecorrencia => "aula.excluir.recorrencia";
     }
 }
