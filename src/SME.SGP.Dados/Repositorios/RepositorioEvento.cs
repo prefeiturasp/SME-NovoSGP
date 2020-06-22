@@ -695,9 +695,8 @@ namespace SME.SGP.Dados.Repositorios
 
 
 
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
 

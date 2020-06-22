@@ -176,7 +176,7 @@ namespace SME.SGP.Aplicacao
             if (dataAula.Year != DateTime.Now.Year)
             {
 
-                var periodoEscolarDaAula = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAula);
+                var periodoEscolarDaAula = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAula);
                 if (periodoEscolarDaAula == null)
                     throw new NegocioException("Não foi possível localizar o período escolar da aula.");
                 
@@ -215,7 +215,7 @@ namespace SME.SGP.Aplicacao
 
             string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
-            var diasPeriodoEscolares = comandosDiasLetivos.BuscarDiasLetivos(filtro.TipoCalendarioId);
+            var diasPeriodoEscolares = await comandosDiasLetivos.BuscarDiasLetivos(filtro.TipoCalendarioId);
             var diasAulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf);
             var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.EhEventoSme, true, usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
 
@@ -244,7 +244,7 @@ namespace SME.SGP.Aplicacao
 
             var eventosAulas = new List<EventosAulasTipoCalendarioDto>();
 
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId);
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId);
 
             if (periodoEscolar is null || !periodoEscolar.Any())
                 throw new NegocioException($"Não existe periodo escolar cadastrado para o tipo de calendario de id {filtro.TipoCalendarioId}");

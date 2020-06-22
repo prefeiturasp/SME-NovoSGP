@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao
 
         Task ExcluirAsync(long idWorkflowAprovacao);
 
-        long Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto);
+        Task<long> Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto);
     }
 }

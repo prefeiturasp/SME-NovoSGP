@@ -79,11 +79,11 @@ namespace SME.SGP.Aplicacao
         {
             var modalidadeTipoCalendario = ObterModalidadeCalendario(filtro.Modalidade);
 
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(filtro.AnoLetivo, modalidadeTipoCalendario, filtro.Semestre);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(filtro.AnoLetivo, modalidadeTipoCalendario, filtro.Semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
-            var periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+            var periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
@@ -351,8 +351,8 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        public IEnumerable<ConceitoDto> ObterConceitos(DateTime data)
-            => MapearParaDto(repositorioConceito.ObterPorData(data));
+        public async Task<IEnumerable<ConceitoDto>> ObterConceitos(DateTime data)
+            => MapearParaDto(await repositorioConceito.ObterPorData(data));
 
         public async Task<TipoNota> ObterNotaTipo(long turmaId, int anoLetivo, bool consideraHistorico)
         {
@@ -365,18 +365,18 @@ namespace SME.SGP.Aplicacao
             return notaTipo.TipoNota;
         }
 
-        public double ObterValorArredondado(long atividadeAvaliativaId, double nota)
+        public async Task<double> ObterValorArredondado(long atividadeAvaliativaId, double nota)
         {
-            var atividadeAvaliativa = repositorioAtividadeAvaliativa.ObterPorId(atividadeAvaliativaId);
+            var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterPorIdAsync(atividadeAvaliativaId);
             if (atividadeAvaliativa == null)
                 throw new NegocioException("Não foi possível localizar a atividade avaliativa.");
 
-            return ObterValorArredondado(atividadeAvaliativa.DataAvaliacao, nota);
+            return await ObterValorArredondado(atividadeAvaliativa.DataAvaliacao, nota);
         }
 
-        public double ObterValorArredondado(DateTime data, double nota)
+        public async Task<double> ObterValorArredondado(DateTime data, double nota)
         {
-            var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(data);
+            var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(data);
             if (notaParametro == null)
                 throw new NegocioException("Não foi possível localizar o parâmetro da nota.");
 
@@ -393,33 +393,6 @@ namespace SME.SGP.Aplicacao
             var notaDoAluno = notas.FirstOrDefault(a => a.AlunoId == aluno.CodigoAluno && a.AtividadeAvaliativaID == atividadeAvaliativa.Id);
 
             return notaDoAluno;
-        }
-
-        private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf,
-            AtividadeAvaliativa atividadeAvaliativa, AlunoPorTurmaResposta aluno)
-        {
-            if (atividadeAvaliativa.DataAvaliacao >= aluno.DataSituacao &&
-                (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade))
-                return false;
-
-            if (atividadeAvaliativa.DataAvaliacao.Date > DateTime.Today)
-                return false;
-
-            if (usuarioLogado.PerfilAtual == Perfis.PERFIL_CJ)
-            {
-                if (atividadeAvaliativa.CriadoRF != usuarioLogado.CodigoRf)
-                    return false;
-            }
-            else
-            {
-                if (usuarioLogado.CodigoRf != professorTitularDaTurmaDisciplinaRf)
-                    return false;
-            }
-
-            return true;
         }
 
         private IEnumerable<ConceitoDto> MapearParaDto(IEnumerable<Conceito> conceitos)
@@ -471,18 +444,6 @@ namespace SME.SGP.Aplicacao
                 BimestreAtual = bimestre,
                 Bimestres = ObterListaBimestreGenerico(periodosEscolares.Count()).ToList(),
             };
-        }
-
-        private async Task<string> ObterRfProfessorTitularDisciplina(string turmaCodigo, string disciplinaCodigo, List<AtividadeAvaliativa> atividadesAvaliativasdoBimestre)
-        {
-            if (atividadesAvaliativasdoBimestre.Any())
-            {
-                var professoresTitularesDaTurma = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaCodigo);
-                var professorTitularDaDisciplina = professoresTitularesDaTurma.FirstOrDefault(a => a.DisciplinaId == int.Parse(disciplinaCodigo) && a.ProfessorRf != string.Empty);
-                return professorTitularDaDisciplina == null ? string.Empty : professorTitularDaDisciplina.ProfessorRf;
-            }
-
-            return string.Empty;
         }
 
         private void ObterValoresDeAuditoria(DateTime? dataUltimaNotaConceitoInserida, DateTime? dataUltimaNotaConceitoAlterada, string usuarioInseriu, string usuarioAlterou, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoInclusao, string nomeAvaliacaoAlteracao)

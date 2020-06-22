@@ -15,7 +15,6 @@ namespace SME.SGP.Aplicacao.Servicos
     {
         private readonly IConsultasSupervisor consultasSupervisor;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
-        private readonly IRepositorioCiclo repositorioCiclo;
         private readonly IRepositorioCicloEnsino repositorioCicloEnsino;
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioTipoEscola repositorioTipoEscola;

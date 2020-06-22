@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -33,15 +34,15 @@ namespace SME.SGP.Dominio.Servicos
             this.comandosProcessoExecutando = comandosProcessoExecutando ?? throw new ArgumentNullException(nameof(comandosProcessoExecutando));
         }
 
-        private int ObterBimestre(DateTime data, string turmaId)
+        private async Task<int> ObterBimestre(DateTime data, string turmaId)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaId);
-            return consultasPeriodoEscolar.ObterBimestre(data, turma.ModalidadeCodigo, turma.Semestre);
+            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+            return await consultasPeriodoEscolar.ObterBimestre(data, turma.ModalidadeCodigo, turma.Semestre);
         }
 
-        public void CalcularFrequenciaPorTurma(IEnumerable<string> alunos, DateTime dataAula, string turmaId, string disciplinaId)
+        public async Task CalcularFrequenciaPorTurma(IEnumerable<string> alunos, DateTime dataAula, string turmaId, string disciplinaId)
         {
-            var bimestre = ObterBimestre(dataAula, turmaId);
+            var bimestre = await ObterBimestre(dataAula, turmaId);
 
             comandosProcessoExecutando.IncluirCalculoFrequencia(turmaId, disciplinaId, bimestre).Wait();
             try

@@ -86,7 +86,7 @@ namespace SME.SGP.Dados.Repositorios
                     entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                     throw;
