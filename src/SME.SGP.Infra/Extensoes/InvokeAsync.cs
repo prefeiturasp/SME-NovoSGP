@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Api
+namespace SME.SGP.Infra
 {
     public static class ExtensionMethods
     {

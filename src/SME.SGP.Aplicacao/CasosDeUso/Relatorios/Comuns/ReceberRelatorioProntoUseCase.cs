@@ -16,8 +16,8 @@ namespace SME.SGP.Aplicacao
 
         public ReceberRelatorioProntoUseCase(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
@@ -25,18 +25,16 @@ namespace SME.SGP.Aplicacao
 
             var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
 
-            //SentrySdk.AddBreadcrumb($"Correlação obtida com sucesso {relatorioCorrelacao.Codigo}", "9 - ReceberRelatorioProntoUseCase");
+            SentrySdk.AddBreadcrumb($"Correlação obtida com sucesso {relatorioCorrelacao.Codigo}", "9 - ReceberRelatorioProntoUseCase");
 
             unitOfWork.IniciarTransacao();
-
-            throw new NegocioException("Teste");
 
             var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoFiltro<ReceberRelatorioProntoCommand>();
             receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao ?? throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
 
             var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
 
-            //SentrySdk.AddBreadcrumb("Salvando Correlação Relatório Jasper de retorno", "9 - ReceberRelatorioProntoUseCase");
+            SentrySdk.AddBreadcrumb("Salvando Correlação Relatório Jasper de retorno", "9 - ReceberRelatorioProntoUseCase");
 
             relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
 
@@ -58,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
 
             unitOfWork.PersistirTransacao();
-            //SentrySdk.CaptureMessage("9 - ReceberRelatorioProntoUseCase -> Finalizado Fluxo de relatórios");
+            SentrySdk.CaptureMessage("9 - ReceberRelatorioProntoUseCase -> Finalizado Fluxo de relatórios");
 
 
             return await Task.FromResult(true);
@@ -66,7 +64,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao)
         {
-            //TODO: Remover Hard Code!!
             var urlRedirecionamentoBase = configuration.GetValue<string>("UrlBackEnd");
 
             await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase));
