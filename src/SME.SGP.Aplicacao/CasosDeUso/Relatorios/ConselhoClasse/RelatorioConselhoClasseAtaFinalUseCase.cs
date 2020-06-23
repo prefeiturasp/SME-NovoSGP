@@ -14,14 +14,15 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public async Task<bool> Executar(FiltroRelatorioConselhoClasseAtaFinalDto filtroRelatorioConselhoClasseDto)
+        public async Task<bool> Executar(FiltroRelatorioConselhoClasseAtaFinalDto filtroRelatorioConselhoClasseAtaFinalDto)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
 
             if (usuarioId == 0)
                 throw new NegocioException("Não foi possível localizar o usuário.");
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAtaFinal, filtroRelatorioConselhoClasseDto, usuarioId));
+
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAtaFinal, filtroRelatorioConselhoClasseAtaFinalDto, usuarioId));
         }
     }
 }

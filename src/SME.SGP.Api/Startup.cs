@@ -139,7 +139,6 @@ namespace SME.SGP.Api
             if (_env.EnvironmentName != "teste-integrado")
             {
                 services.AddRabbit();
-                services.AddHostedService<ListenerRabbitMQ>();
             }
         }
     }
