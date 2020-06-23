@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirAulaUseCase : AbstractUseCase, IInserirAulaUseCase
     {
-        public InserirAulaUseCase(IMediator mediator): base(mediator)
+        public InserirAulaUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     mediator.Enfileirar(new InserirAulaRecorrenteCommand(usuarioLogado, inserirAulaDto.DataAula, inserirAulaDto.Quantidade, inserirAulaDto.CodigoTurma, inserirAulaDto.CodigoComponenteCurricular, inserirAulaDto.NomeComponenteCurricular, inserirAulaDto.TipoCalendarioId, inserirAulaDto.TipoAula, inserirAulaDto.CodigoUe, inserirAulaDto.EhRegencia, inserirAulaDto.RecorrenciaAula));
+                    
                     return new RetornoBaseDto("Serão cadastradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
                 }
                 catch (Exception ex)
