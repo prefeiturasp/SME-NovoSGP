@@ -21,24 +21,32 @@ namespace SME.SGP.Infra
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public void AdicionaFilaWorkerRelatorios(AdicionaFilaDto adicionaFilaDto)
+        public void AdicionaFilaWorkerServidorRelatorios(AdicionaFilaDto adicionaFilaDto)
+        {
+            byte[] body = FormataBodyWorker(adicionaFilaDto);
+
+            rabbitChannel.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeServidorRelatorios, RotasRabbit.RotaRelatoriosSolicitados);
+            rabbitChannel.BasicPublish(RotasRabbit.ExchangeServidorRelatorios, adicionaFilaDto.Fila, null, body);
+
+            SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
+        }
+
+        public void AdicionaFilaWorkerSgp(AdicionaFilaDto adicionaFilaDto)
+        {
+            byte[] body = FormataBodyWorker(adicionaFilaDto);
+
+            rabbitChannel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, adicionaFilaDto.Fila);
+            rabbitChannel.BasicPublish(RotasRabbit.ExchangeSgp, adicionaFilaDto.Fila, null, body);
+
+            SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
+        }
+
+        private static byte[] FormataBodyWorker(AdicionaFilaDto adicionaFilaDto)
         {
             var request = new MensagemRabbit(adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros, adicionaFilaDto.CodigoCorrelacao);
             var mensagem = JsonConvert.SerializeObject(request);
             var body = Encoding.UTF8.GetBytes(mensagem);
-            //TODO PENSAR NA EXCHANGE
-            var properties = rabbitChannel.CreateBasicProperties();
-            properties.Persistent = false;
-            properties.Persistent = false;
-
-            rabbitChannel.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeListenerWorkerRelatorios, RotasRabbit.RotaRelatoriosSolicitados);
-            rabbitChannel.BasicPublish(RotasRabbit.ExchangeListenerWorkerRelatorios, adicionaFilaDto.Fila, properties, body);
-
-            using (SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN")))
-            {
-                SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
-            }
-
+            return body;
         }
     }
 }
