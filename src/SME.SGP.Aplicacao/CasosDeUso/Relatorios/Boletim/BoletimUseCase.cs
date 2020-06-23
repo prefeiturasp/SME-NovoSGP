@@ -43,9 +43,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (repositorioUe.ObterPorCodigo(filtroRelatorioBoletimDto.UeCodigo) == null)
                 throw new NegocioException("Não foi possível encontrar a UE");
 
-            if (!string.IsNullOrEmpty(filtroRelatorioBoletimDto.TurmaCodigo) && 
-                repositorioTurma.ObterPorCodigo(filtroRelatorioBoletimDto.TurmaCodigo) == null)
-                throw new NegocioException("Não foi possível encontrar a turma");
+            if (!string.IsNullOrEmpty(filtroRelatorioBoletimDto.TurmaCodigo))
+            {
+                int codigoTurma;
+                if (int.TryParse(filtroRelatorioBoletimDto.TurmaCodigo, out codigoTurma) && codigoTurma <= 0)
+                    filtroRelatorioBoletimDto.TurmaCodigo = String.Empty;
+                else if (repositorioTurma.ObterPorCodigo(filtroRelatorioBoletimDto.TurmaCodigo) == null)
+                    throw new NegocioException("Não foi possível encontrar a turma");
+            }
+
 
             unitOfWork.IniciarTransacao();
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
