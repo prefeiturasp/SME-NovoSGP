@@ -84,14 +84,14 @@ namespace SME.SGP.Dominio.Servicos
                     var fechamentosSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, null, null, null);
 
                     if(fechamentosSME.Any(f => f.EhParaDre() || f.EhParaUe()))
-                        return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}, existem fechamentos para DRE/UE relacionados a essa SME";
+                        throw new NegocioException($"Não é possível excluir este período de reabertura pois existem fechamentos para DRE/UE no mesmo intervalo de datas.");
                 }
                 else if (fechamentoReabertura.EhParaDre())
                 {
                     var fechamentosDre = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, fechamentoReabertura.DreId, null, null);
 
                     if (fechamentosDre.Any(f => f.EhParaUe()))
-                        return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}, existem fechamentos para UE relacionados a essa DRE";
+                        throw new NegocioException($"Não é possível excluir este período de reabertura pois existem fechamentos para UE no mesmo intervalo de datas.");
                 }
 
                 fechamentoReabertura.Excluir();
@@ -117,11 +117,11 @@ namespace SME.SGP.Dominio.Servicos
             }
             catch (NegocioException nEx)
             {
-                return nEx.Message;
+                throw nEx;
             }
             catch (Exception)
             {
-                return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}";
+                throw new NegocioException($"Não foi possível excluir o fechamento de reabertura.");
             }
 
             unitOfWork.PersistirTransacao();
