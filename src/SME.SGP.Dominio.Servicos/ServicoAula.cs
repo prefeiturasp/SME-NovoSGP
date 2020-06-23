@@ -152,16 +152,8 @@ namespace SME.SGP.Dominio.Servicos
                     aulasQueDeramErro.Add((aulaRecorrente.DataAula, $"Erro Interno: {ex.Message}"));
                 }
             }
-<<<<<<< HEAD
 
-            if (datasAtribuicao != null && datasAtribuicao.Any(c => !c.PodePersistir))
-            {
-                aulasQueDeramErro.AddRange(datasAtribuicao.Where(c => !c.PodePersistir).Select(c => (c.Data, "Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.")));
-            }
-
-=======
             usuario.PerfilAtual = perfilSelecionado;
->>>>>>> development
             await NotificarUsuario(usuario, aula, Operacao.Exclusao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
         }
 
