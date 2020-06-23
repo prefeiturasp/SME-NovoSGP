@@ -64,7 +64,10 @@ const BoletimSimples = () => {
     });
     if (resultado.erro)
       erro('Não foi possível socilitar a impressão do Boletim');
-    else sucesso('Impressão de Boletim solicitada com sucesso');
+    else
+      sucesso(
+        'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+      );
   };
 
   const colunas = [
