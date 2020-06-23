@@ -42,6 +42,7 @@ const BoletimSimples = () => {
       ueCodigo: valoresFiltro.ueId,
       turmaCodigo: valoresFiltro.turmaId,
     });
+    setItensSelecionados([]);
     setSelecionarAlunos(
       valoresFiltro.turmaId && valoresFiltro.opcaoAlunoId === '1'
     );
