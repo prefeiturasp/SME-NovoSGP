@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Integracoes
 {
-    public class ServicoEOL : IServicoEOL
+    public class ServicoEOL : IServicoEol
     {
         private readonly IRepositorioCache cache;
         private readonly HttpClient httpClient;
@@ -401,7 +401,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = resposta.Content.ReadAsStringAsync().Result;
                 return JsonConvert.DeserializeObject<IEnumerable<DreRespostaEolDto>>(json);
             }
-            return null;
+            return Enumerable.Empty<DreRespostaEolDto>();
         }
 
         public IEnumerable<EscolasRetornoDto> ObterEscolasPorCodigo(string[] codigoUes)
@@ -414,7 +414,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = resposta.Content.ReadAsStringAsync().Result;
                 return JsonConvert.DeserializeObject<IEnumerable<EscolasRetornoDto>>(json);
             }
-            return null;
+            return Enumerable.Empty<EscolasRetornoDto>();
         }
 
         public IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId)
@@ -427,7 +427,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = resposta.Content.ReadAsStringAsync().Result;
                 return JsonConvert.DeserializeObject<IEnumerable<EscolasRetornoDto>>(json);
             }
-            return null;
+            return Enumerable.Empty<EscolasRetornoDto>();
         }
 
         public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorDre()
@@ -491,7 +491,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = resposta.Content.ReadAsStringAsync().Result;
                 return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
             }
-            return null;
+            return Enumerable.Empty<UsuarioEolRetornoDto>();
         }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto)
@@ -551,7 +551,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = resposta.Content.ReadAsStringAsync().Result;
                 return JsonConvert.DeserializeObject<IEnumerable<ProfessorTurmaReposta>>(json);
             }
-            return null;
+            return Enumerable.Empty<ProfessorTurmaReposta>();
         }
 
         public async Task<MeusDadosDto> ObterMeusDados(string login)
@@ -696,7 +696,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = resposta.Content.ReadAsStringAsync().Result;
                 return JsonConvert.DeserializeObject<IEnumerable<SupervisoresRetornoDto>>(json);
             }
-            return null;
+            return Enumerable.Empty<SupervisoresRetornoDto>();
         }
 
         public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorDre(string dreId)
@@ -707,7 +707,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = resposta.Content.ReadAsStringAsync().Result;
                 return JsonConvert.DeserializeObject<IEnumerable<SupervisoresRetornoDto>>(json);
             }
-            return null;
+            return Enumerable.Empty<SupervisoresRetornoDto>();
         }
 
         public async Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)
@@ -819,12 +819,12 @@ namespace SME.SGP.Aplicacao.Integracoes
             else throw new Exception("Não foi possível validar a atribuição do professor no EOL.");
         }
 
-        public async Task ReiniciarSenha(string codigoRf)
+        public async Task ReiniciarSenha(string login)
         {
             httpClient.DefaultRequestHeaders.Clear();
 
             IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
-                { new KeyValuePair<string, string>("login", codigoRf) }};
+                { new KeyValuePair<string, string>("login", login) }};
 
             var resposta = await httpClient.PostAsync($"AutenticacaoSgp/ReiniciarSenha", new FormUrlEncodedContent(valoresParaEnvio));
 
@@ -907,7 +907,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             else
             {
                 SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
-                return null;
+                return new string[0];
             }
         }
 
@@ -915,7 +915,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var resposta = await httpClient.GetAsync(url);
 
-            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            if (!resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 await RegistrarLogSentryAsync(resposta, "ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", url);
                 throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");

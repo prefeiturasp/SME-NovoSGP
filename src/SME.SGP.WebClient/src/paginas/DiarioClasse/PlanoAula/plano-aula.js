@@ -1,5 +1,5 @@
 import { Switch } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import PropTypes from 'prop-types';
@@ -227,6 +227,16 @@ const PlanoAula = props => {
     planoAula.licaoCasa = value;
   };
 
+  const editorObjetivosPlanejamentoDesabilitado = useMemo(() => {
+    if (desabilitarCampos) return desabilitarCampos;
+
+    if (ehProfessorCj && !habilitaEscolhaObjetivos) return false;
+
+    if (!temObjetivos || !objetivosAprendizagem) return false;
+
+    return !objetivosAprendizagem.filter(obj => obj.selected === true).length;
+  }, [desabilitarCampos, temObjetivos, objetivosAprendizagem]);
+
   const layoutComObjetivos = () => {
     const naoEhEjaEMedio = !ehEja && !ehMedio;
     const resultado = !ehProfessorCj
@@ -248,6 +258,7 @@ const PlanoAula = props => {
         titulo="Plano de aula"
         indice="Plano de aula"
         show={mostrarCardPrincipal}
+        icon={possuiPlanoAnual}
       >
         <Loader loading={mostrarCardPrincipal && carregandoMaterias}>
           <QuantidadeBotoes className="col-md-12">
@@ -439,14 +450,7 @@ const PlanoAula = props => {
                       </Erro>
                     ) : null}
                     <Editor
-                      desabilitar={
-                        desabilitarCampos ||
-                        (temObjetivos &&
-                          objetivosAprendizagem &&
-                          !objetivosAprendizagem.filter(
-                            obj => obj.selected === true
-                          ).length)
-                      }
+                      desabilitar={editorObjetivosPlanejamentoDesabilitado}
                       onChange={onBlurMeusObjetivos}
                       inicial={planoAula.descricao}
                     />

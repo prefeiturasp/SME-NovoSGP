@@ -49,10 +49,26 @@ import PendenciasFechamentoForm from '~/paginas/Fechamento/PendenciasFechamento/
 import ComunicadosLista from '~/paginas/AcompanhamentoEscolar/Comunicados/Lista';
 import ComunicadosCadastro from '~/paginas/AcompanhamentoEscolar/Comunicados/Cadastro';
 import ConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/conselhoClasse';
+import RelatorioSemestral from '~/paginas/Relatorios/PAP/RelatorioSemestral/relatorioSemestral';
 
 import CalendarioProfessor from '~/paginas/CalendarioEscolar/CalendarioProfessor';
+import TerritorioSaber from '~/paginas/Planejamento/TerritorioSaber';
+import AtaFinalResultados from '~/paginas/Relatorios/Atas/AtaFinalResultados/ataFinalResultados';
+
+import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 
 const rotas = new Map();
+
+rotas.set(RotasDto.RELATORIO_BOLETIM_SIMPLES, {
+  breadcrumbName: ['Boletim'],
+  menu: ['Fechamento'],
+  parent: '/',
+  component: BoletimSimples,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_BOLETIM_SIMPLES,
+});
 
 rotas.set(RotasDto.ACOMPANHAMENTO_COMUNICADOS, {
   breadcrumbName: 'Comunicados',
@@ -156,6 +172,17 @@ rotas.set(RotasDto.PLANO_ANUAL, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.PLANO_ANUAL,
+});
+
+rotas.set(RotasDto.TERRITORIO_SABER, {
+  breadcrumbName: 'Territórios do Saber',
+  menu: ['Planejamento'],
+  parent: '/',
+  component: TerritorioSaber,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.TERRITORIO_SABER,
 });
 
 rotas.set(RotasDto.ATRIBUICAO_SUPERVISOR_LISTA, {
@@ -758,6 +785,27 @@ rotas.set(RotasDto.CONSELHO_CLASSE, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.CONSELHO_CLASSE,
+});
+
+rotas.set(RotasDto.RELATORIO_SEMESTRAL, {
+  breadcrumbName: 'Relatório Semestral',
+  menu: ['Relatórios', 'PAP'],
+  parent: '/',
+  component: RelatorioSemestral,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_SEMESTRAL,
+});
+rotas.set(RotasDto.ATA_FINAL_RESULTADOS, {
+  breadcrumbName: 'Ata final de resultados',
+  menu: ['Relatórios', 'Atas'],
+  parent: '/',
+  component: AtaFinalResultados,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.ATA_FINAL_RESULTADOS,
 });
 
 const rotasArray = [];

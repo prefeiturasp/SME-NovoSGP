@@ -76,17 +76,16 @@ function ExcluirAula({
                   className="col-sm-12 col-md-12"
                   style={{ paddingTop: '10px' }}
                 >
-                  <p>{`Essa aula se repete por ${
-                    recorrencia.quantidadeAulasRecorrentes
-                  }${
-                    recorrencia.quantidadeAulasRecorrentes > 1
-                      ? ' vezes'
-                      : ' vez'
-                  } em seu planejamento.${
-                    recorrencia.existeFrequenciaOuPlanoAula
-                      ? ' Obs: Esta aula ou sua recorrência possui frequência ou plano de aula registrado, ao excluí-la estará excluindo esse registro também'
-                      : ''
-                  }`}</p>
+                  <p>{`Existem ${recorrencia.quantidadeAulasRecorrentes} ocorrências desta aula a partir desta data.`}</p>
+                  <p>
+                    {recorrencia.existeFrequenciaOuPlanoAula
+                      ? ` Esta aula ou sua recorrência possui frequência ou plano de aula registrado, ao excluí-la estará excluindo ${
+                          recorrencia.quantidadeAulasRecorrentes == 1
+                            ? 'esse registro'
+                            : 'estes registros'
+                        } também.`
+                      : ''}
+                  </p>
                   <p>Qual opção de exclusão você deseja realizar?</p>
                 </div>
                 <div className="col-sm-12 col-md-12 d-block">

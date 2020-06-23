@@ -100,5 +100,35 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
         }
+
+        public async Task<int> ObterBimestreAtualAsync(string codigoTurma, ModalidadeTipoCalendario modalidade, DateTime dataReferencia)
+        {
+            var query = new StringBuilder(@"select pe.bimestre
+                                              from periodo_escolar pe
+                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                              left join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @codigoTurma
+                                              where tc.modalidade = @modalidade
+                                              and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
+                                              and not tc.excluido ");
+
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { codigoTurma, modalidade = (int)modalidade, dataReferencia });
+        }
+
+        public async Task<bool> PeriodoEmAbertoAsync(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
+        {
+            var query = new StringBuilder(@"select count(pe.Id)
+                          from periodo_escolar pe 
+                         where pe.tipo_calendario_id = @tipoCalendarioId
+                           and periodo_fim >= @dataReferencia ");
+
+            if (!ehAnoLetivo)
+                query.AppendLine("and periodo_inicio <= @dataReferencia");
+
+            if (bimestre > 0)
+                query.AppendLine(" and pe.bimestre = @bimestre");
+
+            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre }) > 0;
+        }
     }
 }

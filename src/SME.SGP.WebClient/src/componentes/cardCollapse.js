@@ -58,6 +58,7 @@ CardCollapse.defaultProps = {
   titulo: '',
   indice: shortid.generate(),
   children: () => {},
+  onClick: () => {},
   show: false,
   onClick: () => {},
   configCabecalho: {

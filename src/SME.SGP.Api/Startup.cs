@@ -8,29 +8,33 @@ using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
+using SME.SGP.Api.Configuracoes;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
-using Swashbuckle.AspNetCore.Swagger;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using System.Threading.Tasks;
+using RabbitMQ.Client;
+using SME.SGP.Api.Configuracoes;
 
 namespace SME.SGP.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
+
         }
 
         public IConfiguration Configuration { get; }
+        private IHostingEnvironment _env;
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -96,13 +100,14 @@ namespace SME.SGP.Api
             services.AddDistributedRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("SGP-Redis");
+                //options.Configuration = "10.50.1.174:6380";
                 options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
             });
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
-            services.AddMediatR(assembly);
+            services.AdicionarMediatr();
+            services.AdicionarValidadoresFluentValidation();
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
 
@@ -130,8 +135,13 @@ namespace SME.SGP.Api
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
-            }); 
+            });
 
+            if (_env.EnvironmentName != "teste-integrado")
+            {
+                services.AddRabbit();
+                services.AddHostedService<ListenerRabbitMQ>();
+            }
         }
     }
 }

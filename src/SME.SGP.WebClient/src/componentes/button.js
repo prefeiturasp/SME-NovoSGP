@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import shortid from 'shortid';
 import { Base, Active, Hover } from './colors';
 import Remover from '../recursos/Remover.svg';
 
@@ -113,7 +114,7 @@ Button.propTypes = {
   indice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   label: PropTypes.string,
   hidden: PropTypes.bool,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.string,
   customRadius: PropTypes.string,
 };
 
@@ -136,6 +137,7 @@ Button.defaultProps = {
   indice: '',
   label: '',
   hidden: false,
+  id: shortid.generate(),
   customRadius: '',
 };
 

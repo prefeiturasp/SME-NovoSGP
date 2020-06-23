@@ -36,7 +36,11 @@ const RotasDto = {
   PENDENCIAS_FECHAMENTO: '/fechamento/pendencias-fechamento',
   ACOMPANHAMENTO_COMUNICADOS: '/gestao/acompanhamento-escolar/comunicados',
   CONSELHO_CLASSE: '/fechamento/conselho-classe',
+  RELATORIO_SEMESTRAL: '/relatorios/pap/relatorio-semestral',
   SEM_PERMISSAO: '/sem-permissao',
+  TERRITORIO_SABER: '/planejamento/plano-anual-territorio-saber',
+  RELATORIO_BOLETIM_SIMPLES: '/relatorios/diario-classe/boletim-simples',
+  ATA_FINAL_RESULTADOS: '/relatorios/atas/ata-final-resultados',
 };
 
 export default RotasDto;

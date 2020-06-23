@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Form } from 'formik';
 import LogoDoSgp from '~/recursos/LogoDoSgp.svg';
@@ -36,6 +36,7 @@ const Item = styled.li`
 `;
 
 const RedefinirSenha = props => {
+  const dispatch = useDispatch();
   const [senhas, setSenhas] = useState({
     senha: '',
     confirmarSenha: '',
@@ -82,7 +83,6 @@ const RedefinirSenha = props => {
 
   useLayoutEffect(() => {
     if (!tokenValidado && !logado) validarToken();
-
     document.addEventListener('keydown', trataAcaoTeclado);
     return () => {
       document.removeEventListener('keydown', trataAcaoTeclado);
@@ -158,10 +158,13 @@ const RedefinirSenha = props => {
 
   const alterarSenha = async () => {
     if (!logado) {
-      const requisicao = await RedefinirSenhaServico.redefinirSenha({
-        token,
-        novaSenha: senha,
-      });
+      const requisicao = await RedefinirSenhaServico.redefinirSenha(
+        {
+          token,
+          novaSenha: senha,
+        },
+        dispatch
+      );
 
       if (requisicao.sucesso) history.push(URL_LOGIN);
       if (requisicao.tokenExpirado) setTokenExpirado(requisicao.tokenExpirado);

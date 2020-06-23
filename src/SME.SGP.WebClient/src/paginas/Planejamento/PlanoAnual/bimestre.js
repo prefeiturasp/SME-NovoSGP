@@ -160,6 +160,8 @@ const Bimestre = ({
       );
       setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
     }
+
+    if (!bimestre?.objetivosAprendizagem?.length) removerTodosObjetivos();
   }, [objetivosCarregados, bimestre]);
 
   useEffect(() => {
@@ -181,6 +183,9 @@ const Bimestre = ({
               preSelecionadas={disciplinasPreSelecionadas}
               onChange={onChangeDisciplinasSelecionadas}
               layoutEspecial={layoutEspecial}
+              carregandoDisciplinas={carregando =>
+                setCarregandoDados(carregando)
+              }
             />
           </div>
 

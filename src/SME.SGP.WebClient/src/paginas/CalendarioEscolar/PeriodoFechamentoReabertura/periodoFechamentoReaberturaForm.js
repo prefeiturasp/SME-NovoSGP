@@ -59,6 +59,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     descricao: '',
     bimestres: [],
   });
+  const [salvandoInformacoes, setSalvandoInformacoes] = useState(false);
 
   const montarListaBimestres = tipoModalidade => {
     const listaNova = [
@@ -394,35 +395,40 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       ueCodigo: ueId,
       id: idFechamentoReabertura,
     };
+    setSalvandoInformacoes(true);
     const cadastrado = await ServicoFechamentoReabertura.salvar(
       idFechamentoReabertura,
       prametrosParaSalvar
-    ).catch(async e => {
-      if (e && e.response && e.response.status == 602) {
-        const mensagens =
-          e && e.response && e.response.data && e.response.data.mensagens;
-        if (mensagens) {
-          const alteracaoConfirmacao = await confirmar(
-            'Atenção',
-            '',
-            mensagens[0]
-          );
-          if (alteracaoConfirmacao) {
-            const cadastradoAlteracao = await ServicoFechamentoReabertura.salvar(
-              idFechamentoReabertura,
-              prametrosParaSalvar,
-              true
+    )
+      .catch(async e => {
+        if (e && e.response && e.response.status == 602) {
+          const mensagens =
+            e && e.response && e.response.data && e.response.data.mensagens;
+          if (mensagens) {
+            const alteracaoConfirmacao = await confirmar(
+              'Atenção',
+              '',
+              mensagens[0]
             );
-            if (cadastradoAlteracao && cadastradoAlteracao.status == 200) {
-              sucesso(cadastradoAlteracao.data);
-              history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
+            if (alteracaoConfirmacao) {
+              const cadastradoAlteracao = await ServicoFechamentoReabertura.salvar(
+                idFechamentoReabertura,
+                prametrosParaSalvar,
+                true
+              );
+              if (cadastradoAlteracao && cadastradoAlteracao.status == 200) {
+                sucesso(cadastradoAlteracao.data);
+                history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
+              }
             }
           }
+        } else {
+          erros(e);
         }
-      } else {
-        erros(e);
-      }
-    });
+      })
+      .finally(() => {
+        setSalvandoInformacoes(false);
+      });
     if (cadastrado && cadastrado.status == 200) {
       sucesso(cadastrado.data);
       history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
@@ -482,8 +488,8 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                       className="mr-2"
                       onClick={onClickExcluir}
                       disabled={
-                        somenteConsulta ||
                         podeExcluir ||
+                        somenteConsulta ||
                         !permissoesTela.podeExcluir ||
                         novoRegistro
                       }
@@ -597,107 +603,29 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                           form.setFieldValue('bimestres', ['5']);
                           onChangeCampos();
                         }
-                        placeholder="Selecione um tipo de calendário"
-                        onChange={valor => onChangeTipoCalendario(valor, form)}
-                      />
-                    </div>
-                  </Loader>
+                      }}
+                      valueOption="valor"
+                      valueText="descricao"
+                      placeholder="Selecione bimestre(s)"
+                      multiple
+                      disabled={desabilitarCampos || !novoRegistro}
+                    />
+                  </div>
+                  {exibirAuditoria ? (
+                    <Auditoria
+                      criadoEm={auditoria.criadoEm}
+                      criadoPor={auditoria.criadoPor}
+                      alteradoPor={auditoria.alteradoPor}
+                      alteradoEm={auditoria.alteradoEm}
+                    />
+                  ) : (
+                    ''
+                  )}
                 </div>
-                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
-                  <DreDropDown
-                    name="dreId"
-                    label="Diretoria Regional de Educação (DRE)"
-                    form={form}
-                    desabilitado={desabilitarCampos || !novoRegistro}
-                    onChange={() => {
-                      if (novoRegistro) {
-                        onChangeCampos();
-                      }
-                    }}
-                  />
-                </div>
-                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
-                  <UeDropDown
-                    name="ueId"
-                    dreId={form.values.dreId}
-                    label="Unidade Escolar (UE)"
-                    form={form}
-                    url="v1/dres"
-                    desabilitado={desabilitarCampos || !novoRegistro}
-                    onChange={() => {
-                      if (novoRegistro) {
-                        onChangeCampos();
-                      }
-                    }}
-                  />
-                </div>
-                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                  <CampoTexto
-                    label="Descrição"
-                    name="descricao"
-                    id="descricao"
-                    type="textarea"
-                    form={form}
-                    onChange={onChangeCampos}
-                    desabilitado={desabilitarCampos || !novoRegistro}
-                  />
-                </div>
-                <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
-                  <CampoData
-                    label="Início"
-                    form={form}
-                    name="dataInicio"
-                    placeholder="DD/MM/AAAA"
-                    formatoData="DD/MM/YYYY"
-                    onChange={onChangeCampos}
-                    desabilitado={desabilitarCampos}
-                  />
-                </div>
-                <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
-                  <CampoData
-                    label="Fim"
-                    form={form}
-                    name="dataFim"
-                    placeholder="DD/MM/AAAA"
-                    formatoData="DD/MM/YYYY"
-                    onChange={onChangeCampos}
-                    desabilitado={desabilitarCampos}
-                  />
-                </div>
-                <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
-                  <SelectComponent
-                    form={form}
-                    label="Bimestre"
-                    name="bimestres"
-                    id="bimestres"
-                    lista={listaBimestres}
-                    onChange={valor => {
-                      if (valor.includes('5')) {
-                        form.setFieldValue('bimestres', ['5']);
-                        onChangeCampos();
-                      }
-                    }}
-                    valueOption="valor"
-                    valueText="descricao"
-                    placeholder="Selecione bimestre(s)"
-                    multiple
-                    disabled={desabilitarCampos || !novoRegistro}
-                  />
-                </div>
-                {exibirAuditoria ? (
-                  <Auditoria
-                    criadoEm={auditoria.criadoEm}
-                    criadoPor={auditoria.criadoPor}
-                    alteradoPor={auditoria.alteradoPor}
-                    alteradoEm={auditoria.alteradoEm}
-                  />
-                ) : (
-                  ''
-                )}
-              </div>
-            </Form>
-          )}
-        </Formik>
+              </Form>
+            )}
+          </Formik>
+        </Loader>
       </Card>
     </>
   );
