@@ -20,5 +20,7 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public Modalidade? Modalidade { get; set; }
 
         public string[] AlunosCodigo { get; set; }
+
+        public Usuario Usuario { get; set; }
     }
 }
