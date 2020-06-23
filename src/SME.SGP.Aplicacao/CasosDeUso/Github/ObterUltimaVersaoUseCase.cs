@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease;
+using SME.SGP.Dominio;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,6 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Executar()
         {
+            throw new NegocioException("ops");
             return await mediator.Send(new ObterUltimaVersaoQuery());
         }
     }
