@@ -37,6 +37,12 @@ export default function ReiniciarSenha() {
   const [exibirModalReiniciarSenha, setExibirModalReiniciarSenha] = useState(
     false
   );
+  const [
+    exibirModalMensagemReiniciarSenha,
+    setExibirModalMensagemReiniciarSenha,
+  ] = useState(false);
+  const [mensagemSenhaAlterada, setMensagemSenhaAlterada] = useState('');
+
   const [semEmailCadastrado, setSemEmailCadastrado] = useState(false);
   const [refForm, setRefForm] = useState();
 
@@ -185,15 +191,12 @@ export default function ReiniciarSenha() {
     if (dreSelecionada) {
       const parametrosPost = {
         codigoDRE: dreSelecionada,
-		codigoUE: ueSelecionada,
+        codigoUE: ueSelecionada,
         nomeServidor: nomeUsuarioSelecionado,
         codigoRF: rfSelecionado,
       };
       const lista = await api
-        .post(
-          `v1/unidades-escolares/funcionarios`,
-          parametrosPost
-        )
+        .post(`v1/unidades-escolares/funcionarios`, parametrosPost)
         .catch(() => {
           setListaUsuario([]);
         });
@@ -228,6 +231,10 @@ export default function ReiniciarSenha() {
     let deveAtualizarEmail = false;
     await api
       .put(`v1/autenticacao/${linha.codigoRf}/reiniciar-senha`)
+      .then(resposta => {
+        setExibirModalMensagemReiniciarSenha(true);
+        setMensagemSenhaAlterada(resposta.data.mensagem);
+      })
       .catch(error => {
         if (error && error.response && error.response.data) {
           deveAtualizarEmail = error.response.data.deveAtualizarEmail;
@@ -248,6 +255,7 @@ export default function ReiniciarSenha() {
 
   const onCloseModalReiniciarSenha = () => {
     setExibirModalReiniciarSenha(false);
+    setExibirModalMensagemReiniciarSenha(false);
     setSemEmailCadastrado(false);
     refForm.resetForm();
   };
@@ -397,6 +405,20 @@ export default function ReiniciarSenha() {
           </Form>
         )}
       </Formik>
+
+      <ModalConteudoHtml
+        key="exibirModalMensagemReiniciarSenha"
+        visivel={exibirModalMensagemReiniciarSenha}
+        onClose={onCloseModalReiniciarSenha}
+        labelBotaoPrincipal="OK"
+        labelBotaoSecundario="Cancelar"
+        esconderBotaoPrincipal={true}
+        esconderBotaoSecundario={true}
+        titulo="Senha reiniciada"
+        closable
+      >
+        <b> {mensagemSenhaAlterada} </b>
+      </ModalConteudoHtml>
     </>
   );
 }
