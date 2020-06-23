@@ -8,6 +8,7 @@ using Redis2Go;
 using SME.SGP.Api;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados.Repositorios;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.IO;
@@ -25,7 +26,7 @@ namespace SME.SGP.Integracao.Teste
         private readonly ServicoTokenJwt servicoTokenJwt;
         private readonly RedisRunner _redisRunner;
 
-        public TestServerFixture()
+        public TestServerFixture(IRepositorioCache repositorioCache)
         {
             try
             {
@@ -59,7 +60,7 @@ namespace SME.SGP.Integracao.Teste
 
                 var contextoTesteIntegrado = new ContextoTesteIntegrado("");
 
-                servicoTokenJwt = new ServicoTokenJwt(config, contextoTesteIntegrado);
+                servicoTokenJwt = new ServicoTokenJwt(config, contextoTesteIntegrado, repositorioCache);
             }
             catch (Exception ex)
             {
