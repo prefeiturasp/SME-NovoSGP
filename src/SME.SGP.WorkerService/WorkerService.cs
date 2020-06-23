@@ -58,7 +58,7 @@ namespace SME.SGP.Worker.Service
 
         internal static void Configurar(IConfiguration config, IServiceCollection services)
         {
-            HangfireWorkerService = new SME.Background.Core.Servidor<SME.Background.Hangfire.Worker>(new SME.Background.Hangfire.Worker(config, services, config.GetConnectionString("SGP-Postgres")));
+            HangfireWorkerService = new Servidor<SME.Background.Hangfire.Worker>(new SME.Background.Hangfire.Worker(config, services, config.GetConnectionString("SGP-Postgres")));
         }
 
         internal static void ConfigurarDependencias(IConfiguration configuration, IServiceCollection services)

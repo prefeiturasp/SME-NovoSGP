@@ -8,15 +8,16 @@ using RabbitMQ.Client.Events;
 using Sentry;
 using Sentry.Protocol;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.CasosDeUso.Exemplos.Games;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Api
+namespace SME.SGP.Worker.Service
 {
-    public class ListenerRabbitMQ : IHostedService
+    public class WorkerRabbitMQ : IHostedService
     {
         private readonly IModel canalRabbit;
         private readonly string sentryDSN;
@@ -30,18 +31,20 @@ namespace SME.SGP.Api
         private readonly Dictionary<string, (bool, Type)> comandos;
 
 
-        public ListenerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
+        public WorkerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
             sentryDSN = configuration.GetValue<string>("Sentry:DSN");
             this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
             canalRabbit = conexaoRabbit.CreateModel();
-            canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeListenerWorkerRelatorios, ExchangeType.Topic);
-            canalRabbit.QueueDeclare(RotasRabbit.FilaListenerSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.FilaListenerSgp, RotasRabbit.ExchangeListenerWorkerRelatorios, "*", null);
+            
+            canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeServidorRelatorios, ExchangeType.Topic);
+            canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
+            canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);
 
             comandos = new Dictionary<string, (bool, Type)>();
             comandos.Add(RotasRabbit.RotaRelatoriosProntos, (false, typeof(IReceberRelatorioProntoUseCase)));
+            comandos.Add(RotasRabbit.ExcluirAulaRecorrente, (false, typeof(ITestePostgreUseCase)));
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -54,7 +57,7 @@ namespace SME.SGP.Api
                 await TratarMensagem(ea);
             };
 
-            canalRabbit.BasicConsume(RotasRabbit.FilaListenerSgp, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.FilaSgp, false, consumer);
         }
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
         {
@@ -65,6 +68,7 @@ namespace SME.SGP.Api
                 using (SentrySdk.Init(sentryDSN))
                 {
                     var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
+                    SentrySdk.AddBreadcrumb($"Dados: {mensagemRabbit.Filtros}");
                     try
                     {
                         using (var scope = serviceScopeFactory.CreateScope())
@@ -72,6 +76,7 @@ namespace SME.SGP.Api
                             var tipoComando = comandos[rota];
 
                             //usar mediatr?
+                            SentrySdk.CaptureMessage($"RABBITMQ EXECUTANDO- {ea.RoutingKey}", SentryLevel.Info);
                             if (tipoComando.Item1)
                             {
                                 var comando = JsonConvert.DeserializeObject(mensagemRabbit.Filtros.ToString(), tipoComando.Item2);
@@ -89,11 +94,9 @@ namespace SME.SGP.Api
                     }
                     catch (Exception ex)
                     {
-                        SentrySdk.CaptureMessage($"Erro ao consumir a fila - {ea.RoutingKey}", SentryLevel.Error);
+                        SentrySdk.CaptureMessage($"RABBITMQ ERRO - {ea.RoutingKey}", SentryLevel.Error);
                         SentrySdk.CaptureException(ex);
-                        //canalRabbit.QueueDeclare("filadeerro",false);
-                        //canalRabbit.BasicPublish(RotasRabbit.ExchangeListenerWorkerRelatorios, "filadeerro", null, ea.Body);
-                        //canalRabbit.BasicNack(ea.DeliveryTag, false, true);
+                        canalRabbit.BasicReject(ea.DeliveryTag, false);
                     }
                 }
             }

@@ -1,20 +1,28 @@
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using RabbitMQ.Client;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.CasosDeUso;
+using SME.SGP.Aplicacao.CasosDeUso.Exemplos.Games;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Aplicacao.Pipelines;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.IoC.Extensions;
+using System;
 
 namespace SME.SGP.IoC
 {
@@ -22,6 +30,9 @@ namespace SME.SGP.IoC
     {
         public static void Registrar(IServiceCollection services)
         {
+            RegistrarMediator(services);
+            RegistrarRabbit(services);
+
             //TODO VERIFICAR AddTransient
             services.TryAddSingleton<HangfireMediator>();
             ResgistraDependenciaHttp(services);
@@ -30,6 +41,33 @@ namespace SME.SGP.IoC
             RegistrarComandos(services);
             RegistrarConsultas(services);
             RegistrarServicos(services);
+            RegistrarCasosDeUso(services);
+        }
+
+        private static void RegistrarMediator(IServiceCollection services)
+        {
+            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
+            services.AddMediatR(assembly);
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
+        }
+
+        private static void RegistrarRabbit(IServiceCollection services)
+        {
+            var factory = new ConnectionFactory
+            {
+                HostName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__HostName"),
+                UserName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__UserName"),
+                Password = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Password")
+            };
+
+            var conexaoRabbit = factory.CreateConnection();
+            IModel canalRabbit = conexaoRabbit.CreateModel();
+            services.AddSingleton(conexaoRabbit);
+            services.AddSingleton(canalRabbit);
+
+            canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
+            canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
+            canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*");
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -235,6 +273,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioRelatorioSemestralPAPAlunoSecao, RepositorioRelatorioSemestralPAPAlunoSecao>();
             services.TryAddScopedWorkerService<IRepositorioSecaoRelatorioSemestralPAP, RepositorioSecaoRelatorioSemestralPAP>();
             services.TryAddScopedWorkerService<IRepositorioObjetivoAprendizagem, RepositorioObjetivoAprendizagem>();
+            services.TryAddScopedWorkerService<IRepositorioCorrelacaoRelatorio, RepositorioCorrelacaoRelatorio>();
+            services.TryAddScopedWorkerService<IRepositorioCorrelacaoRelatorioJasper, RepositorioRelatorioCorrelacaoJasper>();
+            services.TryAddScopedWorkerService<IRepositorioTestePostgre, RepositorioTestePostgre>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -270,6 +311,26 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScopedWorkerService<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
             services.TryAddScopedWorkerService<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
+        }
+
+
+        private static void RegistrarCasosDeUso(IServiceCollection services)
+        {
+            services.TryAddScopedWorkerService<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
+            services.TryAddScopedWorkerService<IImpressaoConselhoClasseAlunoUseCase, ImpressaoConselhoClasseAlunoUseCase>();
+            services.TryAddScopedWorkerService<IImpressaoConselhoClasseTurmaUseCase, ImpressaoConselhoClasseTurmaUseCase>();
+            services.TryAddScopedWorkerService<IReceberRelatorioProntoUseCase, ReceberRelatorioProntoUseCase>();
+            services.TryAddScopedWorkerService<IBoletimUseCase, BoletimUseCase>();
+            services.TryAddScopedWorkerService<IObterListaAlunosDaTurmaUseCase, ObterListaAlunosDaTurmaUseCase>();
+            services.TryAddScopedWorkerService<IReceberDadosDownloadRelatorioUseCase, ReceberDadosDownloadRelatorioUseCase>();
+            services.TryAddScopedWorkerService<IRelatorioConselhoClasseAtaFinalUseCase, RelatorioConselhoClasseAtaFinalUseCase>();
+            services.TryAddScopedWorkerService<IGamesUseCase, GamesUseCase>();
+            services.TryAddScopedWorkerService<IInserirAulaUseCase, InserirAulaUseCase>();
+            services.TryAddScopedWorkerService<IAlterarAulaUseCase, AlterarAulaUseCase>();
+            services.TryAddScopedWorkerService<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
+            services.TryAddScopedWorkerService<IExcluirAulaWorkerUseCase, ExcluirAulaWorkerUseCase>();
+            services.TryAddScopedWorkerService<IExcluirAulaUseCase, ExcluirAulaUseCase>();
+            services.TryAddScopedWorkerService<ITestePostgreUseCase, TestePostgreUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
