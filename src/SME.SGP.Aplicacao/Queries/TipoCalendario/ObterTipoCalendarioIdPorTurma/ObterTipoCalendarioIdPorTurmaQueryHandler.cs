@@ -16,8 +16,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
-        public Task<long> Handle(ObterTipoCalendarioIdPorTurmaQuery request, CancellationToken cancellationToken)
-            => repositorioTipoCalendario.ObterIdPorAnoLetivoEModalidadeAsync(request.Turma.AnoLetivo
+        public async Task<long> Handle(ObterTipoCalendarioIdPorTurmaQuery request, CancellationToken cancellationToken)
+            => await repositorioTipoCalendario.ObterIdPorAnoLetivoEModalidadeAsync(request.Turma.AnoLetivo
                     , request.Turma.ModalidadeTipoCalendario
                     , request.Turma.Semestre);
     }

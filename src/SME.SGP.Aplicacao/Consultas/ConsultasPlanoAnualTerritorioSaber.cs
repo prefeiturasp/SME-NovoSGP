@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Turma não encontrada.");
             }
             var modalidade = turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
             if (tipoCalendario == null)
             {
                 throw new NegocioException("Tipo de calendário não encontrado.");

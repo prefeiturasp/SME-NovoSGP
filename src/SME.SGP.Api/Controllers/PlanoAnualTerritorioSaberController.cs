@@ -18,9 +18,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<PlanoAnualTerritorioSaberCompletoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PT_C, Policy = "Bearer")]
-        public IActionResult Get(string turmaId, string ueId, int anoLetivo, long territorioExperienciaId, [FromServices]IConsultasPlanoAnualTerritorioSaber consultasPlanoAnualTerritorioSaber)
+        public async Task<IActionResult> Get(string turmaId, string ueId, int anoLetivo, long territorioExperienciaId, [FromServices]IConsultasPlanoAnualTerritorioSaber consultasPlanoAnualTerritorioSaber)
         {
-            return Ok(consultasPlanoAnualTerritorioSaber.ObterPorUETurmaAnoETerritorioExperiencia(ueId, turmaId, anoLetivo, territorioExperienciaId));
+            return Ok(await consultasPlanoAnualTerritorioSaber.ObterPorUETurmaAnoETerritorioExperiencia(ueId, turmaId, anoLetivo, territorioExperienciaId));
         }
 
         [HttpPost]

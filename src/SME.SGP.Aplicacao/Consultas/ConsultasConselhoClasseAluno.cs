@@ -284,7 +284,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 // Frequencia Anual - totaliza todos os bimestres
-                var tipoCalendario = consultasTipoCalendario.ObterPorTurma(turma);
+                var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
                 if (tipoCalendario == null)
                     throw new NegocioException("Tipo de calendário não localizado para a turma");
 

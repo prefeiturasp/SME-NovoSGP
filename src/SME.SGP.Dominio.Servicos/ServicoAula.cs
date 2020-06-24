@@ -184,7 +184,7 @@ namespace SME.SGP.Dominio.Servicos
                 aula.PodeSerAlterada(usuario);
 
             var temLiberacaoExcepcionalNessaData = servicoDiaLetivo.ValidaSeEhLiberacaoExcepcional(aula.DataAula, aula.TipoCalendarioId, aula.UeId);
-            var diaLetivo = temLiberacaoExcepcionalNessaData ? true : servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId);
+            var diaLetivo = temLiberacaoExcepcionalNessaData ? true : await servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId);
 
             if (!temLiberacaoExcepcionalNessaData && !diaLetivo)
                 throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");

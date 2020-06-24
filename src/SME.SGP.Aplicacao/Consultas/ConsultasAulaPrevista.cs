@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await ObterTurma(turmaId);
 
-            var tipoCalendario = ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
+            var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
 
             AulasPrevistasDadasAuditoriaDto aulaPrevistaDto;
 

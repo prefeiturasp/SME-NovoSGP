@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio.Servicos
             if (atribuicoesConflitantes != null && atribuicoesConflitantes.Any())
                 throw new NegocioException("Já existem outras atribuições, para este professor, no periodo especificado");
 
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeTipoCalendario.FundamentalMedio);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeTipoCalendario.FundamentalMedio);
 
             if (tipoCalendario == null)
                 throw new NegocioException("Nenhum tipo de calendario para o ano letivo vigente encontrado");
