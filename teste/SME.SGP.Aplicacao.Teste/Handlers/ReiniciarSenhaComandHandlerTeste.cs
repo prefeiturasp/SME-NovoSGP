@@ -11,15 +11,13 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
 {
     public class ReiniciarSenhaCommandHandlerTeste
     {
-        private readonly Mock<IComandosUsuario> comandosUsuario;
         private readonly Mock<IServicoEol> servicoEOL;
         private readonly ReiniciarSenhaCommandHandler reiniciarSenhaCommandHandler;
 
         public ReiniciarSenhaCommandHandlerTeste()
         {
-            comandosUsuario = new Mock<IComandosUsuario>();
             servicoEOL = new Mock<IServicoEol>();
-            reiniciarSenhaCommandHandler = new ReiniciarSenhaCommandHandler(comandosUsuario.Object, servicoEOL.Object);
+            reiniciarSenhaCommandHandler = new ReiniciarSenhaCommandHandler(servicoEOL.Object);
         }
 
         [Theory]
@@ -32,7 +30,6 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             //Arrange
             servicoEOL.Setup(a => a.ObterMeusDados(codigoRf)).ReturnsAsync(new MeusDadosDto() { CodigoRf = codigoRf, Email = "teste@teste.com.br" });
             servicoEOL.Setup(a => a.ReiniciarSenha(codigoRf));
-            comandosUsuario.Setup(u => u.ReiniciarSenha(codigoRf)).ReturnsAsync(new UsuarioReinicioSenhaDto() { });
 
             // Act
             var result = await reiniciarSenhaCommandHandler.Handle(new ReiniciarSenhaCommand(codigoRf), new CancellationToken());

@@ -15,10 +15,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AS_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFuncionarios([FromServices] IReiniciarSenhaUseCase reiniciarSenhaUseCase,
+        public async Task<IActionResult> ObterFuncionarios([FromServices] IObterFuncionariosUseCase obterFuncionariosUseCase,
                                                                           FiltroFuncionarioDto filtroFuncionariosDto)
         {
-            return Ok(await reiniciarSenhaUseCase.Executar(filtroFuncionariosDto));
+            return Ok(await obterFuncionariosUseCase.Executar(filtroFuncionariosDto));
         }
     }
 }
