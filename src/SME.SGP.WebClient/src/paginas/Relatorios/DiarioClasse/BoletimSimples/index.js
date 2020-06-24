@@ -6,7 +6,6 @@ import { Loader, Card, ButtonGroup, ListaPaginada } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 
 import history from '~/servicos/history';
-import RotasDto from '~/dtos/rotasDto';
 
 import Filtro from './componentes/Filtro';
 import ServicoBoletimSimples from '~/servicos/Paginas/Relatorios/DiarioClasse/BoletimSimples/ServicoBoletimSimples';
@@ -15,8 +14,6 @@ import { sucesso, erro } from '~/servicos/alertas';
 const BoletimSimples = () => {
   const [loaderSecao] = useState(false);
   const [somenteConsulta] = useState(false);
-  const permissoesTela = useSelector(store => store.usuario.permissoes);
-
   const [filtro, setFiltro] = useState({
     anoLetivo: '',
     modalidade: '',
@@ -42,6 +39,7 @@ const BoletimSimples = () => {
       ueCodigo: valoresFiltro.ueId,
       turmaCodigo: valoresFiltro.turmaId,
     });
+    setItensSelecionados([]);
     setSelecionarAlunos(
       valoresFiltro.turmaId && valoresFiltro.opcaoAlunoId === '1'
     );
@@ -64,7 +62,10 @@ const BoletimSimples = () => {
     });
     if (resultado.erro)
       erro('Não foi possível socilitar a impressão do Boletim');
-    else sucesso('Impressão de Boletim solicitada com sucesso');
+    else
+      sucesso(
+        'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+      );
   };
 
   const colunas = [

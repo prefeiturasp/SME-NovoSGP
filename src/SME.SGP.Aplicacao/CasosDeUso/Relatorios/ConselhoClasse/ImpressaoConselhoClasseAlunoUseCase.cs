@@ -23,10 +23,12 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(FiltroRelatorioConselhoClasseAlunoDto filtroRelatorioConselhoClasseAlunoDto)
         {
 
-            var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            if (usuarioId == 0)
+            if (usuario == null)
                 throw new NegocioException("Não foi possível localizar o usuário.");
+
+            filtroRelatorioConselhoClasseAlunoDto.Usuario = usuario;
 
             
             using (SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN")))
@@ -34,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 SentrySdk.CaptureMessage("1 - ImpressaoConselhoClasseAlunoUseCase");                
             }
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAluno, filtroRelatorioConselhoClasseAlunoDto, usuarioId));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAluno, filtroRelatorioConselhoClasseAlunoDto, usuario.Id));
         }
     }
 }
