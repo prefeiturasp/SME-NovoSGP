@@ -18,9 +18,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PeriodoEscolarDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PE_C, Policy = "Bearer")]
-        public IActionResult Get(long codigoTipoCalendario, [FromServices]IConsultasPeriodoEscolar consultas)
+        public async Task<IActionResult> Get(long codigoTipoCalendario, [FromServices]IConsultasPeriodoEscolar consultas)
         {
-            var periodoEscolar = consultas.ObterPorTipoCalendario(codigoTipoCalendario);
+            var periodoEscolar = await consultas.ObterPorTipoCalendario(codigoTipoCalendario);
 
             if (periodoEscolar == null)
                 return NoContent();
@@ -62,9 +62,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterAtual(int modalidade, [FromServices]IConsultasPeriodoEscolar consultas)
+        public async Task<IActionResult> ObterAtual(int modalidade, [FromServices]IConsultasPeriodoEscolar consultas)
         {
-            return Ok(consultas.ObterBimestre(DateTime.Today, (Dominio.Modalidade)modalidade));
+            return Ok(await consultas.ObterBimestre(DateTime.Today, (Dominio.Modalidade)modalidade));
         }
     }
 }
