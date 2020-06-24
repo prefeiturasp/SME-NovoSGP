@@ -42,18 +42,18 @@ namespace SME.SGP.Integracao.Teste
                 var postResult2 = _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost2).Result;
                 Assert.True(postResult2.IsSuccessStatusCode);
 
-                var filtro = new FiltroDiasLetivosDTO()
-                {
-                    TipoCalendarioId = 1
-                };
+                //var filtro = new FiltroDiasLetivosDTO()
+                //{
+                //    TipoCalendarioId = 1
+                //};
 
-                var filtroPeriodoEscolar = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
-                var diasLetivosResponse = _fixture._clientApi.PostAsync("api/v1/calendarios/dias-letivos", filtroPeriodoEscolar).Result;
-                if (diasLetivosResponse.IsSuccessStatusCode)
-                {
-                    var diasLetivos = JsonConvert.DeserializeObject<DiasLetivosDto>(diasLetivosResponse.Content.ReadAsStringAsync().Result);
-                    Assert.True(diasLetivos.Dias > 0);
-                }
+                //var filtroPeriodoEscolar = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+                //var diasLetivosResponse = _fixture._clientApi.PostAsync("api/v1/calendarios/dias-letivos", filtroPeriodoEscolar).Result;
+                //if (diasLetivosResponse.IsSuccessStatusCode)
+                //{
+                //    var diasLetivos = JsonConvert.DeserializeObject<DiasLetivosDto>(diasLetivosResponse.Content.ReadAsStringAsync().Result);
+                //    Assert.True(diasLetivos.Dias > 0);
+                //}
             }
         }
 

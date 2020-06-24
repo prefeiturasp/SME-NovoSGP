@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact(DisplayName = "Deve_Consultar_Periodo_Escolar")]
         public void Deve_Consultar_Periodo_Escolar()
         {
-            repositorio.Setup(r => r.ObterPorTipoCalendario(It.IsAny<long>()).Result).Returns(new List<PeriodoEscolar>());
+            repositorio.Setup(r => r.ObterPorTipoCalendario(It.IsAny<long>())).ReturnsAsync(new List<PeriodoEscolar>());
 
             consultas.ObterPorTipoCalendario(1);
         }
