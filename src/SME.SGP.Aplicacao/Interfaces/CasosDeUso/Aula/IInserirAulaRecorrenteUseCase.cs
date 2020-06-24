@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IInserirAulaRecorrenteUseCase : IUseCase<MensagemRabbit, bool>
+    public interface IInserirAulaRecorrenteUseCase: IUseCase<MensagemRabbit, bool>
     {
     }
 }
