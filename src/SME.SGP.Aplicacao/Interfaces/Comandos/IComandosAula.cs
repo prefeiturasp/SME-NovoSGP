@@ -11,5 +11,7 @@ namespace SME.SGP.Aplicacao
         Task<string> Excluir(long id, string disciplinaNome, RecorrenciaAula recorrencia);
 
         Task<string> Inserir(AulaDto dto);
+
+       Task<AulaRecorrenciaDto> ObterRecorrenciaDaSerie(long aulaId, RecorrenciaAula recorrenciaSelecionada, IConsultasAula consultasAula);
     }
 }
