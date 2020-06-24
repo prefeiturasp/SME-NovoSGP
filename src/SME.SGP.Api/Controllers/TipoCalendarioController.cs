@@ -40,9 +40,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TCE_C, Permissao.E_C, Policy = "Bearer")]
         [Route("anos/letivos/{anoLetivo}")]
-        public IActionResult BuscarPorAnoLetivo(int anoLetivo)
+        public async Task<IActionResult> BuscarPorAnoLetivo(int anoLetivo)
         {
-            var retorno = consultas.ListarPorAnoLetivo(anoLetivo);
+            var retorno = await consultas.ListarPorAnoLetivo(anoLetivo);
 
             if (retorno == null || !retorno.Any())
                 return NoContent();

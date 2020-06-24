@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public IEnumerable<EntidadeBase> Salvar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
+        public async Task<IEnumerable<EntidadeBase>> Salvar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
         {
             Validar(planoAnualTerritorioSaberDto);
 
@@ -37,7 +38,7 @@ namespace SME.SGP.Aplicacao
             }
             foreach (var bimestrePlanoAnual in planoAnualTerritorioSaberDto.Bimestres)
             {
-                PlanoAnualTerritorioSaber planoAnualTerritorioSaber = ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value);
+                PlanoAnualTerritorioSaber planoAnualTerritorioSaber = await ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value);
                 if (planoAnualTerritorioSaber != null)
                 {
                     if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now).Result)
@@ -46,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 planoAnualTerritorioSaber = MapearParaDominio(planoAnualTerritorioSaberDto, planoAnualTerritorioSaber, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Desenvolvimento, bimestrePlanoAnual.Reflexao);
                 repositorioPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaber);
 
-                listaAuditoria.Add(planoAnualTerritorioSaber as EntidadeBase);
+                listaAuditoria.Add(planoAnualTerritorioSaber);
             }
 
             unitOfWork.PersistirTransacao();
@@ -64,9 +65,9 @@ namespace SME.SGP.Aplicacao
                                             {string.Join(", ", bimestresDescricaoVazia.Select(b => $"{b.Bimestre}º"))} bimestre");
         }
 
-        private PlanoAnualTerritorioSaber ObterPlanoAnualTerritorioSaberSimplificado(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, int bimestre)
+        private async Task<PlanoAnualTerritorioSaber> ObterPlanoAnualTerritorioSaberSimplificado(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, int bimestre)
         {
-            return repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(planoAnualTerritorioSaberDto.AnoLetivo.Value,
+            return await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(planoAnualTerritorioSaberDto.AnoLetivo.Value,
                                                                                                       planoAnualTerritorioSaberDto.EscolaId,
                                                                                                       planoAnualTerritorioSaberDto.TurmaId.Value,
                                                                                                       bimestre,

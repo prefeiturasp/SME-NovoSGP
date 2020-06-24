@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             wfAprovacaoAula.AdicionarNivel(Cargo.CP);
             wfAprovacaoAula.AdicionarNivel(Cargo.Diretor);
 
-            return comandosWorkflowAprovacao.Salvar(wfAprovacaoAula);
+            return await comandosWorkflowAprovacao.Salvar(wfAprovacaoAula);
         }
     }
 }

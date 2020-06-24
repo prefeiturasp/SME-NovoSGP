@@ -15,12 +15,6 @@ using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
-using System.Threading.Tasks;
-using RabbitMQ.Client;
-using SME.SGP.Api.Configuracoes;
 
 namespace SME.SGP.Api
 {

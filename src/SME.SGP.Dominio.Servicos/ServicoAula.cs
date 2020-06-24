@@ -189,7 +189,7 @@ namespace SME.SGP.Dominio.Servicos
             if (!temLiberacaoExcepcionalNessaData && !diaLetivo)
                 throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
 
-            var bimestre = consultasPeriodoEscolar.ObterBimestre(aula.DataAula, turma.ModalidadeCodigo);
+            var bimestre = await consultasPeriodoEscolar.ObterBimestre(aula.DataAula, turma.ModalidadeCodigo);
             if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre))
                 throw new NegocioException("Não é possível cadastrar essa aula pois o período não está aberto.");
 
@@ -208,7 +208,7 @@ namespace SME.SGP.Dominio.Servicos
                     var nomeDisciplina = aula.DisciplinaNome;
 
                     repositorioAula.Salvar(aula);
-                    PersistirWorkflowReposicaoAula(aula, aula.Turma.Ue.Dre.Nome, aula.Turma.Ue.Nome, nomeDisciplina,
+                    await PersistirWorkflowReposicaoAula(aula, aula.Turma.Ue.Dre.Nome, aula.Turma.Ue.Nome, nomeDisciplina,
                                                  aula.Turma.Nome, aula.Turma.Ue.Dre.CodigoDre);
                     return "Aula cadastrada com sucesso e enviada para aprovação.";
                 }
@@ -613,7 +613,7 @@ namespace SME.SGP.Dominio.Servicos
             return lstDisciplinasProfCJ != null && lstDisciplinasProfCJ.Any() ? lstDisciplinasProfCJ.Select(d => d.DisciplinaId) : null;
         }
 
-        private void PersistirWorkflowReposicaoAula(Aula aula, string nomeDre, string nomeEscola, string nomeDisciplina,
+        private async Task PersistirWorkflowReposicaoAula(Aula aula, string nomeDre, string nomeEscola, string nomeDisciplina,
                                                           string nomeTurma, string dreId)
         {
             var linkParaReposicaoAula = $"{configuration["UrlFrontEnd"]}calendario-escolar/calendario-professor/cadastro-aula/editar/:{aula.Id}/";
@@ -643,7 +643,7 @@ namespace SME.SGP.Dominio.Servicos
                 Nivel = 2
             });
 
-            var idWorkflow = comandosWorkflowAprovacao.Salvar(wfAprovacaoAula);
+            var idWorkflow = await comandosWorkflowAprovacao.Salvar(wfAprovacaoAula);
 
             aula.EnviarParaWorkflowDeAprovacao(idWorkflow);
 
