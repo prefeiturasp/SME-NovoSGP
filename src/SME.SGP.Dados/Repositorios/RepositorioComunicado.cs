@@ -69,14 +69,15 @@ namespace SME.SGP.Dados.Repositorios
             string where = MontaWhereListar(filtro);
             string from = "";
             var whereGrupo = " AND ({0}.grupo_comunicado_id = ANY(@gruposId))";
+            
+            if (paginacao == null)
+                paginacao = new Paginacao(1, 10);
+
             if (paginacao.QuantidadeRegistros != 0)
                 from = string.Format(fromComunicadoGrupo, filtro.GruposId?.Length > 0 ? string.Format(whereGrupo, "cgr") : "", string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros));
             else from = string.Format(fromComunicadoGrupo, filtro.GruposId?.Length > 0 ? string.Format(whereGrupo, "cgr") : "", "");
 
             query.AppendFormat(queryComunicado, Montarcampos(), from, where);
-
-            if (paginacao == null)
-                paginacao = new Paginacao(1, 10);
 
             var retornoPaginado = new PaginacaoResultadoDto<Comunicado>()
             {
@@ -109,7 +110,7 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        public async Task<IEnumerable<ComunicadoResultadoDto>> ObterPorIdAsync(long id)
+        public async Task<IEnumerable<ComunicadoResultadoDto>> ObterResultadoPorComunicadoIdAsync(long id)
         {
             var where = "AND c.id = @id";
             var query = string.Format(queryComunicado, Montarcampos(false), fromComunicado, where);

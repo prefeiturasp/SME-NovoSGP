@@ -131,13 +131,13 @@ namespace SME.SGP.Aplicacao
                                            usuario.EhProfessorCj() ||  // Para professores substitutos (CJ) a seleção dos objetivos deve ser opcional
                                            !(consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt64(aula.DisciplinaId))) || // Caso a disciplina não possui vinculo com Jurema, os objetivos não devem ser exigidos
                                            abrangenciaTurma.Ano.Equals("0"); // Caso a turma for de  educação física multisseriadas, os objetivos não devem ser exigidos;
-                
+
                 if (!permitePlanoSemObjetivos)
                     throw new NegocioException("A seleção de objetivos de aprendizagem é obrigatória para criação do plano de aula");
             }
 
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(aula.TipoCalendarioId,aula.DataAula.Date);
-            if(periodoEscolar==null)
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(aula.TipoCalendarioId, aula.DataAula.Date);
+            if (periodoEscolar == null)
                 throw new NegocioException("Não foi possível concluir o cadastro, pois não foi localizado o bimestre da aula.");
 
 

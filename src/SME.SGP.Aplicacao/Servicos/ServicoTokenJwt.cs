@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -10,13 +8,11 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Servicos
 {
     public class ServicoTokenJwt : IServicoTokenJwt
     {
-        private readonly IRepositorioCache cache;
         private readonly IConfiguration configuration;
         private readonly IContextoAplicacao contextoAplicacao;
         private string tokenGerado;
@@ -25,8 +21,7 @@ namespace SME.SGP.Aplicacao.Servicos
                                IContextoAplicacao  contextoAplicacao)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));            
-            
+            this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }
 
         public string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos)
@@ -84,16 +79,6 @@ namespace SME.SGP.Aplicacao.Servicos
 
         public Guid ObterPerfil()
             => ObterPerfilDoToken(ObterTokenAtual());
-
-        public async Task RevogarToken(string login)
-        {
-            var chaveLogin = ObterChaveLogin(login);
-            var token = cache.Obter(chaveLogin);
-            if (!string.IsNullOrWhiteSpace(token))
-            {
-                await cache.RemoverAsync(chaveLogin);
-            }
-        }
 
         public bool TemPerfilNoToken(string guid)
         {

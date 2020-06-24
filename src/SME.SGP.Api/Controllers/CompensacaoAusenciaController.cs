@@ -71,9 +71,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TurmaRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.CA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterTurmasCopia(string turmaOrigemCodigo, [FromServices] IConsultasCompensacaoAusencia consultas)
+        public IActionResult ObterTurmasCopia(string turmaOrigemCodigo, [FromServices] IConsultasCompensacaoAusencia consultas)
         {
-            return Ok(await consultas.ObterTurmasParaCopia(turmaOrigemCodigo));
+            return Ok(consultas.ObterTurmasParaCopia(turmaOrigemCodigo));
         }
 
         [HttpPost("copiar")]
@@ -89,7 +89,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("notificar")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Notificar([FromServices] IServicoNotificacaoFrequencia servicoNotificacao)
+        public IActionResult Notificar([FromServices] IServicoNotificacaoFrequencia servicoNotificacao)
         {
             servicoNotificacao.VerificaNotificacaoBimestral();
             return Ok();
