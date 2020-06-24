@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             var Mensagens = new List<string>();
 
             var fechamentos = await repositorioFechamentoReabertura.Listar(0, 0, 0, ids);
-            if (fechamentos == null && !fechamentos.Any())
+            if (fechamentos == null || !fechamentos.Any())
                 throw new NegocioException("Não foram localizados fechamento(s) válido(s) para exclusão.");
             else
             {

@@ -126,7 +126,9 @@ namespace SME.SGP.Aplicacao
 
         private void ObterAtribuicoesEsporadicasUe(string professorRf, List<string> codigosUes, string codigoDre)
         {
-            if (codigosUes != null || !codigosUes.Any())
+            if (codigosUes == null || !codigosUes.Any())
+                return;
+            else
             {
                 var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf);
                 if (atribuicaoEsporadica != null && atribuicaoEsporadica.DreId == codigoDre
