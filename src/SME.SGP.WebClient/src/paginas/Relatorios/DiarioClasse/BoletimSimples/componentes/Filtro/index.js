@@ -106,6 +106,10 @@ function Filtro({ onFiltrar, resetForm }) {
   const aoTrocarModalidadeId = id => {
     if (!id) refForm.setFieldValue('semestre', undefined);
     setModalidadeId(id);
+    refForm.setFieldValue('dreId', undefined);
+    refForm.setFieldValue('ueId', undefined);
+    refForm.setFieldValue('turmaId', undefined);
+    refForm.setFieldValue('opcaoAlunoId', '0');
   };
 
   const aoTrocarDreId = id => {
