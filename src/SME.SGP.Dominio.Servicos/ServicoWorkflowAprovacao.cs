@@ -615,7 +615,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var diretoresDaEscola = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor);
 
-            if (diretoresDaEscola == null && !diretoresDaEscola.Any())
+            if (diretoresDaEscola == null || !diretoresDaEscola.Any())
                 throw new NegocioException("Não foi possível localizar o diretor da Ue desta reabertura de fechamento.");
             else
                 foreach (var diretorDaEscola in diretoresDaEscola)
@@ -647,7 +647,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var diretoresDaEscola = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor);
 
-            if (diretoresDaEscola == null && !diretoresDaEscola.Any())
+            if (diretoresDaEscola == null || !diretoresDaEscola.Any())
                 throw new NegocioException("Não foi possível localizar o diretor da Ue desta reabertura de fechamento.");
             else
                 foreach (var diretorDaEscola in diretoresDaEscola)
