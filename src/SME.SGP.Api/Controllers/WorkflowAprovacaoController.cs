@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -44,9 +45,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Post(WorkflowAprovacaoDto workflowAprovaNivelDto)
+        public async Task<IActionResult> Post(WorkflowAprovacaoDto workflowAprovaNivelDto)
         {
-            comandosWorkflowAprovacao.Salvar(workflowAprovaNivelDto);
+            await comandosWorkflowAprovacao.Salvar(workflowAprovaNivelDto);
             return Ok();
         }
     }

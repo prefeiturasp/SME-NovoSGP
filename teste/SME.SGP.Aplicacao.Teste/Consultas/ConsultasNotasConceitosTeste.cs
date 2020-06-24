@@ -97,8 +97,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [InlineData(8.05, 0.04, 9)]
         public async Task Deve_Arredondar_Nota(double nota, double arredondamento, double esperado)
         {
-            repositorioAtividadeAvaliativa.Setup(a => a.ObterPorId(1)).Returns(new Dominio.AtividadeAvaliativa());
-            repositorioNotaParametro.Setup(a => a.ObterPorDataAvaliacao(It.IsAny<DateTime>()).Result).Returns(new Dominio.NotaParametro() { Incremento = arredondamento });
+            repositorioAtividadeAvaliativa.Setup(a => a.ObterPorIdAsync(1)).ReturnsAsync(new Dominio.AtividadeAvaliativa());
+            repositorioNotaParametro.Setup(a => a.ObterPorDataAvaliacao(It.IsAny<DateTime>())).ReturnsAsync(new Dominio.NotaParametro() { Incremento = arredondamento });
 
             var valorArredondado = await consultasNotasConceito.ObterValorArredondado(1, nota);
 
