@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AS_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFuncionarios([FromServices] IObterFuncionariosUseCase obterFuncionariosUseCase,
-                                                                          FiltroFuncionarioDto filtroFuncionariosDto)
+                                                                          [FromBody]FiltroFuncionarioDto filtroFuncionariosDto)
         {
             return Ok(await obterFuncionariosUseCase.Executar(filtroFuncionariosDto));
         }
