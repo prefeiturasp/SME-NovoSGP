@@ -12,6 +12,7 @@ using SME.SGP.Aplicacao.CasosDeUso.Exemplos.Games;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -94,7 +95,7 @@ namespace SME.SGP.Worker.Service
                             {
                                 var casoDeUso = scope.ServiceProvider.GetService(tipoComando.Item2);
 
-                                await tipoComando.Item2.GetMethod("Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
+                                await GetMethod(tipoComando.Item2, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
                             }
                             canalRabbit.BasicAck(ea.DeliveryTag, false);
                         }
@@ -107,6 +108,23 @@ namespace SME.SGP.Worker.Service
                     }
                 }
             }
+        }
+
+        private MethodInfo GetMethod(Type objType, string method)
+        {
+            var executar = objType.GetMethod(method);
+
+            if (executar == null)
+            {
+                foreach (var itf in objType.GetInterfaces())
+                {
+                    executar = GetMethod(itf, method);
+                    if (executar != null)
+                        break;
+                }
+            }
+
+            return executar;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

@@ -19,13 +19,18 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             if (excluirDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
-                return await mediator.Send(new ExcluirAulaUnicaCommand(usuarioLogado, excluirDto.AulaId, excluirDto.ComponenteCurricularNome));
+                return await mediator.Send(new ExcluirAulaUnicaCommand(usuarioLogado,
+                                                                       excluirDto.AulaId,
+                                                                       excluirDto.ComponenteCurricularNome));
             else
             {
                 try
                 {
                     // TODO alterar para fila do RabbitMQ
-                    mediator.Enfileirar(new ExcluirAulaRecorrenteCommand(excluirDto.AulaId, excluirDto.RecorrenciaAula, excluirDto.ComponenteCurricularNome, usuarioLogado));
+                    await mediator.Send(new IncluirFilaExclusaoAulaRecorrenteCommand(excluirDto.AulaId,
+                                                                                     excluirDto.RecorrenciaAula,
+                                                                                     excluirDto.ComponenteCurricularNome,
+                                                                                     usuarioLogado));
                     return new RetornoBaseDto("Serão excluidas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
                 }
                 catch (Exception ex)
