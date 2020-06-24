@@ -27,9 +27,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PT_I, Permissao.PT_A, Policy = "Bearer")]
-        public IActionResult Post(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, [FromServices]IComandosPlanoAnualTerritorioSaber comandosPlanoAnualTerritorioSaber)
+        public async Task<IActionResult> Post(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, [FromServices]IComandosPlanoAnualTerritorioSaber comandosPlanoAnualTerritorioSaber)
         {
-            var resultado = comandosPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaberDto);
+            var resultado = await comandosPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaberDto);
 
             if (planoAnualTerritorioSaberDto.Id == default(int))
             {
