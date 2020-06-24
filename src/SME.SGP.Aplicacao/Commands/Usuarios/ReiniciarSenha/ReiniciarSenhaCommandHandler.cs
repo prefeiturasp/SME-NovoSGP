@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 await servicoEOL.ReiniciarSenha(request.CodigoRf);
-                retorno.Mensagem = $"Senha do usuário {request.CodigoRf} - {usuario.Nome} reiniciada com sucesso. O usuário deverá informar a senha {FormatarSenha(request.CodigoRf)} no seu próximo acesso";
+                retorno.Mensagem = $"Senha do usuário {request.CodigoRf} - {usuario.Nome} reiniciada com sucesso. O usuário deverá informar a senha {FormatarSenha(request.CodigoRf)} no seu próximo acesso.";
                 retorno.DeveAtualizarEmail = false;
             }
 
