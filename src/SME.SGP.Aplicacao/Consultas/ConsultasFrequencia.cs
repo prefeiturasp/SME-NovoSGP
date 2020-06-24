@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
         {
             var alunosAusentesDto = new List<AlunoAusenteDto>();
             // Busca dados da turma
-            var turma = BuscaTurma(turmaId);
+            var turma = await BuscaTurma(turmaId);
 
             // Busca periodo
             var periodo = await BuscaPeriodo(turma, bimestre);
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
             }
-            var turma = repositorioTurma.ObterPorCodigo(aula.TurmaId);
+            var turma = await repositorioTurma.ObterPorCodigo(aula.TurmaId);
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
             FrequenciaDto registroFrequenciaDto = ObterRegistroFrequencia(aulaId, aula, turma);
@@ -147,7 +147,7 @@ namespace SME.SGP.Aplicacao
                 ausencias = new List<RegistroAusenciaAluno>();
             }
 
-            var bimestre = consultasPeriodoEscolar.ObterPeriodoEscolarPorData(aula.TipoCalendarioId, aula.DataAula);
+            var bimestre = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(aula.TipoCalendarioId, aula.DataAula);
             if (bimestre == null)
             {
                 throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
@@ -240,7 +240,7 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi possível localizar o tipo de calendário da turma");
 
-            var periodosEscolares = consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
+            var periodosEscolares = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não foi possível localizar os períodos escolares da turma");
 
@@ -251,9 +251,9 @@ namespace SME.SGP.Aplicacao
             return periodoEscolar;
         }
 
-        private Turma BuscaTurma(string turmaId)
+        private async Task <Turma> BuscaTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 

@@ -61,7 +61,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (fechamentoReabertura.Status == EntidadeStatus.AguardandoAprovacao)
             {
-                fechamentoReabertura.WorkflowAprovacaoId = PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
+                fechamentoReabertura.WorkflowAprovacaoId = await PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
                 mensagemRetorno = "Reabertura de Fechamento alterado e será válido após aprovação.";
             }
@@ -137,7 +137,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (fechamentoReabertura.Status == EntidadeStatus.AguardandoAprovacao)
             {
-                fechamentoReabertura.WorkflowAprovacaoId = PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
+                fechamentoReabertura.WorkflowAprovacaoId = await PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
                 mensagemRetorno = "Reabertura de Fechamento cadastrado e será válido após aprovação.";
             }
@@ -224,7 +224,7 @@ namespace SME.SGP.Dominio.Servicos
             if (fechamentoReabertura.EhParaDre())
             {
                 var adminsSgpDre = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Dre.CodigoDre).Result;
-                if (adminsSgpDre != null || adminsSgpDre.Any())
+                if (adminsSgpDre != null && adminsSgpDre.Any())
                 {
                     foreach (var adminSgpUe in adminsSgpDre)
                     {
@@ -344,7 +344,7 @@ namespace SME.SGP.Dominio.Servicos
             return tipoEvento;
         }
 
-        private long PersistirWorkflowFechamentoReabertura(FechamentoReabertura fechamentoReabertura)
+        private async Task<long> PersistirWorkflowFechamentoReabertura(FechamentoReabertura fechamentoReabertura)
         {
             var wfAprovacaoEvento = new WorkflowAprovacaoDto()
             {
@@ -369,7 +369,7 @@ namespace SME.SGP.Dominio.Servicos
                 Nivel = 1
             });
 
-            return comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
+            return await comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
         }
 
         private async Task VerificaEAtualizaFechamentosReaberturasParaAlterar(FechamentoReabertura fechamentoReabertura, IEnumerable<FechamentoReabertura> fechamentoReaberturas, bool confirmacacaoAlteracaoHierarquica)

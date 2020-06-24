@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -16,9 +17,9 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
 
-        public bool ValidarSeEhDiaLetivo(DateTime data, long tipoCalendarioId, string dreId, string ueId)
+        public async Task<bool> ValidarSeEhDiaLetivo(DateTime data, long tipoCalendarioId, string dreId, string ueId)
         {
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, data.Local());
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, data.Local());
 
             if (periodoEscolar == null)
                 return false;
@@ -29,11 +30,11 @@ namespace SME.SGP.Dominio.Servicos
             return data.DayOfWeek != DayOfWeek.Saturday && data.DayOfWeek != DayOfWeek.Sunday;
         }
 
-        public bool ValidarSeEhDiaLetivo(DateTime dataInicio, DateTime dataFim, long tipoCalendarioId, bool ehLetivo = false, long tipoEventoId = 0)
+        public async Task<bool> ValidarSeEhDiaLetivo(DateTime dataInicio, DateTime dataFim, long tipoCalendarioId, bool ehLetivo = false, long tipoEventoId = 0)
         {
             DateTime dataInicial = dataInicio.Date;
             DateTime dataFinal = dataFim.Date;
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataInicial, dataFinal);
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataInicial, dataFinal);
             if (periodoEscolar == null)
                 return false;
             if (ehLetivo && tipoEventoId != (int)TipoEvento.LiberacaoExcepcional)
@@ -53,7 +54,7 @@ namespace SME.SGP.Dominio.Servicos
                 
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

@@ -86,7 +86,7 @@ namespace SME.SGP.Dominio.Servicos
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var aula = ObterAula(aulaId);
-            var turma = ObterTurma(aula.TurmaId);
+            var turma = await ObterTurma(aula.TurmaId);
 
             if (!aula.PermiteRegistroFrequencia(turma))
             {
@@ -136,9 +136,9 @@ namespace SME.SGP.Dominio.Servicos
             return aula;
         }
 
-        private Turma ObterTurma(string turmaId)
+        private async Task<Turma> ObterTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
             return turma;
