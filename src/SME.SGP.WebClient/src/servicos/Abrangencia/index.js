@@ -5,8 +5,10 @@ const AbrangenciaServico = {
     if (url) return api.get(url);
     return api.get(`/v1/abrangencias/false/dres`);
   },
-  buscarUes(dreId, url = '') {
-    if (url) return api.get(`${url}/${dreId}/ues/atribuicoes`);
+  buscarUes(dreId, url = '', temParametros = false) {
+    if (url && !temParametros)
+      return api.get(`${url}/${dreId}/ues/atribuicoes`);
+    if (temParametros) return api.get(url);
     return api.get(`/v1/abrangencias/false/dres/${dreId}/ues`);
   },
   buscarModalidades() {

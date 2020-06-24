@@ -32,12 +32,6 @@ const BoletimSimples = () => {
   const [selecionarAlunos, setSelecionarAlunos] = useState(false);
 
   const onChangeFiltro = valoresFiltro => {
-    // console.log('Ano letivo: ' + valoresFiltro.anoLetivo);
-    // console.log('Modalidade: ' + valoresFiltro.modalidadeId);
-    // console.log('DRE: ' + valoresFiltro.dreId);
-    // console.log('UE: ' + valoresFiltro.ueId);
-    // console.log('Turma Id: ' + valoresFiltro.turmaId);
-
     setFiltro({
       anoLetivo: valoresFiltro.anoLetivo,
       modalidade: valoresFiltro.modalidadeId,
