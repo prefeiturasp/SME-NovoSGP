@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
         {
             var semana = UtilData.ObterSemanaDoAno(request.DataAula);
 
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
+            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
 

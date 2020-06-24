@@ -314,9 +314,11 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IReceberDadosDownloadRelatorioUseCase, ReceberDadosDownloadRelatorioUseCase>();
             services.TryAddScoped<IRelatorioConselhoClasseAtaFinalUseCase, RelatorioConselhoClasseAtaFinalUseCase>();
             services.TryAddScoped<IGamesUseCase, GamesUseCase>();
+            services.TryAddScoped<IReiniciarSenhaUseCase, ReiniciarSenhaUseCase>();
             services.TryAddScoped<IInserirAulaUseCase, InserirAulaUseCase>();
             services.TryAddScoped<IAlterarAulaUseCase, AlterarAulaUseCase>();
             services.TryAddScoped<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
+            services.TryAddScoped<IObterFuncionariosUseCase, ObterFuncionariosUseCase>();
         }
     }
 }

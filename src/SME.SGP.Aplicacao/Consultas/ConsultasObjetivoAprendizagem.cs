@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma não encontrada para consulta de objetivos de aprendizagem");
 
-            return consultasPeriodoEscolar.ObterBimestre(dataReferencia, turma.ModalidadeCodigo, turma.Semestre);
+            return await consultasPeriodoEscolar.ObterBimestre(dataReferencia, turma.ModalidadeCodigo, turma.Semestre);
         }
 
         private async Task<List<ObjetivoAprendizagemDto>> ListarSemCache()

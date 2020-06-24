@@ -29,18 +29,18 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(double), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
-        public IActionResult ObterArredondamento(long atividadeAvaliativaId, double nota, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
+        public async Task<IActionResult> ObterArredondamento(long atividadeAvaliativaId, double nota, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
         {
-            return Ok(consultasNotasConceitos.ObterValorArredondado(atividadeAvaliativaId, nota));
+            return Ok(await consultasNotasConceitos.ObterValorArredondado(atividadeAvaliativaId, nota));
         }
 
         [HttpGet("{nota}/arredondamento")]
         [ProducesResponseType(typeof(double), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
-        public IActionResult ObterArredondamento(double nota, [FromQuery] DateTime data, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
+        public async Task<IActionResult> ObterArredondamento(double nota, [FromQuery] DateTime data, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
         {
-            return Ok(consultasNotasConceitos.ObterValorArredondado(data, nota));
+            return Ok(await consultasNotasConceitos.ObterValorArredondado(data, nota));
         }
 
         [HttpGet("turmas/{turmaId}/anos-letivos/{anoLetivo}/tipos")]
@@ -68,7 +68,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterConceitos([FromQuery] DateTime data, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
         {
-            var listaConceitos = consultasNotasConceitos.ObterConceitos(data);
+            var listaConceitos = await consultasNotasConceitos.ObterConceitos(data);
 
             if (listaConceitos == null || !listaConceitos.Any())
                 return NoContent();

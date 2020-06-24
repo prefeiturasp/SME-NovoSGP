@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<int> Handle(ObterBimestreAtualQuery request, CancellationToken cancellationToken)
         {
-            var turma = request.Turma ?? repositorioTurma.ObterPorCodigo(request.TurmaCodigo);
+            var turma = request.Turma ?? await repositorioTurma.ObterPorCodigo(request.TurmaCodigo);
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 

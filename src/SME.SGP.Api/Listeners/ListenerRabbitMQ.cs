@@ -83,7 +83,7 @@ namespace SME.SGP.Api
 
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     //TODO
                 }

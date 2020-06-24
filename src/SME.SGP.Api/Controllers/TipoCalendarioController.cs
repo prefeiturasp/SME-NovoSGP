@@ -40,9 +40,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TCE_C, Permissao.E_C, Policy = "Bearer")]
         [Route("anos/letivos/{anoLetivo}")]
-        public IActionResult BuscarPorAnoLetivo(int anoLetivo)
+        public async Task<IActionResult> BuscarPorAnoLetivo(int anoLetivo)
         {
-            var retorno = consultas.ListarPorAnoLetivo(anoLetivo);
+            var retorno = await consultas.ListarPorAnoLetivo(anoLetivo);
 
             if (retorno == null || !retorno.Any())
                 return NoContent();
@@ -54,9 +54,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TCE_C, Permissao.E_C, Policy = "Bearer")]
-        public IActionResult BuscarTodos()
+        public async Task<IActionResult> BuscarTodos()
         {
-            return Ok(consultas.Listar());
+            return Ok(await consultas.Listar());
         }
 
         [HttpGet]
@@ -64,9 +64,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{id}")]
         [Permissao(Permissao.TCE_C, Permissao.E_C, Policy = "Bearer")]
-        public IActionResult BuscarUm(long id)
+        public async Task<IActionResult> BuscarUm(long id)
         {
-            return Ok(consultas.BuscarPorId(id));
+            return Ok(await consultas.BuscarPorId(id));
         }
 
         [HttpPost]
