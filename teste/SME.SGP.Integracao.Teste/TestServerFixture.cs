@@ -26,7 +26,7 @@ namespace SME.SGP.Integracao.Teste
         private readonly ServicoTokenJwt servicoTokenJwt;
         private readonly RedisRunner _redisRunner;
 
-        public TestServerFixture(IRepositorioCache repositorioCache)
+        public TestServerFixture()
         {
             try
             {
@@ -60,7 +60,7 @@ namespace SME.SGP.Integracao.Teste
 
                 var contextoTesteIntegrado = new ContextoTesteIntegrado("");
 
-                servicoTokenJwt = new ServicoTokenJwt(config, contextoTesteIntegrado, repositorioCache);
+                servicoTokenJwt = new ServicoTokenJwt(config, contextoTesteIntegrado);
             }
             catch (Exception ex)
             {
