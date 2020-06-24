@@ -76,8 +76,8 @@ namespace SME.Background.Hangfire
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseLogProvider<SentryLogProvider>(new SentryLogProvider())
                 .UseRecommendedSerializerSettings()
-                .UseActivator(new HangfireActivator(serviceCollection.BuildServiceProvider()))
-                .UseActivator(new MediatRJobActivator(mediator))
+                .UseActivator(new HangfireActivator(serviceCollection.BuildServiceProvider(), mediator))
+                //.UseActivator(new MediatRJobActivator(mediator))
                 .UseFilter<AutomaticRetryAttribute>(new AutomaticRetryAttribute() { Attempts = 0 })
                 .UsePostgreSqlStorage(connectionString, new PostgreSqlStorageOptions()
                 {
