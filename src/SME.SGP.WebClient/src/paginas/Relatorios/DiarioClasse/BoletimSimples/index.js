@@ -42,6 +42,7 @@ const BoletimSimples = () => {
       ueCodigo: valoresFiltro.ueId,
       turmaCodigo: valoresFiltro.turmaId,
     });
+    setItensSelecionados([]);
     setSelecionarAlunos(
       valoresFiltro.turmaId && valoresFiltro.opcaoAlunoId === '1'
     );
@@ -64,7 +65,10 @@ const BoletimSimples = () => {
     });
     if (resultado.erro)
       erro('Não foi possível socilitar a impressão do Boletim');
-    else sucesso('Impressão de Boletim solicitada com sucesso');
+    else
+      sucesso(
+        'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+      );
   };
 
   const colunas = [
@@ -85,13 +89,18 @@ const BoletimSimples = () => {
         <Card mx="mx-0">
           <ButtonGroup
             somenteConsulta={somenteConsulta}
-            permissoesTela={permissoesTela[RotasDto.RELATORIO_BOLETIM_SIMPLES]}
+            permissoesTela={{
+              podeAlterar: false,
+              podeConsultar: true,
+              podeExcluir: false,
+              podeIncluir: true,
+            }}
             temItemSelecionado={itensSelecionados && itensSelecionados.length}
             onClickVoltar={onClickVoltar}
             onClickCancelar={onClickCancelar}
             onClickBotaoPrincipal={onClickBotaoPrincipal}
             desabilitarBotaoPrincipal={false}
-            botoesEstadoVariavel
+            botoesEstadoVariavel={false}
             labelBotaoPrincipal="Gerar"
           />
           <Filtro onFiltrar={onChangeFiltro} resetForm={resetForm} />
