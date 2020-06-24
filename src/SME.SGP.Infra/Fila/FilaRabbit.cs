@@ -43,7 +43,7 @@ namespace SME.SGP.Infra
 
         private static byte[] FormataBodyWorker(AdicionaFilaDto adicionaFilaDto)
         {
-            var request = new MensagemRabbit(adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros, adicionaFilaDto.CodigoCorrelacao);
+            var request = new MensagemRabbit(adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros, adicionaFilaDto.CodigoCorrelacao, adicionaFilaDto.NotificarErroUsuario);
             var mensagem = JsonConvert.SerializeObject(request);
             var body = Encoding.UTF8.GetBytes(mensagem);
             return body;

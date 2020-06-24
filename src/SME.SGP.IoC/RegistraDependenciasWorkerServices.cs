@@ -310,6 +310,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScopedWorkerService<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
             services.TryAddScopedWorkerService<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
+            services.TryAddScopedWorkerService<IServicoFila, FilaRabbit>();
         }
 
 
@@ -328,6 +329,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExcluirAulaRecorrenteUseCase, ExcluirAulaRecorrenteUseCase>();
             services.TryAddScopedWorkerService<IInserirAulaRecorrenteUseCase, InserirAulaRecorrenteUseCase>();
             services.TryAddScopedWorkerService<IAlterarAulaRecorrenteUseCase, AlterarAulaRecorrenteUseCase>();
+            services.TryAddScopedWorkerService<INotificarUsuarioUseCase, NotificarUsuarioUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
