@@ -6,7 +6,6 @@ import { Loader, Card, ButtonGroup, ListaPaginada } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 
 import history from '~/servicos/history';
-import RotasDto from '~/dtos/rotasDto';
 
 import Filtro from './componentes/Filtro';
 import ServicoBoletimSimples from '~/servicos/Paginas/Relatorios/DiarioClasse/BoletimSimples/ServicoBoletimSimples';
@@ -15,8 +14,6 @@ import { sucesso, erro } from '~/servicos/alertas';
 const BoletimSimples = () => {
   const [loaderSecao] = useState(false);
   const [somenteConsulta] = useState(false);
-  const permissoesTela = useSelector(store => store.usuario.permissoes);
-
   const [filtro, setFiltro] = useState({
     anoLetivo: '',
     modalidade: '',
@@ -35,6 +32,12 @@ const BoletimSimples = () => {
   const [selecionarAlunos, setSelecionarAlunos] = useState(false);
 
   const onChangeFiltro = valoresFiltro => {
+    // console.log('Ano letivo: ' + valoresFiltro.anoLetivo);
+    // console.log('Modalidade: ' + valoresFiltro.modalidadeId);
+    // console.log('DRE: ' + valoresFiltro.dreId);
+    // console.log('UE: ' + valoresFiltro.ueId);
+    // console.log('Turma Id: ' + valoresFiltro.turmaId);
+
     setFiltro({
       anoLetivo: valoresFiltro.anoLetivo,
       modalidade: valoresFiltro.modalidadeId,
