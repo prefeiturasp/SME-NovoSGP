@@ -182,7 +182,7 @@ namespace SME.SGP.Aplicacao
                     else
                     {
                         var tipoCalendarioId = aula.FirstOrDefault().TipoCalendarioId;
-                        var perioEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);
+                        var perioEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);
                         if (perioEscolar == null)
                         {
                             retorno.Add(new AtividadeAvaliativaExistenteRetornoDto()

@@ -204,7 +204,7 @@ namespace SME.SGP.Dominio.Servicos
             await CarregarTurma(entidadeDto.TurmaId);
 
             // Valida periodo de fechamento
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turmaFechamento.AnoLetivo
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turmaFechamento.AnoLetivo
                                                                 , turmaFechamento.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio
                                                                 , DateTime.Now.Semestre());
 

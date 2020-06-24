@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-   public interface IRepositorioPlanoAnualTerritorioSaber : IRepositorioBase<PlanoAnualTerritorioSaber>
+    public interface IRepositorioPlanoAnualTerritorioSaber : IRepositorioBase<PlanoAnualTerritorioSaber>
     {
-       Task<PlanoAnualTerritorioSaber> ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long territorioExperienciaId);
+        Task<PlanoAnualTerritorioSaber> ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long territorioExperienciaId);
 
         Task<PlanoAnualTerritorioSaberCompletoDto> ObterPlanoAnualTerritorioSaberCompletoPorAnoEscolaBimestreETurma(int ano, string escolaId, string turmaId, int bimestre, long territorioExperienciaId);
 

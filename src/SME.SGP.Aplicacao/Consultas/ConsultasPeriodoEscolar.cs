@@ -62,16 +62,6 @@ namespace SME.SGP.Aplicacao.Consultas
         public async Task<PeriodoEscolar> ObterPeriodoEscolarPorData(long tipoCalendarioId, DateTime dataPeriodo)
             => await repositorio.ObterPorTipoCalendarioData(tipoCalendarioId, dataPeriodo);
 
-        private PeriodoEscolarDto MapearParaDto(PeriodoEscolar periodo)
-            => periodo == null ? null : new PeriodoEscolarDto()
-            {
-                Id = periodo.Id,
-                Bimestre = periodo.Bimestre,
-                Migrado = periodo.Migrado,
-                PeriodoInicio = periodo.PeriodoInicio,
-                PeriodoFim = periodo.PeriodoFim
-            };
-
         private static PeriodoEscolarListaDto EntidadeParaDto(IEnumerable<PeriodoEscolar> lista)
         {
             return new PeriodoEscolarListaDto
@@ -115,7 +105,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
             var modalidade = modalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
 
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, dataAtual.Semestre());
+            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, dataAtual.Semestre());
 
             return await ObterPeriodoEscolarPorData(tipoCalendario.Id, dataAtual);
         }

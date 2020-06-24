@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await ObterTurma(dto.TurmaId);
 
-            var tipoCalendario = ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo);
+            var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo);
 
             long id;
 

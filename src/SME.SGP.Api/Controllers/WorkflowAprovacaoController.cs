@@ -27,9 +27,9 @@ namespace SME.SGP.Api.Controllers
         [Route("notificacoes/{notificacaoId}/aprova")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Aprovar(long notificacaoId, [FromBody]WorkflowAprovacaoAprovacaoDto workflowAprovacaoAprovacaoDto)
+        public async Task<IActionResult> Aprovar(long notificacaoId, [FromBody] WorkflowAprovacaoAprovacaoDto workflowAprovacaoAprovacaoDto)
         {
-            comandosWorkflowAprovacao.Aprovar(workflowAprovacaoAprovacaoDto.Aprova, notificacaoId, workflowAprovacaoAprovacaoDto.Observacao);
+            await comandosWorkflowAprovacao.Aprovar(workflowAprovacaoAprovacaoDto.Aprova, notificacaoId, workflowAprovacaoAprovacaoDto.Observacao);
             return Ok();
         }
 

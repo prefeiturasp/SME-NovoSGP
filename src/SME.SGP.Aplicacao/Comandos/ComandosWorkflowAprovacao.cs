@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
         }
 
-        public void Aprovar(bool aprovar, long notificacaoId, string observacao)
+        public async Task Aprovar(bool aprovar, long notificacaoId, string observacao)
         {
             var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, notificacaoId);
             if (workflow == null)
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             unitOfWork.IniciarTransacao();
 
-            servicoWorkflowAprovacao.Aprovar(workflow, aprovar, observacao, notificacaoId);
+            await servicoWorkflowAprovacao.Aprovar(workflow, aprovar, observacao, notificacaoId);
 
             unitOfWork.PersistirTransacao();
         }
