@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,23 +14,28 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<RetornoBaseDto> Executar(ExcluirAulaDto aulaDto)
+        public async Task<RetornoBaseDto> Executar(ExcluirAulaDto excluirDto)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            if (aulaDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
-                return await mediator.Send(new ExcluirAulaUnicaCommand(usuarioLogado, aulaDto.AulaId, aulaDto.ComponenteCurricularNome));
+            if (excluirDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
+                return await mediator.Send(new ExcluirAulaUnicaCommand(usuarioLogado,
+                                                                       excluirDto.AulaId,
+                                                                       excluirDto.ComponenteCurricularNome));
             else
             {
                 try
                 {
-                    // TODO Excluir Recorrencia
-                    //mediator.Enfileirar(new ExcluirAulaUnicaCommand(usuarioLogado, aulaDto.Id, aulaDto.DataAula, aulaDto.Quantidade, aulaDto.CodigoTurma, aulaDto.CodigoComponenteCurricular, aulaDto.NomeComponenteCurricular, aulaDto.TipoCalendarioId, aulaDto.TipoAula, aulaDto.CodigoUe, aulaDto.EhRegencia, aulaDto.RecorrenciaAula));
+                    // TODO alterar para fila do RabbitMQ
+                    await mediator.Send(new IncluirFilaExclusaoAulaRecorrenteCommand(excluirDto.AulaId,
+                                                                                     excluirDto.RecorrenciaAula,
+                                                                                     excluirDto.ComponenteCurricularNome,
+                                                                                     usuarioLogado));
                     return new RetornoBaseDto("Serão excluidas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.AddBreadcrumb("Exclusão de aulas recorrentes", "Hangfire");
+                    SentrySdk.AddBreadcrumb("Exclusão de aulas recorrentes", "RabbitMQ");
                     SentrySdk.CaptureException(ex);
                 }
                 return new RetornoBaseDto("Ocorreu um erro ao solicitar a exclusão de aulas recorrentes, por favor tente novamente.");

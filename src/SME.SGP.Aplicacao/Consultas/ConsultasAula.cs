@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
         {
             var existeRegistro = await consultasFrequencia.FrequenciaAulaRegistrada(aulaId);
             if (!existeRegistro)
-                existeRegistro = await repositorioPlanoAula.PlanoAulaRegistrado(aulaId);
+                existeRegistro = await repositorioPlanoAula.PlanoAulaRegistradoAsync(aulaId);
 
             return existeRegistro;
         }

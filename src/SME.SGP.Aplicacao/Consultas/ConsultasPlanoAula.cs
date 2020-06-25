@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao.Consultas
         }
 
         public async Task<bool> PlanoAulaRegistrado(long aulaId)
-            => await repositorio.PlanoAulaRegistrado(aulaId);
+            => await repositorio.PlanoAulaRegistradoAsync(aulaId);
 
         public IEnumerable<PlanoAulaExistenteRetornoDto> ValidarPlanoAulaExistente(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto)
         {

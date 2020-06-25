@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoFila = servicoFila;
         }
+
         public async Task<bool> Executar(FiltroRelatorioConselhoClasseAtaFinalDto filtroRelatorioConselhoClasseAtaFinalDto)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
