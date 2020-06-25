@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 
-import { useSelector } from 'react-redux';
-
 import { Loader, Card, ButtonGroup, ListaPaginada } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 
@@ -38,6 +36,7 @@ const BoletimSimples = () => {
       dreCodigo: valoresFiltro.dreId,
       ueCodigo: valoresFiltro.ueId,
       turmaCodigo: valoresFiltro.turmaId,
+      semestre: valoresFiltro.semestre,
     });
     setItensSelecionados([]);
     setSelecionarAlunos(
