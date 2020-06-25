@@ -16,6 +16,11 @@ const ObjectCardConselhoClasse = props => {
     store => store.conselhoClasse.salvouJustificativa
   );
 
+  const conselhoClasseAlunoId = useSelector(
+    store =>
+      store.conselhoClasse.dadosPrincipaisConselhoClasse.conselhoClasseAlunoId
+  );
+
   const gerarConselhoClasseAluno = async () => {
     setGerandoConselhoClasse(true);
     await ServicoConselhoClasse.gerarConselhoClasseAluno(
@@ -36,7 +41,7 @@ const ObjectCardConselhoClasse = props => {
     <Loader loading={gerandoConselhoClasse}>
       <DetalhesAluno
         dados={dadosAlunoObjectCard}
-        desabilitarImprimir={!salvouJustificativa}
+        desabilitarImprimir={!salvouJustificativa && !conselhoClasseAlunoId}
         onClickImprimir={gerarConselhoClasseAluno}
       />
     </Loader>
