@@ -31,7 +31,6 @@ namespace SME.SGP.Worker.Service
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddHostedService<WorkerService>();
-                services.AddHostedService<WorkerRabbitMQ>();
                 WorkerService.ConfigurarDependencias(hostContext.Configuration, services);
                 WorkerService.Configurar(hostContext.Configuration, services);
 

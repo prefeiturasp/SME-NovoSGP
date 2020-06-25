@@ -9,9 +9,11 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
+using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
@@ -23,14 +25,18 @@ namespace SME.SGP.IoC
     {
         public static void Registrar(IServiceCollection services)
         {
-            //TODO VERIFICAR AddTransient
+            services.AdicionarMediatr();
+            services.AdicionarValidadoresFluentValidation();
+            services.AddRabbit();
             services.TryAddScoped<HangfireMediator>();
+
             RegistrarRepositorios(services);
             RegistrarContextos(services);
             RegistrarComandos(services);
             RegistrarConsultas(services);
             RegistrarServicos(services);
             RegistrarCasosDeUso(services);
+            RegistrarMapeamentos.Registrar();
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -259,6 +265,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPlanoAnualTerritorioSaber, RepositorioPlanoAnualTerritorioSaber>();
             services.TryAddScoped<IRepositorioCorrelacaoRelatorio, RepositorioCorrelacaoRelatorio>();
             services.TryAddScoped<IRepositorioCorrelacaoRelatorioJasper, RepositorioRelatorioCorrelacaoJasper>();
+            services.TryAddScoped<IRepositorioTestePostgre, RepositorioTestePostgre>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -314,6 +321,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAlterarAulaUseCase, AlterarAulaUseCase>();
             services.TryAddScoped<IExcluirAulaUseCase, ExcluirAulaUseCase>();
             services.TryAddScoped<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
+            services.TryAddScoped<IExcluirAulaRecorrenteUseCase, ExcluirAulaRecorrenteUseCase>();
+            services.TryAddScoped<IInserirAulaRecorrenteUseCase, InserirAulaRecorrenteUseCase>();
+            services.TryAddScoped<IAlterarAulaRecorrenteUseCase, AlterarAulaRecorrenteUseCase>();
+            services.TryAddScoped<INotificarUsuarioUseCase, NotificarUsuarioUseCase>();
         }
     }
 }

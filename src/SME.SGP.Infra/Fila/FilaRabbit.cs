@@ -21,7 +21,7 @@ namespace SME.SGP.Infra
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public void AdicionaFilaWorkerServidorRelatorios(AdicionaFilaDto adicionaFilaDto)
+        public void PublicaFilaWorkerServidorRelatorios(PublicaFilaRelatoriosDto adicionaFilaDto)
         {
             byte[] body = FormataBodyWorker(adicionaFilaDto);
 
@@ -31,17 +31,23 @@ namespace SME.SGP.Infra
             SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
         }
 
-        public void AdicionaFilaWorkerSgp(AdicionaFilaDto adicionaFilaDto)
+        public void PublicaFilaWorkerSgp(PublicaFilaSgpDto publicaFilaSgpDto)
         {
-            byte[] body = FormataBodyWorker(adicionaFilaDto);
+            var request = new MensagemRabbit(publicaFilaSgpDto.Filtros,
+                                             publicaFilaSgpDto.CodigoCorrelacao,
+                                             publicaFilaSgpDto.UsuarioLogadoNomeCompleto,
+                                             publicaFilaSgpDto.UsuarioLogadoRF,
+                                             publicaFilaSgpDto.PerfilUsuario,
+                                             publicaFilaSgpDto.NotificarErroUsuario);
 
-            rabbitChannel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, adicionaFilaDto.Fila);
-            rabbitChannel.BasicPublish(RotasRabbit.ExchangeSgp, adicionaFilaDto.Fila, null, body);
+            var mensagem = JsonConvert.SerializeObject(request);
+            var body = Encoding.UTF8.GetBytes(mensagem);
 
-            SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
+            rabbitChannel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, publicaFilaSgpDto.NomeFila);
+            rabbitChannel.BasicPublish(RotasRabbit.ExchangeSgp, publicaFilaSgpDto.NomeFila, null, body);
         }
 
-        private static byte[] FormataBodyWorker(AdicionaFilaDto adicionaFilaDto)
+        private static byte[] FormataBodyWorker(PublicaFilaRelatoriosDto adicionaFilaDto)
         {
             var request = new MensagemRabbit(adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros, adicionaFilaDto.CodigoCorrelacao, adicionaFilaDto.NotificarErroUsuario);
             var mensagem = JsonConvert.SerializeObject(request);

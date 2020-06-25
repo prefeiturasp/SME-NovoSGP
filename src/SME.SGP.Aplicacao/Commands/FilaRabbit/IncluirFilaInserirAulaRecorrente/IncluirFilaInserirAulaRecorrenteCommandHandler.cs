@@ -3,8 +3,6 @@ using Sentry;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,7 +31,7 @@ namespace SME.SGP.Aplicacao.Commands.FilaRabbit.IncluirFilaInserirAulaRecorrente
                                                            request.EhRegencia,
                                                            request.RecorrenciaAula);
 
-            servicoFila.AdicionaFilaWorkerSgp(new Infra.Dtos.AdicionaFilaDto(RotasRabbit.RotaInserirAulaRecorrencia, command, string.Empty, new Guid(), true));
+            servicoFila.PublicaFilaWorkerSgp(new PublicaFilaSgpDto(RotasRabbit.RotaInserirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
             SentrySdk.AddBreadcrumb($"Incluir fila inserção de aula recorrente", "RabbitMQ");
 
             return Task.FromResult(true);
