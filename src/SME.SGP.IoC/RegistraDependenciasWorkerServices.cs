@@ -35,6 +35,7 @@ namespace SME.SGP.IoC
 
             //TODO VERIFICAR AddTransient
             services.TryAddSingleton<HangfireMediator>();
+            
             ResgistraDependenciaHttp(services);
             RegistrarRepositorios(services);
             RegistrarContextos(services);
@@ -328,9 +329,12 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IInserirAulaUseCase, InserirAulaUseCase>();
             services.TryAddScopedWorkerService<IAlterarAulaUseCase, AlterarAulaUseCase>();
             services.TryAddScopedWorkerService<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
-            services.TryAddScopedWorkerService<IExcluirAulaWorkerUseCase, ExcluirAulaWorkerUseCase>();
             services.TryAddScopedWorkerService<IExcluirAulaUseCase, ExcluirAulaUseCase>();
             services.TryAddScopedWorkerService<ITestePostgreUseCase, TestePostgreUseCase>();
+         
+            services.TryAddScopedWorkerService<IExcluirAulaRecorrenteUseCase, ExcluirAulaRecorrenteUseCase>();
+            services.TryAddScopedWorkerService<IInserirAulaRecorrenteUseCase, InserirAulaRecorrenteUseCase>();
+            services.TryAddScopedWorkerService<IAlterarAulaRecorrenteUseCase, AlterarAulaRecorrenteUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

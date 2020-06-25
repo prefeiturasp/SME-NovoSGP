@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Infra.Dtos
 {
-    public class AdicionaFilaDto
+    public class PublicaFilaRelatoriosDto
     {
-        public AdicionaFilaDto(string fila, object filtros, string endpoint, Guid codigoCorrelacao)
+        public PublicaFilaRelatoriosDto(string fila, object filtros, string endpoint, Guid codigoCorrelacao)
         {
             Fila = fila;
             Filtros = filtros;

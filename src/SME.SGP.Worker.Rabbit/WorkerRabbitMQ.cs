@@ -8,16 +8,18 @@ using RabbitMQ.Client.Events;
 using Sentry;
 using Sentry.Protocol;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.CasosDeUso.Exemplos.Games;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Worker.Service
+namespace SME.SGP.Worker.Rabbit
 {
-    public class WorkerRabbitMQ : IHostedService
+    public class WorkerRabbitMQ : BackgroundService
+    //public class WorkerRabbitMQ : IHostedService
     {
         private readonly IModel canalRabbit;
         private readonly string sentryDSN;
@@ -54,18 +56,18 @@ namespace SME.SGP.Worker.Service
             comandos.Add(RotasRabbit.RotaAlterarAulaRecorrencia, (false, typeof(IAlterarAulaRecorrenteUseCase)));
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var consumer = new EventingBasicConsumer(canalRabbit);
-            consumer.Received += async (ch, ea) =>
-            {
+        //public async Task StartAsync(CancellationToken cancellationToken)
+        //{
+        //    cancellationToken.ThrowIfCancellationRequested();
+        //    var consumer = new EventingBasicConsumer(canalRabbit);
+        //    consumer.Received += async (ch, ea) =>
+        //    {
 
-                await TratarMensagem(ea);
-            };
+        //        await TratarMensagem(ea);
+        //    };
 
-            canalRabbit.BasicConsume(RotasRabbit.FilaSgp, false, consumer);
-        }
+        //    canalRabbit.BasicConsume(RotasRabbit.FilaSgp, false, consumer);
+        //}
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
         {
             var mensagem = System.Text.Encoding.UTF8.GetString(ea.Body.Span);
@@ -82,8 +84,10 @@ namespace SME.SGP.Worker.Service
                         {
                             var tipoComando = comandos[rota];
 
+                            AtribuirContextoAplicacao(mensagemRabbit, scope);
+
                             //usar mediatr?
-                            SentrySdk.CaptureMessage($"RABBITMQ EXECUTANDO- {ea.RoutingKey}", SentryLevel.Info);
+                            SentrySdk.CaptureMessage($"{mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey}", SentryLevel.Debug);
                             if (tipoComando.Item1)
                             {
                                 var comando = JsonConvert.DeserializeObject(mensagemRabbit.Filtros.ToString(), tipoComando.Item2);
@@ -93,15 +97,15 @@ namespace SME.SGP.Worker.Service
                             else
                             {
                                 var casoDeUso = scope.ServiceProvider.GetService(tipoComando.Item2);
-
                                 await tipoComando.Item2.GetMethod("Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
                             }
+                            SentrySdk.CaptureMessage($"{mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - SUCESSO - {ea.RoutingKey}", SentryLevel.Info);
                             canalRabbit.BasicAck(ea.DeliveryTag, false);
                         }
                     }
                     catch (Exception ex)
                     {
-                        SentrySdk.CaptureMessage($"RABBITMQ ERRO - {ea.RoutingKey}", SentryLevel.Error);
+                        SentrySdk.CaptureMessage($"{mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - ERRO - {ea.RoutingKey}", SentryLevel.Error);
                         SentrySdk.CaptureException(ex);
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
                     }
@@ -109,10 +113,39 @@ namespace SME.SGP.Worker.Service
             }
         }
 
+        private static void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)
+        {
+            if (!string.IsNullOrWhiteSpace(mensagemRabbit.UsuarioLogadoRF))
+            {
+                var contextoAplicacao = scope.ServiceProvider.GetService<IContextoAplicacao>();
+                var variaveis = new Dictionary<string, object>();
+                variaveis.Add("NomeUsuario", mensagemRabbit.UsuarioLogadoNomeCompleto);
+                variaveis.Add("UsuarioLogado", mensagemRabbit.UsuarioLogadoRF);
+                variaveis.Add("RF", mensagemRabbit.UsuarioLogadoRF);
+                variaveis.Add("login", mensagemRabbit.UsuarioLogadoRF);
+                variaveis.Add("Claims", new List<InternalClaim> { new InternalClaim { Value = mensagemRabbit.PerfilUsuario, Type = "perfil" } });
+                contextoAplicacao.AdicionarVariaveis(variaveis);
+            }
+        }
+
         public Task StopAsync(CancellationToken cancellationToken)
         {
             canalRabbit.Close();
             conexaoRabbit.Close();
+            return Task.CompletedTask;
+        }
+
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            stoppingToken.ThrowIfCancellationRequested();
+            var consumer = new EventingBasicConsumer(canalRabbit);
+            consumer.Received += async (ch, ea) =>
+            {
+
+                await TratarMensagem(ea);
+            };
+
+            canalRabbit.BasicConsume(RotasRabbit.FilaSgp, false, consumer);
             return Task.CompletedTask;
         }
     }

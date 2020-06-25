@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces.Repositorios;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,10 +18,10 @@ namespace SME.SGP.Aplicacao.Commands.Aulas
         public async Task<bool> Handle(TestePostgreCommand request, CancellationToken cancellationToken)
         {
 
-            //repositorioTestePostgre.Salvar(new Ciclo()
-            //{
-            //    Descricao = $"teste{DateTime.Now.Millisecond}"
-            //});
+            repositorioTestePostgre.Salvar(new Ciclo()
+            {
+                Descricao = $"teste{DateTime.Now.Millisecond}"
+            });
 
             return await Task.FromResult(true);
         }
