@@ -15,7 +15,6 @@ namespace SME.SGP.Infra.Dtos
 
         public string Fila { get; set; }
         public object Filtros { get; set; }
-        //TODO: PENSAR EM NOME MELHOR
         public string Endpoint { get; set; }
         public Guid CodigoCorrelacao { get; set; }
         public bool NotificarErroUsuario { get; set; }
