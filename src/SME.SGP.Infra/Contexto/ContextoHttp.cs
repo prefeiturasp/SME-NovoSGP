@@ -57,7 +57,7 @@ namespace SME.SGP.Infra.Contexto
 
         public override void AdicionarVariaveis(IDictionary<string, object> variaveis)
         {
-            throw new NotImplementedException();
+            this.Variaveis = variaveis;
         }
     }
 }

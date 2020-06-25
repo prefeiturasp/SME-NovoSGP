@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.Pipelines;
 using System;
 
-namespace SME.SGP.Api.Configuracoes
+namespace SME.SGP.IoC
 {
     public static class RegistraMediatr
     {

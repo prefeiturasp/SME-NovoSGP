@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Exemplos.Games
             unitOfWork.IniciarTransacao();
             for (int i = 0; i < 10; i++)
             {
-                await mediator.Send(new TestePostgreCommand { IdCorrelacao = Guid.NewGuid() });
+                await mediator.Send(new TestePostgreCommand(Guid.NewGuid()));
             }
             unitOfWork.Rollback();
             return await Task.FromResult(true);

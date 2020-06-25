@@ -8,8 +8,10 @@ using RabbitMQ.Client.Events;
 using Sentry;
 using Sentry.Protocol;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Excecoes;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -56,18 +58,6 @@ namespace SME.SGP.Worker.Rabbit
             comandos.Add(RotasRabbit.RotaAlterarAulaRecorrencia, (false, typeof(IAlterarAulaRecorrenteUseCase)));
         }
 
-        //public async Task StartAsync(CancellationToken cancellationToken)
-        //{
-        //    cancellationToken.ThrowIfCancellationRequested();
-        //    var consumer = new EventingBasicConsumer(canalRabbit);
-        //    consumer.Received += async (ch, ea) =>
-        //    {
-
-        //        await TratarMensagem(ea);
-        //    };
-
-        //    canalRabbit.BasicConsume(RotasRabbit.FilaSgp, false, consumer);
-        //}
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
         {
             var mensagem = System.Text.Encoding.UTF8.GetString(ea.Body.Span);
@@ -87,7 +77,7 @@ namespace SME.SGP.Worker.Rabbit
                             AtribuirContextoAplicacao(mensagemRabbit, scope);
 
                             //usar mediatr?
-                            SentrySdk.CaptureMessage($"{mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey}", SentryLevel.Debug);
+                            SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey}", SentryLevel.Debug);
                             if (tipoComando.Item1)
                             {
                                 var comando = JsonConvert.DeserializeObject(mensagemRabbit.Filtros.ToString(), tipoComando.Item2);
@@ -99,18 +89,34 @@ namespace SME.SGP.Worker.Rabbit
                                 var casoDeUso = scope.ServiceProvider.GetService(tipoComando.Item2);
                                 await tipoComando.Item2.GetMethod("Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
                             }
-                            SentrySdk.CaptureMessage($"{mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - SUCESSO - {ea.RoutingKey}", SentryLevel.Info);
+                            SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - SUCESSO - {ea.RoutingKey}", SentryLevel.Info);
                             canalRabbit.BasicAck(ea.DeliveryTag, false);
                         }
                     }
+                    catch (NegocioException nex)
+                    {
+                        SentrySdk.AddBreadcrumb($"Erros: {nex.Message}");
+                        RegistrarSentry(ea, mensagemRabbit, nex);
+                    }
+                    catch (ValidacaoException vex)
+                    {
+                        SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
+                        RegistrarSentry(ea, mensagemRabbit, vex);
+                    }
                     catch (Exception ex)
                     {
-                        SentrySdk.CaptureMessage($"{mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - ERRO - {ea.RoutingKey}", SentryLevel.Error);
-                        SentrySdk.CaptureException(ex);
-                        canalRabbit.BasicReject(ea.DeliveryTag, false);
+                        SentrySdk.AddBreadcrumb($"Erros: {ex.Message}");
+                        RegistrarSentry(ea, mensagemRabbit, ex);
                     }
                 }
             }
+        }
+
+        private void RegistrarSentry(BasicDeliverEventArgs ea, MensagemRabbit mensagemRabbit, Exception ex)
+        {
+            SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - ERRO - {ea.RoutingKey}", SentryLevel.Error);
+            SentrySdk.CaptureException(ex);
+            canalRabbit.BasicReject(ea.DeliveryTag, false);
         }
 
         private static void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)
