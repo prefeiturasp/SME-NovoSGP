@@ -102,12 +102,12 @@ function CadastroDeAula({ match, location }) {
     {
       label: 'Repetir no Bimestre atual',
       value: recorrencia.REPETIR_BIMESTRE_ATUAL,
-      disabled: id && recorrenciaAulaOriginal === 3,
+      disabled: id && (recorrenciaAulaOriginal === 3 || recorrenciaAulaOriginal === 1),
     },
     {
       label: 'Repetir em todos os Bimestres',
       value: recorrencia.REPETIR_TODOS_BIMESTRES,
-      disabled: id && recorrenciaAulaOriginal === 2,
+      disabled: id && (recorrenciaAulaOriginal === 2 || recorrenciaAulaOriginal === 1),
     },
   ];
 
