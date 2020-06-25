@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem InserirAulaRecorrenteUseCase", "Rabbit - InserirAulaRecorrenteUseCase");
             InserirAulaRecorrenteCommand command = mensagemRabbit.ObterObjetoFiltro<InserirAulaRecorrenteCommand>();
-            command.CodigoTurma = null;
+            
             return await mediator.Send(command);
         }
     }
