@@ -67,41 +67,43 @@ function Filtro({ onFiltrar, resetForm }) {
     if (refForm && resetForm) refForm.resetForm();
   }, [refForm, resetForm]);
 
-  const obterPeriodosPorModalidadeId = useCallback(async () => {
-    if (anoLetivo && modalidadeId) {
-      return FiltroHelper.obterPeriodos({
+  // const obterPeriodosPorModalidadeId = useCallback(async () => {
+  //   if (anoLetivo && modalidadeId) {
+  //     return FiltroHelper.obterPeriodos({
+  //       consideraHistorico: false,
+  //       modalidadeSelecionada: modalidadeId,
+  //       anoLetivoSelecionado: anoLetivo,
+  //     });
+  //   }
+  //   return [];
+  // }, [anoLetivo, modalidadeId]);
+
+  useEffect(() => {
+    setCarregandoPeriodos(true);
+
+    const obterPeriodos = async () => {
+      let periodosLista = [];
+
+      periodosLista = await FiltroHelper.obterPeriodos({
         consideraHistorico: false,
         modalidadeSelecionada: modalidadeId,
         anoLetivoSelecionado: anoLetivo,
       });
-    }
-    return [];
-  }, [anoLetivo, modalidadeId]);
 
-  useEffect(() => {
-    setCarregandoPeriodos(true);
-    if (periodosStore && periodosStore.length) setPeriodos(periodosStore);
-    else {
-      const obterPeriodos = async () => {
-        const periodosLista = await obterPeriodosPorModalidadeId();
+      setPeriodos(periodosLista);
+
+      if (periodosLista && periodosLista.length === 1) {
         setPeriodos(periodosLista);
-
-        if (periodosLista && periodosLista.length === 1) {
-          setPeriodos(periodosLista);
-          refForm.setFieldValue('semestre', String(periodosLista[0].valor));
-          setSemestreId(periodosLista[0].valor);
-        }
-      };
+        refForm.setFieldValue('semestre', String(periodosLista[0].valor));
+        setSemestreId(periodosLista[0].valor);
+      }
+    };
+    if (anoLetivo && modalidadeId) {
       obterPeriodos();
     }
+
     setCarregandoPeriodos(false);
-  }, [
-    refForm,
-    periodosStore,
-    anoLetivo,
-    modalidadeId,
-    obterPeriodosPorModalidadeId,
-  ]);
+  }, [refForm, periodosStore, anoLetivo, modalidadeId]);
 
   const aoTrocarModalidadeId = id => {
     if (!id) refForm.setFieldValue('semestre', undefined);
