@@ -269,7 +269,7 @@ const AtaFinalResultados = () => {
         );
       })
       .catch(e => erros(e));
-    // setDesabilitarBtnGerar(true);
+    setDesabilitarBtnGerar(true);
   };
 
   const onChangeUe = ue => {
