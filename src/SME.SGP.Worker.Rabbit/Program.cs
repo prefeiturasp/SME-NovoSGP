@@ -24,13 +24,11 @@ namespace SME.SGP.Worker.Rabbit
                 .ConfigureServices((hostContext, services) =>
                 {
                     RegistraDependencias.Registrar(services);
-                    RegistrarHttpClients(services, hostContext.Configuration);
-                    services.AdicionarRedis(hostContext.Configuration);
-
                     services.TryAddScoped<IHttpContextAccessor, NoHttpContext>();
-
+                    RegistrarHttpClients(services, hostContext.Configuration);
                     services.AddApplicationInsightsTelemetryWorkerService(hostContext.Configuration);
-
+                    services.AdicionarRedis(hostContext.Configuration);
+                   
                     services.AddHostedService<WorkerRabbitMQ>();
                 });
 
