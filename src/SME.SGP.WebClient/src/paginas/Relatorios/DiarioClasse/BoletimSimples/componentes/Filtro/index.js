@@ -87,6 +87,7 @@ function Filtro({ onFiltrar, resetForm }) {
         setPeriodos(periodosLista);
 
         if (periodosLista && periodosLista.length === 1) {
+          setPeriodos(periodosLista);
           refForm.setFieldValue('semestre', String(periodosLista[0].valor));
           setSemestreId(periodosLista[0].valor);
         }
@@ -192,9 +193,7 @@ function Filtro({ onFiltrar, resetForm }) {
                     valueText="desc"
                     placeholder="Semestre"
                     label="Semestre"
-                    disabled={
-                      !modalidadeId || (periodos && periodos.length === 1)
-                    }
+                    disabled={!modalidadeId || periodos}
                   />
                 </Loader>
               </Grid>
