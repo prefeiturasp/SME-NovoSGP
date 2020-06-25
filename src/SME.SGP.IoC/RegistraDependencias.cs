@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
@@ -9,6 +10,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
+using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -24,14 +26,18 @@ namespace SME.SGP.IoC
     {
         public static void Registrar(IServiceCollection services)
         {
-            //TODO VERIFICAR AddTransient
+            services.AdicionarMediatr();
+            services.AdicionarValidadoresFluentValidation();
+            services.AddRabbit();
             services.TryAddScoped<HangfireMediator>();
+
             RegistrarRepositorios(services);
             RegistrarContextos(services);
             RegistrarComandos(services);
             RegistrarConsultas(services);
             RegistrarServicos(services);
             RegistrarCasosDeUso(services);
+            RegistrarMapeamentos.Registrar();
         }
 
         private static void RegistrarComandos(IServiceCollection services)

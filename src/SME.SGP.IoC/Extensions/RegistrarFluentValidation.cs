@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace SME.SGP.Api
+namespace SME.SGP.IoC
 {
     public static class RegistrarFluentValidation
     {

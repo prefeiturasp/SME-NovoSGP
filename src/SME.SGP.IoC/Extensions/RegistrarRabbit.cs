@@ -3,7 +3,7 @@ using RabbitMQ.Client;
 using SME.SGP.Infra;
 using System;
 
-namespace SME.SGP.Api
+namespace SME.SGP.IoC
 {
     public static class RegistrarRabbit
     {

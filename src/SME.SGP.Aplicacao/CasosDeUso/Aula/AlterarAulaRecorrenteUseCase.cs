@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.IniciarTransacao();
             for (int i = 0; i < 10; i++)
             {
-                await mediator.Send(new TestePostgreCommand());
+                await mediator.Send(new TestePostgreCommand(Guid.NewGuid()));
             }
 
             unitOfWork.PersistirTransacao();

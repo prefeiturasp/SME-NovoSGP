@@ -6,6 +6,11 @@ namespace SME.SGP.Aplicacao.Commands.Aulas
 {
     public class TestePostgreCommand : IRequest<bool>
     {
+        public TestePostgreCommand(Guid idCorrelacao)
+        {
+            IdCorrelacao = idCorrelacao;
+        }
+
         public Guid IdCorrelacao { get; set; }
     }
 

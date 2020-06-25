@@ -24,14 +24,7 @@ namespace SME.SGP.Aplicacao
             if (usuarioId == 0)
                 throw new NegocioException("Não foi possível localizar o usuário.");
 
-
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            servicoFila.PublicaFilaWorkerSgp(new PublicaFilaSgpDto(RotasRabbit.RotaAlterarAulaRecorrencia, new { teste = 1 }, Guid.NewGuid(), usuarioLogado));
-
-            return await Task.FromResult(true);
-
-            //return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAtaFinal, filtroRelatorioConselhoClasseAtaFinalDto, usuarioId));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAtaFinal, filtroRelatorioConselhoClasseAtaFinalDto, usuarioId));
         }
     }
 }

@@ -1,12 +1,9 @@
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using RabbitMQ.Client;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Pipelines;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.IoC;
@@ -27,14 +24,8 @@ namespace SME.SGP.Worker.Rabbit
                 .ConfigureServices((hostContext, services) =>
                 {
                     RegistraDependencias.Registrar(services);
-                    RegistrarMediator(services);
                     RegistrarHttpClients(services, hostContext.Configuration);
-                    RegistrarRabbit(services);
-                    services.AddDistributedRedisCache(options =>
-                    {
-                        options.Configuration = hostContext.Configuration.GetConnectionString("SGP-Redis");
-                        options.InstanceName = hostContext.Configuration.GetValue<string>("Nome-Instancia-Redis");
-                    });
+                    services.AdicionarRedis(hostContext.Configuration);
 
                     services.TryAddScoped<IHttpContextAccessor, NoHttpContext>();
 
@@ -43,14 +34,6 @@ namespace SME.SGP.Worker.Rabbit
                     services.AddHostedService<WorkerRabbitMQ>();
                 });
 
-
-
-        private static void RegistrarMediator(IServiceCollection services)
-        {
-            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
-            services.AddMediatR(assembly);
-            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
-        }
         private static void RegistrarHttpClients(IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpClient<IServicoJurema, ServicoJurema>(c =>
@@ -94,24 +77,5 @@ namespace SME.SGP.Worker.Rabbit
                 return new JasperCookieHandler() { CookieContainer = cookieContainer };
             });
         }
-        private static void RegistrarRabbit(IServiceCollection services)
-        {
-            var factory = new ConnectionFactory
-            {
-                HostName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__HostName"),
-                UserName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__UserName"),
-                Password = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Password")
-            };
-
-            var conexaoRabbit = factory.CreateConnection();
-            IModel canalRabbit = conexaoRabbit.CreateModel();
-            services.AddSingleton(conexaoRabbit);
-            services.AddSingleton(canalRabbit);
-
-            canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
-            canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*");
-        }
-
     }
 }
