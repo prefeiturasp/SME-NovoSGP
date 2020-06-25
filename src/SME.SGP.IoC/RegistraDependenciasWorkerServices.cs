@@ -32,9 +32,6 @@ namespace SME.SGP.IoC
             RegistrarMediator(services);
             RegistrarRabbit(services);
 
-            //TODO VERIFICAR AddTransient
-            services.TryAddSingleton<HangfireMediator>();
-            
             ResgistraDependenciaHttp(services);
             RegistrarRepositorios(services);
             RegistrarContextos(services);
