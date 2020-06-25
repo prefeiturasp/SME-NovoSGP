@@ -67,17 +67,6 @@ function Filtro({ onFiltrar, resetForm }) {
     if (refForm && resetForm) refForm.resetForm();
   }, [refForm, resetForm]);
 
-  // const obterPeriodosPorModalidadeId = useCallback(async () => {
-  //   if (anoLetivo && modalidadeId) {
-  //     return FiltroHelper.obterPeriodos({
-  //       consideraHistorico: false,
-  //       modalidadeSelecionada: modalidadeId,
-  //       anoLetivoSelecionado: anoLetivo,
-  //     });
-  //   }
-  //   return [];
-  // }, [anoLetivo, modalidadeId]);
-
   useEffect(() => {
     setCarregandoPeriodos(true);
 
