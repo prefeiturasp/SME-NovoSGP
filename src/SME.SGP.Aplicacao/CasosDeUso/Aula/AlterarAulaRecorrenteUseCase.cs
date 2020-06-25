@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using Sentry;
+using SME.SGP.Aplicacao.Commands.Aulas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -32,6 +33,14 @@ namespace SME.SGP.Aplicacao
 
             AlterarAulaRecorrenteCommand filtro = mensagemRabbit.ObterObjetoFiltro<AlterarAulaRecorrenteCommand>();
 
+
+            unitOfWork.IniciarTransacao();
+            for (int i = 0; i < 10; i++)
+            {
+                await mediator.Send(new TestePostgreCommand());
+            }
+
+            unitOfWork.PersistirTransacao();
             // TODO chamar command
 
             return true;

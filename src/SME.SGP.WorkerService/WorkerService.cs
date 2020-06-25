@@ -15,7 +15,7 @@ namespace SME.SGP.Worker.Service
 {
     public class WorkerService : IHostedService
     {
-        private static SME.Background.Core.Servidor<SME.Background.Hangfire.Worker> HangfireWorkerService;
+        private static Servidor<SME.Background.Hangfire.Worker> HangfireWorkerService;
         private string ipLocal;
 
         protected string IPLocal
