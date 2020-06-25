@@ -46,25 +46,22 @@ namespace SME.SGP.Dados.Repositorios
         public long Salvar(Ciclo entidade)
         {
             entidade.CriadoEm = DateTime.Now;
-            //entidade.CriadoPor = "teste";
-            //entidade.CriadoRF = "teste";
             entidade.CriadoPor = database.UsuarioLogadoNomeCompleto;
             entidade.CriadoRF = database.UsuarioLogadoRF;
-
-            
-
-            //database.Conexao.Insert(entidade);
-
-            //using (var conexao = new NpgsqlConnection("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=sgp_db;Pooling=true;MaxPoolSize=10;ConnectionIdleLifetime=10;"))
-            //{
-            //database.Conexao.Open();
-            database.AbrirConexao();
             database.Conexao.Insert(entidade);
-            database.FecharConexao();
-            //database.Conexao.Close();
-            //}
             return entidade.Id;
         }
+
+
+
+
+        //using (var conexao = new NpgsqlConnection("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=sgp_db;Pooling=true;MaxPoolSize=10;ConnectionIdleLifetime=10;"))
+        //{
+        //database.Conexao.Open();
+        //database.AbrirConexao();
+        //database.FecharConexao();
+        //database.Conexao.Close();
+        //}
 
         public Task<long> SalvarAsync(Ciclo entidade)
         {

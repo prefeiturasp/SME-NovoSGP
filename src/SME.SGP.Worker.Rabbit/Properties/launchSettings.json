@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "SME.SGP.Worker.Rabbit": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

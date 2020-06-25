@@ -29,8 +29,8 @@ namespace SME.SGP.Aplicacao
             var correlacao = new RelatorioCorrelacao(request.TipoRelatorio, request.IdUsuarioLogado);
             repositorioCorrelacaoRelatorio.Salvar(correlacao);
 
-            servicoFila.AdicionaFilaWorkerServidorRelatorios(new AdicionaFilaDto(RotasRabbit.RotaRelatoriosSolicitados, request.Filtros, request.TipoRelatorio.Name(), correlacao.Codigo));
-            
+            servicoFila.PublicaFilaWorkerServidorRelatorios(new PublicaFilaRelatoriosDto(RotasRabbit.RotaRelatoriosSolicitados, request.Filtros, request.TipoRelatorio.Name(), correlacao.Codigo));
+
             SentrySdk.CaptureMessage("2 - GerarRelatorioCommandHandler");
 
             return Task.FromResult(true);

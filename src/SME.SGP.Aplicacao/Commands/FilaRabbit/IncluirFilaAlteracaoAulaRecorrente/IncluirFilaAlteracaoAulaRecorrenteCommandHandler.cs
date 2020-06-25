@@ -3,8 +3,6 @@ using Sentry;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,7 +32,7 @@ namespace SME.SGP.Aplicacao
                                                            request.EhRegencia,
                                                            request.RecorrenciaAula);
 
-            servicoFila.AdicionaFilaWorkerSgp(new Infra.Dtos.AdicionaFilaDto(RotasRabbit.RotaAlterarAulaRecorrencia, command, string.Empty, new Guid(), true));
+            servicoFila.PublicaFilaWorkerSgp(new PublicaFilaSgpDto(RotasRabbit.RotaAlterarAulaRecorrencia, command, Guid.NewGuid(), request.Usuario));
             SentrySdk.AddBreadcrumb($"Incluir fila alteração de aula recorrente", "RabbitMQ");
 
             return Task.FromResult(true);
