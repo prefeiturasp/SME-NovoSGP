@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using RabbitMQ.Client;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
-using SME.SGP.Aplicacao.CasosDeUso.Exemplos.Games;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
@@ -312,6 +311,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScopedWorkerService<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
             services.TryAddScopedWorkerService<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
+            services.TryAddScopedWorkerService<IServicoFila, FilaRabbit>();
         }
 
 
@@ -326,15 +326,11 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IReceberDadosDownloadRelatorioUseCase, ReceberDadosDownloadRelatorioUseCase>();
             services.TryAddScopedWorkerService<IRelatorioConselhoClasseAtaFinalUseCase, RelatorioConselhoClasseAtaFinalUseCase>();
             services.TryAddScopedWorkerService<IGamesUseCase, GamesUseCase>();
-            services.TryAddScopedWorkerService<IInserirAulaUseCase, InserirAulaUseCase>();
-            services.TryAddScopedWorkerService<IAlterarAulaUseCase, AlterarAulaUseCase>();
             services.TryAddScopedWorkerService<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
-            services.TryAddScopedWorkerService<IExcluirAulaUseCase, ExcluirAulaUseCase>();
-            services.TryAddScopedWorkerService<ITestePostgreUseCase, TestePostgreUseCase>();
-         
             services.TryAddScopedWorkerService<IExcluirAulaRecorrenteUseCase, ExcluirAulaRecorrenteUseCase>();
             services.TryAddScopedWorkerService<IInserirAulaRecorrenteUseCase, InserirAulaRecorrenteUseCase>();
             services.TryAddScopedWorkerService<IAlterarAulaRecorrenteUseCase, AlterarAulaRecorrenteUseCase>();
+            services.TryAddScopedWorkerService<INotificarUsuarioUseCase, NotificarUsuarioUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

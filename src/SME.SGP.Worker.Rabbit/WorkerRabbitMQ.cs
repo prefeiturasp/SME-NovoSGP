@@ -15,6 +15,7 @@ using SME.SGP.Infra.Excecoes;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,6 +28,7 @@ namespace SME.SGP.Worker.Rabbit
         private readonly string sentryDSN;
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
+        private readonly IServicoFila filaRabbit;
 
         /// <summary>
         /// configuração da lista de tipos para a fila do rabbit instanciar, seguindo a ordem de propriedades:
@@ -35,7 +37,7 @@ namespace SME.SGP.Worker.Rabbit
         private readonly Dictionary<string, (bool, Type)> comandos;
 
 
-        public WorkerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
+        public WorkerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, IServicoFila filaRabbit)
         {
             sentryDSN = configuration.GetValue<string>("Sentry:DSN");
             this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
@@ -45,6 +47,8 @@ namespace SME.SGP.Worker.Rabbit
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeServidorRelatorios, ExchangeType.Topic);
             canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
             canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);
+
+            this.filaRabbit = filaRabbit ?? throw new ArgumentNullException(nameof(filaRabbit));
 
             comandos = new Dictionary<string, (bool, Type)>();
             RegistrarUseCases();
@@ -56,6 +60,7 @@ namespace SME.SGP.Worker.Rabbit
             comandos.Add(RotasRabbit.RotaExcluirAulaRecorrencia, (false, typeof(IExcluirAulaRecorrenteUseCase)));
             comandos.Add(RotasRabbit.RotaInserirAulaRecorrencia, (false, typeof(IInserirAulaRecorrenteUseCase)));
             comandos.Add(RotasRabbit.RotaAlterarAulaRecorrencia, (false, typeof(IAlterarAulaRecorrenteUseCase)));
+            comandos.Add(RotasRabbit.RotaNotificacaoUsuario, (false, typeof(INotificarUsuarioUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -87,7 +92,8 @@ namespace SME.SGP.Worker.Rabbit
                             else
                             {
                                 var casoDeUso = scope.ServiceProvider.GetService(tipoComando.Item2);
-                                await tipoComando.Item2.GetMethod("Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
+
+                                await GetMethod(tipoComando.Item2, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
                             }
                             SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - SUCESSO - {ea.RoutingKey}", SentryLevel.Info);
                             canalRabbit.BasicAck(ea.DeliveryTag, false);
@@ -132,6 +138,39 @@ namespace SME.SGP.Worker.Rabbit
                 variaveis.Add("Claims", new List<InternalClaim> { new InternalClaim { Value = mensagemRabbit.PerfilUsuario, Type = "perfil" } });
                 contextoAplicacao.AdicionarVariaveis(variaveis);
             }
+        }
+
+        private Task<bool> NotificarErroUsuario(string message, string usuarioRf, string routingKey)
+        {
+            if (string.IsNullOrEmpty(usuarioRf))
+                return Task.FromResult(false);
+
+            var command = new NotificarUsuarioCommand($"Erro ao executar processo no WorkerSGP - {routingKey}",
+                                                      message,
+                                                      usuarioRf,
+                                                      Dominio.NotificacaoCategoria.Aviso,
+                                                      Dominio.NotificacaoTipo.Worker);
+
+            filaRabbit.AdicionaFilaWorkerSgp(new Infra.Dtos.AdicionaFilaDto(RotasRabbit.RotaNotificacaoUsuario, command, string.Empty, new Guid()));
+
+            return Task.FromResult(true);
+        }
+
+        private MethodInfo GetMethod(Type objType, string method)
+        {
+            var executar = objType.GetMethod(method);
+
+            if (executar == null)
+            {
+                foreach (var itf in objType.GetInterfaces())
+                {
+                    executar = GetMethod(itf, method);
+                    if (executar != null)
+                        break;
+                }
+            }
+
+            return executar;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

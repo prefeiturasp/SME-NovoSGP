@@ -512,7 +512,7 @@ namespace SME.SGP.Dados.Repositorios
             return qtd;
         }
 
-        public Aula ObterCompletoPorId(long id)
+        public async Task<Aula> ObterCompletoPorIdAsync(long id)
         {
             var query = @"select a.*,t.*, ue.*, dre.* from aula a
                             inner join turma t
@@ -523,7 +523,7 @@ namespace SME.SGP.Dados.Repositorios
                             on dre.id = ue.dre_id
                                 where a.id  = @Id ";
 
-            return database.Conexao.Query<Aula, Turma, Ue, Dre, Aula>(query,
+            return (await database.Conexao.QueryAsync<Aula, Turma, Ue, Dre, Aula>(query,
                         (aula, turma, ue, dre) =>
                         {
                             turma.AdicionarUe(ue);
@@ -531,7 +531,7 @@ namespace SME.SGP.Dados.Repositorios
                             aula.AtualizaTurma(turma);
 
                             return aula;
-                        }, param: new { id }).FirstOrDefault();
+                        }, param: new { id })).FirstOrDefault();
         }
 
         public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf, long? aulaPaiId = null)
