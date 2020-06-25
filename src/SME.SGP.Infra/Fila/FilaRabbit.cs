@@ -33,14 +33,18 @@ namespace SME.SGP.Infra
 
         public void PublicaFilaWorkerSgp(PublicaFilaSgpDto publicaFilaSgpDto)
         {
-            var request = new MensagemRabbit(publicaFilaSgpDto.Filtros, publicaFilaSgpDto.CodigoCorrelacao, publicaFilaSgpDto.UsuarioLogadoNomeCompleto, publicaFilaSgpDto.UsuarioLogadoRF, publicaFilaSgpDto.PerfilUsuario);
+            var request = new MensagemRabbit(publicaFilaSgpDto.Filtros,
+                                             publicaFilaSgpDto.CodigoCorrelacao,
+                                             publicaFilaSgpDto.UsuarioLogadoNomeCompleto,
+                                             publicaFilaSgpDto.UsuarioLogadoRF,
+                                             publicaFilaSgpDto.PerfilUsuario,
+                                             publicaFilaSgpDto.NotificarErroUsuario);
+
             var mensagem = JsonConvert.SerializeObject(request);
             var body = Encoding.UTF8.GetBytes(mensagem);
 
             rabbitChannel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, publicaFilaSgpDto.NomeFila);
             rabbitChannel.BasicPublish(RotasRabbit.ExchangeSgp, publicaFilaSgpDto.NomeFila, null, body);
-
-            SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
         }
 
         private static byte[] FormataBodyWorker(PublicaFilaRelatoriosDto adicionaFilaDto)

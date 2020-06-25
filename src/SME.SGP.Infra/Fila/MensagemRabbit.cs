@@ -13,12 +13,13 @@ namespace SME.SGP.Infra
             NotificarErroUsuario = notificarErroUsuario;
         }
 
-        public MensagemRabbit(object filtros, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid perfil)
+        public MensagemRabbit(object filtros, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid perfil, bool notificarErroUsuario = false)
         {
             Filtros = filtros;
             CodigoCorrelacao = codigoCorrelacao;
             UsuarioLogadoNomeCompleto = usuarioLogadoNomeCompleto;
             UsuarioLogadoRF = usuarioLogadoRF;
+            NotificarErroUsuario = notificarErroUsuario;
             PerfilUsuario = perfil.ToString();
         }
 

@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
@@ -16,28 +15,27 @@ using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Worker.Rabbit
 {
-    public class WorkerRabbitMQ : BackgroundService
-    //public class WorkerRabbitMQ : IHostedService
+    public class WorkerRabbitMQ : IHostedService
     {
         private readonly IModel canalRabbit;
         private readonly string sentryDSN;
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
-        private readonly IServicoFila filaRabbit;
 
         /// <summary>
         /// configuração da lista de tipos para a fila do rabbit instanciar, seguindo a ordem de propriedades:
         /// rota do rabbit, usaMediatr?, tipo
         /// </summary>
-        private readonly Dictionary<string, (bool, Type)> comandos;
+        private readonly Dictionary<string, ComandoRabbit> comandos;
 
 
-        public WorkerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, IServicoFila filaRabbit)
+        public WorkerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
             sentryDSN = configuration.GetValue<string>("Sentry:DSN");
             this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
@@ -48,19 +46,17 @@ namespace SME.SGP.Worker.Rabbit
             canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
             canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);
 
-            this.filaRabbit = filaRabbit ?? throw new ArgumentNullException(nameof(filaRabbit));
-
-            comandos = new Dictionary<string, (bool, Type)>();
+            comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
         }
 
         private void RegistrarUseCases()
         {
-            comandos.Add(RotasRabbit.RotaRelatoriosProntos, (false, typeof(IReceberRelatorioProntoUseCase)));
-            comandos.Add(RotasRabbit.RotaExcluirAulaRecorrencia, (false, typeof(IExcluirAulaRecorrenteUseCase)));
-            comandos.Add(RotasRabbit.RotaInserirAulaRecorrencia, (false, typeof(IInserirAulaRecorrenteUseCase)));
-            comandos.Add(RotasRabbit.RotaAlterarAulaRecorrencia, (false, typeof(IAlterarAulaRecorrenteUseCase)));
-            comandos.Add(RotasRabbit.RotaNotificacaoUsuario, (false, typeof(INotificarUsuarioUseCase)));
+            comandos.Add(RotasRabbit.RotaRelatoriosProntos, new ComandoRabbit("Receber dados do relatório", typeof(IReceberRelatorioProntoUseCase)));
+            comandos.Add(RotasRabbit.RotaInserirAulaRecorrencia, new ComandoRabbit("Inserir aulas recorrentes", typeof(IInserirAulaRecorrenteUseCase)));
+            comandos.Add(RotasRabbit.RotaAlterarAulaRecorrencia, new ComandoRabbit("Alterar aulas recorrentes", typeof(IAlterarAulaRecorrenteUseCase)));
+            comandos.Add(RotasRabbit.RotaExcluirAulaRecorrencia, new ComandoRabbit("Excluir aulas recorrentes", typeof(IExcluirAulaRecorrenteUseCase)));
+            comandos.Add(RotasRabbit.RotaNotificacaoUsuario, new ComandoRabbit("Notificar usuário", typeof(INotificarUsuarioUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -73,28 +69,19 @@ namespace SME.SGP.Worker.Rabbit
                 {
                     var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
                     SentrySdk.AddBreadcrumb($"Dados: {mensagemRabbit.Filtros}");
+                    var comandoRabbit = comandos[rota];
                     try
                     {
                         using (var scope = serviceScopeFactory.CreateScope())
                         {
-                            var tipoComando = comandos[rota];
 
                             AtribuirContextoAplicacao(mensagemRabbit, scope);
 
-                            //usar mediatr?
                             SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey}", SentryLevel.Debug);
-                            if (tipoComando.Item1)
-                            {
-                                var comando = JsonConvert.DeserializeObject(mensagemRabbit.Filtros.ToString(), tipoComando.Item2);
-                                var mediatr = scope.ServiceProvider.GetService<IMediator>();
-                                await mediatr.Send(comando);
-                            }
-                            else
-                            {
-                                var casoDeUso = scope.ServiceProvider.GetService(tipoComando.Item2);
+                            var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
-                                await GetMethod(tipoComando.Item2, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
-                            }
+                            await ObterMetodo(comandoRabbit.TipoCasoUso, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
+                            
                             SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - SUCESSO - {ea.RoutingKey}", SentryLevel.Info);
                             canalRabbit.BasicAck(ea.DeliveryTag, false);
                         }
@@ -103,16 +90,22 @@ namespace SME.SGP.Worker.Rabbit
                     {
                         SentrySdk.AddBreadcrumb($"Erros: {nex.Message}");
                         RegistrarSentry(ea, mensagemRabbit, nex);
+                        if (mensagemRabbit.NotificarErroUsuario)
+                            NotificarErroUsuario(nex.Message, mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
                     }
                     catch (ValidacaoException vex)
                     {
                         SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
                         RegistrarSentry(ea, mensagemRabbit, vex);
+                        if (mensagemRabbit.NotificarErroUsuario)
+                            NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
                     }
                     catch (Exception ex)
                     {
                         SentrySdk.AddBreadcrumb($"Erros: {ex.Message}");
                         RegistrarSentry(ea, mensagemRabbit, ex);
+                        if (mensagemRabbit.NotificarErroUsuario)
+                            NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
                     }
                 }
             }
@@ -140,23 +133,26 @@ namespace SME.SGP.Worker.Rabbit
             }
         }
 
-        private Task<bool> NotificarErroUsuario(string message, string usuarioRf, string routingKey)
+        private void NotificarErroUsuario(string message, string usuarioRf, string nomeProcesso)
         {
-            if (string.IsNullOrEmpty(usuarioRf))
-                return Task.FromResult(false);
+            if (!string.IsNullOrEmpty(usuarioRf))
+            {
+                var command = new NotificarUsuarioCommand($"Ocorreu um erro ao: '{nomeProcesso}'",
+                                                          message,
+                                                          usuarioRf,
+                                                          NotificacaoCategoria.Aviso,
+                                                          NotificacaoTipo.Worker);
 
-            var command = new NotificarUsuarioCommand($"Erro ao executar processo no WorkerSGP - {routingKey}",
-                                                      message,
-                                                      usuarioRf,
-                                                      Dominio.NotificacaoCategoria.Aviso,
-                                                      Dominio.NotificacaoTipo.Worker);
+                var request = new MensagemRabbit(string.Empty, command, Guid.NewGuid());
+                var mensagem = JsonConvert.SerializeObject(request);
+                var body = Encoding.UTF8.GetBytes(mensagem);
 
-            filaRabbit.AdicionaFilaWorkerSgp(new Infra.Dtos.AdicionaFilaDto(RotasRabbit.RotaNotificacaoUsuario, command, string.Empty, new Guid()));
-
-            return Task.FromResult(true);
+                canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, RotasRabbit.RotaNotificacaoUsuario);
+                canalRabbit.BasicPublish(RotasRabbit.ExchangeSgp, RotasRabbit.RotaNotificacaoUsuario, null, body);
+            }
         }
 
-        private MethodInfo GetMethod(Type objType, string method)
+        private MethodInfo ObterMetodo(Type objType, string method)
         {
             var executar = objType.GetMethod(method);
 
@@ -164,7 +160,7 @@ namespace SME.SGP.Worker.Rabbit
             {
                 foreach (var itf in objType.GetInterfaces())
                 {
-                    executar = GetMethod(itf, method);
+                    executar = ObterMetodo(itf, method);
                     if (executar != null)
                         break;
                 }
@@ -180,7 +176,7 @@ namespace SME.SGP.Worker.Rabbit
             return Task.CompletedTask;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        public Task StartAsync(CancellationToken stoppingToken)
         {
             stoppingToken.ThrowIfCancellationRequested();
             var consumer = new EventingBasicConsumer(canalRabbit);
