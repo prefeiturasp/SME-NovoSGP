@@ -135,12 +135,13 @@ namespace SME.SGP.Dados.Repositorios
         public FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
         {
             var query = new StringBuilder(@"select *
-                        from frequencia_aluno
+                        from frequencia_aluno fa
+                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
                         where
 	                        codigo_aluno = @codigoAluno
 	                        and tipo = @tipoFrequencia
-	                        and periodo_inicio <= @dataAtual
-	                        and periodo_fim >= @dataAtual ");
+	                        and pe.periodo_inicio <= @dataAtual
+	                        and pe.periodo_fim >= @dataAtual ");
 
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("and disciplina_id = @disciplinaId");
@@ -157,12 +158,13 @@ namespace SME.SGP.Dados.Repositorios
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
         {
             var query = @"select *
-                        from frequencia_aluno
+                        from frequencia_aluno fa
+                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
                         where codigo_aluno = @codigoAluno
                             and disciplina_id = @disciplinaId
 	                        and tipo = 1
-	                        and periodo_inicio <= @dataAtual
-	                        and periodo_fim >= @dataAtual";
+	                        and pe.periodo_inicio <= @dataAtual
+	                        and pe.periodo_fim >= @dataAtual";
 
             return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
             {
