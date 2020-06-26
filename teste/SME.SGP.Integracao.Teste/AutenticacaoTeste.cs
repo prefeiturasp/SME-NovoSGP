@@ -19,19 +19,19 @@ namespace SME.SGP.Integracao.Teste
             this.fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
         }
 
-        [Fact]
-        public void Deve_Retornar_Nao_Autorizado()
-        {
-            fixture._clientApi.DefaultRequestHeaders.Clear();
+        //[Fact]
+        //public void Deve_Retornar_Nao_Autorizado()
+        //{
+        //    fixture._clientApi.DefaultRequestHeaders.Clear();
 
-            var autenticacaoDto = new AutenticacaoDto() { Login = "testea", Senha = "senha123" };
+        //    var autenticacaoDto = new AutenticacaoDto() { Login = "testea", Senha = "senha123" };
 
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(autenticacaoDto), UnicodeEncoding.UTF8, "application/json");
+        //    var jsonParaPost = new StringContent(JsonConvert.SerializeObject(autenticacaoDto), UnicodeEncoding.UTF8, "application/json");
 
-            var postResult = fixture._clientApi.PostAsync($"api/v1/autenticacao", jsonParaPost).Result;
-            Assert.True(!postResult.IsSuccessStatusCode);
-            Assert.True(postResult.StatusCode == HttpStatusCode.Unauthorized);
-        }
+        //    var postResult = fixture._clientApi.PostAsync($"api/v1/autenticacao", jsonParaPost).Result;
+        //    Assert.True(!postResult.IsSuccessStatusCode);
+        //    Assert.True(postResult.StatusCode == HttpStatusCode.Unauthorized);
+        //}
 
         [Fact]
         public void Deve_Retornar_Senha_Incorreta_Formatacao()
@@ -95,5 +95,20 @@ namespace SME.SGP.Integracao.Teste
 
             return postResult;
         }
+
+        //[Fact(DisplayName = "Deve reiniciar a senha do usuário")]
+        //[Trait("Autenticação", "Reiniciar a senha do usuário")]
+        //public async Task Deve_Reiniciar_Senha()
+        //{
+        //    // Arrange
+        //    fixture._clientApi.DefaultRequestHeaders.Clear();
+        //    var codigoRf = "caique.amcom";
+
+        //    // Act
+        //    var result = await fixture._clientApi.PutAsync($"api/v1/autenticacao/{codigoRf}/reiniciar-senha", null);
+
+        //    // Assert
+        //    Assert.True(fixture.ValidarStatusCodeComSucesso(result));
+        //}
     }
 }

@@ -13,7 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         void SalvarAbrangencias(IEnumerable<Abrangencia> abrangencias, string login);
 
-        void SincronizarEstruturaInstitucionalVigenteCompleta();
+        Task SincronizarEstruturaInstitucionalVigenteCompleta();
 
         bool DreEstaNaAbrangencia(string login, Guid perfilId, string codigoDre);
 

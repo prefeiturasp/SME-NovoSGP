@@ -25,7 +25,6 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IRepositorioObjetivoAprendizagemAula> repositorioObjetivosAula;
         private readonly Mock<IRepositorioObjetivoAprendizagemPlano> repositorioObjetivosPlano;
         private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
-        private readonly Mock<IServicoEOL> servicoEOL;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IUnitOfWork> unitOfWork;
@@ -51,7 +50,6 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             consultasPlanoAnual = new Mock<IConsultasPlanoAnual>();
             consultasProfessor = new Mock<IConsultasProfessor>();
             consultasObjetivosAprendizagem = new Mock<IConsultasObjetivoAprendizagem>();
-            servicoEOL = new Mock<IServicoEOL>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
 
             comandosPlanoAula = new ComandosPlanoAula(repositorioPlanoAula.Object,
@@ -65,7 +63,6 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                                                     consultasProfessor.Object,
                                                     servicoUsuario.Object,
                                                     unitOfWork.Object,
-                                                    servicoEOL.Object,
                                                     repositorioPeriodoEscolar.Object);
             Setup();
         }
@@ -120,23 +117,23 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         //    Assert.True(true);
         //}
 
-        [Fact]
-        public async void Deve_Incluir_Plano_Aula_Sem_Objetivos_Professor_CJ()
-        {
-            //ARRANGE
-            usuario.DefinirPerfis(new List<PrioridadePerfil>()
-            {
-                new PrioridadePerfil() { CodigoPerfil = PERFIL_PROFESSOR },
-                new PrioridadePerfil() { CodigoPerfil = PERFIL_CJ }
-            });
+        //[Fact]
+        //public async void Deve_Incluir_Plano_Aula_Sem_Objetivos_Professor_CJ()
+        //{
+        //    //ARRANGE
+        //    usuario.DefinirPerfis(new List<PrioridadePerfil>()
+        //    {
+        //        new PrioridadePerfil() { CodigoPerfil = PERFIL_PROFESSOR },
+        //        new PrioridadePerfil() { CodigoPerfil = PERFIL_CJ }
+        //    });
 
-            usuario.DefinirPerfilAtual(PERFIL_CJ);
+        //    usuario.DefinirPerfilAtual(PERFIL_CJ);
 
-            // ACT
-            await comandosPlanoAula.Salvar(planoAulaDto);
+        //    // ACT
+        //    await comandosPlanoAula.Salvar(planoAulaDto);
 
-            Assert.True(true);
-        }
+        //    Assert.True(true);
+        //}
 
         private void Setup()
         {

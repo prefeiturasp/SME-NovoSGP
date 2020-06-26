@@ -14,11 +14,11 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPeriodoEscolar(ISgpContext conexao) : base(conexao)
         { }
 
-        public IEnumerable<PeriodoEscolar> ObterPorTipoCalendario(long tipoCalendarioId)
+        public async Task<IEnumerable<PeriodoEscolar>> ObterPorTipoCalendario(long tipoCalendarioId)
         {
             string query = "select * from periodo_escolar where tipo_calendario_id = @tipoCalendarioId";
 
-            return database.Conexao.Query<PeriodoEscolar>(query, new { tipoCalendarioId });
+            return await database.Conexao.QueryAsync<PeriodoEscolar>(query, new { tipoCalendarioId });
         }
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPorTipoCalendarioAsync(long tipoCalendarioId)
@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<PeriodoEscolar>(query, new { tipoCalendarioId }, commandTimeout: 20);
         }
 
-        public PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime data)
+        public async Task<PeriodoEscolar> ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime data)
         {
             StringBuilder query = new StringBuilder();
             MontaQuery(query);
@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and periodo_inicio::date <= date(@dataPeriodo)");
             query.AppendLine("and periodo_fim::date >= date(@dataPeriodo)");
 
-            return database.Conexao.QueryFirstOrDefault<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataPeriodo = data.Date });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataPeriodo = data.Date });
         }
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEmAbertoPorTipoCalendarioData(long tipoCalendarioId, DateTime data)
@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataPeriodo = data.Date });
         }
 
-        public PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim)
+        public async Task<PeriodoEscolar> ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim)
         {
             StringBuilder query = new StringBuilder();
             MontaQuery(query);
@@ -57,7 +57,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and periodo_inicio <= @dataInicio");
             query.AppendLine("and periodo_fim >= @dataFim");
 
-            return database.Conexao.QueryFirstOrDefault<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataInicio, dataFim });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataInicio, dataFim });
         }
 
         private static void MontaQuery(StringBuilder query)
@@ -113,6 +113,22 @@ namespace SME.SGP.Dados.Repositorios
 
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { codigoTurma, modalidade = (int)modalidade, dataReferencia });
+        }
+
+        public async Task<bool> PeriodoEmAbertoAsync(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
+        {
+            var query = new StringBuilder(@"select count(pe.Id)
+                          from periodo_escolar pe 
+                         where pe.tipo_calendario_id = @tipoCalendarioId
+                           and periodo_fim >= @dataReferencia ");
+
+            if (!ehAnoLetivo)
+                query.AppendLine("and periodo_inicio <= @dataReferencia");
+
+            if (bimestre > 0)
+                query.AppendLine(" and pe.bimestre = @bimestre");
+
+            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre }) > 0;
         }
     }
 }

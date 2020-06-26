@@ -21,5 +21,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Plano de Aula")]
         PlanoDeAula = 6,
+
+        [Display(Name = "Relatório")]
+        Relatorio = 7,
     }
 }
