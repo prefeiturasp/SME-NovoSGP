@@ -36,7 +36,7 @@ namespace SME.SGP.Dominio
             if (bimestre != null)
             {
                 bimestre.FechamentoAbertura = this;
-                bimestre.FechamentoAberturaId = this.Id;                
+                bimestre.FechamentoAberturaId = this.Id;
                 bimestres.Add(bimestre);
             }
         }
