@@ -28,5 +28,8 @@ namespace SME.SGP.Dominio
         {
             CorrelacaoJasper = relatorioCorrelacaoJasper;
         }
+        public bool EhRelatorioJasper => TipoRelatorio.EhUmDosValores(TipoRelatorio.Boletim, TipoRelatorio.ConselhoClasseAluno, TipoRelatorio.ConselhoClasseTurma);
+
+        public bool PrazoDownloadExpirado => (CriadoEm - DateTime.Now).Days > 1;
     }
 }
