@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao
                     return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
             }
 
-            var turma = repositorioTurma.ObterPorCodigo(codigoTurma);
+            var turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
             if (turma == null)
                 throw new NegocioException("Não foi possível encontrar a turma");
 
