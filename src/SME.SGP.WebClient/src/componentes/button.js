@@ -51,7 +51,7 @@ const Button = React.forwardRef((props, ref) => {
         ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
         : `border: 0 none !important;`
     };
-    ${customRadius && customRadius};
+    ${customRadius || ''};
     font-weight: bold !important;
     ${width ? `width: ${width};` : ''}
     ${fontSize && `font-size: ${fontSize} !important;`}
