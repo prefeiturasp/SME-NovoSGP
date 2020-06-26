@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Api.Controllers;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -29,8 +30,6 @@ namespace SME.SGP.Integracao.Teste
 
         //    Assert.True(postResult.IsSuccessStatusCode, postResult.Content.ReadAsStringAsync().Result);
         //}
-
-
 
         private TestServerFixture ObtenhaCabecalho(bool inclusao = false, bool alteracao = false, bool consulta = false, bool exclusao = false)
         {

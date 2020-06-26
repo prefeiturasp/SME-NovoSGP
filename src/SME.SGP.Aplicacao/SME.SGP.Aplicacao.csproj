@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.2" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="8.6.2" />
     <PackageReference Include="MailKit" Version="2.3.1.6" />
   <PackageReference Include="MailKit" Version="2.3.1.6" />
   <PackageReference Include="MediatR" Version="8.0.1" />
@@ -22,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Commands\Notificacao\" />
     <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
 </Project>

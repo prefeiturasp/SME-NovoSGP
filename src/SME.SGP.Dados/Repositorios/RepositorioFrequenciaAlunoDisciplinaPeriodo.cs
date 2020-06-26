@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<FrequenciaAluno>(query, new { periodoId });
         }
 
-        public IEnumerable<AlunoFaltosoBimestreDto> ObterAlunosFaltososBimestre(bool modalidadeEJA, double percentualFrequenciaMinimo, int bimestre, int anoLetivo)
+        public IEnumerable<AlunoFaltosoBimestreDto> ObterAlunosFaltososBimestre(bool modalidadeEJA, double percentualFrequenciaMinimo, int bimestre, int? anoLetivo)
         {
             var query = new StringBuilder();
 
@@ -65,7 +65,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join (select codigo_aluno, max(id) as maiorId from frequencia_aluno where not excluido group by codigo_aluno ) m on m.codigo_aluno = fa.codigo_aluno and m.maiorId = fa.id");
             query.AppendLine("where fa.tipo = 2");
             query.AppendLine("and fa.bimestre = @bimestre");
-            query.AppendLine("and extract(year from fa.periodo_inicio) = @anoLetivo");
+
+            if (anoLetivo.HasValue)
+                query.AppendLine("and extract(year from fa.periodo_inicio) = @anoLetivo");
+
             query.AppendLine("and ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric) > (1 -(@percentualFrequenciaMinimo::numeric / 100::numeric)) ");
 
             if (modalidadeEJA)

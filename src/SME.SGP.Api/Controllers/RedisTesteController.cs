@@ -37,7 +37,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> DeletarDados()
         {
 
-            await RemoverChaves();
+           await  RemoverChaves();
 
             return Ok();
         }
@@ -61,7 +61,7 @@ namespace SME.SGP.Api.Controllers
                 retorno = ObterValor();
                 await repositorioCache.SalvarAsync(chave, retorno);
             }
-
+                  
 
             return Ok(retorno);
         }

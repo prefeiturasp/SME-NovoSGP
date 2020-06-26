@@ -28,11 +28,7 @@ namespace SME.SGP.Integracao.Teste
 
             var postResult = _fixture._clientApi.GetAsync("api/v1/dres").Result;
 
-            if (postResult.IsSuccessStatusCode)
-            {
-                var supervisorEscolasDto = JsonConvert.DeserializeObject<List<DreConsultaDto>>(postResult.Content.ReadAsStringAsync().Result);
-                Assert.True(supervisorEscolasDto.Count > 0);
-            }
+            Assert.True(_fixture.ValidarStatusCodeComSucesso(postResult));
         }
 
         [Fact, Order(11)]

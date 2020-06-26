@@ -40,14 +40,6 @@ namespace SME.SGP.Aplicacao
             return await servicoAula.Excluir(aula, recorrencia, usuario);
         }
 
-        public async Task<string> Inserir(AulaDto dto)
-        {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var aula = MapearDtoParaEntidade(dto, usuario.CodigoRf, usuario.EhProfessorCj());
-
-            return await servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
-        }
-
         private Aula MapearDtoParaEntidade(AulaDto dto, string usuarioRf, bool usuarioEhCJ, Aula aula = null)
         {
             Aula entidadeAula = aula ?? new Aula();
