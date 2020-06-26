@@ -410,11 +410,10 @@ export default function ReiniciarSenha() {
         key="exibirModalMensagemReiniciarSenha"
         visivel={exibirModalMensagemReiniciarSenha}
         onClose={onCloseModalReiniciarSenha}
+        onConfirmacaoPrincipal={onCloseModalReiniciarSenha}
         labelBotaoPrincipal="OK"
-        labelBotaoSecundario="Cancelar"
-        esconderBotaoPrincipal={true}
-        esconderBotaoSecundario={true}
         titulo="Senha reiniciada"
+        esconderBotaoSecundario
         closable
       >
         <b> {mensagemSenhaAlterada} </b>
