@@ -28,18 +28,26 @@ namespace SME.SGP.Aplicacao
 
                 var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
 
+                if (relatorioCorrelacao == null)
+                {
+                    throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
+                }
+
                 SentrySdk.AddBreadcrumb($"Correlação obtida com sucesso {relatorioCorrelacao.Codigo}", "9 - ReceberRelatorioProntoUseCase");
 
                 unitOfWork.IniciarTransacao();
+                
+                if (relatorioCorrelacao.EhRelatorioJasper)
+                {
+                    var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoFiltro<ReceberRelatorioProntoCommand>();
+                    receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao;
 
-                var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoFiltro<ReceberRelatorioProntoCommand>();
-                receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao ?? throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
+                    var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
 
-                var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
+                    SentrySdk.AddBreadcrumb("Salvando Correlação Relatório Jasper de retorno", "9 - ReceberRelatorioProntoUseCase");
 
-                SentrySdk.AddBreadcrumb("Salvando Correlação Relatório Jasper de retorno", "9 - ReceberRelatorioProntoUseCase");
-
-                relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
+                    relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
+                }
 
                 switch (relatorioCorrelacao.TipoRelatorio)
                 {
@@ -68,7 +76,7 @@ namespace SME.SGP.Aplicacao
         private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao)
         {
             //TODO: Remover Hard Code!!
-            var urlRedirecionamentoBase = configuration.GetValue<string>("UrlBackEnd");             
+            var urlRedirecionamentoBase = configuration.GetValue<string>("UrlBackEnd");
 
             await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase));
         }

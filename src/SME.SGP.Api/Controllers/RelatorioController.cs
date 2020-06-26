@@ -14,14 +14,12 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{codigoCorrelacao}")]
         public async Task<IActionResult> Download(Guid codigoCorrelacao, [FromServices] IReceberDadosDownloadRelatorioUseCase downloadRelatorioUseCase, [FromServices] ISevicoJasper servicoJasper)
         {
-            var dadosRelatorio = await downloadRelatorioUseCase.Executar(codigoCorrelacao);
-            if (dadosRelatorio != null)
-                return File(await servicoJasper.DownloadRelatorio(dadosRelatorio.ExportacaoId, dadosRelatorio.RequisicaoId, dadosRelatorio.JSessionId), dadosRelatorio.ContentType, dadosRelatorio.NomeArquivo);
+            var (relatorio, contentType, nomeArquivo) = await downloadRelatorioUseCase.Executar(codigoCorrelacao);
 
-            return NoContent();
+            return File(relatorio, contentType, nomeArquivo);
         }
         [HttpGet("conselhos-classe/atas-finais")]
-        public async Task<IActionResult> ConselhoClasseAtaFinal([FromQuery]FiltroRelatorioConselhoClasseAtaFinalDto filtroRelatorioConselhoClasseAtaFinalDto, [FromServices] IRelatorioConselhoClasseAtaFinalUseCase relatorioConselhoClasseAtaFinalUseCase)
+        public async Task<IActionResult> ConselhoClasseAtaFinal([FromQuery] FiltroRelatorioConselhoClasseAtaFinalDto filtroRelatorioConselhoClasseAtaFinalDto, [FromServices] IRelatorioConselhoClasseAtaFinalUseCase relatorioConselhoClasseAtaFinalUseCase)
         {
             return Ok(await relatorioConselhoClasseAtaFinalUseCase.Executar(filtroRelatorioConselhoClasseAtaFinalDto));
         }
