@@ -30,6 +30,6 @@ namespace SME.SGP.Dominio
         }
         public bool EhRelatorioJasper => TipoRelatorio.EhUmDosValores(TipoRelatorio.Boletim, TipoRelatorio.ConselhoClasseAluno, TipoRelatorio.ConselhoClasseTurma);
 
-        public bool PrazoDownloadExpirado => (CriadoEm - DateTime.Now).Days > 1;
+        public bool PrazoDownloadExpirado => (DateTime.Now - CriadoEm).Days > 1;
     }
 }

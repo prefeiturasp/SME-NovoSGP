@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<byte[]> DownloadRelatorio(Guid correlacaoId)
         {
-            var resposta = await httpClient.GetAsync($"/WorkerSGP/download/{correlacaoId}");
+            var resposta = await httpClient.GetAsync($"api/v1/downloads/sgp/pdf/{correlacaoId}");
 
             if (resposta.IsSuccessStatusCode)
                 return await resposta.Content.ReadAsByteArrayAsync();
