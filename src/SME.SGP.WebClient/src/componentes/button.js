@@ -51,7 +51,7 @@ const Button = React.forwardRef((props, ref) => {
         ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
         : `border: 0 none !important;`
     };
-    ${customRadius && customRadius};
+    ${customRadius || ''};
     font-weight: bold !important;
     ${width ? `width: ${width};` : ''}
     ${fontSize && `font-size: ${fontSize} !important;`}
@@ -81,7 +81,7 @@ const Button = React.forwardRef((props, ref) => {
       disabled={disabled}
       data-indice={indice}
       id={id}
-      ref={ref && ref}
+      ref={ref  || ''}
     >
       {icon ? <Icon className={`fa fa-${icon} mr-2 py-1`} /> : null}
       {label}
