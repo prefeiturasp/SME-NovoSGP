@@ -22,3 +22,5 @@
 [Environment]::SetEnvironmentVariable("ConfiguracaoRabbit__Password", "bitnami", "Machine")
 [Environment]::SetEnvironmentVariable("UrlBackEnd", "http://localhost:5001/", "Machine")
 [Environment]::SetEnvironmentVariable("AE_ChaveIntegracao", "xxxxxxxxxxxxx", "Machine")
+[Environment]::SetEnvironmentVariable("HangfireUser_Admin", "admin:XXX", "Machine")
+[Environment]::SetEnvironmentVariable("HangfireUser_Basic", "user:XXX", "Machine")
