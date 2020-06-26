@@ -38,16 +38,16 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("frequencias/notificar/alunos/faltosos")]
-        public IActionResult NotificarAlunosFaltosos([FromServices]IServicoNotificacaoFrequencia servico)
+        public async Task<IActionResult> NotificarAlunosFaltosos([FromServices] IServicoNotificacaoFrequencia servico)
         {
-            servico.NotificarAlunosFaltosos();
+            await servico.NotificarAlunosFaltosos();
             return Ok();
         }
 
         [HttpPost("frequencias/notificar/alunos/faltosos/bimestre")]
-        public IActionResult NotificarAlunosFaltososBimestre([FromServices]IServicoNotificacaoFrequencia servico)
+        public async Task<IActionResult> NotificarAlunosFaltososBimestre([FromServices] IServicoNotificacaoFrequencia servico)
         {
-            servico.NotificarAlunosFaltososBimestre();
+            await servico.NotificarAlunosFaltososBimestre();
             return Ok();
         }
 
@@ -83,7 +83,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(double), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo , [FromServices] IConsultasFrequencia consultasFrequencia)
+        public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, [FromServices] IConsultasFrequencia consultasFrequencia)
              => Ok(await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo));
 
     }

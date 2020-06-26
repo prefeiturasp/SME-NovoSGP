@@ -11,13 +11,11 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoFrequencia : IServicoFrequencia
     {
-        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUe repositorioUE;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
@@ -26,10 +24,8 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioAula repositorioAula,
                                  IServicoUsuario servicoUsuario,
                                  IUnitOfWork unitOfWork,
-                                 IServicoEOL servicoEOL,
-                                 IRepositorioUe repositorioUE,
-                                 IRepositorioTurma repositorioTurma,
-                                 IConsultasDisciplina consultasDisciplina)
+                                 IServicoEol servicoEOL,
+                                 IRepositorioTurma repositorioTurma)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia));
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new System.ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
@@ -37,14 +33,11 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
-            this.repositorioUE = repositorioUE ?? throw new System.ArgumentNullException(nameof(repositorioUE));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
-            this.consultasDisciplina = consultasDisciplina ?? throw new System.ArgumentNullException(nameof(consultasDisciplina));
         }
 
-        public async Task AtualizarQuantidadeFrequencia(long aulaId, int quantidadeOriginal, int quantidadeAtual)
+        public void AtualizarQuantidadeFrequencia(long aulaId, int quantidadeOriginal, int quantidadeAtual)
         {
-            //var frequencia = repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
             var ausencias = repositorioRegistroAusenciaAluno.ObterRegistrosAusenciaPorAula(aulaId);
 
             if (quantidadeAtual > quantidadeOriginal)
@@ -93,7 +86,7 @@ namespace SME.SGP.Dominio.Servicos
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var aula = ObterAula(aulaId);
-            var turma = ObterTurma(aula.TurmaId);
+            var turma = await ObterTurma(aula.TurmaId);
 
             if (!aula.PermiteRegistroFrequencia(turma))
             {
@@ -143,9 +136,9 @@ namespace SME.SGP.Dominio.Servicos
             return aula;
         }
 
-        private Turma ObterTurma(string turmaId)
+        private async Task<Turma> ObterTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
             return turma;

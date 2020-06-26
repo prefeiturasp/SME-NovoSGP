@@ -71,7 +71,16 @@ namespace SME.SGP.Dados.Contexto
             return Conexao.CreateCommand();
         }
 
-        public void Dispose() => Conexao.Close();
+        protected virtual void Dispose(bool disposing)
+        {
+            Conexao.Close();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         public void Open()
         {

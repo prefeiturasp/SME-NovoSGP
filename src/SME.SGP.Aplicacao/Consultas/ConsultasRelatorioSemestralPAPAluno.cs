@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterListaAlunosAsync(string turmaCodigo, int anoLetivo, int semestre)
         {
             var turma = await consultasTurma.ObterPorCodigo(turmaCodigo);
-            var periodoEscolar = ObterPeriodoEscolar(turma, semestre);
+            var periodoEscolar = await ObterPeriodoEscolar(turma, semestre);
 
             // Obtem lista de alunos da turma com dados basicos
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar);
@@ -46,13 +46,13 @@ namespace SME.SGP.Aplicacao
             return dadosAlunos.OrderBy(w => w.Nome);
         }
 
-        private PeriodoEscolar ObterPeriodoEscolar(Turma turma, int semestre)
+        private async Task<PeriodoEscolar> ObterPeriodoEscolar(Turma turma, int semestre)
         {
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Tipo de Calendario não localizado para a turma!");
 
-            var periodosEscolares = consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
+            var periodosEscolares = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não localizados periodos escolares para o calendario da turma!");
 

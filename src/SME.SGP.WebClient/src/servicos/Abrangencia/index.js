@@ -5,8 +5,10 @@ const AbrangenciaServico = {
     if (url) return api.get(url);
     return api.get(`/v1/abrangencias/false/dres`);
   },
-  buscarUes(dreId, url = '') {
-    if (url) return api.get(`${url}/${dreId}/ues/atribuicoes`);
+  buscarUes(dreId, url = '', temParametros = false) {
+    if (url && !temParametros)
+      return api.get(`${url}/${dreId}/ues/atribuicoes`);
+    if (temParametros) return api.get(url);
     return api.get(`/v1/abrangencias/false/dres/${dreId}/ues`);
   },
   buscarModalidades() {
@@ -26,6 +28,19 @@ const AbrangenciaServico = {
     return api.get(`v1/abrangencias/false/dres/ues/${ue}/turmas`, {
       params,
     });
+  },
+  buscarDisciplinas(codigoTurma, params) {
+    return api.get(`v1/professores/turmas/${codigoTurma}/disciplinas`, {
+      params,
+    });
+  },
+  buscarDisciplinasPlanejamento(codigoTurma, params) {
+    return api.get(
+      `v1/professores/turmas/${codigoTurma}/disciplinas/planejamento`,
+      {
+        params,
+      }
+    );
   },
 };
 

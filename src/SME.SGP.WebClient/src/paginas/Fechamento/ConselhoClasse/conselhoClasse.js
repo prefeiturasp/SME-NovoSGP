@@ -11,7 +11,7 @@ import {
   setDadosAlunoObjectCard,
   limparDadosConselhoClasse,
 } from '~/redux/modulos/conselhoClasse/actions';
-import { erros } from '~/servicos/alertas';
+import { erros, erro, sucesso } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import { Container } from './conselhoClasse.css';
 import BotaoOrdenarListaAlunos from './DadosConselhoClasse/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
@@ -29,7 +29,22 @@ const ConselhoClasse = () => {
   const { turma, anoLetivo, periodo } = turmaSelecionada;
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
+  const [imprimindo, setImprimindo] = useState(false);
   const [exibirListas, setExibirListas] = useState(false);
+  const [podeImprimir, setPodeImprimir] = useState(false);
+
+  const conselhoClasseId = useSelector(
+    store => store.conselhoClasse.dadosPrincipaisConselhoClasse.conselhoClasseId
+  );
+
+  const fechamentoTurmaId = useSelector(
+    store =>
+      store.conselhoClasse.dadosPrincipaisConselhoClasse.fechamentoTurmaId
+  );
+
+  useEffect(() => {
+    setPodeImprimir(conselhoClasseId);
+  }, [conselhoClasseId]);
 
   const obterListaAlunos = useCallback(async () => {
     setCarregandoGeral(true);
@@ -86,6 +101,21 @@ const ConselhoClasse = () => {
     return false;
   };
 
+  const gerarConselhoClasseTurma = async () => {
+    setImprimindo(true);
+    await ServicoConselhoClasse.gerarConselhoClasseTurma(
+      conselhoClasseId,
+      fechamentoTurmaId
+    )
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
+      })
+      .finally(setImprimindo(false))
+      .catch(e => erro(e));
+  };
+
   return (
     <Container>
       {!turmaSelecionada.turma ? (
@@ -119,16 +149,17 @@ const ConselhoClasse = () => {
                 <>
                   <div className="col-md-12 mb-2 d-flex">
                     <BotaoOrdenarListaAlunos />
-
-                    <Button
-                      className="btn-imprimir"
-                      icon="print"
-                      color={Colors.Azul}
-                      border
-                      onClick={() => {}}
-                      disabled
-                      id="btn-imprimir-conselho-classe"
-                    />
+                    <Loader loading={imprimindo}>
+                      <Button
+                        className="btn-imprimir"
+                        icon="print"
+                        color={Colors.Azul}
+                        border
+                        onClick={() => gerarConselhoClasseTurma()}
+                        disabled={!podeImprimir}
+                        id="btn-imprimir-conselho-classe"
+                      />
+                    </Loader>
                   </div>
                   <div className="col-md-12 mb-2">
                     <TabelaRetratilConselhoClasse
@@ -136,7 +167,10 @@ const ConselhoClasse = () => {
                       permiteOnChangeAluno={permiteOnChangeAluno}
                     >
                       <>
-                        <ObjectCardConselhoClasse />
+                        <ObjectCardConselhoClasse
+                          conselhoClasseId={conselhoClasseId}
+                          fechamentoTurmaId={fechamentoTurmaId}
+                        />
                         <DadosConselhoClasse
                           turmaCodigo={turmaSelecionada.turma}
                           modalidade={turmaSelecionada.modalidade}

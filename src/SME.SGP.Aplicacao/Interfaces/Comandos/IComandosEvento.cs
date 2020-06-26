@@ -13,6 +13,6 @@ namespace SME.SGP.Aplicacao
 
         void Excluir(long[] idsEventos);
 
-        void GravarRecorrencia(EventoDto eventoDto, Evento evento);
+        Task GravarRecorrencia(EventoDto eventoDto, Evento evento);
     }
 }
