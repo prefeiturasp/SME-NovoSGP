@@ -285,7 +285,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Usuário não encontrado.");
 
             if (usuario == null)
-                usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, null, usuarioCore.Nome, usuarioCore.Email);
+                usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, login, usuarioCore.Nome, usuarioCore.Email);
 
             if (usuario.Perfis == null || !usuario.Perfis.Any())
                 await servicoEOL.RelecionarUsuarioPerfis(login);
