@@ -1,7 +1,9 @@
-﻿namespace SME.SGP.Dominio.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoAtribuicaoEsporadica
     {
-        void Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo);
+        Task Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo);
     }
 }
