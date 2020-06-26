@@ -17,6 +17,7 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { ContainerAuditoria, Lista } from './fechamentoFinal.css';
 import LinhaAluno from './linhaAluno';
 import { setExpandirLinha } from '~/redux/modulos/notasConceitos/actions';
+import Alert from '~/componentes/alert';
 
 const FechamentoFinal = forwardRef((props, ref) => {
   const {
@@ -28,6 +29,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
     desabilitarCampo,
     carregandoFechamentoFinal,
     bimestreCorrente,
+    registraFrequencia,
   } = props;
 
   const dispatch = useDispatch();
@@ -74,6 +76,26 @@ const FechamentoFinal = forwardRef((props, ref) => {
       .catch(e => erros(e));
   };
 
+  const resetarComponenteAtivo = () => {
+    if (disciplinasRegencia && disciplinasRegencia.length) {
+      const lista = disciplinasRegencia.map(c => {
+        c.ativa = false;
+        return c;
+      });
+      setDisciplinasRegencia([...lista]);
+    }
+  };
+
+  const resetarTela = () => {
+    resetarComponenteAtivo();
+    setDadosFechamentoFinal({});
+    setAlunos([]);
+    setEhNota(true);
+    setEhSintese(false);
+    setAuditoria({});
+    setDisciplinaSelecionada();
+  };
+
   const obterFechamentoFinal = useCallback(() => {
     setNotasEmEdicao([]);
     dispatch(setExpandirLinha([]));
@@ -102,6 +124,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
         carregandoFechamentoFinal(false);
       })
       .catch(e => {
+        resetarTela();
         erros(e);
         carregandoFechamentoFinal(false);
       });
@@ -117,10 +140,12 @@ const FechamentoFinal = forwardRef((props, ref) => {
   }));
 
   useEffect(() => {
-    if (bimestreCorrente == 'final') {
+    if (bimestreCorrente == 'final' && turmaCodigo && disciplinaCodigo) {
       obterFechamentoFinal();
+    } else {
+      resetarTela();
     }
-  }, [obterFechamentoFinal, bimestreCorrente]);
+  }, [bimestreCorrente, disciplinaCodigo]);
 
   const setDisciplinaAtiva = disciplina => {
     const disciplinas = disciplinasRegencia.map(c => {
@@ -190,6 +215,22 @@ const FechamentoFinal = forwardRef((props, ref) => {
         ) : (
             ''
           )}
+        {disciplinasRegencia &&
+        disciplinasRegencia.length &&
+        !disciplinaSelecionada ? (
+          <div className="col-md-12">
+            <Alert
+              alerta={{
+                tipo: 'warning',
+                id: 'AlertaTurmaFechamentoFinal',
+                mensagem:
+                  'Selecione um componente para consultar as notas ou conceitos dos bimestre',
+                estiloTitulo: { fontSize: '18px' },
+              }}
+              className="mb-2"
+            />
+          </div>
+        ) : null}
         {exibirLista && (
           <>
             <div className="table-responsive">
@@ -211,7 +252,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
                           {ehNota ? 'Nota Final' : 'Conceito Final'}
                         </th>
                       )}
-                    <th>%Freq.</th>
+                    {registraFrequencia ? <th>%Freq.</th> : ''}
                   </tr>
                 </thead>
                 <tbody className="tabela-fechamento-final-tbody">
@@ -232,6 +273,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
                             indexAluno={i}
                             desabilitarCampo={desabilitarCampo}
                             ehSintese={ehSintese}
+                            registraFrequencia={registraFrequencia}
                           />
                         </>
                       );
@@ -251,8 +293,8 @@ const FechamentoFinal = forwardRef((props, ref) => {
                 <div className="col-md-12">
                   <ContainerAuditoria style={{ float: 'left' }}>
                     <span>
-                      <p>{auditoria.auditoriaAlteracao || ''}</p>
                       <p>{auditoria.auditoriaInclusao || ''}</p>
+                      <p>{auditoria.auditoriaAlteracao || ''}</p>
                     </span>
                   </ContainerAuditoria>
                 </div>
@@ -276,6 +318,7 @@ FechamentoFinal.propTypes = {
   desabilitarCampo: PropTypes.bool,
   carregandoFechamentoFinal: PropTypes.func,
   bimestreCorrente: PropTypes.string,
+  registraFrequencia: PropTypes.bool,
 };
 
 FechamentoFinal.defaultProps = {
@@ -287,6 +330,7 @@ FechamentoFinal.defaultProps = {
   desabilitarCampo: false,
   carregandoFechamentoFinal: () => { },
   bimestreCorrente: '',
+  registraFrequencia: true,
 };
 
 export default FechamentoFinal;
