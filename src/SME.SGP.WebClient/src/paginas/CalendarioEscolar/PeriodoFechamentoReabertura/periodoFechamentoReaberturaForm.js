@@ -74,7 +74,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       },
     ];
 
-    if (tipoModalidade != modalidadeTipoCalendario.EJA) {
+    if (String(tipoModalidade) !== String(modalidadeTipoCalendario.EJA)) {
       listaNova.push(
         {
           valor: 3,
@@ -298,7 +298,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       form.setFieldTouched(campo, true, true);
     });
     form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length == 0) {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
         form.handleSubmit(e => e);
       }
     });
@@ -331,7 +331,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
           idFechamentoReabertura,
         ]).catch(e => erros(e));
 
-        if (excluir && excluir.status == 200) {
+        if (excluir && excluir.status === 200) {
           sucesso(excluir.data);
           history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
         }
@@ -359,15 +359,18 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   };
 
   const obterBimestresSalvar = valoresForm => {
-    const todosBimestres = valoresForm.bimestres.find(item => item == '5');
+    const todosBimestres = valoresForm.bimestres.find(
+      item => String(item) === '5'
+    );
     if (todosBimestres) {
       const calendarioSelecionado = listaTipoCalendarioEscolar.find(
-        item => item.id == valoresForm.tipoCalendarioId
+        item => String(item.id) === String(valoresForm.tipoCalendarioId)
       );
       if (
         calendarioSelecionado &&
         calendarioSelecionado.modalidade &&
-        calendarioSelecionado.modalidade == modalidadeTipoCalendario.EJA
+        String(calendarioSelecionado.modalidade) ===
+          String(modalidadeTipoCalendario.EJA)
       ) {
         return ['1', '2'];
       }
@@ -402,7 +405,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       prametrosParaSalvar
     )
       .catch(async e => {
-        if (e && e.response && e.response.status == 602) {
+        if (e && e.response && e.response.status === 602) {
           const mensagens =
             e && e.response && e.response.data && e.response.data.mensagens;
           if (mensagens) {
@@ -417,7 +420,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                 prametrosParaSalvar,
                 true
               );
-              if (cadastradoAlteracao && cadastradoAlteracao.status == 200) {
+              if (cadastradoAlteracao && cadastradoAlteracao.status === 200) {
                 sucesso(cadastradoAlteracao.data);
                 history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
               }
@@ -430,7 +433,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       .finally(() => {
         setSalvandoInformacoes(false);
       });
-    if (cadastrado && cadastrado.status == 200) {
+    if (cadastrado && cadastrado.status === 200) {
       sucesso(cadastrado.data);
       history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
     }
@@ -439,7 +442,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const onChangeTipoCalendario = (tipoId, form) => {
     if (tipoId) {
       const calendarioSelecionado = listaTipoCalendarioEscolar.find(
-        item => item.id == tipoId
+        item => String(item.id) === String(tipoId)
       );
       if (calendarioSelecionado) {
         montarListaBimestres(calendarioSelecionado.modalidade);
@@ -596,28 +599,26 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                       desabilitado={desabilitarCampos}
                     />
                   </div>
-                  <Loader loading={carregandoTipos} tip="">
-                    <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
-                      <SelectComponent
-                        form={form}
-                        label="Bimestre"
-                        name="bimestres"
-                        id="bimestres"
-                        lista={listaBimestres}
-                        onChange={valor => {
-                          if (valor.includes('5')) {
-                            form.setFieldValue('bimestres', ['5']);
-                            onChangeCampos();
-                          }
-                        }}
-                        valueOption="valor"
-                        valueText="descricao"
-                        placeholder="Selecione bimestre(s)"
-                        multiple
-                        disabled={desabilitarCampos || !novoRegistro}
-                      />
-                    </div>
-                  </Loader>
+                  <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
+                    <SelectComponent
+                      form={form}
+                      label="Bimestre"
+                      name="bimestres"
+                      id="bimestres"
+                      lista={listaBimestres}
+                      onChange={valor => {
+                        if (valor.includes('5')) {
+                          form.setFieldValue('bimestres', ['5']);
+                          onChangeCampos();
+                        }
+                      }}
+                      valueOption="valor"
+                      valueText="descricao"
+                      placeholder="Selecione bimestre(s)"
+                      multiple
+                      disabled={desabilitarCampos || !novoRegistro}
+                    />
+                  </div>
                 </div>
                 {exibirAuditoria ? (
                   <Auditoria
