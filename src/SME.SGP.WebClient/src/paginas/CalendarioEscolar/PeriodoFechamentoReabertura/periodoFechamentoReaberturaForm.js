@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
+import shortid from 'shortid';
 import { CampoData, Loader, momentSchema } from '~/componentes';
 import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
 import Auditoria from '~/componentes/auditoria';
@@ -59,6 +60,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     descricao: '',
     bimestres: [],
   });
+  const [salvandoInformacoes, setSalvandoInformacoes] = useState(false);
 
   const montarListaBimestres = tipoModalidade => {
     const listaNova = [
@@ -72,7 +74,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       },
     ];
 
-    if (tipoModalidade != modalidadeTipoCalendario.EJA) {
+    if (String(tipoModalidade) !== String(modalidadeTipoCalendario.EJA)) {
       listaNova.push(
         {
           valor: 3,
@@ -123,17 +125,23 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
         usuarioStore.turmaSelecionada.modalidade
       ) {
         const ehEja =
-          usuarioStore.turmaSelecionada.modalidade == modalidade.EJA;
+          String(usuarioStore.turmaSelecionada.modalidade) ===
+          String(modalidade.EJA);
         const listaPorAnoLetivoModalidade = lista.filter(item => {
           if (ehEja) {
-            return item.modalidade == modalidadeTipoCalendario.EJA;
+            return (
+              String(item.modalidade) === String(modalidadeTipoCalendario.EJA)
+            );
           }
-          return item.modalidade == modalidadeTipoCalendario.FUNDAMENTAL_MEDIO;
+          return (
+            String(item.modalidade) ===
+            String(modalidadeTipoCalendario.FUNDAMENTAL_MEDIO)
+          );
         });
         return listaPorAnoLetivoModalidade;
       }
 
-      return lista.filter(item => item.anoLetivo == anoLetivo);
+      return lista.filter(item => String(item.anoLetivo) === String(anoLetivo));
     },
     [usuarioStore.turmaSelecionada]
   );
@@ -190,6 +198,8 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     consultaTipos();
   }, [match, obterListaTiposCalAnoLetivo]);
 
+  const [podeExcluir, setPodeExcluir] = useState(false);
+
   useEffect(() => {
     const consultaPorId = async () => {
       if (
@@ -209,6 +219,8 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
         setIdFechamentoReabertura(match.params.id);
 
         if (cadastrado && cadastrado.data) {
+          setPodeExcluir(!cadastrado.data.possuiFilhos);
+
           const bimestres = [];
           for (var i = 0; i < cadastrado.data.bimestres.length; i++) {
             const bimestre = cadastrado.data.bimestres[i];
@@ -286,7 +298,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       form.setFieldTouched(campo, true, true);
     });
     form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length == 0) {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
         form.handleSubmit(e => e);
       }
     });
@@ -319,7 +331,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
           idFechamentoReabertura,
         ]).catch(e => erros(e));
 
-        if (excluir && excluir.status == 200) {
+        if (excluir && excluir.status === 200) {
           sucesso(excluir.data);
           history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
         }
@@ -347,15 +359,18 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   };
 
   const obterBimestresSalvar = valoresForm => {
-    const todosBimestres = valoresForm.bimestres.find(item => item == '5');
+    const todosBimestres = valoresForm.bimestres.find(
+      item => String(item) === '5'
+    );
     if (todosBimestres) {
       const calendarioSelecionado = listaTipoCalendarioEscolar.find(
-        item => item.id == valoresForm.tipoCalendarioId
+        item => String(item.id) === String(valoresForm.tipoCalendarioId)
       );
       if (
         calendarioSelecionado &&
         calendarioSelecionado.modalidade &&
-        calendarioSelecionado.modalidade == modalidadeTipoCalendario.EJA
+        String(calendarioSelecionado.modalidade) ===
+          String(modalidadeTipoCalendario.EJA)
       ) {
         return ['1', '2'];
       }
@@ -384,36 +399,41 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       ueCodigo: ueId,
       id: idFechamentoReabertura,
     };
+    setSalvandoInformacoes(true);
     const cadastrado = await ServicoFechamentoReabertura.salvar(
       idFechamentoReabertura,
       prametrosParaSalvar
-    ).catch(async e => {
-      if (e && e.response && e.response.status == 602) {
-        const mensagens =
-          e && e.response && e.response.data && e.response.data.mensagens;
-        if (mensagens) {
-          const alteracaoConfirmacao = await confirmar(
-            'Atenção',
-            '',
-            mensagens[0]
-          );
-          if (alteracaoConfirmacao) {
-            const cadastradoAlteracao = await ServicoFechamentoReabertura.salvar(
-              idFechamentoReabertura,
-              prametrosParaSalvar,
-              true
+    )
+      .catch(async e => {
+        if (e && e.response && e.response.status === 602) {
+          const mensagens =
+            e && e.response && e.response.data && e.response.data.mensagens;
+          if (mensagens) {
+            const alteracaoConfirmacao = await confirmar(
+              'Atenção',
+              '',
+              mensagens[0]
             );
-            if (cadastradoAlteracao && cadastradoAlteracao.status == 200) {
-              sucesso(cadastradoAlteracao.data);
-              history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
+            if (alteracaoConfirmacao) {
+              const cadastradoAlteracao = await ServicoFechamentoReabertura.salvar(
+                idFechamentoReabertura,
+                prametrosParaSalvar,
+                true
+              );
+              if (cadastradoAlteracao && cadastradoAlteracao.status === 200) {
+                sucesso(cadastradoAlteracao.data);
+                history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
+              }
             }
           }
+        } else {
+          erros(e);
         }
-      } else {
-        erros(e);
-      }
-    });
-    if (cadastrado && cadastrado.status == 200) {
+      })
+      .finally(() => {
+        setSalvandoInformacoes(false);
+      });
+    if (cadastrado && cadastrado.status === 200) {
       sucesso(cadastrado.data);
       history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
     }
@@ -422,7 +442,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const onChangeTipoCalendario = (tipoId, form) => {
     if (tipoId) {
       const calendarioSelecionado = listaTipoCalendarioEscolar.find(
-        item => item.id == tipoId
+        item => String(item.id) === String(tipoId)
       );
       if (calendarioSelecionado) {
         montarListaBimestres(calendarioSelecionado.modalidade);
@@ -436,160 +456,169 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     <>
       <Cabecalho pagina="Período de Fechamento (Reabertura)" />
       <Card>
-        <Formik
-          enableReinitialize
-          initialValues={valoresIniciais}
-          validationSchema={validacoes}
-          onSubmit={valores => onClickCadastrar(valores)}
-          validateOnChange
-          validateOnBlur
-        >
-          {form => (
-            <Form className="col-md-12">
-              <div className="row mb-4">
-                <div className="col-md-12 d-flex justify-content-end pb-4">
-                  <Button
-                    label="Voltar"
-                    icon="arrow-left"
-                    color={Colors.Azul}
-                    border
-                    className="mr-2"
-                    onClick={() => onClickVoltar(form)}
-                  />
-                  <Button
-                    label="Cancelar"
-                    color={Colors.Roxo}
-                    border
-                    className="mr-2"
-                    onClick={() => onClickCancelar(form)}
-                    disabled={!modoEdicao}
-                  />
-                  <Button
-                    label="Excluir"
-                    color={Colors.Vermelho}
-                    border
-                    className="mr-2"
-                    onClick={onClickExcluir}
-                    disabled={
-                      somenteConsulta ||
-                      !permissoesTela.podeExcluir ||
-                      novoRegistro
-                    }
-                  />
-                  <Button
-                    label={`${
-                      idFechamentoReabertura > 0 ? 'Alterar' : 'Cadastrar'
-                    }`}
-                    color={Colors.Roxo}
-                    border
-                    bold
-                    className="mr-2"
-                    onClick={() => validaAntesDoSubmit(form)}
-                    disabled={desabilitarCampos}
-                  />
-                </div>
-                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                  <Loader loading={carregandoTipos} tip="">
-                    <div style={{ maxWidth: '300px' }}>
-                      <SelectComponent
-                        label="Calendário"
-                        form={form}
-                        name="tipoCalendarioId"
-                        id="tipoCalendarioId"
-                        lista={listaTipoCalendarioEscolar}
-                        valueOption="id"
-                        valueText="descricaoTipoCalendario"
-                        disabled={
-                          desabilitarCampos ||
-                          !novoRegistro ||
-                          desabilitarTipoCalendario
+        <Loader loading={salvandoInformacoes}>
+          <Formik
+            enableReinitialize
+            initialValues={valoresIniciais}
+            validationSchema={validacoes}
+            onSubmit={valores => onClickCadastrar(valores)}
+            validateOnChange
+            validateOnBlur
+          >
+            {form => (
+              <Form className="col-md-12">
+                <div className="row mb-4">
+                  <div className="col-md-12 d-flex justify-content-end pb-4">
+                    <Button
+                      id={shortid.generate()}
+                      label="Voltar"
+                      icon="arrow-left"
+                      color={Colors.Azul}
+                      border
+                      className="mr-2"
+                      onClick={() => onClickVoltar(form)}
+                    />
+                    <Button
+                      id={shortid.generate()}
+                      label="Cancelar"
+                      color={Colors.Roxo}
+                      border
+                      className="mr-2"
+                      onClick={() => onClickCancelar(form)}
+                      disabled={!modoEdicao}
+                    />
+                    <Button
+                      id={shortid.generate()}
+                      label="Excluir"
+                      color={Colors.Vermelho}
+                      border
+                      className="mr-2"
+                      onClick={onClickExcluir}
+                      disabled={
+                        somenteConsulta ||
+                        podeExcluir ||
+                        !permissoesTela.podeExcluir ||
+                        novoRegistro
+                      }
+                    />
+                    <Button
+                      id={shortid.generate()}
+                      label={`${
+                        idFechamentoReabertura > 0 ? 'Alterar' : 'Cadastrar'
+                      }`}
+                      color={Colors.Roxo}
+                      border
+                      bold
+                      className="mr-2"
+                      onClick={() => validaAntesDoSubmit(form)}
+                      disabled={desabilitarCampos}
+                    />
+                  </div>
+                  <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                    <Loader loading={carregandoTipos} tip="">
+                      <div style={{ maxWidth: '300px' }}>
+                        <SelectComponent
+                          label="Calendário"
+                          form={form}
+                          name="tipoCalendarioId"
+                          id="tipoCalendarioId"
+                          lista={listaTipoCalendarioEscolar}
+                          valueOption="id"
+                          valueText="descricaoTipoCalendario"
+                          disabled={
+                            desabilitarCampos ||
+                            !novoRegistro ||
+                            desabilitarTipoCalendario
+                          }
+                          placeholder="Selecione um tipo de calendário"
+                          onChange={valor =>
+                            onChangeTipoCalendario(valor, form)
+                          }
+                        />
+                      </div>
+                    </Loader>
+                  </div>
+                  <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
+                    <DreDropDown
+                      name="dreId"
+                      label="Diretoria Regional de Educação (DRE)"
+                      form={form}
+                      desabilitado={desabilitarCampos || !novoRegistro}
+                      onChange={() => {
+                        if (novoRegistro) {
+                          onChangeCampos();
                         }
-                        placeholder="Selecione um tipo de calendário"
-                        onChange={valor => onChangeTipoCalendario(valor, form)}
-                      />
-                    </div>
-                  </Loader>
-                </div>
-                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
-                  <DreDropDown
-                    name="dreId"
-                    label="Diretoria Regional de Educação (DRE)"
-                    form={form}
-                    desabilitado={desabilitarCampos || !novoRegistro}
-                    onChange={() => {
-                      if (novoRegistro) {
-                        onChangeCampos();
-                      }
-                    }}
-                  />
-                </div>
-                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
-                  <UeDropDown
-                    name="ueId"
-                    dreId={form.values.dreId}
-                    label="Unidade Escolar (UE)"
-                    form={form}
-                    url="v1/dres"
-                    desabilitado={desabilitarCampos || !novoRegistro}
-                    onChange={() => {
-                      if (novoRegistro) {
-                        onChangeCampos();
-                      }
-                    }}
-                  />
-                </div>
-                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                  <CampoTexto
-                    label="Descrição"
-                    name="descricao"
-                    id="descricao"
-                    type="textarea"
-                    form={form}
-                    onChange={onChangeCampos}
-                    desabilitado={desabilitarCampos || !novoRegistro}
-                  />
-                </div>
-                <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
-                  <CampoData
-                    label="Início"
-                    form={form}
-                    name="dataInicio"
-                    placeholder="DD/MM/AAAA"
-                    formatoData="DD/MM/YYYY"
-                    onChange={onChangeCampos}
-                    desabilitado={desabilitarCampos}
-                  />
-                </div>
-                <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
-                  <CampoData
-                    label="Fim"
-                    form={form}
-                    name="dataFim"
-                    placeholder="DD/MM/AAAA"
-                    formatoData="DD/MM/YYYY"
-                    onChange={onChangeCampos}
-                    desabilitado={desabilitarCampos}
-                  />
-                </div>
-                <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
-                  <SelectComponent
-                    form={form}
-                    label="Bimestre"
-                    name="bimestres"
-                    id="bimestres"
-                    lista={listaBimestres}
-                    onChange={valor => {
-                      if (valor.includes('5')) {
-                        form.setFieldValue('bimestres', ['5']);
-                        onChangeCampos();
-                      }
-                    }}
-                    valueOption="valor"
-                    valueText="descricao"
-                    placeholder="Selecione bimestre(s)"
-                    multiple
-                    disabled={desabilitarCampos || !novoRegistro}
-                  />
+                      }}
+                    />
+                  </div>
+                  <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
+                    <UeDropDown
+                      name="ueId"
+                      dreId={form.values.dreId}
+                      label="Unidade Escolar (UE)"
+                      form={form}
+                      url="v1/dres"
+                      desabilitado={desabilitarCampos || !novoRegistro}
+                      onChange={() => {
+                        if (novoRegistro) {
+                          onChangeCampos();
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                    <CampoTexto
+                      label="Descrição"
+                      name="descricao"
+                      id="descricao"
+                      type="textarea"
+                      form={form}
+                      onChange={onChangeCampos}
+                      desabilitado={desabilitarCampos || !novoRegistro}
+                    />
+                  </div>
+                  <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
+                    <CampoData
+                      label="Início"
+                      form={form}
+                      name="dataInicio"
+                      placeholder="DD/MM/AAAA"
+                      formatoData="DD/MM/YYYY"
+                      onChange={onChangeCampos}
+                      desabilitado={desabilitarCampos}
+                    />
+                  </div>
+                  <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
+                    <CampoData
+                      label="Fim"
+                      form={form}
+                      name="dataFim"
+                      placeholder="DD/MM/AAAA"
+                      formatoData="DD/MM/YYYY"
+                      onChange={onChangeCampos}
+                      desabilitado={desabilitarCampos}
+                    />
+                  </div>
+                  <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
+                    <SelectComponent
+                      form={form}
+                      label="Bimestre"
+                      name="bimestres"
+                      id="bimestres"
+                      lista={listaBimestres}
+                      onChange={valor => {
+                        if (valor.includes('5')) {
+                          form.setFieldValue('bimestres', ['5']);
+                          onChangeCampos();
+                        }
+                      }}
+                      valueOption="valor"
+                      valueText="descricao"
+                      placeholder="Selecione bimestre(s)"
+                      multiple
+                      disabled={desabilitarCampos || !novoRegistro}
+                    />
+                  </div>
                 </div>
                 {exibirAuditoria ? (
                   <Auditoria
@@ -601,10 +630,10 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                 ) : (
                   ''
                 )}
-              </div>
-            </Form>
-          )}
-        </Formik>
+              </Form>
+            )}
+          </Formik>
+        </Loader>
       </Card>
     </>
   );

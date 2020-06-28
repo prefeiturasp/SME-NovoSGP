@@ -48,9 +48,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(FechamentoReaberturaRetornoDto), 200)]
         [Permissao(Permissao.PFR_C, Policy = "Bearer")]
-        public IActionResult ObterPorId([FromServices] IConsultasFechamentoReabertura consultasFechamentoReabertura, long id)
+        public async Task<IActionResult> ObterPorId([FromServices] IConsultasFechamentoReabertura consultasFechamentoReabertura, long id)
         {
-            return Ok(consultasFechamentoReabertura.ObterPorId(id));
+            return Ok(await consultasFechamentoReabertura.ObterPorId(id));
         }
 
         [HttpPost]

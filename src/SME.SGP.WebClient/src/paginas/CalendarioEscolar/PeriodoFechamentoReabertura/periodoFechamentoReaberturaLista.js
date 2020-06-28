@@ -2,6 +2,7 @@ import { Form, Formik } from 'formik';
 import * as moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import shortid from 'shortid';
 import { ListaPaginada, Loader } from '~/componentes';
 import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
 import Button from '~/componentes/button';
@@ -146,17 +147,24 @@ const PeriodoFechamentoReaberturaLista = () => {
   const obterListaTiposCalAnoLetivo = useCallback(
     lista => {
       if (usuario.turmaSelecionada && usuario.turmaSelecionada.modalidade) {
-        const ehEja = usuario.turmaSelecionada.modalidade == modalidade.EJA;
+        const ehEja =
+          String(usuario.turmaSelecionada.modalidade) ===
+          String(modalidade.EJA);
         const listaPorAnoLetivoModalidade = lista.filter(item => {
           if (ehEja) {
-            return item.modalidade == modalidadeTipoCalendario.EJA;
+            return (
+              String(item.modalidade) === String(modalidadeTipoCalendario.EJA)
+            );
           }
-          return item.modalidade == modalidadeTipoCalendario.FUNDAMENTAL_MEDIO;
+          return (
+            String(item.modalidade) ===
+            String(modalidadeTipoCalendario.FUNDAMENTAL_MEDIO)
+          );
         });
         return listaPorAnoLetivoModalidade;
       }
 
-      return lista.filter(item => item.anoLetivo == anoLetivo);
+      return lista.filter(item => String(item.anoLetivo) === String(anoLetivo));
     },
     [usuario.turmaSelecionada]
   );
@@ -210,7 +218,7 @@ const PeriodoFechamentoReaberturaLista = () => {
         idsDeletar
       ).catch(e => erros(e));
 
-      if (excluir && excluir.status == 200) {
+      if (excluir && excluir.status === 200) {
         setIdsReaberturasSelecionadas([]);
         sucesso(excluir.data);
         onFiltrar();
@@ -227,8 +235,11 @@ const PeriodoFechamentoReaberturaLista = () => {
     );
   };
 
+  const [podeExcluir, setPodeExcluir] = useState(false);
+
   const onSelecionarItems = ids => {
     setIdsReaberturasSelecionadas(ids);
+    setPodeExcluir(ids.filter(id => id.possuiFilhos).length);
   };
 
   const formatarCampoDataGrid = data => {
@@ -277,6 +288,11 @@ const PeriodoFechamentoReaberturaLista = () => {
     }
   };
 
+  const onChangeDre = dreId => {
+    setUeSelecionada('');
+    setDreSelecionada(dreId);
+  };
+
   return (
     <>
       <Cabecalho pagina="Período de Fechamento (Reabertura)" />
@@ -296,6 +312,7 @@ const PeriodoFechamentoReaberturaLista = () => {
               <div className="row mb-4">
                 <div className="col-md-12 d-flex justify-content-end pb-4">
                   <Button
+                    id={shortid.generate()}
                     label="Voltar"
                     icon="arrow-left"
                     color={Colors.Azul}
@@ -304,6 +321,7 @@ const PeriodoFechamentoReaberturaLista = () => {
                     onClick={onClickVoltar}
                   />
                   <Button
+                    id={shortid.generate()}
                     label="Excluir"
                     color={Colors.Vermelho}
                     border
@@ -311,11 +329,13 @@ const PeriodoFechamentoReaberturaLista = () => {
                     onClick={onClickExcluir}
                     disabled={
                       !permissoesTela.podeExcluir ||
+                      podeExcluir ||
                       (idsReaberturasSelecionadas &&
-                        idsReaberturasSelecionadas.length < 1)
+                        !idsReaberturasSelecionadas.length)
                     }
                   />
                   <Button
+                    id={shortid.generate()}
                     label="Novo"
                     color={Colors.Roxo}
                     border
