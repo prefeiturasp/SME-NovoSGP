@@ -22,6 +22,7 @@ const ListaPaginada = props => {
     filtroEhValido,
     onErro,
     paramArrayFormat,
+    cancelarRequisicoes,
   } = props;
 
   const [carregando, setCarregando] = useState(false);
@@ -90,6 +91,9 @@ const ListaPaginada = props => {
   };
 
   const filtrar = () => {
+    if (cancelarRequisicoes) {
+      api.CancelarRequisicoes('');
+    }
     selecionar([]);
     setCarregando(true);
     api
@@ -207,6 +211,7 @@ ListaPaginada.propTypes = {
   filtroEhValido: PropTypes.bool,
   onErro: PropTypes.oneOfType([PropTypes.func]),
   paramArrayFormat: PropTypes.oneOfType([PropTypes.string]),
+  cancelarRequisicoes: PropTypes.bool,
 };
 
 ListaPaginada.defaultProps = {
@@ -221,6 +226,7 @@ ListaPaginada.defaultProps = {
   filtroEhValido: true,
   onErro: () => {},
   paramArrayFormat: 'brackets',
+  cancelarRequisicoes: false,
 };
 
 export default ListaPaginada;

@@ -79,6 +79,21 @@ namespace SME.SGP.Dominio.Servicos
 
             try
             {
+                if (fechamentoReabertura.EhParaSme())
+                {
+                    var fechamentosSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, null, null, null);
+
+                    if (fechamentosSME.Any(f => f.EhParaDre() || f.EhParaUe()))
+                        throw new NegocioException($"Não é possível excluir este período de reabertura pois existem fechamentos para DRE/UE no mesmo intervalo de datas.");
+                }
+                else if (fechamentoReabertura.EhParaDre())
+                {
+                    var fechamentosDre = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, fechamentoReabertura.DreId, null, null);
+
+                    if (fechamentosDre.Any(f => f.EhParaUe()))
+                        throw new NegocioException($"Não é possível excluir este período de reabertura pois existem fechamentos para UE no mesmo intervalo de datas.");
+                }
+
                 fechamentoReabertura.Excluir();
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
 
@@ -102,11 +117,11 @@ namespace SME.SGP.Dominio.Servicos
             }
             catch (NegocioException nEx)
             {
-                return nEx.Message;
+                throw nEx;
             }
             catch (Exception)
             {
-                return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}";
+                throw new NegocioException($"Não foi possível excluir o fechamento de reabertura.");
             }
 
             unitOfWork.PersistirTransacao();
@@ -132,6 +147,19 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var fechamentoReaberturaBimestre in fechamentoReabertura.Bimestres)
             {
                 fechamentoReaberturaBimestre.FechamentoAberturaId = fechamentoReaberturaId;
+
+                if (fechamentoReaberturaBimestre.Id > 0)
+                {
+                    fechamentoReaberturaBimestre.AlteradoEm = DateTime.Now;
+                    fechamentoReaberturaBimestre.AlteradoPor = usuarioAtual.Nome;
+                    fechamentoReaberturaBimestre.AlteradoRF = usuarioAtual.CodigoRf;
+                }
+                else
+                {
+                    fechamentoReaberturaBimestre.CriadoPor = usuarioAtual.Nome;
+                    fechamentoReaberturaBimestre.CriadoRF = usuarioAtual.CodigoRf;
+                }
+
                 await repositorioFechamentoReabertura.SalvarBimestreAsync(fechamentoReaberturaBimestre);
             }
 
@@ -325,8 +353,10 @@ namespace SME.SGP.Dominio.Servicos
                 Titulo = "Alteração em datas de fechamento de bimestre",
                 Tipo = NotificacaoTipo.Calendario,
                 UsuarioId = usuarioId,
-                Mensagem = $@"A {(fechamentoReabertura.EhParaDre() ? "SME" : "Dre")} realizou alterações em datas de reabertura do período de fechamento de bimestre e as datas definidas pela {(fechamentoReabertura.EhParaDre() ? fechamentoReabertura.Dre.Nome : fechamentoReabertura.Ue.Nome)} foram ajustadas. As novas datas são: <br />
-                                  { fechamentoReabertura.TipoCalendario.Nome } - { fechamentoReabertura.TipoCalendario.AnoLetivo }
+                Mensagem = $@"A {(fechamentoReabertura.EhParaDre() ? "SME" : "Dre")} realizou alterações em datas de reabertura do período de fechamento de bimestre para os bimestres
+                                 { fechamentoReabertura.ObterBimestresNumeral()} e as datas definidas pela {(fechamentoReabertura.EhParaDre() ? fechamentoReabertura.Dre.Nome
+                                : $@"{fechamentoReabertura.Ue.TipoEscola.ShortName()} {fechamentoReabertura.Ue.Nome}")} foram ajustadas. As novas datas são: <br/>
+                                  <b>{ fechamentoReabertura.TipoCalendario.Nome } - { fechamentoReabertura.TipoCalendario.AnoLetivo }</b>   
                                   { (fechamentoReaberturaParaAtualizar.Item2 ? " - Nova data de início do período: " + fechamentoReabertura.Inicio.ToString("dd/MM/yyyy") : string.Empty) }
                                   { (fechamentoReaberturaParaAtualizar.Item2 ? " - Nova data de fim do período: " + fechamentoReabertura.Fim.ToString("dd/MM/yyyy") : string.Empty) }"
             };
@@ -356,10 +386,10 @@ namespace SME.SGP.Dominio.Servicos
                 DreId = fechamentoReabertura.Dre.CodigoDre,
                 NotificacaoTitulo = "Cadastro de período de reabertura de fechamento - ano anterior",
                 NotificacaoTipo = NotificacaoTipo.Calendario,
-                NotificacaoMensagem = $@"A {fechamentoReabertura.Ue.Nome} cadastrou um novo período de reabertura de fechamento de bimestre para o tipo de calendário {fechamentoReabertura.TipoCalendario.Nome} do ano de {fechamentoReabertura.TipoCalendario.AnoLetivo}. Para que o período seja considerado válido é necessário que você aceite esta notificação. <br />
-                                           Descrição: {fechamentoReabertura.Descricao} <br />
-                                           Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br />
-                                           Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br />
+                NotificacaoMensagem = $@"A {fechamentoReabertura.Ue.TipoEscola.ShortName()} {fechamentoReabertura.Ue.Nome}({fechamentoReabertura.Dre.Abreviacao}) cadastrou um novo período de reabertura de fechamento de bimestre para o tipo de calendário <b>{fechamentoReabertura.TipoCalendario.Nome}</b> do ano de {fechamentoReabertura.TipoCalendario.AnoLetivo}. Para que o período seja considerado válido é necessário que você aceite esta notificação. <br/>
+                                           Descrição: {fechamentoReabertura.Descricao} <br/>
+                                           Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
+                                           Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
                                            Bimestres: {fechamentoReabertura.ObterBimestresNumeral()}"
             };
 

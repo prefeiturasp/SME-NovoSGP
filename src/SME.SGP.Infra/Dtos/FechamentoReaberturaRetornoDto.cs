@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
         public string Descricao { get; set; }
         public string DreCodigo { get; set; }
         public long TipoCalendarioId { get; set; }
+        public bool PossuiFilhos { get; set; }
         public string UeCodigo { get; set; }
     }
 }
