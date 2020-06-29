@@ -1,36 +1,51 @@
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Contexto;
 using SME.SGP.IoC;
+using SME.SGP.Worker.RabbitMQ;
 using System;
 using System.Net;
 
-namespace SME.SGP.Worker.Rabbit
+namespace SME.SGP.Worker.RabbbitMQ
 {
-    public class Program
+    public class Startup
     {
-        public static void Main(string[] args)
+        private readonly IConfiguration configuration;
+
+        public Startup(IConfiguration configuration)
         {
-            CreateHostBuilder(args).Build().Run();
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        }
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
+            RegistraDependencias.Registrar(services);
+            RegistrarHttpClients(services, configuration);
+            services.AddApplicationInsightsTelemetry(configuration);
+            services.AdicionarRedis(configuration);
+
+            services.AddHostedService<WorkerRabbitMQ>();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureServices((hostContext, services) =>
-                {
-                    RegistraDependencias.Registrar(services);
-                    services.TryAddScoped<IHttpContextAccessor, NoHttpContext>();
-                    RegistrarHttpClients(services, hostContext.Configuration);
-                    services.AddApplicationInsightsTelemetryWorkerService(hostContext.Configuration);
-                    services.AdicionarRedis(hostContext.Configuration);
-                   
-                    services.AddHostedService<WorkerRabbitMQ>();
-                });
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.Run(async (context) =>
+            {
+                await context.Response.WriteAsync("WorkerRabbitMQ!");
+            });
+        }
 
         private static void RegistrarHttpClients(IServiceCollection services, IConfiguration configuration)
         {
@@ -75,5 +90,6 @@ namespace SME.SGP.Worker.Rabbit
                 return new JasperCookieHandler() { CookieContainer = cookieContainer };
             });
         }
+
     }
 }
