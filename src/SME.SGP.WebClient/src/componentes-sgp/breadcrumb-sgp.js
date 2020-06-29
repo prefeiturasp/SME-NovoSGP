@@ -25,9 +25,11 @@ const BreadcrumbBody = styled.div`
   }
 `;
 const BreadcrumbSgp = () => {
-  const NavegacaoStore = useSelector(store => store.navegacao);
+  const NavegacaoStore = useSelector(
+    storeNavegacao => storeNavegacao.navegacao
+  );
 
-  const UsuarioStrore = useSelector(store => store.usuario);
+  const UsuarioStrore = useSelector(storeUsuario => storeUsuario.usuario);
 
   const rotas = NavegacaoStore.rotas;
 
