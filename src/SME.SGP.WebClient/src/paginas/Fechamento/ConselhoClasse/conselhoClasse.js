@@ -107,8 +107,10 @@ const ConselhoClasse = () => {
       conselhoClasseId,
       fechamentoTurmaId
     )
-      .then(resp => {
-        sucesso('Gerando conselho de classe da turma');
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
       })
       .finally(setImprimindo(false))
       .catch(e => erro(e));

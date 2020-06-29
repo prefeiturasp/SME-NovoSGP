@@ -21,8 +21,9 @@ const LinhaAluno = ({
   indexAluno,
   desabilitarCampo,
   ehSintese,
+  registraFrequencia,
 }) => {
-  
+
   const obterValorConceito = valor => {
     if (listaConceitos && listaConceitos.length) {
       const conceito = listaConceitos.find(item => item.id == valor);
@@ -141,18 +142,7 @@ const LinhaAluno = ({
             )}
           </td>
         )}
-
-        <td>
-          <span
-            className={`${
-              frequenciaMedia && aluno.frequencia < frequenciaMedia
-                ? 'indicativo-alerta'
-                : ''
-            } `}
-          >
-            {aluno.frequencia}%
-          </span>
-        </td>
+        {registraFrequencia ? <td>{aluno.frequencia}%</td> : ''}
       </tr>
       <LinhaConceitoFinal
         indexLinha={indexAluno}

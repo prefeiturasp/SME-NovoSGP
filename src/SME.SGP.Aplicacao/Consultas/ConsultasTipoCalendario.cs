@@ -20,16 +20,16 @@ namespace SME.SGP.Aplicacao
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
         }
 
-        public IEnumerable<TipoCalendarioDto> BuscarPorAnoLetivo(int anoLetivo)
+        public async Task<IEnumerable<TipoCalendarioDto>> BuscarPorAnoLetivo(int anoLetivo)
         {
-            var retorno = repositorio.BuscarPorAnoLetivo(anoLetivo);
+            var retorno = await repositorio.BuscarPorAnoLetivo(anoLetivo);
             return from t in retorno
                    select EntidadeParaDto(t);
         }
 
-        public TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
+        public async Task<TipoCalendarioCompletoDto> BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
         {
-            var entidade = repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, semestre);
+            var entidade = await repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, semestre);
 
             if (entidade != null)
                 return EntidadeParaDtoCompleto(entidade);
@@ -37,9 +37,9 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        public TipoCalendarioCompletoDto BuscarPorId(long id)
+        public async Task<TipoCalendarioCompletoDto> BuscarPorId(long id)
         {
-            var entidade = repositorio.ObterPorId(id);
+            var entidade = await repositorio.ObterPorIdAsync(id);
 
             TipoCalendarioCompletoDto dto = new TipoCalendarioCompletoDto();
 
@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             return dto;
         }
 
-        public TipoCalendarioDto EntidadeParaDto(TipoCalendario entidade)
+        private TipoCalendarioDto EntidadeParaDto(TipoCalendario entidade)
         {
             return new TipoCalendarioDto()
             {
@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        public TipoCalendarioCompletoDto EntidadeParaDtoCompleto(TipoCalendario entidade)
+        private TipoCalendarioCompletoDto EntidadeParaDtoCompleto(TipoCalendario entidade)
         {
             bool possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(entidade.Id);
             return new TipoCalendarioCompletoDto
@@ -84,26 +84,26 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        public IEnumerable<TipoCalendarioDto> Listar()
+        public async Task<IEnumerable<TipoCalendarioDto>> Listar()
         {
-            var retorno = repositorio.ObterTiposCalendario();
+            var retorno = await repositorio.ObterTiposCalendario();
             return from t in retorno
                    select EntidadeParaDto(t);
         }
 
-        public IEnumerable<TipoCalendarioDto> ListarPorAnoLetivo(int anoLetivo)
+        public async Task<IEnumerable<TipoCalendarioDto>> ListarPorAnoLetivo(int anoLetivo)
         {
-            var retorno = repositorio.ListarPorAnoLetivo(anoLetivo);
+            var retorno = await repositorio.ListarPorAnoLetivo(anoLetivo);
             return from t in retorno
                    select EntidadeParaDto(t);
         }
 
         public async Task<TipoCalendario> ObterPorTurma(Turma turma)
-            => repositorio.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo
+            => await repositorio.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo
                     , turma.ModalidadeTipoCalendario
                     , turma.Semestre);
 
-        public Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
-            => repositorio.PeriodoEmAberto(tipoCalendario.Id, dataReferencia, bimestre, ehAnoLetivo);
+        public async Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
+            => await repositorio.PeriodoEmAberto(tipoCalendario.Id, dataReferencia, bimestre, ehAnoLetivo);
     }
 }

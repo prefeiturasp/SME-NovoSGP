@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
         }
 
-        public void Aprovar(bool aprovar, long notificacaoId, string observacao)
+        public async Task Aprovar(bool aprovar, long notificacaoId, string observacao)
         {
             var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, notificacaoId);
             if (workflow == null)
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             unitOfWork.IniciarTransacao();
 
-            servicoWorkflowAprovacao.Aprovar(workflow, aprovar, observacao, notificacaoId);
+            await servicoWorkflowAprovacao.Aprovar(workflow, aprovar, observacao, notificacaoId);
 
             unitOfWork.PersistirTransacao();
         }
@@ -44,19 +44,19 @@ namespace SME.SGP.Aplicacao
             await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(idWorkflowAprovacao);
         }
 
-        public long Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
+        public async Task<long> Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
         {
             if (workflowAprovacaoNiveisDto.Tipo != WorkflowAprovacaoTipo.Basica && workflowAprovacaoNiveisDto.EntidadeParaAprovarId == 0)
                 throw new NegocioException("Para um workflow diferente de básico, é necessário informar o Id da entidade para Aprovar.");
 
             WorkflowAprovacao workflowAprovacao = MapearDtoParaEntidade(workflowAprovacaoNiveisDto);
 
-            repositorioWorkflowAprovacao.Salvar(workflowAprovacao);
+            await repositorioWorkflowAprovacao.SalvarAsync(workflowAprovacao);
 
             foreach (var workflowAprovacaoNivel in workflowAprovacao.Niveis)
             {
                 workflowAprovacaoNivel.WorkflowId = workflowAprovacao.Id;
-                repositorioWorkflowAprovacaoNivel.Salvar(workflowAprovacaoNivel);
+                await repositorioWorkflowAprovacaoNivel.SalvarAsync(workflowAprovacaoNivel);
 
                 foreach (var usuario in workflowAprovacaoNivel.Usuarios)
                 {

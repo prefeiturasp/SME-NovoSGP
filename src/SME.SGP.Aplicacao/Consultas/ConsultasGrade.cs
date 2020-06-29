@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             if (ue == null)
                 throw new NegocioException("Ue não localizada.");
 
-            var turma = repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
 

@@ -317,10 +317,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IReceberDadosDownloadRelatorioUseCase, ReceberDadosDownloadRelatorioUseCase>();
             services.TryAddScoped<IRelatorioConselhoClasseAtaFinalUseCase, RelatorioConselhoClasseAtaFinalUseCase>();
             services.TryAddScoped<IGamesUseCase, GamesUseCase>();
+            services.TryAddScoped<IReiniciarSenhaUseCase, ReiniciarSenhaUseCase>();
             services.TryAddScoped<IInserirAulaUseCase, InserirAulaUseCase>();
             services.TryAddScoped<IAlterarAulaUseCase, AlterarAulaUseCase>();
             services.TryAddScoped<IExcluirAulaUseCase, ExcluirAulaUseCase>();
             services.TryAddScoped<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
+            services.TryAddScoped<IObterFuncionariosUseCase, ObterFuncionariosUseCase>();
             services.TryAddScoped<IExcluirAulaRecorrenteUseCase, ExcluirAulaRecorrenteUseCase>();
             services.TryAddScoped<IInserirAulaRecorrenteUseCase, InserirAulaRecorrenteUseCase>();
             services.TryAddScoped<IAlterarAulaRecorrenteUseCase, AlterarAulaRecorrenteUseCase>();
