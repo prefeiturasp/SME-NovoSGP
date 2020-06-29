@@ -19,7 +19,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Worker.Rabbit
+namespace SME.SGP.Worker.RabbitMQ
 {
     public class WorkerRabbitMQ : IHostedService
     {
@@ -61,7 +61,7 @@ namespace SME.SGP.Worker.Rabbit
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
         {
-            var mensagem = System.Text.Encoding.UTF8.GetString(ea.Body.Span);
+            var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
             var rota = ea.RoutingKey;
             if (comandos.ContainsKey(rota))
             {
