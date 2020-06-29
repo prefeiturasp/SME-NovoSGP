@@ -22,18 +22,39 @@ namespace SME.SGP.Aplicacao
 
             if (aulaDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {
-                return await mediator.Send(new AlterarAulaUnicaCommand(usuarioLogado, aulaDto.Id, aulaDto.DataAula, aulaDto.Quantidade, aulaDto.CodigoTurma, aulaDto.CodigoComponenteCurricular, aulaDto.NomeComponenteCurricular, aulaDto.TipoCalendarioId, aulaDto.TipoAula, aulaDto.CodigoUe, aulaDto.EhRegencia));
+                return await mediator.Send(new AlterarAulaUnicaCommand(usuarioLogado,
+                                                                       aulaDto.Id,
+                                                                       aulaDto.DataAula,
+                                                                       aulaDto.Quantidade,
+                                                                       aulaDto.CodigoTurma,
+                                                                       aulaDto.CodigoComponenteCurricular,
+                                                                       aulaDto.NomeComponenteCurricular,
+                                                                       aulaDto.TipoCalendarioId,
+                                                                       aulaDto.TipoAula,
+                                                                       aulaDto.CodigoUe,
+                                                                       aulaDto.EhRegencia));
             }
             else
             {
                 try
                 {
-                    mediator.Enfileirar(new AlterarAulaRecorrenteCommand(usuarioLogado, aulaDto.Id, aulaDto.DataAula, aulaDto.Quantidade, aulaDto.CodigoTurma, aulaDto.CodigoComponenteCurricular, aulaDto.NomeComponenteCurricular, aulaDto.TipoCalendarioId, aulaDto.TipoAula, aulaDto.CodigoUe, aulaDto.EhRegencia, aulaDto.RecorrenciaAula));
+                    await mediator.Send(new IncluirFilaAlteracaoAulaRecorrenteCommand(usuarioLogado,
+                                                                         aulaDto.Id,
+                                                                         aulaDto.DataAula,
+                                                                         aulaDto.Quantidade,
+                                                                         aulaDto.CodigoTurma,
+                                                                         aulaDto.CodigoComponenteCurricular,
+                                                                         aulaDto.NomeComponenteCurricular,
+                                                                         aulaDto.TipoCalendarioId,
+                                                                         aulaDto.TipoAula,
+                                                                         aulaDto.CodigoUe,
+                                                                         aulaDto.EhRegencia,
+                                                                         aulaDto.RecorrenciaAula));
                     return new RetornoBaseDto("Serão alteradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.AddBreadcrumb("Alteração de aulas recorrentes", "Hangfire");
+                    SentrySdk.AddBreadcrumb("Alteração de aulas recorrentes", "RabbitMQ");
                     SentrySdk.CaptureException(ex);
                 }
                 return new RetornoBaseDto("Ocorreu um erro ao solicitar a alteração de aulas recorrentes, por favor tente novamente.");

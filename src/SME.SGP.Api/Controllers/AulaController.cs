@@ -40,11 +40,14 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir(long id, string disciplinaNome, RecorrenciaAula recorrencia, [FromServices] IComandosAula comandos)
+        public async Task<IActionResult> Excluir(long id, string disciplinaNome, RecorrenciaAula recorrencia, [FromServices] IExcluirAulaUseCase excluirAulaUseCase)
         {
-            var retorno = new RetornoBaseDto();
-            retorno.Mensagens.Add(await comandos.Excluir(id, UtilCriptografia.DesconverterBase64(disciplinaNome), recorrencia));
-            return Ok(retorno);
+            return Ok(await excluirAulaUseCase.Executar(new ExcluirAulaDto()
+            {
+                AulaId = id,
+                RecorrenciaAula = recorrencia,
+                ComponenteCurricularNome = UtilCriptografia.DesconverterBase64(disciplinaNome)
+            }));
         }
 
         [HttpPost]
