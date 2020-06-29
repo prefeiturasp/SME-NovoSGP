@@ -966,9 +966,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
         }
 
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorDre(FiltroFuncionarioDto filtroFuncionariosDto)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorDre(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
         {
-            var resposta = await httpClient.GetAsync($@"funcionarios/dres/{filtroFuncionariosDto.CodigoDRE}?CodigoUe={filtroFuncionariosDto.CodigoUE}&CodigoRf={filtroFuncionariosDto.CodigoRF}&NomeServidor={filtroFuncionariosDto.NomeServidor}");
+            var resposta = await httpClient.GetAsync($@"funcionarios/perfis/{perfil}/dres/{filtroFuncionariosDto.CodigoDRE}?CodigoUe={filtroFuncionariosDto.CodigoUE}&CodigoRf={filtroFuncionariosDto.CodigoRF}&NomeServidor={filtroFuncionariosDto.NomeServidor}");
 
             if (resposta.IsSuccessStatusCode)
             {
