@@ -20,10 +20,14 @@ namespace SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionariosQuery request, CancellationToken cancellationToken)
         {
-            FiltroFuncionarioDto filtro = new FiltroFuncionarioDto();
-            filtro.CodigoDRE = request.CodigoDre;
-            filtro.CodigoUE = request.CodigoUe;
-                ;
+            FiltroFuncionarioDto filtro = new FiltroFuncionarioDto()
+            {
+                CodigoDRE = request.CodigoDre,
+                CodigoUE = request.CodigoUe,
+                CodigoRF = request.CodigoRf,
+                NomeServidor = request.NomeServidor
+            };
+
             return await servicoEOL.ObterFuncionariosPorDre(filtro);
         }
 

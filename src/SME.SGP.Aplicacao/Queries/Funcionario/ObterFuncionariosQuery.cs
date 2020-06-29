@@ -11,10 +11,21 @@ namespace SME.SGP.Aplicacao.Queries.Funcionario
 
         public string CodigoUe { get; set; }
 
-        public ObterFuncionariosQuery(string codigoDre, string codigoUe)
+        public string CodigoRf { get; set; }
+
+        public string NomeServidor { get; set; }
+
+        public ObterFuncionariosQuery() { }
+
+        public ObterFuncionariosQuery(string codigoDre, 
+                                      string codigoUe,
+                                      string codigoRf,
+                                      string nomeServidor)
         {
             CodigoDre = codigoDre;
             CodigoUe = codigoUe;
+            CodigoRf = codigoRf;
+            NomeServidor = nomeServidor;
         }
     }
 
