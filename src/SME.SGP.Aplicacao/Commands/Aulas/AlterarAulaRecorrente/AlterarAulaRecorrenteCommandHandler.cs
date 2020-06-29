@@ -137,13 +137,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<ProcessoExecutando>> IncluirAulasEmManutencao(Aula aulaOrigem, IEnumerable<Aula> aulasDaRecorrencia)
         {
-            var listaProcessos = new List<ProcessoExecutando>();
+            var listaProcessos = await mediator.Send(new InserirAulaEmManutencaoCommand(aulasDaRecorrencia.Select(a => a.Id)
+                                                                                        .Union(new List<long>() { aulaOrigem.Id })));
 
-            listaProcessos.Add(await mediator.Send(new InserirAulaEmManutencaoCommand(aulaOrigem.Id)));
-            foreach (var aulaRecorrente in aulasDaRecorrencia)
-            {
-                listaProcessos.Add(await mediator.Send(new InserirAulaEmManutencaoCommand(aulaRecorrente.Id)));
-            }
 
             return listaProcessos;
         }

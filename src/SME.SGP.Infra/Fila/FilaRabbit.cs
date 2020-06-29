@@ -21,24 +21,38 @@ namespace SME.SGP.Infra
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public void AdicionaFilaWorkerRelatorios(AdicionaFilaDto adicionaFilaDto)
+        public void PublicaFilaWorkerServidorRelatorios(PublicaFilaRelatoriosDto adicionaFilaDto)
         {
-            var request = new MensagemRabbit(adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros, adicionaFilaDto.CodigoCorrelacao);
+            byte[] body = FormataBodyWorker(adicionaFilaDto);
+
+            rabbitChannel.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeServidorRelatorios, RotasRabbit.RotaRelatoriosSolicitados);
+            rabbitChannel.BasicPublish(RotasRabbit.ExchangeServidorRelatorios, adicionaFilaDto.Fila, null, body);
+
+            SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
+        }
+
+        public void PublicaFilaWorkerSgp(PublicaFilaSgpDto publicaFilaSgpDto)
+        {
+            var request = new MensagemRabbit(publicaFilaSgpDto.Filtros,
+                                             publicaFilaSgpDto.CodigoCorrelacao,
+                                             publicaFilaSgpDto.UsuarioLogadoNomeCompleto,
+                                             publicaFilaSgpDto.UsuarioLogadoRF,
+                                             publicaFilaSgpDto.PerfilUsuario,
+                                             publicaFilaSgpDto.NotificarErroUsuario);
+
             var mensagem = JsonConvert.SerializeObject(request);
             var body = Encoding.UTF8.GetBytes(mensagem);
-            //TODO PENSAR NA EXCHANGE
-            var properties = rabbitChannel.CreateBasicProperties();
-            properties.Persistent = false;
-            properties.Persistent = false;
 
-            rabbitChannel.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeListenerWorkerRelatorios, RotasRabbit.RotaRelatoriosSolicitados);
-            rabbitChannel.BasicPublish(RotasRabbit.ExchangeListenerWorkerRelatorios, adicionaFilaDto.Fila, properties, body);
+            rabbitChannel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, publicaFilaSgpDto.NomeFila);
+            rabbitChannel.BasicPublish(RotasRabbit.ExchangeSgp, publicaFilaSgpDto.NomeFila, null, body);
+        }
 
-            using (SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN")))
-            {
-                SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
-            }
-
+        private static byte[] FormataBodyWorker(PublicaFilaRelatoriosDto adicionaFilaDto)
+        {
+            var request = new MensagemRabbit(adicionaFilaDto.Endpoint, adicionaFilaDto.Filtros, adicionaFilaDto.CodigoCorrelacao, adicionaFilaDto.NotificarErroUsuario);
+            var mensagem = JsonConvert.SerializeObject(request);
+            var body = Encoding.UTF8.GetBytes(mensagem);
+            return body;
         }
     }
 }

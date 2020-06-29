@@ -23,16 +23,19 @@ namespace SME.SGP.Api.Controllers
                 };
                 conexaoRabbit = factory.CreateConnection();
             }
+
             if (canalRabbit == null || canalRabbit.IsClosed)
             {
                 canalRabbit = conexaoRabbit.CreateModel();
             }
 
-            canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeListenerWorkerRelatorios, ExchangeType.Topic);
-            canalRabbit.QueueDeclare(RotasRabbit.FilaListenerSgp, false, false, false, null);
-            canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeListenerWorkerRelatorios, ExchangeType.Topic);
-            canalRabbit.QueueDeclare(RotasRabbit.FilaListenerSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.FilaListenerSgp, RotasRabbit.ExchangeListenerWorkerRelatorios, "*", null);
+            canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
+            canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
+            canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*", null);
+
+            canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeServidorRelatorios, ExchangeType.Topic);
+            canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
+            canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);
 
             return Ok();
         }

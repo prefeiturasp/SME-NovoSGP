@@ -3,7 +3,7 @@ using RabbitMQ.Client;
 using SME.SGP.Infra;
 using System;
 
-namespace SME.SGP.Api
+namespace SME.SGP.IoC
 {
     public static class RegistrarRabbit
     {
@@ -21,8 +21,9 @@ namespace SME.SGP.Api
             services.AddSingleton(conexaoRabbit);
             services.AddSingleton(_channel);
 
-            _channel.ExchangeDeclare(RotasRabbit.ExchangeListenerWorkerRelatorios, ExchangeType.Topic);
-            _channel.QueueDeclare(RotasRabbit.FilaListenerSgp, false, false, false, null);
+            _channel.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
+            _channel.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
+            _channel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp,"*");
         }
     }
 }
