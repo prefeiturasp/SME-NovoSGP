@@ -27,7 +27,6 @@ namespace SME.SGP.IoC
         {
             services.AdicionarMediatr();
             services.AdicionarValidadoresFluentValidation();
-            services.AddRabbit();
             services.TryAddScoped<HangfireMediator>();
 
             RegistrarRepositorios(services);
