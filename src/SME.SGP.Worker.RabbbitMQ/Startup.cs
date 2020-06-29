@@ -15,10 +15,12 @@ namespace SME.SGP.Worker.RabbbitMQ
     public class Startup
     {
         private readonly IConfiguration configuration;
+        private readonly IHostingEnvironment env;
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.env = env ?? throw new ArgumentNullException(nameof(env));
         }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -29,6 +31,11 @@ namespace SME.SGP.Worker.RabbbitMQ
             RegistrarHttpClients(services, configuration);
             services.AddApplicationInsightsTelemetry(configuration);
             services.AdicionarRedis(configuration);
+
+            if (env.EnvironmentName != "teste-integrado")
+            {
+                services.AddRabbit();
+            }
 
             services.AddHostedService<WorkerRabbitMQ>();
         }
