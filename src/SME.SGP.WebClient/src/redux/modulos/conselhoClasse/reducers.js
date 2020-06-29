@@ -22,6 +22,7 @@ const inicial = {
   gerandoParecerConclusivo: false,
   desabilitarCampos: false,
   podeEditarNota: false,
+  salvouJustificativa: false,
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -186,6 +187,12 @@ export default function ConselhoClasse(state = inicial, action) {
         return {
           ...draft,
           podeEditarNota: action.payload,
+        };
+      }
+      case '@conselhoClasse/setSalvouJustificativa': {
+        return {
+          ...draft,
+          salvouJustificativa: action.payload,
         };
       }
 

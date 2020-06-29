@@ -104,8 +104,8 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException($"Não foi possivel obter a turma da aula");
 
-            var bimestreAtual = consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo, turma.Semestre);
-            var bimestreAvaliacao = consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo, turma.Semestre);
+            var bimestreAtual = await consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo, turma.Semestre);
+            var bimestreAvaliacao = await consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo, turma.Semestre);
 
             if (bimestreAtual == 0 || bimestreAvaliacao == 0)
                 return false;
@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<TurmaRetornoDto>();
 
-            var turma = repositorioTurma.ObterPorCodigo(turmaId.ToString());
+            var turma = await repositorioTurma.ObterPorCodigo(turmaId.ToString());
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(usuario.CodigoRf);
 
@@ -182,7 +182,7 @@ namespace SME.SGP.Aplicacao
                     else
                     {
                         var tipoCalendarioId = aula.FirstOrDefault().TipoCalendarioId;
-                        var perioEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);
+                        var perioEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);
                         if (perioEscolar == null)
                         {
                             retorno.Add(new AtividadeAvaliativaExistenteRetornoDto()

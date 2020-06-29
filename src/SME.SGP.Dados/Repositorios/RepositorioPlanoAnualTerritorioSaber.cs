@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -15,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public PlanoAnualTerritorioSaberCompletoDto ObterPlanoAnualTerritorioSaberCompletoPorAnoEscolaBimestreETurma(int ano, string escolaId, string turmaId, int bimestre, long territorioExperienciaId)
+        public async Task<PlanoAnualTerritorioSaberCompletoDto> ObterPlanoAnualTerritorioSaberCompletoPorAnoEscolaBimestreETurma(int ano, string escolaId, string turmaId, int bimestre, long territorioExperienciaId)
         {
             StringBuilder query = new StringBuilder();
 
@@ -32,10 +33,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("group by");
             query.AppendLine("	pa.id");
 
-            return database.Conexao.QueryFirstOrDefault<PlanoAnualTerritorioSaberCompletoDto>(query.ToString(), new { ano, escolaId, turmaId = Convert.ToInt32(turmaId), bimestre, territorioExperienciaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAnualTerritorioSaberCompletoDto>(query.ToString(), new { ano, escolaId, turmaId = Convert.ToInt32(turmaId), bimestre, territorioExperienciaId });
         }
 
-        public IEnumerable<PlanoAnualTerritorioSaberCompletoDto> ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(int ano, string ueId, string turmaId, long territorioExperienciaId)
+        public async Task<IEnumerable<PlanoAnualTerritorioSaberCompletoDto>> ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(int ano, string ueId, string turmaId, long territorioExperienciaId)
         {
             StringBuilder query = new StringBuilder();
 
@@ -51,10 +52,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("group by");
             query.AppendLine("	pa.id");
 
-            return database.Conexao.Query<PlanoAnualTerritorioSaberCompletoDto>(query.ToString(), new { ano, ueId, turmaId = int.Parse(turmaId), territorioExperienciaId });
+            return await database.Conexao.QueryAsync<PlanoAnualTerritorioSaberCompletoDto>(query.ToString(), new { ano, ueId, turmaId = int.Parse(turmaId), territorioExperienciaId });
         }
 
-        public PlanoAnualTerritorioSaber ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long territorioExperienciaId)
+        public async Task<PlanoAnualTerritorioSaber> ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long territorioExperienciaId)
         {
             StringBuilder query = new StringBuilder();
 
@@ -69,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("turma_id = @turmaId and");
             query.AppendLine("territorio_experiencia_id = @territorioExperienciaId");
 
-            return database.Conexao.Query<PlanoAnualTerritorioSaber>(query.ToString(),
+            return (await database.Conexao.QueryAsync<PlanoAnualTerritorioSaber>(query.ToString(),
                 new
                 {
                     ano,
@@ -77,7 +78,7 @@ namespace SME.SGP.Dados.Repositorios
                     turmaId,
                     bimestre,
                     territorioExperienciaId
-                }).SingleOrDefault();
+                })).SingleOrDefault();
         }
     }
 }

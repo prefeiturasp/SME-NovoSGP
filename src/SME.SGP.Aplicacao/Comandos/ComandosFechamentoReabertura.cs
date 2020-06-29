@@ -43,17 +43,19 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Excluir(long[] ids)
         {
-            var fechamentos = await repositorioFechamentoReabertura.Listar(0, 0, 0, ids);
-            if (fechamentos == null && !fechamentos.Any())
-                throw new NegocioException("Não foram localizados fechamento(s) válido(s) para exclusão.");
-
             var Mensagens = new List<string>();
 
-            foreach (var fechamento in fechamentos)
+            var fechamentos = await repositorioFechamentoReabertura.Listar(0, 0, 0, ids);
+            if (fechamentos == null || !fechamentos.Any())
+                throw new NegocioException("Não foram localizados fechamento(s) válido(s) para exclusão.");
+            else
             {
-                var mensagem = await servicoFechamentoReabertura.ExcluirAsync(fechamento);
-                if (!string.IsNullOrEmpty(mensagem))
-                    Mensagens.Add(mensagem);
+                foreach (var fechamento in fechamentos)
+                {
+                    var mensagem = await servicoFechamentoReabertura.ExcluirAsync(fechamento);
+                    if (!string.IsNullOrEmpty(mensagem))
+                        Mensagens.Add(mensagem);
+                }
             }
 
             return string.Join(" <br />", Mensagens);

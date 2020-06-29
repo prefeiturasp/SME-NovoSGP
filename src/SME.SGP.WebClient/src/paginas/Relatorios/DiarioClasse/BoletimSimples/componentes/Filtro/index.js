@@ -15,27 +15,39 @@ import TurmasDropDown from './componentes/TurmasDropDown';
 
 function Filtro({ onFiltrar, resetForm }) {
   const [refForm, setRefForm] = useState({});
-
   const filtro = useSelector(store => store.filtro);
-
-  const [valoresIniciais, setValoresIniciais] = useState({
-    anoLetivo: filtro.anosLetivos.length ? filtro.anosLetivos[0].valor : '',
-    modalidadeId: '',
-    semestre: '',
-    dreId: '',
-    ueId: '',
-    turmaId: '',
-    opcaoAlunoId: '0',
-  });
 
   const [carregandoModalidades, setCarregandoModalidades] = useState(false);
   const [carregandoPeriodos, setCarregandoPeriodos] = useState(false);
 
+  const [modalidadeId, setModalidadeId] = useState(undefined);
+  const [semestreId, setSemestreId] = useState(undefined);
+  const [anoLetivo, setAnoLetivo] = useState(undefined);
+  const [dreId, setDreId] = useState(undefined);
+
+  const [urlDre, setUrlDre] = useState('v1/abrangencias/false/dres');
+  const [urlUe, setUrlUe] = useState(`v1/abrangencias/false/dres/${dreId}/ues`);
   const modalidadesStore = filtro.modalidades;
   const periodosStore = filtro.periodos;
 
   const [modalidades, setModalidades] = useState([]);
   const [periodos, setPeriodos] = useState([]);
+
+  useEffect(() => {
+    if (modalidadeId && anoLetivo) {
+      let url = `v1/abrangencias/false/dres?modalidade=${modalidadeId}&anoLetivo=${anoLetivo}`;
+      if (modalidadeId === '3' && semestreId) url += `&periodo=${semestreId}`;
+      setUrlDre(url);
+    }
+  }, [modalidadeId, semestreId, anoLetivo]);
+
+  useEffect(() => {
+    if (modalidadeId && anoLetivo && dreId) {
+      let url = `v1/abrangencias/false/dres/${dreId}/ues?modalidade=${modalidadeId}&anoLetivo=${anoLetivo}`;
+      if (modalidadeId === '3' && semestreId) url += `&periodo=${semestreId}`;
+      setUrlUe(url);
+    }
+  }, [modalidadeId, semestreId, anoLetivo, dreId]);
 
   useEffect(() => {
     setCarregandoModalidades(true);
@@ -44,68 +56,56 @@ function Filtro({ onFiltrar, resetForm }) {
     setCarregandoModalidades(false);
   }, [modalidades.length, modalidadesStore]);
 
-  const [modalidadeId, setModalidadeId] = useState(undefined);
-
   useEffect(() => {
     if (modalidades && modalidades.length === 1 && refForm) {
       refForm.setFieldValue('modalidadeId', String(modalidades[0].valor));
       setModalidadeId(String(modalidades[0].valor));
-      setValoresIniciais({
-        ...valoresIniciais,
-        modalidadeId: String(modalidades[0].valor),
-      });
     }
   }, [modalidades, refForm]);
-
-  const [anoLetivo, setAnoLetivo] = useState(undefined);
-  const [dreId, setDreId] = useState(undefined);
 
   useEffect(() => {
     if (refForm && resetForm) refForm.resetForm();
   }, [refForm, resetForm]);
 
-  const obterPeriodosPorModalidadeId = useCallback(async () => {
-    if (anoLetivo && modalidadeId) {
-      return FiltroHelper.obterPeriodos({
+  useEffect(() => {
+    setCarregandoPeriodos(true);
+
+    const obterPeriodos = async () => {
+      let periodosLista = [];
+
+      periodosLista = await FiltroHelper.obterPeriodos({
         consideraHistorico: false,
         modalidadeSelecionada: modalidadeId,
         anoLetivoSelecionado: anoLetivo,
       });
-    }
-    return [];
-  }, [anoLetivo, modalidadeId]);
 
-  useEffect(() => {
-    setCarregandoPeriodos(true);
-    if (periodosStore && periodosStore.length) setPeriodos(periodosStore);
-    else {
-      const obterPeriodos = async () => {
-        const periodosLista = await obterPeriodosPorModalidadeId();
+      setPeriodos(periodosLista);
+
+      if (periodosLista && periodosLista.length === 1) {
         setPeriodos(periodosLista);
-
-        if (periodosLista && periodosLista.length === 1) {
-          refForm.setFieldValue('semestre', String(periodosLista[0].valor));
-          setValoresIniciais({
-            ...valoresIniciais,
-            modalidadeId,
-            semestre: String(periodosLista[0].valor),
-          });
-        }
-      };
+        refForm.setFieldValue('semestre', String(periodosLista[0].valor));
+        setSemestreId(periodosLista[0].valor);
+      }
+    };
+    if (anoLetivo && modalidadeId) {
       obterPeriodos();
     }
+
     setCarregandoPeriodos(false);
-  }, [
-    refForm,
-    periodosStore,
-    anoLetivo,
-    modalidadeId,
-    obterPeriodosPorModalidadeId,
-  ]);
+  }, [refForm, periodosStore, anoLetivo, modalidadeId]);
 
   const aoTrocarModalidadeId = id => {
     if (!id) refForm.setFieldValue('semestre', undefined);
     setModalidadeId(id);
+    refForm.setFieldValue('dreId', undefined);
+    setDreId();
+    refForm.setFieldValue('ueId', undefined);
+    refForm.setFieldValue('turmaId', undefined);
+    refForm.setFieldValue('opcaoAlunoId', '0');
+  };
+
+  const aoTrocarSemestre = id => {
+    setSemestreId(id);
   };
 
   const aoTrocarDreId = id => {
@@ -133,7 +133,6 @@ function Filtro({ onFiltrar, resetForm }) {
   return (
     <Formik
       enableReinitialize
-      initialValues={valoresIniciais}
       validate={valores => onSubmitFiltro(valores)}
       ref={refFormik => setRefForm(refFormik)}
       validateOnBlur={false}
@@ -179,14 +178,13 @@ function Filtro({ onFiltrar, resetForm }) {
                     form={form}
                     name="semestre"
                     className="fonte-14"
+                    onChange={semestre => aoTrocarSemestre(semestre)}
                     lista={periodos}
                     valueOption="valor"
                     valueText="desc"
                     placeholder="Semestre"
                     label="Semestre"
-                    disabled={
-                      !modalidadeId || (periodos && periodos.length === 1)
-                    }
+                    disabled={!modalidadeId || periodos}
                   />
                 </Loader>
               </Grid>
@@ -197,6 +195,7 @@ function Filtro({ onFiltrar, resetForm }) {
               <DreDropDown
                 form={form}
                 onChange={dre => aoTrocarDreId(dre)}
+                url={urlDre}
                 label="Diretoria Regional de Educação (DRE)"
                 desabilitado={!modalidadeId}
               />
@@ -206,7 +205,9 @@ function Filtro({ onFiltrar, resetForm }) {
                 dreId={dreId}
                 form={form}
                 onChange={ue => aoTrocarUeId(ue)}
+                url={urlUe}
                 label="Unidade Escolar (UE)"
+                temParametros
               />
             </Grid>
           </Linha>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -6,14 +7,14 @@ namespace SME.SGP.Dominio.Interfaces
     {
         IEnumerable<Turma> MaterializarCodigosTurma(string[] idTurmas, out string[] codigosNaoEncontrados);
 
-        Turma ObterPorCodigo(string turmaCodigo);
+        Task<Turma> ObterPorCodigo(string turmaCodigo);
 
-        Turma ObterPorId(long id);
+        Task<Turma> ObterPorId(long id);
 
-        Turma ObterTurmaComUeEDrePorCodigo(string turmaCodigo);
+        Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo);
 
-        Turma ObterTurmaComUeEDrePorId(long turmaId);
+        Task<Turma> ObterTurmaComUeEDrePorId(long turmaId);
 
-        IEnumerable<Turma> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
+        Task<IEnumerable<Turma>> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
     }
 }
