@@ -241,6 +241,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTipoEscola, RepositorioTipoEscola>();
             services.TryAddScoped<IRepositorioObjetivoAprendizagem, RepositorioObjetivoAprendizagem>();
             services.TryAddScoped<IRepositorioConselhoClasseParecerConclusivo, RepositorioConselhoClasseParecerConclusivo>();
+            services.TryAddScoped<IRepositorioFechamentoReaberturaBimestre, RepositorioFechamentoReaberturaBimestre>();
         }
 
         private static void RegistararQueries(IServiceCollection services)

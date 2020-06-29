@@ -59,8 +59,8 @@ const PeriodoFechamentoReaberturaLista = () => {
         <i className="fas fa-check" />
       </CampoBimestre>
     ) : (
-      <></>
-    );
+        <></>
+      );
   };
 
   const getColunasBimestreAnual = () => {
@@ -277,6 +277,11 @@ const PeriodoFechamentoReaberturaLista = () => {
     }
   };
 
+  const onChangeDre = dreId => {
+    setUeSelecionada('');
+    setDreSelecionada(dreId);
+  }
+
   return (
     <>
       <Cabecalho pagina="Período de Fechamento (Reabertura)" />
@@ -378,8 +383,8 @@ const PeriodoFechamentoReaberturaLista = () => {
                       filtroEhValido={filtroValido}
                     />
                   ) : (
-                    ''
-                  )}
+                      ''
+                    )}
                 </div>
               </div>
             </Form>
