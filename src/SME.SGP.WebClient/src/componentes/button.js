@@ -81,7 +81,7 @@ const Button = React.forwardRef((props, ref) => {
       disabled={disabled}
       data-indice={indice}
       id={id}
-      ref={ref  || ''}
+      ref={ref}
     >
       {icon ? <Icon className={`fa fa-${icon} mr-2 py-1`} /> : null}
       {label}
