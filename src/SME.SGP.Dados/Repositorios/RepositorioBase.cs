@@ -49,8 +49,6 @@ namespace SME.SGP.Dados.Repositorios
             if (entidade.Id > 0)
             {
                 entidade.AlteradoEm = DateTime.Now;
-                if (string.IsNullOrWhiteSpace(database.UsuarioLogadoNomeCompleto))
-                    throw new ErroInternoException("Contexto não pegou usuário logado.");
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 database.Conexao.Update(entidade);
@@ -81,16 +79,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 entidade.CriadoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.CriadoRF = database.UsuarioLogadoRF;
-                try
-                {
-                    entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
-
-                }
-                catch (Exception ex)
-                {
-
-                    throw;
-                }
+                entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
                 await AuditarAsync(entidade.Id, "I");
             }
 

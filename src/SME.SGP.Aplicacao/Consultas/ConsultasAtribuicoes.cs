@@ -126,11 +126,16 @@ namespace SME.SGP.Aplicacao
 
         private void ObterAtribuicoesEsporadicasUe(string professorRf, List<string> codigosUes, string codigoDre)
         {
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf);
-            if (atribuicaoEsporadica != null && atribuicaoEsporadica.DreId == codigoDre
-                && (codigosUes != null || !codigosUes.Any() || codigosUes.Any(a => a != atribuicaoEsporadica.UeId)))
+            if (codigosUes == null || !codigosUes.Any())
+                return;
+            else
             {
-                codigosUes.Add(atribuicaoEsporadica.UeId);
+                var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf);
+                if (atribuicaoEsporadica != null && atribuicaoEsporadica.DreId == codigoDre
+                    && (codigosUes.Any(a => a != atribuicaoEsporadica.UeId)))
+                {
+                    codigosUes.Add(atribuicaoEsporadica.UeId);
+                }
             }
         }
 

@@ -12,6 +12,7 @@ import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
+import ServicoConselhoAtaFinal from '~/servicos/Paginas/Relatorios/ConselhoAtaFinal/ServicoConselhoAtaFinal';
 
 const AtaFinalResultados = () => {
   const anoAtual = window.moment().format('YYYY');

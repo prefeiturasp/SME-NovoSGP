@@ -34,13 +34,10 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento;
         private readonly IServicoEol servicoEOL;
-        private readonly IServicoFechamentoReabertura servicoFechamentoReabertura;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
@@ -84,10 +81,8 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioFechamentoAluno));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new ArgumentNullException(nameof(servicoPeriodoFechamento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new ArgumentNullException(nameof(repositorioTipoAvaliacao));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
@@ -181,7 +176,7 @@ namespace SME.SGP.Dominio.Servicos
             if (fechamentoTurmaDisciplina == null)
                 throw new NegocioException("Fechamento ainda não realizado para essa turma.");
 
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoTurmaDisciplina.FechamentoTurma.TurmaId);
+            var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoTurmaDisciplina.FechamentoTurma.TurmaId);
             if (turma == null)
                 throw new NegocioException("Turma não encontrada.");
 
@@ -206,10 +201,10 @@ namespace SME.SGP.Dominio.Servicos
             notasEnvioWfAprovacao = new List<FechamentoNotaDto>();
 
             var fechamentoTurmaDisciplina = MapearParaEntidade(id, entidadeDto);
-            CarregarTurma(entidadeDto.TurmaId);
+            await CarregarTurma(entidadeDto.TurmaId);
 
             // Valida periodo de fechamento
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turmaFechamento.AnoLetivo
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turmaFechamento.AnoLetivo
                                                                 , turmaFechamento.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio
                                                                 , DateTime.Now.Semestre());
 
@@ -386,9 +381,9 @@ namespace SME.SGP.Dominio.Servicos
             return fechamentoAlunos;
         }
 
-        private void CarregarTurma(string turmaCodigo)
+        private async Task CarregarTurma(string turmaCodigo)
         {
-            turmaFechamento = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
+            turmaFechamento = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
             if (turmaFechamento == null)
                 throw new NegocioException($"Turma com código [{turmaCodigo}] não localizada!");
         }
@@ -420,7 +415,7 @@ namespace SME.SGP.Dominio.Servicos
                 wfAprovacaoNota.AdicionarNivel(Cargo.Diretor);
                 wfAprovacaoNota.AdicionarNivel(Cargo.Supervisor);
 
-                var idWorkflow = comandosWorkflowAprovacao.Salvar(wfAprovacaoNota);
+                var idWorkflow = await comandosWorkflowAprovacao.Salvar(wfAprovacaoNota);
                 foreach (var notaFechamento in notasEnvioWfAprovacao)
                 {
                     await repositorioWfAprovacaoNotaFechamento.SalvarAsync(new WfAprovacaoNotaFechamento()
@@ -566,10 +561,11 @@ namespace SME.SGP.Dominio.Servicos
                     if (fechamentoReabertura == null)
                         throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {bimestre}º Bimestre");
 
-                    return repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId).FirstOrDefault(a => a.Bimestre == bimestre);
+                    return (await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId)).FirstOrDefault(a => a.Bimestre == bimestre);
                 }
             }
-            return periodoFechamentoBimestre.PeriodoEscolar;
+
+            return periodoFechamentoBimestre?.PeriodoEscolar;
         }
 
         private EventoTipo ObterTipoEventoFechamentoBimestre()

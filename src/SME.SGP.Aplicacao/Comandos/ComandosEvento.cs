@@ -111,19 +111,19 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(mensagensErroRetorno.ToString());
         }
 
-        public void GravarRecorrencia(EventoDto eventoDto, Evento evento)
+        public async Task GravarRecorrencia(EventoDto eventoDto, Evento evento)
         {
             if (eventoDto.RecorrenciaEventos != null)
             {
                 var recorrencia = eventoDto.RecorrenciaEventos;
-                servicoEvento.SalvarRecorrencia(evento,
-                                                recorrencia.DataInicio,
-                                                recorrencia.DataFim,
-                                                recorrencia.DiaDeOcorrencia,
-                                                recorrencia.DiasDaSemana,
-                                                recorrencia.Padrao,
-                                                recorrencia.PadraoRecorrenciaMensal,
-                                                recorrencia.RepeteACada);
+                await servicoEvento.SalvarRecorrencia(evento,
+                                                 recorrencia.DataInicio,
+                                                 recorrencia.DataFim,
+                                                 recorrencia.DiaDeOcorrencia,
+                                                 recorrencia.DiasDaSemana,
+                                                 recorrencia.Padrao,
+                                                 recorrencia.PadraoRecorrenciaMensal,
+                                                 recorrencia.RepeteACada);
             }
         }
 
@@ -183,7 +183,7 @@ namespace SME.SGP.Aplicacao
 
         private void ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(Evento evento)
         {
-            var usuario = servicoUsuario.ObterUsuarioLogado().Result;            
+            var usuario = servicoUsuario.ObterUsuarioLogado().Result;
 
             if (evento.EhEventoSME() && !usuario.EhPerfilSME())
                 throw new NegocioException(evento.Nome);

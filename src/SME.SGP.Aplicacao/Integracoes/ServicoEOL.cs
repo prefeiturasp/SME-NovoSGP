@@ -915,7 +915,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var resposta = await httpClient.GetAsync(url);
 
-            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            if (!resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 await RegistrarLogSentryAsync(resposta, "ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", url);
                 throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
@@ -965,5 +965,19 @@ namespace SME.SGP.Aplicacao.Integracoes
                 servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
             }
         }
+
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorDre(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
+        {
+            var resposta = await httpClient.GetAsync($@"funcionarios/perfis/{perfil}/dres/{filtroFuncionariosDto.CodigoDRE}?CodigoUe={filtroFuncionariosDto.CodigoUE}&CodigoRf={filtroFuncionariosDto.CodigoRF}&NomeServidor={filtroFuncionariosDto.NomeServidor}");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
+
+            }
+            return Enumerable.Empty<UsuarioEolRetornoDto>();
+        }
+
     }
 }

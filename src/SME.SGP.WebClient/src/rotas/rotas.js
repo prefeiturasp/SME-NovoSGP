@@ -175,7 +175,7 @@ rotas.set(RotasDto.PLANO_ANUAL, {
 });
 
 rotas.set(RotasDto.TERRITORIO_SABER, {
-  breadcrumbName: 'Território do Saber',
+  breadcrumbName: 'Territórios do Saber',
   menu: ['Planejamento'],
   parent: '/',
   component: TerritorioSaber,

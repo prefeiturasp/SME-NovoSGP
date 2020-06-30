@@ -48,9 +48,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AulasPrevistasDadasAuditoriaDto> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId, int semestre = 0)
         {
-            var turma = ObterTurma(turmaId);
+            var turma = await ObterTurma(turmaId);
 
-            var tipoCalendario = ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
+            var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
 
             AulasPrevistasDadasAuditoriaDto aulaPrevistaDto;
 
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
             {
                 aulaPrevista = new AulaPrevista();
 
-                var periodosBimestre = ObterPeriodosEscolares(tipoCalendario.Id);
+                var periodosBimestre = await ObterPeriodosEscolares(tipoCalendario.Id);
                 aulaPrevistaBimestres = MapearPeriodoParaBimestreDto(periodosBimestre);
             }
 
@@ -168,14 +168,14 @@ namespace SME.SGP.Aplicacao
             return await repositorioBimestre.ObterBimestresAulasPrevistasPorId(aulaPrevistaId);
         }
 
-        private IEnumerable<PeriodoEscolar> ObterPeriodosEscolares(long tipoCalendarioId)
+        private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)
         {
-            return repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
+            return await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
         }
 
-        private TipoCalendario ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade, int semestre)
+        private async Task<TipoCalendario> ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade, int semestre)
         {
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade), semestre);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade), semestre);
 
             if (tipoCalendario == null)
                 throw new NegocioException("Tipo calendário não encontrado!");
@@ -183,9 +183,9 @@ namespace SME.SGP.Aplicacao
             return tipoCalendario;
         }
 
-        private Turma ObterTurma(string turmaId)
+        private async Task<Turma> ObterTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
 
             if (turma == null)
                 throw new NegocioException("Turma não encontrada!");

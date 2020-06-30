@@ -8,19 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
-using SME.SGP.Api.Configuracoes;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
-using System.Threading.Tasks;
-using RabbitMQ.Client;
-using SME.SGP.Api.Configuracoes;
 
 namespace SME.SGP.Api
 {
@@ -88,25 +80,14 @@ namespace SME.SGP.Api
             services.AddHttpContextAccessor();
 
             RegistraDependencias.Registrar(services);
-            RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
-
-
+            
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-            services.AddDistributedRedisCache(options =>
-            {
-                options.Configuration = Configuration.GetConnectionString("SGP-Redis");
-                options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
-            });
-
             services.AddApplicationInsightsTelemetry(Configuration);
-
-            services.AdicionarMediatr();
-            services.AdicionarValidadoresFluentValidation();
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
 
@@ -139,7 +120,6 @@ namespace SME.SGP.Api
             if (_env.EnvironmentName != "teste-integrado")
             {
                 services.AddRabbit();
-                services.AddHostedService<ListenerRabbitMQ>();
             }
         }
     }

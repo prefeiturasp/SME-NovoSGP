@@ -14,6 +14,7 @@ namespace SME.SGP.Dados
             Map(c => c.TipoProcesso).ToColumn("tipo_processo");
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.DisciplinaId).ToColumn("disciplina_id");
+            Map(c => c.AulaId).ToColumn("aula_id");
         }
     }
 }

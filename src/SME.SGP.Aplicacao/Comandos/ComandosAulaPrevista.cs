@@ -49,9 +49,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Inserir(AulaPrevistaDto dto)
         {
-            var turma = ObterTurma(dto.TurmaId);
+            var turma = await ObterTurma(dto.TurmaId);
 
-            var tipoCalendario = ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo);
+            var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo);
 
             long id;
 
@@ -83,9 +83,9 @@ namespace SME.SGP.Aplicacao
             return aulaPrevistaDto.Id;
         }
 
-        private Turma ObterTurma(string turmaId)
+        private async Task<Turma> ObterTurma(string turmaId)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
 
             if (turma == null)
                 throw new NegocioException("Turma não encontrada!");
@@ -93,9 +93,9 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private TipoCalendario ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade)
+        private async Task<TipoCalendario> ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade)
         {
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade));
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade));
 
             if (tipoCalendario == null)
                 throw new NegocioException("Tipo calendário não encontrado!");

@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -70,17 +71,17 @@ namespace SME.SGP.Dados.Repositorios
             return resultado;
         }
 
-        public Turma ObterPorCodigo(string turmaCodigo)
+        public async Task<Turma> ObterPorCodigo(string turmaCodigo)
         {
-            return contexto.QueryFirstOrDefault<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+            return await contexto.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
-        public Turma ObterPorId(long id)
+        public async Task<Turma> ObterPorId(long id)
         {
-            return contexto.QueryFirstOrDefault<Turma>("select * from turma where id = @id", new { id });
+            return await contexto.QueryFirstOrDefaultAsync<Turma>("select * from turma where id = @id", new { id });
         }
 
-        public Turma ObterTurmaComUeEDrePorCodigo(string turmaCodigo)
+        public async Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo)
         {
             var query = @"select
 	                        t.id,
@@ -115,15 +116,15 @@ namespace SME.SGP.Dados.Repositorios
 	                        u.dre_id = d.id
                         where
 	                        turma_id = @turmaCodigo";
-            return contexto.Query<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
              {
                  ue.AdicionarDre(dre);
                  turma.AdicionarUe(ue);
                  return turma;
-             }, new { turmaCodigo }, splitOn: "TurmaId, UeId, DreId").FirstOrDefault();
+             }, new { turmaCodigo }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
         }
 
-        public Turma ObterTurmaComUeEDrePorId(long turmaId)
+        public async Task<Turma> ObterTurmaComUeEDrePorId(long turmaId)
         {
             var query = @"select
 	                        t.id,
@@ -158,15 +159,15 @@ namespace SME.SGP.Dados.Repositorios
 	                        u.dre_id = d.id
                         where
 	                        t.id = @turmaId";
-            return contexto.Query<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 return turma;
-            }, new { turmaId }, splitOn: "TurmaId, UeId, DreId").FirstOrDefault();
+            }, new { turmaId }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
         }
 
-        public IEnumerable<Turma> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
+        public async Task<IEnumerable<Turma>> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
         {
             List<Turma> resultado = new List<Turma>();
 
@@ -174,7 +175,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var iteracao = entidades.Skip(i).Take(900);
 
-                var armazenados = contexto.Conexao.Query<Turma>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoTurma}'")))).ToList();
+                var armazenados = (await contexto.Conexao.QueryAsync<Turma>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoTurma}'"))))).ToList();
 
                 var idsArmazenados = armazenados.Select(y => y.CodigoTurma);
                 var novos = iteracao.Where(x => !idsArmazenados.Contains(x.CodigoTurma)).ToList();
@@ -216,7 +217,7 @@ namespace SME.SGP.Dados.Repositorios
 
                 foreach (var item in modificados)
                 {
-                    contexto.Conexao.Execute(Update, new
+                    await contexto.Conexao.ExecuteAsync(Update, new
                     {
                         nome = item.Nome,
                         ano = item.Ano,

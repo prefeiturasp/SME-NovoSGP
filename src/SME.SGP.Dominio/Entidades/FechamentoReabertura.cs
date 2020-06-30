@@ -41,6 +41,11 @@ namespace SME.SGP.Dominio
             }
         }
 
+        public void AdicionarBimestres(IEnumerable<FechamentoReaberturaBimestre> listaBimestres)
+        {
+            bimestres.AddRange(listaBimestres);
+        }
+
         public void AprovarWorkFlow()
         {
             if (Status == EntidadeStatus.AguardandoAprovacao)
@@ -111,7 +116,8 @@ namespace SME.SGP.Dominio
 
         public object ObterBimestresNumeral()
         {
-            return string.Join(",", bimestres.Select(a => $"{a.Bimestre.ToString()}º").ToArray());
+            var bimestresOrdenados = bimestres.OrderBy(a => a);
+            return string.Join(",", bimestresOrdenados.Select(a => $"{a.Bimestre.ToString()}º").ToArray());
         }
 
         public bool[] ObterBimestresSelecionados()

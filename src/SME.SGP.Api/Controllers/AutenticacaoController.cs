@@ -105,8 +105,11 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> RecuperarSenha([FromForm]RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
-            await comandosUsuario.AlterarSenhaComTokenRecuperacao(recuperacaoSenhaDto);
-            return Ok();
+           var retorno = await comandosUsuario.AlterarSenhaComTokenRecuperacao(recuperacaoSenhaDto);
+            if (!retorno.Autenticado)
+                return StatusCode(401);
+
+            return Ok(retorno);
         }
 
         [HttpPut("{codigoRf}/reiniciar-senha")]
@@ -114,14 +117,13 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(UsuarioReinicioSenhaDto), 601)]
         [AllowAnonymous]
-        public async Task<IActionResult> ReiniciarSenha(string codigoRf)
+        public async Task<IActionResult> ReiniciarSenha([FromServices] IReiniciarSenhaUseCase reiniciarSenhaUseCase, string codigoRf)
         {
-            if (string.IsNullOrEmpty(codigoRf))
-                throw new NegocioException("Informe o Código Rf.");
+            var retorno = await reiniciarSenhaUseCase.ReiniciarSenha(codigoRf);
 
-            var retorno = await comandosUsuario.ReiniciarSenha(codigoRf);
             if (retorno.DeveAtualizarEmail)
                 return StatusCode(601, retorno);
+
             else return Ok(retorno);
         }
 

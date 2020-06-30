@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -27,10 +28,10 @@ namespace SME.SGP.Aplicacao
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }
 
-        public List<DateTime> BuscarDiasLetivos(long tipoCalendarioId)
+        public async Task<List<DateTime>> BuscarDiasLetivos(long tipoCalendarioId)
         {
             List<DateTime> dias = new List<DateTime>();
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
             periodoEscolar
                 .ToList()
                 .ForEach(x => dias
@@ -45,13 +46,13 @@ namespace SME.SGP.Aplicacao
             return dias;
         }
 
-        public DiasLetivosDto CalcularDiasLetivos(FiltroDiasLetivosDTO filtro)
+        public async Task<DiasLetivosDto> CalcularDiasLetivos(FiltroDiasLetivosDTO filtro)
         {
             //se for letivo em um fds que esteja no calendário somar
             bool estaAbaixo = false;
 
             //buscar os dados
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId);
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId);
             var diasLetivosCalendario = BuscarDiasLetivos(periodoEscolar);
             var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, false, false);
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(filtro.TipoCalendarioId);

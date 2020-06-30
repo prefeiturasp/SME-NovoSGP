@@ -28,14 +28,10 @@ namespace SME.SGP.Aplicacao
         {
             var correlacao = new RelatorioCorrelacao(request.TipoRelatorio, request.IdUsuarioLogado);
             repositorioCorrelacaoRelatorio.Salvar(correlacao);
-            servicoFila.AdicionaFilaWorkerRelatorios(new AdicionaFilaDto(RotasRabbit.RotaRelatoriosSolicitados, request.Filtros, request.TipoRelatorio.Name(), correlacao.Codigo));
 
+            servicoFila.PublicaFilaWorkerServidorRelatorios(new PublicaFilaRelatoriosDto(RotasRabbit.RotaRelatoriosSolicitados, request.Filtros, request.TipoRelatorio.Name(), correlacao.Codigo));
 
-            using (SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN")))
-            {
-                SentrySdk.CaptureMessage("2 - GerarRelatorioCommandHandler");
-            }
-
+            SentrySdk.CaptureMessage("2 - GerarRelatorioCommandHandler");
 
             return Task.FromResult(true);
         }

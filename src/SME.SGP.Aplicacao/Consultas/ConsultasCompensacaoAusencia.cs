@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
             compensacao.Alunos = await consultasCompensacaoAusenciaAluno.ObterPorCompensacao(compensacao.Id);
 
             // Busca os nomes de alunos do EOL por turma
-            var turma = repositorioTurma.ObterPorId(compensacao.TurmaId);
+            var turma = await repositorioTurma.ObterPorId(compensacao.TurmaId);
             compensacaoDto.TurmaId = turma.CodigoTurma;
 
             var alunos = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
@@ -209,9 +209,9 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasParaCopia(string turmaOrigemId)
         {
             var professorRf = servicoUsuario.ObterRf();
-            var turmaOrigem = repositorioTurma.ObterPorCodigo(turmaOrigemId);
+            var turmaOrigem = await repositorioTurma.ObterPorCodigo(turmaOrigemId);
 
-            var ue = await consultasUe.ObterPorId(turmaOrigem.UeId);
+            var ue = consultasUe.ObterPorId(turmaOrigem.UeId);
             var turmas = servicoEOL.ObterListaTurmasPorProfessor(professorRf);
 
             return turmas.Where(t => t.CodTurma.ToString() != turmaOrigem.CodigoTurma
