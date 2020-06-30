@@ -281,9 +281,7 @@ namespace SME.SGP.Aplicacao
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
 
             if (usuario == null)
-            {
-                throw new NegocioException("Usuário não encontrado.");
-            }
+                usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, login, usuarioCore.Nome, usuarioCore.Email);
 
             if (usuario.Perfis == null || !usuario.Perfis.Any())
             {
