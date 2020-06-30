@@ -1,5 +1,5 @@
 import LoginService from '~/servicos/Paginas/LoginServices';
-import { salvarDadosLogin, meusDados } from '~/redux/modulos/usuario/actions';
+import { salvarDadosLogin } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
 import { URL_HOME, URL_REDEFINIRSENHA } from '~/constantes/url';
 import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
@@ -37,7 +37,12 @@ class LoginHelper {
     );
 
     if (autenticacao.dados.modificarSenha) {
-      history.push(URL_REDEFINIRSENHA);
+      history.push({
+        pathname: URL_REDEFINIRSENHA,
+        state: {
+          rf,
+        },
+      });
       return { sucesso: false, erroGeral: '' };
     }
     obterMeusDados();
