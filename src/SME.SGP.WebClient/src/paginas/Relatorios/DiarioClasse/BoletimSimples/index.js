@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import shortid from 'shortid';
 import { Loader, Card, ButtonGroup, ListaPaginada } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 
@@ -51,7 +52,7 @@ const BoletimSimples = () => {
   const [resetForm, setResetForm] = useState(false);
 
   const onClickCancelar = () => {
-    setResetForm(true);
+    setResetForm(shortid.generate());
   };
 
   const onClickBotaoPrincipal = async () => {
@@ -86,7 +87,7 @@ const BoletimSimples = () => {
           <ButtonGroup
             somenteConsulta={somenteConsulta}
             permissoesTela={{
-              podeAlterar: false,
+              podeAlterar: true,
               podeConsultar: true,
               podeExcluir: false,
               podeIncluir: true,
@@ -98,6 +99,7 @@ const BoletimSimples = () => {
             desabilitarBotaoPrincipal={false}
             botoesEstadoVariavel={false}
             labelBotaoPrincipal="Gerar"
+            modoEdicao
           />
           <Filtro onFiltrar={onChangeFiltro} resetForm={resetForm} />
           {filtro && filtro.turmaCodigo > 0 && selecionarAlunos ? (
