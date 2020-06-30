@@ -467,7 +467,7 @@ const CalendarioEscolar = () => {
                     eventoSme
                       ? 'Exibindo eventos da SME'
                       : 'Não exibindo eventos da SME'
-                  }`}
+                    }`}
                 >
                   <Switch
                     onChange={aoTrocarEventoSme}
@@ -490,7 +490,7 @@ const CalendarioEscolar = () => {
                   valueText="desc"
                   valueSelect={dreSelecionada}
                   placeholder="Diretoria Regional de Educação (DRE)"
-                  disabled={!tipoCalendarioSelecionado}
+                  disabled={!tipoCalendarioSelecionado || dres.length < 2}
                 />
               </Loader>
             </Grid>
@@ -504,7 +504,7 @@ const CalendarioEscolar = () => {
                   valueText="desc"
                   valueSelect={unidadeEscolarSelecionada}
                   placeholder="Unidade Escolar (UE)"
-                  disabled={!dreSelecionada}
+                  disabled={!dreSelecionada || unidadesEscolares.length < 2}
                 />
               </Loader>
             </Grid>
