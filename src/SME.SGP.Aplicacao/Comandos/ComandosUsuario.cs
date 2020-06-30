@@ -279,6 +279,7 @@ namespace SME.SGP.Aplicacao
         public async Task<string> SolicitarRecuperacaoSenha(string login)
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
+            var usuarioCore = await servicoEOL.ObterMeusDados(login);
 
             if (usuario == null)
                 usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, login, usuarioCore.Nome, usuarioCore.Email);
@@ -288,8 +289,7 @@ namespace SME.SGP.Aplicacao
                 await servicoEOL.RelecionarUsuarioPerfis(login);
             }
 
-            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));
-            var usuarioCore = await servicoEOL.ObterMeusDados(login);
+            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));            
             usuario.DefinirEmail(usuarioCore.Email);
             usuario.IniciarRecuperacaoDeSenha();
             repositorioUsuario.Salvar(usuario);
