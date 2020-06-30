@@ -55,11 +55,11 @@ function ButtonGroup({
           className="btnGroupItem"
           onClick={() => onClickCancelar(form)}
           disabled={
-            !botoesEstadoVariavel &&
-            (somenteConsulta ||
-              !modoEdicao ||
-              !permissoesTela.podeIncluir ||
-              !permissoesTela.podeAlterar)
+            botoesEstadoVariavel ||
+            somenteConsulta ||
+            !modoEdicao ||
+            !permissoesTela.podeIncluir ||
+            !permissoesTela.podeAlterar
           }
         />
       )}
