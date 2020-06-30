@@ -73,7 +73,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (modalidade == ModalidadeTipoCalendario.EJA)
             {
-                query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and @dataReferenica BETWEEN p.periodo_inicio and p.periodo_fim)");
+                query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and @dataReferencia BETWEEN p.periodo_inicio and p.periodo_fim)");
             }
 
             return database.Conexao.Query<TipoCalendario>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
