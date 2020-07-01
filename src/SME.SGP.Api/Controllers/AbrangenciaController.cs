@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -153,5 +154,16 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(ues);
         }
+
+        [HttpGet("adm")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> UsuarioAdm([FromServices] IUsuarioPossuiAbrangenciaAdmUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
+        }
+
     }
 }
