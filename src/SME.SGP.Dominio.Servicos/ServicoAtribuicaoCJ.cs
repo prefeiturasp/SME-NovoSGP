@@ -74,7 +74,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (abrangenciasAtuais != null && !abrangenciasAtuais.Any())
                 {
-                    var turma = repositorioTurma.ObterPorCodigo(atribuicaoCJ.TurmaId);
+                    var turma = await repositorioTurma.ObterPorCodigo(atribuicaoCJ.TurmaId);
                     if (turma == null)
                         throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
 

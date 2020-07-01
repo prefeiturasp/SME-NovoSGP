@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
         {
             var relatorioSemestral = relatorioSemestralId > 0 ?
                 await consultasRelatorioSemestral.ObterPorIdAsync(relatorioSemestralId) :
-                await NovoRelatorioSemestral(turma, semestre);
+                NovoRelatorioSemestral(turma, semestre);
 
             var novoRelatorioAluno = new RelatorioSemestralPAPAluno()
             {
@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
             return novoRelatorioAluno;
         }
 
-        private async Task<RelatorioSemestralTurmaPAP> NovoRelatorioSemestral(Turma turma, int semestre)
+        private RelatorioSemestralTurmaPAP NovoRelatorioSemestral(Turma turma, int semestre)
         {
             return new RelatorioSemestralTurmaPAP()
             {

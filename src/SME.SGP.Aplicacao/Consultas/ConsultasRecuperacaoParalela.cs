@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
 
             var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
 
-            var periodoEscolarAtual = consultasPeriodoEscolar.ObterPeriodoEscolarEmAberto(Modalidade.Fundamental, DateTime.Now.Year);
+            var periodoEscolarAtual = await consultasPeriodoEscolar.ObterPeriodoEscolarEmAberto(Modalidade.Fundamental, DateTime.Now.Year);
 
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao, periodoEscolarAtual);
         }

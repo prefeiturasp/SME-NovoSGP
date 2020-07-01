@@ -19,11 +19,11 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<int> Handle(ObterBimestreAtualQuery request, CancellationToken cancellationToken)
         {
-            var turma = repositorioTurma.ObterPorCodigo(request.CodigoTurma);
+            var turma = request.Turma ?? await repositorioTurma.ObterPorCodigo(request.TurmaCodigo);
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
-            return await repositorioPeriodoEscolar.ObterBimestreAtualAsync(request.CodigoTurma, turma.ModalidadeTipoCalendario, request.DataReferencia);
+            return await repositorioPeriodoEscolar.ObterBimestreAtualAsync(request.TurmaCodigo, turma.ModalidadeTipoCalendario, request.DataReferencia);
         }
     }
 }

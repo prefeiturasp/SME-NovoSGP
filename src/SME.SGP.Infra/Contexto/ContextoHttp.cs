@@ -54,5 +54,10 @@ namespace SME.SGP.Infra.Contexto
         {
             throw new Exception("Este tipo de conexto não permite atribuição");
         }
+
+        public override void AdicionarVariaveis(IDictionary<string, object> variaveis)
+        {
+            this.Variaveis = variaveis;
+        }
     }
 }

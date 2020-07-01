@@ -40,6 +40,7 @@
     <ProjectReference Include="..\Bibliotecas\SME.Background.Hangfire\SME.Background.Hangfire.csproj" />
     <ProjectReference Include="..\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
     <ProjectReference Include="..\SME.SGP.Dados\SME.SGP.Dados.csproj" />
+    <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
     <ProjectReference Include="..\SME.SGP.IoC\SME.SGP.IoC.csproj" />
   </ItemGroup>

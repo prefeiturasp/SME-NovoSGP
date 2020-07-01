@@ -49,6 +49,10 @@ namespace SME.SGP.Dominio
 
             await AlterarEmail(usuario, novoEmail);
         }
+        public async Task<Usuario> ObterPorIdAsync(long id)
+        {
+            return await repositorioUsuario.ObterPorIdAsync(id);
+        }
 
         public async Task AlterarEmailUsuarioPorRfOuInclui(string codigoRf, string novoEmail)
         {

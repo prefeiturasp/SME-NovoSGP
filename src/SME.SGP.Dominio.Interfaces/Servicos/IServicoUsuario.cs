@@ -43,5 +43,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool UsuarioLogadoPossuiPerfilSme();
         Task<string[]> ObterComponentesCurricularesQuePodeVisualizarHoje(string turmaCodigo, Usuario usuarioLogado);
+        Task<Usuario> ObterPorIdAsync(long id);
     }
 }

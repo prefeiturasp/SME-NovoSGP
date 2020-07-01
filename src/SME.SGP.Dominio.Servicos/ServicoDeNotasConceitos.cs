@@ -99,7 +99,7 @@ namespace SME.SGP.Dominio
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
         {
-            turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId);
+            turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException($"Turma com código [{turmaId}] não localizada");
 
@@ -156,13 +156,13 @@ namespace SME.SGP.Dominio
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                var valoresConceito = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
+                var valoresConceito = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
                 var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, dataAtual.Year != atividadeAvaliativa.DataAvaliacao.Year);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
-                var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
                 var quantidadeAlunos = notasPorAvaliacao.Count();
                 var quantidadeAlunosSuficientes = 0;
-                var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(atividadeAvaliativa.TurmaId);
+                var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(atividadeAvaliativa.TurmaId);
 
                 var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
                 var periodoAtividade = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
@@ -228,7 +228,7 @@ namespace SME.SGP.Dominio
             if (aula == null)
                 throw new NegocioException($"Não encontrada aula para a atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' no dia {atividadeAvaliativa.DataAvaliacao.Date.ToString("dd/MM/yyyy")}");
 
-            IEnumerable<PeriodoEscolar> periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
+            IEnumerable<PeriodoEscolar> periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
             return periodosEscolares;
         }
 
@@ -289,7 +289,7 @@ namespace SME.SGP.Dominio
             var nota = notasConceitos.FirstOrDefault();
 
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, atividadeAvaliativa.DataAvaliacao.Year != DateTime.Now.Year);
-            var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+            var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
             var dataAtual = DateTime.Now;
 
             // Verifica Bimestre Atual
@@ -324,7 +324,7 @@ namespace SME.SGP.Dominio
                 }
                 else
                 {
-                    var conceitos = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
+                    var conceitos = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
 
                     if (conceitos == null)
                         throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");

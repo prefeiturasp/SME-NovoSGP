@@ -68,7 +68,9 @@ class FiltroHelper {
 
         return periodos;
       })
-      .catch(() => periodos);
+      .catch(() => {
+        return periodos;
+      });
   };
 
   obterDres = async ({

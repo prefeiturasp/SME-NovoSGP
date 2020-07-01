@@ -1,10 +1,12 @@
 ﻿using Hangfire;
 using Hangfire.PostgreSql;
+using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SME.Background.Core.Interfaces;
 using SME.Background.Hangfire.Logging;
+using SME.SGP.Aplicacao.Pipelines;
 using System;
 using System.IO;
 
@@ -59,12 +61,22 @@ namespace SME.Background.Hangfire
             var pollInterval = configuration.GetValue<int>("BackgroundWorkerQueuePollInterval", 5);
             Console.WriteLine($"SGP Worker Service - BackgroundWorkerQueuePollInterval parameter = {pollInterval}");
 
+
+            //TODO VERIFICAR AddTransient
+            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
+            serviceCollection.AddMediatR(assembly);
+            serviceCollection.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var mediator = (IMediator)serviceProvider.GetService(typeof(IMediator));
+
+
             GlobalConfiguration.Configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseLogProvider<SentryLogProvider>(new SentryLogProvider())
                 .UseRecommendedSerializerSettings()
-                .UseActivator<HangfireActivator>(new HangfireActivator(serviceCollection.BuildServiceProvider()))
+                .UseActivator(new HangfireActivator(serviceCollection.BuildServiceProvider(), mediator))
                 .UseFilter<AutomaticRetryAttribute>(new AutomaticRetryAttribute() { Attempts = 0 })
                 .UsePostgreSqlStorage(connectionString, new PostgreSqlStorageOptions()
                 {

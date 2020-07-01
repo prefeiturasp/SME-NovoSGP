@@ -30,6 +30,7 @@ import modalidade from '~/dtos/modalidade';
 import ExcluirAula from './excluirAula';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import RotasDto from '~/dtos/rotasDto';
+import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 
 function CadastroDeAula({ match, location }) {
   const { id, tipoCalendarioId } = match.params;
@@ -59,6 +60,9 @@ function CadastroDeAula({ match, location }) {
   const [carregandoDados, setCarregandoDados] = useState(false);
   const [controlaGrade, setControlaGrade] = useState(true);
   const [gradeAtingida, setGradeAtingida] = useState(false);
+  const [registroMigrado, setRegistroMigrado] = useState(false);
+  const [emManutencao, setEmManutencao] = useState(false);
+  const [desabilitarBtnSalvar, setDesabilitarBtnSalvar] = useState(false);
 
   const { diaAula } = queryString.parse(location.search);
   const aulaInicial = {
@@ -80,6 +84,7 @@ function CadastroDeAula({ match, location }) {
 
   const [quantidadeBloqueada, setQuantidadeBloqueada] = useState(false);
   const [listaComponentes, setListaComponentes] = useState([]);
+  const [recorrenciaAulaOriginal, setRecorrenciaAulaOriginal] = useState();
 
   const opcoesTipoAula = [
     { label: 'Normal', value: 1 },
@@ -97,10 +102,12 @@ function CadastroDeAula({ match, location }) {
     {
       label: 'Repetir no Bimestre atual',
       value: recorrencia.REPETIR_BIMESTRE_ATUAL,
+      disabled: id && (recorrenciaAulaOriginal === 3 || recorrenciaAulaOriginal === 1),
     },
     {
       label: 'Repetir em todos os Bimestres',
       value: recorrencia.REPETIR_TODOS_BIMESTRES,
+      disabled: id && (recorrenciaAulaOriginal === 2 || recorrenciaAulaOriginal === 1),
     },
   ];
 
@@ -152,7 +159,10 @@ function CadastroDeAula({ match, location }) {
         .then(resposta => {
           const respostaAula = resposta.data;
           respostaAula.dataAula = window.moment(respostaAula.dataAula);
+          setRecorrenciaAulaOriginal(respostaAula.recorrenciaAula);
           setAula(respostaAula);
+          setRegistroMigrado(respostaAula.migrado);
+          setEmManutencao(respostaAula.emManutencao);
           servicoCadastroAula
             .obterRecorrenciaPorIdAula(id)
             .then(resposta => {
@@ -170,14 +180,6 @@ function CadastroDeAula({ match, location }) {
               respostaAula.tipoAula == 1,
               respostaAula.quantidade
             );
-            if (ehRegenciaEja(componenteSelecionado)) {
-              setAula(aulaState => {
-                return {
-                  ...aulaState,
-                  quantidade: 5,
-                };
-              });
-            }
           }
         })
         .catch(e => {
@@ -201,19 +203,6 @@ function CadastroDeAula({ match, location }) {
     }
   }, [id, turmaSelecionada.turma]);
 
-  const defineGradeRegenteEja = quantidadeAulasRestantes => {
-    setAula(aulaState => {
-      return {
-        ...aulaState,
-        quantidade: 5,
-      };
-    });
-    if (!id) {
-      setQuantidadeBloqueada(true);
-      setGradeAtingida(quantidadeAulasRestantes == 0);
-    }
-  };
-
   const defineGradeRegistroNovoComValidacoes = quantidadeAulasRestante => {
     setValidacoes(validacoesState => {
       return {
@@ -228,6 +217,7 @@ function CadastroDeAula({ match, location }) {
           ),
       };
     });
+
     if (quantidadeAulasRestante == 0) {
       setQuantidadeBloqueada(true);
       setGradeAtingida(true);
@@ -267,41 +257,30 @@ function CadastroDeAula({ match, location }) {
   };
 
   const defineGrade = useCallback(
-    (
-      dadosGrade,
-      componenteSelecionado,
-      tipoAula,
-      aplicarGrade,
-      quantidadeAula
-    ) => {
+    (dadosGrade, tipoAula, aplicarGrade, quantidadeAula) => {
       refForm.current.handleReset();
-      const quantidade = dadosGrade.quantidadeAulasRestante;
+      const { quantidadeAulasRestante, podeEditar } = dadosGrade;
+      setGradeAtingida(quantidadeAulasRestante == 0);
       if (tipoAula == 1) {
-        if (ehRegenciaEja(componenteSelecionado)) {
-          defineGradeRegenteEja(quantidade);
-        } else if (aplicarGrade) {
+        if (aplicarGrade) {
           if (!id) {
-            if (quantidade === 1) {
-              //defineGrade limite 1 aula
+            setQuantidadeBloqueada(!podeEditar);
+            if (quantidadeAulasRestante === 1 || !podeEditar) {
+              // defineGrade limite 1 aula
               setQuantidadeBloqueada(true);
               setAula(aulaState => {
                 return {
                   ...aulaState,
-                  quantidade,
+                  quantidade: quantidadeAulasRestante,
                 };
               });
-            } else if (ehRegenciaEja(componenteSelecionado)) {
-              defineGradeRegenteEja();
-            } else {
-              //define grade registro novo com validações
-              defineGradeRegistroNovoComValidacoes(
-                dadosGrade.quantidadeAulasRestante
-              );
             }
+            // define grade registro novo com validações
+            defineGradeRegistroNovoComValidacoes(quantidadeAulasRestante);
           } else {
-            //define grade para edição
+            // define grade para edição
             defineGradeEdicaoComValidacoes(
-              dadosGrade.quantidadeAulasRestante + quantidadeAula
+              quantidadeAulasRestante + quantidadeAula
             );
           }
         } else {
@@ -309,7 +288,7 @@ function CadastroDeAula({ match, location }) {
         }
       } else removeGrade();
     },
-    [aula.quantidade, controlaGrade, ehRegenciaEja]
+    [id]
   );
 
   const carregarGrade = useCallback(
@@ -327,44 +306,73 @@ function CadastroDeAula({ match, location }) {
             turmaSelecionada.turma,
             componenteSelecionado.codigoComponenteCurricular,
             dataAula,
+            id || 0,
             componenteSelecionado.regencia
           )
           .then(respostaGrade => {
+            setDesabilitarBtnSalvar(false);
             if (respostaGrade.status === 200) {
-              defineGrade(
-                respostaGrade.data,
-                componenteSelecionado,
-                tipoAula,
-                aplicarGrade,
-                quantidadeAula
-              );
+              const { grade } = respostaGrade.data;
+              if (grade) {
+                defineGrade(grade, tipoAula, aplicarGrade, quantidadeAula);
+              } else {
+                removeGrade();
+              }
             } else {
               removeGrade();
             }
           })
           .catch(e => {
-            erros(e);
+            setDesabilitarBtnSalvar(true);
+            if (
+              e &&
+              e.response &&
+              e.response.data &&
+              e.response.data.mensagens
+            ) {
+              erros(e);
+            }
           })
           .finally(() => setCarregandoDados(false));
       }
     },
-    [turmaSelecionada.turma, turmaSelecionada.modalidade, defineGrade]
+    [turmaSelecionada.turma, defineGrade, id]
   );
 
-  const salvar = valoresForm => {
-    const componente = obterComponenteSelecionadoPorId(
-      valoresForm.disciplinaId
+  const validaPerguntaAntesSalvar = async () => {
+    const quantidade = recorrenciaAulaEmEdicao.quantidadeAulasRecorrentes;
+    return confirmar(
+      'Atenção',
+      '',
+      `Você tem certeza que deseja alterar ${quantidade} ocorrências desta aula a partir desta data?`
     );
-    if (componente) valoresForm.disciplinaNome = componente.nome;
-    setCarregandoDados(true);
-    servicoCadastroAula
-      .salvar(id, valoresForm)
-      .then(resposta => {
-        sucesso(resposta.data.mensagens[0]);
-        navegarParaCalendarioProfessor();
-      })
-      .catch(e => erros(e))
-      .finally(() => setCarregandoDados(false));
+  };
+
+  const salvar = async valoresForm => {
+    let salvarRegistro = true;
+    if (
+      id &&
+      aula.tipoAula === 1 &&
+      (aula.recorrenciaAula === 2 || aula.recorrenciaAula === 3)
+    ) {
+      salvarRegistro = await validaPerguntaAntesSalvar();
+    }
+
+    if (salvarRegistro) {
+      const componente = obterComponenteSelecionadoPorId(
+        valoresForm.disciplinaId
+      );
+      if (componente) valoresForm.disciplinaNome = componente.nome;
+      setCarregandoDados(true);
+      servicoCadastroAula
+        .salvar(id, valoresForm, valoresForm.regencia || false)
+        .then(resposta => {
+          resposta.data.mensagens.forEach(mensagem => sucesso(mensagem));
+          navegarParaCalendarioProfessor();
+        })
+        .catch(e => erros(e))
+        .finally(() => setCarregandoDados(false));
+    }
   };
 
   const obterDataFormatada = () => {
@@ -594,7 +602,26 @@ function CadastroDeAula({ match, location }) {
             />
           )}
         </div>
-        <Cabecalho pagina={`Cadastro de Aula - ${obterDataFormatada()}`} />
+        <Cabecalho pagina={`Cadastro de Aula - ${obterDataFormatada()}`}>
+          {registroMigrado && (
+            <div className="col-md-2 float-right">
+              <RegistroMigrado>Registro Migrado</RegistroMigrado>
+            </div>
+          )}
+        </Cabecalho>
+        <div className="col-md-12">
+          {emManutencao && (
+            <Alert
+              alerta={{
+                tipo: 'warning',
+                id: 'em-manutencao',
+                mensagem: 'Registro em manutenção',
+                estiloTitulo: { fontSize: '18px' },
+              }}
+              className="mb-2"
+            />
+          )}
+        </div>
         <Card>
           <div className="col-xs-12 col-md-12 col-lg-12">
             <Formik
@@ -661,7 +688,9 @@ function CadastroDeAula({ match, location }) {
                           somenteConsulta ||
                           (controlaGrade && gradeAtingida && !id) ||
                           !aula.disciplinaId ||
-                          somenteLeitura
+                          somenteLeitura ||
+                          desabilitarBtnSalvar ||
+                          !modoEdicao
                         }
                       />
                     </div>
@@ -713,7 +742,7 @@ function CadastroDeAula({ match, location }) {
                         name="recorrenciaAula"
                         form={form}
                         onChange={onChangeRecorrencia}
-                        desabilitado={!!id || aula.tipoAula === 2}
+                        desabilitado={aula.tipoAula === 2}
                       />
                     </div>
                   </div>

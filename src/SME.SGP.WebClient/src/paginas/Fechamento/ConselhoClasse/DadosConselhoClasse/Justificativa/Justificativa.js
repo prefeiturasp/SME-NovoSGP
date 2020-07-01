@@ -6,7 +6,10 @@ import * as Yup from 'yup';
 import { Auditoria, Colors } from '~/componentes';
 import Button from '~/componentes/button';
 import Editor from '~/componentes/editor/editor';
-import { setNotaConceitoPosConselhoAtual } from '~/redux/modulos/conselhoClasse/actions';
+import {
+  setNotaConceitoPosConselhoAtual,
+  setSalvouJustificativa,
+} from '~/redux/modulos/conselhoClasse/actions';
 import servicoSalvarConselhoClasse from '../../servicoSalvarConselhoClasse';
 
 const Justificativa = props => {
@@ -51,6 +54,7 @@ const Justificativa = props => {
 
   const salvarJustificativa = () => {
     servicoSalvarConselhoClasse.salvarNotaPosConselho(true);
+    dispatch(setSalvouJustificativa(true));
   };
 
   const clicouBotaoSalvar = form => {
@@ -116,20 +120,20 @@ const Justificativa = props => {
                     />
                     <div className="d-flex justify-content-end pt-2">
                       {notaConceitoPosConselhoAtual &&
-                        notaConceitoPosConselhoAtual.id &&
-                        auditoria ? (
-                          <Auditoria
-                            criadoEm={auditoria.criadoEm}
-                            criadoPor={auditoria.criadoPor}
-                            criadoRf={auditoria.criadoRf}
-                            alteradoPor={auditoria.alteradoPor}
-                            alteradoEm={auditoria.alteradoEm}
-                            alteradoRf={auditoria.alteradoRf}
-                            ignorarMarginTop
-                          />
-                        ) : (
-                          ''
-                        )}
+                      notaConceitoPosConselhoAtual.id &&
+                      auditoria ? (
+                        <Auditoria
+                          criadoEm={auditoria.criadoEm}
+                          criadoPor={auditoria.criadoPor}
+                          criadoRf={auditoria.criadoRf}
+                          alteradoPor={auditoria.alteradoPor}
+                          alteradoEm={auditoria.alteradoEm}
+                          alteradoRf={auditoria.alteradoRf}
+                          ignorarMarginTop
+                        />
+                      ) : (
+                        ''
+                      )}
                       <Button
                         label="Salvar"
                         color={Colors.Roxo}
@@ -153,8 +157,8 @@ const Justificativa = props => {
           </div>
         </div>
       ) : (
-          ''
-        )}
+        ''
+      )}
     </>
   );
 };

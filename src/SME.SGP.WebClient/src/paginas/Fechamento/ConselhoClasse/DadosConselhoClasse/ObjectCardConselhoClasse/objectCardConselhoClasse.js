@@ -12,6 +12,10 @@ const ObjectCardConselhoClasse = props => {
     store => store.conselhoClasse.dadosAlunoObjectCard
   );
 
+  const salvouJustificativa = useSelector(
+    store => store.conselhoClasse.salvouJustificativa
+  );
+
   const conselhoClasseAlunoId = useSelector(
     store =>
       store.conselhoClasse.dadosPrincipaisConselhoClasse.conselhoClasseAlunoId
@@ -25,7 +29,9 @@ const ObjectCardConselhoClasse = props => {
       dadosAlunoObjectCard.codigoEOL
     )
       .then(() => {
-        sucesso('Gerando conselho de classe do aluno');
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
       })
       .finally(setGerandoConselhoClasse(false))
       .catch(e => erro(e));
@@ -35,7 +41,7 @@ const ObjectCardConselhoClasse = props => {
     <Loader loading={gerandoConselhoClasse}>
       <DetalhesAluno
         dados={dadosAlunoObjectCard}
-        desabilitarImprimir={!conselhoClasseAlunoId}
+        desabilitarImprimir={!salvouJustificativa && !conselhoClasseAlunoId}
         onClickImprimir={gerarConselhoClasseAluno}
       />
     </Loader>
