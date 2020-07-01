@@ -7,14 +7,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasUsuario : IConsultasUsuario
     {
-        private readonly IRepositorioUsuario repositorioUsuario;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasUsuario(IServicoEOL servicoEOL, IRepositorioUsuario repositorioUsuario, IServicoUsuario servicoUsuario)
+        public ConsultasUsuario(IServicoEol servicoEOL, IServicoUsuario servicoUsuario)
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
-            this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 

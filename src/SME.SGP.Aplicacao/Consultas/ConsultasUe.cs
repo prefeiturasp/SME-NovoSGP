@@ -33,10 +33,10 @@ namespace SME.SGP.Aplicacao
             else return null;
         }
 
-        public async Task<Ue> ObterPorId(long id)
+        public Ue ObterPorId(long id)
             => repositorioUe.ObterPorId(id);
 
-        public async Task<Ue> ObterPorCodigo(string codigoUe)
+        public Ue ObterPorCodigo(string codigoUe)
             => repositorioUe.ObterPorCodigo(codigoUe);
 
         public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmas(string ueCodigo, int modalidadeId, int ano)

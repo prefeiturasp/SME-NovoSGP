@@ -51,7 +51,7 @@ const AulaDadaAulaPrevista = () => {
       }
     };
     if (turmaId) {
-      obterDisciplinas(turmaId);
+      obterDisciplinas();
     } else {
       setDadosLista([]);
       setModoEdicao(false);

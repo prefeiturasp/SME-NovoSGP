@@ -25,9 +25,11 @@ const BreadcrumbBody = styled.div`
   }
 `;
 const BreadcrumbSgp = () => {
-  const NavegacaoStore = useSelector(store => store.navegacao);
+  const NavegacaoStore = useSelector(
+    storeNavegacao => storeNavegacao.navegacao
+  );
 
-  const UsuarioStrore = useSelector(store => store.usuario);
+  const UsuarioStrore = useSelector(storeUsuario => storeUsuario.usuario);
 
   const rotas = NavegacaoStore.rotas;
 
@@ -89,7 +91,7 @@ const BreadcrumbSgp = () => {
 
   const setItensBreadcrumb = item => {
     const newItens = [];
-    if ((!item.breadcrumbName || !item.breadcrumbName === '') && item.parent) {
+    if (!item.breadcrumbName && item.parent) {
       item = rotas.get(item.parent);
     }
     carregaBreadcrumbsExtra(item, newItens);

@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<GrupoComunicacaoCompletoDto> ObterPorIdAsync(long id)
         {
-            var grupo = await repositorioGrupoComunicacao.ObterPorIdAsync(id);
+            var grupo = await repositorioGrupoComunicacao.ObterCompletoPorIdAsync(id);
 
             if (grupo is null || !grupo.Any())
                 throw new NegocioException("Grupo de comunicação não encontrado");

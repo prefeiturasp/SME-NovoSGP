@@ -16,11 +16,11 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAbrangencia servicoAbrangencia;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ServicoAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAbrangencia servicoAbrangencia, IRepositorioTurma repositorioTurma,
-            IRepositorioAbrangencia repositorioAbrangencia, IServicoEOL servicoEOL, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario)
+            IRepositorioAbrangencia repositorioAbrangencia, IServicoEol servicoEOL, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
@@ -74,7 +74,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (abrangenciasAtuais != null && !abrangenciasAtuais.Any())
                 {
-                    var turma = repositorioTurma.ObterPorCodigo(atribuicaoCJ.TurmaId);
+                    var turma = await repositorioTurma.ObterPorCodigo(atribuicaoCJ.TurmaId);
                     if (turma == null)
                         throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
 
@@ -83,13 +83,10 @@ namespace SME.SGP.Dominio.Servicos
                     servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }
             }
-            else
+            else if ((abrangenciasAtuais != null && abrangenciasAtuais.Any()) &&
+                     (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir)))
             {
-                if (abrangenciasAtuais != null && abrangenciasAtuais.Any())
-                {
-                    if (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir == true))
-                        servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
-                }
+                servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
             }
         }
 

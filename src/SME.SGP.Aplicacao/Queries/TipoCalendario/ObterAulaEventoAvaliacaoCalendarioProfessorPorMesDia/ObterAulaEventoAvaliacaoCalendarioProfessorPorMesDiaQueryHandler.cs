@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                     var atividadesAvaliativasDaAula = (from avaliacao in request.Avaliacoes
                                                        from disciplina in avaliacao.Disciplinas
                                                        where avaliacao.EhCj == aulaParaVisualizar.AulaCJ &&
-                                                             ((!avaliacao.EhCj && disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId) || 
+                                                             ((!avaliacao.EhCj && disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId) ||
                                                                 avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf)
                                                        select avaliacao);
 
@@ -50,8 +50,11 @@ namespace SME.SGP.Aplicacao
                         }
                     }
 
-                    eventoAulaDto.MostrarBotaoFrequencia = componenteCurricular.RegistraFrequencia;
-                    eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
+                    if (componenteCurricular != null)
+                    {
+                        eventoAulaDto.MostrarBotaoFrequencia = componenteCurricular.RegistraFrequencia;
+                        eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
+                    }
 
                     retorno.Add(eventoAulaDto);
 
@@ -79,7 +82,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return retorno.AsEnumerable();
+            return await Task.FromResult(retorno.AsEnumerable());
         }
 
         private bool ObterPodeCadastrarAvaliacao(IEnumerable<AtividadeAvaliativa> atividadesAvaliativasDaAula, DisciplinaDto componenteCurricular)
