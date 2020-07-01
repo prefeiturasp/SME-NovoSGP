@@ -12,7 +12,7 @@ import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
-import ServicoConselhoAtaFinal from '~/servicos/Paginas/Relatorios/ConselhoAtaFinal/ServicoConselhoAtaFinal';
+import ServicoConselhoAtaFinal from '~/servicos/Paginas/ConselhoAtaFinal/ServicoConselhoAtaFinal';
 
 const AtaFinalResultados = () => {
   const anoAtual = window.moment().format('YYYY');
@@ -40,13 +40,13 @@ const AtaFinalResultados = () => {
   const [modalidadeId, setModalidadeId] = useState(undefined);
   const [semestre, setSemestre] = useState(undefined);
   const [turmaId, setTurmaId] = useState(undefined);
-  const [formato, setFormato] = useState('PDF');
+  const [formato, setFormato] = useState('1');
 
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
 
   const listaFormatos = [
-    { valor: 'PDF', desc: 'PDF' },
-    { valor: 'EXCEL', desc: 'EXCEL' },
+    { valor: '1', desc: 'PDF' },
+    { valor: '4', desc: 'EXCEL' },
   ];
 
   const obterAnosLetivos = useCallback(async () => {
@@ -160,6 +160,8 @@ const AtaFinalResultados = () => {
           desc: item.nome,
           valor: item.codigo,
         }));
+        // TODO Critério 2.1
+        lista.unshift({ desc: 'Todas', valor: '-99' });
         setListaTurmas(lista);
 
         if (lista && lista.length && lista.length === 1) {
@@ -264,10 +266,16 @@ const AtaFinalResultados = () => {
 
   const onClickGerar = async () => {
     if (permissoesTela.podeConsultar) {
-      let url = 'v1/relatorios/conselhos-classe/atas-finais';
-      url = `${url}?anoLetivo=${anoLetivo}&dreId=${dreId}&ueId=${ueId}&modalidadeId=${modalidadeId}&semestre=${semestre}&turmaId=${turmaId}&formato=${formato}`;
-      const retorno = await api.get(url).catch(e => erros(e));
-      if (retorno && retorno === 200) {
+      const params = { turmasCodigos: [] };
+      if (turmaId === '-99') {
+        params.turmasCodigos = listaTurmas.map(item => String(item.valor));
+      } else {
+        params.turmasCodigos = [String(turmaId)];
+      }
+      const retorno = await ServicoConselhoAtaFinal.gerar(params).catch(e =>
+        erros(e)
+      );
+      if (retorno && retorno.status === 200) {
         sucesso(
           'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
         );
@@ -447,7 +455,7 @@ const AtaFinalResultados = () => {
                 valueText="desc"
                 valueSelect={formato}
                 onChange={onChangeFormato}
-                disabled={!permissoesTela.podeConsultar}
+                disabled
               />
             </div>
           </div>
