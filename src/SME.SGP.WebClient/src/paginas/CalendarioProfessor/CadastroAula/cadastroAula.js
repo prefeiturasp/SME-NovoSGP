@@ -102,12 +102,14 @@ function CadastroDeAula({ match, location }) {
     {
       label: 'Repetir no Bimestre atual',
       value: recorrencia.REPETIR_BIMESTRE_ATUAL,
-      disabled: id && (recorrenciaAulaOriginal === 3 || recorrenciaAulaOriginal === 1),
+      disabled:
+        id && (recorrenciaAulaOriginal === 3 || recorrenciaAulaOriginal === 1),
     },
     {
       label: 'Repetir em todos os Bimestres',
       value: recorrencia.REPETIR_TODOS_BIMESTRES,
-      disabled: id && (recorrenciaAulaOriginal === 2 || recorrenciaAulaOriginal === 1),
+      disabled:
+        id && (recorrenciaAulaOriginal === 2 || recorrenciaAulaOriginal === 1),
     },
   ];
 
@@ -165,8 +167,8 @@ function CadastroDeAula({ match, location }) {
           setEmManutencao(respostaAula.emManutencao);
           servicoCadastroAula
             .obterRecorrenciaPorIdAula(id)
-            .then(resposta => {
-              setRecorrenciaAulaEmEdicao(resposta.data);
+            .then(rep => {
+              setRecorrenciaAulaEmEdicao(rep.data);
             })
             .catch(e => erros(e));
           if (componentes) {
@@ -177,8 +179,7 @@ function CadastroDeAula({ match, location }) {
               componenteSelecionado,
               respostaAula.dataAula,
               respostaAula.tipoAula,
-              respostaAula.tipoAula == 1,
-              respostaAula.quantidade
+              respostaAula.tipoAula == 1
             );
           }
         })
@@ -197,8 +198,7 @@ function CadastroDeAula({ match, location }) {
         componentes[0],
         aulaInicial.dataAula,
         aulaInicial.tipoAula,
-        aulaInicial.tipoAula == 1,
-        aulaInicial.quantidade
+        aulaInicial.tipoAula == 1
       );
     }
   }, [id, turmaSelecionada.turma]);
@@ -257,7 +257,7 @@ function CadastroDeAula({ match, location }) {
   };
 
   const defineGrade = useCallback(
-    (dadosGrade, tipoAula, aplicarGrade, quantidadeAula) => {
+    (dadosGrade, tipoAula, aplicarGrade) => {
       refForm.current.handleReset();
       const { quantidadeAulasRestante, podeEditar } = dadosGrade;
       setGradeAtingida(quantidadeAulasRestante == 0);
@@ -290,13 +290,7 @@ function CadastroDeAula({ match, location }) {
   );
 
   const carregarGrade = useCallback(
-    (
-      componenteSelecionado,
-      dataAula,
-      tipoAula,
-      aplicarGrade,
-      quantidadeAula
-    ) => {
+    (componenteSelecionado, dataAula, tipoAula, aplicarGrade) => {
       if (componenteSelecionado && dataAula) {
         setCarregandoDados(true);
         servicoCadastroAula
@@ -305,14 +299,15 @@ function CadastroDeAula({ match, location }) {
             componenteSelecionado.codigoComponenteCurricular,
             dataAula,
             id || 0,
-            componenteSelecionado.regencia
+            componenteSelecionado.regencia,
+            tipoAula
           )
           .then(respostaGrade => {
             setDesabilitarBtnSalvar(false);
             if (respostaGrade.status === 200) {
               const { grade } = respostaGrade.data;
               if (grade) {
-                defineGrade(grade, tipoAula, aplicarGrade, quantidadeAula);
+                defineGrade(grade, tipoAula, aplicarGrade);
               } else {
                 removeGrade();
               }
@@ -403,8 +398,7 @@ function CadastroDeAula({ match, location }) {
       componenteSelecionado,
       aula.dataAula,
       aula.tipoAula,
-      aula.tipoAula == 1,
-      aula.quantidade
+      aula.tipoAula == 1
     );
   };
 
@@ -431,13 +425,7 @@ function CadastroDeAula({ match, location }) {
     const componenteSelecionado = obterComponenteSelecionadoPorId(
       aula.disciplinaId
     );
-    carregarGrade(
-      componenteSelecionado,
-      data,
-      aula.tipoAula,
-      controlaGrade,
-      aula.quantidade
-    );
+    carregarGrade(componenteSelecionado, data, aula.tipoAula, controlaGrade);
   };
 
   const onChangeTipoAula = e => {
@@ -452,13 +440,7 @@ function CadastroDeAula({ match, location }) {
       tipoRecorrencia = recorrencia.AULA_UNICA;
       setQuantidadeBloqueada(false);
     }
-    carregarGrade(
-      componente,
-      aula.dataAula,
-      e.target.value,
-      ehAulaNormal,
-      aula.quantidade
-    );
+    carregarGrade(componente, aula.dataAula, e.target.value, ehAulaNormal);
     setAula(aulaState => {
       return {
         ...aulaState,
