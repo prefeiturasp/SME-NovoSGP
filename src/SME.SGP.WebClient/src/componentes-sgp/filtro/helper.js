@@ -21,8 +21,9 @@ class FiltroHelper {
   obterModalidades = async ({ consideraHistorico, anoLetivoSelecionado }) => {
     const modalidadesLista = [];
 
-    if (!anoLetivoSelecionado || typeof anoLetivoSelecionado === 'undefined')
+    if (!anoLetivoSelecionado) {
       return null;
+    }
 
     return ServicoFiltro.listarModalidades({
       consideraHistorico,
@@ -67,7 +68,9 @@ class FiltroHelper {
 
         return periodos;
       })
-      .catch(() => periodos);
+      .catch(() => {
+        return periodos;
+      });
   };
 
   obterDres = async ({

@@ -86,7 +86,6 @@ CardHeader.defaultProps = {
   border: false,
   icon: false,
   show: false,
-  onClick: () => {},
   configuracao: {
     altura: 'auto',
     corBorda: Base.AzulBordaCard,

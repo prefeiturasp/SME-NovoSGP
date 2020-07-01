@@ -13,10 +13,10 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasSupervisor(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IServicoEOL servicoEOL,
+        public ConsultasSupervisor(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IServicoEol servicoEOL,
             IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario)
         {
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new System.ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
@@ -74,8 +74,8 @@ namespace SME.SGP.Aplicacao
         {
             var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisores(dreId, supervisoresId);
 
-            if (supervisoresEscolasDres == null || supervisoresEscolasDres.Count() == 0)
-                return null;
+            if (supervisoresEscolasDres == null || supervisoresEscolasDres.Any())
+                return Enumerable.Empty<SupervisorEscolasDto>();
             else return MapearSupervisorEscolaDre(supervisoresEscolasDres).ToList();
         }
 
@@ -129,7 +129,7 @@ namespace SME.SGP.Aplicacao
                     RemoverSupervisorSemAtribuicao(supervisoresEscolasDres, supervisores);
 
                     if (supervisores != null)
-                        supervisoresEscolasDres = supervisoresEscolasDres.ToList().Where(s => supervisores.Select(e => e.CodigoRF).Contains(s.SupervisorId));
+                        supervisoresEscolasDres = supervisoresEscolasDres.Where(s => supervisores.Select(e => e.CodigoRF).Contains(s.SupervisorId));
                     else
                         supervisoresEscolasDres = Enumerable.Empty<SupervisorEscolasDreDto>();
                 }

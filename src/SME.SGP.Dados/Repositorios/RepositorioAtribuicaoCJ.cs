@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Query<AtribuicaoCJ>(query, parametros);
         }
 
-        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long disciplinaId,
+        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long componenteCurricularId,
             string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaIds = null, int? anoLetivo = null)
         {
             var query = new StringBuilder();
@@ -48,8 +48,8 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(turmaId))
                 query.AppendLine("and a.turma_id = @turmaId");
 
-            if (disciplinaId > 0)
-                query.AppendLine("and a.disciplina_id = @disciplinaId");
+            if (componenteCurricularId > 0)
+                query.AppendLine("and a.disciplina_id = @componenteCurricularId");
 
             if (!string.IsNullOrEmpty(usuarioRf))
                 query.AppendLine("and a.professor_rf = @usuarioRf");
@@ -81,7 +81,7 @@ namespace SME.SGP.Dados.Repositorios
                 modalidade = modalidade.HasValue ? (int)modalidade : 0,
                 ueId,
                 turmaId,
-                disciplinaId,
+                componenteCurricularId,
                 usuarioRf,
                 usuarioNome,
                 substituir,

@@ -18,14 +18,14 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
         public ServicoFechamentoReabertura(IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IUnitOfWork unitOfWork,
-            IComandosWorkflowAprovacao comandosWorkflowAprovacao, IServicoUsuario servicoUsuario, IServicoEOL servicoEOL, IServicoNotificacao servicoNotificacao,
+            IComandosWorkflowAprovacao comandosWorkflowAprovacao, IServicoUsuario servicoUsuario, IServicoEol servicoEOL, IServicoNotificacao servicoNotificacao,
             IRepositorioEventoTipo repositorioEventoTipo, IServicoEvento servicoEvento, IRepositorioEvento repositorioEvento, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
         {
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
@@ -61,7 +61,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (fechamentoReabertura.Status == EntidadeStatus.AguardandoAprovacao)
             {
-                fechamentoReabertura.WorkflowAprovacaoId = PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
+                fechamentoReabertura.WorkflowAprovacaoId = await PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
                 mensagemRetorno = "Reabertura de Fechamento alterado e será válido após aprovação.";
             }
@@ -79,6 +79,21 @@ namespace SME.SGP.Dominio.Servicos
 
             try
             {
+                if (fechamentoReabertura.EhParaSme())
+                {
+                    var fechamentosSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, null, null, null);
+
+                    if (fechamentosSME.Any(f => f.EhParaDre() || f.EhParaUe()))
+                        return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}, existem fechamentos para DRE/UE relacionados a essa SME";
+                }
+                else if (fechamentoReabertura.EhParaDre())
+                {
+                    var fechamentosDre = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, fechamentoReabertura.DreId, null, null);
+
+                    if (fechamentosDre.Any(f => f.EhParaUe()))
+                        return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}, existem fechamentos para UE relacionados a essa DRE";
+                }
+
                 fechamentoReabertura.Excluir();
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
 
@@ -132,12 +147,25 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var fechamentoReaberturaBimestre in fechamentoReabertura.Bimestres)
             {
                 fechamentoReaberturaBimestre.FechamentoAberturaId = fechamentoReaberturaId;
+
+                if (fechamentoReaberturaBimestre.Id > 0)
+                {
+                    fechamentoReaberturaBimestre.AlteradoEm = DateTime.Now;
+                    fechamentoReaberturaBimestre.AlteradoPor = usuarioAtual.Nome;
+                    fechamentoReaberturaBimestre.AlteradoRF = usuarioAtual.CodigoRf;
+                }
+                else
+                {
+                    fechamentoReaberturaBimestre.CriadoPor = usuarioAtual.Nome;
+                    fechamentoReaberturaBimestre.CriadoRF = usuarioAtual.CodigoRf;
+                }
+
                 await repositorioFechamentoReabertura.SalvarBimestreAsync(fechamentoReaberturaBimestre);
             }
 
             if (fechamentoReabertura.Status == EntidadeStatus.AguardandoAprovacao)
             {
-                fechamentoReabertura.WorkflowAprovacaoId = PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
+                fechamentoReabertura.WorkflowAprovacaoId = await PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
                 mensagemRetorno = "Reabertura de Fechamento cadastrado e será válido após aprovação.";
             }
@@ -151,7 +179,7 @@ namespace SME.SGP.Dominio.Servicos
             return mensagemRetorno;
         }
 
-        private async Task AtualizaFechamentosComDatasDistintas(FechamentoReabertura fechamentoReabertura, List<(FechamentoReabertura, bool, bool)> fechamentosReaberturasParaAtualizar)
+        private async Task AtualizaFechamentosComDatasDistintas(List<(FechamentoReabertura, bool, bool)> fechamentosReaberturasParaAtualizar)
         {
             foreach (var fechamentoReaberturaParaAtualizar in fechamentosReaberturasParaAtualizar)
             {
@@ -191,7 +219,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (eventosParaExcluir != null && eventosParaExcluir.Any())
                 {
                     var eventoParaExcluir = eventosParaExcluir.FirstOrDefault();
-                    await servicoEvento.Excluir(eventoParaExcluir);
+                    servicoEvento.Excluir(eventoParaExcluir);
                 }
             }
         }
@@ -224,7 +252,7 @@ namespace SME.SGP.Dominio.Servicos
             if (fechamentoReabertura.EhParaDre())
             {
                 var adminsSgpDre = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Dre.CodigoDre).Result;
-                if (adminsSgpDre != null || adminsSgpDre.Any())
+                if (adminsSgpDre != null && adminsSgpDre.Any())
                 {
                     foreach (var adminSgpUe in adminsSgpDre)
                     {
@@ -325,10 +353,12 @@ namespace SME.SGP.Dominio.Servicos
                 Titulo = "Alteração em datas de fechamento de bimestre",
                 Tipo = NotificacaoTipo.Calendario,
                 UsuarioId = usuarioId,
-                Mensagem = $@"A {(fechamentoReabertura.EhParaDre() ? "SME" : "Dre")} realizou alterações em datas de reabertura do período de fechamento de bimestre e as datas definidas pela {(fechamentoReabertura.EhParaDre() ? fechamentoReabertura.Dre.Nome : fechamentoReabertura.Ue.Nome)} foram ajustadas. As novas datas são: <br />
-                                  { fechamentoReabertura.TipoCalendario.Nome } - { fechamentoReabertura.TipoCalendario.AnoLetivo }
+                Mensagem = $@"A {(fechamentoReabertura.EhParaDre() ? "SME" : "Dre")} realizou alterações em datas de reabertura do período de fechamento de bimestre para os bimestres
+                                 { fechamentoReabertura.ObterBimestresNumeral()} e as datas definidas pela {(fechamentoReabertura.EhParaDre() ? fechamentoReabertura.Dre.Nome
+                                : $@"{fechamentoReabertura.Ue.TipoEscola.ShortName()} {fechamentoReabertura.Ue.Nome}")} foram ajustadas. As novas datas são: <br/>
+                                  <b>{ fechamentoReabertura.TipoCalendario.Nome } - { fechamentoReabertura.TipoCalendario.AnoLetivo }</b>   
                                   { (fechamentoReaberturaParaAtualizar.Item2 ? " - Nova data de início do período: " + fechamentoReabertura.Inicio.ToString("dd/MM/yyyy") : string.Empty) }
-                                  { (fechamentoReaberturaParaAtualizar.Item2 ? " - Nova data de fim do período: " + fechamentoReabertura.Fim.ToString("dd/MM/yyyy") : string.Empty) }"
+                                  { (fechamentoReaberturaParaAtualizar.Item3 ? " - Nova data de fim do período: " + fechamentoReabertura.Fim.ToString("dd/MM/yyyy") : string.Empty) }"
             };
 
             servicoNotificacao.Salvar(notificacao);
@@ -344,7 +374,7 @@ namespace SME.SGP.Dominio.Servicos
             return tipoEvento;
         }
 
-        private long PersistirWorkflowFechamentoReabertura(FechamentoReabertura fechamentoReabertura)
+        private async Task<long> PersistirWorkflowFechamentoReabertura(FechamentoReabertura fechamentoReabertura)
         {
             var wfAprovacaoEvento = new WorkflowAprovacaoDto()
             {
@@ -356,10 +386,10 @@ namespace SME.SGP.Dominio.Servicos
                 DreId = fechamentoReabertura.Dre.CodigoDre,
                 NotificacaoTitulo = "Cadastro de período de reabertura de fechamento - ano anterior",
                 NotificacaoTipo = NotificacaoTipo.Calendario,
-                NotificacaoMensagem = $@"A {fechamentoReabertura.Ue.Nome} cadastrou um novo período de reabertura de fechamento de bimestre para o tipo de calendário {fechamentoReabertura.TipoCalendario.Nome} do ano de {fechamentoReabertura.TipoCalendario.AnoLetivo}. Para que o período seja considerado válido é necessário que você aceite esta notificação. <br />
-                                           Descrição: {fechamentoReabertura.Descricao} <br />
-                                           Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br />
-                                           Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br />
+                NotificacaoMensagem = $@"A {fechamentoReabertura.Ue.TipoEscola.ShortName()} {fechamentoReabertura.Ue.Nome}({fechamentoReabertura.Dre.Abreviacao}) cadastrou um novo período de reabertura de fechamento de bimestre para o tipo de calendário <b>{fechamentoReabertura.TipoCalendario.Nome}</b> do ano de {fechamentoReabertura.TipoCalendario.AnoLetivo}. Para que o período seja considerado válido é necessário que você aceite esta notificação. <br/>
+                                           Descrição: {fechamentoReabertura.Descricao} <br/>
+                                           Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
+                                           Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
                                            Bimestres: {fechamentoReabertura.ObterBimestresNumeral()}"
             };
 
@@ -369,7 +399,7 @@ namespace SME.SGP.Dominio.Servicos
                 Nivel = 1
             });
 
-            return comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
+            return await comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
         }
 
         private async Task VerificaEAtualizaFechamentosReaberturasParaAlterar(FechamentoReabertura fechamentoReabertura, IEnumerable<FechamentoReabertura> fechamentoReaberturas, bool confirmacacaoAlteracaoHierarquica)
@@ -416,7 +446,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     if (confirmacacaoAlteracaoHierarquica)
                     {
-                        await AtualizaFechamentosComDatasDistintas(fechamentoReabertura, fechamentosParaAtualizarTupple);
+                        await AtualizaFechamentosComDatasDistintas(fechamentosParaAtualizarTupple);
                     }
                     else
                     {

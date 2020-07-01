@@ -32,14 +32,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task Excluir(long aulaId)
         {
-            foreach(var notificacaoAula in await ObterPorAula(aulaId))
+            foreach(var notificacaoAula in await ObterPorAulaAsync(aulaId))
             {
                 repositorioNotificacao.Remover(notificacaoAula.NotificacaoId);
                 database.Conexao.Delete(notificacaoAula);
             }
         }
 
-        private async Task<IEnumerable<NotificacaoAula>> ObterPorAula(long aulaId)
+        public async Task<IEnumerable<NotificacaoAula>> ObterPorAulaAsync(long aulaId)
             => await database.Conexao.QueryAsync<NotificacaoAula>("select * from notificacao_aula where aula_id = @aulaId", new { aulaId });
     }
 }

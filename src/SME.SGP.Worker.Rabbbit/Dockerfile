@@ -1,0 +1,30 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-stretch-slim AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2-stretch AS build
+WORKDIR /src
+COPY ["src/SME.SGP.Worker.Rabbbit/SME.SGP.Worker.Rabbbit.csproj", "src/SME.SGP.Worker.Rabbbit/"]
+COPY ["src/SME.SGP.Infra/SME.SGP.Infra.csproj", "src/SME.SGP.Infra/"]
+COPY ["src/SME.SGP.Dominio/SME.SGP.Dominio.csproj", "src/SME.SGP.Dominio/"]
+COPY ["src/SME.SGP.IoC/SME.SGP.IoC.csproj", "src/SME.SGP.IoC/"]
+COPY ["src/SME.SGP.Dominio.Servicos/SME.SGP.Dominio.Servicos.csproj", "src/SME.SGP.Dominio.Servicos/"]
+COPY ["src/SME.SGP.Dados/SME.SGP.Dados.csproj", "src/SME.SGP.Dados/"]
+COPY ["src/SME.SGP.Dominio.Interfaces/SME.SGP.Dominio.Interfaces.csproj", "src/SME.SGP.Dominio.Interfaces/"]
+COPY ["src/SME.SGP.Aplicacao/SME.SGP.Aplicacao.csproj", "src/SME.SGP.Aplicacao/"]
+COPY ["src/Bibliotecas/SME.Background.Core/SME.Background.Core.csproj", "src/Bibliotecas/SME.Background.Core/"]
+RUN dotnet restore "src/SME.SGP.Worker.Rabbbit/SME.SGP.Worker.Rabbbit.csproj"
+COPY . .
+WORKDIR "/src/src/SME.SGP.Worker.Rabbbit"
+RUN dotnet build "SME.SGP.Worker.Rabbbit.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "SME.SGP.Worker.Rabbbit.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "SME.SGP.Worker.Rabbbit.dll"]

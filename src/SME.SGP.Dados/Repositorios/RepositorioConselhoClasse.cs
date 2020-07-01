@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
                             from conselho_classe c 
                            where c.fechamento_turma_id = @fechamentoTurmaId";
 
-            return database.Conexao.QueryFirstOrDefault<ConselhoClasse>(query, new { fechamentoTurmaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query, new { fechamentoTurmaId });
         }
 
         public async Task<ConselhoClasse> ObterPorTurmaEPeriodoAsync(long turmaId, long? periodoEscolarId = null)

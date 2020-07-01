@@ -784,8 +784,8 @@ const Filtro = () => {
   useEffect(() => {
     const controlaClickFora = evento => {
       if (
-        !evento.target.nodeName === 'svg' &&
-        !evento.target.nodeName === 'path' &&
+        evento.target.nodeName !== 'svg' &&
+        evento.target.nodeName !== 'path' &&
         !evento.target.classList.contains('fa-caret-down') &&
         !evento.target.classList.contains('ant-select-dropdown-menu-item') &&
         !evento.target.classList.contains(
