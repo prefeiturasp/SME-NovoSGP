@@ -15,6 +15,7 @@ import {
   Loader,
   LazyLoad,
 } from '~/componentes';
+import Alert from '~/componentes/alert';
 import AlertaSelecionarTurma from './componentes/AlertaSelecionarTurma';
 import DropDownTerritorios from './componentes/DropDownTerritorios';
 
@@ -45,6 +46,12 @@ function TerritorioSaber() {
   const [bimestreAberto, setBimestreAberto] = useState(false);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [territorioSelecionado, setTerritorioSelecionado] = useState('');
+
+  const [
+    mostraMensagemSemTerritorios,
+    setMostraMensagemSemTerritorios,
+  ] = useState(false);
+
   const [dados, setDados] = useState({ bimestres: [] });
 
   const permissoesTela = useSelector(store => store.usuario.permissoes);
@@ -188,8 +195,26 @@ function TerritorioSaber() {
     }
   };
 
+  const onBuscarTerritorios = response => {
+    setMostraMensagemSemTerritorios(response);
+  };
+
   return (
     <>
+      <div className="col-md-12">
+        {mostraMensagemSemTerritorios ? (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'territorios-aviso-sem-territori',
+              mensagem:
+                'Apenas é possível realizar este planejamento para componentes de territórios do saber.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-2"
+          />
+        ) : null}
+      </div>
       <AlertaSelecionarTurma />
       <Cabecalho pagina="Planejamento anual do Território do Saber" />
       <Card>
@@ -200,13 +225,14 @@ function TerritorioSaber() {
           onClickCancelar={onClickCancelar}
           labelBotaoPrincipal="Salvar"
           somenteConsulta={somenteConsulta}
-          desabilitarBotaoPrincipal={!territorioSelecionado}
+          desabilitarBotaoPrincipal={!territorioSelecionado || !modoEdicao}
           modoEdicao={modoEdicao}
         />
         <Grid cols={12}>
           <Linha className="row mb-0">
             <Grid cols={12}>
               <DropDownTerritorios
+                onBuscarTerritorios={onBuscarTerritorios}
                 territorioSelecionado={territorioSelecionado}
                 onChangeTerritorio={useCallback(
                   valor => setTerritorioSelecionado(valor || ''),

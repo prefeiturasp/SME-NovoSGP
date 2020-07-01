@@ -11,10 +11,8 @@ namespace SME.SGP.Infra
         [Range(1, 4, ErrorMessage = "O bimestre deve ser entre 1 e 4")]
         public int? Bimestre { get; set; }
 
-        [Required(ErrorMessage = "O desenvolvimento descrição deve ser informada.")]
         public string Desenvolvimento { get; set; }
 
-        [Required(ErrorMessage = "A reflexão deve ser informada.")]
         public string Reflexao { get; set; }
     }
 }

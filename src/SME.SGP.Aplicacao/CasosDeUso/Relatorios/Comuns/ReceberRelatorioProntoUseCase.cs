@@ -16,17 +16,14 @@ namespace SME.SGP.Aplicacao
 
         public ReceberRelatorioProntoUseCase(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            using (SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN")))
-            {
 
-
-                var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
+            var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
 
                 if (relatorioCorrelacao == null)
                 {
@@ -49,33 +46,32 @@ namespace SME.SGP.Aplicacao
                     relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
                 }
 
-                switch (relatorioCorrelacao.TipoRelatorio)
-                {
-                    case TipoRelatorio.RelatorioExemplo:
-                        break;
-                    case TipoRelatorio.Boletim:
-                    case TipoRelatorio.ConselhoClasseAluno:
-                    case TipoRelatorio.ConselhoClasseTurma:
-                    case TipoRelatorio.ConselhoClasseAtaFinal:
-                        SentrySdk.AddBreadcrumb("Enviando notificação..", "9 - ReceberRelatorioProntoUseCase");
-                        await EnviaNotificacaoCriador(relatorioCorrelacao);
-                        break;
-                    default:
-                        await EnviaNotificacaoCriador(relatorioCorrelacao);
-                        break;
-                }
-
-
-                unitOfWork.PersistirTransacao();
-                SentrySdk.CaptureMessage("9 - ReceberRelatorioProntoUseCase -> Finalizado Fluxo de relatórios");
-
+            switch (relatorioCorrelacao.TipoRelatorio)
+            {
+                case TipoRelatorio.RelatorioExemplo:
+                    break;
+                case TipoRelatorio.Boletim:
+                case TipoRelatorio.ConselhoClasseAluno:
+                case TipoRelatorio.ConselhoClasseTurma:
+                case TipoRelatorio.ConselhoClasseAtaFinal:
+                    SentrySdk.AddBreadcrumb("Enviando notificação..", "9 - ReceberRelatorioProntoUseCase");
+                    await EnviaNotificacaoCriador(relatorioCorrelacao);
+                    break;
+                default:
+                    await EnviaNotificacaoCriador(relatorioCorrelacao);
+                    break;
             }
+
+
+            unitOfWork.PersistirTransacao();
+            SentrySdk.CaptureMessage("9 - ReceberRelatorioProntoUseCase -> Finalizado Fluxo de relatórios");
+
+
             return await Task.FromResult(true);
         }
 
         private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao)
         {
-            //TODO: Remover Hard Code!!
             var urlRedirecionamentoBase = configuration.GetValue<string>("UrlBackEnd");
 
             await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase));

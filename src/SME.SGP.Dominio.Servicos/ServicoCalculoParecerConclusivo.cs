@@ -132,7 +132,7 @@ namespace SME.SGP.Dominio.Servicos
             var tipoNota = notasFechamentoAluno.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
             return tipoNota == TipoNota.Nota ?
                 ValidarParecerPorNota(notasFechamentoAluno) :
-                ValidarParecerPorConceito(notasFechamentoAluno);
+                await ValidarParecerPorConceito(notasFechamentoAluno);
         }
 
         private bool ValidarParecerPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
@@ -145,9 +145,9 @@ namespace SME.SGP.Dominio.Servicos
             return true;
         }
 
-        private bool ValidarParecerPorConceito(IEnumerable<NotaConceitoBimestreComponenteDto> conceitosFechamentoAluno)
+        private async Task<bool> ValidarParecerPorConceito(IEnumerable<NotaConceitoBimestreComponenteDto> conceitosFechamentoAluno)
         {
-            var conceitosVigentes = repositorioConceito.ObterPorData(DateTime.Today);
+            var conceitosVigentes = await repositorioConceito.ObterPorData(DateTime.Today);
             foreach (var conceitoFechamentoAluno in conceitosFechamentoAluno)
             {
                 var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoFechamentoAluno.ConceitoId);
@@ -169,7 +169,7 @@ namespace SME.SGP.Dominio.Servicos
             var tipoNota = notasConselhoClasse.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
             return (true, tipoNota == TipoNota.Nota ?
                 ValidarParecerConselhoPorNota(notasConselhoClasse) :
-                ValidarParecerConselhoPorConceito(notasConselhoClasse) );
+               await ValidarParecerConselhoPorConceito(notasConselhoClasse));
         }
 
         private bool ValidarParecerConselhoPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasse)
@@ -182,9 +182,9 @@ namespace SME.SGP.Dominio.Servicos
             return true;
         }
 
-        private bool ValidarParecerConselhoPorConceito(IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasse)
+        private async Task<bool> ValidarParecerConselhoPorConceito(IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasse)
         {
-            var conceitosVigentes = repositorioConceito.ObterPorData(DateTime.Today);
+            var conceitosVigentes = await repositorioConceito.ObterPorData(DateTime.Today);
             foreach (var conceitoConselhoClasseAluno in notasConselhoClasse)
             {
                 var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoConselhoClasseAluno.ConceitoId);

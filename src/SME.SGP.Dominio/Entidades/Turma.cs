@@ -47,5 +47,25 @@ namespace SME.SGP.Dominio
             else
                 return ModalidadeCodigo != Modalidade.EJA;
         }
+
+        public bool EhEJA()
+            => ModalidadeCodigo == Modalidade.EJA;
+
+        public int ObterHorasGradeRegencia()
+            => EhEJA() ? 5 : 1;
+
+        public int AnoTurmaInteiro => int.Parse(Ano);
+
+        public bool EhTurmaFund1 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 1 && AnoTurmaInteiro <= 5);
+        public bool EhTurmaFund2 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 6 && AnoTurmaInteiro <= 9);
+        public bool EhTurmaEnsinoMedio => ModalidadeCodigo == Modalidade.Medio;
+
+        public bool AulasReposicaoPrecisamAprovacao(int quantidadeAulasExistentesNoDia)
+        {
+            int.TryParse(Ano, out int anoTurma);
+            return (EhTurmaFund1 || (EhEJA() && (anoTurma == 1 || anoTurma == 2)) && quantidadeAulasExistentesNoDia > 1) || 
+                   (EhTurmaFund2 || (EhEJA() && (anoTurma == 3 || anoTurma == 4))) || 
+                   (EhTurmaEnsinoMedio && quantidadeAulasExistentesNoDia > 2);
+        }
     }
 }
