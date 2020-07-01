@@ -62,10 +62,17 @@ const HistoricoEscolar = () => {
   ];
 
   const obterAnosLetivos = useCallback(async () => {
-    // TODO - Tem que ter um endpoint com todos os anos!
-    const anosLetivo = await FiltroHelper.obterAnosLetivos({
+    let anosLetivo = [];
+
+    const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
       consideraHistorico: true,
     });
+
+    const anosLetivoSemHistorico = await FiltroHelper.obterAnosLetivos({
+      consideraHistorico: false,
+    });
+
+    anosLetivo = anosLetivoComHistorico.concat(anosLetivoSemHistorico);
 
     if (!anosLetivo.length) {
       anosLetivo.push({
@@ -75,12 +82,11 @@ const HistoricoEscolar = () => {
     }
 
     if (anosLetivo && anosLetivo.length) {
-      const temAnoAtualNaLista = anosLetivo.find(item => item == anoAtual);
-      if (temAnoAtualNaLista) {
-        setAnoLetivo(anoAtual);
-      } else {
-        setAnoLetivo(anosLetivo[0].valor);
-      }
+      const temAnoAtualNaLista = anosLetivo.find(
+        item => String(item.valor) === String(anoAtual)
+      );
+      if (temAnoAtualNaLista) setAnoLetivo(anoAtual);
+      else setAnoLetivo(anosLetivo[0].valor);
     }
 
     setListaAnosLetivo(anosLetivo);
@@ -392,38 +398,6 @@ const HistoricoEscolar = () => {
                 disabled={desabilitarBtnGerar}
               />
             </div>
-            <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
-              <SelectComponent
-                label="Diretoria Regional de Educação (DRE)"
-                lista={listaDres}
-                valueOption="valor"
-                valueText="desc"
-                disabled={listaDres && listaDres.length === 1}
-                onChange={onChangeDre}
-                valueSelect={dreId}
-              />
-            </div>
-            <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
-              <SelectComponent
-                label="Unidade Escolar (UE)"
-                lista={listaUes}
-                valueOption="valor"
-                valueText="desc"
-                disabled={listaUes && listaUes.length === 1}
-                onChange={onChangeUe}
-                valueSelect={ueId}
-              />
-            </div>
-
-            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-              <div className="row">
-                <LocalizadorEstudante
-                  showLabel
-                  onChange={onChangeLocalizadorEstudante}
-                />
-              </div>
-            </div>
-
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
               <SelectComponent
                 label="Ano Letivo"
@@ -436,7 +410,40 @@ const HistoricoEscolar = () => {
                 }
                 onChange={onChangeAnoLetivo}
                 valueSelect={anoLetivo}
+                placeholder="Ano letivo"
               />
+            </div>
+            <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
+              <SelectComponent
+                label="Diretoria Regional de Educação (DRE)"
+                lista={listaDres}
+                valueOption="valor"
+                valueText="desc"
+                disabled={!anoLetivo || (listaDres && listaDres.length === 1)}
+                onChange={onChangeDre}
+                valueSelect={dreId}
+                placeholder="Diretoria Regional De Educação (DRE)"
+              />
+            </div>
+            <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
+              <SelectComponent
+                label="Unidade Escolar (UE)"
+                lista={listaUes}
+                valueOption="valor"
+                valueText="desc"
+                disabled={!dreId || (listaUes && listaUes.length === 1)}
+                onChange={onChangeUe}
+                valueSelect={ueId}
+                placeholder="Unidade Escolar (UE)"
+              />
+            </div>
+            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+              <div className="row">
+                <LocalizadorEstudante
+                  showLabel
+                  onChange={onChangeLocalizadorEstudante}
+                />
+              </div>
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
               <SelectComponent
