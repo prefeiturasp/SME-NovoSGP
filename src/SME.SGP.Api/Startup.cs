@@ -93,8 +93,8 @@ namespace SME.SGP.Api
 
             services.AddDistributedRedisCache(options =>
             {
-                options.Configuration = Configuration.GetConnectionString("SGP-Redis");
-                //options.Configuration = "10.50.1.174:6380";
+                //options.Configuration = Configuration.GetConnectionString("SGP-Redis");
+                options.Configuration = "smehml.redis.cache.windows.net:6379,password=GvS5lpYli9Mb9B6EkAOFCLUTz3yqPOFNPL4PMe6XXbA=,ssl=false,abortConnect=false";
                 options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
             });
 
@@ -115,7 +115,7 @@ namespace SME.SGP.Api
 
             services.AddHealthChecks()
                     .AddRedis(
-                        Configuration.GetConnectionString("SGP-Redis"),
+                        "smehml.redis.cache.windows.net:6379,password=GvS5lpYli9Mb9B6EkAOFCLUTz3yqPOFNPL4PMe6XXbA=,ssl=false,abortConnect=false",
                         "Redis Cache",
                         null,
                         tags: new string[] { "db", "redis" })
