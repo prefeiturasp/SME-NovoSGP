@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
@@ -6,26 +7,20 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
+import RotasDto from '~/dtos/rotasDto';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
-import FiltroHelper from '~componentes-sgp/filtro/helper';
 import ServicoConselhoAtaFinal from '~/servicos/Paginas/ConselhoAtaFinal/ServicoConselhoAtaFinal';
+import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const AtaFinalResultados = () => {
-  const anoAtual = window.moment().format('YYYY');
+  // const anoAtual = window.moment().format('YYYY');
 
-  // const usuarioStore = useSelector(store => store.usuario);
-  // const permissoesTela = usuarioStore.permissoes[RotasDto.ATA_FINAL_RESULTADOS];
-  // TODO Ainda o back não retorna as permissões!
-  const permissoesTela = {
-    podeAlterar: false,
-    podeConsultar: true,
-    podeExcluir: false,
-    podeIncluir: false,
-  };
+  const usuarioStore = useSelector(store => store.usuario);
+  const permissoesTela = usuarioStore.permissoes[RotasDto.ATA_FINAL_RESULTADOS];
 
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
   const [listaSemestre, setListaSemestre] = useState([]);
@@ -55,24 +50,28 @@ const AtaFinalResultados = () => {
       consideraHistorico: true,
     });
 
-    if (!anosLetivo.length) {
-      anosLetivo.push({
-        desc: anoAtual,
-        valor: anoAtual,
-      });
-    }
+    anosLetivo.unshift({ desc: '2020', valor: 2020 });
+    setAnoLetivo(anosLetivo[0].valor);
 
-    if (anosLetivo && anosLetivo.length) {
-      const temAnoAtualNaLista = anosLetivo.find(item => item == anoAtual);
-      if (temAnoAtualNaLista) {
-        setAnoLetivo(anoAtual);
-      } else {
-        setAnoLetivo(anosLetivo[0].valor);
-      }
-    }
+    // if (!anosLetivo.length) {
+    //   anosLetivo.push({
+    //     desc: anoAtual,
+    //     valor: anoAtual,
+    //   });
+    // }
+
+
+    // if (anosLetivo && anosLetivo.length) {
+    //   const temAnoAtualNaLista = anosLetivo.find(item => item == anoAtual);
+    //   if (temAnoAtualNaLista) {
+    //     setAnoLetivo(anoAtual);
+    //   } else {
+    //     setAnoLetivo(anosLetivo[0].valor);
+    //   }
+    // }
 
     setListaAnosLetivo(anosLetivo);
-  }, [anoAtual]);
+  }, []);
 
   const obterModalidades = async (ue, ano) => {
     if (ue && ano) {
