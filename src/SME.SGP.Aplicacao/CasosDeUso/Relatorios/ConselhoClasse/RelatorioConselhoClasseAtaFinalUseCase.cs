@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -20,6 +21,8 @@ namespace SME.SGP.Aplicacao
 
             if (usuarioId == 0)
                 throw new NegocioException("Não foi possível localizar o usuário.");
+
+            filtroRelatorioConselhoClasseDto.TurmasCodigos.RemoveAll(c => c == "-99");
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAtaFinal, filtroRelatorioConselhoClasseDto, usuarioId));
         }
