@@ -28,6 +28,7 @@ import { store } from '~/redux';
 import Erro from '../RecuperarSenha/erro';
 import { setMenusPermissoes } from '~/servicos/servico-navegacao';
 import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
+import { Loader } from '~/componentes';
 
 const Item = styled.li`
   ${props => props.status === true && `color: ${Base.Verde}`};
@@ -81,6 +82,18 @@ const RedefinirSenha = props => {
     }
   };
 
+  const validarToken = async () => {
+    let tokenValido = true;
+    if (!token) history.push(URL_LOGIN);
+    if (token) tokenValido = await RedefinirSenhaServico.validarToken(token);
+
+    if (!tokenValido) {
+      setErroGeral(
+        'Esse link expirou. Clique em continuar para solicitar um link novo.'
+      );
+    } else setTokenValidado(true);
+  };
+
   useLayoutEffect(() => {
     if (!tokenValidado && !logado) validarToken();
     document.addEventListener('keydown', trataAcaoTeclado);
@@ -96,32 +109,6 @@ const RedefinirSenha = props => {
   useEffect(() => {
     if (inputConfSenhaRef.current) inputConfSenhaRef.current.focus();
   }, [confirmarSenha]);
-
-  const aoMudarSenha = e => {
-    setErroGeral('');
-    setSenhas({ ...senhas, senha: e.target.value });
-    realizarValidacoes(e.target.value);
-  };
-
-  const validarToken = async () => {
-    let tokenValido = true;
-    if (!token) history.push(URL_LOGIN);
-    if (token) tokenValido = await RedefinirSenhaServico.validarToken(token);
-
-    if (!tokenValido) {
-      setErroGeral(
-        'Esse link expirou. Clique em continuar para solicitar um link novo.'
-      );
-    } else setTokenValidado(true);
-  };
-
-  const aoMudarConfSenha = e => {
-    setSenhas({ ...senhas, confirmarSenha: e.target.value });
-    setErroGeral('');
-
-    const iguais = e.target.value === inputSenhaRef.current.value;
-    setValidacoes({ ...validacoes, iguais });
-  };
 
   const realizarValidacoes = valor => {
     const temMaiuscula = valor.match(/([A-Z])/);
@@ -148,6 +135,20 @@ const RedefinirSenha = props => {
     });
   };
 
+  const aoMudarSenha = e => {
+    setErroGeral('');
+    setSenhas({ ...senhas, senha: e.target.value });
+    realizarValidacoes(e.target.value);
+  };
+
+  const aoMudarConfSenha = e => {
+    setSenhas({ ...senhas, confirmarSenha: e.target.value });
+    setErroGeral('');
+
+    const iguais = e.target.value === inputSenhaRef.current.value;
+    setValidacoes({ ...validacoes, iguais });
+  };
+
   const validarSeFormularioTemErro = () =>
     Object.entries(validacoes).filter(validacao => !validacao[1]).length > 0;
 
@@ -171,8 +172,14 @@ const RedefinirSenha = props => {
 
       setErroGeral(requisicao.erro);
     } else {
+      const rf = Number.isInteger(usuario * 1)
+        ? usuario
+        : Number.isInteger(props?.location?.state?.rf * 1)
+        ? props?.location?.state?.rf
+        : '';
+
       const requisicao = await ServicoPrimeiroAcesso.alterarSenha({
-        usuario,
+        usuario: rf,
         novaSenha: senha,
         confirmarSenha: senha,
       });
@@ -180,7 +187,6 @@ const RedefinirSenha = props => {
         obterMeusDados();
         setMenusPermissoes();
 
-        const rf = Number.isInteger(usuario * 1) ? usuario : '';
         store.dispatch(
           salvarDadosLogin({
             token: requisicao.resposta.data.token,
@@ -205,7 +211,10 @@ const RedefinirSenha = props => {
     }
   };
 
+  const [carregandoContinuar, setCarregandoContinuar] = useState(false);
+
   const aoClicarContinuar = () => {
+    setCarregandoContinuar(true);
     realizarValidacoes(inputSenhaRef.current.value);
     setErroGeral('');
 
@@ -215,6 +224,7 @@ const RedefinirSenha = props => {
     }
 
     if (!validarSeFormularioTemErro()) alterarSenha();
+    setCarregandoContinuar(false);
   };
 
   const aoClicarContinuarExpirado = () => {
@@ -361,12 +371,14 @@ const RedefinirSenha = props => {
                           onClick={onClickSair}
                           id="btnSair"
                         />
-                        <Button
-                          label="Continuar"
-                          color={Colors.Roxo}
-                          onClick={aoClicarContinuar}
-                          id="btnContinuar"
-                        />
+                        <Loader loading={carregandoContinuar} tip="">
+                          <Button
+                            label="Continuar"
+                            color={Colors.Roxo}
+                            onClick={aoClicarContinuar}
+                            id="btnContinuar"
+                          />
+                        </Loader>
                       </Div>
                     </Form>
                   </Div>
