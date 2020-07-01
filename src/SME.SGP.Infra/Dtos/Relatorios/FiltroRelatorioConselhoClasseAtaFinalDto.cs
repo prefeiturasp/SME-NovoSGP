@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SME.SGP.Dominio;
 using System.Collections.Generic;
 
 namespace SME.SGP.Infra
@@ -6,6 +7,7 @@ namespace SME.SGP.Infra
     public class FiltroRelatorioConselhoClasseAtaFinalDto
     {
         public List<string> TurmasCodigos { get; set; }
+        public Usuario Usuario { get; set; }
     }
 
 
@@ -16,7 +18,6 @@ namespace SME.SGP.Infra
             RuleFor(c => c.TurmasCodigos)
             .NotEmpty()
             .WithMessage("A lista de turmas deve ser informada.");
-
         }
     }
 
