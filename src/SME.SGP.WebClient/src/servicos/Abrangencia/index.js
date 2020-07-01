@@ -42,6 +42,9 @@ const AbrangenciaServico = {
       }
     );
   },
+  buscarTodosAnosLetivos() {
+    return api.get(`v1/abrangencias/false/anos-letivos-todos`);
+  },
 };
 
 export default AbrangenciaServico;
