@@ -86,7 +86,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(CadastroAulaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> CadastroAula([FromServices] IPodeCadastrarAulaUseCase podeCadastrarAulaUseCase, long aulaId, string turmaCodigo, long componenteCurricular, [FromQuery] DateTime dataAula, [FromQuery] bool ehRegencia = false, [FromQuery] TipoAula tipoAula)
+        public async Task<IActionResult> CadastroAula([FromServices] IPodeCadastrarAulaUseCase podeCadastrarAulaUseCase, long aulaId, string turmaCodigo, long componenteCurricular, [FromQuery] DateTime dataAula, [FromQuery] bool ehRegencia, [FromQuery] TipoAula tipoAula)
         {
             return Ok(await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(aulaId, turmaCodigo, componenteCurricular, dataAula, ehRegencia, tipoAula)));
         }
