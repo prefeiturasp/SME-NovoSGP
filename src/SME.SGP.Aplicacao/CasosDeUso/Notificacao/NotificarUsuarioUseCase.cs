@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Sentry;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class NotificarUsuarioUseCase : AbstractUseCase, INotificarUsuarioUseCase
     {
-        public NotificarUsuarioUseCase(IMediator mediator): base(mediator)
+        public NotificarUsuarioUseCase(IMediator mediator) : base(mediator)
         {
         }
 

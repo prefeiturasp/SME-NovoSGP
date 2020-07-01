@@ -15,5 +15,6 @@
         public static string RotaInserirAulaRecorrencia => "aula.cadastrar.recorrencia";
         public static string RotaAlterarAulaRecorrencia => "aula.alterar.recorrencia";
         public static string RotaNotificacaoUsuario => "notificacao.usuario";
+        public static string RotaRelatorioComErro => "relatorios.erro";
     }
 }

@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 SentrySdk.CaptureMessage("1 - ImpressaoConselhoClasseAlunoUseCase");                
             }
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAluno, filtroRelatorioConselhoClasseAlunoDto, usuario.Id));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAluno, filtroRelatorioConselhoClasseAlunoDto, usuario));
         }
     }
 }

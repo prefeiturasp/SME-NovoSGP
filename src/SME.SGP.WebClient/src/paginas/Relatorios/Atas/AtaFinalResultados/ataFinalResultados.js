@@ -8,14 +8,24 @@ import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import AbrangenciaServico from '~/servicos/Abrangencia';
+import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
-import { sucesso, erros } from '~/servicos/alertas';
 import ServicoConselhoAtaFinal from '~/servicos/Paginas/Relatorios/ConselhoAtaFinal/ServicoConselhoAtaFinal';
 
 const AtaFinalResultados = () => {
   const anoAtual = window.moment().format('YYYY');
+
+  // const usuarioStore = useSelector(store => store.usuario);
+  // const permissoesTela = usuarioStore.permissoes[RotasDto.ATA_FINAL_RESULTADOS];
+  // TODO Ainda o back não retorna as permissões!
+  const permissoesTela = {
+    podeAlterar: false,
+    podeConsultar: true,
+    podeExcluir: false,
+    podeIncluir: false,
+  };
 
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
   const [listaSemestre, setListaSemestre] = useState([]);
@@ -252,24 +262,18 @@ const AtaFinalResultados = () => {
     setFormato('PDF');
   };
 
-  const onClickGerar = () => {
-    const params = {
-      anoLetivo,
-      dreId,
-      ueId,
-      modalidadeId,
-      semestre,
-      turmaId,
-      formato,
-    };
-    ServicoConselhoAtaFinal.gerar(params)
-      .then(c => {
+  const onClickGerar = async () => {
+    if (permissoesTela.podeConsultar) {
+      let url = 'v1/relatorios/conselhos-classe/atas-finais';
+      url = `${url}?anoLetivo=${anoLetivo}&dreId=${dreId}&ueId=${ueId}&modalidadeId=${modalidadeId}&semestre=${semestre}&turmaId=${turmaId}&formato=${formato}`;
+      const retorno = await api.get(url).catch(e => erros(e));
+      if (retorno && retorno === 200) {
         sucesso(
           'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
         );
-      })
-      .catch(e => erros(e));
-    setDesabilitarBtnGerar(true);
+        setDesabilitarBtnGerar(true);
+      }
+    }
   };
 
   const onChangeUe = ue => {
@@ -346,7 +350,7 @@ const AtaFinalResultados = () => {
                 bold
                 className="mr-2"
                 onClick={() => onClickGerar()}
-                disabled={desabilitarBtnGerar}
+                disabled={desabilitarBtnGerar || !permissoesTela.podeConsultar}
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
@@ -355,7 +359,10 @@ const AtaFinalResultados = () => {
                 lista={listaAnosLetivo}
                 valueOption="valor"
                 valueText="desc"
-                disabled={listaAnosLetivo && listaAnosLetivo.length === 1}
+                disabled={
+                  !permissoesTela.podeConsultar ||
+                  (listaAnosLetivo && listaAnosLetivo.length === 1)
+                }
                 onChange={onChangeAnoLetivo}
                 valueSelect={anoLetivo}
               />
@@ -366,7 +373,10 @@ const AtaFinalResultados = () => {
                 lista={listaDres}
                 valueOption="valor"
                 valueText="desc"
-                disabled={listaDres && listaDres.length === 1}
+                disabled={
+                  !permissoesTela.podeConsultar ||
+                  (listaDres && listaDres.length === 1)
+                }
                 onChange={onChangeDre}
                 valueSelect={dreId}
               />
@@ -377,7 +387,10 @@ const AtaFinalResultados = () => {
                 lista={listaUes}
                 valueOption="valor"
                 valueText="desc"
-                disabled={listaUes && listaUes.length === 1}
+                disabled={
+                  !permissoesTela.podeConsultar ||
+                  (listaUes && listaUes.length === 1)
+                }
                 onChange={onChangeUe}
                 valueSelect={ueId}
               />
@@ -388,7 +401,10 @@ const AtaFinalResultados = () => {
                 lista={listaModalidades}
                 valueOption="valor"
                 valueText="desc"
-                disabled={listaModalidades && listaModalidades.length === 1}
+                disabled={
+                  !permissoesTela.podeConsultar ||
+                  (listaModalidades && listaModalidades.length === 1)
+                }
                 onChange={onChangeModalidade}
                 valueSelect={modalidadeId}
               />
@@ -400,6 +416,7 @@ const AtaFinalResultados = () => {
                 valueText="desc"
                 label="Semestre"
                 disabled={
+                  !permissoesTela.podeConsultar ||
                   !modalidadeId ||
                   modalidadeId == modalidade.FUNDAMENTAL ||
                   (listaSemestre && listaSemestre.length === 1)
@@ -414,7 +431,10 @@ const AtaFinalResultados = () => {
                 valueOption="valor"
                 valueText="desc"
                 label="Turma"
-                disabled={listaTurmas && listaTurmas.length === 1}
+                disabled={
+                  !permissoesTela.podeConsultar ||
+                  (listaTurmas && listaTurmas.length === 1)
+                }
                 valueSelect={turmaId}
                 onChange={onChangeTurma}
               />
@@ -427,6 +447,7 @@ const AtaFinalResultados = () => {
                 valueText="desc"
                 valueSelect={formato}
                 onChange={onChangeFormato}
+                disabled={!permissoesTela.podeConsultar}
               />
             </div>
           </div>

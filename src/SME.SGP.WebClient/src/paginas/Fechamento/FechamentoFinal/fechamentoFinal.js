@@ -166,13 +166,14 @@ const FechamentoFinal = forwardRef((props, ref) => {
     if (notaEmEdicao) {
       notaEmEdicao.conceitoId = ehNota ? '' : Number(nota);
       notaEmEdicao.nota = ehNota ? nota : '';
-    } else
+    } else {
       notas.push({
         alunoRf: aluno.codigo,
         componenteCurricularCodigo: disciplina,
         conceitoId: ehNota ? '' : Number(nota),
         nota: ehNota ? nota : '',
       });
+    }
 
     setNotasEmEdicao([...notas]);
     onChange(notas);
