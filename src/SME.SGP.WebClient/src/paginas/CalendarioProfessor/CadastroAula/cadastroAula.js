@@ -263,8 +263,8 @@ function CadastroDeAula({ match, location }) {
       setGradeAtingida(quantidadeAulasRestante == 0);
       if (tipoAula == 1) {
         if (aplicarGrade) {
+          setQuantidadeBloqueada(!podeEditar);
           if (!id) {
-            setQuantidadeBloqueada(!podeEditar);
             if (quantidadeAulasRestante === 1 || !podeEditar) {
               // defineGrade limite 1 aula
               setQuantidadeBloqueada(true);
@@ -279,9 +279,7 @@ function CadastroDeAula({ match, location }) {
             defineGradeRegistroNovoComValidacoes(quantidadeAulasRestante);
           } else {
             // define grade para edição
-            defineGradeEdicaoComValidacoes(
-              quantidadeAulasRestante + quantidadeAula
-            );
+            defineGradeEdicaoComValidacoes(quantidadeAulasRestante);
           }
         } else {
           removeGrade();
