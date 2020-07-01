@@ -25,18 +25,26 @@ namespace SME.SGP.Aplicacao
 
             var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
 
-            SentrySdk.AddBreadcrumb($"Correlação obtida com sucesso {relatorioCorrelacao.Codigo}", "9 - ReceberRelatorioProntoUseCase");
+                if (relatorioCorrelacao == null)
+                {
+                    throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
+                }
 
-            unitOfWork.IniciarTransacao();
+                SentrySdk.AddBreadcrumb($"Correlação obtida com sucesso {relatorioCorrelacao.Codigo}", "9 - ReceberRelatorioProntoUseCase");
 
-            var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoFiltro<ReceberRelatorioProntoCommand>();
-            receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao ?? throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
+                unitOfWork.IniciarTransacao();
+                
+                if (relatorioCorrelacao.EhRelatorioJasper)
+                {
+                    var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoFiltro<ReceberRelatorioProntoCommand>();
+                    receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao;
 
-            var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
+                    var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
 
-            SentrySdk.AddBreadcrumb("Salvando Correlação Relatório Jasper de retorno", "9 - ReceberRelatorioProntoUseCase");
+                    SentrySdk.AddBreadcrumb("Salvando Correlação Relatório Jasper de retorno", "9 - ReceberRelatorioProntoUseCase");
 
-            relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
+                    relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
+                }
 
             switch (relatorioCorrelacao.TipoRelatorio)
             {
