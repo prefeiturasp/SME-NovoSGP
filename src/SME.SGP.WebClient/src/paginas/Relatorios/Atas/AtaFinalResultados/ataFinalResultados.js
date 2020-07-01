@@ -17,7 +17,6 @@ import ServicoConselhoAtaFinal from '~/servicos/Paginas/ConselhoAtaFinal/Servico
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const AtaFinalResultados = () => {
-  // const anoAtual = window.moment().format('YYYY');
 
   const usuarioStore = useSelector(store => store.usuario);
   const permissoesTela = usuarioStore.permissoes[RotasDto.ATA_FINAL_RESULTADOS];
@@ -45,32 +44,19 @@ const AtaFinalResultados = () => {
   ];
 
   const obterAnosLetivos = useCallback(async () => {
-    // TODO - Tem que ter um endpoint com todos os anos!
-    const anosLetivo = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: true,
-    });
-
-    anosLetivo.unshift({ desc: '2020', valor: 2020 });
-    setAnoLetivo(anosLetivo[0].valor);
-
-    // if (!anosLetivo.length) {
-    //   anosLetivo.push({
-    //     desc: anoAtual,
-    //     valor: anoAtual,
-    //   });
-    // }
-
-
-    // if (anosLetivo && anosLetivo.length) {
-    //   const temAnoAtualNaLista = anosLetivo.find(item => item == anoAtual);
-    //   if (temAnoAtualNaLista) {
-    //     setAnoLetivo(anoAtual);
-    //   } else {
-    //     setAnoLetivo(anosLetivo[0].valor);
-    //   }
-    // }
-
-    setListaAnosLetivo(anosLetivo);
+    const anosLetivo = await AbrangenciaServico.buscarTodosAnosLetivos().catch(
+      e => erros(e)
+    );
+    if (anosLetivo && anosLetivo.data) {
+      const anos = [];
+      anosLetivo.data.forEach(ano => {
+        anos.push({ desc: ano, valor: ano });
+      });
+      setAnoLetivo(anos[0].valor);
+      setListaAnosLetivo(anos);
+    } else {
+      setListaAnosLetivo([]);
+    }
   }, []);
 
   const obterModalidades = async (ue, ano) => {
@@ -159,8 +145,13 @@ const AtaFinalResultados = () => {
           desc: item.nome,
           valor: item.codigo,
         }));
-        // TODO Critério 2.1
-        lista.unshift({ desc: 'Todas', valor: '-99' });
+
+        const temAbrangenciaTodasTurmas = await AbrangenciaServico.usuarioTemAbrangenciaTodasTurmas().catch(
+          e => erros(e)
+        );
+        if (temAbrangenciaTodasTurmas && temAbrangenciaTodasTurmas.data) {
+          lista.unshift({ desc: 'Todas', valor: '-99' });
+        }
         setListaTurmas(lista);
 
         if (lista && lista.length && lista.length === 1) {
