@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             filtroRelatorioConselhoClasseDto.Usuario = usuario;
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseTurma, filtroRelatorioConselhoClasseDto, usuario.Id));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseTurma, filtroRelatorioConselhoClasseDto, usuario));
         }
     }
 }
