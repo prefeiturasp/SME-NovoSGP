@@ -145,8 +145,13 @@ const AtaFinalResultados = () => {
           desc: item.nome,
           valor: item.codigo,
         }));
-        // TODO Critério 2.1
-        lista.unshift({ desc: 'Todas', valor: '-99' });
+
+        const temAbrangenciaTodasTurmas = await AbrangenciaServico.usuarioTemAbrangenciaTodasTurmas().catch(
+          e => erros(e)
+        );
+        if (temAbrangenciaTodasTurmas && temAbrangenciaTodasTurmas.data) {
+          lista.unshift({ desc: 'Todas', valor: '-99' });
+        }
         setListaTurmas(lista);
 
         if (lista && lista.length && lista.length === 1) {
