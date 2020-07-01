@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -42,6 +43,13 @@ namespace SME.SGP.Aplicacao
             var perfil = servicoUsuario.ObterPerfilAtual();
 
             return await repositorioAbrangencia.ObterAnosLetivos(login, perfil, consideraHistorico);
+        }
+
+        public Task<IEnumerable<int>> ObterAnosLetivosTodos()
+        {
+            var anos = Enumerable.Range(2014, 7).OrderByDescending(x => x).AsEnumerable();
+
+            return Task.FromResult(anos);
         }
 
         public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)

@@ -68,6 +68,20 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
+        [HttpGet("anos-letivos-todos")]
+        [ProducesResponseType(typeof(int[]), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterAnosLetivosTodos()
+        {
+            int[] retorno = (await consultasAbrangencia.ObterAnosLetivosTodos()).ToArray();
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
         [HttpGet("dres")]
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetorno>), 200)]
         [ProducesResponseType(401)]
