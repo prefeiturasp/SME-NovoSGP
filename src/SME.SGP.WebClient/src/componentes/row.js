@@ -8,7 +8,7 @@ const Row = props => {
     <div
       {...props}
       key={shortid.generate()}
-      className={`row ${className && className}`}
+      className={`row ${className || ''}`}
     >
       {children}
     </div>

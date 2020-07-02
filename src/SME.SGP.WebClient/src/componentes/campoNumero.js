@@ -69,7 +69,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
                 possuiErro() ? 'is-invalid' : ''
               } ${className || ''} ${desabilitado ? 'desabilitado' : ''}`}
               component={InputNumber}
-              type={maskType && maskType}
+              type={maskType || ''}
               readOnly={desabilitado}
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}

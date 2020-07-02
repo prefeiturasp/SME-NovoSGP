@@ -137,8 +137,8 @@ const Justificativa = props => {
                       <Button
                         label="Salvar"
                         color={Colors.Roxo}
-                        onClick={e => {
-                          clicouBotaoSalvar(form, e);
+                        onClick={() => {
+                          clicouBotaoSalvar(form);
                         }}
                         disabled={
                           (alunoDesabilitado && !podeEditarNota) ||
