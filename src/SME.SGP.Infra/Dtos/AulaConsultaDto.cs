@@ -19,6 +19,7 @@ namespace SME.SGP.Infra
         public string ProfessorRf { get; set; }
         public int Quantidade { get; set; }
         public RecorrenciaAula RecorrenciaAula { get; set; }
+        public RecorrenciaAula? RecorrenciaAulaPai { get; set; }
         public bool SomenteLeitura { get; set; }
         public TipoAula TipoAula { get; set; }
         public long TipoCalendarioId { get; set; }
