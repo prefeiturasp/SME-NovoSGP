@@ -15,7 +15,7 @@ import { sucesso } from '~/servicos/alertas';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 
 const HistoricoEscolar = () => {
-  const anoAtual = window.moment().format('YYYY');
+  const [anoAtual] = useState(window.moment().format('YYYY'));
 
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
   const [listaSemestre, setListaSemestre] = useState([]);
@@ -38,7 +38,7 @@ const HistoricoEscolar = () => {
   const [alunoLocalizadorSelect, setAlunoLocalizadorSelect] = useState();
 
   const [alunosSelecionados, setAlunosSelecionados] = useState([]);
-  const [filtro, setFiltro] = useState({});
+  const [filtro] = useState({});
 
   const listaEstudanteOpt = [
     { valor: '0', desc: 'Todos' },
@@ -67,7 +67,6 @@ const HistoricoEscolar = () => {
     const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
       consideraHistorico: true,
     });
-
     const anosLetivoSemHistorico = await FiltroHelper.obterAnosLetivos({
       consideraHistorico: false,
     });
@@ -92,6 +91,10 @@ const HistoricoEscolar = () => {
     setListaAnosLetivo(anosLetivo);
   }, [anoAtual]);
 
+  useEffect(() => {
+    obterAnosLetivos();
+  }, [obterAnosLetivos]);
+
   const obterModalidades = async (ue, ano) => {
     if (ue && ano) {
       const { data } = await api.get(`/v1/ues/${ue}/modalidades?ano=${ano}`);
@@ -109,9 +112,13 @@ const HistoricoEscolar = () => {
     }
   };
 
-  const obterUes = useCallback(async dre => {
+  const obterUes = useCallback(async (dre, ano) => {
     if (dre) {
-      const { data } = await AbrangenciaServico.buscarUes(dre);
+      const { data } = await AbrangenciaServico.buscarUes(
+        dre,
+        `v1/abrangencias/false/dres/${dre}/ues?anoLetivo=${ano}`,
+        true
+      );
       if (data) {
         const lista = data
           .map(item => ({
@@ -147,25 +154,29 @@ const HistoricoEscolar = () => {
     setTurmaId(undefined);
   };
 
-  const obterDres = async () => {
-    const { data } = await AbrangenciaServico.buscarDres();
-    if (data && data.length) {
-      const lista = data
-        .map(item => ({
-          desc: item.nome,
-          valor: String(item.codigo),
-          abrev: item.abreviacao,
-        }))
-        .sort(FiltroHelper.ordenarLista('desc'));
-      setListaDres(lista);
+  const obterDres = useCallback(async () => {
+    if (anoLetivo) {
+      const { data } = await AbrangenciaServico.buscarDres(
+        `v1/abrangencias/false/dres?anoLetivo=${anoLetivo}`
+      );
+      if (data && data.length) {
+        const lista = data
+          .map(item => ({
+            desc: item.nome,
+            valor: String(item.codigo),
+            abrev: item.abreviacao,
+          }))
+          .sort(FiltroHelper.ordenarLista('desc'));
+        setListaDres(lista);
 
-      if (lista && lista.length && lista.length === 1) {
-        setDreId(lista[0].valor);
+        if (lista && lista.length && lista.length === 1) {
+          setDreId(lista[0].valor);
+        }
+      } else {
+        setListaDres([]);
       }
-    } else {
-      setListaDres([]);
     }
-  };
+  }, [anoLetivo]);
 
   const obterTurmas = useCallback(async (modalidadeSelecionada, ue) => {
     if (ue && modalidadeSelecionada) {
@@ -218,12 +229,12 @@ const HistoricoEscolar = () => {
 
   useEffect(() => {
     if (dreId) {
-      obterUes(dreId);
+      obterUes(dreId, anoLetivo);
     } else {
       setUeId(undefined);
       setListaUes([]);
     }
-  }, [dreId, obterUes]);
+  }, [dreId, anoLetivo, obterUes]);
 
   useEffect(() => {
     if (modalidadeId && ueId) {
@@ -236,7 +247,7 @@ const HistoricoEscolar = () => {
 
   useEffect(() => {
     if (modalidadeId && anoLetivo) {
-      if (modalidadeId == modalidade.EJA) {
+      if (String(modalidadeId) === String(modalidade.EJA)) {
         obterSemestres(modalidadeId, anoLetivo);
       } else {
         setSemestre(undefined);
@@ -252,7 +263,7 @@ const HistoricoEscolar = () => {
     const desabilitar =
       !anoLetivo || !dreId || !ueId || !modalidadeId || !turmaId;
 
-    if (modalidadeId == modalidade.EJA) {
+    if (String(modalidadeId) === String(modalidade.EJA)) {
       setDesabilitarBtnGerar(!semestre || desabilitar);
     } else {
       setDesabilitarBtnGerar(desabilitar);
@@ -260,9 +271,8 @@ const HistoricoEscolar = () => {
   }, [anoLetivo, dreId, ueId, modalidadeId, turmaId, semestre]);
 
   useEffect(() => {
-    obterAnosLetivos();
     obterDres();
-  }, [obterAnosLetivos]);
+  }, [obterDres]);
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
@@ -279,6 +289,11 @@ const HistoricoEscolar = () => {
   };
 
   const onClickGerar = () => {
+    sucesso(
+      'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado'
+    );
+    setDesabilitarBtnGerar(true);
+
     const params = {
       anoLetivo,
       dreId,
@@ -289,14 +304,10 @@ const HistoricoEscolar = () => {
       estudanteOpt,
       imprimirDadosResp,
       preencherDataImpressao,
+      alunosCodigo: alunosSelecionados,
     };
-    console.log(params);
-    // TODO Chamar endpoint para gerar!
 
-    sucesso(
-      'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado'
-    );
-    setDesabilitarBtnGerar(true);
+    return params;
   };
 
   const onChangeUe = ue => {
@@ -358,7 +369,7 @@ const HistoricoEscolar = () => {
   };
 
   const onSelecionarItems = items => {
-    setAlunosSelecionados(items);
+    setAlunosSelecionados([...items.map(item => String(item.codigo))]);
   };
 
   return (
@@ -445,50 +456,75 @@ const HistoricoEscolar = () => {
                 />
               </div>
             </div>
-            <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+            <div
+              className={`"col-sm-12 col-md-6 ${
+                modalidadeId && String(modalidadeId) === String(modalidade.EJA)
+                  ? `col-lg-3 col-xl-3`
+                  : `col-lg-4 col-xl-4`
+              } mb-2"`}
+            >
               <SelectComponent
                 label="Modalidade"
                 lista={listaModalidades}
                 valueOption="valor"
                 valueText="desc"
                 disabled={
+                  !ueId ||
                   (listaModalidades && listaModalidades.length === 1) ||
                   alunoLocalizadorSelect
                 }
                 onChange={onChangeModalidade}
                 valueSelect={modalidadeId}
+                placeholder="Modalidade"
               />
             </div>
-            <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
-              <SelectComponent
-                lista={listaSemestre}
-                valueOption="valor"
-                valueText="desc"
-                label="Semestre"
-                disabled={
-                  !modalidadeId ||
-                  modalidadeId == modalidade.FUNDAMENTAL ||
-                  (listaSemestre && listaSemestre.length === 1)
-                }
-                valueSelect={semestre}
-                onChange={onChangeSemestre}
-              />
-            </div>
-            <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
+            {String(modalidadeId) === String(modalidade.EJA) ? (
+              <div className="col-sm-12 col-md-12 col-lg-3 col-xl-3 mb-2">
+                <SelectComponent
+                  lista={listaSemestre}
+                  valueOption="valor"
+                  valueText="desc"
+                  label="Semestre"
+                  disabled={
+                    !modalidadeId ||
+                    String(modalidadeId) === String(modalidade.FUNDAMENTAL) ||
+                    (listaSemestre && listaSemestre.length === 1)
+                  }
+                  valueSelect={semestre}
+                  onChange={onChangeSemestre}
+                  placeholder="Semestre"
+                />
+              </div>
+            ) : null}
+            <div
+              className={`"col-sm-12 col-md-6 ${
+                modalidadeId && String(modalidadeId) === String(modalidade.EJA)
+                  ? `col-lg-3 col-xl-3`
+                  : `col-lg-4 col-xl-4`
+              } mb-2"`}
+            >
               <SelectComponent
                 lista={listaTurmas}
                 valueOption="valor"
                 valueText="desc"
                 label="Turma"
                 disabled={
+                  !modalidadeId ||
                   (listaTurmas && listaTurmas.length === 1) ||
                   alunoLocalizadorSelect
                 }
                 valueSelect={turmaId}
                 onChange={onChangeTurma}
+                placeholder="Turma"
               />
             </div>
-            <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+            <div
+              className={`"col-sm-12 col-md-6 ${
+                modalidadeId && String(modalidadeId) === String(modalidade.EJA)
+                  ? `col-lg-3 col-xl-3`
+                  : `col-lg-4 col-xl-4`
+              } mb-2"`}
+            >
               <SelectComponent
                 label="Estudantes"
                 lista={listaEstudanteOpt}
@@ -496,6 +532,7 @@ const HistoricoEscolar = () => {
                 valueText="desc"
                 valueSelect={estudanteOpt}
                 onChange={onChangeEstudanteOpt}
+                placeholder="Estudantes"
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
