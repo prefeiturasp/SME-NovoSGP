@@ -57,7 +57,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(usuarioNome))
             {
                 usuarioNome = $"%{usuarioNome.ToUpper()}%";
-                query.AppendLine("and upper(f_unaccent(u.nome)) LIKE @usuarioNome");
+                query.AppendLine("and upper(f_unaccent(u.nome)) LIKE upper(f_unaccent(@usuarioNome))");
             }
 
             if (substituir.HasValue)
