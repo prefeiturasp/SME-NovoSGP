@@ -293,7 +293,6 @@ namespace SME.SGP.Aplicacao
             }
 
             usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));
-            var usuarioCore = await servicoEOL.ObterMeusDados(login);
             usuario.DefinirEmail(usuarioCore.Email);
             usuario.IniciarRecuperacaoDeSenha();
             repositorioUsuario.Salvar(usuario);
