@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -61,6 +62,20 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterAnosLetivos()
         {
             int[] retorno = (await consultasAbrangencia.ObterAnosLetivos(ConsideraHistorico)).ToArray();
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
+        [HttpGet("anos-letivos-todos")]
+        [ProducesResponseType(typeof(int[]), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterAnosLetivosTodos()
+        {
+            int[] retorno = (await consultasAbrangencia.ObterAnosLetivosTodos()).ToArray();
 
             if (!retorno.Any())
                 return NoContent();
@@ -139,5 +154,16 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(ues);
         }
+
+        [HttpGet("adm")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> UsuarioAdm([FromServices] IUsuarioPossuiAbrangenciaAdmUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
+        }
+
     }
 }

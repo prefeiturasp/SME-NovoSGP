@@ -60,7 +60,6 @@ CardCollapse.defaultProps = {
   children: () => {},
   onClick: () => {},
   show: false,
-  onClick: () => {},
   configCabecalho: {
     altura: 'auto',
     corBorda: Base.AzulBordaCard,

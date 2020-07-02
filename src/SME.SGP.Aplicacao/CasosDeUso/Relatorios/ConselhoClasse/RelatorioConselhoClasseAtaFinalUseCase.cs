@@ -20,12 +20,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(FiltroRelatorioConselhoClasseAtaFinalDto filtroRelatorioConselhoClasseAtaFinalDto)
         {
-            var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            if (usuarioId == 0)
+            if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível localizar o usuário.");
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAtaFinal, filtroRelatorioConselhoClasseAtaFinalDto, usuarioId));
+            filtroRelatorioConselhoClasseAtaFinalDto.TurmasCodigos.RemoveAll(c => c == "-99");
+
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAtaFinal, filtroRelatorioConselhoClasseAtaFinalDto, usuarioLogado));
         }
     }
 }

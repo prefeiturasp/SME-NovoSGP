@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
@@ -6,16 +7,19 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
+import RotasDto from '~/dtos/rotasDto';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import AbrangenciaServico from '~/servicos/Abrangencia';
+import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
+import ServicoConselhoAtaFinal from '~/servicos/Paginas/ConselhoAtaFinal/ServicoConselhoAtaFinal';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
-import { sucesso, erros } from '~/servicos/alertas';
-import ServicoConselhoAtaFinal from '~/servicos/Paginas/Relatorios/ConselhoAtaFinal/ServicoConselhoAtaFinal';
 
 const AtaFinalResultados = () => {
-  const anoAtual = window.moment().format('YYYY');
+
+  const usuarioStore = useSelector(store => store.usuario);
+  const permissoesTela = usuarioStore.permissoes[RotasDto.ATA_FINAL_RESULTADOS];
 
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
   const [listaSemestre, setListaSemestre] = useState([]);
@@ -30,39 +34,30 @@ const AtaFinalResultados = () => {
   const [modalidadeId, setModalidadeId] = useState(undefined);
   const [semestre, setSemestre] = useState(undefined);
   const [turmaId, setTurmaId] = useState(undefined);
-  const [formato, setFormato] = useState('PDF');
+  const [formato, setFormato] = useState('1');
 
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
 
   const listaFormatos = [
-    { valor: 'PDF', desc: 'PDF' },
-    { valor: 'EXCEL', desc: 'EXCEL' },
+    { valor: '1', desc: 'PDF' },
+    { valor: '4', desc: 'EXCEL' },
   ];
 
   const obterAnosLetivos = useCallback(async () => {
-    // TODO - Tem que ter um endpoint com todos os anos!
-    const anosLetivo = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: true,
-    });
-
-    if (!anosLetivo.length) {
-      anosLetivo.push({
-        desc: anoAtual,
-        valor: anoAtual,
+    const anosLetivo = await AbrangenciaServico.buscarTodosAnosLetivos().catch(
+      e => erros(e)
+    );
+    if (anosLetivo && anosLetivo.data) {
+      const anos = [];
+      anosLetivo.data.forEach(ano => {
+        anos.push({ desc: ano, valor: ano });
       });
+      setAnoLetivo(anos[0].valor);
+      setListaAnosLetivo(anos);
+    } else {
+      setListaAnosLetivo([]);
     }
-
-    if (anosLetivo && anosLetivo.length) {
-      const temAnoAtualNaLista = anosLetivo.find(item => item == anoAtual);
-      if (temAnoAtualNaLista) {
-        setAnoLetivo(anoAtual);
-      } else {
-        setAnoLetivo(anosLetivo[0].valor);
-      }
-    }
-
-    setListaAnosLetivo(anosLetivo);
-  }, [anoAtual]);
+  }, []);
 
   const obterModalidades = async (ue, ano) => {
     if (ue && ano) {
@@ -150,6 +145,13 @@ const AtaFinalResultados = () => {
           desc: item.nome,
           valor: item.codigo,
         }));
+
+        const temAbrangenciaTodasTurmas = await AbrangenciaServico.usuarioTemAbrangenciaTodasTurmas().catch(
+          e => erros(e)
+        );
+        if (temAbrangenciaTodasTurmas && temAbrangenciaTodasTurmas.data) {
+          lista.unshift({ desc: 'Todas', valor: '-99' });
+        }
         setListaTurmas(lista);
 
         if (lista && lista.length && lista.length === 1) {
@@ -252,24 +254,24 @@ const AtaFinalResultados = () => {
     setFormato('PDF');
   };
 
-  const onClickGerar = () => {
-    const params = {
-      anoLetivo,
-      dreId,
-      ueId,
-      modalidadeId,
-      semestre,
-      turmaId,
-      formato,
-    };
-    ServicoConselhoAtaFinal.gerar(params)
-      .then(c => {
+  const onClickGerar = async () => {
+    if (permissoesTela.podeConsultar) {
+      const params = { turmasCodigos: [] };
+      if (turmaId === '-99') {
+        params.turmasCodigos = listaTurmas.map(item => String(item.valor));
+      } else {
+        params.turmasCodigos = [String(turmaId)];
+      }
+      const retorno = await ServicoConselhoAtaFinal.gerar(params).catch(e =>
+        erros(e)
+      );
+      if (retorno && retorno.status === 200) {
         sucesso(
           'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
         );
-      })
-      .catch(e => erros(e));
-    setDesabilitarBtnGerar(true);
+        setDesabilitarBtnGerar(true);
+      }
+    }
   };
 
   const onChangeUe = ue => {
@@ -346,7 +348,7 @@ const AtaFinalResultados = () => {
                 bold
                 className="mr-2"
                 onClick={() => onClickGerar()}
-                disabled={desabilitarBtnGerar}
+                disabled={desabilitarBtnGerar || !permissoesTela.podeConsultar}
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
@@ -355,7 +357,10 @@ const AtaFinalResultados = () => {
                 lista={listaAnosLetivo}
                 valueOption="valor"
                 valueText="desc"
-                disabled={listaAnosLetivo && listaAnosLetivo.length === 1}
+                disabled={
+                  !permissoesTela.podeConsultar ||
+                  (listaAnosLetivo && listaAnosLetivo.length === 1)
+                }
                 onChange={onChangeAnoLetivo}
                 valueSelect={anoLetivo}
               />
@@ -366,7 +371,10 @@ const AtaFinalResultados = () => {
                 lista={listaDres}
                 valueOption="valor"
                 valueText="desc"
-                disabled={listaDres && listaDres.length === 1}
+                disabled={
+                  !permissoesTela.podeConsultar ||
+                  (listaDres && listaDres.length === 1)
+                }
                 onChange={onChangeDre}
                 valueSelect={dreId}
               />
@@ -377,7 +385,10 @@ const AtaFinalResultados = () => {
                 lista={listaUes}
                 valueOption="valor"
                 valueText="desc"
-                disabled={listaUes && listaUes.length === 1}
+                disabled={
+                  !permissoesTela.podeConsultar ||
+                  (listaUes && listaUes.length === 1)
+                }
                 onChange={onChangeUe}
                 valueSelect={ueId}
               />
@@ -388,7 +399,10 @@ const AtaFinalResultados = () => {
                 lista={listaModalidades}
                 valueOption="valor"
                 valueText="desc"
-                disabled={listaModalidades && listaModalidades.length === 1}
+                disabled={
+                  !permissoesTela.podeConsultar ||
+                  (listaModalidades && listaModalidades.length === 1)
+                }
                 onChange={onChangeModalidade}
                 valueSelect={modalidadeId}
               />
@@ -400,6 +414,7 @@ const AtaFinalResultados = () => {
                 valueText="desc"
                 label="Semestre"
                 disabled={
+                  !permissoesTela.podeConsultar ||
                   !modalidadeId ||
                   modalidadeId == modalidade.FUNDAMENTAL ||
                   (listaSemestre && listaSemestre.length === 1)
@@ -414,7 +429,10 @@ const AtaFinalResultados = () => {
                 valueOption="valor"
                 valueText="desc"
                 label="Turma"
-                disabled={listaTurmas && listaTurmas.length === 1}
+                disabled={
+                  !permissoesTela.podeConsultar ||
+                  (listaTurmas && listaTurmas.length === 1)
+                }
                 valueSelect={turmaId}
                 onChange={onChangeTurma}
               />
@@ -427,6 +445,7 @@ const AtaFinalResultados = () => {
                 valueText="desc"
                 valueSelect={formato}
                 onChange={onChangeFormato}
+                disabled
               />
             </div>
           </div>

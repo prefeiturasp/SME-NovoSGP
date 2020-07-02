@@ -42,6 +42,12 @@ const AbrangenciaServico = {
       }
     );
   },
+  buscarTodosAnosLetivos() {
+    return api.get(`v1/abrangencias/false/anos-letivos-todos`);
+  },
+  usuarioTemAbrangenciaTodasTurmas() {
+    return api.get(`v1/abrangencias/false/adm`);
+  },
 };
 
 export default AbrangenciaServico;
