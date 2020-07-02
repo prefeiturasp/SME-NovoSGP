@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { SelectComponent, ListaPaginada } from '~/componentes';
+import { SelectComponent, ListaPaginada, Loader } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
@@ -38,7 +38,7 @@ const HistoricoEscolar = () => {
   const [alunoLocalizadorSelect, setAlunoLocalizadorSelect] = useState();
 
   const [alunosSelecionados, setAlunosSelecionados] = useState([]);
-  const [filtro] = useState({});
+  const [filtro, setFiltro] = useState({});
 
   const listaEstudanteOpt = [
     { valor: '0', desc: 'Todos' },
@@ -53,7 +53,7 @@ const HistoricoEscolar = () => {
   const colunas = [
     {
       title: 'Número',
-      dataIndex: 'numero',
+      dataIndex: 'numeroChamada',
     },
     {
       title: 'Nome',
@@ -61,7 +61,10 @@ const HistoricoEscolar = () => {
     },
   ];
 
+  const [carregandoAnos, setCarregandoAnos] = useState(false);
+
   const obterAnosLetivos = useCallback(async () => {
+    setCarregandoAnos(true);
     let anosLetivo = [];
 
     const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
@@ -89,14 +92,18 @@ const HistoricoEscolar = () => {
     }
 
     setListaAnosLetivo(anosLetivo);
+    setCarregandoAnos(false);
   }, [anoAtual]);
 
   useEffect(() => {
     obterAnosLetivos();
   }, [obterAnosLetivos]);
 
+  const [carregandoModalidades, setCarregandoModalidades] = useState(false);
+
   const obterModalidades = async (ue, ano) => {
     if (ue && ano) {
+      setCarregandoModalidades(true);
       const { data } = await api.get(`/v1/ues/${ue}/modalidades?ano=${ano}`);
       if (data) {
         const lista = data.map(item => ({
@@ -109,11 +116,15 @@ const HistoricoEscolar = () => {
         }
         setListaModalidades(lista);
       }
+      setCarregandoModalidades(false);
     }
   };
 
+  const [carregandoUes, setCarregandoUes] = useState(false);
+
   const obterUes = useCallback(async (dre, ano) => {
     if (dre) {
+      setCarregandoUes(true);
       const { data } = await AbrangenciaServico.buscarUes(
         dre,
         `v1/abrangencias/false/dres/${dre}/ues?anoLetivo=${ano}`,
@@ -135,6 +146,7 @@ const HistoricoEscolar = () => {
       } else {
         setListaUes([]);
       }
+      setCarregandoUes(false);
     }
   }, []);
 
@@ -154,8 +166,11 @@ const HistoricoEscolar = () => {
     setTurmaId(undefined);
   };
 
+  const [carregandoDres, setCarregandoDres] = useState(false);
+
   const obterDres = useCallback(async () => {
     if (anoLetivo) {
+      setCarregandoDres(true);
       const { data } = await AbrangenciaServico.buscarDres(
         `v1/abrangencias/false/dres?anoLetivo=${anoLetivo}`
       );
@@ -175,11 +190,15 @@ const HistoricoEscolar = () => {
       } else {
         setListaDres([]);
       }
+      setCarregandoDres(false);
     }
   }, [anoLetivo]);
 
+  const [carregandoTurmas, setCarregandoTurmas] = useState(false);
+
   const obterTurmas = useCallback(async (modalidadeSelecionada, ue) => {
     if (ue && modalidadeSelecionada) {
+      setCarregandoTurmas(true);
       const { data } = await AbrangenciaServico.buscarTurmas(
         ue,
         modalidadeSelecionada
@@ -195,13 +214,17 @@ const HistoricoEscolar = () => {
           setTurmaId(lista[0].valor);
         }
       }
+      setCarregandoTurmas(false);
     }
   }, []);
+
+  const [carregandoSemestres, setCarregandoSemestres] = useState(false);
 
   const obterSemestres = async (
     modalidadeSelecionada,
     anoLetivoSelecionado
   ) => {
+    setCarregandoSemestres(true);
     const retorno = await api.get(
       `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
         0}`
@@ -216,6 +239,7 @@ const HistoricoEscolar = () => {
       }
       setListaSemestre(lista);
     }
+    setCarregandoSemestres(false);
   };
 
   useEffect(() => {
@@ -350,6 +374,16 @@ const HistoricoEscolar = () => {
   const onChangeTurma = valor => setTurmaId(valor);
 
   const onChangeEstudanteOpt = valor => {
+    if (valor === '1') {
+      setFiltro({
+        anoLetivo,
+        modalidade: modalidadeId,
+        dreCodigo: dreId,
+        ueCodigo: ueId,
+        turmaCodigo: turmaId,
+        semestre,
+      });
+    }
     setEstudanteOpt(valor);
   };
 
@@ -410,43 +444,49 @@ const HistoricoEscolar = () => {
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
-              <SelectComponent
-                label="Ano Letivo"
-                lista={listaAnosLetivo}
-                valueOption="valor"
-                valueText="desc"
-                disabled={
-                  (listaAnosLetivo && listaAnosLetivo.length === 1) ||
-                  alunoLocalizadorSelect
-                }
-                onChange={onChangeAnoLetivo}
-                valueSelect={anoLetivo}
-                placeholder="Ano letivo"
-              />
+              <Loader loading={carregandoAnos} tip="">
+                <SelectComponent
+                  label="Ano Letivo"
+                  lista={listaAnosLetivo}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={
+                    (listaAnosLetivo && listaAnosLetivo.length === 1) ||
+                    alunoLocalizadorSelect
+                  }
+                  onChange={onChangeAnoLetivo}
+                  valueSelect={anoLetivo}
+                  placeholder="Ano letivo"
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
-              <SelectComponent
-                label="Diretoria Regional de Educação (DRE)"
-                lista={listaDres}
-                valueOption="valor"
-                valueText="desc"
-                disabled={!anoLetivo || (listaDres && listaDres.length === 1)}
-                onChange={onChangeDre}
-                valueSelect={dreId}
-                placeholder="Diretoria Regional De Educação (DRE)"
-              />
+              <Loader loading={carregandoDres} tip="">
+                <SelectComponent
+                  label="Diretoria Regional de Educação (DRE)"
+                  lista={listaDres}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={!anoLetivo || (listaDres && listaDres.length === 1)}
+                  onChange={onChangeDre}
+                  valueSelect={dreId}
+                  placeholder="Diretoria Regional De Educação (DRE)"
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
-              <SelectComponent
-                label="Unidade Escolar (UE)"
-                lista={listaUes}
-                valueOption="valor"
-                valueText="desc"
-                disabled={!dreId || (listaUes && listaUes.length === 1)}
-                onChange={onChangeUe}
-                valueSelect={ueId}
-                placeholder="Unidade Escolar (UE)"
-              />
+              <Loader loading={carregandoUes} tip="">
+                <SelectComponent
+                  label="Unidade Escolar (UE)"
+                  lista={listaUes}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={!dreId || (listaUes && listaUes.length === 1)}
+                  onChange={onChangeUe}
+                  valueSelect={ueId}
+                  placeholder="Unidade Escolar (UE)"
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
               <div className="row">
@@ -463,37 +503,41 @@ const HistoricoEscolar = () => {
                   : `col-lg-4 col-xl-4`
               } mb-2"`}
             >
-              <SelectComponent
-                label="Modalidade"
-                lista={listaModalidades}
-                valueOption="valor"
-                valueText="desc"
-                disabled={
-                  !ueId ||
-                  (listaModalidades && listaModalidades.length === 1) ||
-                  alunoLocalizadorSelect
-                }
-                onChange={onChangeModalidade}
-                valueSelect={modalidadeId}
-                placeholder="Modalidade"
-              />
+              <Loader loading={carregandoModalidades} tip="">
+                <SelectComponent
+                  label="Modalidade"
+                  lista={listaModalidades}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={
+                    !ueId ||
+                    (listaModalidades && listaModalidades.length === 1) ||
+                    alunoLocalizadorSelect
+                  }
+                  onChange={onChangeModalidade}
+                  valueSelect={modalidadeId}
+                  placeholder="Modalidade"
+                />
+              </Loader>
             </div>
             {String(modalidadeId) === String(modalidade.EJA) ? (
               <div className="col-sm-12 col-md-12 col-lg-3 col-xl-3 mb-2">
-                <SelectComponent
-                  lista={listaSemestre}
-                  valueOption="valor"
-                  valueText="desc"
-                  label="Semestre"
-                  disabled={
-                    !modalidadeId ||
-                    String(modalidadeId) === String(modalidade.FUNDAMENTAL) ||
-                    (listaSemestre && listaSemestre.length === 1)
-                  }
-                  valueSelect={semestre}
-                  onChange={onChangeSemestre}
-                  placeholder="Semestre"
-                />
+                <Loader loading={carregandoSemestres} tip="">
+                  <SelectComponent
+                    lista={listaSemestre}
+                    valueOption="valor"
+                    valueText="desc"
+                    label="Semestre"
+                    disabled={
+                      !modalidadeId ||
+                      String(modalidadeId) === String(modalidade.FUNDAMENTAL) ||
+                      (listaSemestre && listaSemestre.length === 1)
+                    }
+                    valueSelect={semestre}
+                    onChange={onChangeSemestre}
+                    placeholder="Semestre"
+                  />
+                </Loader>
               </div>
             ) : null}
             <div
@@ -503,20 +547,22 @@ const HistoricoEscolar = () => {
                   : `col-lg-4 col-xl-4`
               } mb-2"`}
             >
-              <SelectComponent
-                lista={listaTurmas}
-                valueOption="valor"
-                valueText="desc"
-                label="Turma"
-                disabled={
-                  !modalidadeId ||
-                  (listaTurmas && listaTurmas.length === 1) ||
-                  alunoLocalizadorSelect
-                }
-                valueSelect={turmaId}
-                onChange={onChangeTurma}
-                placeholder="Turma"
-              />
+              <Loader loading={carregandoTurmas} tip="">
+                <SelectComponent
+                  lista={listaTurmas}
+                  valueOption="valor"
+                  valueText="desc"
+                  label="Turma"
+                  disabled={
+                    !modalidadeId ||
+                    (listaTurmas && listaTurmas.length === 1) ||
+                    alunoLocalizadorSelect
+                  }
+                  valueSelect={turmaId}
+                  onChange={onChangeTurma}
+                  placeholder="Turma"
+                />
+              </Loader>
             </div>
             <div
               className={`"col-sm-12 col-md-6 ${
@@ -533,6 +579,7 @@ const HistoricoEscolar = () => {
                 valueSelect={estudanteOpt}
                 onChange={onChangeEstudanteOpt}
                 placeholder="Estudantes"
+                disabled={!turmaId}
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
@@ -556,19 +603,19 @@ const HistoricoEscolar = () => {
               />
             </div>
             <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-              {listaEstudanteOpt === '1' ? (
+              {estudanteOpt === '1' ? (
                 <ListaPaginada
-                  url="v1/teste"
+                  url="v1/boletim/alunos"
                   id="lista-alunos-historico-escolar"
-                  colunaChave="id"
+                  idLinha="codigo"
+                  colunaChave="codigo"
                   colunas={colunas}
                   filtro={filtro}
                   multiSelecao
+                  temPaginacao={false}
                   selecionarItems={onSelecionarItems}
                 />
-              ) : (
-                ''
-              )}
+              ) : null}
             </div>
           </div>
         </div>
