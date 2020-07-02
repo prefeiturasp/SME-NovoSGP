@@ -308,9 +308,8 @@ const HistoricoEscolar = () => {
     setListaAnosLetivo([]);
     setListaDres([]);
 
-    setEstudanteOpt(undefined);
-
     obterAnosLetivos();
+    obterDres();
   };
 
   const onClickGerar = () => {
@@ -429,7 +428,7 @@ const HistoricoEscolar = () => {
                 color={Colors.Roxo}
                 border
                 bold
-                className="mr-2"
+                className="mr-3"
                 onClick={() => onClickCancelar()}
               />
               <Button
@@ -439,7 +438,7 @@ const HistoricoEscolar = () => {
                 color={Colors.Azul}
                 border
                 bold
-                className="mr-0"
+                className="mr-2"
                 onClick={() => onClickGerar()}
                 disabled={desabilitarBtnGerar}
               />
