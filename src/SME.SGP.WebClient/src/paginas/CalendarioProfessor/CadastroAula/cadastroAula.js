@@ -30,6 +30,7 @@ import modalidade from '~/dtos/modalidade';
 import ExcluirAula from './excluirAula';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import RotasDto from '~/dtos/rotasDto';
+import AlterarAula from './alterarAula';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 
 function CadastroDeAula({ match, location }) {
@@ -57,6 +58,7 @@ function CadastroDeAula({ match, location }) {
   const [somenteLeitura, setSomenteLeitura] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [exibirModalExclusao, setExibirModalExclusao] = useState(false);
+  const [exibirModalAlteracao, setExibirModalAlteracao] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
   const [controlaGrade, setControlaGrade] = useState(true);
   const [gradeAtingida, setGradeAtingida] = useState(false);
@@ -91,6 +93,8 @@ function CadastroDeAula({ match, location }) {
     { label: 'Reposição', value: 2 },
   ];
 
+  const [recorrenciaInicial, setRecorrenciaInicial] = useState(1);
+
   const recorrencia = {
     AULA_UNICA: 1,
     REPETIR_BIMESTRE_ATUAL: 2,
@@ -102,14 +106,12 @@ function CadastroDeAula({ match, location }) {
     {
       label: 'Repetir no Bimestre atual',
       value: recorrencia.REPETIR_BIMESTRE_ATUAL,
-      disabled:
-        id && (recorrenciaAulaOriginal === 3 || recorrenciaAulaOriginal === 1),
+      disabled: recorrenciaInicial !== recorrencia.REPETIR_BIMESTRE_ATUAL
     },
     {
       label: 'Repetir em todos os Bimestres',
       value: recorrencia.REPETIR_TODOS_BIMESTRES,
-      disabled:
-        id && (recorrenciaAulaOriginal === 2 || recorrenciaAulaOriginal === 1),
+      disabled: recorrenciaInicial !== recorrencia.REPETIR_TODOS_BIMESTRES
     },
   ];
 
@@ -161,14 +163,14 @@ function CadastroDeAula({ match, location }) {
         .then(resposta => {
           const respostaAula = resposta.data;
           respostaAula.dataAula = window.moment(respostaAula.dataAula);
-          setRecorrenciaAulaOriginal(respostaAula.recorrenciaAula);
+          setRecorrenciaInicial(respostaAula.recorrenciaAulaPai ?? respostaAula.recorrenciaAula);
           setAula(respostaAula);
           setRegistroMigrado(respostaAula.migrado);
           setEmManutencao(respostaAula.emManutencao);
           servicoCadastroAula
-            .obterRecorrenciaPorIdAula(id)
-            .then(rep => {
-              setRecorrenciaAulaEmEdicao(rep.data);
+            .obterRecorrenciaPorIdAula(id, aula.recorrenciaAula)
+            .then(resposta => {
+              setRecorrenciaAulaEmEdicao(resposta.data);
             })
             .catch(e => erros(e));
           if (componentes) {
@@ -468,6 +470,12 @@ function CadastroDeAula({ match, location }) {
         recorrenciaAula: e.target.value,
       };
     });
+    servicoCadastroAula
+      .obterRecorrenciaPorIdAula(id, e.target.value)
+      .then(resposta => {
+        setRecorrenciaAulaEmEdicao(resposta.data);
+      })
+      .catch(e => erros(e));
   };
 
   const onClickVoltar = async () => {
@@ -555,6 +563,26 @@ function CadastroDeAula({ match, location }) {
           }}
           onCancelar={() => setExibirModalExclusao(false)}
         />
+        <AlterarAula
+          visivel={exibirModalAlteracao}
+          dataAula={obterDataFormatada()}
+          nomeComponente={() => {
+            const componente = obterComponenteSelecionadoPorId(
+              aula.disciplinaId
+            );
+            return componente?.nome;
+          }}
+          recorrencia={recorrenciaAulaEmEdicao}
+          recorrenciaSelecionada={aula.recorrenciaAula}
+          onFecharModal={(salvar) => {
+            setExibirModalAlteracao(false);
+            if (salvar) {
+              refForm.current.handleSubmit();
+            }
+          }}
+          onCancelar={() => setExibirModalAlteracao(false)}
+        />
+
         <div className="col-md-12">
           {controlaGrade && gradeAtingida && !id && (
             <Alert
@@ -663,7 +691,14 @@ function CadastroDeAula({ match, location }) {
                         border
                         bold
                         className="mr-2"
-                        onClick={() => form.handleSubmit()}
+                        onClick={() => {
+                          if (aula.recorrenciaAula == recorrencia.AULA_UNICA && !recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula) {
+                            form.handleSubmit();
+                          }
+                          else {
+                            setExibirModalAlteracao(true);
+                          }
+                        }}
                         disabled={
                           somenteConsulta ||
                           (controlaGrade && gradeAtingida && !id) ||
