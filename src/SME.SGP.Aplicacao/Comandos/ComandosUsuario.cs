@@ -281,9 +281,6 @@ namespace SME.SGP.Aplicacao
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
             var usuarioCore = await servicoEOL.ObterMeusDados(login);
 
-            if (usuarioCore == null)
-                throw new NegocioException("Usuário não encontrado.");
-
             if (usuario == null)
                 usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, login, usuarioCore.Nome, usuarioCore.Email);
 
@@ -292,7 +289,7 @@ namespace SME.SGP.Aplicacao
                 await servicoEOL.RelecionarUsuarioPerfis(login);
             }
 
-            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));
+            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));            
             usuario.DefinirEmail(usuarioCore.Email);
             usuario.IniciarRecuperacaoDeSenha();
             repositorioUsuario.Salvar(usuario);
