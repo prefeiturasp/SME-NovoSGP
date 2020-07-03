@@ -138,7 +138,7 @@ const CompensacaoAusenciaLista = () => {
 
     if (turmaSelecionada.turma) {
       resetarFiltro();
-      obterDisciplinas(turmaSelecionada.turma);
+      obterDisciplinas();
     } else {
       resetarFiltro();
     }

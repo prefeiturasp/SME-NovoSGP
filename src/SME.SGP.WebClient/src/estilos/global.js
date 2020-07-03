@@ -60,6 +60,10 @@ export default createGlobalStyle`
   .ant-modal, .ant-modal-wrap {
     z-index: 9999 !important;
   }
+  
+  .ant-dropdown {
+    z-index: 10000 !important;
+  }
 
   .ant-select-dropdown-menu-item:hover {
     background-color: ${Base.Roxo}  !important;

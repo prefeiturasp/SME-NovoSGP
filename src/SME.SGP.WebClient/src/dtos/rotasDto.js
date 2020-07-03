@@ -40,6 +40,8 @@ const RotasDto = {
   SEM_PERMISSAO: '/sem-permissao',
   TERRITORIO_SABER: '/planejamento/plano-anual-territorio-saber',
   HISTORICO_ESCOLAR: '/relatorios/historico-escolar',
+  RELATORIO_BOLETIM_SIMPLES: '/relatorios/diario-classe/boletim-simples',
+  ATA_FINAL_RESULTADOS: '/relatorios/atas/ata-final-resultados',
 };
 
 export default RotasDto;
