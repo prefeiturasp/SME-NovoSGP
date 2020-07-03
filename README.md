@@ -1,5 +1,7 @@
 # SME Novo SGP
 
+O Sistema de Gestão Pedagógica (SGP) é o novo sistema de gestão pedagógica dos gestores e professores de toda rede Municipal de ensino do município de São Paulo como parte de uma transformação digital da Secretaria de Educação. O Sistema é utilizado diariamente por milhares professores e alunos da rede pública tendo alto impacto no ambiente escolar.
+
 Configuração inicial de ambiente de desenvolvimento
 
 Esta solução contém o projet de [API](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.Api "API") (backend) e [Front](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.WebClient "Front")
