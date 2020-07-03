@@ -282,8 +282,8 @@ const CalendarioEscolar = () => {
     history.push('/');
   };
 
-  const aoTrocarEventoSme = () => {
-    setEventoSme(!eventoSme);
+  const aoTrocarEventoSme = (valor) => {
+    setEventoSme(valor);
   };
 
   useEffect(() => {
@@ -293,6 +293,7 @@ const CalendarioEscolar = () => {
       dreSelecionada,
       unidadeEscolarSelecionada,
     });
+    store.dispatch(zeraCalendario());
   }, [eventoSme]);
 
   useEffect(() => {
@@ -393,6 +394,7 @@ const CalendarioEscolar = () => {
       dreSelecionada,
       unidadeEscolarSelecionada,
     });
+    store.dispatch(zeraCalendario());
   }, [unidadeEscolarSelecionada]);
 
   return (
@@ -504,7 +506,7 @@ const CalendarioEscolar = () => {
                   valueText="desc"
                   valueSelect={unidadeEscolarSelecionada}
                   placeholder="Unidade Escolar (UE)"
-                  disabled={!dreSelecionada || unidadesEscolares.length < 2}
+                  disabled={!dreSelecionada}
                 />
               </Loader>
             </Grid>
