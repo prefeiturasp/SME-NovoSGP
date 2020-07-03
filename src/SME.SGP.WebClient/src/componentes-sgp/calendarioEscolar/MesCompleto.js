@@ -77,33 +77,32 @@ const MesCompleto = props => {
   const obterTipoEventosDia = useCallback(
     async mes => {
       if (mes) {
+        setTipoEventosDiaLista([]);
         if (tipoCalendarioSelecionado) {
           setCarregandoTipos(true);
           await api
             .get(
               `v1/calendarios/eventos/meses/${mes}/tipos?EhEventoSme=${eventoSme}&${
-                dreSelecionada ? `DreId=${dreSelecionada}&` : ''
+              dreSelecionada ? `DreId=${dreSelecionada}&` : ''
               }${
-                tipoCalendarioSelecionado
-                  ? `IdTipoCalendario=${tipoCalendarioSelecionado}&`
-                  : ''
+              tipoCalendarioSelecionado
+                ? `IdTipoCalendario=${tipoCalendarioSelecionado}&`
+                : ''
               }${
-                unidadeEscolarSelecionada
-                  ? `UeId=${unidadeEscolarSelecionada}`
-                  : ''
+              unidadeEscolarSelecionada
+                ? `UeId=${unidadeEscolarSelecionada}`
+                : ''
               }`
             )
             .then(resposta => {
-              if (resposta.data) {
+              if (resposta.data)
                 setTipoEventosDiaLista(resposta.data);
-              } else setTipoEventosDiaLista([]);
               setCarregandoTipos(false);
             })
             .catch(() => {
-              setTipoEventosDiaLista([]);
               setCarregandoTipos(false);
             });
-        } else setTipoEventosDiaLista([]);
+        }
       }
     },
     [
@@ -132,10 +131,10 @@ const MesCompleto = props => {
 
       setDiasDaSemana(diasDaSemanaLista);
       setUltimoUsado(mesSelecionado);
-      setEstaAberto({ ...estaAberto, [mesSelecionado]: true });
+      setEstaAberto({ [mesSelecionado]: true });
       obterTipoEventosDia(mesSelecionado);
     }
-    return () => setEstaAberto({ ...estaAberto, [mesSelecionado]: false });
+    return () => setEstaAberto({ [mesSelecionado]: false });
   }, [mesSelecionado]);
 
   return mesSelecionado > 0 && estaAberto[mesSelecionado] ? (
@@ -222,8 +221,8 @@ const MesCompleto = props => {
       </Loader>
     </Div>
   ) : (
-    <Div />
-  );
+      <Div />
+    );
 };
 
 MesCompleto.propTypes = {
