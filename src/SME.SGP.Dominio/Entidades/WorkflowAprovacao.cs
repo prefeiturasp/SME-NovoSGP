@@ -56,8 +56,8 @@ namespace SME.SGP.Dominio
 
         public IEnumerable<WorkflowAprovacaoNivel> ModificarStatusPorNivel(WorkflowAprovacaoNivelStatus status, int nivelNumero, string observacao)
         {
-            var niveis = ObtemNiveis(nivelNumero);
-            foreach (var nivel in niveis)
+            var niveisWf = ObtemNiveis(nivelNumero);
+            foreach (var nivel in niveisWf)
             {
                 nivel.ModificaStatus(status, observacao);
 
@@ -79,8 +79,7 @@ namespace SME.SGP.Dominio
         public IEnumerable<WorkflowAprovacaoNivel> ObtemNiveisParaEnvioPosAprovacao()
         {
             var nivelAtual = niveis
-                    .Where(a => a.Status == WorkflowAprovacaoNivelStatus.Aprovado)
-                    .FirstOrDefault()
+                    .FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Aprovado)
                     .Nivel;
 
             var proximoNivel = niveis
@@ -88,7 +87,7 @@ namespace SME.SGP.Dominio
                 .FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.SemStatus && a.Nivel > nivelAtual);
 
             if (proximoNivel == null)
-                return null;
+                return Enumerable.Empty<WorkflowAprovacaoNivel>();
 
             return ObtemNiveis(proximoNivel.Nivel);
         }

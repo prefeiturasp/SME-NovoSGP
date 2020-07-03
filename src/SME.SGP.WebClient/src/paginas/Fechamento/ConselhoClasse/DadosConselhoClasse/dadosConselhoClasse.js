@@ -107,12 +107,14 @@ const DadosConselhoClasse = props => {
         if (e && e.response && e.response.status === 601) {
           dispatch(setBimestreAtual(bimestreConsulta || '1'));
         }
+        dispatch(setDadosPrincipaisConselhoClasse({}));
         setSemDados(true);
       });
       if (retorno && retorno.data) {
         const {
           conselhoClasseId,
           fechamentoTurmaId,
+          conselhoClasseAlunoId,
           bimestre,
           periodoFechamentoInicio,
           periodoFechamentoFim,
@@ -141,6 +143,7 @@ const DadosConselhoClasse = props => {
         const valores = {
           fechamentoTurmaId,
           conselhoClasseId: conselhoClasseId || 0,
+          conselhoClasseAlunoId,
           alunoCodigo: codigoEOL,
           turmaCodigo,
           alunoDesabilitado: desabilitado,

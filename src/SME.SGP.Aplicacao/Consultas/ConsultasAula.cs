@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorio;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IServicoEOL servicoEol;
+        private readonly IServicoEol servicoEol;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasAula(IRepositorioAula repositorio,
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                              IRepositorioPlanoAula repositorioPlanoAula,
                              IRepositorioTurma repositorioTurma,
                              IServicoUsuario servicoUsuario,
-                             IServicoEOL servicoEol,
+                             IServicoEol servicoEol,
                              IConsultasDisciplina consultasDisciplina,
                              IConsultasTurma consultasTurma,
                              IConsultasPeriodoFechamento consultasPeriodoFechamento)
@@ -61,8 +61,8 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException($"Não foi possivel obter a turma da aula");
 
-            var bimestreAtual = consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo, turma.Semestre);
-            var bimestreAula = consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo, turma.Semestre);
+            var bimestreAtual = await consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo, turma.Semestre);
+            var bimestreAula = await consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo, turma.Semestre);
 
             var bimestreForaPeriodo = bimestreAtual == 0 || bimestreAula == 0;
 
@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
         {
             var existeRegistro = await consultasFrequencia.FrequenciaAulaRegistrada(aulaId);
             if (!existeRegistro)
-                existeRegistro = await repositorioPlanoAula.PlanoAulaRegistrado(aulaId);
+                existeRegistro = await repositorioPlanoAula.PlanoAulaRegistradoAsync(aulaId);
 
             return existeRegistro;
         }
@@ -132,15 +132,15 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var usuarioRF = usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : string.Empty;
 
-            var turma = repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Tipo de calendário não existe para turma selecionada");
 
-            var periodosEscolares = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+            var periodosEscolares = await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
             return ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplina, usuarioLogado, usuarioRF);
         }
@@ -180,7 +180,7 @@ namespace SME.SGP.Aplicacao
             return aulas.Sum(a => a.Quantidade);
         }
 
-        public async Task<int> ObterRecorrenciaDaSerie(long aulaId)
+        public int ObterRecorrenciaDaSerie(long aulaId)
         {
             var aula = repositorio.ObterPorId(aulaId);
 
@@ -251,8 +251,9 @@ namespace SME.SGP.Aplicacao
         private async Task<string> ObterDisciplinaIdAulaEOL(Usuario usuarioLogado, Aula aula, bool ehCJ)
         {
             IEnumerable<DisciplinaResposta> disciplinasUsuario = Enumerable.Empty<DisciplinaResposta>();
+
             if (ehCJ)
-                disciplinasUsuario = await consultasDisciplina.ObterComponentesCJ(null, aula.TurmaId, string.Empty, long.Parse(aula.DisciplinaId), usuarioLogado.CodigoRf);
+                disciplinasUsuario = await consultasDisciplina.ObterComponentesCJ(null, aula.TurmaId, string.Empty, long.Parse(aula.DisciplinaId), usuarioLogado.CodigoRf, ignorarDeParaRegencia: true);
             else
             {
                 var componentesEOL = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);

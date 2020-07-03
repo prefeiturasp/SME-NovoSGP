@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IServicoAbrangencia> servicoAbrangencia;
         private readonly Mock<IServicoAutenticacao> servicoAutenticacao;
         private readonly Mock<IServicoEmail> servicoEmail;
-        private readonly Mock<IServicoEOL> servicoEOL;
+        private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IServicoPerfil> servicoPerfil;
         private readonly Mock<IServicoTokenJwt> servicoTokenJwt;
         private readonly Mock<IServicoUsuario> servicoUsuario;
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             servicoUsuario = new Mock<IServicoUsuario>();
             servicoPerfil = new Mock<IServicoPerfil>();
             servicoTokenJwt = new Mock<IServicoTokenJwt>();
-            servicoEOL = new Mock<IServicoEOL>();
+            servicoEOL = new Mock<IServicoEol>();
             var repositorioCache = new Mock<IRepositorioCache>();
             servicoEmail = new Mock<IServicoEmail>();
             var mockConfiguration = new Mock<IConfiguration>();

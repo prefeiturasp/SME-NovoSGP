@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao
         private async Task<int> ObterBimestreAtual(Turma turma)
         {
             var bimestreAtual = await repositorioPeriodoEscolar.ObterBimestreAtualAsync(turma.CodigoTurma, turma.ModalidadeTipoCalendario, DateTime.Today);
-            if (bimestreAtual == null || bimestreAtual == 0)
+            if (bimestreAtual == 0)
                 throw new NegocioException("Não foi possível identificar o bimestre atual");
 
             return bimestreAtual;
@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
         {
             var relatorioSemestral = relatorioSemestralId > 0 ?
                 await consultasRelatorioSemestral.ObterPorIdAsync(relatorioSemestralId) :
-                await NovoRelatorioSemestral(turma, semestre);
+                NovoRelatorioSemestral(turma, semestre);
 
             var novoRelatorioAluno = new RelatorioSemestralPAPAluno()
             {
@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
             return novoRelatorioAluno;
         }
 
-        private async Task<RelatorioSemestralTurmaPAP> NovoRelatorioSemestral(Turma turma, int semestre)
+        private RelatorioSemestralTurmaPAP NovoRelatorioSemestral(Turma turma, int semestre)
         {
             return new RelatorioSemestralTurmaPAP()
             {

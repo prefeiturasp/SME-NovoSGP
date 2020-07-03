@@ -6,15 +6,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
-using RabbitMQ.Client;
 using SME.Background.Core;
 using SME.Background.Hangfire;
-using SME.SGP.Api.Configuracoes;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -84,25 +80,14 @@ namespace SME.SGP.Api
             services.AddHttpContextAccessor();
 
             RegistraDependencias.Registrar(services);
-            RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
-
-
+            
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-            services.AddDistributedRedisCache(options =>
-            {
-                options.Configuration = Configuration.GetConnectionString("SGP-Redis");
-                options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
-            });
-
             services.AddApplicationInsightsTelemetry(Configuration);
-
-            services.AdicionarMediatr();
-            services.AdicionarValidadoresFluentValidation();
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
 
@@ -132,30 +117,10 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
-
             if (_env.EnvironmentName != "teste-integrado")
             {
-                //TODO: RETIRAR DAQUI!
-                var factory = new ConnectionFactory
-                {
-                    HostName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Hostname"),
-                    UserName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Username"),
-                    Password = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Password")
-                };
-
-
-                var conexaoRabbit = factory.CreateConnection();
-                IModel _channel = conexaoRabbit.CreateModel();
-
-                //TODO: VARIAVEIS PARA CONFIGURACOES!
-                _channel.ExchangeDeclare("sme.sr.workers", ExchangeType.Topic);
-                _channel.QueueDeclare("sme.sr.workers.sgp", false, false, false, null);
-                _channel.QueueBind("sme.sr.workers.sgp", "sme.sr.workers", "relatorios");
-
-                services.AddSingleton(conexaoRabbit);
-                services.AddSingleton(_channel);
+                services.AddRabbit();
             }
-
         }
     }
 }

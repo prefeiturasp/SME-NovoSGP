@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEventosAulasCalendario(
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             IComandosDiasLetivos comandosDiasLetivos,
             IRepositorioAula repositorioAula,
             IServicoUsuario servicoUsuario,
-            IServicoEOL servicoEOL,
+            IServicoEol servicoEOL,
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
@@ -148,7 +148,7 @@ namespace SME.SGP.Aplicacao
                         EhRegencia = disciplina.Regencia,
                         EhCompartilhada = disciplina.Compartilhada,
                         PermiteRegistroFrequencia = disciplina.RegistraFrequencia && !x.SomenteConsulta,
-                        podeCadastrarAvaliacao = podeCriarAtividade,
+                        PodeCadastrarAvaliacao = podeCriarAtividade,
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
                         Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
@@ -176,7 +176,7 @@ namespace SME.SGP.Aplicacao
             if (dataAula.Year != DateTime.Now.Year)
             {
 
-                var periodoEscolarDaAula = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAula);
+                var periodoEscolarDaAula = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAula);
                 if (periodoEscolarDaAula == null)
                     throw new NegocioException("Não foi possível localizar o período escolar da aula.");
                 
@@ -215,7 +215,7 @@ namespace SME.SGP.Aplicacao
 
             string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
-            var diasPeriodoEscolares = comandosDiasLetivos.BuscarDiasLetivos(filtro.TipoCalendarioId);
+            var diasPeriodoEscolares = await comandosDiasLetivos.BuscarDiasLetivos(filtro.TipoCalendarioId);
             var diasAulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf);
             var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.EhEventoSme, true, usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
 
@@ -244,7 +244,7 @@ namespace SME.SGP.Aplicacao
 
             var eventosAulas = new List<EventosAulasTipoCalendarioDto>();
 
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId);
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId);
 
             if (periodoEscolar is null || !periodoEscolar.Any())
                 throw new NegocioException($"Não existe periodo escolar cadastrado para o tipo de calendario de id {filtro.TipoCalendarioId}");
@@ -267,15 +267,15 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var dia in diasAulas.Select(x => x.Key).Distinct())
             {
-                var qtdEventosAulas = diasAulas.Where(x => x.Key == dia).Count();
+                var qtdEventosAulas = diasAulas.Count(x => x.Key == dia);
                 eventosAulas.Add(new EventosAulasTipoCalendarioDto
                 {
                     Dia = dia,
                     QuantidadeDeEventosAulas = qtdEventosAulas,
-                    TemAtividadeAvaliativa = diasAulas.Where(x => x.Key == dia && x.Value == "Atividade avaliativa").Any(),
-                    TemAula = diasAulas.Where(x => x.Key == dia && x.Value == "Aula").Any(),
-                    TemAulaCJ = diasAulas.Where(x => x.Key == dia && x.Value == "CJ").Any(),
-                    TemEvento = diasAulas.Where(x => x.Key == dia && x.Value == "Evento").Any()
+                    TemAtividadeAvaliativa = diasAulas.Any(x => x.Key == dia && x.Value == "Atividade avaliativa"),
+                    TemAula = diasAulas.Any(x => x.Key == dia && x.Value == "Aula"),
+                    TemAulaCJ = diasAulas.Any(x => x.Key == dia && x.Value == "CJ"),
+                    TemEvento = diasAulas.Any(x => x.Key == dia && x.Value == "Evento")
                 });
             }
 
@@ -346,7 +346,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AulaCompletaDto>> ObterAulasDia(FiltroEventosAulasCalendarioDiaDto filtro, DateTime data, Guid perfil, string professorRf, IEnumerable<DisciplinaResposta> disciplinas)
         {
-            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, filtro.TurmaHistorico);
+            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil);
 
             foreach (var aula in aulas)
                 aula.DentroPeriodo = await consultasAula.AulaDentroPeriodo(aula.TurmaId, aula.DataAula);

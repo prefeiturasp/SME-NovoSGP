@@ -25,8 +25,8 @@ namespace SME.SGP.Dto
         public long Id { get; set; }
 
         [Required(ErrorMessage = "É necessário informar o título.")]
-        [MinLength(5, ErrorMessage = "O título deve conter no mínimo 5 caracteres.")]
-        [MaxLength(30, ErrorMessage = "O título deve conter no máximo 30 caracteres.")]
+        [MinLength(10, ErrorMessage = "O título deve conter no mínimo 10 caracteres.")]
+        [MaxLength(50, ErrorMessage = "O título deve conter no máximo 50 caracteres.")]
         public string Titulo { get; set; }
     }
 }

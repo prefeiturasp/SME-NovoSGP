@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
             return repositorioObjetivosPlano.ObterDisciplinasDoBimestrePlanoAula(dataReferencia.Year, bimestre, turmaId, componenteCurricularId);
         }
 
-        public async Task<long> ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId)
+        public long ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId)
         {
             return repositorioObjetivosPlano.ObterIdPorObjetivoAprendizagemJurema(planoId, objetivoAprendizagemJuremaId);
         }
@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma não encontrada para consulta de objetivos de aprendizagem");
 
-            return consultasPeriodoEscolar.ObterBimestre(dataReferencia, turma.ModalidadeCodigo, turma.Semestre);
+            return await consultasPeriodoEscolar.ObterBimestre(dataReferencia, turma.ModalidadeCodigo, turma.Semestre);
         }
 
         private async Task<List<ObjetivoAprendizagemDto>> ListarSemCache()
@@ -152,15 +152,6 @@ namespace SME.SGP.Aplicacao
                     };
                 }
             }
-        }
-
-        private ObjetivoAprendizagemSimplificadoDto MapearParaDto(ObjetivoAprendizagemPlano objetivo)
-        {
-            return new ObjetivoAprendizagemSimplificadoDto()
-            {
-                Id = objetivo.Id,
-                IdComponenteCurricular = objetivo.ComponenteCurricularId
-            };
         }
 
         private IEnumerable<ComponenteCurricular> ObterComponentesCurriculares()

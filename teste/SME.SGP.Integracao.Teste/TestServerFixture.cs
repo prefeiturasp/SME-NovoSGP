@@ -7,6 +7,8 @@ using Postgres2Go;
 using Redis2Go;
 using SME.SGP.Api;
 using SME.SGP.Aplicacao.Servicos;
+using SME.SGP.Dados.Repositorios;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.IO;
@@ -174,7 +176,7 @@ namespace SME.SGP.Integracao.Teste
                     {
                         cmd.ExecuteNonQuery();
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         //throw new Exception($"Erro ao executar o script {file.FullName}. Erro: {ex.Message}");
                     }

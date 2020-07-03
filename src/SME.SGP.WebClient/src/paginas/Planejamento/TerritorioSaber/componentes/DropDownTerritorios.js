@@ -10,7 +10,11 @@ import { SelectComponent, Loader } from '~/componentes';
 // Serviços
 import AbrangenciaServico from '~/servicos/Abrangencia';
 
-function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
+function DropDownTerritorios({
+  onChangeTerritorio,
+  territorioSelecionado,
+  onBuscarTerritorios,
+}) {
   const [carregando, setCarregando] = useState(false);
   const [listaTerritorios, setListaTerritorios] = useState([]);
   const [possuiUmUnicoTerritorio, setPossuiUmUnicoTerritorio] = useState(false);
@@ -29,6 +33,8 @@ function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
         setPossuiUmUnicoTerritorio(lista.length <= 1);
 
         setListaTerritorios(lista);
+
+        onBuscarTerritorios(lista.length === 0);
       }
       setCarregando(false);
     }
@@ -37,6 +43,7 @@ function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
       buscarTerritorios();
     } else {
       setListaTerritorios([]);
+      onBuscarTerritorios(false);
     }
   }, [onChangeTerritorio, turmaSelecionada, turmaSelecionada.turma]);
 
@@ -68,11 +75,13 @@ function DropDownTerritorios({ onChangeTerritorio, territorioSelecionado }) {
 DropDownTerritorios.propTypes = {
   onChangeTerritorio: t.func,
   territorioSelecionado: t.oneOfType([t.any]),
+  onBuscarTerritorios: t.func,
 };
 
 DropDownTerritorios.defaultProps = {
   onChangeTerritorio: () => null,
   territorioSelecionado: {},
+  onBuscarTerritorios: () => null,
 };
 
 export default DropDownTerritorios;

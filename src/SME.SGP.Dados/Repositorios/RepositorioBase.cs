@@ -1,5 +1,4 @@
 ﻿using Dommel;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -50,8 +49,6 @@ namespace SME.SGP.Dados.Repositorios
             if (entidade.Id > 0)
             {
                 entidade.AlteradoEm = DateTime.Now;
-                if (string.IsNullOrWhiteSpace(database.UsuarioLogadoNomeCompleto))
-                    throw new ArgumentNullException("Contexto não pegou usuário logado.");
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 database.Conexao.Update(entidade);

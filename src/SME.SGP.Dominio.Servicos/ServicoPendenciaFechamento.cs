@@ -20,7 +20,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         private int avaliacoesSemnota;
@@ -37,7 +37,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioAula repositorioAula,
                                           IRepositorioParametrosSistema repositorioParametrosSistema,
                                           IRepositorioFechamentoNota repositorioFechamentoNota,
-                                          IServicoEOL servicoEOL,
+                                          IServicoEol servicoEOL,
                                           IServicoUsuario servicoUsuario)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));

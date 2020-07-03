@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
@@ -10,19 +8,17 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/unidades-escolares")]
-    [Authorize("Bearer")]
     public class UnidadesEscolaresController : ControllerBase
     {
-        [Route("{ueId}/funcionarios")]
+        [Route("funcionarios")]
         [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AS_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFuncionariosPorUe([FromServices]IConsultasUnidadesEscolares consultasUnidadesEscolares,
-            BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto, string ueId)
+        public async Task<IActionResult> ObterFuncionarios([FromServices] IObterFuncionariosUseCase obterFuncionariosUseCase,
+                                                                          [FromBody]FiltroFuncionarioDto filtroFuncionariosDto)
         {
-            if (string.IsNullOrEmpty(ueId))
-                throw new NegocioException("É necessário informar o código da UE.");
-            buscaFuncionariosFiltroDto.AtualizaCodigoUe(ueId);
-            return Ok(await consultasUnidadesEscolares.ObtemFuncionariosPorUe(buscaFuncionariosFiltroDto));
+            return Ok(await obterFuncionariosUseCase.Executar(filtroFuncionariosDto));
         }
     }
 }
