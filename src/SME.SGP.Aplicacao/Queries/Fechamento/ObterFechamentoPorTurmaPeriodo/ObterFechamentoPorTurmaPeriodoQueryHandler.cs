@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
         }
+
         public async Task<FechamentoTurma> Handle(ObterFechamentoPorTurmaPeriodoQuery request, CancellationToken cancellationToken)
         {
             return await repositorioFechamentoTurma.ObterPorTurmaPeriodo(request.TurmaId, request.PeriodoEscolarId);            
