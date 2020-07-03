@@ -246,9 +246,6 @@ export default function ReiniciarSenha() {
       setExibirModalReiniciarSenha(true);
     } else {
       setSemEmailCadastrado(false);
-      sucesso(
-        `Senha do usuário ${linha.nomeServidor} foi reiniciada com sucesso.`
-      );
       onClickFiltrar();
     }
   };
@@ -410,11 +407,10 @@ export default function ReiniciarSenha() {
         key="exibirModalMensagemReiniciarSenha"
         visivel={exibirModalMensagemReiniciarSenha}
         onClose={onCloseModalReiniciarSenha}
+        onConfirmacaoPrincipal={onCloseModalReiniciarSenha}
         labelBotaoPrincipal="OK"
-        labelBotaoSecundario="Cancelar"
-        esconderBotaoPrincipal={true}
-        esconderBotaoSecundario={true}
         titulo="Senha reiniciada"
+        esconderBotaoSecundario
         closable
       >
         <b> {mensagemSenhaAlterada} </b>

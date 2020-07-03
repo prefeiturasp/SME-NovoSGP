@@ -101,7 +101,7 @@ const PendenciasFechamentoForm = ({ match }) => {
 
     if (turmaSelecionada.turma) {
       montaBimestre();
-      obterDisciplinas(turmaSelecionada.turma);
+      obterDisciplinas();
     } else {
       resetarTela();
     }

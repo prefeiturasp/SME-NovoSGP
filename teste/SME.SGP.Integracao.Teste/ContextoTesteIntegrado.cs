@@ -2,7 +2,6 @@
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Integracao
 {
@@ -34,6 +33,11 @@ namespace SME.SGP.Integracao
         public override IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto)
         {
             throw new Exception("Este tipo de conexto não permite atribuição");
+        }
+
+        public override void AdicionarVariaveis(IDictionary<string, object> variaveis)
+        {
+            Variaveis = variaveis;
         }
     }
 }

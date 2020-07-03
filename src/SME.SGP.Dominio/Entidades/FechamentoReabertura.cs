@@ -41,6 +41,11 @@ namespace SME.SGP.Dominio
             }
         }
 
+        public void AdicionarBimestres(IEnumerable<FechamentoReaberturaBimestre> listaBimestres)
+        {
+            bimestres.AddRange(listaBimestres);
+        }
+
         public void AprovarWorkFlow()
         {
             if (Status == EntidadeStatus.AguardandoAprovacao)

@@ -8,10 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
-using SME.SGP.Api.Configuracoes;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using System.Collections.Generic;
 using System.Globalization;
@@ -82,13 +80,11 @@ namespace SME.SGP.Api
             services.AddHttpContextAccessor();
 
             RegistraDependencias.Registrar(services);
-            RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
-
-
+            
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddDistributedRedisCache(options =>
@@ -99,9 +95,6 @@ namespace SME.SGP.Api
             });
 
             services.AddApplicationInsightsTelemetry(Configuration);
-
-            services.AdicionarMediatr();
-            services.AdicionarValidadoresFluentValidation();
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
 
@@ -134,7 +127,6 @@ namespace SME.SGP.Api
             if (_env.EnvironmentName != "teste-integrado")
             {
                 services.AddRabbit();
-                services.AddHostedService<ListenerRabbitMQ>();
             }
         }
     }

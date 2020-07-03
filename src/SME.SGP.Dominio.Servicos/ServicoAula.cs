@@ -102,10 +102,9 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task ExcluirRecorrencia(long aulaId, int idRecorrencia, long usuarioId, Guid perfilSelecionado)
         {
-
             var recorrencia = (RecorrenciaAula)idRecorrencia;
 
-            var aula = repositorioAula.ObterCompletoPorId(aulaId);
+            var aula = await repositorioAula.ObterCompletoPorIdAsync(aulaId);
             if (aula == null)
                 throw new NegocioException("Não foi possível obter a aula.");
 

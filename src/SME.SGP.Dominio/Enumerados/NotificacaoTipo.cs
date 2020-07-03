@@ -24,5 +24,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Relatório")]
         Relatorio = 7,
+
+        [Display(Name = "Worker")]
+        Worker = 8,
     }
 }

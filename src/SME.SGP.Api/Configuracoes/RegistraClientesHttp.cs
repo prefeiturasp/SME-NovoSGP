@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Infra;
 using System;
@@ -49,6 +50,13 @@ namespace SME.SGP.Api
             }).ConfigurePrimaryHttpMessageHandler(() =>
             {
                 return new JasperCookieHandler() { CookieContainer = cookieContainer };
+            });
+
+
+            services.AddHttpClient<IServicoServidorRelatorios, ServicoServidorRelatorios>(c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
         }
     }
