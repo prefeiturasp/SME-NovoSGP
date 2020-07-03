@@ -7,7 +7,7 @@ import InputNome from './componentes/InputNome';
 import service from './services/LocalizadorService';
 
 const LocalizadorEstudante = props => {
-  const { onChange, showLabel, desabilitado } = props;
+  const { onChange, showLabel, desabilitado, dreId, ueId } = props;
 
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
@@ -31,32 +31,37 @@ const LocalizadorEstudante = props => {
     }
 
     if (valor.length < 3) return;
+
     const retorno = await service
-      .buscarNomeMock({
+      .buscarPorNome({
         nome: valor,
+        dreId,
+        ueId,
       })
       .catch(e => erros(e));
 
     if (retorno && retorno.data && retorno.data.length > 0) {
       setDataSource(
-        retorno.data.map(x => ({
-          alunoCodigo: x.alunoCodigo,
-          alunoNome: x.alunoNome,
+        retorno.data.map(aluno => ({
+          alunoCodigo: aluno.codigo,
+          alunoNome: aluno.nome,
         }))
       );
     }
   };
 
-  const onBuscarPorCodigo = useCallback(async ({ codigo }) => {
+  const onBuscarPorCodigo = useCallback(async codigoAluno => {
     const retorno = await service
-      .buscarCodigoMock({
-        codigo,
+      .buscarPorCodigo({
+        codigo: codigoAluno,
+        dreId,
+        ueId,
       })
       .catch(e => erros(e));
 
     if (retorno && retorno.data) {
-      const { alunoCodigo, alunoNome } = retorno.data;
-      setPessoaSelecionada({ alunoCodigo, alunoNome });
+      const { codigo, nome } = retorno.data;
+      setPessoaSelecionada({ codigo, nome });
       setDesabilitarCampo(estado => ({
         ...estado,
         nome: true,
@@ -123,12 +128,16 @@ LocalizadorEstudante.propTypes = {
   onChange: () => {},
   showLabel: PropTypes.bool,
   desabilitado: PropTypes.bool,
+  dreId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 LocalizadorEstudante.defaultProps = {
   onChange: PropTypes.func,
   showLabel: false,
   desabilitado: false,
+  dreId: '',
+  ueId: '',
 };
 
 export default LocalizadorEstudante;

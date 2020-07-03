@@ -15,9 +15,15 @@ namespace SME.Background.Core
             this.worker = worker;
         }
 
-        public void Dispose()
+        protected virtual void Dispose(bool disposing)
         {
             worker?.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public void Registrar()

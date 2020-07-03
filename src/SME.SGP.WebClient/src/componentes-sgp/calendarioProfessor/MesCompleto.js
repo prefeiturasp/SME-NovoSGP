@@ -124,8 +124,6 @@ const MesCompleto = props => {
       );
       data.setDate(data.getDate() - data.getDay() - 1);
 
-      debugger;
-
       const diasDaSemanaLista = [];
       for (let numSemanas = 0; numSemanas < 6; numSemanas += 1) {
         diasDaSemanaLista[numSemanas] = [];

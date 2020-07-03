@@ -95,5 +95,20 @@ namespace SME.SGP.Integracao.Teste
 
             return postResult;
         }
+
+        //[Fact(DisplayName = "Deve reiniciar a senha do usuário")]
+        //[Trait("Autenticação", "Reiniciar a senha do usuário")]
+        //public async Task Deve_Reiniciar_Senha()
+        //{
+        //    // Arrange
+        //    fixture._clientApi.DefaultRequestHeaders.Clear();
+        //    var codigoRf = "caique.amcom";
+
+        //    // Act
+        //    var result = await fixture._clientApi.PutAsync($"api/v1/autenticacao/{codigoRf}/reiniciar-senha", null);
+
+        //    // Assert
+        //    Assert.True(fixture.ValidarStatusCodeComSucesso(result));
+        //}
     }
 }
