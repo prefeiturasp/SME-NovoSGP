@@ -12,20 +12,27 @@ namespace SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease
     public class ObterFuncionariosQueryHandler : IRequestHandler<ObterFuncionariosQuery, IEnumerable<UsuarioEolRetornoDto>>
     {
         private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ObterFuncionariosQueryHandler(IServicoEol servicoEOL)
+        public ObterFuncionariosQueryHandler(IServicoEol servicoEOL, IMediator mediator)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionariosQuery request, CancellationToken cancellationToken)
         {
-            FiltroFuncionarioDto filtro = new FiltroFuncionarioDto();
-            filtro.CodigoDRE = request.CodigoDre;
-            filtro.CodigoUE = request.CodigoUe;
-                ;
-            return await servicoEOL.ObterFuncionariosPorDre(filtro);
-        }
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
+            FiltroFuncionarioDto filtro = new FiltroFuncionarioDto()
+            {
+                CodigoDRE = request.CodigoDre,
+                CodigoUE = request.CodigoUe,
+                CodigoRF = request.CodigoRf,
+                NomeServidor = request.NomeServidor
+            };
+
+            return await servicoEOL.ObterFuncionariosPorDre(usuario.PerfilAtual, filtro);
+        }
     }
 }

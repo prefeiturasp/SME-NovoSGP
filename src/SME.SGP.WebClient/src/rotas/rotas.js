@@ -804,8 +804,8 @@ rotas.set(RotasDto.ATA_FINAL_RESULTADOS, {
   component: AtaFinalResultados,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.ATA_FINAL_RESULTADOS,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ATA_FINAL_RESULTADOS,
 });
 
 const rotasArray = [];

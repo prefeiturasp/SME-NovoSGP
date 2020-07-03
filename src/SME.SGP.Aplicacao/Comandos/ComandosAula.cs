@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Excluir(long id, string disciplinaNome, RecorrenciaAula recorrencia)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var aula = repositorioAula.ObterCompletoPorId(id);
+            var aula = await repositorioAula.ObterCompletoPorIdAsync(id);
             aula.DisciplinaNome = disciplinaNome;
 
             return await servicoAula.Excluir(aula, recorrencia, usuario);

@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirAulaUseCase : AbstractUseCase, IInserirAulaUseCase
     {
-        public InserirAulaUseCase(IMediator mediator): base(mediator)
+        public InserirAulaUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -21,18 +21,38 @@ namespace SME.SGP.Aplicacao
 
             if (inserirAulaDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {
-                return await mediator.Send(new InserirAulaUnicaCommand(usuarioLogado, inserirAulaDto.DataAula, inserirAulaDto.Quantidade, inserirAulaDto.CodigoTurma, inserirAulaDto.CodigoComponenteCurricular, inserirAulaDto.NomeComponenteCurricular, inserirAulaDto.TipoCalendarioId, inserirAulaDto.TipoAula, inserirAulaDto.CodigoUe, inserirAulaDto.EhRegencia));
+                return await mediator.Send(new InserirAulaUnicaCommand(usuarioLogado,
+                                                                       inserirAulaDto.DataAula,
+                                                                       inserirAulaDto.Quantidade,
+                                                                       inserirAulaDto.CodigoTurma,
+                                                                       inserirAulaDto.CodigoComponenteCurricular,
+                                                                       inserirAulaDto.NomeComponenteCurricular,
+                                                                       inserirAulaDto.TipoCalendarioId,
+                                                                       inserirAulaDto.TipoAula,
+                                                                       inserirAulaDto.CodigoUe,
+                                                                       inserirAulaDto.EhRegencia));
             }
             else
             {
                 try
                 {
-                    mediator.Enfileirar(new InserirAulaRecorrenteCommand(usuarioLogado, inserirAulaDto.DataAula, inserirAulaDto.Quantidade, inserirAulaDto.CodigoTurma, inserirAulaDto.CodigoComponenteCurricular, inserirAulaDto.NomeComponenteCurricular, inserirAulaDto.TipoCalendarioId, inserirAulaDto.TipoAula, inserirAulaDto.CodigoUe, inserirAulaDto.EhRegencia, inserirAulaDto.RecorrenciaAula));
+                    await mediator.Send(new IncluirFilaInserirAulaRecorrenteCommand(usuarioLogado,
+                                                                         inserirAulaDto.DataAula,
+                                                                         inserirAulaDto.Quantidade,
+                                                                         inserirAulaDto.CodigoTurma,
+                                                                         inserirAulaDto.CodigoComponenteCurricular,
+                                                                         inserirAulaDto.NomeComponenteCurricular,
+                                                                         inserirAulaDto.TipoCalendarioId,
+                                                                         inserirAulaDto.TipoAula,
+                                                                         inserirAulaDto.CodigoUe,
+                                                                         inserirAulaDto.EhRegencia,
+                                                                         inserirAulaDto.RecorrenciaAula));
+                    
                     return new RetornoBaseDto("Serão cadastradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.AddBreadcrumb("Criação de aulas recorrentes", "Hangfire");
+                    SentrySdk.AddBreadcrumb("Criação de aulas recorrentes", "RabbitMQ");
                     SentrySdk.CaptureException(ex);
                 }
                 return new RetornoBaseDto("Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente.");

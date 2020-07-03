@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirAulaEmManutencaoCommandHandler : IRequestHandler<InserirAulaEmManutencaoCommand, ProcessoExecutando>
+    public class InserirAulaEmManutencaoCommandHandler : IRequestHandler<InserirAulaEmManutencaoCommand, IEnumerable<ProcessoExecutando>>
     {
         private readonly IRepositorioProcessoExecutando repositorio;
 
@@ -18,17 +18,24 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<ProcessoExecutando> Handle(InserirAulaEmManutencaoCommand request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ProcessoExecutando>> Handle(InserirAulaEmManutencaoCommand request, CancellationToken cancellationToken)
         {
-            var processoExecutando = new ProcessoExecutando()
+            var processosExecutando = new List<ProcessoExecutando>();
+
+            foreach(var aulaId in request.AulasIds)
             {
-                TipoProcesso = TipoProcesso.ManutencaoAula,
-                AulaId = request.AulaId
-            };
+                var processoExecutando = new ProcessoExecutando()
+                {
+                    TipoProcesso = TipoProcesso.ManutencaoAula,
+                    AulaId = aulaId
+                };
 
-            await repositorio.SalvarAsync(processoExecutando);
+                await repositorio.SalvarAsync(processoExecutando);
 
-            return processoExecutando;
+                processosExecutando.Add(processoExecutando);
+            }
+
+            return processosExecutando;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             unitOfWork.IniciarTransacao();
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioExemplo, filtroRelatorioGamesDto, usuarioLogado.Id));
+            var retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioExemplo, filtroRelatorioGamesDto, usuarioLogado));
             unitOfWork.PersistirTransacao();
             return retorno;
         }

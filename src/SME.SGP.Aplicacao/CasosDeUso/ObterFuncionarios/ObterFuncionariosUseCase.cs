@@ -18,7 +18,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Executar(FiltroFuncionarioDto filtroFuncionariosDto)
         {
-            return await mediator.Send(new ObterFuncionariosQuery(filtroFuncionariosDto.CodigoDRE, filtroFuncionariosDto.CodigoUE));
+            return await mediator.Send(new ObterFuncionariosQuery()
+            {
+                CodigoDre = filtroFuncionariosDto.CodigoDRE,
+                CodigoUe = filtroFuncionariosDto.CodigoUE,
+                CodigoRf = filtroFuncionariosDto.CodigoRF,
+                NomeServidor = filtroFuncionariosDto.NomeServidor
+            });
         }
     }
 }

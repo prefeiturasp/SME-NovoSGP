@@ -179,7 +179,7 @@ namespace SME.SGP.Dominio.Servicos
             return mensagemRetorno;
         }
 
-        private async Task AtualizaFechamentosComDatasDistintas(FechamentoReabertura fechamentoReabertura, List<(FechamentoReabertura, bool, bool)> fechamentosReaberturasParaAtualizar)
+        private async Task AtualizaFechamentosComDatasDistintas(List<(FechamentoReabertura, bool, bool)> fechamentosReaberturasParaAtualizar)
         {
             foreach (var fechamentoReaberturaParaAtualizar in fechamentosReaberturasParaAtualizar)
             {
@@ -358,7 +358,7 @@ namespace SME.SGP.Dominio.Servicos
                                 : $@"{fechamentoReabertura.Ue.TipoEscola.ShortName()} {fechamentoReabertura.Ue.Nome}")} foram ajustadas. As novas datas são: <br/>
                                   <b>{ fechamentoReabertura.TipoCalendario.Nome } - { fechamentoReabertura.TipoCalendario.AnoLetivo }</b>   
                                   { (fechamentoReaberturaParaAtualizar.Item2 ? " - Nova data de início do período: " + fechamentoReabertura.Inicio.ToString("dd/MM/yyyy") : string.Empty) }
-                                  { (fechamentoReaberturaParaAtualizar.Item2 ? " - Nova data de fim do período: " + fechamentoReabertura.Fim.ToString("dd/MM/yyyy") : string.Empty) }"
+                                  { (fechamentoReaberturaParaAtualizar.Item3 ? " - Nova data de fim do período: " + fechamentoReabertura.Fim.ToString("dd/MM/yyyy") : string.Empty) }"
             };
 
             servicoNotificacao.Salvar(notificacao);
@@ -386,10 +386,10 @@ namespace SME.SGP.Dominio.Servicos
                 DreId = fechamentoReabertura.Dre.CodigoDre,
                 NotificacaoTitulo = "Cadastro de período de reabertura de fechamento - ano anterior",
                 NotificacaoTipo = NotificacaoTipo.Calendario,
-                NotificacaoMensagem = $@"A {fechamentoReabertura.Ue.Nome} cadastrou um novo período de reabertura de fechamento de bimestre para o tipo de calendário {fechamentoReabertura.TipoCalendario.Nome} do ano de {fechamentoReabertura.TipoCalendario.AnoLetivo}. Para que o período seja considerado válido é necessário que você aceite esta notificação. <br />
-                                           Descrição: {fechamentoReabertura.Descricao} <br />
-                                           Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br />
-                                           Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br />
+                NotificacaoMensagem = $@"A {fechamentoReabertura.Ue.TipoEscola.ShortName()} {fechamentoReabertura.Ue.Nome}({fechamentoReabertura.Dre.Abreviacao}) cadastrou um novo período de reabertura de fechamento de bimestre para o tipo de calendário <b>{fechamentoReabertura.TipoCalendario.Nome}</b> do ano de {fechamentoReabertura.TipoCalendario.AnoLetivo}. Para que o período seja considerado válido é necessário que você aceite esta notificação. <br/>
+                                           Descrição: {fechamentoReabertura.Descricao} <br/>
+                                           Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
+                                           Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
                                            Bimestres: {fechamentoReabertura.ObterBimestresNumeral()}"
             };
 
@@ -446,7 +446,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     if (confirmacacaoAlteracaoHierarquica)
                     {
-                        await AtualizaFechamentosComDatasDistintas(fechamentoReabertura, fechamentosParaAtualizarTupple);
+                        await AtualizaFechamentosComDatasDistintas(fechamentosParaAtualizarTupple);
                     }
                     else
                     {

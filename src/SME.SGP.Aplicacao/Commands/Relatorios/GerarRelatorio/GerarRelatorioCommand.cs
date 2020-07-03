@@ -10,11 +10,12 @@ namespace SME.SGP.Aplicacao
         /// </summary>
         /// <param name="tipoRelatorio">Endpoint do relatório no servidor de relatórios, descrito na tag DisplayName</param>
         /// <param name="filtros">Classe de filtro vindo do front</param>
-        public GerarRelatorioCommand(TipoRelatorio tipoRelatorio, object filtros, long idUsuarioLogado)
+        public GerarRelatorioCommand(TipoRelatorio tipoRelatorio, object filtros, Usuario usuario)
         {
             TipoRelatorio = tipoRelatorio;
             Filtros = filtros;
-            IdUsuarioLogado = idUsuarioLogado;
+            IdUsuarioLogado = usuario.Id;
+            UsuarioLogadoRf = usuario.CodigoRf;
         }
 
         /// <summary>
@@ -23,5 +24,6 @@ namespace SME.SGP.Aplicacao
         public object Filtros { get; set; }
         public TipoRelatorio TipoRelatorio { get; set; }
         public long IdUsuarioLogado { get; set; }
+        public string UsuarioLogadoRf { get; }
     }
 }

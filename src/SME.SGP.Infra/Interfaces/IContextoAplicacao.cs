@@ -14,5 +14,6 @@ namespace SME.SGP.Infra.Interfaces
         T ObterVarivel<T>(string nome);
 
         IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto);
+        void AdicionarVariaveis(IDictionary<string, object> variaveis);
     }
 }

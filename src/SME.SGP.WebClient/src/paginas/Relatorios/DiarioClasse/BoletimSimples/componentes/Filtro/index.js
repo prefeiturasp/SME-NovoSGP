@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { Form, Formik } from 'formik';
@@ -64,7 +64,28 @@ function Filtro({ onFiltrar, resetForm }) {
   }, [modalidades, refForm]);
 
   useEffect(() => {
-    if (refForm && resetForm) refForm.resetForm();
+    if (resetForm) {
+      if (refForm && refForm.fields && Object.keys(refForm.fields).length) {
+        const fields = Object.keys(refForm.fields);
+        fields.forEach(field => {
+          const value =
+            refForm.fields[field] &&
+            refForm.fields[field].props &&
+            refForm.fields[field].props.children &&
+            Object.entries(refForm.fields[field].props.children).length === 1
+              ? String(refForm.fields[field].props.children[0].props.value)
+              : '';
+          refForm.setFieldValue(`${field}`, value);
+          if (field === 'modalidadeId') setModalidadeId(value);
+          if (field === 'dreId') setDreId(value);
+          if (
+            field === 'ueId' &&
+            !Object.entries(refForm.fields.dreId.props.children).length
+          )
+            refForm.setFieldValue('ueId', '');
+        });
+      }
+    }
   }, [refForm, resetForm]);
 
   useEffect(() => {
@@ -184,7 +205,7 @@ function Filtro({ onFiltrar, resetForm }) {
                     valueText="desc"
                     placeholder="Semestre"
                     label="Semestre"
-                    disabled={!modalidadeId || periodos}
+                    disabled={!modalidadeId || periodos.length}
                   />
                 </Loader>
               </Grid>
@@ -232,6 +253,7 @@ function Filtro({ onFiltrar, resetForm }) {
                 disabled={
                   refForm &&
                   refForm.state &&
+                  refForm.state.values &&
                   (!refForm.state.values.turmaId ||
                     refForm.state.values.turmaId === '0')
                 }
@@ -246,7 +268,7 @@ function Filtro({ onFiltrar, resetForm }) {
 
 Filtro.propTypes = {
   onFiltrar: PropTypes.func,
-  resetForm: PropTypes.bool,
+  resetForm: PropTypes.oneOfType([PropTypes.any]),
 };
 
 Filtro.defaultProps = {

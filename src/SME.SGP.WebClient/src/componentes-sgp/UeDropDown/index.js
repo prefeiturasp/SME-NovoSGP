@@ -64,7 +64,11 @@ function UeDropDown({
   }, [dreId, opcaoTodas, url]);
 
   useEffect(() => {
-    form.setFieldValue('ueId', undefined);
+    let valorUeId = undefined;
+    if (form?.values?.ueId && listaUes?.length > 0) {
+      valorUeId = listaUes.find(a => a.valor === form.values.ueId)?.valor;
+    }
+    form.setFieldValue('ueId', valorUeId);
 
     if (listaUes.length === 1) {
       form.setFieldValue('ueId', listaUes[0].valor);
@@ -110,7 +114,7 @@ UeDropDown.propTypes = {
 
 UeDropDown.defaultProps = {
   form: {},
-  onChange: () => {},
+  onChange: () => { },
   dreId: '',
   label: null,
   url: '',
