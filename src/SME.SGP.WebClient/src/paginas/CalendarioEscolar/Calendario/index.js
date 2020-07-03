@@ -276,8 +276,8 @@ const CalendarioEscolar = () => {
     history.push('/');
   };
 
-  const aoTrocarEventoSme = () => {
-    setEventoSme(!eventoSme);
+  const aoTrocarEventoSme = (valor) => {
+    setEventoSme(valor);
   };
 
   useEffect(() => {
@@ -287,6 +287,7 @@ const CalendarioEscolar = () => {
       dreSelecionada,
       unidadeEscolarSelecionada,
     });
+    store.dispatch(zeraCalendario());
   }, [eventoSme]);
 
   useEffect(() => {
@@ -381,6 +382,7 @@ const CalendarioEscolar = () => {
       dreSelecionada,
       unidadeEscolarSelecionada,
     });
+    store.dispatch(zeraCalendario());
   }, [unidadeEscolarSelecionada]);
 
   return (
@@ -455,7 +457,7 @@ const CalendarioEscolar = () => {
                     eventoSme
                       ? 'Exibindo eventos da SME'
                       : 'Não exibindo eventos da SME'
-                  }`}
+                    }`}
                 >
                   <Switch
                     onChange={aoTrocarEventoSme}
@@ -478,7 +480,7 @@ const CalendarioEscolar = () => {
                   valueText="desc"
                   valueSelect={dreSelecionada}
                   placeholder="Diretoria Regional de Educação (DRE)"
-                  disabled={!tipoCalendarioSelecionado}
+                  disabled={!tipoCalendarioSelecionado || dres.length < 2}
                 />
               </Loader>
             </Grid>
