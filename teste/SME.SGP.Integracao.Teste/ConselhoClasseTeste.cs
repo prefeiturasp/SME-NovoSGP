@@ -30,5 +30,32 @@ namespace SME.SGP.Integracao.Teste
             // Assert
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));
         }
+
+
+        [Fact(DisplayName = "Obter Relatório Conselho Classe Aluno")]
+        [Trait("Conselho de Classe", "Relatório Conselho Classe Aluno")]
+        public async void Retornar_Relatorio_Conselho_Classe_Aluno()
+        {
+            // Arrange & Act
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.CC_C }));
+            var result = await fixture._clientApi.GetAsync("api/v1/conselhos-classe/1/fechamentos/1/alunos/123/imprimir");
+
+            // Assert
+            Assert.True(fixture.ValidarStatusCodeComSucesso(result));
+        }
+
+        [Fact(DisplayName = "Obter Relatório Conselho Classe Turma")]
+        [Trait("Conselho de Classe", "Relatório Conselho Classe Turma")]
+        public async void Retornar_Relatorio_Conselho_Classe_Turma()
+        {
+            // Arrange & Act
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.CC_C }));
+            var result = await fixture._clientApi.GetAsync("api/v1/conselhos-classe/1/fechamentos/1/imprimir");
+
+            // Assert
+            Assert.True(fixture.ValidarStatusCodeComSucesso(result));
+        }
     }
 }

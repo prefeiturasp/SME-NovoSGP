@@ -68,9 +68,9 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao == null || paginacao.QuantidadeRegistros == 0)
                 paginacao = new Paginacao(1, 10);
 
-            MontaQueryCabecalhoCompleto(query);
-            MontaQueryFromCompleto(query);
-            MontaQueryListarWhere(query, tipoCalendarioId, 0, 0, dreCodigo, ueCodigo);
+            MontaQueryCabecalhoSemBimestres(query);
+            MontaQueryFromSemBimestres(query);
+            MontaQueryListarWherePaginado(query, tipoCalendarioId, dreCodigo, ueCodigo);
 
             var retornoPaginado = new PaginacaoResultadoDto<FechamentoReabertura>();
 
@@ -79,7 +79,7 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao.QuantidadeRegistros != 0)
                 query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
 
-            await database.Conexao.QueryAsync<FechamentoReabertura, FechamentoReaberturaBimestre, Ue, Dre, TipoCalendario, FechamentoReabertura>(query.ToString(), (fechamento, bimestre, ue, dre, tipoCalendario) =>
+            await database.Conexao.QueryAsync<FechamentoReabertura, Ue, Dre, TipoCalendario, FechamentoReabertura>(query.ToString(), (fechamento, ue, dre, tipoCalendario) =>
             {
                 FechamentoReabertura fechamentoReabertura;
                 if (!lookup.TryGetValue(fechamento.Id, out fechamentoReabertura))
@@ -90,7 +90,6 @@ namespace SME.SGP.Dados.Repositorios
                 fechamentoReabertura.AtualizarDre(dre);
                 fechamentoReabertura.AtualizarUe(ue);
                 fechamentoReabertura.AtualizarTipoCalendario(tipoCalendario);
-                fechamentoReabertura.Adicionar(bimestre);
                 return fechamentoReabertura;
             }, new
             {
@@ -243,11 +242,27 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("select fr.*, frb.*, ue.*, dre.*, tc.*");
         }
 
+        private void MontaQueryCabecalhoSemBimestres(StringBuilder query)
+        {
+            query.AppendLine("select fr.*, ue.*, dre.*, tc.*");
+        }
+
         private void MontaQueryFromCompleto(StringBuilder query)
         {
             query.AppendLine("from fechamento_reabertura fr");
             query.AppendLine("join fechamento_reabertura_bimestre frb");
             query.AppendLine("on frb.fechamento_reabertura_id = fr.id");
+            query.AppendLine("inner join tipo_calendario tc");
+            query.AppendLine("on fr.tipo_calendario_id = tc.id");
+            query.AppendLine("left join ue");
+            query.AppendLine("on fr.ue_id = ue.id");
+            query.AppendLine("left join dre");
+            query.AppendLine("on fr.dre_id = dre.id");
+        }
+
+        private void MontaQueryFromSemBimestres(StringBuilder query)
+        {
+            query.AppendLine("from fechamento_reabertura fr");
             query.AppendLine("inner join tipo_calendario tc");
             query.AppendLine("on fr.tipo_calendario_id = tc.id");
             query.AppendLine("left join ue");
@@ -290,6 +305,24 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ids != null && ids.Any())
                 query.AppendLine("and fr.id = ANY(@ids)");
+        }
+
+        private void MontaQueryListarWherePaginado(StringBuilder query, long tipoCalendarioId, string dreCodigo = "", string ueCodigo = "")
+        {
+            query.AppendLine("where fr.excluido = false and fr.status <> 3");
+
+            if (tipoCalendarioId > 0)
+                query.AppendLine("and fr.tipo_calendario_id = @tipoCalendarioId");
+
+            if (!string.IsNullOrEmpty(dreCodigo))
+                query.AppendLine("and dre.dre_id = @dreCodigo");
+            else
+                query.AppendLine("and fr.dre_id is null");
+
+            if (!string.IsNullOrEmpty(ueCodigo))
+                query.AppendLine("and ue.ue_id = @ueCodigo");
+            else
+                query.AppendLine("and fr.ue_id is null");
         }
 
         public async Task<FechamentoReabertura> ObterPorDataTurmaCalendarioAsync(long ueId, DateTime dataReferencia, long tipoCalendarioId)

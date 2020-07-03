@@ -13,6 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task Registrar(long aulaId, IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos);
 
-        Task AtualizarQuantidadeFrequencia(long aulaId, int quantidadeOriginal, int quantidadeAtual);
+        void AtualizarQuantidadeFrequencia(long aulaId, int quantidadeOriginal, int quantidadeAtual);
     }
 }

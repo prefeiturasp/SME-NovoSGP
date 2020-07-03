@@ -5,10 +5,10 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosWorkflowAprovacao
     {
-        void Aprovar(bool aprovar, long notificacaoId, string observacao);
+        Task Aprovar(bool aprovar, long notificacaoId, string observacao);
 
         Task ExcluirAsync(long idWorkflowAprovacao);
 
-        long Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto);
+        Task<long> Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto);
     }
 }

@@ -27,11 +27,11 @@ namespace SME.SGP.Aplicacao
             await repositorioAtribuicaoEsporadica.SalvarAsync(atribuicaoEsporadica);
         }
 
-        public void Salvar(AtribuicaoEsporadicaDto atruibuicaoEsporadicaDto)
+        public async Task Salvar(AtribuicaoEsporadicaDto atruibuicaoEsporadicaDto)
         {
             var entidade = ObterEntidade(atruibuicaoEsporadicaDto);
 
-            servicoAtribuicaoEsporadica.Salvar(entidade, atruibuicaoEsporadicaDto.AnoLetivo);
+           await servicoAtribuicaoEsporadica.Salvar(entidade, atruibuicaoEsporadicaDto.AnoLetivo);
         }
 
         private AtribuicaoEsporadica DtoParaEntidade(AtribuicaoEsporadicaDto Dto)

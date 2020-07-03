@@ -1,8 +1,9 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 
 namespace SME.SGP.Dominio
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
         IDbTransaction IniciarTransacao();
 

@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<GrupoComunicacaoCompletoRespostaDto>> Listar(FiltroGrupoComunicacaoDto filtro);
 
-        Task<IEnumerable<GrupoComunicacaoCompletoRespostaDto>> ObterPorIdAsync(long id);
+        Task<IEnumerable<GrupoComunicacaoCompletoRespostaDto>> ObterCompletoPorIdAsync(long id);
     }
 }
