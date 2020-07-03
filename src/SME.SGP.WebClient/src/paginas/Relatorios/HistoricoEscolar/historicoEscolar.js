@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { SelectComponent, ListaPaginada, Loader } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
@@ -13,8 +14,20 @@ import history from '~/servicos/history';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 import { sucesso } from '~/servicos/alertas';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
+import ServicoHistoricoEscolar from '~/servicos/Paginas/HistoricoEscolar/ServicoHistoricoEscolar';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import RotasDto from '~/dtos/rotasDto';
 
 const HistoricoEscolar = () => {
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const permissoesTela = useSelector(store => store.usuario.permissoes);
+
+  useEffect(() => {
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela[RotasDto.HISTORICO_ESCOLAR])
+    );
+  }, [permissoesTela]);
+
   const [anoAtual] = useState(window.moment().format('YYYY'));
 
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
@@ -154,16 +167,16 @@ const HistoricoEscolar = () => {
     setDreId(dre);
 
     setListaUes([]);
-    setUeId(undefined);
+    setUeId();
 
     setListaModalidades([]);
-    setModalidadeId(undefined);
+    setModalidadeId();
 
     setListaSemestre([]);
-    setSemestre(undefined);
+    setSemestre();
 
     setListaTurmas([]);
-    setTurmaId(undefined);
+    setTurmaId();
   };
 
   const [carregandoDres, setCarregandoDres] = useState(false);
@@ -246,7 +259,7 @@ const HistoricoEscolar = () => {
     if (anoLetivo && ueId) {
       obterModalidades(ueId, anoLetivo);
     } else {
-      setModalidadeId(undefined);
+      setModalidadeId();
       setListaModalidades([]);
     }
   }, [anoLetivo, ueId]);
@@ -255,7 +268,7 @@ const HistoricoEscolar = () => {
     if (dreId) {
       obterUes(dreId, anoLetivo);
     } else {
-      setUeId(undefined);
+      setUeId();
       setListaUes([]);
     }
   }, [dreId, anoLetivo, obterUes]);
@@ -264,7 +277,7 @@ const HistoricoEscolar = () => {
     if (modalidadeId && ueId) {
       obterTurmas(modalidadeId, ueId);
     } else {
-      setTurmaId(undefined);
+      setTurmaId();
       setListaTurmas([]);
     }
   }, [modalidadeId, ueId, obterTurmas]);
@@ -274,11 +287,11 @@ const HistoricoEscolar = () => {
       if (String(modalidadeId) === String(modalidade.EJA)) {
         obterSemestres(modalidadeId, anoLetivo);
       } else {
-        setSemestre(undefined);
+        setSemestre();
         setListaSemestre([]);
       }
     } else {
-      setSemestre(undefined);
+      setSemestre();
       setListaSemestre([]);
     }
   }, [modalidadeId, anoLetivo, obterTurmas]);
@@ -303,76 +316,88 @@ const HistoricoEscolar = () => {
   };
 
   const onClickCancelar = () => {
-    setAnoLetivo(undefined);
-    setDreId(undefined);
+    setAnoLetivo();
+    setDreId();
     setListaAnosLetivo([]);
     setListaDres([]);
 
-    setEstudanteOpt(undefined);
+    setEstudanteOpt();
 
     obterAnosLetivos();
   };
 
+  const gerarHistorico = async params => {
+    const requisicao = await ServicoHistoricoEscolar.gerar(params);
+    return requisicao.status === 200 && requisicao.data;
+  };
+
+  const [carregandoGerar, setCarregandoGerar] = useState(false);
+
   const onClickGerar = () => {
-    sucesso(
-      'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado'
-    );
-    setDesabilitarBtnGerar(true);
+    setCarregandoGerar(true);
 
     const params = {
       anoLetivo,
-      dreId,
-      ueId,
-      modalidadeId,
+      dreCodigo: dreId,
+      ueCodigo: ueId,
+      modalidade: modalidadeId,
       semestre,
-      turmaId,
-      estudanteOpt,
+      turmaCodigo: turmaId,
       imprimirDadosResp,
       preencherDataImpressao,
-      alunosCodigo: alunosSelecionados,
+      alunosCodigo: alunosSelecionados || [alunoLocalizadorSelect.alunoCodigo],
     };
 
-    return params;
+    if (gerarHistorico(params)) {
+      sucesso(
+        'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado'
+      );
+    }
+
+    setCarregandoGerar(false);
   };
 
   const onChangeUe = ue => {
     setUeId(ue);
 
     setListaModalidades([]);
-    setModalidadeId(undefined);
+    setModalidadeId();
 
     setListaSemestre([]);
-    setSemestre(undefined);
+    setSemestre();
 
     setListaTurmas([]);
-    setTurmaId(undefined);
+    setTurmaId();
   };
 
   const onChangeModalidade = novaModalidade => {
     setModalidadeId(novaModalidade);
 
     setListaSemestre([]);
-    setSemestre(undefined);
+    setSemestre();
 
     setListaTurmas([]);
-    setTurmaId(undefined);
+    setTurmaId();
   };
 
   const onChangeAnoLetivo = ano => {
     setAnoLetivo(ano);
 
     setListaModalidades([]);
-    setModalidadeId(undefined);
+    setModalidadeId();
 
     setListaSemestre([]);
-    setSemestre(undefined);
+    setSemestre();
 
     setListaTurmas([]);
-    setTurmaId(undefined);
+    setTurmaId();
   };
 
   const onChangeSemestre = valor => setSemestre(valor);
-  const onChangeTurma = valor => setTurmaId(valor);
+  const onChangeTurma = valor => {
+    setTurmaId(valor);
+    setEstudanteOpt('0');
+  };
 
   const onChangeEstudanteOpt = valor => {
     if (valor === '1') {
@@ -395,9 +420,9 @@ const HistoricoEscolar = () => {
   const onChangeLocalizadorEstudante = aluno => {
     if (aluno && (aluno.alunoCodigo || aluno.alunoNome)) {
       setAlunoLocalizadorSelect(aluno);
-      setAnoLetivo(undefined);
-      setModalidadeId(undefined);
-      setTurmaId(undefined);
+      setModalidadeId();
+      setTurmaId();
+      setDesabilitarBtnGerar(false);
     } else {
       setAlunoLocalizadorSelect();
     }
@@ -413,7 +438,7 @@ const HistoricoEscolar = () => {
       <Card>
         <div className="col-md-12">
           <div className="row">
-            <div className="col-md-12 d-flex justify-content-end pb-4">
+            <div className="col-md-12 d-flex justify-content-end pb-4 justify-itens-end">
               <Button
                 id="btn-voltar-historico-escolar"
                 label="Voltar"
@@ -432,17 +457,19 @@ const HistoricoEscolar = () => {
                 className="mr-2"
                 onClick={() => onClickCancelar()}
               />
-              <Button
-                id="btn-gerar-historico-escolar"
-                icon="print"
-                label="Gerar"
-                color={Colors.Azul}
-                border
-                bold
-                className="mr-0"
-                onClick={() => onClickGerar()}
-                disabled={desabilitarBtnGerar}
-              />
+              <Loader loading={carregandoGerar} className="d-flex" tip="">
+                <Button
+                  id="btn-gerar-historico-escolar"
+                  icon="print"
+                  label="Gerar"
+                  color={Colors.Azul}
+                  border
+                  bold
+                  className="mr-0"
+                  onClick={() => onClickGerar()}
+                  disabled={desabilitarBtnGerar || somenteConsulta}
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
               <Loader loading={carregandoAnos} tip="">
@@ -451,10 +478,7 @@ const HistoricoEscolar = () => {
                   lista={listaAnosLetivo}
                   valueOption="valor"
                   valueText="desc"
-                  disabled={
-                    (listaAnosLetivo && listaAnosLetivo.length === 1) ||
-                    alunoLocalizadorSelect
-                  }
+                  disabled={listaAnosLetivo && listaAnosLetivo.length === 1}
                   onChange={onChangeAnoLetivo}
                   valueSelect={anoLetivo}
                   placeholder="Ano letivo"
@@ -493,7 +517,10 @@ const HistoricoEscolar = () => {
               <div className="row">
                 <LocalizadorEstudante
                   showLabel
+                  dreId={dreId}
+                  ueId={ueId}
                   onChange={onChangeLocalizadorEstudante}
+                  desabilitado={!dreId || !ueId}
                 />
               </div>
             </div>
@@ -580,7 +607,7 @@ const HistoricoEscolar = () => {
                 valueSelect={estudanteOpt}
                 onChange={onChangeEstudanteOpt}
                 placeholder="Estudantes"
-                disabled={!turmaId}
+                disabled={!turmaId || alunoLocalizadorSelect}
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
