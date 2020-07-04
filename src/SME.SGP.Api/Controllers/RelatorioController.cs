@@ -23,6 +23,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioConselhoClasseAtaFinalUseCase.Executar(filtroRelatorioConselhoClasseAtaFinalDto));
         }
+        [HttpPost("notas-frequencias")]
+        public async Task<IActionResult> NotasFrequencias([FromBody]FiltroRelatorioFaltasFrequenciasDto filtroRelatorioFaltasFrequenciasDto, [FromServices] IRelatorioFaltasFrequenciasUseCase relatorioFaltasFrequenciasUseCase)
+        {
+            return Ok(await relatorioFaltasFrequenciasUseCase.Executar(filtroRelatorioFaltasFrequenciasDto));
+        }
 
     }
 }
