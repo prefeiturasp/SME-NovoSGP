@@ -89,7 +89,7 @@ namespace SME.SGP.Api
 
             services.AddDistributedRedisCache(options =>
             {
-                options.Configuration = Configuration.GetConnectionString("SGP-Redis");
+                options.Configuration = "10.50.1.174:6379,connectTimeout=500,syncTimeout=500,asyncTimeout=500";
                 options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
             });
 
@@ -107,7 +107,7 @@ namespace SME.SGP.Api
 
             services.AddHealthChecks()
                     .AddRedis(
-                        Configuration.GetConnectionString("SGP-Redis"),
+                        "10.50.1.174:6379,connectTimeout=500,syncTimeout=500,asyncTimeout=500",
                         "Redis Cache",
                         null,
                         tags: new string[] { "db", "redis" })
