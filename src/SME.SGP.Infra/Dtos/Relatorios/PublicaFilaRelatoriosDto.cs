@@ -11,7 +11,7 @@ namespace SME.SGP.Infra.Dtos
             Endpoint = endpoint;
             CodigoCorrelacao = codigoCorrelacao;
             NotificarErroUsuario = notificarErroUsuario;
-            UsuarioLogadoRF = codigoRfUsuario;
+            UsuarioLogadoRF = codigoRfUsuario;            
         }
 
         public string Fila { get; set; }
@@ -19,6 +19,6 @@ namespace SME.SGP.Infra.Dtos
         public string Endpoint { get; set; }
         public Guid CodigoCorrelacao { get; set; }
         public bool NotificarErroUsuario { get; set; }
-        public string UsuarioLogadoRF { get; }
+        public string UsuarioLogadoRF { get; }        
     }
 }

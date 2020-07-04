@@ -17,6 +17,8 @@ namespace SME.SGP.Dominio
         Boletim = 4,
         
         [Display(Name = "relatorios/conselhoclasseatafinal", ShortName = "RelatorioConselhoClasseAtaFinal.pdf", Description = "Conselho Classe Ata Final")]
-        ConselhoClasseAtaFinal = 5
+        ConselhoClasseAtaFinal = 5,
+        [Display(Name = "relatorios/faltasfrequencias", ShortName = "RelatorioFaltasFrequencias.pdf", Description = "Faltas e Frequências")]
+        FaltasFrequencias = 6
     }
 }
