@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao
             Filtros = filtros;
             IdUsuarioLogado = usuario.Id;
             UsuarioLogadoRf = usuario.CodigoRf;
+            PerfilUsuario = usuario.PerfilAtual.ToString();
         }
 
         /// <summary>
@@ -25,5 +26,6 @@ namespace SME.SGP.Aplicacao
         public TipoRelatorio TipoRelatorio { get; set; }
         public long IdUsuarioLogado { get; set; }
         public string UsuarioLogadoRf { get; }
+        public string PerfilUsuario { get; }
     }
 }
