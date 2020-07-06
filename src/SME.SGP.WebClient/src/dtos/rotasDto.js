@@ -41,6 +41,7 @@ const RotasDto = {
   TERRITORIO_SABER: '/planejamento/plano-anual-territorio-saber',
   RELATORIO_BOLETIM_SIMPLES: '/relatorios/diario-classe/boletim-simples',
   ATA_FINAL_RESULTADOS: '/relatorios/atas/ata-final-resultados',
+  FALTAS_FREQUENCIA: '/relatorios/frequencia/faltas-frequencia',
 };
 
 export default RotasDto;
