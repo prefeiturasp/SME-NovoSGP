@@ -607,11 +607,13 @@ namespace SME.SGP.Dados
             try
             {
 
+                var result = Dommel.DommelMapper.Delete<TEntity>(connection, entity, transaction);
+
                 timer.Stop();
 
                 insightsClient.TrackDependency("PostgreSQL", "Delete", nameof(entity), inicioOperacao, timer.Elapsed, true);
 
-                return Dommel.DommelMapper.Delete<TEntity>(connection, entity, transaction);
+                return result;
             }
             catch (Exception ex)
             {
@@ -631,12 +633,13 @@ namespace SME.SGP.Dados
 
             try
             {
+                var result = await Dommel.DommelMapper.GetAsync<TEntity>(connection, id);
 
                 timer.Stop();
 
                 insightsClient.TrackDependency("PostgreSQL", "GetAsync", $"{nameof(TEntity)} -> {id}", inicioOperacao, timer.Elapsed, true);
 
-                return await Dommel.DommelMapper.GetAsync<TEntity>(connection, id);
+                return result;
             }
             catch (Exception ex)
             {
@@ -657,11 +660,13 @@ namespace SME.SGP.Dados
             try
             {
 
+                var result = await Dommel.DommelMapper.UpdateAsync<TEntity>(connection, entity, transaction);
+
                 timer.Stop();
 
                 insightsClient.TrackDependency("PostgreSQL", "UpdateAsync", nameof(entity), inicioOperacao, timer.Elapsed, true);
 
-                return await Dommel.DommelMapper.UpdateAsync<TEntity>(connection, entity, transaction);
+                return result;
             }
             catch (Exception ex)
             {
@@ -682,11 +687,13 @@ namespace SME.SGP.Dados
             try
             {
 
+                var result = await Dommel.DommelMapper.InsertAsync<TEntity>(connection, entity, transaction);
+
                 timer.Stop();
 
                 insightsClient.TrackDependency("PostgreSQL", "InsertAsync", nameof(entity), inicioOperacao, timer.Elapsed, true);
 
-                return await Dommel.DommelMapper.InsertAsync<TEntity>(connection, entity, transaction);
+                return result;
             }
             catch (Exception ex)
             {
