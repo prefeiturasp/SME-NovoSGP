@@ -1,6 +1,6 @@
 import 'react-quill/dist/quill.snow.css';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import ReactQuill from 'react-quill';
 
 const TextEditor = React.forwardRef((props, ref) => {
@@ -52,7 +52,9 @@ const TextEditor = React.forwardRef((props, ref) => {
   };
 
   const onClickQuill = posicao => {
-    if (onClick) onClick(posicao);
+    if (onClick) {
+      onClick(posicao);
+    }
   };
 
   return (
@@ -98,4 +100,4 @@ TextEditor.defaultProps = {
   toolbar: true,
 };
 
-export default TextEditor;
+export default memo(TextEditor);
