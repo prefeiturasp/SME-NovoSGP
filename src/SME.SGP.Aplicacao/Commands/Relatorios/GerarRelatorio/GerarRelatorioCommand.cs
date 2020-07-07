@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
             IdUsuarioLogado = usuario.Id;
             UsuarioLogadoRf = usuario.CodigoRf;
             Formato = formato;
+            PerfilUsuario = usuario.PerfilAtual.ToString();
         }
 
         /// <summary>
@@ -27,5 +28,6 @@ namespace SME.SGP.Aplicacao
         public long IdUsuarioLogado { get; set; }
         public string UsuarioLogadoRf { get; }
         public TipoFormatoRelatorio Formato { get; set; }
+        public string PerfilUsuario { get; }
     }
 }
