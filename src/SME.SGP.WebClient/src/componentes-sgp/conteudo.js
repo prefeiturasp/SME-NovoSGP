@@ -4,7 +4,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { Switch } from 'react-router-dom';
-import shortid from 'shortid';
 import rotasArray from '~/rotas/rotas';
 import RotaAutenticadaEstruturada from '../rotas/rotaAutenticadaEstruturada';
 import BreadcrumbSgp from './breadcrumb-sgp';
@@ -14,6 +13,7 @@ import TempoExpiracaoSessao from './tempoExpiracaoSessao/tempoExpiracaoSessao';
 
 const Conteudo = () => {
   const { versao } = useSelector(store => store.sistema);
+
   return (
     <div className="secao-conteudo">
       <TempoExpiracaoSessao />
@@ -27,14 +27,12 @@ const Conteudo = () => {
       <Switch>
         {rotasArray.map(rota => (
           <RotaAutenticadaEstruturada
-            key={shortid.generate()}
+            key={rota.path}
             path={rota.path}
             component={rota.component}
             temPermissionamento={rota.temPermissionamento}
             chavePermissao={rota.chavePermissao}
             exact={rota.exact}
-            temPermissionamento={rota.temPermissionamento}
-            chavePermissao={rota.chavePermissao}
           />
         ))}
       </Switch>

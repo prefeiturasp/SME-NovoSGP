@@ -20,6 +20,7 @@ import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import { Loader } from '~/componentes';
+import { urlBase } from '~/servicos/variaveis';
 
 const urlTelaNotificacoes = '/notificacoes';
 
@@ -88,6 +89,19 @@ const DetalheNotificacao = ({ match }) => {
   useEffect(() => {
     setIdNotificacao(match.params.id);
   }, [match.params.id]);
+
+  useEffect(() => {
+    if (match.params.correlacao) {
+      urlBase().then(resposta => {
+        api
+          .get('URLENDPOINTVALIDACAOTEMPODOWNLOAD')
+          .then(c => {
+            window.open(`${resposta}/v1/relatorios/${match.params.correlacao}`);
+          })
+          .catch(e => erros(e));
+      });
+    }
+  }, [match.params.correlacao]);
 
   const anoAtual = window.moment().format('YYYY');
 

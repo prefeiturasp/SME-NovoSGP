@@ -288,6 +288,16 @@ rotas.set('/gestao/atribuicao-cjs/editar', {
   chavePermissao: RotasDto.ATRIBUICAO_CJ_LISTA,
 });
 
+rotas.set('/notificacoes/:id/download/:correlacao', {
+  breadcrumbName: ['Notificações'],
+  parent: '/',
+  component: DetalheNotificacao,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.NOTIFICACOES,
+});
+
 rotas.set('/notificacoes/:id', {
   breadcrumbName: ['Notificações'],
   parent: '/',

@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { Provider } from 'react-redux';
 import { Router, Switch } from 'react-router-dom';
 import ReactGA from 'react-ga';
+import { PersistGate } from 'redux-persist/integration/react';
 import { obterTrackingID } from './servicos/variaveis';
 
 import './configuracao/ReactotronConfig';
-import { PersistGate } from 'redux-persist/integration/react';
 import history from './servicos/history';
 import GlobalStyle from './estilos/global';
 import { store, persistor } from './redux';
@@ -24,7 +24,6 @@ import { Deslogar } from '~/redux/modulos/usuario/actions';
 import VersaoSistema from '~/componentes-sgp/VersaoSistema';
 
 obterTrackingID().then(id => ReactGA.initialize(id));
-
 function App() {
   const verificaSairResetSenha = () => {
     const persistJson = localStorage.getItem('persist:sme-sgp');
