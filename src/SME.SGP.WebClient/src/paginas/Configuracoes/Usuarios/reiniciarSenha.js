@@ -148,9 +148,9 @@ export default function ReiniciarSenha() {
   const onClickVoltar = () => history.push(URL_HOME);
 
   const onChangeDre = dre => {
-    setDreSelecionada(dre);
-    setUeSelecionada();
-    setListaUes();
+    setDreSelecionada(!dre ? '' : dre);
+    setUeSelecionada([]);
+    setListaUes([]);
   };
 
   const onChangeUe = ue => {
