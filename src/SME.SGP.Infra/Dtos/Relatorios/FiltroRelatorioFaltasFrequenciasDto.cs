@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using SME.SGP.Dominio;
+
+namespace SME.SGP.Infra
 {
     public  class FiltroRelatorioFaltasFrequenciasDto 
     {
