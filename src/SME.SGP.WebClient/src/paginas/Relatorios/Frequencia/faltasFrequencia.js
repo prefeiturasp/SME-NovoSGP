@@ -424,28 +424,31 @@ const FaltasFrequencia = () => {
                   disabled={listaAnosLetivo && listaAnosLetivo.length === 1}
                   onChange={onChangeAnoLetivo}
                   valueSelect={anoLetivo}
+                  placeholder="Selecione o ano"
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-9 col-xl-5 mb-2">
                 <SelectComponent
-                  label="Diretoria Regional de Educação (DRE)"
+                  label="DRE"
                   lista={listaDres}
                   valueOption="valor"
                   valueText="desc"
                   disabled={listaDres && listaDres.length === 1}
                   onChange={onChangeDre}
                   valueSelect={dreId}
+                  placeholder="Diretoria Regional de Educação (DRE)"
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-9 col-xl-5 mb-2">
                 <SelectComponent
-                  label="Unidade Escolar (UE)"
+                  label="UE"
                   lista={listaUes}
                   valueOption="valor"
                   valueText="desc"
                   disabled={listaUes && listaUes.length === 1}
                   onChange={onChangeUe}
                   valueSelect={ueId}
+                  placeholder="Unidade Escolar (UE)"
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
@@ -457,6 +460,7 @@ const FaltasFrequencia = () => {
                   disabled={listaModalidades && listaModalidades.length === 1}
                   onChange={onChangeModalidade}
                   valueSelect={modalidadeId}
+                  placeholder="Selecione uma modalidade"
                 />
               </div>
               <div className="col-sm-12 col-md-3 col-lg-2 col-xl-2 mb-2">
@@ -472,6 +476,7 @@ const FaltasFrequencia = () => {
                   }
                   valueSelect={semestre}
                   onChange={onChangeSemestre}
+                  placeholder="Selecione o semestre"
                 />
               </div>
               <div className="col-sm-12 col-md-3 col-lg-2 col-xl-2 mb-2">
@@ -485,6 +490,7 @@ const FaltasFrequencia = () => {
                   }
                   valueSelect={anosEscolares}
                   onChange={onChangeAnos}
+                  placeholder="Selecione o ano"
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-5 col-xl-5 mb-2">
@@ -499,6 +505,7 @@ const FaltasFrequencia = () => {
                   }
                   valueSelect={componenteCurricular}
                   onChange={onChangeComponenteCurricular}
+                  placeholder="Selecione o componente curricular"
                 />
               </div>
               <div className="col-sm-12 col-md-3 col-lg-3 col-xl-2 mb-2">
@@ -510,6 +517,7 @@ const FaltasFrequencia = () => {
                   disabled={listaBimestre && listaBimestre.length === 1}
                   valueSelect={bimestre}
                   onChange={onChangeBimestre}
+                  placeholder="Selecione o bimestre"
                 />
               </div>
               <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
@@ -523,6 +531,7 @@ const FaltasFrequencia = () => {
                   }
                   valueSelect={tipoRelatorio}
                   onChange={onChangeTipoRelatorio}
+                  placeholder="Selecione o tipo"
                 />
               </div>
               <div className="col-sm-12 col-md-3 col-lg-3 col-xl-2 mb-2">
@@ -534,6 +543,7 @@ const FaltasFrequencia = () => {
                   disabled={listaCondicao && listaCondicao.length === 1}
                   valueSelect={condicao}
                   onChange={onChangeCondicao}
+                  placeholder="Selecione a condição"
                 />
               </div>
               <div className="col-sm-12 col-md-3 col-lg-3 col-xl-2 mb-2">
@@ -543,6 +553,7 @@ const FaltasFrequencia = () => {
                   min={0}
                   label="Valor"
                   className="w-100"
+                  placeholder="Digite o valor"
                 />
               </div>
               <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
@@ -554,6 +565,7 @@ const FaltasFrequencia = () => {
                   valueSelect={formato}
                   onChange={onChangeFormato}
                   disabled
+                  placeholder="Selecione o formato"
                 />
               </div>
             </div>
