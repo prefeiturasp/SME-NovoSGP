@@ -106,12 +106,12 @@ function CadastroDeAula({ match, location }) {
     {
       label: 'Repetir no Bimestre atual',
       value: recorrencia.REPETIR_BIMESTRE_ATUAL,
-      disabled: recorrenciaInicial !== recorrencia.REPETIR_BIMESTRE_ATUAL
+      disabled: id && recorrenciaInicial !== recorrencia.REPETIR_BIMESTRE_ATUAL
     },
     {
       label: 'Repetir em todos os Bimestres',
       value: recorrencia.REPETIR_TODOS_BIMESTRES,
-      disabled: recorrenciaInicial !== recorrencia.REPETIR_TODOS_BIMESTRES
+      disabled: id && recorrenciaInicial !== recorrencia.REPETIR_TODOS_BIMESTRES
     },
   ];
 
@@ -470,12 +470,14 @@ function CadastroDeAula({ match, location }) {
         recorrenciaAula: e.target.value,
       };
     });
-    servicoCadastroAula
-      .obterRecorrenciaPorIdAula(id, e.target.value)
-      .then(resposta => {
-        setRecorrenciaAulaEmEdicao(resposta.data);
-      })
-      .catch(e => erros(e));
+    if (id) {
+      servicoCadastroAula
+        .obterRecorrenciaPorIdAula(id, e.target.value)
+        .then(resposta => {
+          setRecorrenciaAulaEmEdicao(resposta.data);
+        })
+        .catch(e => erros(e));
+    }
   };
 
   const onClickVoltar = async () => {
