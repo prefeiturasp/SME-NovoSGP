@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios.HistoricoEscolar;
-using System;
 using System.Collections.Generic;
-using AlunoDto = SME.SGP.Infra.Dtos.Relatorios.HistoricoEscolar.AlunoDto;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -15,25 +14,18 @@ namespace SME.SGP.Api.Controllers
 
         [HttpPost]
         [Route("alunos")]
-        [ProducesResponseType(typeof(IEnumerable<AlunoDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AlunoSimplesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public IActionResult ObterAlunos(FiltroBuscaAlunosDto filtroBuscaAlunosDto)
+        public async System.Threading.Tasks.Task<IActionResult> ObterAlunosAsync([FromBody] FiltroBuscaAlunosDto filtroBuscaAlunosDto, [FromServices] IObterListaAlunosFiltroHistoricoEscolarUseCase obterListaAlunosFiltroHistoricoEscolarUseCase)
         {
-            List<AlunoDto> alunos = new List<AlunoDto>
-            {
-                new AlunoDto("6588992", "ANA VIEIRA ALMEIDA"),
-                new AlunoDto("6249873", "ANA CLARA DO PRADO MARTINS"),
-                new AlunoDto("6145218", "ANA JULIA DOS SANTOS SOUZA"),
-                new AlunoDto("6233047", "ANA HENRIQUE PRIORI GOMES")
-            };
-            return Ok(alunos);
+            return Ok(await obterListaAlunosFiltroHistoricoEscolarUseCase.Executar(filtroBuscaAlunosDto));
         }
 
 
         [HttpPost]
         [Route("gerar")]
-        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public IActionResult Gerar(FiltroRelatorioHistoricoEscolarDto filtroRelatorioHistoricoEscolarDto)

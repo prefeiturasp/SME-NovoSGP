@@ -275,6 +275,23 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorFiltro(string codigoUe, int anoLetivo, string nomeAluno, string codigoEol)
+        {
+            var alunos = new List<AlunoPorTurmaResposta>();
+            
+            var resposta = await httpClient.GetAsync($"alunos/ues/{codigoUe}/anosLetivos/{anoLetivo}?NomeAluno={nomeAluno}&CodigoEol={codigoEol}");
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException($"Não foi encontrado alunos para os filtros informados!");
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return alunos;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+        }
+
         [Obsolete("não utilizar mais esse método, utilize o ObterAlunosPorTurma")]
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo)
         {
