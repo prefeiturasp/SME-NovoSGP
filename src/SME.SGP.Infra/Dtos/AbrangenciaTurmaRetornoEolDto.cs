@@ -14,5 +14,6 @@ namespace SME.SGP.Dto
         public int TipoTurno { get; set; }
         public DateTime? DataFIm { get; set; }
         public bool EHistorico { get; set; }
+        public bool EnsinoEspecial { get; set; }
     }
 }
