@@ -161,7 +161,7 @@ function CadastroDeAula({ match, location }) {
           setRecorrenciaInicial(respostaAula.recorrenciaAulaPai ?? respostaAula.recorrenciaAula);
           setAula(respostaAula);
           servicoCadastroAula
-            .obterRecorrenciaPorIdAula(id, aula.recorrenciaAula)
+            .obterRecorrenciaPorIdAula(id, respostaAula.recorrenciaAula)
             .then(resposta => {
               setRecorrenciaAulaEmEdicao(resposta.data);
             })
@@ -692,7 +692,7 @@ function CadastroDeAula({ match, location }) {
                         bold
                         className="mr-2"
                         onClick={() => {
-                          if (aula.recorrenciaAula == recorrencia.AULA_UNICA && !recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula) {
+                          if (!id || (aula.recorrenciaAula == recorrencia.AULA_UNICA && !recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula)) {
                             form.handleSubmit();
                           }
                           else {
