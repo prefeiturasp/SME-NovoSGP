@@ -139,9 +139,9 @@ export default function ReiniciarSenha({ perfilSelecionado }) {
   }, [listaUes]);
 
   const onChangeDre = dre => {
-    setDreSelecionada(dre);
-    setUeSelecionada();
-    setListaUes();
+    setDreSelecionada(!dre ? '' : dre);
+    setUeSelecionada([]);
+    setListaUes([]);
   };
 
   const onChangeUe = ue => {
