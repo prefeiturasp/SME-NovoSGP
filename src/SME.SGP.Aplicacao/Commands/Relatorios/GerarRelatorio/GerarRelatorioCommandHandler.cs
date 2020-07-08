@@ -26,10 +26,10 @@ namespace SME.SGP.Aplicacao
 
         public Task<bool> Handle(GerarRelatorioCommand request, CancellationToken cancellationToken)
         {
-            var correlacao = new RelatorioCorrelacao(request.TipoRelatorio, request.IdUsuarioLogado);
+            var correlacao = new RelatorioCorrelacao(request.TipoRelatorio, request.IdUsuarioLogado, request.Formato);
             repositorioCorrelacaoRelatorio.Salvar(correlacao);
 
-            servicoFila.PublicaFilaWorkerServidorRelatorios(new PublicaFilaRelatoriosDto(RotasRabbit.RotaRelatoriosSolicitados, request.Filtros, request.TipoRelatorio.Name(), correlacao.Codigo, request.UsuarioLogadoRf));
+            servicoFila.PublicaFilaWorkerServidorRelatorios(new PublicaFilaRelatoriosDto(RotasRabbit.RotaRelatoriosSolicitados, request.Filtros, request.TipoRelatorio.Name(), correlacao.Codigo, request.UsuarioLogadoRf, false, request.PerfilUsuario));
 
             SentrySdk.CaptureMessage("2 - GerarRelatorioCommandHandler");
 
