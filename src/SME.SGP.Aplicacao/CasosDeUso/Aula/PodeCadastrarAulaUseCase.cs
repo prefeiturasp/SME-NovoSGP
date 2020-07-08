@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             return new CadastroAulaDto()
             {
                 PodeCadastrarAula = true,
-                Grade = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(filtro.TurmaCodigo, filtro.ComponenteCurricular, filtro.DataAula, ehRegencia: filtro.EhRegencia))
+                Grade = filtro.TipoAula == TipoAula.Reposicao ? null : await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(filtro.TurmaCodigo, filtro.ComponenteCurricular, filtro.DataAula, ehRegencia: filtro.EhRegencia))
             };
         }
 

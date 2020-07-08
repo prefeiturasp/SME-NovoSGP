@@ -5,13 +5,14 @@ namespace SME.SGP.Infra
 {
     public class MensagemRabbit
     {
-        public MensagemRabbit(string action, object filtros, Guid codigoCorrelacao, string usuarioLogadoRF, bool notificarErroUsuario = false)
+        public MensagemRabbit(string action, object filtros, Guid codigoCorrelacao, string usuarioLogadoRF, bool notificarErroUsuario = false, string perfilUsuario = null)
         {
             Action = action;
             Filtros = filtros;
             CodigoCorrelacao = codigoCorrelacao;
             NotificarErroUsuario = notificarErroUsuario;
             UsuarioLogadoRF = usuarioLogadoRF;
+            PerfilUsuario = perfilUsuario;
         }
 
         public MensagemRabbit(object filtros, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid perfil, bool notificarErroUsuario = false)
