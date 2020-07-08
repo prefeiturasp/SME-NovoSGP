@@ -164,6 +164,7 @@ class FiltroHelper {
               desc: turma.nome,
               valor: turma.codigo,
               ano: turma.ano,
+              ensinoEspecial: turma.ensinoEspecial,
             });
           });
         }

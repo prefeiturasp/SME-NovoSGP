@@ -543,6 +543,7 @@ const PlanoAnual = () => {
                           disciplinas={listaDisciplinasPlanejamento}
                           bimestre={plano}
                           ano={turmaSelecionada.ano}
+                          ensinoEspecial={turmaSelecionada.ensinoEspecial}
                           ehEja={ehEja}
                           ehMedio={
                             turmaSelecionada &&
