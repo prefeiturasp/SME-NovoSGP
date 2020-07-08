@@ -43,7 +43,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());            
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            
+            filtroHistoricoEscolarDto.Usuario = usuarioLogado ?? throw new NegocioException("Não foi possível localizar o usuário.");
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.HistoricoEscolarFundamental, filtroHistoricoEscolarDto, usuarioLogado));
 
