@@ -30,11 +30,12 @@ class ServicoCadastroAula {
     componenteId,
     dataAula,
     aulaId,
-    ehRegencia
+    ehRegencia,
+    tipoAula
   ) => {
     const url = `v1/calendarios/professores/aulas/${aulaId}/turmas/${turmaId}/componente-curricular/${componenteId}?dataAula=${dataAula.format(
       'YYYY-MM-DD'
-    )}&ehRegencia=${ehRegencia}`;
+    )}&ehRegencia=${ehRegencia}&tipoAula=${tipoAula}`;
     return api.get(url);
   };
 

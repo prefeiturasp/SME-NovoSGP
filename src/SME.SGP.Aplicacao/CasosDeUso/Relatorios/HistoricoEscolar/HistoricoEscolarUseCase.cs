@@ -44,8 +44,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             }
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            filtroHistoricoEscolarDto.Usuario = usuarioLogado;
+            
+            filtroHistoricoEscolarDto.Usuario = usuarioLogado ?? throw new NegocioException("Não foi possível localizar o usuário.");
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.HistoricoEscolarFundamental, filtroHistoricoEscolarDto, usuarioLogado));
 
