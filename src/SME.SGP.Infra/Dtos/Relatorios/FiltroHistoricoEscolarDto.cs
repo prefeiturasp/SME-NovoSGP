@@ -11,6 +11,7 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public string TurmaCodigo { get; set; }
         public string[] AlunosCodigo { get; set; }
         public bool ImprimirDadosResponsaveis { get; set; }
-        public bool PreencherDataImpressao { get; set; }        
+        public bool PreencherDataImpressao { get; set; }
+        public Usuario Usuario { get; set; }
     }
 }

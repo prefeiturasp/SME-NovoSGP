@@ -246,9 +246,6 @@ export default function ReiniciarSenha() {
       setExibirModalReiniciarSenha(true);
     } else {
       setSemEmailCadastrado(false);
-      sucesso(
-        `Senha do usuário ${linha.nomeServidor} foi reiniciada com sucesso.`
-      );
       onClickFiltrar();
     }
   };
