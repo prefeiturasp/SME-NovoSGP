@@ -14,6 +14,8 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico);
 
+        Task<IEnumerable<int>> ObterAnosLetivosTodos();
+
         Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0);
 
         Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades(int anoLetivo, bool consideraHistorico);

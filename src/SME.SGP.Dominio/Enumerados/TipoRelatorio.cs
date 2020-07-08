@@ -7,19 +7,22 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/alunos", ShortName = "RelatorioExemplo.pdf")]
         RelatorioExemplo = 1,
 
-        [Display(Name = "relatorio/conselhoclassealuno" , ShortName = "RelatorioConselhoClasse.pdf", Description = "Relatório de conselho de classe")]
+        [Display(Name = "relatorio/conselhoclassealuno", ShortName = "RelatorioConselhoClasse", Description = "Relatório de conselho de classe")]
         ConselhoClasseAluno = 2,
 
-        [Display(Name = "relatorio/conselhoclasseturma", ShortName = "RelatorioConselhoTurma.pdf", Description = "Relatório de conselho de classe")]
+        [Display(Name = "relatorio/conselhoclasseturma", ShortName = "RelatorioConselhoTurma", Description = "Relatório de conselho de classe")]
         ConselhoClasseTurma = 3,
 
-        [Display(Name = "relatorios/boletimescolar", ShortName = "BoletimEscolar.pdf", Description = "Boletim escolar")]
+        [Display(Name = "relatorios/boletimescolar", ShortName = "BoletimEscolar", Description = "Boletim escolar")]
         Boletim = 4,
         
         [Display(Name = "relatorios/conselhoclasseatafinal", ShortName = "RelatorioConselhoClasseAtaFinal.pdf", Description = "Conselho Classe Ata Final")]
         ConselhoClasseAtaFinal = 5,
 
-        [Display(Name = "relatorios/historicoescolarfundamental", ShortName = "HistoricoEscolar.pdf", Description = "Histórico Escolar Funadamental")]
-        HistoricoEscolarFundamental = 6,
+        [Display(Name = "relatorios/faltasfrequencias", ShortName = "RelatorioFaltasFrequencias", Description = "Faltas e Frequências")]
+        FaltasFrequencias = 6,
+
+       [Display(Name = "relatorios/historicoescolarfundamental", ShortName = "HistoricoEscolar.pdf", Description = "Histórico Escolar Funadamental")]
+        HistoricoEscolarFundamental = 7,
     }
 }
