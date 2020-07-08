@@ -329,6 +329,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificarUsuarioUseCase, NotificarUsuarioUseCase>();
             services.TryAddScoped<IReceberRelatorioComErroUseCase, ReceberRelatorioComErroUseCase>();
             services.TryAddScoped<IUsuarioPossuiAbrangenciaAdmUseCase, UsuarioPossuiAbrangenciaAdmUseCase>();
+            services.TryAddScoped<IGerarRelatorioFaltasFrequenciaUseCase, GerarRelatorioFaltasFrequenciaUseCase>();
         }
     }
 }
