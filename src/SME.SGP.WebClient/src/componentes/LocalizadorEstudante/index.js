@@ -7,7 +7,7 @@ import InputNome from './componentes/InputNome';
 import service from './services/LocalizadorService';
 
 const LocalizadorEstudante = props => {
-  const { onChange, showLabel, desabilitado, dreId, ueId } = props;
+  const { onChange, showLabel, desabilitado, dreId, ueId, anoLetivo } = props;
 
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
@@ -35,8 +35,8 @@ const LocalizadorEstudante = props => {
     const retorno = await service
       .buscarPorNome({
         nome: valor,
-        dreId,
-        ueId,
+        codigoUe: ueId,
+        anoLetivo,
       })
       .catch(e => erros(e));
 
@@ -54,8 +54,8 @@ const LocalizadorEstudante = props => {
     const retorno = await service
       .buscarPorCodigo({
         codigo: codigoAluno,
-        dreId,
-        ueId,
+        codigoUe: ueId,
+        anoLetivo,
       })
       .catch(e => erros(e));
 
@@ -130,6 +130,7 @@ LocalizadorEstudante.propTypes = {
   desabilitado: PropTypes.bool,
   dreId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 LocalizadorEstudante.defaultProps = {
@@ -138,6 +139,7 @@ LocalizadorEstudante.defaultProps = {
   desabilitado: false,
   dreId: '',
   ueId: '',
+  anoLetivo: '',
 };
 
 export default LocalizadorEstudante;

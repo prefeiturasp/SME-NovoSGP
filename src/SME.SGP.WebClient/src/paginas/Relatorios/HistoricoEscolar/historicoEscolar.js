@@ -21,6 +21,11 @@ import RotasDto from '~/dtos/rotasDto';
 const HistoricoEscolar = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const usuarioStore = useSelector(state => state.usuario);
+  const turmaUsuarioSelecionada = usuarioStore.turmaSelecionada;
+  const [anoLetivoSelecionado] = useState(
+    turmaUsuarioSelecionada ? turmaUsuarioSelecionada.anoLetivo : ''
+  );
 
   useEffect(() => {
     setSomenteConsulta(
@@ -520,6 +525,7 @@ const HistoricoEscolar = () => {
                   dreId={dreId}
                   ueId={ueId}
                   onChange={onChangeLocalizadorEstudante}
+                  anoLetivo={anoLetivoSelecionado}
                   desabilitado={!dreId || !ueId}
                 />
               </div>
