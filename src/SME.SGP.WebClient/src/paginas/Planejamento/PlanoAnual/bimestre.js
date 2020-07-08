@@ -13,6 +13,7 @@ const Bimestre = ({
   bimestre,
   disciplinas,
   ano,
+  ensinoEspecial,
   ehEja,
   ehMedio,
   disciplinaSemObjetivo,
@@ -60,7 +61,11 @@ const Bimestre = ({
     if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
       setCarregandoDados(true);
       servicoPlanoAnual
-        .obterObjetivosPorAnoEComponenteCurricular(ano, disciplinasSelecionadas)
+        .obterObjetivosPorAnoEComponenteCurricular(
+          ano,
+          ensinoEspecial,
+          disciplinasSelecionadas
+        )
         .then(resposta => {
           if (objetivosSelecionados && objetivosSelecionados.length > 0) {
             resposta.data.forEach(c => {
@@ -343,6 +348,7 @@ Bimestre.propTypes = {
   bimestre: PropTypes.oneOfType([PropTypes.any]).isRequired,
   disciplinas: PropTypes.oneOfType([PropTypes.any]).isRequired,
   ano: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  ensinoEspecial: PropTypes.oneOfType([PropTypes.any]).isRequired,
   ehEja: PropTypes.oneOfType([PropTypes.any]).isRequired,
   ehMedio: PropTypes.oneOfType([PropTypes.any]).isRequired,
   disciplinaSemObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
