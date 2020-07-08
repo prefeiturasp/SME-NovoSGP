@@ -6,9 +6,14 @@ class ServicoPlanoAnual {
     return api.get(url);
   };
 
-  obterObjetivosPorAnoEComponenteCurricular = (anoLetivo, disciplinas) => {
+  obterObjetivosPorAnoEComponenteCurricular = (
+    anoLetivo,
+    ensinoEspecial,
+    disciplinas
+  ) => {
     return api.post('v1/objetivos-aprendizagem', {
       ano: anoLetivo,
+      ensinoEspecial,
       ComponentesCurricularesIds: disciplinas,
     });
   };
