@@ -461,16 +461,16 @@
         [PermissaoMenu(Menu = "Ata Final de Resultados", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhAlteracao = true, Url = "/relatorios/atas/ata-final-resultados")]
         AFR_A = 151,
 
-        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/historico-escolar")]
+        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 5, EhConsulta = true, Url = "/relatorios/historico-escolar")]
         HE_C = 152,
 
-        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhInclusao = true, Url = "/relatorios/historico-escolar")]
+        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 5, EhInclusao = true, Url = "/relatorios/historico-escolar")]
         HE_I = 153,
 
-        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhExclusao = true, Url = "/relatorios/historico-escolar")]
+        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 5, EhExclusao = true, Url = "/relatorios/historico-escolar")]
         HE_E = 154,
 
-        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhAlteracao = true, Url = "/relatorios/historico-escolar")]
+        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 5, EhAlteracao = true, Url = "/relatorios/historico-escolar")]
         HE_A = 155
     }
 }
