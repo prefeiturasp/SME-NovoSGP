@@ -333,5 +333,12 @@ namespace SME.SGP.Dados.Repositorios
 
             database.Execute(query, new { login, perfil });
         }
+
+        public async Task<bool> UsuarioPossuiAbrangenciaAdm(long usuarioId)
+        {
+            var query = "select 1 from abrangencia where usuario_id = @usuarioId and turma_id is null";
+
+            return (await database.Conexao.QueryAsync<int>(query, new { usuarioId })).Count() > 0;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Sentry;
+using SME.SGP.Dominio;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -21,6 +22,12 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode)
                 return await resposta.Content.ReadAsByteArrayAsync();
 
+            var mensagemErro = await resposta.Content.ReadAsStringAsync();
+            
+            SentrySdk.AddBreadcrumb($"Erro ao fazer o download");
+            SentrySdk.AddBreadcrumb($"Base Address: {httpClient.BaseAddress}");
+            SentrySdk.AddBreadcrumb($"Status code: {resposta.StatusCode}");
+            SentrySdk.AddBreadcrumb($"Mensagem Erro: {mensagemErro}");
             throw new NegocioException("Não foi possível realizar o download do relatório.");
         }
     }
