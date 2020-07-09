@@ -22,7 +22,7 @@ const HistoricoEscolar = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
   const usuarioStore = useSelector(state => state.usuario);
-  const codigosAlunosSelecionados = useSelector(
+  const [codigosAlunosSelecionados, setCodigosAlunosSelecionados] = useSelector(
     state => state.localizadorEstudante.codigosAluno
   );
   const turmaUsuarioSelecionada = usuarioStore.turmaSelecionada;
@@ -353,7 +353,10 @@ const HistoricoEscolar = () => {
       turmaCodigo: turmaId,
       imprimirDadosResponsaveis: imprimirDadosResp === '0',
       preencherDataImpressao: preencherDataImpressao === '0',
-      alunosCodigo: codigosAlunosSelecionados,
+      alunosCodigo:
+        codigosAlunosSelecionados?.length > 0
+          ? codigosAlunosSelecionados
+          : alunosSelecionados,
     };
 
     if (gerarHistorico(params)) {
