@@ -60,6 +60,8 @@ namespace SME.SGP.Dominio
         public bool EhTurmaFund2 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 6 && AnoTurmaInteiro <= 9);
         public bool EhTurmaEnsinoMedio => ModalidadeCodigo == Modalidade.Medio;
 
+        public bool EnsinoEspecial { get; set; }
+
         public bool AulasReposicaoPrecisamAprovacao(int quantidadeAulasExistentesNoDia)
         {
             int.TryParse(Ano, out int anoTurma);
