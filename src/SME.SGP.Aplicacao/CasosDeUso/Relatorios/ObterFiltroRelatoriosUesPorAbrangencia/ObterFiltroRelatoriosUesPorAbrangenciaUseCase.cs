@@ -28,7 +28,9 @@ namespace SME.SGP.Aplicacao
             }
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            
             ues = (await repositorioAbrangencia.ObterUes(codigoDre, usuarioLogado.Login, usuarioLogado.PerfilAtual))?.ToList();
+            
             var possuiAbrangenciaEmTodasAsUes = await mediator.Send(new ObterUsuarioPossuiAbrangenciaEmTodasAsUesQuery(usuarioLogado.PerfilAtual));
             if (possuiAbrangenciaEmTodasAsUes)
             {

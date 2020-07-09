@@ -21,5 +21,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterFiltroRelatoriosUesPorAbrangenciaUseCase.Executar(codigoDre));
         }
+
+        [HttpGet("ues/{codigoUe}/modalidades")]
+        public async Task<IActionResult> ObterModalidadesPorUe(string codigoUe, [FromServices] IObterFiltroRelatoriosUesPorAbrangenciaUseCase obterFiltroRelatoriosUesPorAbrangenciaUseCase)
+        {
+            return Ok(await obterFiltroRelatoriosUesPorAbrangenciaUseCase.Executar(codigoUe));
+        }
     }
 }

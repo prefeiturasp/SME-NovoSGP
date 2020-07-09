@@ -347,5 +347,18 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { perfil, tipos=tipos?.Select(c=>(int)c)?.ToArray() });
         }
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string codigoUe)
+        {
+            var query = @"select
+                                distinct t.modalidade_codigo
+                            from
+                                turma t
+                            inner join ue u on
+                                t.ue_id = u.id
+                            where
+                                u.ue_id = @codigoUe";
+
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe });
+        }
     }
 }
