@@ -5,6 +5,8 @@ import { erros } from '~/servicos/alertas';
 import InputCodigo from './componentes/InputCodigo';
 import InputNome from './componentes/InputNome';
 import service from './services/LocalizadorService';
+import { store } from '~/redux';
+import { setAlunosCodigo } from '~/redux/modulos/localizadorEstudante/actions';
 
 const LocalizadorEstudante = props => {
   const { onChange, showLabel, desabilitado, dreId, ueId, anoLetivo } = props;
@@ -40,9 +42,9 @@ const LocalizadorEstudante = props => {
       })
       .catch(e => erros(e));
 
-    if (retorno && retorno.data && retorno.data.length > 0) {
+    if (retorno && retorno?.data?.items?.length > 0) {
       setDataSource(
-        retorno.data.map(aluno => ({
+        retorno.data.items.map(aluno => ({
           alunoCodigo: aluno.codigo,
           alunoNome: aluno.nome,
         }))
@@ -50,24 +52,33 @@ const LocalizadorEstudante = props => {
     }
   };
 
-  const onBuscarPorCodigo = useCallback(async codigoAluno => {
+  const onBuscarPorCodigo = async codigo => {
     const retorno = await service
       .buscarPorCodigo({
-        codigo: codigoAluno,
+        codigo: codigo.codigo,
         codigoUe: ueId,
         anoLetivo,
       })
       .catch(e => erros(e));
 
-    if (retorno && retorno.data) {
-      const { codigo, nome } = retorno.data;
-      setPessoaSelecionada({ codigo, nome });
+    if (retorno?.data?.items?.length > 0) {
+      const { codigo, nome } = retorno.data.items[0];
+      setDataSource(
+        retorno.data.items.map(aluno => ({
+          alunoCodigo: aluno.codigo,
+          alunoNome: aluno.nome,
+        }))
+      );
+      setPessoaSelecionada({
+        alunoCodigo: parseInt(codigo, 10),
+        alunoNome: nome,
+      });
       setDesabilitarCampo(estado => ({
         ...estado,
         nome: true,
       }));
     }
-  }, []);
+  };
 
   const onChangeCodigo = valor => {
     if (valor.length === 0) {
@@ -94,7 +105,8 @@ const LocalizadorEstudante = props => {
   };
 
   useEffect(() => {
-    onChange(pessoaSelecionada);
+    const dados = [pessoaSelecionada.alunoCodigo];
+    store.dispatch(setAlunosCodigo(dados));
   }, [pessoaSelecionada]);
 
   return (

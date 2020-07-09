@@ -22,6 +22,9 @@ const HistoricoEscolar = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
   const usuarioStore = useSelector(state => state.usuario);
+  const codigosAlunosSelecionados = useSelector(
+    state => state.localizadorEstudante.codigosAluno
+  );
   const turmaUsuarioSelecionada = usuarioStore.turmaSelecionada;
   const [anoLetivoSelecionado] = useState(
     turmaUsuarioSelecionada ? turmaUsuarioSelecionada.anoLetivo : ''
@@ -348,9 +351,9 @@ const HistoricoEscolar = () => {
       modalidade: modalidadeId,
       semestre,
       turmaCodigo: turmaId,
-      imprimirDadosResp,
-      preencherDataImpressao,
-      alunosCodigo: alunosSelecionados || [alunoLocalizadorSelect.alunoCodigo],
+      imprimirDadosResponsaveis: imprimirDadosResp === '0',
+      preencherDataImpressao: preencherDataImpressao === '0',
+      alunosCodigo: codigosAlunosSelecionados,
     };
 
     if (gerarHistorico(params)) {
