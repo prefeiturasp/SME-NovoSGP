@@ -332,6 +332,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioFaltasFrequenciasUseCase, RelatorioFaltasFrequenciasUseCase>();
             
             services.TryAddScoped<IHistoricoEscolarUseCase, HistoricoEscolarUseCase>();
+            services.TryAddScoped<IObterAlunosPorCodigoEolNomeUseCase, ObterAlunosPorCodigoEolNomeUseCase>();
         }
     }
 }
