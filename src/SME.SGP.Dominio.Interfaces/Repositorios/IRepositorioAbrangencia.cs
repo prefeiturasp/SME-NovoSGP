@@ -42,6 +42,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool PossuiAbrangenciaTurmaAtivaPorLogin(string login);
 
-        void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia escopo);
+        void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo);
+        Task<bool> UsuarioPossuiAbrangenciaDeUmDosTipos(Guid perfil, IEnumerable<TipoPerfil> tipos);
     }
 }
