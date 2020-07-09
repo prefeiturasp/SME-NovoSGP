@@ -53,6 +53,7 @@ import RelatorioSemestral from '~/paginas/Relatorios/PAP/RelatorioSemestral/rela
 
 import CalendarioProfessor from '~/paginas/CalendarioEscolar/CalendarioProfessor';
 import TerritorioSaber from '~/paginas/Planejamento/TerritorioSaber';
+import HistoricoEscolar from '~/paginas/Relatorios/HistoricoEscolar/historicoEscolar';
 import AtaFinalResultados from '~/paginas/Relatorios/Atas/AtaFinalResultados/ataFinalResultados';
 
 import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
@@ -806,6 +807,17 @@ rotas.set(RotasDto.ATA_FINAL_RESULTADOS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.ATA_FINAL_RESULTADOS,
+});
+
+rotas.set(RotasDto.HISTORICO_ESCOLAR, {
+  breadcrumbName: 'Histórico Escolar',
+  menu: ['Relatórios'],
+  parent: '/',
+  component: HistoricoEscolar,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.HISTORICO_ESCOLAR,
 });
 
 const rotasArray = [];
