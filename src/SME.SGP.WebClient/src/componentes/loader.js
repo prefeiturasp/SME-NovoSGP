@@ -19,10 +19,15 @@ const LoaderWrapper = styled.div`
 
 const icone = <Icon type="loading" style={{ fontWeight: 'bold' }} spin />;
 
-function Loader({ children, loading, tip, className }) {
+function Loader({ children, loading, tip, className, ignorarTip }) {
   return (
     <LoaderWrapper className={className}>
-      <Spin tip={tip} size="large" indicator={icone} spinning={loading}>
+      <Spin
+        tip={!ignorarTip && tip}
+        size="large"
+        indicator={icone}
+        spinning={loading}
+      >
         {children}
       </Spin>
     </LoaderWrapper>
@@ -37,6 +42,7 @@ Loader.propTypes = {
   ]),
   loading: PropTypes.bool,
   tip: PropTypes.string,
+  ignorarTip: PropTypes.bool,
   className: PropTypes.string,
 };
 
@@ -45,6 +51,7 @@ Loader.defaultProps = {
   children: () => {},
   tip: 'Carregando...',
   className: '',
+  ignorarTip: false,
 };
 
 export default Loader;
