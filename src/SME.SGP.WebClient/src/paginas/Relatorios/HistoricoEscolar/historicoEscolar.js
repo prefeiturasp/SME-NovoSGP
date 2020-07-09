@@ -22,7 +22,7 @@ const HistoricoEscolar = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
   const usuarioStore = useSelector(state => state.usuario);
-  const [codigosAlunosSelecionados, setCodigosAlunosSelecionados] = useSelector(
+  const codigosAlunosSelecionados = useSelector(
     state => state.localizadorEstudante.codigosAluno
   );
   const turmaUsuarioSelecionada = usuarioStore.turmaSelecionada;
