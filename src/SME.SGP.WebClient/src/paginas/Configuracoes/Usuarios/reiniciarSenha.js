@@ -228,9 +228,14 @@ export default function ReiniciarSenha() {
   };
 
   const reiniciarSenha = async linha => {
+    const parametros = {
+      dreCodigo: dreSelecionada,
+      ueCodigo: ueSelecionada
+    };
+
     let deveAtualizarEmail = false;
     await api
-      .put(`v1/autenticacao/${linha.codigoRf}/reiniciar-senha`)
+      .put(`v1/autenticacao/${linha.codigoRf}/reiniciar-senha`, parametros)
       .then(resposta => {
         setExibirModalMensagemReiniciarSenha(true);
         setMensagemSenhaAlterada(resposta.data.mensagem);
