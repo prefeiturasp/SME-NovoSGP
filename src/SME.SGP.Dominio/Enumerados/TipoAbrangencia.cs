@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio.Enumerados
+﻿namespace SME.SGP.Dominio
 {
     public enum TipoAbrangencia
     {
-        PorDre = 0,
-        PorUe,
-        PorTurma
+        UE = 1,
+        Professor = 2,
+        UeTurmasDisciplinas = 3,
+        Dre = 4,
+        DreEscolasAtribuidas = 5,
+        SME = 6
     }
 }
