@@ -353,7 +353,10 @@ const HistoricoEscolar = () => {
       turmaCodigo: turmaId,
       imprimirDadosResponsaveis: imprimirDadosResp === '0',
       preencherDataImpressao: preencherDataImpressao === '0',
-      alunosCodigo: codigosAlunosSelecionados,
+      alunosCodigo:
+        codigosAlunosSelecionados?.length > 0
+          ? codigosAlunosSelecionados
+          : alunosSelecionados,
     };
 
     if (gerarHistorico(params)) {
