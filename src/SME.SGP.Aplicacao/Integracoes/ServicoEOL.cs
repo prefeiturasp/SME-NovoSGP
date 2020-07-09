@@ -278,7 +278,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, string nome, string codigoEol)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
-            var url = $"alunos/ues/{codigoUe}/anosLetivos/{anoLetivo}" + (nome != null ? $"?nomeAluno={nome}" : "")
+            var url = $"alunos/ues/{codigoUe}/anosLetivos/{anoLetivo}/autocomplete" + (nome != null ? $"?nomeAluno={nome}" : "")
                 + (codigoEol != null ? $"{(nome != null ? "&" : "?") + $"codigoEol={codigoEol}"}" : "");
             var resposta = await httpClient.GetAsync(url);
 
