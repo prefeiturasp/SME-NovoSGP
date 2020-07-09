@@ -155,7 +155,9 @@ namespace SME.SGP.Aplicacao.Consultas
         {
             var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(turma.UeId);
 
-            PeriodoEscolar periodoEscolar = null;
+            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre)
+                ?? throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
+
             if (periodosAberto != null && periodosAberto.Any())
             {
                 // caso tenha mais de um periodo em aberto (abertura e reabertura) usa o ultimo bimestre
@@ -164,19 +166,24 @@ namespace SME.SGP.Aplicacao.Consultas
             else
             {
                 // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
-                var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+                var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
                 if (tipoCalendario == null)
                     throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
-                var periodosEscolares = await ObterPeriodosEscolares(tipoCalendario.Id);
+                var periodosEscolares = ObterPeriodosEscolares(tipoCalendario.Id);
                 if (periodosEscolares == null)
                     throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
 
-                periodoEscolar = ObterPeriodoPorData(periodosEscolares, DateTime.Today);
-                if (periodoEscolar == null)
-                    periodoEscolar = ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
-            }
+            return ObterPeriodoPorData(periodosEscolares, DateTime.Today)
+                ?? ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
+        }
 
-            return periodoEscolar;
+        private static PeriodoEscolar FiltraEObtemUltimoPeriodoEmAberto(ref IEnumerable<PeriodoEscolar> periodosAberto, TipoCalendarioCompletoDto tipoCalendario)
+        {
+            // Filtra apenas a modalidade desejada
+            periodosAberto = periodosAberto.Where(x => tipoCalendario.Id == x.TipoCalendarioId);
+
+            // caso tenha mais de um periodo em aberto (abertura e reabertura) usa o ultimo bimestre
+            return periodosAberto.OrderBy(c => c.Bimestre).Last();
         }
     }
 }
