@@ -20,16 +20,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public IActionResult ObterAlunos(FiltroBuscaAlunosDto filtroBuscaAlunosDto)
+        public async Task<IActionResult> ObterAlunos(FiltroBuscaAlunosDto filtroBuscaAlunosDto, [FromServices] IObterAlunosPorCodigoEolNomeUseCase obterAlunosPorCodigoEolNomeUseCase)
         {
-            List<AlunoDto> alunos = new List<AlunoDto>
-            {
-                new AlunoDto("6588992", "ANA VIEIRA ALMEIDA"),
-                new AlunoDto("6249873", "ANA CLARA DO PRADO MARTINS"),
-                new AlunoDto("6145218", "ANA JULIA DOS SANTOS SOUZA"),
-                new AlunoDto("6233047", "ANA HENRIQUE PRIORI GOMES")
-            };
-            return Ok(alunos);
+            return Ok(await obterAlunosPorCodigoEolNomeUseCase.Executar(filtroBuscaAlunosDto));
         }
 
 

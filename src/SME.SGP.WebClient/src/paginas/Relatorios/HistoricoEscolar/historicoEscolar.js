@@ -21,6 +21,14 @@ import RotasDto from '~/dtos/rotasDto';
 const HistoricoEscolar = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const usuarioStore = useSelector(state => state.usuario);
+  const codigosAlunosSelecionados = useSelector(
+    state => state.localizadorEstudante.codigosAluno
+  );
+  const turmaUsuarioSelecionada = usuarioStore.turmaSelecionada;
+  const [anoLetivoSelecionado] = useState(
+    turmaUsuarioSelecionada ? turmaUsuarioSelecionada.anoLetivo : ''
+  );
 
   useEffect(() => {
     setSomenteConsulta(
@@ -343,9 +351,9 @@ const HistoricoEscolar = () => {
       modalidade: modalidadeId,
       semestre,
       turmaCodigo: turmaId,
-      imprimirDadosResp,
-      preencherDataImpressao,
-      alunosCodigo: alunosSelecionados || [alunoLocalizadorSelect.alunoCodigo],
+      imprimirDadosResponsaveis: imprimirDadosResp === '0',
+      preencherDataImpressao: preencherDataImpressao === '0',
+      alunosCodigo: codigosAlunosSelecionados,
     };
 
     if (gerarHistorico(params)) {
@@ -520,6 +528,7 @@ const HistoricoEscolar = () => {
                   dreId={dreId}
                   ueId={ueId}
                   onChange={onChangeLocalizadorEstudante}
+                  anoLetivo={anoLetivoSelecionado}
                   desabilitado={!dreId || !ueId}
                 />
               </div>
