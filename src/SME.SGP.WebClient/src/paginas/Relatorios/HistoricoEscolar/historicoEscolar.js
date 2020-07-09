@@ -528,7 +528,7 @@ const HistoricoEscolar = () => {
                   dreId={dreId}
                   ueId={ueId}
                   onChange={onChangeLocalizadorEstudante}
-                  anoLetivo={anoLetivoSelecionado}
+                  anoLetivo={anoLetivo}
                   desabilitado={!dreId || !ueId}
                 />
               </div>
