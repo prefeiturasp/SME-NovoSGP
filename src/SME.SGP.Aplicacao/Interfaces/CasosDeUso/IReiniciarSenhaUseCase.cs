@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IReiniciarSenhaUseCase
     {
-        Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf);
+        Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf, string dreCodigo, string ueCodigo);
     }
 }
