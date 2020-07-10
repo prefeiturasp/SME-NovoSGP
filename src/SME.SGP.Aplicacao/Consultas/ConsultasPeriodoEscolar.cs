@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 ?? throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
 
             if (periodosAberto != null && periodosAberto.Any())
-                return FiltraEObtemUltimoPeriodoEmAberto(ref periodosAberto, tipoCalendario);
+                return FiltraEObtemUltimoPeriodoEmAberto(periodosAberto, tipoCalendario);
 
             return await BuscaUltimoPeriodoEscolar(tipoCalendario);
         }
@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 ?? ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
         }
 
-        private static PeriodoEscolar FiltraEObtemUltimoPeriodoEmAberto(ref IEnumerable<PeriodoEscolar> periodosAberto, TipoCalendarioCompletoDto tipoCalendario)
+        private PeriodoEscolar FiltraEObtemUltimoPeriodoEmAberto(IEnumerable<PeriodoEscolar> periodosAberto, TipoCalendarioCompletoDto tipoCalendario)
         {
             // Filtra apenas a modalidade desejada
             periodosAberto = periodosAberto.Where(x => tipoCalendario.Id == x.TipoCalendarioId);
