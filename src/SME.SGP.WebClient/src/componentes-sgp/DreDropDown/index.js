@@ -12,7 +12,15 @@ import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import Loader from '~/componentes/loader';
 
-function DreDropDown({ form, onChange, label, url, desabilitado, opcaoTodas }) {
+function DreDropDown({
+  form,
+  onChange,
+  label,
+  url,
+  desabilitado,
+  opcaoTodas,
+  temModalidade,
+}) {
   const [carregando, setCarregando] = useState(false);
   const [listaDres, setListaDres] = useState([]);
 
@@ -34,7 +42,7 @@ function DreDropDown({ form, onChange, label, url, desabilitado, opcaoTodas }) {
       }
       setCarregando(false);
     }
-    buscarDres();
+    if (temModalidade) buscarDres();
   }, [url]);
 
   useEffect(() => {
@@ -78,6 +86,7 @@ DreDropDown.propTypes = {
   url: PropTypes.string,
   desabilitado: PropTypes.bool,
   opcaoTodas: PropTypes.bool,
+  temModalidade: PropTypes.bool,
 };
 
 DreDropDown.defaultProps = {
@@ -87,6 +96,7 @@ DreDropDown.defaultProps = {
   url: null,
   desabilitado: false,
   opcaoTodas: false,
+  temModalidade: true,
 };
 
 export default DreDropDown;

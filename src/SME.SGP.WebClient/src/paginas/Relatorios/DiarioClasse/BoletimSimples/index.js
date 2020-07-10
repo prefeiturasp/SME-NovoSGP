@@ -96,7 +96,13 @@ const BoletimSimples = () => {
             onClickVoltar={onClickVoltar}
             onClickCancelar={onClickCancelar}
             onClickBotaoPrincipal={onClickBotaoPrincipal}
-            desabilitarBotaoPrincipal={false}
+            desabilitarBotaoPrincipal={
+              false ||
+              (filtro &&
+                filtro.turmaCodigo > 0 &&
+                selecionarAlunos &&
+                !itensSelecionados?.length)
+            }
             botoesEstadoVariavel={false}
             labelBotaoPrincipal="Gerar"
             modoEdicao
