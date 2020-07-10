@@ -288,7 +288,7 @@ const Notas = ({ match }) => {
   const obterDisciplinas = useCallback(async () => {
     const url = `v1/professores/turmas/${usuario.turmaSelecionada.turma}/disciplinas`;
     const disciplinas = await api.get(url).then(res => {
-      setDesabilitarDisciplina(false);
+      if (res.data) setDesabilitarDisciplina(false);
 
       return res;
     });
