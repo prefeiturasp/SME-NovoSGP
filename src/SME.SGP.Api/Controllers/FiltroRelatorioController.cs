@@ -16,16 +16,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterDresPorAbrangenciaFiltroRelatoriosUseCase.Executar());
         }
 
-        [HttpGet("ues/{codigoDre}")]
-        public async Task<IActionResult> ObterUesPorAbrangencia(string codigoDre, [FromServices] IObterFiltroRelatoriosUesPorAbrangenciaUseCase obterFiltroRelatoriosUesPorAbrangenciaUseCase)
+        [HttpGet("dres/{codigoDre}/ues")]
+        public async Task<IActionResult> ObterUesPorDreComAbrangencia(string codigoDre, [FromServices] IObterFiltroRelatoriosUesPorAbrangenciaUseCase obterFiltroRelatoriosUesPorAbrangenciaUseCase)
         {
             return Ok(await obterFiltroRelatoriosUesPorAbrangenciaUseCase.Executar(codigoDre));
         }
 
         [HttpGet("ues/{codigoUe}/modalidades")]
-        public async Task<IActionResult> ObterModalidadesPorUe(string codigoUe, [FromServices] IObterFiltroRelatoriosUesPorAbrangenciaUseCase obterFiltroRelatoriosUesPorAbrangenciaUseCase)
+        public async Task<IActionResult> ObterModalidadesPorUe(string codigoUe, [FromServices] IObterFiltroRelatoriosModalidadesPorUeUseCase obterFiltroRelatoriosModalidadesPorUeUseCase)
         {
-            return Ok(await obterFiltroRelatoriosUesPorAbrangenciaUseCase.Executar(codigoUe));
+            return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe));
         }
     }
 }

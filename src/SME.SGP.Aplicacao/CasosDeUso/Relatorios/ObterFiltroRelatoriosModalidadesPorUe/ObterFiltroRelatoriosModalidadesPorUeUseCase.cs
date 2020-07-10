@@ -1,27 +1,21 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFiltroRelatoriosModalidadesPorUeUseCase
+    public class ObterFiltroRelatoriosModalidadesPorUeUseCase : IObterFiltroRelatoriosModalidadesPorUeUseCase
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioAbrangencia repositorioAbrangencia;
 
-        public ObterFiltroRelatoriosModalidadesPorUeUseCase(IMediator mediator,
-                                              IRepositorioAbrangencia repositorioAbrangencia)
+        public ObterFiltroRelatoriosModalidadesPorUeUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            this.repositorioAbrangencia = repositorioAbrangencia ?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
         }
-        public async Task<IEnumerable<Modalidade>> Executar(string codigoUe)
+        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe)
         {
-            return await repositorioAbrangencia.ObterModalidadesPorUe(codigoUe);
+            return await mediator.Send(new ObterFiltroRelatoriosModalidadesPorUeQuery(codigoUe));
         }
     }
 }
