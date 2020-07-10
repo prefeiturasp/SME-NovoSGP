@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 SentrySdk.CaptureMessage("1 - RelatorioFaltasFrequencias");
             }
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FaltasFrequencias, filtroRelatorioFaltasFrequenciasDto, usuario, Dominio.TipoFormatoRelatorio.Xlsx));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FaltasFrequencia, filtroRelatorioFaltasFrequenciasDto, usuario, Dominio.TipoFormatoRelatorio.Xlsx));
         }
     }
 }

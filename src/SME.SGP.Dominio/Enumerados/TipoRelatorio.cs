@@ -20,7 +20,7 @@ namespace SME.SGP.Dominio
         ConselhoClasseAtaFinal = 5,
 
         [Display(Name = "relatorios/faltas-frequencia", ShortName = "RelatorioFaltasFrequencia.pdf", Description = "Relatório de faltas e frequência")]
-        FaltasFrequencia = 6
+        FaltasFrequencia = 6,
        [Display(Name = "relatorios/historicoescolarfundamental", ShortName = "HistoricoEscolar.pdf", Description = "Histórico Escolar Funadamental")]
         HistoricoEscolarFundamental = 7,
         
