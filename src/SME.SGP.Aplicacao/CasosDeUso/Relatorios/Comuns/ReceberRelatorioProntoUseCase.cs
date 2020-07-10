@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 
                 if (relatorioCorrelacao.EhRelatorioJasper)
                 {
-                    var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoFiltro<ReceberRelatorioProntoCommand>();
+                    var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoMensagem<ReceberRelatorioProntoCommand>();
                     receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao;
 
                     var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
