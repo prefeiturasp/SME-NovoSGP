@@ -11,8 +11,7 @@ namespace SME.SGP.Dados.Contexto
     {
         private readonly NpgsqlConnection conexao;
         private readonly IContextoAplicacao contextoAplicacao;
-        private NpgsqlTransaction transacao;
-
+        
         public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao)
         {
             conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP-Postgres"));
@@ -100,7 +99,7 @@ namespace SME.SGP.Dados.Contexto
 
         public void FecharConexao()
         {
-            if (conexao.State != ConnectionState.Closed && !(transacao != null && transacao.Connection != null))
+            if (conexao.State != ConnectionState.Closed)
             {
                 Close();
             }
