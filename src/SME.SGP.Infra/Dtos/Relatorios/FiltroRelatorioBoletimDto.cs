@@ -11,13 +11,13 @@ namespace SME.SGP.Infra.Dtos.Relatorios
 
         public string UeCodigo { get; set; }
 
-        public long? Semestre { get; set; }
+        public int Semestre { get; set; }
 
         public string TurmaCodigo { get; set; }
 
-        public int? AnoLetivo { get; set; }
+        public int AnoLetivo { get; set; }
 
-        public Modalidade? Modalidade { get; set; }
+        public Modalidade Modalidade { get; set; }
 
         public string[] AlunosCodigo { get; set; }
 

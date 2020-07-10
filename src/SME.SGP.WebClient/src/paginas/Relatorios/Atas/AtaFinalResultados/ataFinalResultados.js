@@ -416,7 +416,7 @@ const AtaFinalResultados = () => {
                 disabled={
                   !permissoesTela.podeConsultar ||
                   !modalidadeId ||
-                  modalidadeId == modalidade.FUNDAMENTAL ||
+                  modalidadeId != modalidade.EJA ||
                   (listaSemestre && listaSemestre.length === 1)
                 }
                 valueSelect={semestre}
