@@ -44,5 +44,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo);
         Task<bool> UsuarioPossuiAbrangenciaDeUmDosTipos(Guid perfil, IEnumerable<TipoPerfil> tipos);
+        Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string codigoUe);
     }
 }
