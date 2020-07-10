@@ -56,6 +56,7 @@ import TerritorioSaber from '~/paginas/Planejamento/TerritorioSaber';
 import AtaFinalResultados from '~/paginas/Relatorios/Atas/AtaFinalResultados/ataFinalResultados';
 
 import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
+import FaltasFrequencia from '~/paginas/Relatorios/Frequencia/faltasFrequencia';
 
 const rotas = new Map();
 
@@ -806,6 +807,17 @@ rotas.set(RotasDto.ATA_FINAL_RESULTADOS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.ATA_FINAL_RESULTADOS,
+});
+
+rotas.set(RotasDto.FALTAS_FREQUENCIA, {
+  breadcrumbName: 'Faltas e frequência',
+  menu: ['Relatórios', 'Frequência'],
+  parent: '/',
+  component: FaltasFrequencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.FALTAS_FREQUENCIA,
 });
 
 const rotasArray = [];
