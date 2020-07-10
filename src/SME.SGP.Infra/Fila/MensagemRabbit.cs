@@ -5,18 +5,18 @@ namespace SME.SGP.Infra
 {
     public class MensagemRabbit
     {
-        public MensagemRabbit(string action, object filtros, Guid codigoCorrelacao, string usuarioLogadoRF, bool notificarErroUsuario = false)
+        public MensagemRabbit(string action, object mensagem, Guid codigoCorrelacao, string usuarioLogadoRF, bool notificarErroUsuario = false)
         {
             Action = action;
-            Filtros = filtros;
+            Mensagem = mensagem;
             CodigoCorrelacao = codigoCorrelacao;
             NotificarErroUsuario = notificarErroUsuario;
             UsuarioLogadoRF = usuarioLogadoRF;
         }
 
-        public MensagemRabbit(object filtros, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid perfil, bool notificarErroUsuario = false)
+        public MensagemRabbit(object mensagem, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid perfil, bool notificarErroUsuario = false)
         {
-            Filtros = filtros;
+            Mensagem = mensagem;
             CodigoCorrelacao = codigoCorrelacao;
             UsuarioLogadoNomeCompleto = usuarioLogadoNomeCompleto;
             UsuarioLogadoRF = usuarioLogadoRF;
@@ -29,16 +29,16 @@ namespace SME.SGP.Infra
 
         }
         public string Action { get; set; }
-        public object Filtros { get; set; }
+        public object Mensagem { get; set; }
         public Guid CodigoCorrelacao { get; set; }
         public string UsuarioLogadoNomeCompleto { get; set; }
         public string UsuarioLogadoRF { get; set; }
         public bool NotificarErroUsuario { get; set; }
         public string PerfilUsuario { get; set; }
 
-        public T ObterObjetoFiltro<T>() where T : class
+        public T ObterObjetoMensagem<T>() where T : class
         {
-            return JsonConvert.DeserializeObject<T>(Filtros.ToString());
+            return JsonConvert.DeserializeObject<T>(Mensagem.ToString());
         }
     }
 }
