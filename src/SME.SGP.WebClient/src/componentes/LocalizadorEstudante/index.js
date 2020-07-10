@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Label } from '~/componentes';
 import { erros } from '~/servicos/alertas';
 import InputCodigo from './componentes/InputCodigo';
@@ -9,7 +9,7 @@ import { store } from '~/redux';
 import { setAlunosCodigo } from '~/redux/modulos/localizadorEstudante/actions';
 
 const LocalizadorEstudante = props => {
-  const { onChange, showLabel, desabilitado, dreId, ueId, anoLetivo } = props;
+  const { onChange, showLabel, desabilitado, ueId, anoLetivo } = props;
 
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
@@ -30,6 +30,7 @@ const LocalizadorEstudante = props => {
           nome: false,
         }));
       }, 200);
+      onChange();
     }
 
     if (valor.length < 3) return;
@@ -62,7 +63,7 @@ const LocalizadorEstudante = props => {
       .catch(e => erros(e));
 
     if (retorno?.data?.items?.length > 0) {
-      const { codigo, nome } = retorno.data.items[0];
+      const { codigo: cAluno, nome } = retorno.data.items[0];
       setDataSource(
         retorno.data.items.map(aluno => ({
           alunoCodigo: aluno.codigo,
@@ -70,7 +71,7 @@ const LocalizadorEstudante = props => {
         }))
       );
       setPessoaSelecionada({
-        alunoCodigo: parseInt(codigo, 10),
+        alunoCodigo: parseInt(cAluno, 10),
         alunoNome: nome,
       });
       setDesabilitarCampo(estado => ({
@@ -90,6 +91,7 @@ const LocalizadorEstudante = props => {
         ...estado,
         nome: false,
       }));
+      onChange();
     }
   };
 
@@ -102,15 +104,23 @@ const LocalizadorEstudante = props => {
       ...estado,
       codigo: true,
     }));
+    onChange({
+      alunoCodigo: parseInt(objeto.key, 10),
+      alunoNome: objeto.props.value,
+    });
   };
 
   useEffect(() => {
-    const dados = [pessoaSelecionada.alunoCodigo];
-    store.dispatch(setAlunosCodigo(dados));
+    if (pessoaSelecionada && pessoaSelecionada.alunoCodigo) {
+      const dados = [pessoaSelecionada.alunoCodigo];
+      store.dispatch(setAlunosCodigo(dados));
+    } else {
+      store.dispatch(setAlunosCodigo([]));
+    }
   }, [pessoaSelecionada]);
 
   return (
-    <>
+    <React.Fragment>
       <div className="col-sm-12 col-md-6 col-lg-8 col-xl-8">
         {showLabel && <Label text="Nome" control="alunoNome" />}
         <InputNome
@@ -132,24 +142,22 @@ const LocalizadorEstudante = props => {
           desabilitado={desabilitado || desabilitarCampo.codigo}
         />
       </div>
-    </>
+    </React.Fragment>
   );
 };
 
 LocalizadorEstudante.propTypes = {
-  onChange: () => {},
+  onChange: PropTypes.func,
   showLabel: PropTypes.bool,
   desabilitado: PropTypes.bool,
-  dreId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 LocalizadorEstudante.defaultProps = {
-  onChange: PropTypes.func,
+  onChange: () => {},
   showLabel: false,
   desabilitado: false,
-  dreId: '',
   ueId: '',
   anoLetivo: '',
 };
