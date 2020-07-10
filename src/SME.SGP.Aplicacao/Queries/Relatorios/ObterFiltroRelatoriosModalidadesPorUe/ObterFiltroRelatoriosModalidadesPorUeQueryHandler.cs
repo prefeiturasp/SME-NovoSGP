@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -19,6 +20,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<OpcaoDropdownDto>> Handle(ObterFiltroRelatoriosModalidadesPorUeQuery request, CancellationToken cancellationToken)
         {
+            if (request.CodigoUe == "-99")
+            {
+                return EnumExtensao.ListarDto<Modalidade>().Select(c => new OpcaoDropdownDto { Descricao = c.Descricao, Valor = c.Id.ToString() });
+            }
+
             var modalidades = await repositorioAbrangencia.ObterModalidadesPorUe(request.CodigoUe);
             return modalidades.Select(c => new OpcaoDropdownDto
             {
