@@ -16,9 +16,12 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(FiltroRelatorioFaltasFrequenciaDto filtro)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FaltasFrequencia, filtro, usuarioLogado));
-            return await Task.FromResult(true);
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if (usuario == null)
+                throw new NegocioException("Não foi possível localizar o usuário.");
+
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FaltasFrequencia, filtro, usuario, filtro.TipoFormatoRelatorio));
         }
     }
 }
