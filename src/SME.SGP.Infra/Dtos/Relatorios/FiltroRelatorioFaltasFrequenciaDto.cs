@@ -17,8 +17,7 @@ namespace SME.SGP.Infra
         public TipoRelatorioFaltasFrequencia TipoRelatorio { get; set; }
         public CondicoesRelatorioFaltasFrequencia Condicao { get; set; }
         public int ValorCondicao { get; set; }
-        //TODO PEGAR ENUM NA BRANCH DE DEVELOPMENT
-        public string Formato { get; set; }
+        public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
     }
 
 
@@ -49,7 +48,7 @@ namespace SME.SGP.Infra
             .NotEmpty()
             .WithMessage("O valor para a condição deve ser informado.");
 
-            RuleFor(c => c.Formato)
+            RuleFor(c => c.TipoFormatoRelatorio)
            .NotEmpty()
            .WithMessage("O formato deve ser informado.");
         }
