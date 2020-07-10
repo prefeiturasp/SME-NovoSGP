@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExcluirAulaRecorrenteUseCase", "Rabbit - ExcluirAulaRecorrenteUseCase");
 
-            var command = mensagemRabbit.ObterObjetoFiltro<ExcluirAulaRecorrenteCommand>();
+            var command = mensagemRabbit.ObterObjetoMensagem<ExcluirAulaRecorrenteCommand>();
 
             return await mediator.Send(command);
         }
