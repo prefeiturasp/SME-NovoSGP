@@ -6,6 +6,8 @@ import {
   setDadosRelatorioSemestral,
   setAlunosRelatorioSemestral,
   setCodigoAlunoSelecionado,
+  setExibirModalErrosRalSemestralPAP,
+  setErrosRalSemestralPAP,
 } from '~/redux/modulos/relatorioSemestralPAP/actions';
 import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
@@ -43,6 +45,7 @@ class ServicoSalvarRelatorioSemestral {
 
     const todosCamposValidos = (mostrarErro = false) => {
       const { secoes } = dadosRelatorioSemestral;
+      const camposInvalidos = [];
       for (let index = 0; index < secoes.length; index += 1) {
         const secao = secoes[index];
 
@@ -52,14 +55,22 @@ class ServicoSalvarRelatorioSemestral {
           );
           if (itemAlterado) {
             if (!itemAlterado.valor) {
-              if (mostrarErro) erro(`É obrigatório informar ${secao.nome}`);
-              return false;
+              if (mostrarErro) {
+                camposInvalidos.push(secao.nome);
+              }
             }
           } else if (!secao.valor) {
-            if (mostrarErro) erro(`É obrigatório informar ${secao.nome}`);
-            return false;
+            if (mostrarErro) {
+              camposInvalidos.push(secao.nome);
+            }
           }
         }
+      }
+
+      if (camposInvalidos.length) {
+        dispatch(setErrosRalSemestralPAP(camposInvalidos));
+        dispatch(setExibirModalErrosRalSemestralPAP(true));
+        return false;
       }
       return true;
     };

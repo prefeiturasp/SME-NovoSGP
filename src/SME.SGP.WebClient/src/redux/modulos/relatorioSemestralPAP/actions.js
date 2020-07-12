@@ -52,3 +52,13 @@ export const setCodigoAlunoSelecionado = payload => ({
   type: '@relatorioSemestralPAP/setCodigoAlunoSelecionado',
   payload,
 });
+
+export const setExibirModalErrosRalSemestralPAP = payload => ({
+  type: '@relatorioSemestralPAP/setExibirModalErrosRalSemestralPAP',
+  payload,
+});
+
+export const setErrosRalSemestralPAP = payload => ({
+  type: '@relatorioSemestralPAP/setErrosRalSemestralPAP',
+  payload,
+});
