@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -26,6 +27,12 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterModalidadesPorUe(string codigoUe, [FromServices] IObterFiltroRelatoriosModalidadesPorUeUseCase obterFiltroRelatoriosModalidadesPorUeUseCase)
         {
             return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe));
+        }
+
+        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/anos-escolares")]
+        public async Task<IActionResult> ObterAnosEscolaresPorModalidadeUe(string codigoUe, Modalidade modalidade, [FromServices] IObterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase obterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase)
+        {
+            return Ok(await obterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase.Executar(codigoUe, modalidade));
         }
     }
 }
