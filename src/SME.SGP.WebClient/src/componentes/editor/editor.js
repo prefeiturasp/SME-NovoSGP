@@ -3,7 +3,7 @@ import '@ckeditor/ckeditor5-build-classic/build/translations/pt-br';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CKEditor from '@ckeditor/ckeditor5-react';
 import { Field } from 'formik';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import { Base } from '../colors';
@@ -22,9 +22,7 @@ const Campo = styled.div`
       border-color: #dc3545 !important;
     }
   }
-`;
 
-const Desabilitado = styled.div`
   .ck-read-only {
     background: #eee !important;
     cursor: not-allowed;
@@ -54,14 +52,23 @@ export default function Editor(props) {
     mensagemErro,
     desabilitar,
     removerToolbar,
+    validarSeTemErro,
   } = props;
 
+  const [validacaoComErro, setValidacaoComErro] = useState(false);
+
   const possuiErro = () => {
-    return (form && form.errors[name] && form.touched[name]) || temErro;
+    return (
+      (form && form.errors[name] && form.touched[name]) ||
+      temErro ||
+      validacaoComErro
+    );
   };
 
   const obterErros = () => {
-    return (form && form.touched[name] && form.errors[name]) || temErro ? (
+    return (form && form.touched[name] && form.errors[name]) ||
+      temErro ||
+      validacaoComErro ? (
       <span style={{ color: `${Base.Vermelho}` }}>
         {(form && form.errors[name]) || mensagemErro}
       </span>
@@ -109,33 +116,38 @@ export default function Editor(props) {
 
   const editorSemValidacoes = () => {
     return (
-      <Desabilitado>
-        <CKEditor
-          disabled={desabilitar || false}
-          editor={ClassicEditor}
-          config={{
-            toolbar: removerToolbar ? [] : toolbar,
-            table: { isEnabled: true },
-            readOnly: desabilitar || false,
-            language: 'pt-br',
-            removePlugins: [
-              'Image',
-              'ImageCaption',
-              'ImageStyle',
-              'ImageToolbar',
-              'Indent',
-              'IndentToolbar',
-              'IndentStyle',
-              'Outdent',
-            ],
-          }}
-          data={inicial || ''}
-          onChange={(event, editor) => {
-            const data = editor.getData();
-            onChange && onChange(data);
-          }}
-        />
-      </Desabilitado>
+      <Campo>
+        <div className={validacaoComErro || possuiErro() ? 'is-invalid' : ''}>
+          <CKEditor
+            disabled={desabilitar || false}
+            editor={ClassicEditor}
+            config={{
+              toolbar: removerToolbar ? [] : toolbar,
+              table: { isEnabled: true },
+              readOnly: desabilitar || false,
+              language: 'pt-br',
+              removePlugins: [
+                'Image',
+                'ImageCaption',
+                'ImageStyle',
+                'ImageToolbar',
+                'Indent',
+                'IndentToolbar',
+                'IndentStyle',
+                'Outdent',
+              ],
+            }}
+            data={inicial || ''}
+            onChange={(event, editor) => {
+              const data = editor.getData();
+              if (validarSeTemErro) {
+                setValidacaoComErro(validarSeTemErro(data));
+              }
+              onChange && onChange(data);
+            }}
+          />
+        </div>
+      </Campo>
     );
   };
 

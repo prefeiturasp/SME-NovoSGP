@@ -10,6 +10,8 @@ const inicial = {
   desabilitarCampos: false,
   dentroPeriodo: true,
   codigoAlunoSelecionado: null,
+  exibirModalErrosRalSemestralPAP: false,
+  errosRalSemestralPAP: [],
 };
 
 export default function RelatorioSemestralPAP(state = inicial, action) {
@@ -37,6 +39,8 @@ export default function RelatorioSemestralPAP(state = inicial, action) {
           auditoriaRelatorioSemestral: null,
           desabilitarCampos: false,
           codigoAlunoSelecionado: null,
+          exibirModalErrosRalSemestralPAP: false,
+          errosRalSemestralPAP: [],
         };
       }
       case '@relatorioSemestralPAP/setRelatorioSemestralEmEdicao': {
@@ -97,6 +101,18 @@ export default function RelatorioSemestralPAP(state = inicial, action) {
         return {
           ...draft,
           codigoAlunoSelecionado: action.payload,
+        };
+      }
+      case '@relatorioSemestralPAP/setExibirModalErrosRalSemestralPAP': {
+        return {
+          ...draft,
+          exibirModalErrosRalSemestralPAP: action.payload,
+        };
+      }
+      case '@relatorioSemestralPAP/setErrosRalSemestralPAP': {
+        return {
+          ...draft,
+          errosRalSemestralPAP: action.payload,
         };
       }
 
