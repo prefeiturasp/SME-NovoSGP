@@ -15,14 +15,13 @@ namespace SME.SGP.Aplicacao
 
         public EnviaNotificacaoCriadorCommandHandler(IServicoNotificacao servicoNotificacao)
         {
-            
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            
+            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));            
         }
 
         public Task<bool> Handle(EnviaNotificacaoCriadorCommand request, CancellationToken cancellationToken)
         {
-            var urlNotificacao = $"{request.UrlRedirecionamentoBase}api/v1/downloads/sgp/{request.RelatorioCorrelacao.Formato.Name()}/{request.RelatorioCorrelacao.Codigo}";
+            var extensaoRelatorio = request.RelatorioCorrelacao.Formato.Name();
+            var urlNotificacao = $"{request.UrlRedirecionamentoBase}api/v1/downloads/sgp/{extensaoRelatorio}/{request.RelatorioCorrelacao.TipoRelatorio.ShortName()}.{extensaoRelatorio}/{request.RelatorioCorrelacao.Codigo}";
 
             var descricaoDoRelatorio = request.RelatorioCorrelacao.TipoRelatorio.GetAttribute<DisplayAttribute>().Description;
 

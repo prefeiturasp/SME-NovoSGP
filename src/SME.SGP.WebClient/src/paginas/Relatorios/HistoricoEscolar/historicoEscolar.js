@@ -21,13 +21,8 @@ import RotasDto from '~/dtos/rotasDto';
 const HistoricoEscolar = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
-  const usuarioStore = useSelector(state => state.usuario);
   const codigosAlunosSelecionados = useSelector(
     state => state.localizadorEstudante.codigosAluno
-  );
-  const turmaUsuarioSelecionada = usuarioStore.turmaSelecionada;
-  const [anoLetivoSelecionado] = useState(
-    turmaUsuarioSelecionada ? turmaUsuarioSelecionada.anoLetivo : ''
   );
 
   useEffect(() => {
@@ -56,7 +51,10 @@ const HistoricoEscolar = () => {
   const [preencherDataImpressao, setPreencherDataImpressao] = useState('0');
 
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
-  const [alunoLocalizadorSelect, setAlunoLocalizadorSelect] = useState();
+  const [
+    alunoLocalizadorSelecionado,
+    setAlunoLocalizadorSelecionado,
+  ] = useState();
 
   const [alunosSelecionados, setAlunosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
@@ -306,14 +304,23 @@ const HistoricoEscolar = () => {
 
   useEffect(() => {
     const desabilitar =
-      !anoLetivo || !dreId || !ueId || !modalidadeId || !turmaId;
+      !alunoLocalizadorSelecionado &&
+      (!anoLetivo || !dreId || !ueId || !modalidadeId || !turmaId);
 
     if (String(modalidadeId) === String(modalidade.EJA)) {
       setDesabilitarBtnGerar(!semestre || desabilitar);
     } else {
       setDesabilitarBtnGerar(desabilitar);
     }
-  }, [anoLetivo, dreId, ueId, modalidadeId, turmaId, semestre]);
+  }, [
+    alunoLocalizadorSelecionado,
+    anoLetivo,
+    dreId,
+    ueId,
+    modalidadeId,
+    turmaId,
+    semestre,
+  ]);
 
   useEffect(() => {
     obterDres();
@@ -420,6 +427,8 @@ const HistoricoEscolar = () => {
         turmaCodigo: turmaId,
         semestre,
       });
+    } else {
+      setAlunosSelecionados([]);
     }
     setEstudanteOpt(valor);
   };
@@ -429,13 +438,15 @@ const HistoricoEscolar = () => {
     setPreencherDataImpressao(valor);
 
   const onChangeLocalizadorEstudante = aluno => {
-    if (aluno && (aluno.alunoCodigo || aluno.alunoNome)) {
-      setAlunoLocalizadorSelect(aluno);
+    if (aluno?.alunoCodigo && aluno?.alunoNome) {
+      setAlunoLocalizadorSelecionado(aluno);
       setModalidadeId();
       setTurmaId();
       setDesabilitarBtnGerar(false);
     } else {
-      setAlunoLocalizadorSelect();
+      setAlunoLocalizadorSelecionado();
+      if (listaModalidades && listaModalidades.length === 1)
+        setModalidadeId(String(listaModalidades[0].valor));
     }
   };
 
@@ -468,7 +479,11 @@ const HistoricoEscolar = () => {
                 className="mr-2"
                 onClick={() => onClickCancelar()}
               />
-              <Loader loading={carregandoGerar} className="d-flex" tip="">
+              <Loader
+                loading={carregandoGerar}
+                className="d-flex w-auto"
+                tip=""
+              >
                 <Button
                   id="btn-gerar-historico-escolar"
                   icon="print"
@@ -528,7 +543,6 @@ const HistoricoEscolar = () => {
               <div className="row">
                 <LocalizadorEstudante
                   showLabel
-                  dreId={dreId}
                   ueId={ueId}
                   onChange={onChangeLocalizadorEstudante}
                   anoLetivo={anoLetivo}
@@ -551,8 +565,8 @@ const HistoricoEscolar = () => {
                   valueText="desc"
                   disabled={
                     !ueId ||
-                    (listaModalidades && listaModalidades.length === 1) ||
-                    alunoLocalizadorSelect
+                    alunoLocalizadorSelecionado?.length ||
+                    (listaModalidades && listaModalidades.length === 1)
                   }
                   onChange={onChangeModalidade}
                   valueSelect={modalidadeId}
@@ -570,8 +584,8 @@ const HistoricoEscolar = () => {
                     label="Semestre"
                     disabled={
                       !modalidadeId ||
-                      String(modalidadeId) === String(modalidade.FUNDAMENTAL) ||
-                      (listaSemestre && listaSemestre.length === 1)
+                      (listaSemestre && listaSemestre.length === 1) ||
+                      String(modalidadeId) === String(modalidade.FUNDAMENTAL)
                     }
                     valueSelect={semestre}
                     onChange={onChangeSemestre}
@@ -595,8 +609,8 @@ const HistoricoEscolar = () => {
                   label="Turma"
                   disabled={
                     !modalidadeId ||
-                    (listaTurmas && listaTurmas.length === 1) ||
-                    alunoLocalizadorSelect
+                    alunoLocalizadorSelecionado?.length ||
+                    (listaTurmas && listaTurmas.length === 1)
                   }
                   valueSelect={turmaId}
                   onChange={onChangeTurma}
@@ -619,7 +633,7 @@ const HistoricoEscolar = () => {
                 valueSelect={estudanteOpt}
                 onChange={onChangeEstudanteOpt}
                 placeholder="Estudantes"
-                disabled={!turmaId || alunoLocalizadorSelect}
+                disabled={!turmaId || alunoLocalizadorSelecionado}
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
