@@ -172,11 +172,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Turma>> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            var ensinoEspecial = entidades.Where(x => x.EnsinoEspecial == true);
-
             List<Turma> resultado = new List<Turma>();
 
             for (int i = 0; i < entidades.Count(); i = i + 900)
@@ -225,8 +220,6 @@ namespace SME.SGP.Dados.Repositorios
                                       EnsinoEspecial = c.EnsinoEspecial
                                   };
 
-                var countModificados = modificados.Count();
-
                 foreach (var item in modificados)
                 {
                     await contexto.Conexao.ExecuteAsync(Update, new
@@ -248,9 +241,7 @@ namespace SME.SGP.Dados.Repositorios
 
                 resultado.AddRange(armazenados.Where(x => !resultado.Select(y => y.CodigoTurma).Contains(x.CodigoTurma)));
             }
-            var ensinoEspecial2 = resultado.Where(x => x.EnsinoEspecial == true);
 
-            stopwatch.Stop();
             return resultado;
         }
     }
