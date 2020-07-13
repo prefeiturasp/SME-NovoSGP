@@ -84,6 +84,7 @@ namespace SME.SGP.Api
         {
             services.AddSingleton(Configuration);
             services.AddHttpContextAccessor();
+            services.AdicionarRedis(Configuration);
 
             RegistraDependencias.Registrar(services);
             RegistrarMapeamentos.Registrar();
