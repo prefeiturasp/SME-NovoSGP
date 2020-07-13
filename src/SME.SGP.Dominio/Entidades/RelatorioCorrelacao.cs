@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio
 {
-    public class RelatorioCorrelacao : EntidadeBase
+    public class RelatorioCorrelacao : EntidadeBase, ICloneable
     {
         public RelatorioCorrelacao(TipoRelatorio tipoRelatorio, long usuarioSolicitanteId, TipoFormatoRelatorio formato)
         {
@@ -29,6 +29,12 @@ namespace SME.SGP.Dominio
         {
             CorrelacaoJasper = relatorioCorrelacaoJasper;
         }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
         public bool EhRelatorioJasper => TipoRelatorio.EhUmDosValores(TipoRelatorio.Boletim, TipoRelatorio.ConselhoClasseAluno, TipoRelatorio.ConselhoClasseTurma);
 
         public bool PrazoDownloadExpirado => (DateTime.Now - CriadoEm).Days > 1;
