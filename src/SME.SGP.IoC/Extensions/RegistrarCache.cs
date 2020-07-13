@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace SME.SGP.IoC
 {
@@ -7,11 +8,8 @@ namespace SME.SGP.IoC
     {
         public static void AdicionarRedis(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDistributedRedisCache(options =>
-            {
-                options.Configuration = configuration.GetConnectionString("SGP-Redis");
-                options.InstanceName = configuration.GetValue<string>("Nome-Instancia-Redis");
-            });
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer
+                .Connect(configuration.GetConnectionString("SGP-Redis")));
         }
     }
 }
