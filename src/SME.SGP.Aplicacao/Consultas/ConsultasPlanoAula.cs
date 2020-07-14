@@ -82,11 +82,12 @@ namespace SME.SGP.Aplicacao.Consultas
                         throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
                 }
             }
-            var planoAnualId = consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
+            var planoAnualDto = await consultasPlanoAnual.ObterPlanoAnualPorAnoEscolaBimestreETurma(
                         aulaDto.DataAula.Year, aulaDto.UeId, long.Parse(aulaDto.TurmaId), periodoEscolar.Bimestre, long.Parse(aulaDto.DisciplinaId));
 
             // Carrega informações da aula para o retorno
-            planoAulaDto.PossuiPlanoAnual = planoAnualId > 0;
+            planoAulaDto.PossuiPlanoAnual = planoAnualDto.Id > 0;
+            planoAulaDto.ObjetivosAprendizagemOpcionais = planoAnualDto.ObjetivosAprendizagemOpcionais;
             planoAulaDto.AulaId = aulaDto.Id;
             planoAulaDto.QtdAulas = aulaDto.Quantidade;
             planoAulaDto.IdAtividadeAvaliativa = atividadeAvaliativa?.Id;
