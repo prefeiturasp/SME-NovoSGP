@@ -290,12 +290,16 @@ const PlanoAula = props => {
           </QuantidadeBotoes>
           <HabilitaObjetivos
             className="row d-inline-block col-md-12"
-            hidden={!ehProfessorCj || ehEja || ehMedio}
+            hidden={
+              ((ehProfessorCj || !ehEja || !ehMedio) &&
+                !planoAula.objetivosAprendizagemOpcionais) ||
+              !planoAula.objetivosAprendizagemOpcionais
+            }
           >
             <Label text="Objetivos de Aprendizagem e Desenvolvimento" />
             <Switch
               onChange={() => habilitaDesabilitaObjetivos(!temObjetivos)}
-              checked={habilitaEscolhaObjetivos}
+              checked={temObjetivos}
               size="default"
               className="mr-2"
               disabled={
