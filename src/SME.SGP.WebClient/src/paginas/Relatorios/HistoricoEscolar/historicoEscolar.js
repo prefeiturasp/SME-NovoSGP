@@ -59,6 +59,14 @@ const HistoricoEscolar = () => {
   const [alunosSelecionados, setAlunosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
 
+  useEffect(() => {
+    if (codigosAlunosSelecionados?.length > 0) {
+      setAlunosSelecionados([]);
+      setEstudanteOpt('0');
+      setTurmaId();
+    }
+  }, [codigosAlunosSelecionados]);
+
   const listaEstudanteOpt = [
     { valor: '0', desc: 'Todos' },
     { valor: '1', desc: 'Estudantes selecionados' },
@@ -504,7 +512,10 @@ const HistoricoEscolar = () => {
                   lista={listaAnosLetivo}
                   valueOption="valor"
                   valueText="desc"
-                  disabled={listaAnosLetivo && listaAnosLetivo.length === 1}
+                  disabled={
+                    (listaAnosLetivo && listaAnosLetivo.length === 1) ||
+                    codigosAlunosSelecionados?.length > 0
+                  }
                   onChange={onChangeAnoLetivo}
                   valueSelect={anoLetivo}
                   placeholder="Ano letivo"
@@ -566,7 +577,8 @@ const HistoricoEscolar = () => {
                   disabled={
                     !ueId ||
                     alunoLocalizadorSelecionado?.length ||
-                    (listaModalidades && listaModalidades.length === 1)
+                    (listaModalidades && listaModalidades.length === 1) ||
+                    codigosAlunosSelecionados?.length > 0
                   }
                   onChange={onChangeModalidade}
                   valueSelect={modalidadeId}
@@ -610,7 +622,8 @@ const HistoricoEscolar = () => {
                   disabled={
                     !modalidadeId ||
                     alunoLocalizadorSelecionado?.length ||
-                    (listaTurmas && listaTurmas.length === 1)
+                    (listaTurmas && listaTurmas.length === 1) ||
+                    codigosAlunosSelecionados?.length > 0
                   }
                   valueSelect={turmaId}
                   onChange={onChangeTurma}
@@ -633,7 +646,11 @@ const HistoricoEscolar = () => {
                 valueSelect={estudanteOpt}
                 onChange={onChangeEstudanteOpt}
                 placeholder="Estudantes"
-                disabled={!turmaId || alunoLocalizadorSelecionado}
+                disabled={
+                  !turmaId ||
+                  alunoLocalizadorSelecionado ||
+                  codigosAlunosSelecionados?.length > 0
+                }
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
