@@ -29,7 +29,7 @@ namespace SME.SGP.Dominio
 
         public bool PossuiObjetivosDeAprendizagemOpcionais(IEnumerable<ComponenteCurricular> componentesCurricularesJurema, bool ensinoEspecial)
         {
-            return ensinoEspecial && componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo && new long[] { 218, 138, 1116 }.Contains(Codigo));
+            return ensinoEspecial && (componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo && new long[] { 218, 138, 1116 }.Contains(Codigo)) || Regencia);
         }
     }
 }
