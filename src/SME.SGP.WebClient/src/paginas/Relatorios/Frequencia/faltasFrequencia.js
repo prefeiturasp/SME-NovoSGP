@@ -190,7 +190,7 @@ const FaltasFrequencia = () => {
   const obterAnosEscolares = useCallback(async (mod, ue) => {
     if (mod == modalidade.EJA) {
       setListaAnosEscolares([{ descricao: 'Todos', valor: '-99' }]);
-      setAnosEscolares('-99');
+      setAnosEscolares(['-99']);
     } else {
       const { data } = await ServicoFiltroRelatorio.obterAnosEscolares(
         ue,
