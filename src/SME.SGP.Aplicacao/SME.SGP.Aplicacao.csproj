@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Interfaces\CasosDeUso\Aluno\" />
     <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
 </Project>

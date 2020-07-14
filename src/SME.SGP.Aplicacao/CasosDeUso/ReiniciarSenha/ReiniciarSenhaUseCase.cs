@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf)
+        public async Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf, string dreCodigo, string ueCodigo)
         {
-            return await mediator.Send(new ReiniciarSenhaCommand(codigoRf));
+            return await mediator.Send(new ReiniciarSenhaCommand(codigoRf, dreCodigo, ueCodigo));
         }
     }
 }

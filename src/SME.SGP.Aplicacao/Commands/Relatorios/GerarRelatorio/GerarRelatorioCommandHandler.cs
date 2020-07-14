@@ -14,22 +14,20 @@ namespace SME.SGP.Aplicacao
     public class GerarRelatorioCommandHandler : IRequestHandler<GerarRelatorioCommand, bool>
     {
         private readonly IServicoFila servicoFila;
-        private readonly IRepositorioCorrelacaoRelatorio repositorioCorrelacaoRelatorio;
-        private readonly IConfiguration configuration;
+        private readonly IRepositorioCorrelacaoRelatorio repositorioCorrelacaoRelatorio;        
 
-        public GerarRelatorioCommandHandler(IServicoFila servicoFila, IRepositorioCorrelacaoRelatorio repositorioCorrelacaoRelatorio, IConfiguration configuration)
+        public GerarRelatorioCommandHandler(IServicoFila servicoFila, IRepositorioCorrelacaoRelatorio repositorioCorrelacaoRelatorio)
         {
             this.servicoFila = servicoFila ?? throw new System.ArgumentNullException(nameof(servicoFila));
-            this.repositorioCorrelacaoRelatorio = repositorioCorrelacaoRelatorio ?? throw new System.ArgumentNullException(nameof(repositorioCorrelacaoRelatorio));
-            this.configuration = configuration;
+            this.repositorioCorrelacaoRelatorio = repositorioCorrelacaoRelatorio ?? throw new System.ArgumentNullException(nameof(repositorioCorrelacaoRelatorio));            
         }
 
         public Task<bool> Handle(GerarRelatorioCommand request, CancellationToken cancellationToken)
         {
-            var correlacao = new RelatorioCorrelacao(request.TipoRelatorio, request.IdUsuarioLogado);
+            var correlacao = new RelatorioCorrelacao(request.TipoRelatorio, request.IdUsuarioLogado, request.Formato);
             repositorioCorrelacaoRelatorio.Salvar(correlacao);
 
-            servicoFila.PublicaFilaWorkerServidorRelatorios(new PublicaFilaRelatoriosDto(RotasRabbit.RotaRelatoriosSolicitados, request.Filtros, request.TipoRelatorio.Name(), correlacao.Codigo, request.UsuarioLogadoRf));
+            servicoFila.PublicaFilaWorkerServidorRelatorios(new PublicaFilaRelatoriosDto(RotasRabbit.RotaRelatoriosSolicitados, request.Filtros, request.TipoRelatorio.Name(), correlacao.Codigo, request.UsuarioLogadoRf, false, request.PerfilUsuario));
 
             SentrySdk.CaptureMessage("2 - GerarRelatorioCommandHandler");
 
