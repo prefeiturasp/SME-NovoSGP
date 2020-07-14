@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -18,17 +19,17 @@ namespace SME.SGP.Dominio
         public bool BaseNacional { get; set; }
         public GrupoMatriz GrupoMatriz { get; set; }
 
-        public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricular> componentesCurricularesJurema, bool turmaPrograma, Modalidade turmaModalidade, string turmaAno, bool ensinoEspecial)
+        public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricular> componentesCurricularesJurema, bool turmaPrograma, Modalidade turmaModalidade, string turmaAno)
         {
             var posuiObjetivos = componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo) && !turmaPrograma &&
                     !new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turmaModalidade) && turmaAno != "0";
 
-            if (Codigo == 218 || Codigo == 138)
-            {
-                return false;
-            }
-
             return posuiObjetivos;
+        }
+
+        public bool PossuiObjetivosDeAprendizagemOpcionais(IEnumerable<ComponenteCurricular> componentesCurricularesJurema, bool ensinoEspecial)
+        {
+            return ensinoEspecial && componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo && new long[] { 218, 138, 1116 }.Contains(Codigo));
         }
     }
 }
