@@ -19,6 +19,8 @@ const Bimestre = ({
   disciplinaSemObjetivo,
   selecionarObjetivo,
   onChangeDescricaoObjetivo,
+  exibirSwitchObjAprOpcionais,
+  objetivosAprendizagemOpcionais,
 }) => {
   const [objetivosAprendizagem, setObjetivosAprendizagem] = useState([]);
   const [objetivosCarregados, setObjetivosCarregados] = useState(false);
@@ -309,9 +311,13 @@ const Bimestre = ({
               </li>
             </ul>
             <fieldset className="mt-3">
-              {!layoutEspecial &&
-              objetivosSelecionados &&
-              !objetivosSelecionados.length ? (
+              {(!layoutEspecial &&
+                objetivosSelecionados &&
+                !objetivosSelecionados.length &&
+                !exibirSwitchObjAprOpcionais) ||
+              (!objetivosAprendizagemOpcionais &&
+                objetivosSelecionados &&
+                !objetivosSelecionados.length) ? (
                 <Erro>
                   Você precisa selecionar objetivos na lista ao lado para poder
                   inserir a descrição do plano!
@@ -321,6 +327,7 @@ const Bimestre = ({
                 onChange={onChangeDescricaoObjetivos}
                 inicial={descricaoObjetivo}
                 desabilitar={
+                  !exibirSwitchObjAprOpcionais &&
                   !layoutEspecial &&
                   objetivosSelecionados &&
                   !objetivosSelecionados.length
@@ -354,6 +361,8 @@ Bimestre.propTypes = {
   disciplinaSemObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
   selecionarObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
   onChangeDescricaoObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  exibirSwitchObjAprOpcionais: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  objetivosAprendizagemOpcionais: PropTypes.oneOfType([PropTypes.any]).isRequired,
 };
 
 export default Bimestre;
