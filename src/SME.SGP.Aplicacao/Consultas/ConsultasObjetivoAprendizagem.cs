@@ -57,17 +57,34 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Filtrar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
         {
-            var objetivos = await Listar();
-            var componentesJurema = ObterComponentesJuremaPorIdEOL(filtroObjetivosAprendizagemDto.ComponentesCurricularesIds);
+            IEnumerable<ObjetivoAprendizagemDto> objetivos = await Listar();
+            IEnumerable<long> componentesJurema = ObterComponentesJuremaPorIdEOL(filtroObjetivosAprendizagemDto.ComponentesCurricularesIds);
 
-            return objetivos?
-                .Where(c => componentesJurema.Contains(c.IdComponenteCurricular)
-                    && c.Ano == filtroObjetivosAprendizagemDto.Ano).OrderBy(o => o.Codigo);
+            IEnumerable<ObjetivoAprendizagemDto> result = null;
+
+            if (filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(138) && !filtroObjetivosAprendizagemDto.EnsinoEspecial)
+            {
+                result = objetivos?.Where(c => c.IdComponenteCurricular == 6);
+            }
+            else
+            {
+                result = objetivos?.Where(c => componentesJurema.Contains(c.IdComponenteCurricular));
+            }
+
+            IEnumerable<int> anos = Enumerable.Range(1, 9);
+
+            if (filtroObjetivosAprendizagemDto.EnsinoEspecial)
+            {
+                return result.OrderBy(o => o.Ano).ThenBy(x => x.Codigo);
+            }
+
+            result = result.Where(x => x.Ano == filtroObjetivosAprendizagemDto.Ano);
+            return result.OrderBy(o => o.Codigo);
         }
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Listar()
         {
-            var tempoExpiracao = int.Parse(configuration.GetSection("ExpiracaoCache").GetSection("ObjetivosAprendizagem").Value);
+            int tempoExpiracao = int.Parse(configuration.GetSection("ExpiracaoCache").GetSection("ObjetivosAprendizagem").Value);
 
             return await repositorioCache.ObterAsync("ObjetivosAprendizagem", () => ListarSemCache(), tempoExpiracao, true);
         }
@@ -87,7 +104,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularSimplificadoDto>> ObterDisciplinasDoBimestrePlanoAnual(DateTime dataReferencia, long turmaId, long componenteCurricularId)
         {
-            var bimestre = await ObterBimestreAtual(dataReferencia, turmaId.ToString());
+            int bimestre = await ObterBimestreAtual(dataReferencia, turmaId.ToString());
 
             return repositorioObjetivosPlano.ObterDisciplinasDoBimestrePlanoAula(dataReferencia.Year, bimestre, turmaId, componenteCurricularId);
         }
@@ -100,29 +117,29 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosPlanoDisciplina(DateTime dataReferencia, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false)
         {
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            Usuario usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            var bimestre = await ObterBimestreAtual(dataReferencia, turmaId.ToString());
+            int bimestre = await ObterBimestreAtual(dataReferencia, turmaId.ToString());
 
-            var filtrarSomenteRegencia = regencia && !usuarioLogado.EhProfessorCj();
-            var objetivosPlano = repositorioObjetivosPlano.ObterObjetivosPlanoDisciplina(dataReferencia.Year,
+            bool filtrarSomenteRegencia = regencia && !usuarioLogado.EhProfessorCj();
+            IEnumerable<ObjetivoAprendizagemPlano> objetivosPlano = repositorioObjetivosPlano.ObterObjetivosPlanoDisciplina(dataReferencia.Year,
                                                                                          bimestre,
                                                                                          turmaId,
                                                                                          componenteCurricularId,
                                                                                          disciplinaId,
                                                                                          filtrarSomenteRegencia);
 
-            var objetivosJurema = await Listar();
+            IEnumerable<ObjetivoAprendizagemDto> objetivosJurema = await Listar();
 
             // filtra objetivos do jurema com os objetivos cadastrados no plano anual nesse bimestre
             return objetivosJurema.
-                Where(c => objetivosPlano.Any(o => o.ObjetivoAprendizagemJuremaId == c.Id)).OrderBy(c=>c.Codigo);
+                Where(c => objetivosPlano.Any(o => o.ObjetivoAprendizagemJuremaId == c.Id)).OrderBy(c => c.Codigo);
         }
 
 
         private async Task<int> ObterBimestreAtual(DateTime dataReferencia, string turmaId)
         {
-            var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaId);
+            Turma turma = await consultasTurma.ObterComUeDrePorCodigo(turmaId);
 
             if (turma == null)
                 throw new NegocioException("Turma não encontrada para consulta de objetivos de aprendizagem");
@@ -132,13 +149,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task<List<ObjetivoAprendizagemDto>> ListarSemCache()
         {
-            var objetivosJuremaDto = await repositorioObjetivoAprendizagem.ListarAsync();
+            IEnumerable<ObjetivoAprendizagem> objetivosJuremaDto = await repositorioObjetivoAprendizagem.ListarAsync();
             return MapearParaDto(objetivosJuremaDto).ToList();
         }
 
         private IEnumerable<ObjetivoAprendizagemDto> MapearParaDto(IEnumerable<ObjetivoAprendizagem> objetivos)
         {
-            foreach (var objetivoBase in objetivos)
+            foreach (ObjetivoAprendizagem objetivoBase in objetivos)
             {
                 if (objetivoBase.Ano != 0)
                 {
@@ -156,7 +173,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<ComponenteCurricular> ObterComponentesCurriculares()
         {
-            var componentesCurriculares = repositorioComponenteCurricular.Listar();
+            IEnumerable<ComponenteCurricular> componentesCurriculares = repositorioComponenteCurricular.Listar();
             if (componentesCurriculares == null)
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
@@ -169,8 +186,8 @@ namespace SME.SGP.Aplicacao
         {
             IEnumerable<ComponenteCurricular> componentesCurriculares = ObterComponentesCurriculares();
 
-            var componentesFiltro = componentesCurriculares.Where(c => componentesCurricularesIds.Contains(c.CodigoEOL));
-            var componentesJurema = componentesFiltro.Select(c => c.CodigoJurema);
+            IEnumerable<ComponenteCurricular> componentesFiltro = componentesCurriculares.Where(c => componentesCurricularesIds.Contains(c.CodigoEOL));
+            IEnumerable<long> componentesJurema = componentesFiltro.Select(c => c.CodigoJurema);
             return componentesJurema;
         }
     }
