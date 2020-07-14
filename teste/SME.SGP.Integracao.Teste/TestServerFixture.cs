@@ -39,6 +39,8 @@ namespace SME.SGP.Integracao.Teste
 
                 _redisRunner = RedisRunner.Start();
 
+                Environment.SetEnvironmentVariable("ApplicationInsights__InstrumentationKey", "ab");                
+
                 var projectPath = GetContentRootPath("../src/SME.SGP.Api");
 
                 var builderCliente = new WebHostBuilder()
@@ -49,6 +51,8 @@ namespace SME.SGP.Integracao.Teste
                         .AddJsonFile("appsettings.teste-integrado.json")
                         .Build())
                         .UseStartup<Startup>();
+
+                
 
                 _testServerCliente = new TestServer(builderCliente);
 

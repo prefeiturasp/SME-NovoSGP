@@ -10,9 +10,11 @@ namespace SME.SGP.Aplicacao
     public class ReiniciarSenhaCommandHandler : IRequestHandler<ReiniciarSenhaCommand, UsuarioReinicioSenhaDto>
     {
         private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ReiniciarSenhaCommandHandler(IServicoEol servicoEOL)
+        public ReiniciarSenhaCommandHandler(IMediator mediator, IServicoEol servicoEOL)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
@@ -30,11 +32,19 @@ namespace SME.SGP.Aplicacao
             else
             {
                 await servicoEOL.ReiniciarSenha(request.CodigoRf);
+
+                await GravarHistoricoReinicioSenha(request.CodigoRf, request.DreCodigo, request.UeCodigo);
+
                 retorno.Mensagem = $"Senha do usuário {request.CodigoRf} - {usuario.Nome} reiniciada com sucesso. O usuário deverá informar a senha {FormatarSenha(request.CodigoRf)} no seu próximo acesso.";
                 retorno.DeveAtualizarEmail = false;
             }
 
             return retorno;
+        }
+
+        private async Task GravarHistoricoReinicioSenha(string usuarioRf, string dreCodigo, string ueCodigo)
+        {
+            await mediator.Send(new GravarHistoricoReinicioSenhaCommand(usuarioRf, dreCodigo, ueCodigo));
         }
 
         private string FormatarSenha(string codigoRf) 

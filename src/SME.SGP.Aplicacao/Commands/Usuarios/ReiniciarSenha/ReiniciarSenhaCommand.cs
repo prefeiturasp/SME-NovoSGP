@@ -6,12 +6,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ReiniciarSenhaCommand : IRequest<UsuarioReinicioSenhaDto>
     {
-        public ReiniciarSenhaCommand(string codigoRf)
+        public ReiniciarSenhaCommand(string codigoRf, string dreCodigo, string ueCodigo)
         {
             CodigoRf = codigoRf;
+            DreCodigo = dreCodigo;
+            UeCodigo = ueCodigo;
         }
 
         public string CodigoRf { get; set; }
+        public string DreCodigo { get; set; }
+        public string UeCodigo { get; set; }
     }
 
     public class ReiniciarSenhaCommandValidator : AbstractValidator<ReiniciarSenhaCommand>
@@ -21,6 +25,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.CodigoRf)
                 .NotEmpty()
                 .WithMessage("O código Rf é obrigatório.");
+
+            RuleFor(c => c.DreCodigo)
+                .NotEmpty()
+                .WithMessage("O código da DRE é obrigatório.");
         }
     }
 }
