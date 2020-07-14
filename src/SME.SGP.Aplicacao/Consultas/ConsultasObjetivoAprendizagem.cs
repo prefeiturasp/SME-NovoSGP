@@ -62,9 +62,9 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<ObjetivoAprendizagemDto> result = null;
 
-            if (filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(138))
+            if (filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(138) && !filtroObjetivosAprendizagemDto.EnsinoEspecial)
             {
-                result = objetivos?.Where(c => c.IdComponenteCurricular == (filtroObjetivosAprendizagemDto.EnsinoEspecial ? 11 : 6));
+                result = objetivos?.Where(c => c.IdComponenteCurricular == 6);
             }
             else
             {
