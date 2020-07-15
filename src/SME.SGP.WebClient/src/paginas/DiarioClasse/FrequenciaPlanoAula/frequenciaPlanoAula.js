@@ -89,6 +89,7 @@ const FrequenciaPlanoAula = () => {
     objetivosAprendizagemAula: [],
     migrado: false,
     possuiPlanoAnual: false,
+    objetivosAprendizagemOpcional: false,
   });
   const [temObjetivos, setTemObjetivos] = useState(false);
   const [errosValidacaoPlano, setErrosValidacaoPlano] = useState([]);
@@ -288,6 +289,8 @@ const FrequenciaPlanoAula = () => {
       const dadosPlano = plano && plano.data;
       if (dadosPlano) {
         planoAula.qtdAulas = dadosPlano.qtdAulas;
+        planoAula.objetivosAprendizagemOpcionais =
+          dadosPlano.objetivosAprendizagemOpcionais;
         if (dadosPlano.id > 0) {
           dadosPlano.objetivosAprendizagemAula.forEach(objetivo => {
             objetivo.selected = true;

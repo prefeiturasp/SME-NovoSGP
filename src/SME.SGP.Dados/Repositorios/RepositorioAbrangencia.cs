@@ -250,11 +250,14 @@ namespace SME.SGP.Dados.Repositorios
 	                             nome,
 	                             semestre,
 	                             qtDuracaoAula,
-	                             tipoTurno
+	                             tipoTurno,
+                                 ensinoEspecial
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
                           order by 5";
 
-            return (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo })).AsList();
+            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo })).AsList();
+
+            return result;
         }
 
         public async Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil)

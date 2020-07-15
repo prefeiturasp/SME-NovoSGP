@@ -130,6 +130,7 @@ namespace SME.SGP.Aplicacao
                                            new[] { Modalidade.EJA, Modalidade.Medio }.Contains(abrangenciaTurma.Modalidade) ||  // EJA e Médio não obrigam seleção
                                            usuario.EhProfessorCj() ||  // Para professores substitutos (CJ) a seleção dos objetivos deve ser opcional
                                            !(consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt64(aula.DisciplinaId))) || // Caso a disciplina não possui vinculo com Jurema, os objetivos não devem ser exigidos
+                                           await consultasObjetivoAprendizagem.ComponentePossuiObjetivosOpcionais(aula.TurmaId, aula.DisciplinaId) || // Turma Especial não obriga seleção de componentes
                                            abrangenciaTurma.Ano.Equals("0"); // Caso a turma for de  educação física multisseriadas, os objetivos não devem ser exigidos;
 
                 if (!permitePlanoSemObjetivos)
