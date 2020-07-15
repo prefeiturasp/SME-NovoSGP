@@ -10,6 +10,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.EscolaId).ToColumn("escola_id");
             Map(c => c.ComponenteCurricularEolId).ToColumn("componente_curricular_eol_id");
+            Map(c => c.ObjetivosAprendizagemOpcionais).ToColumn("objetivos_opcionais");
         }
     }
 }

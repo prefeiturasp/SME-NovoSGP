@@ -20,6 +20,7 @@ namespace SME.SGP.Infra
         public IEnumerable<long> IdsObjetivosAprendizagem => ObjetivosAprendizagemPlano?.Split(',').Select(c => Convert.ToInt64(c));
         public bool Migrado { get; set; }
         public List<ObjetivoAprendizagemDto> ObjetivosAprendizagem { get; set; }
+        public bool ObjetivosAprendizagemOpcionais { get; set; }
 
         public bool Obrigatorio { get; set; }
         public string TurmaId { get; set; }
