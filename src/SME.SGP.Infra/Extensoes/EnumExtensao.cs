@@ -41,5 +41,13 @@ namespace SME.SGP.Infra
 
         public static string Description(this Enum enumValue)
            => enumValue.GetAttribute<DisplayAttribute>().Description;
+
+        public static IEnumerable<TEnum> Listar<TEnum>()
+            where TEnum : struct
+        {
+            if (!typeof(TEnum).IsEnum) throw new InvalidOperationException();
+
+            return ((TEnum[])Enum.GetValues(typeof(TEnum)));
+        }
     }
 }
