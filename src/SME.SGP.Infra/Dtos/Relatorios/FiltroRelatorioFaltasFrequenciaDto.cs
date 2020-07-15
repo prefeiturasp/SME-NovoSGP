@@ -51,7 +51,7 @@ namespace SME.SGP.Infra
                 .WithMessage("A condição deve ser informada.");
 
             RuleFor(c => c.ValorCondicao)
-                .NotEmpty()
+                .GreaterThanOrEqualTo(0)
                 .WithMessage("O valor para a condição deve ser informado.");
 
             RuleFor(c => c.TipoFormatoRelatorio)
