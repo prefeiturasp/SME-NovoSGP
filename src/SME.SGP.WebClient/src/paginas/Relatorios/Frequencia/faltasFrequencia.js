@@ -249,9 +249,7 @@ const FaltasFrequencia = () => {
     let todosAnosEscolares = anosEscolares;
     const selecionouTodos = anosEscolares.find(ano => ano === '-99');
     if (selecionouTodos) {
-      todosAnosEscolares = listaAnosEscolares
-        .filter(item => item.valor !== '-99')
-        .map(item => item.valor);
+      todosAnosEscolares = listaAnosEscolares.map(item => item.valor);
     }
     return todosAnosEscolares;
   }, [anosEscolares, listaAnosEscolares]);
@@ -260,9 +258,9 @@ const FaltasFrequencia = () => {
     let todosComponentesCurriculares = componentesCurriculares;
     const selecionouTodos = componentesCurriculares.find(ano => ano === '-99');
     if (selecionouTodos) {
-      todosComponentesCurriculares = listaComponenteCurricular
-        .filter(item => item.valor !== '-99')
-        .map(item => item.valor);
+      todosComponentesCurriculares = listaComponenteCurricular.map(
+        item => item.valor
+      );
     }
     return todosComponentesCurriculares;
   };
