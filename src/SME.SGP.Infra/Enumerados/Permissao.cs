@@ -471,6 +471,9 @@
         HE_E = 154,
 
         [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 5, EhAlteracao = true, Url = "/relatorios/historico-escolar")]
-        HE_A = 155
+        HE_A = 155,
+
+        [PermissaoMenu(Menu = "Faltas e frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/faltas-frequencia", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Frequência")]
+        FF_C = 156
     }
 }
