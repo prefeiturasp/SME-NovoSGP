@@ -13,9 +13,9 @@ import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import ServicoFaltasFrequencia from '~/servicos/Paginas/Relatorios/FaltasFrequencia/ServicoFaltasFrequencia';
-import FiltroHelper from '~componentes-sgp/filtro/helper';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
 const FaltasFrequencia = () => {
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
@@ -122,8 +122,7 @@ const FaltasFrequencia = () => {
         if (lista && lista.length && lista.length === 1) {
           setCodigoUe(lista[0].valor);
         }
-
-        setListaUes(lista);
+        setListaUes(lista.sort(FiltroHelper.ordenarLista('desc')));
       } else {
         setListaUes([]);
       }
