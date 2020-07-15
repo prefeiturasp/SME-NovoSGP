@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 {
                     case Modalidade.Fundamental:
                     case Modalidade.Medio:
-                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4, });
+                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4, -99 });
                         break;
                     case Modalidade.EJA:
                         filtro.Bimestres.AddRange(new int[] { 0, 1, 2 });
