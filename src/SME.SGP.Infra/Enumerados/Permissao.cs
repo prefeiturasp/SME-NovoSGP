@@ -399,11 +399,7 @@
 
         [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true,
             Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
-        RSP_C = 144,
-
-        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true,
-            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
-        RPS_C = 145,
+        RPS_C = 144,
 
         [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true,
             Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
