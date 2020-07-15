@@ -398,23 +398,23 @@
         CC_A = 139,
 
         [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true,
-            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Semestral")]
+            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
         RSP_C = 144,
 
         [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true,
-            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Semestral")]
+            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
         RPS_C = 145,
 
         [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true,
-            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Semestral")]
+            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
         RPS_I = 145,
 
         [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true,
-            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Semestral")]
+            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
         RPS_E = 146,
 
         [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true,
-            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Semestral")]
+            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
         RPS_A = 147,
 
         [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true,
@@ -446,8 +446,8 @@
        Url = "/relatorios/pap/relatorio-preenchimento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Preenchimento")]
         RGP_A = 119,
 
-        [PermissaoMenu(Menu = "Relatório Semestral PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/pap/relatorio-semestral")]
-        RSP_A = 147,
+        //[PermissaoMenu(Menu = "Relatório Semestral PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/pap/relatorio-semestral")]
+        //RSP_A = 147,
 
         [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/atas/ata-final-resultados", EhSubMenu=true, OrdemSubMenu=1, SubMenu= "Ata Final de Resultados")]
         AFR_C = 148,
