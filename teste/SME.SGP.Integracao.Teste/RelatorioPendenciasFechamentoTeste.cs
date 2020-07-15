@@ -1,6 +1,10 @@
 ﻿using SME.SGP.Infra;
 using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using Newtonsoft.Json;
+using SME.SGP.Infra.Dtos.Relatorios;
 using Xunit;
 
 namespace SME.SGP.Integracao.Teste
@@ -19,10 +23,13 @@ namespace SME.SGP.Integracao.Teste
         [Trait("Pendências no Fechamento", "gerar")]
         public async void Deve_Realizar_Chamada_Para_Gerar_Relatorio()
         {
-            // Arrange & Act
+            // Arrange
+            FiltroRelatorioPendenciasFechamentoDto filtro = new FiltroRelatorioPendenciasFechamentoDto();
+            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+            // & Act
             fixture._clientApi.DefaultRequestHeaders.Clear();
             fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }));
-            var result = await fixture._clientApi.GetAsync($"api/v1/relatorio/pendencias-fechamento/gerar");
+            var result = await fixture._clientApi.PostAsync($"api/v1/relatorio/pendencias-fechamento/gerar", jsonParaPost);
 
             // Assert
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));
