@@ -65,8 +65,12 @@ const FaltasFrequencia = () => {
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
 
   const obterAnosLetivos = useCallback(async () => {
+    setCarregandoGeral(true);
     const anosLetivo = await AbrangenciaServico.buscarTodosAnosLetivos().catch(
-      e => erros(e)
+      e => {
+        erros(e);
+        setCarregandoGeral(false);
+      }
     );
     if (anosLetivo && anosLetivo.data) {
       const a = [];
@@ -78,27 +82,35 @@ const FaltasFrequencia = () => {
     } else {
       setListaAnosLetivo([]);
     }
+    setCarregandoGeral(false);
   }, []);
 
   const obterModalidades = async ue => {
     if (ue) {
-      const retorno = await ServicoFiltroRelatorio.obterModalidades(
-        ue
-      ).catch(e => erros(e));
+      setCarregandoGeral(true);
+      const retorno = await ServicoFiltroRelatorio.obterModalidades(ue).catch(
+        e => {
+          erros(e);
+          setCarregandoGeral(false);
+        }
+      );
       if (retorno && retorno.data) {
         if (retorno.data && retorno.data.length && retorno.data.length === 1) {
           setModalidadeId(retorno.data[0].valor);
         }
         setListaModalidades(retorno.data);
       }
+      setCarregandoGeral(false);
     }
   };
 
   const obterUes = useCallback(async dre => {
     if (dre) {
-      const retorno = await ServicoFiltroRelatorio.obterUes(dre).catch(e =>
-        erros(e)
-      );
+      setCarregandoGeral(true);
+      const retorno = await ServicoFiltroRelatorio.obterUes(dre).catch(e => {
+        erros(e);
+        setCarregandoGeral(false);
+      });
       if (retorno && retorno.data) {
         const lista = retorno.data.map(item => ({
           desc: `${
@@ -115,6 +127,7 @@ const FaltasFrequencia = () => {
       } else {
         setListaUes([]);
       }
+      setCarregandoGeral(false);
     }
   }, []);
 
@@ -135,9 +148,11 @@ const FaltasFrequencia = () => {
   };
 
   const obterDres = async () => {
-    const retorno = await ServicoFiltroRelatorio.obterDres().catch(e =>
-      erros(e)
-    );
+    setCarregandoGeral(true);
+    const retorno = await ServicoFiltroRelatorio.obterDres().catch(e => {
+      erros(e);
+      setCarregandoGeral(false);
+    });
     if (retorno && retorno.data && retorno.data.length) {
       setListaDres(retorno.data);
 
@@ -147,16 +162,23 @@ const FaltasFrequencia = () => {
     } else {
       setListaDres([]);
     }
+    setCarregandoGeral(false);
   };
 
   const obterSemestres = async (
     modalidadeSelecionada,
     anoLetivoSelecionado
   ) => {
-    const retorno = await api.get(
-      `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
-        0}`
-    );
+    setCarregandoGeral(true);
+    const retorno = await api
+      .get(
+        `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
+          0}`
+      )
+      .catch(e => {
+        erros(e);
+        setCarregandoGeral(false);
+      });
     if (retorno && retorno.data) {
       const lista = retorno.data.map(periodo => {
         return { desc: periodo, valor: periodo };
@@ -190,12 +212,16 @@ const FaltasFrequencia = () => {
   const obterAnosEscolares = useCallback(async (mod, ue) => {
     if (mod == modalidade.EJA) {
       setListaAnosEscolares([{ descricao: 'Todos', valor: '-99' }]);
-      setAnosEscolares('-99');
+      setAnosEscolares(['-99']);
     } else {
+      setCarregandoGeral(true);
       const respota = await ServicoFiltroRelatorio.obterAnosEscolares(
         ue,
         mod
-      ).catch(e => erros(e));
+      ).catch(e => {
+        erros(e);
+        setCarregandoGeral(false);
+      });
 
       if (respota && respota.data && respota.data.length) {
         setListaAnosEscolares(respota.data);
@@ -206,6 +232,7 @@ const FaltasFrequencia = () => {
       } else {
         setListaAnosEscolares([]);
       }
+      setCarregandoGeral(false);
     }
   }, []);
 
@@ -218,36 +245,40 @@ const FaltasFrequencia = () => {
     }
   }, [modalidadeId, codigoUe, obterAnosEscolares]);
 
-  const obterCodigoTodosAnosEscolares = () => {
+  const obterCodigoTodosAnosEscolares = useCallback(() => {
     let todosAnosEscolares = anosEscolares;
     const selecionouTodos = anosEscolares.find(ano => ano === '-99');
     if (selecionouTodos) {
-      todosAnosEscolares = listaAnosEscolares.filter(
-        item => item.valor !== '-99'
-      );
+      todosAnosEscolares = listaAnosEscolares
+        .filter(item => item.valor !== '-99')
+        .map(item => item.valor);
     }
-    return todosAnosEscolares.map(item => item.valor);
-  };
+    return todosAnosEscolares;
+  }, [anosEscolares, listaAnosEscolares]);
 
   const obterCodigoTodosComponentesCorriculares = () => {
     let todosComponentesCurriculares = componentesCurriculares;
     const selecionouTodos = componentesCurriculares.find(ano => ano === '-99');
     if (selecionouTodos) {
-      todosComponentesCurriculares = listaComponenteCurricular.filter(
-        item => item.valor !== '-99'
-      );
+      todosComponentesCurriculares = listaComponenteCurricular
+        .filter(item => item.valor !== '-99')
+        .map(item => item.valor);
     }
-    return todosComponentesCurriculares.map(item => item.valor);
+    return todosComponentesCurriculares;
   };
 
   const obterComponenteCurricular = useCallback(async () => {
     const codigoTodosAnosEscolares = obterCodigoTodosAnosEscolares();
 
+    setCarregandoGeral(true);
     const retorno = await ServicoComponentesCurriculares.obterComponetensCuriculares(
       modalidadeId,
       anoLetivo,
       codigoTodosAnosEscolares
-    ).catch(e => erros(e));
+    ).catch(e => {
+      erros(e);
+      setCarregandoGeral(false);
+    });
     if (retorno && retorno.data && retorno.data.length) {
       const lista = retorno.data.map(item => {
         return { desc: item.descricao, valor: String(item.codigo) };
@@ -260,7 +291,8 @@ const FaltasFrequencia = () => {
     } else {
       setListaComponenteCurricular([]);
     }
-  }, [modalidadeId, anoLetivo, anosEscolares]);
+    setCarregandoGeral(false);
+  }, [modalidadeId, anoLetivo, obterCodigoTodosAnosEscolares]);
 
   useEffect(() => {
     if (anosEscolares && anosEscolares.length) {
@@ -384,9 +416,11 @@ const FaltasFrequencia = () => {
       valorCondicao,
       tipoFormatoRelatorio: formato,
     };
-    const retorno = await ServicoFaltasFrequencia.gerar(params).catch(e =>
-      erros(e)
-    );
+    setCarregandoGeral(true);
+    const retorno = await ServicoFaltasFrequencia.gerar(params).catch(e => {
+      erros(e);
+      setCarregandoGeral(false);
+    });
     if (retorno && retorno.status === 200) {
       sucesso(
         'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
@@ -432,7 +466,12 @@ const FaltasFrequencia = () => {
     setAnosEscolares(undefined);
   };
 
-  const onChangeAnos = valor => setAnosEscolares(valor);
+  const onChangeAnos = valor => {
+    setAnosEscolares(valor);
+
+    setListaComponenteCurricular([]);
+    setComponentesCurriculares(undefined);
+  };
   const onChangeSemestre = valor => setSemestre(valor);
   const onChangeComponenteCurricular = valor =>
     setComponentesCurriculares(valor);
@@ -441,6 +480,42 @@ const FaltasFrequencia = () => {
   const onChangeCondicao = valor => setCondicao(valor);
   const onChangeComparacao = valor => setValorCondicao(valor);
   const onChangeFormato = valor => setFormato(valor);
+
+  const removeAdicionaOpcaoTodos = (
+    valoresJaSelcionados,
+    valoresParaSelecionar
+  ) => {
+    const todosEhUnicoJaSelecionado =
+      valoresJaSelcionados &&
+      valoresJaSelcionados.length === 1 &&
+      valoresJaSelcionados[0] === '-99';
+
+    if (todosEhUnicoJaSelecionado) {
+      if (
+        valoresParaSelecionar &&
+        valoresParaSelecionar.length > 1 &&
+        valoresParaSelecionar.includes('-99')
+      ) {
+        valoresParaSelecionar = valoresParaSelecionar.filter(
+          item => item !== '-99'
+        );
+      }
+    }
+
+    if (
+      !todosEhUnicoJaSelecionado &&
+      valoresParaSelecionar &&
+      valoresParaSelecionar.length &&
+      valoresParaSelecionar.length > 1 &&
+      valoresParaSelecionar.includes('-99')
+    ) {
+      valoresParaSelecionar = valoresParaSelecionar.filter(
+        item => item === '-99'
+      );
+    }
+
+    return valoresParaSelecionar;
+  };
 
   return (
     <>
@@ -554,7 +629,13 @@ const FaltasFrequencia = () => {
                     listaAnosEscolares && listaAnosEscolares.length === 1
                   }
                   valueSelect={anosEscolares}
-                  onChange={onChangeAnos}
+                  onChange={valoresNovos => {
+                    valoresNovos = removeAdicionaOpcaoTodos(
+                      anosEscolares,
+                      valoresNovos
+                    );
+                    onChangeAnos(valoresNovos);
+                  }}
                   placeholder="Selecione o ano"
                   multiple
                 />
@@ -570,7 +651,13 @@ const FaltasFrequencia = () => {
                     listaComponenteCurricular.length === 1
                   }
                   valueSelect={componentesCurriculares}
-                  onChange={onChangeComponenteCurricular}
+                  onChange={valoresNovos => {
+                    valoresNovos = removeAdicionaOpcaoTodos(
+                      componentesCurriculares,
+                      valoresNovos
+                    );
+                    onChangeComponenteCurricular(valoresNovos);
+                  }}
                   placeholder="Selecione o componente curricular"
                   multiple
                 />
