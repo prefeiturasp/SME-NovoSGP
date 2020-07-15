@@ -129,6 +129,6 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<bool> ValidarProfessor(string professorRf);
 
         Task<bool> TurmaPossuiComponenteCurricularPAP(string codigoTurma, string login, Guid idPerfil);
-        Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(Modalidade modalidade, string[] anosEscolares, int anoLetivo);
+        Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, string[] anosEscolares, int anoLetivo);
     }
 }
