@@ -154,14 +154,14 @@ namespace SME.SGP.Aplicacao
             {
                 using (var transacao = unitOfWork.IniciarTransacao())
                 {
-                    await SalvarPlanoAula(planoAula, planoAulaDto, planoAnualId);
+                    await SalvarPlanoAula(planoAula, planoAulaDto, planoAnual.Id);
 
                     unitOfWork.PersistirTransacao();
                 }
             }
             else
             {
-                await SalvarPlanoAula(planoAula, planoAulaDto, planoAnualId);
+                await SalvarPlanoAula(planoAula, planoAulaDto, planoAnual.Id);
             }
         }
 
