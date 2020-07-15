@@ -706,6 +706,7 @@ const FaltasFrequencia = () => {
                   label="Valor"
                   className="w-100"
                   placeholder="Digite o valor"
+                  ehDecimal={false}
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
