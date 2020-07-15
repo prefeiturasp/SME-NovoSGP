@@ -16,7 +16,7 @@ namespace SME.SGP.Infra
         public List<int> Bimestres { get; set; }
         public TipoRelatorioFaltasFrequencia TipoRelatorio { get; set; }
         public CondicoesRelatorioFaltasFrequencia Condicao { get; set; }
-        public double ValorCondicao { get; set; }
+        public int ValorCondicao { get; set; }
         public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
         public string NomeUsuario { get; set; }
         public string CodigoRf { get; set; }
