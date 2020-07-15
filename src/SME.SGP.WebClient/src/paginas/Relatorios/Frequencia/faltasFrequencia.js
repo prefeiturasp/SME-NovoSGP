@@ -250,16 +250,16 @@ const FaltasFrequencia = () => {
 
   const obterBimestres = useCallback(() => {
     const bi = [
-      { desc: '1º', valor: '1' },
-      { desc: '2º', valor: '2' },
+      { desc: '1º', valor: 1 },
+      { desc: '2º', valor: 2 },
     ];
 
     if (modalidadeId != modalidade.EJA) {
-      bi.push({ desc: '3º', valor: '3' });
-      bi.push({ desc: '4º', valor: '4' });
+      bi.push({ desc: '3º', valor: 3 });
+      bi.push({ desc: '4º', valor: 4 });
     }
-    bi.push({ desc: 'Todos', valor: '-99' });
-    bi.push({ desc: 'Final', valor: 'final' });
+    bi.push({ desc: 'Todos', valor: -99 });
+    bi.push({ desc: 'Final', valor: 0 });
     setListaBimestre(bi);
   }, [modalidadeId]);
 
@@ -370,6 +370,7 @@ const FaltasFrequencia = () => {
 
     setListaAnosEscolares([]);
     setAnosEscolares(undefined);
+    setDesabilitarBtnGerar(false);
   };
 
   const onChangeModalidade = novaModalidade => {
@@ -380,6 +381,7 @@ const FaltasFrequencia = () => {
 
     setListaAnosEscolares([]);
     setAnosEscolares(undefined);
+    setDesabilitarBtnGerar(false);
   };
 
   const onChangeAnoLetivo = ano => {
@@ -393,18 +395,42 @@ const FaltasFrequencia = () => {
 
     setListaAnosEscolares([]);
     setAnosEscolares(undefined);
+    setDesabilitarBtnGerar(false);
   };
 
-  const onChangeAnos = valor => setAnosEscolares(valor);
+  const onChangeAnos = valor => {
+    setAnosEscolares(valor);
+    setDesabilitarBtnGerar(false);
+  };
 
-  const onChangeSemestre = valor => setSemestre(valor);
-  const onChangeComponenteCurricular = valor =>
+  const onChangeSemestre = valor => {
+    setSemestre(valor);
+    setDesabilitarBtnGerar(false);
+  };
+  const onChangeComponenteCurricular = valor => {
     setComponentesCurriculares(valor);
-  const onChangeBimestre = valor => setBimestres(valor);
-  const onChangeTipoRelatorio = valor => setTipoRelatorio(valor);
-  const onChangeCondicao = valor => setCondicao(valor);
-  const onChangeComparacao = valor => setValorCondicao(valor);
-  const onChangeFormato = valor => setFormato(valor);
+    setDesabilitarBtnGerar(false);
+  };
+  const onChangeBimestre = valor => {
+    setBimestres([valor]);
+    setDesabilitarBtnGerar(false);
+  };
+  const onChangeTipoRelatorio = valor => {
+    setTipoRelatorio(valor);
+    setDesabilitarBtnGerar(false);
+  };
+  const onChangeCondicao = valor => {
+    setCondicao(valor);
+    setDesabilitarBtnGerar(false);
+  };
+  const onChangeComparacao = valor => {
+    setValorCondicao(valor);
+    setDesabilitarBtnGerar(false);
+  };
+  const onChangeFormato = valor => {
+    setFormato(valor);
+    setDesabilitarBtnGerar(false);
+  };
 
   return (
     <>
