@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        public async Task<IEnumerable<ComponenteCurricularEol>> Executar(Modalidade modalidade, int anoLetivo, string[] anosEscolares)
+        public async Task<IEnumerable<ComponenteCurricularEol>> Executar(string codigoUe, Modalidade modalidade, int anoLetivo, string[] anosEscolares)
         {
-            return await mediator.Send(new ObterComponentesCurricularesPorAnosEModalidadeQuery(modalidade, anosEscolares, anoLetivo));
+            return await mediator.Send(new ObterComponentesCurricularesPorAnosEModalidadeQuery(codigoUe, modalidade, anosEscolares, anoLetivo));
         }
     }
 }
