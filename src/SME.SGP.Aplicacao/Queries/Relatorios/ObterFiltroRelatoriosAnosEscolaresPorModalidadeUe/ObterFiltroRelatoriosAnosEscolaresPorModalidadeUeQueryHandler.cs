@@ -33,17 +33,24 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<OpcaoDropdownDto> ObterAnosEscolaresPorModalidade(Modalidade modalidade)
         {
+            var lista = new List<OpcaoDropdownDto>()
+            {
+                new OpcaoDropdownDto("-99", "Todos")
+            };
             switch (modalidade)
             {
                 case Modalidade.Fundamental:
-                    return Enumerable.Range(1, 9).Select(c => new OpcaoDropdownDto(c.ToString(), $"{c}º ano - {modalidade.Name()}"));
+                    lista.AddRange(Enumerable.Range(1, 9).Select(c => new OpcaoDropdownDto(c.ToString(), $"{c}º ano - {modalidade.Name()}")));
+                    break;
                 case Modalidade.Medio:
-                    return Enumerable.Range(1, 3).Select(c => new OpcaoDropdownDto(c.ToString(), $"{c}º ano - {modalidade.Name()}"));
+                    lista.AddRange(Enumerable.Range(1, 3).Select(c => new OpcaoDropdownDto(c.ToString(), $"{c}º ano - {modalidade.Name()}")));
+                    break;
                 case Modalidade.EJA:
-                    return new List<OpcaoDropdownDto> { new OpcaoDropdownDto("-99", "Todos") };
+                    return lista;
                 default:
                     throw new NegocioException("Modalidade não atendida pelo SGP.");
             }
+            return lista;
         }
     }
 }
