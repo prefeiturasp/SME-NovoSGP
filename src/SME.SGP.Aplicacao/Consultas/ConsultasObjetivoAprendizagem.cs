@@ -75,8 +75,7 @@ namespace SME.SGP.Aplicacao
             }
 
             IEnumerable<int> anos = Enumerable.Range(1, 9);
-
-            if (filtroObjetivosAprendizagemDto.EnsinoEspecial)
+            if (filtroObjetivosAprendizagemDto.EnsinoEspecial && !anos.Select(a => a.ToString()).Contains(filtroObjetivosAprendizagemDto.Ano))
             {
                 return result.OrderBy(o => o.Ano).ThenBy(x => x.Codigo);
             }
@@ -166,7 +165,7 @@ namespace SME.SGP.Aplicacao
                     {
                         Descricao = objetivoBase.Descricao,
                         Id = objetivoBase.Id,
-                        Ano = objetivoBase.Ano,
+                        Ano = objetivoBase.Ano.ToString(),
                         Codigo = objetivoBase.Codigo,
                         IdComponenteCurricular = objetivoBase.ComponenteCurricularId
                     };

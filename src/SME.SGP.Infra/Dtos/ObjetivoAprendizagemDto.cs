@@ -4,7 +4,7 @@ namespace SME.SGP.Infra
 {
     public class ObjetivoAprendizagemDto
     {
-        public int Ano { get; set; }
+        public string Ano { get; set; }
                 
         public string Codigo { get; set; }
         
