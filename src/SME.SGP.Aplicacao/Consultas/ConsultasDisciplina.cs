@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.EhProfessorCj())
             {
                 var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
-                disciplinasDto = MapearParaDto(disciplinas, turmaPrograma);
+                disciplinasDto = MapearParaDto(disciplinas, turmaPrograma, turma.EnsinoEspecial);
             }
             else
             {
@@ -275,7 +275,8 @@ namespace SME.SGP.Aplicacao
 
                             //disciplinasDto.Add(consultaDisciplinaPai.First());
                         }
-                        disciplinasDto.Add(MapearParaDto(disciplina, true));
+                        var turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
+                        disciplinasDto.Add(MapearParaDto(disciplina, true, turma.EnsinoEspecial));
                     }
                 }
 
@@ -394,7 +395,7 @@ namespace SME.SGP.Aplicacao
             LancaNota = disciplinaEol.LancaNota,
         };
 
-        private List<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false)
+        private List<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false, bool ensinoEspecial = false)
         {
             var retorno = new List<DisciplinaDto>();
 
@@ -402,13 +403,13 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var disciplina in disciplinas)
                 {
-                    retorno.Add(MapearParaDto(disciplina, turmaPrograma));
+                    retorno.Add(MapearParaDto(disciplina, turmaPrograma, ensinoEspecial));
                 }
             }
             return retorno;
         }
 
-        private DisciplinaDto MapearParaDto(DisciplinaResposta disciplina, bool turmaPrograma = false) => new DisciplinaDto()
+        private DisciplinaDto MapearParaDto(DisciplinaResposta disciplina, bool turmaPrograma = false, bool ensinoEspecial = false) => new DisciplinaDto()
         {
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
@@ -418,8 +419,8 @@ namespace SME.SGP.Aplicacao
             Compartilhada = disciplina.Compartilhada,
             RegistraFrequencia = disciplina.RegistroFrequencia,
             LancaNota = disciplina.LancaNota,
-            PossuiObjetivos = !turmaPrograma && consultasObjetivoAprendizagem
-            .DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
+            PossuiObjetivos = !turmaPrograma && consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular),
+            ObjetivosAprendizagemOpcionais = consultasObjetivoAprendizagem.ComponentePossuiObjetivosOpcionais(disciplina.CodigoComponenteCurricular, disciplina.Regencia, ensinoEspecial).Result
         };
 
         private IEnumerable<DisciplinaResposta> TransformarListaDisciplinaEolParaRetornoDto(IEnumerable<DisciplinaDto> disciplinasEol)
