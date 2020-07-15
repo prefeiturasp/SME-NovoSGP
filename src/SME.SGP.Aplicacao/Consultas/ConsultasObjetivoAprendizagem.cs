@@ -74,15 +74,21 @@ namespace SME.SGP.Aplicacao
                 result = objetivos?.Where(c => componentesJurema.Contains(c.IdComponenteCurricular));
             }
 
+            var listResult = result.ToList();
+            foreach (var item in listResult)
+            {
+                item.ComponenteCurricularEolId = filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.FirstOrDefault();
+            }
+
             IEnumerable<int> anos = Enumerable.Range(1, 9);
 
             if (filtroObjetivosAprendizagemDto.EnsinoEspecial)
             {
-                return result.OrderBy(o => o.Ano).ThenBy(x => x.Codigo);
+                return listResult.OrderBy(o => o.Ano).ThenBy(x => x.Codigo);
             }
 
-            result = result.Where(x => x.Ano == filtroObjetivosAprendizagemDto.Ano);
-            return result.OrderBy(o => o.Codigo);
+            listResult = listResult.Where(x => x.Ano == filtroObjetivosAprendizagemDto.Ano).ToList();
+            return listResult.OrderBy(o => o.Codigo);
         }
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Listar()
