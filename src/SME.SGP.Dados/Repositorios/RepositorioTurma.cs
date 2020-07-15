@@ -170,6 +170,13 @@ namespace SME.SGP.Dados.Repositorios
             }, new { turmaId }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
         }
 
+        public async Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo)
+        {
+            var query = "select ensino_especial from turma where turma_id = @turmaCodigo";
+
+            return await contexto.Conexao.QueryFirstAsync<bool>(query, new { turmaCodigo });
+        }
+
         public async Task<IEnumerable<Turma>> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
         {
             List<Turma> resultado = new List<Turma>();

@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTurma consultasTurma;
         private readonly IServicoJurema servicoJurema;
+        private readonly IServicoEol servicoEol;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema,
@@ -35,7 +36,8 @@ namespace SME.SGP.Aplicacao
                                                      IServicoUsuario servicoUsuario,
                                                      IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                                      IConsultasTurma consultasTurma,
-                                                     IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem)
+                                                     IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem,
+                                                     IServicoEol servicoEol)
         {
             this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
@@ -46,6 +48,7 @@ namespace SME.SGP.Aplicacao
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.repositorioObjetivoAprendizagem = repositorioObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagem));
             this.repositorioObjetivosPlano = repositorioObjetivosPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivosPlano));
+            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
         public bool DisciplinaPossuiObjetivosDeAprendizagem(long codigoDisciplina)
@@ -189,6 +192,15 @@ namespace SME.SGP.Aplicacao
             IEnumerable<ComponenteCurricular> componentesFiltro = componentesCurriculares.Where(c => componentesCurricularesIds.Contains(c.CodigoEOL));
             IEnumerable<long> componentesJurema = componentesFiltro.Select(c => c.CodigoJurema);
             return componentesJurema;
+        }
+
+        public async Task<bool> ComponentePossuiObjetivosOpcionais(string turmaId, string disciplinaId)
+        {
+            var turmaEspecial = await consultasTurma.ObterTurmaEspecialPorCodigo(turmaId);
+            var componenteCurricularCodigo = long.Parse(disciplinaId);
+
+            var componente = (await servicoEol.ObterDisciplinasPorIdsAsync(new long[] { componenteCurricularCodigo })).First();
+            return turmaEspecial && (componente.Regencia || new long[] { 218, 138, 1116 }.Contains(componenteCurricularCodigo));
         }
     }
 }
