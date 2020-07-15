@@ -270,6 +270,7 @@ const FaltasFrequencia = () => {
 
     setCarregandoGeral(true);
     const retorno = await ServicoComponentesCurriculares.obterComponetensCuriculares(
+      codigoUe,
       modalidadeId,
       anoLetivo,
       codigoTodosAnosEscolares

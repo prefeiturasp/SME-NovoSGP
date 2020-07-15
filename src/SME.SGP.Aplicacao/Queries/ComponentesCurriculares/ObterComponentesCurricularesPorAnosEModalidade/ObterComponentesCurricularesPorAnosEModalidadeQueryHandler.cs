@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesPorAnosEModalidadeQuery request, CancellationToken cancellationToken)
         {
-            var componentes = (await servicoEol.ObterComponentesCurricularesPorAnosEModalidade(request.Modalidade, request.AnosEscolares, request.AnoLetivo))?.ToList();
+            var componentes = (await servicoEol.ObterComponentesCurricularesPorAnosEModalidade(request.CodigoUe, request.Modalidade, request.AnosEscolares, request.AnoLetivo))?.ToList();
             if (componentes == null || !componentes.Any())
             {
                 throw new NegocioException("Nenhum componente localizado para a modalidade e anos informados.");

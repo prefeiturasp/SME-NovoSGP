@@ -7,13 +7,15 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
 {
     public class ObterComponentesCurricularesPorAnosEModalidadeQuery : IRequest<IEnumerable<ComponenteCurricularEol>>
     {
-        public ObterComponentesCurricularesPorAnosEModalidadeQuery(Modalidade modalidade, string[] anosEscolares, int anoLetivo)
+        public ObterComponentesCurricularesPorAnosEModalidadeQuery(string codigoUe, Modalidade modalidade, string[] anosEscolares, int anoLetivo)
         {
+            CodigoUe = codigoUe;
             Modalidade = modalidade;
             AnosEscolares = anosEscolares;
             AnoLetivo = anoLetivo;
         }
 
+        public string CodigoUe { get; }
         public Modalidade Modalidade { get; }
         public string[] AnosEscolares { get; }
         public int AnoLetivo { get; }

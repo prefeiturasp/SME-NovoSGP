@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterComponentesCurricularesPorAnoEscolarUseCase
     {
-        Task<IEnumerable<ComponenteCurricularEol>> Executar(Modalidade modalidade, int anoLetivo, string[] anosEscolares);
+        Task<IEnumerable<ComponenteCurricularEol>> Executar(string codigoUe, Modalidade modalidade, int anoLetivo, string[] anosEscolares);
     }
 }
