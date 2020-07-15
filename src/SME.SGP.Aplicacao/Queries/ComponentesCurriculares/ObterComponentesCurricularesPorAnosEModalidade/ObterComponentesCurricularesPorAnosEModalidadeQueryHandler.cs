@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +19,18 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesPorAnosEModalidadeQuery request, CancellationToken cancellationToken)
         {
-            return await servicoEol.ObterComponentesCurricularesPorAnosEModalidade(request.Modalidade, request.AnosEscolares, request.AnoLetivo);
+            var componentes = (await servicoEol.ObterComponentesCurricularesPorAnosEModalidade(request.Modalidade, request.AnosEscolares, request.AnoLetivo))?.ToList();
+            if (componentes == null || !componentes.Any())
+            {
+                throw new NegocioException("Nenhum componente localizado para a modalidade e anos informados.");
+            }
+            componentes = componentes.OrderBy(c => c.Descricao).ToList();
+            componentes.Insert(0, new ComponenteCurricularEol
+            {
+                Codigo = -99,
+                Descricao = "Todos"
+            });
+            return componentes;
         }
     }
 }
