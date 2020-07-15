@@ -10,10 +10,10 @@ using SME.Background.Core;
 using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.IoC;
 using System.Collections.Generic;
 using System.Globalization;
-using SME.SGP.IoC.Extensions;
 
 namespace SME.SGP.Api
 {
@@ -86,12 +86,14 @@ namespace SME.SGP.Api
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
-            
+
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
+
+            PropagacaoCache();
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {
@@ -123,6 +125,12 @@ namespace SME.SGP.Api
             {
                 services.AddRabbit();
             }
+        }
+
+        private void PropagacaoCache()
+        {
+            Orquestrador.Provider
+                .GetService<IRepositorioComponenteCurricular>().Listar();
         }
     }
 }
