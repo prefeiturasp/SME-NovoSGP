@@ -193,13 +193,9 @@ namespace SME.SGP.Aplicacao
             return componentesJurema;
         }
 
-        public async Task<bool> ComponentePossuiObjetivosOpcionais(string turmaId, string disciplinaId)
+        public async Task<bool> ComponentePossuiObjetivosOpcionais(long componenteCurricularCodigo, bool regencia, bool turmaEspecial)
         {
-            var turmaEspecial = await consultasTurma.ObterTurmaEspecialPorCodigo(turmaId);
-            var componenteCurricularCodigo = long.Parse(disciplinaId);
-
-            var componente = (await servicoEol.ObterDisciplinasPorIdsAsync(new long[] { componenteCurricularCodigo })).First();
-            return turmaEspecial && (componente.Regencia || new long[] { 218, 138, 1116 }.Contains(componenteCurricularCodigo));
+            return turmaEspecial && (regencia || new long[] { 218, 138, 1116 }.Contains(componenteCurricularCodigo));
         }
     }
 }
