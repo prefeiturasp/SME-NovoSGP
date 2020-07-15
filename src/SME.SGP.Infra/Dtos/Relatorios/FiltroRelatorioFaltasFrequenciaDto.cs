@@ -10,7 +10,7 @@ namespace SME.SGP.Infra
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public Modalidade Modalidade { get; set; }
-        public int? Semestre { get; set; }
+        public int Semestre { get; set; }
         public IEnumerable<string> AnosEscolares { get; set; }
         public IEnumerable<long> ComponentesCurriculares { get; set; }
         public List<int> Bimestres { get; set; }
@@ -40,10 +40,10 @@ namespace SME.SGP.Infra
                 .WithMessage("Quando a modalidade é EJA o Semestre deve ser informado.")
                 .When(c => c.Modalidade == Modalidade.EJA);
 
-            //RuleFor(c => c.Bimestres)
-            //    .NotEmpty()
-            //    .WithMessage("Os bimestres devem ser informados.")
-            //    .When(c => c.Modalidade != Modalidade.EJA);
+            RuleFor(c => c.Bimestres)
+                .NotEmpty()
+                .WithMessage("Os bimestres devem ser informados.")
+                .When(c => c.Modalidade != Modalidade.EJA);
 
 
             RuleFor(c => c.Condicao)
