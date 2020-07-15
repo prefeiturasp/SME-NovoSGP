@@ -82,25 +82,25 @@ const FaltasFrequencia = () => {
 
   const obterModalidades = async ue => {
     if (ue) {
-      const { data } = await ServicoFiltroRelatorio.obterModalidades(
+      const retorno = await ServicoFiltroRelatorio.obterModalidades(
         ue
       ).catch(e => erros(e));
-      if (data) {
-        if (data && data.length && data.length === 1) {
-          setModalidadeId(data[0].valor);
+      if (retorno && retorno.data) {
+        if (retorno.data && retorno.data.length && retorno.data.length === 1) {
+          setModalidadeId(retorno.data[0].valor);
         }
-        setListaModalidades(data);
+        setListaModalidades(retorno.data);
       }
     }
   };
 
   const obterUes = useCallback(async dre => {
     if (dre) {
-      const { data } = await ServicoFiltroRelatorio.obterUes(dre).catch(e =>
+      const retorno = await ServicoFiltroRelatorio.obterUes(dre).catch(e =>
         erros(e)
       );
-      if (data) {
-        const lista = data.map(item => ({
+      if (retorno && retorno.data) {
+        const lista = retorno.data.map(item => ({
           desc: `${
             item.codigo === '-99' ? '' : tipoEscolaDTO[item.tipoEscola]
           } ${item.nome}`,
@@ -135,14 +135,14 @@ const FaltasFrequencia = () => {
   };
 
   const obterDres = async () => {
-    const { data } = await ServicoFiltroRelatorio.obterDres().catch(e =>
+    const retorno = await ServicoFiltroRelatorio.obterDres().catch(e =>
       erros(e)
     );
-    if (data && data.length) {
-      setListaDres(data);
+    if (retorno && retorno.data && retorno.data.length) {
+      setListaDres(retorno.data);
 
-      if (data && data.length && data.length === 1) {
-        setCodigoDre(data[0].valor);
+      if (retorno && retorno.data.length && retorno.data.length === 1) {
+        setCodigoDre(retorno.data[0].codigo);
       }
     } else {
       setListaDres([]);
@@ -190,17 +190,18 @@ const FaltasFrequencia = () => {
   const obterAnosEscolares = useCallback(async (mod, ue) => {
     if (mod == modalidade.EJA) {
       setListaAnosEscolares([{ descricao: 'Todos', valor: '-99' }]);
-      setAnosEscolares(['-99']);
+      setAnosEscolares('-99');
     } else {
-      const { data } = await ServicoFiltroRelatorio.obterAnosEscolares(
+      const respota = await ServicoFiltroRelatorio.obterAnosEscolares(
         ue,
         mod
       ).catch(e => erros(e));
-      if (data && data.length) {
-        setListaAnosEscolares(data);
 
-        if (data && data.length && data.length === 1) {
-          setAnosEscolares(data[0].valor);
+      if (respota && respota.data && respota.data.length) {
+        setListaAnosEscolares(respota.data);
+
+        if (respota.data && respota.data.length && respota.data.length === 1) {
+          setAnosEscolares(respota.data[0].valor);
         }
       } else {
         setListaAnosEscolares([]);
@@ -217,18 +218,40 @@ const FaltasFrequencia = () => {
     }
   }, [modalidadeId, codigoUe, obterAnosEscolares]);
 
+  const obterCodigoTodosAnosEscolares = () => {
+    let todosAnosEscolares = anosEscolares;
+    const selecionouTodos = anosEscolares.find(ano => ano === '-99');
+    if (selecionouTodos) {
+      todosAnosEscolares = listaAnosEscolares.filter(
+        item => item.valor !== '-99'
+      );
+    }
+    return todosAnosEscolares.map(item => item.valor);
+  };
+
+  const obterCodigoTodosComponentesCorriculares = () => {
+    let todosComponentesCurriculares = componentesCurriculares;
+    const selecionouTodos = componentesCurriculares.find(ano => ano === '-99');
+    if (selecionouTodos) {
+      todosComponentesCurriculares = listaComponenteCurricular.filter(
+        item => item.valor !== '-99'
+      );
+    }
+    return todosComponentesCurriculares.map(item => item.valor);
+  };
+
   const obterComponenteCurricular = useCallback(async () => {
+    const codigoTodosAnosEscolares = obterCodigoTodosAnosEscolares();
+
     const retorno = await ServicoComponentesCurriculares.obterComponetensCuriculares(
       modalidadeId,
       anoLetivo,
-      modalidadeId == modalidade.EJA ? [anosEscolares] : anosEscolares
+      codigoTodosAnosEscolares
     ).catch(e => erros(e));
     if (retorno && retorno.data && retorno.data.length) {
-      const lista = retorno.data
-        .map(item => {
-          return { desc: item.descricao, valor: String(item.codigo) };
-        })
-        .sort(FiltroHelper.ordenarLista('desc'));
+      const lista = retorno.data.map(item => {
+        return { desc: item.descricao, valor: String(item.codigo) };
+      });
 
       setListaComponenteCurricular(lista);
       if (lista && lista.length && lista.length === 1) {
@@ -293,6 +316,11 @@ const FaltasFrequencia = () => {
       !codigoUe ||
       !modalidadeId ||
       !anosEscolares ||
+      !componentesCurriculares ||
+      !bimestres ||
+      !tipoRelatorio ||
+      !condicao ||
+      !valorCondicao ||
       !formato;
 
     if (modalidadeId == modalidade.EJA) {
@@ -305,9 +333,14 @@ const FaltasFrequencia = () => {
     codigoDre,
     codigoUe,
     modalidadeId,
-    anosEscolares,
-    formato,
     semestre,
+    anosEscolares,
+    componentesCurriculares,
+    bimestres,
+    tipoRelatorio,
+    condicao,
+    valorCondicao,
+    formato,
   ]);
 
   useEffect(() => {
@@ -333,15 +366,19 @@ const FaltasFrequencia = () => {
 
   const onClickGerar = async () => {
     setCarregandoGeral(true);
+
+    const codigoTodosAnosEscolares = obterCodigoTodosAnosEscolares();
+    const codigoTodosComponentesCorriculares = obterCodigoTodosComponentesCorriculares();
+
     const params = {
       anoLetivo,
       codigoDre,
       codigoUe,
       modalidade: modalidadeId,
       semestre,
-      anosEscolares,
-      componentesCurriculares,
-      bimestres,
+      anosEscolares: codigoTodosAnosEscolares,
+      componentesCurriculares: codigoTodosComponentesCorriculares,
+      bimestres: [bimestres],
       tipoRelatorio,
       condicao,
       valorCondicao,
@@ -370,7 +407,6 @@ const FaltasFrequencia = () => {
 
     setListaAnosEscolares([]);
     setAnosEscolares(undefined);
-    setDesabilitarBtnGerar(false);
   };
 
   const onChangeModalidade = novaModalidade => {
@@ -381,7 +417,6 @@ const FaltasFrequencia = () => {
 
     setListaAnosEscolares([]);
     setAnosEscolares(undefined);
-    setDesabilitarBtnGerar(false);
   };
 
   const onChangeAnoLetivo = ano => {
@@ -395,42 +430,17 @@ const FaltasFrequencia = () => {
 
     setListaAnosEscolares([]);
     setAnosEscolares(undefined);
-    setDesabilitarBtnGerar(false);
   };
 
-  const onChangeAnos = valor => {
-    setAnosEscolares(valor);
-    setDesabilitarBtnGerar(false);
-  };
-
-  const onChangeSemestre = valor => {
-    setSemestre(valor);
-    setDesabilitarBtnGerar(false);
-  };
-  const onChangeComponenteCurricular = valor => {
+  const onChangeAnos = valor => setAnosEscolares(valor);
+  const onChangeSemestre = valor => setSemestre(valor);
+  const onChangeComponenteCurricular = valor =>
     setComponentesCurriculares(valor);
-    setDesabilitarBtnGerar(false);
-  };
-  const onChangeBimestre = valor => {
-    setBimestres([valor]);
-    setDesabilitarBtnGerar(false);
-  };
-  const onChangeTipoRelatorio = valor => {
-    setTipoRelatorio(valor);
-    setDesabilitarBtnGerar(false);
-  };
-  const onChangeCondicao = valor => {
-    setCondicao(valor);
-    setDesabilitarBtnGerar(false);
-  };
-  const onChangeComparacao = valor => {
-    setValorCondicao(valor);
-    setDesabilitarBtnGerar(false);
-  };
-  const onChangeFormato = valor => {
-    setFormato(valor);
-    setDesabilitarBtnGerar(false);
-  };
+  const onChangeBimestre = valor => setBimestres(valor);
+  const onChangeTipoRelatorio = valor => setTipoRelatorio(valor);
+  const onChangeCondicao = valor => setCondicao(valor);
+  const onChangeComparacao = valor => setValorCondicao(valor);
+  const onChangeFormato = valor => setFormato(valor);
 
   return (
     <>
@@ -546,7 +556,7 @@ const FaltasFrequencia = () => {
                   valueSelect={anosEscolares}
                   onChange={onChangeAnos}
                   placeholder="Selecione o ano"
-                  multiple={modalidadeId != modalidade.EJA}
+                  multiple
                 />
               </div>
               <div className="col-sm-12 col-md-9 col-lg-9 col-xl-5 mb-2">
