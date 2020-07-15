@@ -30,7 +30,7 @@ namespace SME.SGP.Integracao.Teste
 
             var filtros = new FiltroObjetivosAprendizagemDto();
             filtros.ComponentesCurricularesIds.Add(139);
-            filtros.Ano = 3;
+            filtros.Ano = "3";
 
             var jsonParaPost = new StringContent(TransformarEmJson(filtros), UnicodeEncoding.UTF8, "application/json");
 
