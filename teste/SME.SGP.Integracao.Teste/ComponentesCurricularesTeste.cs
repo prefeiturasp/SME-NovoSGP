@@ -23,8 +23,9 @@ namespace SME.SGP.Integracao.Teste
             // Act
             fixture._clientApi.DefaultRequestHeaders.Clear();
             fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }));
-            
-            var result = await fixture._clientApi.GetAsync($"api/v1/componentes-curriculares/modalidades/5/anos/2020/anos-escolares?anosEscolares=1");
+
+            var codigoUe = "094765";
+            var result = await fixture._clientApi.GetAsync($"api/v1/componentes-curriculares/ues/{codigoUe}/modalidades/5/anos/2020/anos-escolares?anosEscolares=1");
 
             // Assert
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));
