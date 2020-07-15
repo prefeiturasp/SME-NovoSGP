@@ -13,9 +13,9 @@ import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import ServicoFaltasFrequencia from '~/servicos/Paginas/Relatorios/FaltasFrequencia/ServicoFaltasFrequencia';
-import FiltroHelper from '~componentes-sgp/filtro/helper';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
 const FaltasFrequencia = () => {
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
@@ -122,8 +122,7 @@ const FaltasFrequencia = () => {
         if (lista && lista.length && lista.length === 1) {
           setCodigoUe(lista[0].valor);
         }
-
-        setListaUes(lista);
+        setListaUes(lista.sort(FiltroHelper.ordenarLista('desc')));
       } else {
         setListaUes([]);
       }
@@ -303,17 +302,17 @@ const FaltasFrequencia = () => {
   }, [anosEscolares, obterComponenteCurricular]);
 
   const obterBimestres = useCallback(() => {
-    const bi = [
-      { desc: '1º', valor: 1 },
-      { desc: '2º', valor: 2 },
-    ];
+    const bi = [];
+    bi.push({ desc: '1º', valor: 1 });
+    bi.push({ desc: '2º', valor: 2 });
 
     if (modalidadeId != modalidade.EJA) {
       bi.push({ desc: '3º', valor: 3 });
       bi.push({ desc: '4º', valor: 4 });
     }
-    bi.push({ desc: 'Todos', valor: -99 });
+
     bi.push({ desc: 'Final', valor: 0 });
+    bi.push({ desc: 'Todos', valor: -99 });
     setListaBimestre(bi);
   }, [modalidadeId]);
 
@@ -351,7 +350,8 @@ const FaltasFrequencia = () => {
       !bimestres ||
       !tipoRelatorio ||
       !condicao ||
-      !valorCondicao ||
+      valorCondicao === undefined ||
+      valorCondicao === '' ||
       !formato;
 
     if (modalidadeId == modalidade.EJA) {
@@ -518,7 +518,7 @@ const FaltasFrequencia = () => {
 
   return (
     <>
-      <Cabecalho pagina="Frequência e faltas" />
+      <Cabecalho pagina="Faltas e frequência" />
       <Loader loading={carregandoGeral}>
         <Card>
           <div className="col-md-12">
@@ -580,7 +580,7 @@ const FaltasFrequencia = () => {
               </div>
               <div className="col-sm-12 col-md-6 col-lg-9 col-xl-5 mb-2">
                 <SelectComponent
-                  label="UE"
+                  label="Unidade Escolar (UE)"
                   lista={listaUes}
                   valueOption="valor"
                   valueText="desc"
