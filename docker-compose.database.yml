@@ -30,6 +30,8 @@ services:
       - ./scripts:/opt/scripts
     depends_on:
       - sme-db
+    networks:
+      - sme-network    
 networks:
   sme-network:
     driver: bridge

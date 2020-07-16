@@ -21,8 +21,12 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/faltas-frequencia", ShortName = "RelatorioFaltasFrequencia", Description = "Relatório de faltas e frequência")]
         FaltasFrequencia = 6,
+        
         [Display(Name = "relatorios/historicoescolarfundamental", ShortName = "HistoricoEscolar", Description = "Histórico Escolar Funadamental")]
         HistoricoEscolarFundamental = 7,
+
+        [Display(Name = "relatorios/pendenciasfechamento", ShortName = "PendenciasFechamento", Description = "Relatório de Pendências do Fechamento")]
+        PendenciasFechamento = 8,
 
     }
 }
