@@ -21,6 +21,7 @@ using System.Linq;
 using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using System.Threading.Tasks;
+using SME.SGP.Dados;
 
 namespace SME.SGP.Api
 {
@@ -85,7 +86,7 @@ namespace SME.SGP.Api
             services.AddHttpContextAccessor();
 
             RegistraDependencias.Registrar(services);
-          
+            RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
@@ -99,6 +100,10 @@ namespace SME.SGP.Api
                 options.Configuration = Configuration.GetConnectionString("SGP-Redis");
                 options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
             });
+
+
+            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
+            services.AddMediatR(assembly);
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
@@ -131,11 +136,6 @@ namespace SME.SGP.Api
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             }); 
-
-            if (_env.EnvironmentName != "teste-integrado")
-            {
-                services.AddRabbit();
-            }
 
             // Teste para injeção do client de telemetria em classe estática 
 
