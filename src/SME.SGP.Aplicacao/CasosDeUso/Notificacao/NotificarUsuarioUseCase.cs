@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem NotificarUsuarioUseCase", "Rabbit - NotificarUsuarioUseCase");
 
-            var command = mensagemRabbit.ObterObjetoFiltro<NotificarUsuarioCommand>();
+            var command = mensagemRabbit.ObterObjetoMensagem<NotificarUsuarioCommand>();
 
             return await mediator.Send(command);
         }

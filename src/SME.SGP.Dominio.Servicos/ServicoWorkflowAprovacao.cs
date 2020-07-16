@@ -130,7 +130,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task AprovarNivel(WorkflowAprovacaoNivel nivel, WorkflowAprovacao workflow, long codigoDaNotificacao)
         {
             var niveis = workflow.ObtemNiveisParaEnvioPosAprovacao();
-            if (niveis != null)
+            if (niveis != null && niveis.Any())
                 EnviaNotificacaoParaNiveis(niveis.ToList(), codigoDaNotificacao);
             else
             {

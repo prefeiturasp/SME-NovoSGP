@@ -28,5 +28,6 @@ namespace SME.SGP.Infra
         public int QtdAulas { get; set; }
         public string RecuperacaoAula { get; set; }
         public bool PossuiPlanoAnual { get; set; }
+        public bool ObjetivosAprendizagemOpcionais { get; set; }
     }
 }

@@ -39,8 +39,10 @@ const RotasDto = {
   RELATORIO_SEMESTRAL: '/relatorios/pap/relatorio-semestral',
   SEM_PERMISSAO: '/sem-permissao',
   TERRITORIO_SABER: '/planejamento/plano-anual-territorio-saber',
+  HISTORICO_ESCOLAR: '/relatorios/historico-escolar',
   RELATORIO_BOLETIM_SIMPLES: '/relatorios/diario-classe/boletim-simples',
   ATA_FINAL_RESULTADOS: '/relatorios/atas/ata-final-resultados',
+  FALTAS_FREQUENCIA: '/relatorios/frequencia/faltas-frequencia',
 };
 
 export default RotasDto;

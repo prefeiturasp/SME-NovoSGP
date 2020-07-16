@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             SentrySdk.AddBreadcrumb($"Mensagem InserirAulaRecorrenteUseCase", "Rabbit - InserirAulaRecorrenteUseCase");
-            InserirAulaRecorrenteCommand command = mensagemRabbit.ObterObjetoFiltro<InserirAulaRecorrenteCommand>();
+            InserirAulaRecorrenteCommand command = mensagemRabbit.ObterObjetoMensagem<InserirAulaRecorrenteCommand>();
 
             return await mediator.Send(command);
         }

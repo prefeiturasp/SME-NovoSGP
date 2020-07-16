@@ -234,6 +234,8 @@ const PlanoAula = props => {
 
     if (!temObjetivos || !objetivosAprendizagem) return false;
 
+    if (planoAula.objetivosAprendizagemOpcionais) return false;
+
     return !objetivosAprendizagem.filter(obj => obj.selected === true).length;
   }, [desabilitarCampos, temObjetivos, objetivosAprendizagem]);
 
@@ -242,7 +244,11 @@ const PlanoAula = props => {
     const resultado = !ehProfessorCj
       ? temObjetivos && naoEhEjaEMedio
       : naoEhEjaEMedio && habilitaEscolhaObjetivos;
-    return resultado && !planoAula.migrado;
+    return (
+      resultado &&
+      !planoAula.migrado &&
+      !planoAula.objetivosAprendizagemOpcionais
+    );
   };
 
   const aoClicarBotaoNovaAvaliacao = () => {
@@ -290,7 +296,12 @@ const PlanoAula = props => {
           </QuantidadeBotoes>
           <HabilitaObjetivos
             className="row d-inline-block col-md-12"
-            hidden={!ehProfessorCj || ehEja || ehMedio}
+            hidden={
+              planoAula.objetivosAprendizagemOpcionais ||
+              !ehProfessorCj ||
+              ehEja ||
+              ehMedio
+            }
           >
             <Label text="Objetivos de Aprendizagem e Desenvolvimento" />
             <Switch

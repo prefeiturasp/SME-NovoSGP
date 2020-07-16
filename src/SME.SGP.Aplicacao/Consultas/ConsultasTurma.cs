@@ -135,5 +135,8 @@ namespace SME.SGP.Aplicacao
 
             return dadosAlunosDto;
         }
+
+        public async Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo)
+            => await repositorioTurma.ObterTurmaEspecialPorCodigo(turmaCodigo);
     }
 }
