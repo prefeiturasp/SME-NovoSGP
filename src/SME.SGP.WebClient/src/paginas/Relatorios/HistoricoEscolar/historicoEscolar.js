@@ -208,6 +208,7 @@ const HistoricoEscolar = () => {
         }
       } else {
         setListaDres([]);
+        setDreId(undefined);
       }
       setCarregandoDres(false);
     }
