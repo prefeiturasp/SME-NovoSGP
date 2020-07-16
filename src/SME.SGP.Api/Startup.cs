@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using HealthChecks.UI.Client;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,7 @@ using SME.Background.Core;
 using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
+using SME.SGP.Dados;
 using SME.SGP.IoC;
 using System.Collections.Generic;
 using System.Globalization;
@@ -123,6 +125,14 @@ namespace SME.SGP.Api
             {
                 services.AddRabbit();
             }
+
+            // Teste para injeção do client de telemetria em classe estática 
+
+            var serviceProvider = services.BuildServiceProvider();
+            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+            DapperExtensionMethods.Init(clientTelemetry);
+
+            //
         }
     }
 }

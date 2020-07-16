@@ -24,6 +24,7 @@ import ObjectCardRelatorioSemestral from './DadosRelatorioSemestral/ObjectCardRe
 import TabelaRetratilRelatorioSemestral from './DadosRelatorioSemestral/TabelaRetratilRelatorioSemestral/tabelaRetratilRelatorioSemestral';
 import { Container } from './relatorioSemestral.css';
 import servicoSalvarRelatorioSemestral from './servicoSalvarRelatorioSemestral';
+import ModalErrosRalSemestralPAP from './DadosRelatorioSemestral/ModalErros/ModalErrosRalSemestralPAP';
 
 const RelatorioSemestral = () => {
   const dispatch = useDispatch();
@@ -143,6 +144,7 @@ const RelatorioSemestral = () => {
 
   return (
     <Container>
+      <ModalErrosRalSemestralPAP />
       {!turmaSelecionada.turma ? (
         <div className="col-md-12">
           <Alert

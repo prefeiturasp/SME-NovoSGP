@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace SME.SGP.Dominio
@@ -19,8 +21,15 @@ namespace SME.SGP.Dominio
 
         public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricular> componentesCurricularesJurema, bool turmaPrograma, Modalidade turmaModalidade, string turmaAno)
         {
-            return componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo) && !turmaPrograma && 
+            var posuiObjetivos = componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo) && !turmaPrograma &&
                     !new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turmaModalidade) && turmaAno != "0";
+
+            return posuiObjetivos;
+        }
+
+        public bool PossuiObjetivosDeAprendizagemOpcionais(IEnumerable<ComponenteCurricular> componentesCurricularesJurema, bool ensinoEspecial)
+        {
+            return ensinoEspecial && (componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo && new long[] { 218, 138, 1116 }.Contains(Codigo)) || Regencia);
         }
     }
 }
