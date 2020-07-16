@@ -307,7 +307,8 @@ namespace SME.SGP.Aplicacao.Servicos
                  Nome = z.NomeTurma,
                  Semestre = z.Semestre,
                  TipoTurno = z.TipoTurno,
-                 Ue = new Ue() { CodigoUe = y.Codigo }
+                 Ue = new Ue() { CodigoUe = y.Codigo },
+                 EnsinoEspecial = z.EnsinoEspecial
              })));
 
             dres = repositorioDre.Sincronizar(dres);

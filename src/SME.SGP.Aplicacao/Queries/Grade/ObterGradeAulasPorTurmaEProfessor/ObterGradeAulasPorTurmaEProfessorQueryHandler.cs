@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterGradeAulasPorTurmaEProfessorQueryHandler: IRequestHandler<ObterGradeAulasPorTurmaEProfessorQuery, GradeComponenteTurmaAulasDto>
+    public class ObterGradeAulasPorTurmaEProfessorQueryHandler : IRequestHandler<ObterGradeAulasPorTurmaEProfessorQuery, GradeComponenteTurmaAulasDto>
     {
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioAula repositorioAula;
@@ -75,7 +75,9 @@ namespace SME.SGP.Aplicacao
             if (componenteCurricularId == 1030)
                 return 4;
 
-            return await repositorioGrade.ObterHorasComponente(grade.Id, componenteCurricularId, int.Parse(turma.Ano));
+            int ano;
+            int.TryParse(turma.Ano, out ano);
+            return await repositorioGrade.ObterHorasComponente(grade.Id, componenteCurricularId, ano);
         }
 
         private async Task<int> ObtenhaHorasCadastradas(long componenteCurricular, int semana, DateTime dataAula, string codigoRf, Turma turma, bool ehRegencia)

@@ -9,7 +9,14 @@ import {
 } from '~/redux/modulos/relatorioSemestralPAP/actions';
 
 const CampoRelatorioSemestral = props => {
-  const { descricao, idSecao, nome, valor, alunoDesabilitado } = props;
+  const {
+    descricao,
+    idSecao,
+    nome,
+    valor,
+    alunoDesabilitado,
+    obrigatorio,
+  } = props;
 
   const desabilitarCampos = useSelector(
     store => store.relatorioSemestralPAP.desabilitarCampos
@@ -36,6 +43,13 @@ const CampoRelatorioSemestral = props => {
     dispatch(setRelatorioSemestralEmEdicao(emEdicao));
   };
 
+  const validarSeTemErro = valorEditado => {
+    if (obrigatorio && !valorEditado) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2 mt-4">
       <CardCollapse
@@ -43,8 +57,11 @@ const CampoRelatorioSemestral = props => {
         titulo={nome}
         indice={`secao-${idSecao}-estudante-collapse-indice`}
         alt={`secao-${idSecao}-estudante-alt`}
+        show
       >
         <Editor
+          validarSeTemErro={validarSeTemErro}
+          mensagemErro="Campo obrigatório"
           label={descricao}
           id={`secao-${idSecao}-estudante-editor`}
           inicial={valor}
@@ -65,6 +82,7 @@ CampoRelatorioSemestral.propTypes = {
   nome: PropTypes.string,
   valor: PropTypes.oneOfType([PropTypes.any]),
   alunoDesabilitado: PropTypes.bool,
+  obrigatorio: PropTypes.bool,
 };
 
 CampoRelatorioSemestral.defaultProps = {
@@ -73,6 +91,7 @@ CampoRelatorioSemestral.defaultProps = {
   nome: '',
   valor: '',
   alunoDesabilitado: false,
+  obrigatorio: false,
 };
 
 export default CampoRelatorioSemestral;
