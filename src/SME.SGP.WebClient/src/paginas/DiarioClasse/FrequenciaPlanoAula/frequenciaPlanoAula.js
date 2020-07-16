@@ -456,6 +456,7 @@ const FrequenciaPlanoAula = () => {
     }
 
     if (
+      !planoAula.objetivosAprendizagemOpcionais &&
       !ehProfessorCj &&
       temObjetivos &&
       !ehEja &&
