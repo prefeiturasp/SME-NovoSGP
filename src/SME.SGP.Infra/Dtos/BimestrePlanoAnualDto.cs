@@ -12,6 +12,8 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "A descrição deve ser informada.")]
         public string Descricao { get; set; }
 
+        public bool ObjetivosAprendizagemOpcionais { get; set; }
+
         public List<ObjetivoAprendizagemSimplificadoDto> ObjetivosAprendizagem { get; set; }
     }
 }

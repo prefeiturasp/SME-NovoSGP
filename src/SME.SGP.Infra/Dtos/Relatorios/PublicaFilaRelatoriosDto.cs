@@ -4,10 +4,10 @@ namespace SME.SGP.Infra.Dtos
 {
     public class PublicaFilaRelatoriosDto
     {
-        public PublicaFilaRelatoriosDto(string fila, object filtros, string endpoint, Guid codigoCorrelacao, string codigoRfUsuario, bool notificarErroUsuario = false, string perfilUsuario = null)
+        public PublicaFilaRelatoriosDto(string fila, object mensagem, string endpoint, Guid codigoCorrelacao, string codigoRfUsuario, bool notificarErroUsuario = false, string perfilUsuario = null)
         {
             Fila = fila;
-            Filtros = filtros;
+            Mensagem = mensagem;
             Endpoint = endpoint;
             CodigoCorrelacao = codigoCorrelacao;
             NotificarErroUsuario = notificarErroUsuario;
@@ -16,7 +16,7 @@ namespace SME.SGP.Infra.Dtos
         }
 
         public string Fila { get; set; }
-        public object Filtros { get; set; }
+        public object Mensagem { get; set; }
         public string Endpoint { get; set; }
         public Guid CodigoCorrelacao { get; set; }
         public bool NotificarErroUsuario { get; set; }

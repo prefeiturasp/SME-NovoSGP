@@ -250,11 +250,14 @@ namespace SME.SGP.Dados.Repositorios
 	                             nome,
 	                             semestre,
 	                             qtDuracaoAula,
-	                             tipoTurno
+	                             tipoTurno,
+                                 ensinoEspecial
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
                           order by 5";
 
-            return (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo })).AsList();
+            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo })).AsList();
+
+            return result;
         }
 
         public async Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil)
@@ -312,21 +315,21 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
 
-        public void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia escopo)
+        public void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo)
         {
             var query = "delete from abrangencia where usuario_id = (select id from usuario where login = @login) and historico = false and perfil = @perfil and #escopo";
 
             switch (escopo)
             {
-                case TipoAbrangencia.PorDre:
+                case TipoAbrangenciaSincronizacao.PorDre:
                     query = query.Replace("#escopo", " ue_id is not null and turma_id is not null");
                     break;
 
-                case TipoAbrangencia.PorUe:
+                case TipoAbrangenciaSincronizacao.PorUe:
                     query = query.Replace("#escopo", " dre_id is not null and turma_id is not null");
                     break;
 
-                case TipoAbrangencia.PorTurma:
+                case TipoAbrangenciaSincronizacao.PorTurma:
                     query = query.Replace("#escopo", " ue_id is not null and dre_id is not null");
                     break;
             }
@@ -339,6 +342,26 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select 1 from abrangencia where usuario_id = @usuarioId and turma_id is null";
 
             return (await database.Conexao.QueryAsync<int>(query, new { usuarioId })).Count() > 0;
+        }
+
+        public async Task<bool> UsuarioPossuiAbrangenciaDeUmDosTipos(Guid perfil, IEnumerable<TipoPerfil> tipos)
+        {
+            var query = "select 1 from prioridade_perfil where codigo_perfil = @perfil and tipo = any(@tipos)";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { perfil, tipos=tipos?.Select(c=>(int)c)?.ToArray() });
+        }
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string codigoUe)
+        {
+            var query = @"select
+                                distinct t.modalidade_codigo
+                            from
+                                turma t
+                            inner join ue u on
+                                t.ue_id = u.id
+                            where
+                                u.ue_id = @codigoUe";
+
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe });
         }
     }
 }

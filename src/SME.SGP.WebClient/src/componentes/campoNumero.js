@@ -42,6 +42,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
     step,
     disabled,
     onBlur,
+    ehDecimal
   } = props;
 
   const possuiErro = () => {
@@ -54,6 +55,21 @@ const CampoNumero = React.forwardRef((props, ref) => {
       event.preventDefault();
     }
   };
+
+  const validaFormatter =  valor => {
+    if (!ehDecimal) {
+      valor = valor.toString().replace('.', '')
+      valor = valor.toString().replace(',', '')
+    }
+    return valor;
+  }
+
+  const validaParser =  valor => {
+    if (!ehDecimal) {
+      valor = valor.replace(/[^0-9.]/g, '')
+    }
+    return valor;
+  }
 
   return (
     <>
@@ -98,6 +114,8 @@ const CampoNumero = React.forwardRef((props, ref) => {
             className={className}
             disabled={disabled}
             onBlur={onBlur}
+            formatter={v => validaFormatter(v)}
+            parser={v => validaParser(v)}
           />
         )}
       </Campo>
@@ -109,12 +127,14 @@ CampoNumero.propTypes = {
   onChange: PropTypes.func,
   onBlur: PropTypes.func,
   semMensagem: PropTypes.bool,
+  ehDecimal: PropTypes.bool,
 };
 
 CampoNumero.defaultProps = {
   onChange: () => {},
   onBlur: () => {},
   semMensagem: false,
+  ehDecimal: true,
 };
 
 export default CampoNumero;

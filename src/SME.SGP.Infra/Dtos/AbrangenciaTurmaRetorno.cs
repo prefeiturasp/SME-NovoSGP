@@ -8,5 +8,6 @@
         public int CodigoModalidade { get; set; }
         public string Nome { get; set; }
         public int Semestre { get; set; }
+        public bool EnsinoEspecial { get; set; }
     }
 }

@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 
                 if (relatorioCorrelacao.EhRelatorioJasper)
                 {
-                    var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoFiltro<ReceberRelatorioProntoCommand>();
+                    var receberRelatorioProntoCommand = mensagemRabbit.ObterObjetoMensagem<ReceberRelatorioProntoCommand>();
                     receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao;
 
                     var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
@@ -54,7 +54,8 @@ namespace SME.SGP.Aplicacao
                 case TipoRelatorio.ConselhoClasseAluno:
                 case TipoRelatorio.ConselhoClasseTurma:
                 case TipoRelatorio.ConselhoClasseAtaFinal:
-                    SentrySdk.AddBreadcrumb("Enviando notificação..", "9 - ReceberRelatorioProntoUseCase");
+                case TipoRelatorio.FaltasFrequencia:
+                    SentrySdk.AddBreadcrumb($"Enviando notificação..", $"{relatorioCorrelacao.Codigo.ToString().Substring(0,3)}{relatorioCorrelacao.TipoRelatorio.ShortName()}");
                     await EnviaNotificacaoCriador(relatorioCorrelacao);
                     break;
                 default:
