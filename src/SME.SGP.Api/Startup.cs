@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using HealthChecks.UI.Client;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -84,7 +85,7 @@ namespace SME.SGP.Api
             services.AddHttpContextAccessor();
 
             RegistraDependencias.Registrar(services);
-            RegistrarMapeamentos.Registrar();
+          
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
@@ -101,8 +102,7 @@ namespace SME.SGP.Api
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
-            services.AddMediatR(assembly);
+
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
 
@@ -132,6 +132,18 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             }); 
 
+            if (_env.EnvironmentName != "teste-integrado")
+            {
+                services.AddRabbit();
+            }
+
+            // Teste para injeção do client de telemetria em classe estática 
+
+            var serviceProvider = services.BuildServiceProvider();
+            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+            DapperExtensionMethods.Init(clientTelemetry);
+
+            //
         }
     }
 }
