@@ -63,8 +63,8 @@ const RelatorioPendencias = () => {
   const [bimestre, setBimestre] = useState(undefined);
   const [exibirDetalhamento, setExibirDetalhamento] = useState('0');
   const listaSimNao = [
-    { valor: '0', desc: 'Sim' },
-    { valor: '1', desc: 'Não' },
+    { valor: true, desc: 'Sim' },
+    { valor: false, desc: 'Não' },
   ];
 
   const onChangeAnoLetivo = valor => {
@@ -344,7 +344,7 @@ const RelatorioPendencias = () => {
     setAnoLetivo(anoAtual);
     setComponenteCurricularId(undefined);
     setBimestre('0');
-    setExibirDetalhamento('0');
+    setExibirDetalhamento(true);
     setTurmaId(undefined);
   };
 
