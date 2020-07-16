@@ -267,30 +267,31 @@ const FaltasFrequencia = () => {
 
   const obterComponenteCurricular = useCallback(async () => {
     const codigoTodosAnosEscolares = obterCodigoTodosAnosEscolares();
-
-    setCarregandoGeral(true);
-    const retorno = await ServicoComponentesCurriculares.obterComponetensCuriculares(
-      codigoUe,
-      modalidadeId,
-      anoLetivo,
-      codigoTodosAnosEscolares
-    ).catch(e => {
-      erros(e);
-      setCarregandoGeral(false);
-    });
-    if (retorno && retorno.data && retorno.data.length) {
-      const lista = retorno.data.map(item => {
-        return { desc: item.descricao, valor: String(item.codigo) };
+    if (anoLetivo) {
+      setCarregandoGeral(true);
+      const retorno = await ServicoComponentesCurriculares.obterComponetensCuriculares(
+        codigoUe,
+        modalidadeId,
+        anoLetivo,
+        codigoTodosAnosEscolares
+      ).catch(e => {
+        erros(e);
+        setCarregandoGeral(false);
       });
+      if (retorno && retorno.data && retorno.data.length) {
+        const lista = retorno.data.map(item => {
+          return { desc: item.descricao, valor: String(item.codigo) };
+        });
 
-      setListaComponenteCurricular(lista);
-      if (lista && lista.length && lista.length === 1) {
-        setComponentesCurriculares(lista[0].valor);
+        setListaComponenteCurricular(lista);
+        if (lista && lista.length && lista.length === 1) {
+          setComponentesCurriculares(lista[0].valor);
+        }
+      } else {
+        setListaComponenteCurricular([]);
       }
-    } else {
-      setListaComponenteCurricular([]);
+      setCarregandoGeral(false);
     }
-    setCarregandoGeral(false);
   }, [modalidadeId, anoLetivo, obterCodigoTodosAnosEscolares]);
 
   useEffect(() => {
