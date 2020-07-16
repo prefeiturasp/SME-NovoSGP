@@ -267,6 +267,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTestePostgre, RepositorioTestePostgre>();
             services.TryAddScoped<IRepositorioFechamentoReaberturaBimestre, RepositorioFechamentoReaberturaBimestre>();
             services.TryAddScoped<IRepositorioHistoricoReinicioSenha, RepositorioHistoricoReinicioSenha>();
+            services.TryAddScoped<IRepositorioComunicadoAluno, RepositorioComunicadoAluno>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

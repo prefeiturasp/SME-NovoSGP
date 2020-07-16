@@ -2,6 +2,8 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,32 +16,37 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComunicadoGrupo repositorioComunicadoGrupo;
         private readonly IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
 
         public ComandoComunicado(IRepositorioComunicado repositorio,
             IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar,
             IRepositorioComunicadoGrupo repositorioComunicadoGrupo,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IRepositorioComunicadoAluno repositorioComunicadoAluno)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
             this.repositorioComunicadoGrupo = repositorioComunicadoGrupo ?? throw new System.ArgumentNullException(nameof(repositorioComunicadoGrupo));
             this.servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new System.ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
+            this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
         }
 
         public async Task<string> Alterar(long id, ComunicadoInserirDto comunicadoDto)
         {
             Comunicado comunicado = BuscarComunicado(id);
+
             ComunicadoInserirAeDto comunicadoServico = new ComunicadoInserirAeDto();
-            MapearParaEntidade(comunicadoDto, comunicado);
+
+            MapearAlteracao(comunicadoDto, comunicado);
 
             try
             {
                 unitOfWork.IniciarTransacao();
-                await repositorioComunicadoGrupo.ExcluirPorIdComunicado(id);
-                await SalvarGrupos(id, comunicadoDto);
+
                 await repositorio.SalvarAsync(comunicado);
 
                 MapearParaEntidadeServico(comunicadoServico, comunicado);
+
                 await servicoAcompanhamentoEscolar.AlterarComunicado(comunicadoServico, id);
 
                 unitOfWork.PersistirTransacao();
@@ -51,7 +58,7 @@ namespace SME.SGP.Aplicacao
             }
 
             return "Comunicado alterado com sucesso";
-        }
+        }        
 
         public async Task Excluir(long[] ids)
         {
@@ -84,13 +91,20 @@ namespace SME.SGP.Aplicacao
         {
             Comunicado comunicado = new Comunicado();
             ComunicadoInserirAeDto comunicadoServico = new ComunicadoInserirAeDto();
+            ValidarInsercao(comunicadoDto);
             MapearParaEntidade(comunicadoDto, comunicado);
 
             try
             {
                 unitOfWork.IniciarTransacao();
+
                 var id = await repositorio.SalvarAsync(comunicado);
+
                 await SalvarGrupos(id, comunicadoDto);
+
+                comunicado.AtualizarIdAlunos();
+
+                await SalvarAlunos(comunicado.Alunos);
 
                 MapearParaEntidadeServico(comunicadoServico, comunicado);
 
@@ -107,21 +121,62 @@ namespace SME.SGP.Aplicacao
             return "Comunicado criado com sucesso";
         }
 
-        private static void MapearParaEntidade(ComunicadoInserirDto comunicadoDto, Comunicado comunicado)
+        private async Task SalvarAlunos(IEnumerable<ComunicadoAluno> alunos)
+        {
+            foreach (var aluno in alunos)
+                await repositorioComunicadoAluno.SalvarAsync(aluno);
+        }
+
+        private void MapearAlteracao(ComunicadoInserirDto comunicadoDto, Comunicado comunicado)
+        {
+            comunicado.Descricao = comunicadoDto.Descricao;
+            comunicado.Titulo = comunicadoDto.Titulo;
+            comunicado.DataExpiracao = comunicadoDto.DataExpiracao;
+        }
+
+        private void ValidarInsercao(ComunicadoInserirDto comunicadoDto)
+        {
+            if (comunicadoDto.CodigoDre.Equals("todas") && !comunicadoDto.CodigoUe.Equals("todas"))
+                throw new NegocioException("Não é possivel especificar uma escola quando o comunicado é para todas as DREs");
+
+            if (comunicadoDto.CodigoUe.Equals("todas") && !comunicadoDto.Turma.Equals("todas"))
+                throw new NegocioException("Não é possivel especificar uma turma quando o comunicado é para todas as UEs");
+
+            if (comunicadoDto.Turma.Equals("todas") && (comunicadoDto.AlunosEspecificados || comunicadoDto.Alunos.Any()))
+                throw new NegocioException("Não é possivel especificar alunos quando o comunicado é para todas as Turmas");
+        }
+
+        private void MapearParaEntidade(ComunicadoInserirDto comunicadoDto, Comunicado comunicado)
         {
             comunicado.DataEnvio = comunicadoDto.DataEnvio;
             comunicado.DataExpiracao = comunicadoDto.DataExpiracao;
+            comunicado.AlunoEspecificado = comunicadoDto.AlunosEspecificados;
             comunicado.Descricao = comunicadoDto.Descricao;
             comunicado.Titulo = comunicadoDto.Titulo;
-            comunicado.Grupos = comunicadoDto.GruposId.Select(s => new GrupoComunicacao { Id = s }).ToList();
+            comunicado.AnoLetivo = comunicadoDto.AnoLetivo;
+
+            if (!comunicadoDto.CodigoDre.Equals("todas"))
+                comunicado.CodigoDre = comunicadoDto.CodigoDre;
+
+            if (!comunicadoDto.CodigoUe.Equals("todas"))
+                comunicado.CodigoUe = comunicadoDto.CodigoUe;
+
+            if (comunicadoDto.Turma != "todas")
+                comunicado.Turma = comunicadoDto.Turma;
+
+            if (comunicadoDto.Modalidade.HasValue)
+                comunicado.Modalidade = comunicadoDto.Modalidade;
+
+            if (comunicadoDto.GruposId.Any())
+                comunicado.Grupos = comunicadoDto.GruposId.Select(s => new GrupoComunicacao { Id = s }).ToList();
+
+            if (comunicadoDto.AlunosEspecificados)
+                comunicadoDto.Alunos.ToList().ForEach(x => comunicado.AdicionarAluno(x));
         }
 
         private Comunicado BuscarComunicado(long id)
         {
-            var comunicado = repositorio.ObterPorId(id);
-            if (comunicado is null)
-                throw new NegocioException("Comunicado não encontrado");
-            return comunicado;
+            return repositorio.ObterPorId(id) ?? throw new NegocioException("Comunicado não encontrado");
         }
 
         private void MapearParaEntidadeServico(ComunicadoInserirAeDto comunicadoServico, Comunicado comunicado)
