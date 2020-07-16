@@ -15,6 +15,7 @@ using SME.SGP.Dados;
 using SME.SGP.IoC;
 using System.Collections.Generic;
 using System.Globalization;
+using SME.SGP.IoC.Extensions;
 
 namespace SME.SGP.Api
 {
@@ -80,6 +81,7 @@ namespace SME.SGP.Api
         {
             services.AddSingleton(Configuration);
             services.AddHttpContextAccessor();
+            services.AdicionarRedis(Configuration);
 
             RegistraDependencias.Registrar(services);
             RegistraClientesHttp.Registrar(services, Configuration);
