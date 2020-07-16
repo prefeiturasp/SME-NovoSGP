@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using HealthChecks.UI.Client;
+using MediatR;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -11,17 +12,12 @@ using SME.Background.Core;
 using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
+using SME.SGP.Dados;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
-using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
-using System.Threading.Tasks;
-using SME.SGP.Dados;
 
 namespace SME.SGP.Api
 {
@@ -96,13 +92,6 @@ namespace SME.SGP.Api
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-            services.AddDistributedRedisCache(options =>
-            {
-                options.Configuration = Configuration.GetConnectionString("SGP-Redis");
-                options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
-            });
-
-
             var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
             services.AddMediatR(assembly);
 
@@ -136,7 +125,7 @@ namespace SME.SGP.Api
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
-            }); 
+            });
 
             // Teste para injeção do client de telemetria em classe estática 
 
