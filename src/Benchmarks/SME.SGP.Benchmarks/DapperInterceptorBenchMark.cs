@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados;
 using System;
-using Dapper;
 
 namespace SME.SGP.Benchmarks
 {
