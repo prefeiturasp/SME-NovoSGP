@@ -148,8 +148,6 @@ namespace SME.SGP.Aplicacao
             }
 
 
-            if (planoAnual.ObjetivosAprendizagemOpcionais)
-
             if (controlarTransacao)
             {
                 using (var transacao = unitOfWork.IniciarTransacao())
