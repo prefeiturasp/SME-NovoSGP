@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var command = new NotificarUsuarioCommand("Erro ao gerar relatório.",
-                                                      $"Ocorreu um erro na geração do seu '{relatorioCorrelacao.TipoRelatorio.Description()}'.{System.Environment.NewLine}{erro.Mensagem}.",
+                                                      $"Ocorreu um erro na geração do seu '{relatorioCorrelacao.TipoRelatorio.Description()}'.{System.Environment.NewLine}{erro.Mensagem}",
                                                       mensagemRabbit.UsuarioLogadoRF,
                                                       NotificacaoCategoria.Aviso,
                                                       NotificacaoTipo.Relatorio);
