@@ -16,6 +16,7 @@ import ServicoFaltasFrequencia from '~/servicos/Paginas/Relatorios/FaltasFrequen
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoDeRelatorio from '~/dtos/tipoDeRelatorio';
 
 const FaltasFrequencia = () => {
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
@@ -686,6 +687,13 @@ const FaltasFrequencia = () => {
                   onChange={onChangeTipoRelatorio}
                   placeholder="Selecione o tipo"
                 />
+                {tipoRelatorio === tipoDeRelatorio.AMBOS ? (
+                  <span style={{ marginLeft: '11px' }}>
+                    A condição considerada será pela quantidade de faltas
+                  </span>
+                ) : (
+                  ''
+                )}
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
                 <SelectComponent
