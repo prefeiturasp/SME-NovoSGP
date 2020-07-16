@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             filtro.CodigoRf = usuario.CodigoRf;
 
 
-            if (filtro.Bimestres.Any(c=>c == -99))
+            if (filtro.Bimestres.Any(c => c == -99))
             {
                 filtro.Bimestres = new List<int>();
                 switch (filtro.Modalidade)
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                         filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4, -99 });
                         break;
                     case Modalidade.EJA:
-                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2 });
+                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, -99 });
                         break;
                 }
             }
