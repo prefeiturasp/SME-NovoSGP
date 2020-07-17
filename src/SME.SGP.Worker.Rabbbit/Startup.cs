@@ -35,6 +35,17 @@ namespace SME.SGP.Worker.Rabbbit {
             }
 
             services.AddHostedService<WorkerRabbitMQ> ();
+
+
+            // Teste para injeção do client de telemetria em classe estática 
+
+            var serviceProvider = services.BuildServiceProvider();
+            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+            DapperExtensionMethods.Init(clientTelemetry);
+
+            //
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
