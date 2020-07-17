@@ -44,6 +44,7 @@ const LocalizadorEstudante = props => {
       .catch(e => erros(e));
 
     if (retorno && retorno?.data?.items?.length > 0) {
+      setDataSource([]);
       setDataSource(
         retorno.data.items.map(aluno => ({
           alunoCodigo: aluno.codigo,
