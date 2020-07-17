@@ -23,14 +23,21 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ComunicadoAluno>($"{Cabecalho} {where}", new { comunicadoId });
         }
 
+        public async Task RemoverTodosAlunosComunicado(long comunicadoId)
+        {
+            var delete = "delete from comunicado_aluno where comunicado_id = @comunicadoId";
+
+            await database.Conexao.ExecuteAsync(delete, new { comunicadoId });
+        }
+
         public override void Remover(ComunicadoAluno entidade)
         {
-            throw new NegocioException("Não é possivel remover alunos do comunicado");
+            throw new NegocioException("Não é possivel remover aluno do comunicado");
         }
 
         public override void Remover(long id)
         {
-            throw new NegocioException("Não é possivel remover alunos do comunicado");
+            throw new NegocioException("Não é possivel remover aluno do comunicado");
         }
 
         private string Cabecalho => @"

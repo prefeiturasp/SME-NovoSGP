@@ -46,6 +46,8 @@ namespace SME.SGP.Dto
 
         public Modalidade? Modalidade { get; set; }
 
+        public int Semestre { get; set; }
+        
         public IEnumerable<string> Alunos { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,8 @@ namespace SME.SGP.Dominio
         public string Descricao { get; set; }
         public bool Excluido { get; set; }
         public Modalidade? Modalidade { get; set; }
+        public int? Semestre { get; set; }
+        public TipoComunicado TipoComunicado { get; set; }
         public List<GrupoComunicacao> Grupos { get; set; }
         public IList<ComunicadoAluno> Alunos { get; internal set; }
         public string Titulo { get; set; }
@@ -47,6 +50,31 @@ namespace SME.SGP.Dominio
                 AlunoCodigo = codigoAluno,
                 ComunicadoId = Id
             });
+        }
+
+        public void SetarTipoComunicado()
+        {
+            TipoComunicado = IdentificarTipoComunicado();
+        }
+
+        private TipoComunicado IdentificarTipoComunicado()
+        {
+            if (AlunoEspecificado)
+                return TipoComunicado.ALUNO;
+
+            if (!string.IsNullOrEmpty(Turma))
+                return TipoComunicado.TURMA;
+
+            if (Modalidade.HasValue)
+                return TipoComunicado.UEMOD;
+
+            if (!string.IsNullOrWhiteSpace(CodigoUe))
+                return TipoComunicado.UE;
+
+            if (!string.IsNullOrWhiteSpace(CodigoDre))
+                return TipoComunicado.DRE;
+
+            return TipoComunicado.SME;
         }
 
         public void RemoverAluno(string codigoAluno)

@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
             }
 
             return "Comunicado alterado com sucesso";
-        }        
+        }
 
         public async Task Excluir(long[] ids)
         {
@@ -74,6 +74,7 @@ namespace SME.SGP.Aplicacao
                     try
                     {
                         await repositorioComunicadoGrupo.ExcluirPorIdComunicado(id);
+                        await repositorioComunicadoAluno.RemoverTodosAlunosComunicado(id);
                         comunicado.MarcarExcluido();
                         await repositorio.SalvarAsync(comunicado);
                     }
@@ -172,6 +173,11 @@ namespace SME.SGP.Aplicacao
 
             if (comunicadoDto.AlunosEspecificados)
                 comunicadoDto.Alunos.ToList().ForEach(x => comunicado.AdicionarAluno(x));
+
+            if (comunicadoDto.Semestre > 0)
+                comunicado.Semestre = comunicadoDto.Semestre;
+
+            comunicado.SetarTipoComunicado();
         }
 
         private Comunicado BuscarComunicado(long id)
@@ -193,6 +199,14 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.CriadoEm = comunicado.CriadoEm;
             comunicadoServico.CriadoPor = comunicado.CriadoPor;
             comunicadoServico.CriadoRF = comunicado.CriadoRF;
+            comunicadoServico.Alunos = comunicado.Alunos.Select(x => x.AlunoCodigo);
+            comunicadoServico.AnoLetivo = comunicado.AnoLetivo;
+            comunicadoServico.CodigoDre = comunicado.CodigoDre;
+            comunicadoServico.CodigoUe = comunicado.CodigoUe;
+            comunicadoServico.Turma = comunicado.Turma;
+            comunicadoServico.TipoComunicado = comunicado.TipoComunicado;
+            comunicadoServico.Semestre = comunicado.Semestre;
+            comunicadoServico.Modalidade = comunicado.Modalidade;            
         }
 
         private async Task SalvarGrupos(long id, ComunicadoInserirDto comunicadoDto)
