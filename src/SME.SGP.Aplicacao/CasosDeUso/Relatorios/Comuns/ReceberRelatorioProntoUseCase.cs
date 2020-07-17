@@ -24,7 +24,6 @@ namespace SME.SGP.Aplicacao
         {
 
             var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
-
                 if (relatorioCorrelacao == null)
                 {
                     throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
@@ -46,6 +45,7 @@ namespace SME.SGP.Aplicacao
                     relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
                 }
 
+            var mensagem = mensagemRabbit.ObterObjetoMensagem<MensagemRelatorioProntoDto>();
             switch (relatorioCorrelacao.TipoRelatorio)
             {
                 case TipoRelatorio.RelatorioExemplo:
@@ -56,10 +56,10 @@ namespace SME.SGP.Aplicacao
                 case TipoRelatorio.ConselhoClasseAtaFinal:
                 case TipoRelatorio.FaltasFrequencia:
                     SentrySdk.AddBreadcrumb($"Enviando notificação..", $"{relatorioCorrelacao.Codigo.ToString().Substring(0,3)}{relatorioCorrelacao.TipoRelatorio.ShortName()}");
-                    await EnviaNotificacaoCriador(relatorioCorrelacao);
+                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario);
                     break;
                 default:
-                    await EnviaNotificacaoCriador(relatorioCorrelacao);
+                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario);
                     break;
             }
 
@@ -71,11 +71,11 @@ namespace SME.SGP.Aplicacao
             return await Task.FromResult(true);
         }
 
-        private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao)
+        private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario)
         {
             var urlRedirecionamentoBase = configuration.GetValue<string>("UrlServidorRelatorios");
 
-            await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase));
+            await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase, mensagemUsuario));
         }
     }
 }
