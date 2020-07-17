@@ -30,6 +30,7 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<ComunicadoDto>> ListarPaginado(FiltroComunicadoDto filtro)
         {
             var comunicados = await repositorio.ListarPaginado(filtro, Paginacao);
+
             return MapearParaDtoPaginado(comunicados);
         }
 

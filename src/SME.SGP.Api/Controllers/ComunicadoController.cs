@@ -51,8 +51,10 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> BuscarTodosAsync([FromQuery]FiltroComunicadoDto filtro)
         {
             var resultado = await consultas.ListarPaginado(filtro);
+
             if (!resultado.Items.Any())
                 return NoContent();
+
             return Ok(resultado);
         }
 
