@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Net;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.IoC;
 using SME.SGP.Worker.RabbitMQ;
