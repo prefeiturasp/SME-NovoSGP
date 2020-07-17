@@ -10,6 +10,12 @@ BEGIN TRY
 		insert into SYS_Grupo(gru_id, gru_nome, gru_situacao, gru_dataCriacao, gru_dataAlteracao, vis_id, sis_id, gru_integridade) values( '5BF1E074-37D6-E911-ABD6-F81654FE895D', 'Professor Ed. Infantil', 1, getdate(), getdate(), 10, 1000, 0);
 	end
 
+	-- insere permissão Frequência /Plano de Aula para perfil Professor Ed. Infantil
+	IF NOT EXISTS(select * from SYS_GrupoPermissao where sis_id = 1000 and mod_id = 24 and gru_id = '5BF1E074-37D6-E911-ABD6-F81654FE895D')
+	BEGIN
+		INSERT INTO SYS_GrupoPermissao(gru_id, sis_id, mod_id, grp_consultar, grp_inserir, grp_alterar, grp_excluir) VALUES ('5BF1E074-37D6-E911-ABD6-F81654FE895D', 1000, 24, 1, 1, 1, 1)
+	END
+
 	-- insere permissão Plano Anual / Carta de intensões para perfil Professor Ed. Infantil
 	IF NOT EXISTS(select * from SYS_GrupoPermissao where sis_id = 1000 and mod_id = 23 and gru_id = '5BF1E074-37D6-E911-ABD6-F81654FE895D')
 	BEGIN
@@ -37,7 +43,7 @@ BEGIN TRY
 	-- insere permissão Notificações para perfil Professor Ed. Infantil
 	IF NOT EXISTS(select * from SYS_GrupoPermissao where sis_id = 1000 and mod_id = 26 and gru_id = '5BF1E074-37D6-E911-ABD6-F81654FE895D')
 	BEGIN
-		INSERT INTO SYS_GrupoPermissao(gru_id, sis_id, mod_id, grp_consultar, grp_inserir, grp_alterar, grp_excluir) VALUES ('5BF1E074-37D6-E911-ABD6-F81654FE895D', 1000, 26, 1, 0, 0, 0)
+		INSERT INTO SYS_GrupoPermissao(gru_id, sis_id, mod_id, grp_consultar, grp_inserir, grp_alterar, grp_excluir) VALUES ('5BF1E074-37D6-E911-ABD6-F81654FE895D', 1000, 26, 1, 1, 1, 1)
 	END
 
      PRINT 'Permissionamento para perfil Professor Ed. Infantil definido'
