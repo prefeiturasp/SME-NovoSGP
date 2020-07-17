@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
+using SME.SGP.Dados;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -39,6 +41,18 @@ namespace SME.SGP.Worker.Service
                     Connect(hostContext.Configuration.GetConnectionString("SGP-Redis")));
 
                 services.AddApplicationInsightsTelemetryWorkerService(hostContext.Configuration.GetValue<string>("ApplicationInsights__InstrumentationKey"));
+
+
+                // Teste para injeção do client de telemetria em classe estática                 
+
+                var telemetryConfiguration = new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration(hostContext.Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey"));
+
+                var telemetryClient = new TelemetryClient(telemetryConfiguration);
+
+                DapperExtensionMethods.Init(telemetryClient);
+
+                //
+
             });
 
             builder.UseEnvironment(asService ? EnvironmentName.Production : EnvironmentName.Development);
