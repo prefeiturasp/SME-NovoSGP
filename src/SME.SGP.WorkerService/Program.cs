@@ -40,6 +40,7 @@ namespace SME.SGP.Worker.Service
                 services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.
                     Connect(hostContext.Configuration.GetConnectionString("SGP-Redis")));
 
+                services.AddApplicationInsightsTelemetryWorkerService(hostContext.Configuration.GetValue<string>("ApplicationInsights__InstrumentationKey"));
 
                 // Teste para injeção do client de telemetria em classe estática                 
 
