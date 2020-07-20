@@ -270,3 +270,4 @@ src/SME.SGP.Api/healthchecksdb
 
 # cover xmls do coverlet
 *.opencover.xml
+/src/SME.SGP.WebClient/local-storage.json
