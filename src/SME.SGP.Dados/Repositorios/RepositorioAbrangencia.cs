@@ -250,11 +250,14 @@ namespace SME.SGP.Dados.Repositorios
 	                             nome,
 	                             semestre,
 	                             qtDuracaoAula,
-	                             tipoTurno
+	                             tipoTurno,
+                                 ensinoEspecial
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
                           order by 5";
 
-            return (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo })).AsList();
+            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo })).AsList();
+
+            return result;
         }
 
         public async Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil)
@@ -281,7 +284,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = @"select distinct codigo,
-	                                      nome,
+	                                      nome as NomeSimples,
 	                                      tipoescola
 	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo)
                           order by 2;";

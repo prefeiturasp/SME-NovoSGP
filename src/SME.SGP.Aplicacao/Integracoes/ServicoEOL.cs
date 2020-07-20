@@ -997,5 +997,22 @@ namespace SME.SGP.Aplicacao.Integracoes
             return Enumerable.Empty<UsuarioEolRetornoDto>();
         }
 
+
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, string[] anosEscolares, int anoLetivo)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+            var url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{modalidade}/anos/{anoLetivo}/anos-escolares?anosEscolares={string.Join("&anosEscolares=", anosEscolares)}";
+
+            var resposta = await httpClient.GetAsync(url);
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
+
+            }
+            return Enumerable.Empty<ComponenteCurricularEol>();
+        }
+
     }
 }

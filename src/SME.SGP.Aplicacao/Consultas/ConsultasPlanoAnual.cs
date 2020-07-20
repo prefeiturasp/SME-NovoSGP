@@ -288,5 +288,15 @@ namespace SME.SGP.Aplicacao
 
             return periodo.PeriodoInicio <= dataAtual && periodo.PeriodoFim >= dataAtual;
         }
+
+        public async Task<PlanoAnualResumoDto> ObterPlanoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
+        {
+            var plano = repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, disciplinaId);
+            return plano == null ? null : new PlanoAnualResumoDto()
+            {
+                Id = plano.Id,
+                ObjetivosAprendizagemOpcionais = plano.ObjetivosAprendizagemOpcionais
+            };
+        }
     }
 }

@@ -316,7 +316,7 @@ namespace SME.SGP.Aplicacao
             entidadeAula.ProfessorRf = usuario.CodigoRf;
             entidadeAula.RecorrenciaAula = aulaRecorrente.RecorrenciaAula;
 
-            entidadeAula.UeId = aulaRecorrente.CodigoTurma;
+            entidadeAula.UeId = aulaRecorrente.CodigoUe;
             entidadeAula.DisciplinaId = aulaRecorrente.ComponenteCurricularId.ToString();
             entidadeAula.DisciplinaNome = aulaRecorrente.NomeComponenteCurricular;
             entidadeAula.TurmaId = aulaRecorrente.CodigoTurma;

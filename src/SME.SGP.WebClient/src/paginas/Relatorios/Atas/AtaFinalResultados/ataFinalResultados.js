@@ -17,7 +17,6 @@ import ServicoConselhoAtaFinal from '~/servicos/Paginas/ConselhoAtaFinal/Servico
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const AtaFinalResultados = () => {
-
   const usuarioStore = useSelector(store => store.usuario);
   const permissoesTela = usuarioStore.permissoes[RotasDto.ATA_FINAL_RESULTADOS];
 
@@ -80,12 +79,10 @@ const AtaFinalResultados = () => {
     if (dre) {
       const { data } = await AbrangenciaServico.buscarUes(dre);
       if (data) {
-        const lista = data
-          .map(item => ({
-            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
-            valor: String(item.codigo),
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'));
+        const lista = data.map(item => ({
+          desc: item.nome,
+          valor: String(item.codigo),
+        }));
 
         if (lista && lista.length && lista.length === 1) {
           setUeId(lista[0].valor);
