@@ -297,11 +297,11 @@ const CalendarioProfessor = () => {
           if (resposta.data) {
             resposta.data.forEach(unidade => {
               lista.push({
-                desc: `${tipoEscolaDTO[unidade.tipoEscola]} ${unidade.nome}`,
+                desc: unidade.nome,
                 valor: unidade.codigo,
               });
             });
-            setUnidadesEscolares(lista.sort(FiltroHelper.ordenarLista('desc')));
+            setUnidadesEscolares(lista);
             setCarregandoUes(false);
           }
         }
