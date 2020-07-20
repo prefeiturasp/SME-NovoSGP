@@ -14,7 +14,7 @@ namespace SME.SGP.Dominio
         { 
             get => ModalidadeCodigo == Modalidade.EJA ? 
                 ModalidadeTipoCalendario.EJA :
-                ModalidadeCodigo == Modalidade.Fundamental ?
+                ModalidadeCodigo == Modalidade.Fundamental || ModalidadeCodigo == Modalidade.Medio ?
                     ModalidadeTipoCalendario.FundamentalMedio :
                     ModalidadeTipoCalendario.Infantil; 
         }
