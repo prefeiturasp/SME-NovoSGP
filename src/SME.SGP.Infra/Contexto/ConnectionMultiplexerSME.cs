@@ -29,8 +29,8 @@ namespace SME.SGP.Infra.Contexto
 
         public IDatabase GetDatabase()
         {
-            if (connectionMultiplexer == null)
-                throw new RedisConnectionException(ConnectionFailureType.UnableToConnect, $"Redis indisponível. Host: {host}");
+            if (connectionMultiplexer == null || !connectionMultiplexer.IsConnected || connectionMultiplexer.IsConnecting)
+                return null;
 
             return connectionMultiplexer.GetDatabase();
         }
