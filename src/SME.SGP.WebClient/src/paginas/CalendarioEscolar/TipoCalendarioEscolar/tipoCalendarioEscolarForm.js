@@ -16,6 +16,7 @@ import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import SelectComponent from '~/componentes/select';
 
 import { CaixaAno, CaixaTextoAno } from './tipoCalendarioEscolar.css';
 import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
@@ -63,6 +64,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   const opcoesModalidade = [
     { label: 'Fundamental/Médio', value: modalidadeTipoCalendario.FUNDAMENTAL_MEDIO },
     { label: 'EJA', value: modalidadeTipoCalendario.EJA },
+    { label: 'Infantil', value: modalidadeTipoCalendario.Infantil },
   ];
 
   const opcoesSituacao = [
@@ -104,7 +106,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
         nome: tipoCalendadio.data.nome,
         periodo: tipoCalendadio.data.periodo,
         situacao: tipoCalendadio.data.situacao,
-        modalidade: tipoCalendadio.data.modalidade,
+        modalidade: String(tipoCalendadio.data.modalidade),
       });
       setAnoLetivo(tipoCalendadio.data.anoLetivo);
       setAuditoria({
@@ -313,13 +315,17 @@ const TipoCalendarioEscolarForm = ({ match }) => {
                   />
                 </div>
                 <div className="col-sm-12  col-md-12 col-lg-6 col-xl-5 mb-2">
-                  <RadioGroupButton
-                    label="Modalidade"
-                    form={form}
-                    opcoes={opcoesModalidade}
+                  <SelectComponent
+                    id="modalidade"
                     name="modalidade"
+                    lista={opcoesModalidade}
+                    label="Modalidade"
+                    valueOption="value"
+                    valueText="label"
+                    placeholder="Selecione uma modalidade"
+                    form={form}
                     onChange={onChangeCampos}
-                    desabilitado={desabilitarCampos || possuiEventos}
+                    disabled={desabilitarCampos || possuiEventos}
                   />
                 </div>
               </div>
