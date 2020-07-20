@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
 
             try
             {
-                var cacheParaRetorno = connectionMultiplexerSME.GetDatabase().StringGet(nomeChave);
+                var cacheParaRetorno = connectionMultiplexerSME.GetDatabase()?.StringGet(nomeChave);
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Obtendo", inicioOperacao, timer.Elapsed, true);
 
@@ -54,7 +54,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                var stringCache = connectionMultiplexerSME.GetDatabase().StringGet(nomeChave).ToString();
+                var stringCache = connectionMultiplexerSME.GetDatabase()?.StringGet(nomeChave).ToString();
                 if (!string.IsNullOrWhiteSpace(stringCache))
                 {
                     if (utilizarGZip)
@@ -76,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                var stringCache = connectionMultiplexerSME.GetDatabase().StringGet(nomeChave).ToString();
+                var stringCache = connectionMultiplexerSME.GetDatabase()?.StringGet(nomeChave).ToString();
                 if (!string.IsNullOrWhiteSpace(stringCache))
                 {
                     if (utilizarGZip)
@@ -107,7 +107,7 @@ namespace SME.SGP.Dados.Repositorios
 
             try
             {
-                var stringCache = await connectionMultiplexerSME.GetDatabase().StringGetAsync(nomeChave);
+                var stringCache = await connectionMultiplexerSME.GetDatabase()?.StringGetAsync(nomeChave);
 
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Obtendo Async", inicioOperacao, timer.Elapsed, true);
@@ -144,7 +144,7 @@ namespace SME.SGP.Dados.Repositorios
             var timer = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                var cacheParaRetorno = await connectionMultiplexerSME.GetDatabase().StringGetAsync(nomeChave);
+                var cacheParaRetorno = await connectionMultiplexerSME.GetDatabase()?.StringGetAsync(nomeChave);
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Obtendo async", inicioOperacao, timer.Elapsed, true);
 
@@ -172,7 +172,7 @@ namespace SME.SGP.Dados.Repositorios
 
             try
             {
-                await connectionMultiplexerSME.GetDatabase().KeyDeleteAsync(nomeChave);
+                await connectionMultiplexerSME.GetDatabase()?.KeyDeleteAsync(nomeChave);
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
             }
@@ -198,7 +198,7 @@ namespace SME.SGP.Dados.Repositorios
                 var redisKey = new RedisKey(nomeChave);
                 var rediValue = new RedisValue(valor);
 
-                connectionMultiplexerSME.GetDatabase()
+                connectionMultiplexerSME.GetDatabase()?
                     .StringSet(redisKey, rediValue, TimeSpan.FromMinutes(minutosParaExpirar));
             }
             catch (Exception ex)
