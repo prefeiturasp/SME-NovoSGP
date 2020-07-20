@@ -29,14 +29,5 @@ namespace SME.SGP.Api.Controllers
         {
             return  Ok (await ObterTipoDeCalendarioDaTurmaUseCase.Executar(mediator, new ObterTipoDeCalendarioDaTurmaEntrada() { TurmaCodigo = turmaCodigo }));
         }
-
-        ////TODO: CODIGO DE EXEMPLO PARA APRESENTAR PARA O TIME SERA REMOVIDO NA HISTORIA 10336 Nogueira
-        //[HttpGet("codigo")]
-        //public async Task<IActionResult> ObterTurmaPorCodigo([FromBody] ObterTurmaPorCodigoQuery obterTurmaPorCodigoQuery, [FromServices] IMediator mediator)
-        //{
-        //    obterTurmaPorCodigoQuery.TurmaCodigo = string.Empty;
-        //    await mediator.Send(obterTurmaPorCodigoQuery);
-        //    return Ok();
-        //}
     }
 }
