@@ -15,10 +15,12 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
             Map(c => c.Id).ToColumn("id");
             Map(c => c.Modalidade).ToColumn("modalidade");
+            Map(c => c.Semestre).ToColumn("semestre");
             Map(c => c.CodigoDre).ToColumn("codigo_dre");
             Map(c => c.CodigoUe).ToColumn("codigo_ue");
             Map(c => c.Turma).ToColumn("turma");
             Map(c => c.AlunoEspecificado).ToColumn("alunos_especificados");
+            Map(c => c.TipoComunicado).ToColumn("tipo_comunicado");
         }
     }
 }
