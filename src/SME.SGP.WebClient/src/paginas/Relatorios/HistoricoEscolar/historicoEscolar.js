@@ -313,6 +313,7 @@ const HistoricoEscolar = () => {
   useEffect(() => {
     const desabilitar =
       !alunoLocalizadorSelecionado &&
+      (!codigosAlunosSelecionados || codigosAlunosSelecionados?.length === 0) &&
       (!anoLetivo || !dreId || !ueId || !modalidadeId || !turmaId);
 
     if (String(modalidadeId) === String(modalidade.EJA)) {
@@ -322,6 +323,7 @@ const HistoricoEscolar = () => {
     }
   }, [
     alunoLocalizadorSelecionado,
+    codigosAlunosSelecionados,
     anoLetivo,
     dreId,
     ueId,
