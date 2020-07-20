@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 
@@ -21,6 +22,6 @@ namespace SME.SGP.Dto
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public string Turma { get; set; }
-        public IEnumerable<ComunicadoAluno> Alunos { get; set; }
+        public IEnumerable<ComunicadoAlunoDto> Alunos { get; set; }
     }
 }
