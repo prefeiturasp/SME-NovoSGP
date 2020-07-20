@@ -45,12 +45,12 @@ pipeline {
         }
         
             
-      stage('Testes') {
-            steps {
-            //Executa os testes
-               sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
-            }
-        }
+      // stage('Testes') {
+      //       steps {
+      //       //Executa os testes
+      //          sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+      //       }
+      //   }
         
               stage('Fim Análise Código') {
           when {
