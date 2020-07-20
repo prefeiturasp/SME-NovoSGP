@@ -17,18 +17,25 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
+        private readonly IServicoUsuario servicoUsuario;
+        private readonly IConsultasAbrangencia consultasAbrangencia;
+        private const string Todas = "todas";
 
         public ComandoComunicado(IRepositorioComunicado repositorio,
             IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar,
             IRepositorioComunicadoGrupo repositorioComunicadoGrupo,
             IUnitOfWork unitOfWork,
-            IRepositorioComunicadoAluno repositorioComunicadoAluno)
+            IRepositorioComunicadoAluno repositorioComunicadoAluno,
+            IServicoUsuario servicoUsuario,
+            IConsultasAbrangencia consultasAbrangencia)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
             this.repositorioComunicadoGrupo = repositorioComunicadoGrupo ?? throw new System.ArgumentNullException(nameof(repositorioComunicadoGrupo));
             this.servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new System.ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
         }
 
         public async Task<string> Alterar(long id, ComunicadoInserirDto comunicadoDto)
@@ -36,6 +43,11 @@ namespace SME.SGP.Aplicacao
             Comunicado comunicado = BuscarComunicado(id);
 
             ComunicadoInserirAeDto comunicadoServico = new ComunicadoInserirAeDto();
+
+            var usuarioLogado = (await servicoUsuario.ObterUsuarioLogado())
+                ?? throw new NegocioException("Usuário logado não encontrado");
+
+            await ValidarAbrangenciaUsuario(comunicadoDto, usuarioLogado);
 
             MapearAlteracao(comunicadoDto, comunicado);
 
@@ -92,7 +104,9 @@ namespace SME.SGP.Aplicacao
         {
             Comunicado comunicado = new Comunicado();
             ComunicadoInserirAeDto comunicadoServico = new ComunicadoInserirAeDto();
-            ValidarInsercao(comunicadoDto);
+
+            await ValidarInsercao(comunicadoDto);
+
             MapearParaEntidade(comunicadoDto, comunicado);
 
             try
@@ -135,16 +149,66 @@ namespace SME.SGP.Aplicacao
             comunicado.DataExpiracao = comunicadoDto.DataExpiracao;
         }
 
-        private void ValidarInsercao(ComunicadoInserirDto comunicadoDto)
+        private async Task ValidarInsercao(ComunicadoInserirDto comunicadoDto)
         {
-            if (comunicadoDto.CodigoDre.Equals("todas") && !comunicadoDto.CodigoUe.Equals("todas"))
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+
+            await ValidarAbrangenciaUsuario(comunicadoDto, usuarioLogado);
+
+            if (comunicadoDto.CodigoDre.Equals(Todas) && !comunicadoDto.CodigoUe.Equals(Todas))
                 throw new NegocioException("Não é possivel especificar uma escola quando o comunicado é para todas as DREs");
 
-            if (comunicadoDto.CodigoUe.Equals("todas") && !comunicadoDto.Turma.Equals("todas"))
+            if (comunicadoDto.CodigoUe.Equals(Todas) && !comunicadoDto.Turma.Equals(Todas))
                 throw new NegocioException("Não é possivel especificar uma turma quando o comunicado é para todas as UEs");
 
-            if (comunicadoDto.Turma.Equals("todas") && (comunicadoDto.AlunosEspecificados || comunicadoDto.Alunos.Any()))
+            if (comunicadoDto.Turma.Equals(Todas) && (comunicadoDto.AlunosEspecificados || comunicadoDto.Alunos.Any()))
                 throw new NegocioException("Não é possivel especificar alunos quando o comunicado é para todas as Turmas");
+        }
+
+        private async Task ValidarAbrangenciaUsuario(ComunicadoInserirDto comunicadoDto, Usuario usuarioLogado)
+        {
+            if (comunicadoDto.CodigoDre.Equals(Todas) && !usuarioLogado.EhPerfilSME())
+                throw new NegocioException("Apenas usuários SME podem realizar envio de Comunicados para todas as DREs");
+
+            if (comunicadoDto.CodigoUe.Equals(Todas) && !(usuarioLogado.EhPerfilDRE() || usuarioLogado.EhPerfilSME()))
+                throw new NegocioException("Apenas usuários SME e DRE podem realizar envio de Comunicados para todas as Escolas");
+
+            if (usuarioLogado.EhPerfilDRE() && !comunicadoDto.CodigoDre.Equals(Todas))
+                await ValidarAbrangenciaDre(comunicadoDto);
+
+            if (usuarioLogado.EhPerfilUE() && !comunicadoDto.CodigoUe.Equals(Todas))
+                await ValidarAbrangenciaUE(comunicadoDto);
+        }
+
+        private async Task ValidarAbrangenciaTurma(ComunicadoInserirDto comunicadoDto)
+        {
+            var abrangenciaTurmas = await consultasAbrangencia.ObterAbrangenciaTurma(comunicadoDto.Turma);
+
+            if (abrangenciaTurmas == null)
+                throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a Turma com codigo {comunicadoDto.Turma}");
+        }
+
+        private async Task ValidarAbrangenciaUE(ComunicadoInserirDto comunicadoDto)
+        {
+            var abrangenciaUes = await consultasAbrangencia.ObterUes(comunicadoDto.CodigoDre, null);
+
+            var ue = abrangenciaUes.FirstOrDefault(x => x.Codigo.Equals(comunicadoDto.CodigoUe));
+
+            if (ue == null)
+                throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a UE com codigo {comunicadoDto.CodigoUe}");
+
+            if (!comunicadoDto.Turma.Equals(Todas))
+                await ValidarAbrangenciaTurma(comunicadoDto);
+        }
+
+        private async Task ValidarAbrangenciaDre(ComunicadoInserirDto comunicadoDto)
+        {
+            var abrangenciaDres = await consultasAbrangencia.ObterDres(null);
+
+            var dre = abrangenciaDres.FirstOrDefault(x => x.Codigo.Equals(comunicadoDto.CodigoDre));
+
+            if (dre == null)
+                throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a DRE com codigo {comunicadoDto.CodigoDre}");
         }
 
         private void MapearParaEntidade(ComunicadoInserirDto comunicadoDto, Comunicado comunicado)
@@ -206,7 +270,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.Turma = comunicado.Turma;
             comunicadoServico.TipoComunicado = comunicado.TipoComunicado;
             comunicadoServico.Semestre = comunicado.Semestre;
-            comunicadoServico.Modalidade = comunicado.Modalidade;            
+            comunicadoServico.Modalidade = comunicado.Modalidade;
         }
 
         private async Task SalvarGrupos(long id, ComunicadoInserirDto comunicadoDto)
