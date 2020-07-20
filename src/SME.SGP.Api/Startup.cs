@@ -15,6 +15,7 @@ using SME.SGP.Dados;
 using SME.SGP.IoC;
 using System.Collections.Generic;
 using System.Globalization;
+using SME.SGP.IoC.Extensions;
 
 namespace SME.SGP.Api
 {
@@ -80,6 +81,7 @@ namespace SME.SGP.Api
         {
             services.AddSingleton(Configuration);
             services.AddHttpContextAccessor();
+            services.AdicionarRedis(Configuration);
 
             RegistraDependencias.Registrar(services);
             RegistraClientesHttp.Registrar(services, Configuration);
@@ -87,13 +89,7 @@ namespace SME.SGP.Api
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
             
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-
-            services.AddDistributedRedisCache(options =>
-            {
-                options.Configuration = "10.50.1.174:6379,connectTimeout=500,syncTimeout=500";
-                options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
-            });
+            DefaultTypeMap.MatchNamesWithUnderscores = true;            
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
@@ -108,8 +104,8 @@ namespace SME.SGP.Api
                 Orquestrador.Desativar();
 
             services.AddHealthChecks()
-                    .AddRedis(
-                        "10.50.1.174:6379,connectTimeout=500,syncTimeout=500",
+                   .AddRedis(
+                        Configuration.GetConnectionString("SGP-Redis"),
                         "Redis Cache",
                         null,
                         tags: new string[] { "db", "redis" })
