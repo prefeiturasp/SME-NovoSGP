@@ -246,7 +246,7 @@ namespace SME.SGP.Dominio.Servicos
                 DreId = evento.DreId,
                 NotificacaoTitulo = "Criação de Eventos Excepcionais",
                 NotificacaoTipo = NotificacaoTipo.Calendario,
-                NotificacaoMensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} foi criado no calendário {evento.TipoCalendario.Nome} da {escola.Nome}. Para que este evento seja considerado válido, você precisa aceitar esta notificação. Para visualizar o evento clique <a href='{linkParaEvento}'>aqui</a>."
+                NotificacaoMensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} foi criado no calendário {evento.TipoCalendario.Nome} da {escola.NomeSimples}. Para que este evento seja considerado válido, você precisa aceitar esta notificação. Para visualizar o evento clique <a href='{linkParaEvento}'>aqui</a>."
             };
 
             wfAprovacaoEvento.Niveis.Add(new WorkflowAprovacaoNivelDto()
