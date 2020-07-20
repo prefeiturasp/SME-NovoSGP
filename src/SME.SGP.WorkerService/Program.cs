@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SME.SGP.Dados;
+using StackExchange.Redis;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -36,11 +37,8 @@ namespace SME.SGP.Worker.Service
                 WorkerService.ConfigurarDependencias(hostContext.Configuration, services);
                 WorkerService.Configurar(hostContext.Configuration, services);
 
-                services.AddDistributedRedisCache(options =>
-                {
-                    options.Configuration = hostContext.Configuration.GetConnectionString("SGP-Redis");
-                    options.InstanceName = hostContext.Configuration.GetValue<string>("Nome-Instancia-Redis");
-                });
+                services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.
+                    Connect(hostContext.Configuration.GetConnectionString("SGP-Redis")));
 
                 services.AddApplicationInsightsTelemetryWorkerService(hostContext.Configuration.GetValue<string>("ApplicationInsights__InstrumentationKey"));
 
