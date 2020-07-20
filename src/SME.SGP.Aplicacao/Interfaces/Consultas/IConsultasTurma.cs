@@ -18,5 +18,6 @@ namespace SME.SGP.Aplicacao
         Task<IEnumerable<PeriodoEscolarAbertoDto>> PeriodosEmAbertoTurma(string turmaCodigo, DateTime dataReferencia, bool ehAnoLetivo = false);
         Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, PeriodoEscolar periodoEscolar = null);
         Task<TipoCalendarioSugestaoDto> ObterSugestaoTipoCalendarioPorTurma(string turmaCodigo);
+        Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo);
     }
 }

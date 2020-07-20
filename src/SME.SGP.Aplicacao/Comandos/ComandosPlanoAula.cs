@@ -120,6 +120,16 @@ namespace SME.SGP.Aplicacao
             PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
             planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(aula.TipoCalendarioId, aula.DataAula.Date);
+            if (periodoEscolar == null)
+                throw new NegocioException("Não foi possível concluir o cadastro, pois não foi localizado o bimestre da aula.");
+
+            var planoAnual = await consultasPlanoAnual.ObterPlanoAnualPorAnoEscolaBimestreETurma(
+                        aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), periodoEscolar.Bimestre, long.Parse(aula.DisciplinaId));
+
+            if (planoAnual.Id <= 0 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
+                throw new NegocioException("Não foi possível concluir o cadastro, pois não existe plano anual cadastrado");
+
             if (planoAulaDto.ObjetivosAprendizagemJurema == null || !planoAulaDto.ObjetivosAprendizagemJurema.Any() && !planoAula.Migrado)
             {
                 var permitePlanoSemObjetivos = false;
@@ -130,35 +140,26 @@ namespace SME.SGP.Aplicacao
                                            new[] { Modalidade.EJA, Modalidade.Medio }.Contains(abrangenciaTurma.Modalidade) ||  // EJA e Médio não obrigam seleção
                                            usuario.EhProfessorCj() ||  // Para professores substitutos (CJ) a seleção dos objetivos deve ser opcional
                                            !(consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt64(aula.DisciplinaId))) || // Caso a disciplina não possui vinculo com Jurema, os objetivos não devem ser exigidos
+                                           planoAnual.ObjetivosAprendizagemOpcionais || // Turma Especial não obriga seleção de componentes
                                            abrangenciaTurma.Ano.Equals("0"); // Caso a turma for de  educação física multisseriadas, os objetivos não devem ser exigidos;
 
                 if (!permitePlanoSemObjetivos)
                     throw new NegocioException("A seleção de objetivos de aprendizagem é obrigatória para criação do plano de aula");
             }
 
-            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(aula.TipoCalendarioId, aula.DataAula.Date);
-            if (periodoEscolar == null)
-                throw new NegocioException("Não foi possível concluir o cadastro, pois não foi localizado o bimestre da aula.");
-
-
-            var planoAnualId = consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
-                        aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), periodoEscolar.Bimestre, long.Parse(aula.DisciplinaId));
-
-            if (planoAnualId <= 0 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
-                throw new NegocioException("Não foi possível concluir o cadastro, pois não existe plano anual cadastrado");
 
             if (controlarTransacao)
             {
                 using (var transacao = unitOfWork.IniciarTransacao())
                 {
-                    await SalvarPlanoAula(planoAula, planoAulaDto, planoAnualId);
+                    await SalvarPlanoAula(planoAula, planoAulaDto, planoAnual.Id);
 
                     unitOfWork.PersistirTransacao();
                 }
             }
             else
             {
-                await SalvarPlanoAula(planoAula, planoAulaDto, planoAnualId);
+                await SalvarPlanoAula(planoAula, planoAulaDto, planoAnual.Id);
             }
         }
 

@@ -11,7 +11,9 @@ namespace SME.SGP.Infra
         }
 
         [Required(ErrorMessage = "O ano deve ser informado")]
-        public int Ano { get; set; }
+        public string Ano { get; set; }
+
+        public bool EnsinoEspecial { get; set; }
 
         [ListaTemElementos(ErrorMessage = "Os componentes curriculares devem ser informados")]
         public IList<long> ComponentesCurricularesIds { get; set; }

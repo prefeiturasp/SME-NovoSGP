@@ -43,7 +43,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
 
             query.AppendLine("select");
-            query.AppendLine("	pa.ano as AnoLetivo, pa.*, pa.migrado, ");
+            query.AppendLine("	pa.ano as AnoLetivo, pa.*, pa.migrado, pa.objetivos_opcionais as ObjetivosAprendizagemOpcionais, ");
             query.AppendLine("	string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano");
             query.AppendLine("from");
             query.AppendLine("	plano_anual pa");
@@ -66,7 +66,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select");
             query.AppendLine("id, escola_id, turma_id, ano, bimestre, componente_curricular_eol_id, descricao, migrado,");
-            query.AppendLine("criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf");
+            query.AppendLine("criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf, objetivos_opcionais");
             query.AppendLine("from plano_anual");
             query.AppendLine("where");
             query.AppendLine("ano = @ano and");

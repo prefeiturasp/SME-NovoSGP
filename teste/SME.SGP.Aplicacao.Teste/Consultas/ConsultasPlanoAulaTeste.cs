@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             {
                 ObjetivosAprendizagem = new List<ObjetivoAprendizagemDto>()
                 {
-                    new ObjetivoAprendizagemDto() { Id = 1, Ano = 2019, Codigo = "1", Descricao = "Objetivo 1", IdComponenteCurricular = 1 }
+                    new ObjetivoAprendizagemDto() { Id = 1, Ano = "2019", Codigo = "1", Descricao = "Objetivo 1", IdComponenteCurricular = 1 }
                 }
             };
 

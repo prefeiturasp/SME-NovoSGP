@@ -40,7 +40,6 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
                 yield return new AlunoSimplesDto()
                 {
                     Codigo = alunoEOL.CodigoAluno,
-                    NumeroChamada = alunoEOL.NumeroAlunoChamada,
                     Nome = alunoEOL.NomeAluno
                 };
             }

@@ -158,12 +158,10 @@ const HistoricoEscolar = () => {
         true
       );
       if (data) {
-        const lista = data
-          .map(item => ({
-            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
-            valor: String(item.codigo),
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'));
+        const lista = data.map(item => ({
+          desc: item.nome,
+          valor: String(item.codigo),
+        }));
 
         if (lista && lista.length && lista.length === 1) {
           setUeId(lista[0].valor);
@@ -313,6 +311,7 @@ const HistoricoEscolar = () => {
   useEffect(() => {
     const desabilitar =
       !alunoLocalizadorSelecionado &&
+      (!codigosAlunosSelecionados || codigosAlunosSelecionados?.length === 0) &&
       (!anoLetivo || !dreId || !ueId || !modalidadeId || !turmaId);
 
     if (String(modalidadeId) === String(modalidade.EJA)) {
@@ -322,6 +321,7 @@ const HistoricoEscolar = () => {
     }
   }, [
     alunoLocalizadorSelecionado,
+    codigosAlunosSelecionados,
     anoLetivo,
     dreId,
     ueId,

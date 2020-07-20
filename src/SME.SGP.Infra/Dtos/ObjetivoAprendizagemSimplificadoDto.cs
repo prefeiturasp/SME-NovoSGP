@@ -9,5 +9,7 @@ namespace SME.SGP.Infra
 
         [Range(1, long.MaxValue, ErrorMessage = "O componente curricular deve ser informado")]
         public long IdComponenteCurricular { get; set; }
+
+        public long ComponenteCurricularEolId { get; set; }
     }
 }

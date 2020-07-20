@@ -22,15 +22,12 @@ namespace SME.SGP.Aplicacao
         {
             if (request.CodigoUe == "-99")
             {
-                return EnumExtensao.ListarDto<Modalidade>().Select(c => new OpcaoDropdownDto { Descricao = c.Descricao, Valor = c.Id.ToString() });
+                return EnumExtensao.ListarDto<Modalidade>().Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
             }
 
             var modalidades = await repositorioAbrangencia.ObterModalidadesPorUe(request.CodigoUe);
-            return modalidades.Select(c => new OpcaoDropdownDto
-            {
-                Valor = ((int)c).ToString(),
-                Descricao = c.Name()
-            });
+            
+            return modalidades?.Select(c => new OpcaoDropdownDto(((int)c).ToString(), c.Name()));
         }
     }
 }
