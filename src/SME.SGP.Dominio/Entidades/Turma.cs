@@ -13,8 +13,10 @@ namespace SME.SGP.Dominio
         public ModalidadeTipoCalendario ModalidadeTipoCalendario 
         { 
             get => ModalidadeCodigo == Modalidade.EJA ? 
-                ModalidadeTipoCalendario.EJA : 
-                ModalidadeTipoCalendario.FundamentalMedio; 
+                ModalidadeTipoCalendario.EJA :
+                ModalidadeCodigo == Modalidade.Fundamental ?
+                    ModalidadeTipoCalendario.FundamentalMedio :
+                    ModalidadeTipoCalendario.Infantil; 
         }
         public string Nome { get; set; }
         public int QuantidadeDuracaoAula { get; set; }
