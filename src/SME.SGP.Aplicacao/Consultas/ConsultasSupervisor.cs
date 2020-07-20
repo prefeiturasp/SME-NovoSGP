@@ -118,7 +118,6 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<SupervisorEscolasDto> MapearSupervisorEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
         {
             var listaEscolas = repositorioUe.ListarPorCodigos(supervisoresEscolasDres.Select(a => a.EscolaId).ToArray());
-            //var listaEscolas = servicoEOL.ObterEscolasPorCodigo(supervisoresEscolasDres.Select(a => a.EscolaId.ToString()).ToArray());
 
             IEnumerable<SupervisoresRetornoDto> listaSupervisores;
 
