@@ -17,12 +17,10 @@ function UeDropDown({ form, onChange, dreId, label, desabilitado }) {
     const { data } = await AtribuicaoEsporadicaServico.buscarUes(dreId);
     if (data) {
       setListaUes(
-        data
-          .map(item => ({
-            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
-            valor: item.codigo,
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'))
+        data.map(item => ({
+          desc: item.nome,
+          valor: item.codigo,
+        }))
       );
     }
   }

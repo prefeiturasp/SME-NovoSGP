@@ -35,12 +35,10 @@ function UeDropDown({
       );
       let lista = [];
       if (data) {
-        lista = data
-          .map(item => ({
-            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
-            valor: item.codigo,
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'));
+        lista = data.map(item => ({
+          desc: item.nome,
+          valor: item.codigo,
+        }));
       }
       if (lista.length > 1) {
         if (opcaoTodas) {
@@ -114,7 +112,7 @@ UeDropDown.propTypes = {
 
 UeDropDown.defaultProps = {
   form: {},
-  onChange: () => { },
+  onChange: () => {},
   dreId: '',
   label: null,
   url: '',
