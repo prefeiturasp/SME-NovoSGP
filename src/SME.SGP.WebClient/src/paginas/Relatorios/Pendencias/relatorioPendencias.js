@@ -10,8 +10,9 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import api from '~/servicos/api';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
-import { erros } from '~/servicos/alertas';
+import { erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
+import ServicoRelatorioPendencias from '~/servicos/Paginas/Relatorios/Pendencias/ServicoRelatorioPendencias';
 
 const RelatorioPendencias = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -57,11 +58,11 @@ const RelatorioPendencias = () => {
   const [modalidadeId, setModalidadeId] = useState(undefined);
   const [semestre, setSemestre] = useState(undefined);
   const [turmaId, setTurmaId] = useState(undefined);
-  const [componenteCurricularId, setComponenteCurricularId] = useState(
+  const [componentesCurricularesId, setComponentesCurricularesId] = useState(
     undefined
   );
   const [bimestre, setBimestre] = useState(undefined);
-  const [exibirDetalhamento, setExibirDetalhamento] = useState('0');
+  const [exibirDetalhamento, setExibirDetalhamento] = useState(true);
   const listaSimNao = [
     { valor: true, desc: 'Sim' },
     { valor: false, desc: 'Não' },
@@ -92,7 +93,7 @@ const RelatorioPendencias = () => {
   };
 
   const onChangeComponenteCurricular = valor => {
-    setComponenteCurricularId(valor);
+    setComponentesCurricularesId(valor);
   };
 
   const onChangeBimestre = valor => {
@@ -342,7 +343,7 @@ const RelatorioPendencias = () => {
 
   const cancelar = () => {
     setAnoLetivo(anoAtual);
-    setComponenteCurricularId(undefined);
+    setComponentesCurricularesId(undefined);
     setBimestre('0');
     setExibirDetalhamento(true);
     setTurmaId(undefined);
@@ -355,9 +356,31 @@ const RelatorioPendencias = () => {
     !modalidadeId ||
     (String(modalidadeId) === String(modalidade.EJA) ? !semestre : false) ||
     !turmaId ||
-    !componenteCurricularId ||
+    !componentesCurricularesId ||
     !bimestre ||
     !exibirDetalhamento;
+
+  const gerar = async () => {
+    setCarregandoGerar(true);
+    const params = {
+      anoLetivo,
+      dreCodigo: dreId,
+      ueCodigo: ueId,
+      modalidade: modalidadeId,
+      turmaCodigo: turmaId,
+      bimestre,
+      componentesCurriculares: componentesCurricularesId.split(','),
+      exibirDetalhamento,
+    };
+    await ServicoRelatorioPendencias.gerar(params)
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
+      })
+      .catch(e => erros(e))
+      .finally(setCarregandoGerar(false));
+  };
 
   return (
     <>
@@ -401,7 +424,7 @@ const RelatorioPendencias = () => {
                   border
                   bold
                   className="mr-0"
-                  onClick={() => {}}
+                  onClick={gerar}
                   disabled={desabilitarGerar}
                 />
               </Loader>
@@ -530,7 +553,7 @@ const RelatorioPendencias = () => {
                   disabled={
                     !modalidadeId || listaComponentesCurriculares?.length === 1
                   }
-                  valueSelect={componenteCurricularId}
+                  valueSelect={componentesCurricularesId}
                   onChange={onChangeComponenteCurricular}
                   placeholder="Componente curricular"
                 />
