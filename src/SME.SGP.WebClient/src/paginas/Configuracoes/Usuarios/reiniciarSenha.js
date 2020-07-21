@@ -171,10 +171,7 @@ export default function ReiniciarSenha() {
         `/v1/abrangencias/${consideraHistorico}/dres/${dre}/ues`
       );
       if (ues.data) {
-        ues.data.forEach(ue => {
-          ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`;
-        });
-        setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+        setListaUes(ues.data);
       } else {
         setListaUes([]);
       }
@@ -233,7 +230,7 @@ export default function ReiniciarSenha() {
   const reiniciarSenha = async linha => {
     const parametros = {
       dreCodigo: dreSelecionada,
-      ueCodigo: ueSelecionada
+      ueCodigo: ueSelecionada,
     };
 
     let deveAtualizarEmail = false;
