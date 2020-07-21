@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             var ues = new List<AbrangenciaUeRetorno>();
             if (!string.IsNullOrWhiteSpace(codigoDre) && codigoDre == "-99")
             {
-                ues.Add(new AbrangenciaUeRetorno { Codigo = "-99", Nome = "Todas" });
+                ues.Add(new AbrangenciaUeRetorno { Codigo = "-99", NomeSimples = "Todas" });
                 return ues;
             }
 
