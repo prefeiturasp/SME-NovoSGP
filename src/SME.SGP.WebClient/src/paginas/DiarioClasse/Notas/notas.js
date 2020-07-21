@@ -30,6 +30,8 @@ import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
 import moment from 'moment';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import modalidade from '~/dtos/modalidade';
 
 const { TabPane } = Tabs;
 
@@ -91,7 +93,13 @@ const Notas = ({ match }) => {
   );
 
   const validaSeDesabilitaCampos = async bimestre => {
-    const somenteConsulta = verificaSomenteConsulta(permissoesTela);
+    const naoSetarSomenteConsultaNoStore =
+      String(usuario.turmaSelecionada.modalidade) ===
+      String(modalidade.INFANTIL);
+    const somenteConsulta = verificaSomenteConsulta(
+      permissoesTela,
+      naoSetarSomenteConsultaNoStore
+    );
     const desabilitar =
       somenteConsulta ||
       !permissoesTela.podeAlterar ||
@@ -332,7 +340,11 @@ const Notas = ({ match }) => {
   }, [obterTituloTela]);
 
   useEffect(() => {
-    if (usuario.turmaSelecionada.turma) {
+    if (
+      usuario.turmaSelecionada.turma &&
+      String(usuario.turmaSelecionada.modalidade) !==
+        String(modalidade.INFANTIL)
+    ) {
       obterDisciplinas();
       dispatch(setModoEdicaoGeral(false));
       dispatch(setModoEdicaoGeralNotaFinal(false));
@@ -963,7 +975,7 @@ const Notas = ({ match }) => {
                     id: 'justificativa-porcentagem',
                     mensagem: `A maioria dos estudantes está com ${
                       notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'
-                      } abaixo do
+                    } abaixo do
                                mínimo considerado para aprovação, por isso é necessário que você insira uma justificativa.`,
                     estiloTitulo: { fontSize: '18px' },
                   }}
@@ -1041,7 +1053,9 @@ const Notas = ({ match }) => {
           </Grid>
         </Row>
       ) : null}
-      {showMsgPeriodoFechamento ? (
+      {showMsgPeriodoFechamento &&
+      String(usuario.turmaSelecionada.modalidade) !==
+        String(modalidade.INFANTIL) ? (
         <Row className="mb-0 pb-0">
           <Grid cols={12} className="mb-0 pb-0">
             <Container>
@@ -1058,6 +1072,7 @@ const Notas = ({ match }) => {
           </Grid>
         </Row>
       ) : null}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina={tituloNotasConceitos} />
       <Loader loading={carregandoListaBimestres}>
         <Card>
@@ -1116,8 +1131,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {segundoBimestre.numero ? (
                         <TabPane
                           tab={segundoBimestre.descricao}
@@ -1133,8 +1148,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {terceiroBimestre.numero ? (
                         <TabPane
                           tab={terceiroBimestre.descricao}
@@ -1150,8 +1165,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {quartoBimestre.numero ? (
                         <TabPane
                           tab={quartoBimestre.descricao}
@@ -1167,8 +1182,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                     </ContainerTabsCard>
                   </div>
                 </div>
@@ -1194,8 +1209,8 @@ const Notas = ({ match }) => {
                 </div>
               </>
             ) : (
-                ''
-              )}
+              ''
+            )}
           </div>
         </Card>
       </Loader>

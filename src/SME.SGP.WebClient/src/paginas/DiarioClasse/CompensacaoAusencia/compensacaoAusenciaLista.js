@@ -18,6 +18,7 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import { AlunosCompensacao } from './styles';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 
 const CompensacaoAusenciaLista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -42,8 +43,12 @@ const CompensacaoAusenciaLista = () => {
   );
 
   useEffect(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, [permissoesTela]);
+    const naoSetarSomenteConsultaNoStore =
+      String(turmaSelecionada.modalidade) === String(modalidade.INFANTIL);
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
+    );
+  }, [turmaSelecionada, permissoesTela]);
 
   useEffect(() => {
     if (!disciplinaIdSelecionada || disciplinaIdSelecionada === 0) return;
@@ -136,7 +141,10 @@ const CompensacaoAusenciaLista = () => {
       setCarregandoDisciplinas(false);
     };
 
-    if (turmaSelecionada.turma) {
+    if (
+      turmaSelecionada.turma &&
+      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
+    ) {
       resetarFiltro();
       obterDisciplinas();
     } else {
@@ -296,6 +304,7 @@ const CompensacaoAusenciaLista = () => {
           className="mb-2"
         />
       )}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Compensação de Ausência" />
       <Card>
         <div className="col-md-12">

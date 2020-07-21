@@ -26,6 +26,7 @@ import {
 import ServicoPendenciasFechamento from '~/servicos/Paginas/Fechamento/ServicoPendenciasFechamento';
 import Editor from '~/componentes/editor/editor';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 
 const PendenciasFechamentoForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -99,7 +100,10 @@ const PendenciasFechamentoForm = ({ match }) => {
       setCarregandoDisciplinas(false);
     };
 
-    if (turmaSelecionada.turma) {
+    if (
+      turmaSelecionada.turma &&
+      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
+    ) {
       montaBimestre();
       obterDisciplinas();
     } else {
@@ -161,7 +165,9 @@ const PendenciasFechamentoForm = ({ match }) => {
       }
     };
 
-    consultaPorId();
+    if (String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)) {
+      consultaPorId();
+    }
   }, []);
 
   const onClickVoltar = () => history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}`);
@@ -224,6 +230,7 @@ const PendenciasFechamentoForm = ({ match }) => {
           className="mb-2"
         />
       )}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Análise de Pendências" />
       <Card>
         <div className="col-md-12">
@@ -245,6 +252,8 @@ const PendenciasFechamentoForm = ({ match }) => {
                 className="mr-2"
                 onClick={onClickAprovar}
                 disabled={
+                  String(turmaSelecionada.modalidade) ===
+                    String(modalidade.INFANTIL) ||
                   somenteConsulta ||
                   !permissoesTela.podeAlterar ||
                   !situacaoId ||

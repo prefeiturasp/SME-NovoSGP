@@ -25,6 +25,8 @@ import TabelaRetratilRelatorioSemestral from './DadosRelatorioSemestral/TabelaRe
 import { Container } from './relatorioSemestral.css';
 import servicoSalvarRelatorioSemestral from './servicoSalvarRelatorioSemestral';
 import ModalErrosRalSemestralPAP from './DadosRelatorioSemestral/ModalErros/ModalErrosRalSemestralPAP';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import modalidade from '~/dtos/modalidade';
 
 const RelatorioSemestral = () => {
   const dispatch = useDispatch();
@@ -77,7 +79,10 @@ const RelatorioSemestral = () => {
   useEffect(() => {
     resetarInfomacoes();
     dispatch(setAlunosRelatorioSemestral([]));
-    if (turma) {
+    if (
+      turma &&
+      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
+    ) {
       obterListaSemestres();
     } else {
       setSemestreSelecionado(undefined);
@@ -89,6 +94,7 @@ const RelatorioSemestral = () => {
     resetarInfomacoes,
     dispatch,
     obterListaSemestres,
+    turmaSelecionada.modalidade,
   ]);
 
   useEffect(() => {
@@ -161,6 +167,7 @@ const RelatorioSemestral = () => {
         ''
       )}
       <AlertaDentroPeriodoPAP />
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Relatório semestral" />
       <Loader loading={carregandoGeral}>
         <Card>

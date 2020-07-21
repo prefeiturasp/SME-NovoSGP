@@ -29,6 +29,7 @@ import {
   ColunaBotaoListaAlunos,
   ListaCopiarCompensacoes,
 } from './styles';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 
 const CompensacaoAusenciaForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -162,8 +163,12 @@ const CompensacaoAusenciaForm = ({ match }) => {
   }, [match.url, novoRegistro]);
 
   useEffect(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, [permissoesTela]);
+    const naoSetarSomenteConsultaNoStore =
+      String(turmaSelecionada.modalidade) === String(modalidade.INFANTIL);
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
+    );
+  }, [turmaSelecionada, permissoesTela]);
 
   useEffect(() => {
     const desabilitar = novoRegistro
@@ -469,7 +474,8 @@ const CompensacaoAusenciaForm = ({ match }) => {
       turmaSelecionadaFiltroPrincipal &&
       turmaSelecionada.turma &&
       turmaSelecionadaFiltroPrincipal == turmaSelecionada.turma &&
-      listaDisciplinas.length < 1
+      listaDisciplinas.length < 1 &&
+      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
     ) {
       obterDisciplinas(turmaSelecionada.turma);
     }
@@ -479,6 +485,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
     resetarForm,
     turmaSelecionadaFiltroPrincipal,
     listaDisciplinas,
+    turmaSelecionada.modalidade,
   ]);
 
   const limparListas = () => {
@@ -493,7 +500,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
     limparListas();
     const dentroPeriodo = await podeAlterarNoPeriodo(String(bimestre));
     setForaDoPeriodo(!dentroPeriodo);
-    
+
     if (dentroPeriodo) {
       let podeEditar = false;
       const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
@@ -876,7 +883,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
       ) : (
         ''
       )}
-      {foraDoPeriodo ? <ForaPerido /> : ''}
+      {foraDoPeriodo &&
+      turmaSelecionada &&
+      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL) ? (
+        <ForaPerido />
+      ) : (
+        ''
+      )}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Cadastrar Compensação de Ausência" />
       <Card>
         <Loader
