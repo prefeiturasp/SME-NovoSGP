@@ -48,7 +48,7 @@ pipeline {
       stage('Testes') {
             steps {
             //Executa os testes
-            //  sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+             sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
             }
         }
         
