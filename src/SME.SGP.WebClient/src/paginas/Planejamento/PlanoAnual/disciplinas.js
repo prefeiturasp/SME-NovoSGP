@@ -8,18 +8,9 @@ const Disciplinas = ({
   preSelecionadas,
   layoutEspecial,
   onChange,
-  carregandoDisciplinas,
+  carregando,
 }) => {
   const [listaDisciplinas, setListaDisciplinas] = useState(disciplinas);
-  const [carregando, setCarregando] = useState(true);
-
-  useEffect(() => {
-    if (disciplinas && disciplinas.length) {
-      setListaDisciplinas(disciplinas);
-      setCarregando(false);
-      carregandoDisciplinas(false);
-    }
-  }, [carregandoDisciplinas, disciplinas, onChange]);
 
   const selecionarDisciplina = (codigoComponenteCurricular, selecionada) => {
     if (!layoutEspecial) {
@@ -61,7 +52,7 @@ Disciplinas.propTypes = {
   preSelecionadas: PropTypes.oneOfType([PropTypes.any]).isRequired,
   layoutEspecial: PropTypes.oneOfType([PropTypes.any]).isRequired,
   onChange: PropTypes.oneOfType([PropTypes.any]).isRequired,
-  carregandoDisciplinas: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  carregando: PropTypes.oneOfType([PropTypes.any]).isRequired,
 };
 
 export default Disciplinas;
