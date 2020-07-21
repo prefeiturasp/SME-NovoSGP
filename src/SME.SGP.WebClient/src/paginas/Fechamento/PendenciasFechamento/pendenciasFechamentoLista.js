@@ -24,6 +24,7 @@ import api from '~/servicos/api';
 import RotasDto from '~/dtos/rotasDto';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import { BotaoImprimir } from './pendenciasFechamentoLista.css';
 
 const PendenciasFechamentoLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -31,6 +32,7 @@ const PendenciasFechamentoLista = ({ match }) => {
 
   const permissoesTela = usuario.permissoes[RotasDto.PENDENCIAS_FECHAMENTO];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [lista, setLista] = useState([]);
 
   const [exibirLista, setExibirLista] = useState(false);
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
@@ -44,8 +46,9 @@ const PendenciasFechamentoLista = ({ match }) => {
     undefined
   );
   const [filtrouValoresRota, setFiltrouValoresRota] = useState(false);
+  const [imprimindo, setImprimido] = useState(false);
 
-  useEffect(() => {    
+  useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [permissoesTela]);
 
@@ -111,7 +114,7 @@ const PendenciasFechamentoLista = ({ match }) => {
   };
 
   useEffect(() => {
-    const montaBimestres = async () => {      
+    const montaBimestres = async () => {
       let listaBi = [];
       if (turmaSelecionada.modalidade == modalidade.EJA) {
         listaBi = [
@@ -150,8 +153,8 @@ const PendenciasFechamentoLista = ({ match }) => {
           .get(
             `v1/periodo-escolar/modalidades/${turmaSelecionada.modalidade}/bimestres/atual`
           )
-          .catch(e => erros(e));        
-  
+          .catch(e => erros(e));
+
         if (bimestreAtual && bimestreAtual.data) {
           setBimestreSelecionado(String(bimestreAtual.data));
           return true;
@@ -171,8 +174,13 @@ const PendenciasFechamentoLista = ({ match }) => {
       } else {
         setListaDisciplinas([]);
       }
-      
-      if (temSugestaoBimestre && disciplinas && disciplinas.data && disciplinas.data.length === 1) {
+
+      if (
+        temSugestaoBimestre &&
+        disciplinas &&
+        disciplinas.data &&
+        disciplinas.data.length === 1
+      ) {
         const disciplina = disciplinas.data[0];
         setDisciplinaIdSelecionada(
           String(disciplina.codigoComponenteCurricular)
@@ -187,7 +195,9 @@ const PendenciasFechamentoLista = ({ match }) => {
         match.params.codigoComponenteCurricular
       ) {
         const { codigoComponenteCurricular } = match.params;
-        const temNaLista = disciplinas.data.find(item => item.codigoComponenteCurricular == codigoComponenteCurricular);
+        const temNaLista = disciplinas.data.find(
+          item => item.codigoComponenteCurricular == codigoComponenteCurricular
+        );
         if (temNaLista) {
           setDisciplinaIdSelecionada(String(codigoComponenteCurricular));
           setFiltrouValoresRota(true);
@@ -197,9 +207,9 @@ const PendenciasFechamentoLista = ({ match }) => {
       setCarregandoDisciplinas(false);
     };
 
-    resetarFiltro();    
+    resetarFiltro();
     if (turmaSelecionada.turma) {
-      montaBimestres().then(temSugestaoBimestre => {        
+      montaBimestres().then(temSugestaoBimestre => {
         obterDisciplinas(temSugestaoBimestre);
       });
     } else {
@@ -235,7 +245,9 @@ const PendenciasFechamentoLista = ({ match }) => {
 
   const onClickEditar = pendencia => {
     if (permissoesTela.podeConsultar) {
-      history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${pendencia.pendenciaId}`);
+      history.push(
+        `${RotasDto.PENDENCIAS_FECHAMENTO}/${pendencia.pendenciaId}`
+      );
     }
   };
 
@@ -251,13 +263,13 @@ const PendenciasFechamentoLista = ({ match }) => {
     const ids = pendenciasSelecionadas.map(e => e.pendenciaId);
     const retorno = await ServicoPendenciasFechamento.aprovar(ids).catch(e =>
       erros(e)
-      );
+    );
     if (retorno && retorno.data) {
       const comErros = retorno.data.filter(item => !item.sucesso);
       if (comErros && comErros.length) {
         const mensagensErros = comErros.map(e => e.mensagemConsistencia);
         mensagensErros.forEach(msg => {
-          erro(msg);          
+          erro(msg);
         });
       } else {
         if (ids && ids.length > 1) {
@@ -269,6 +281,8 @@ const PendenciasFechamentoLista = ({ match }) => {
       }
     }
   };
+
+  const gerarRelatorio = () => {};
 
   return (
     <>
@@ -290,6 +304,19 @@ const PendenciasFechamentoLista = ({ match }) => {
         <div className="col-md-12">
           <div className="row">
             <div className="col-md-12 d-flex justify-content-end pb-4">
+              <BotaoImprimir className="d-flex mr-2">
+                <Loader loading={imprimindo}>
+                  <Button
+                    className="btn-imprimir"
+                    icon="print"
+                    color={Colors.Azul}
+                    border
+                    onClick={() => gerarRelatorio()}
+                    disabled={lista.length === 0 || somenteConsulta}
+                    id="btn-imprimir-conselho-classe"
+                  />
+                </Loader>
+              </BotaoImprimir>
               <Button
                 label="Voltar"
                 icon="arrow-left"
@@ -305,13 +332,16 @@ const PendenciasFechamentoLista = ({ match }) => {
                 bold
                 className="mr-2"
                 onClick={onClickAprovar}
-                disabled={                  
+                disabled={
                   !turmaSelecionada.turma ||
                   somenteConsulta ||
                   !permissoesTela.podeAlterar ||
                   (turmaSelecionada.turma && listaDisciplinas.length < 1) ||
-                  (pendenciasSelecionadas && pendenciasSelecionadas.length < 1) || 
-                  pendenciasSelecionadas.filter(item => item.situacao == situacaoPendenciaDto.Aprovada).length > 0
+                  (pendenciasSelecionadas &&
+                    pendenciasSelecionadas.length < 1) ||
+                  pendenciasSelecionadas.filter(
+                    item => item.situacao == situacaoPendenciaDto.Aprovada
+                  ).length > 0
                 }
               />
             </div>
@@ -357,6 +387,7 @@ const PendenciasFechamentoLista = ({ match }) => {
               onClick={onClickEditar}
               multiSelecao={!somenteConsulta}
               selecionarItems={onSelecionarItems}
+              setLista={dados => setLista(dados)}
             />
           </div>
         ) : (

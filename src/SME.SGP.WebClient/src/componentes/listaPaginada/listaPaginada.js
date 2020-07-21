@@ -23,6 +23,7 @@ const ListaPaginada = props => {
     onErro,
     paramArrayFormat,
     temPaginacao,
+    setLista,
   } = props;
 
   const [carregando, setCarregando] = useState(false);
@@ -107,6 +108,7 @@ const ListaPaginada = props => {
       .then(resposta => {
         setTotal(resposta.data.totalRegistros);
         setLinhas(resposta.data.items);
+        if (setLista) setLista(resposta.data.items);
       })
       .catch(err => {
         if (
@@ -213,6 +215,7 @@ ListaPaginada.propTypes = {
   onErro: PropTypes.oneOfType([PropTypes.func]),
   paramArrayFormat: PropTypes.oneOfType([PropTypes.string]),
   temPaginacao: PropTypes.oneOfType([PropTypes.bool]),
+  setLista: PropTypes.oneOfType([PropTypes.func]),
 };
 
 ListaPaginada.defaultProps = {
@@ -228,6 +231,7 @@ ListaPaginada.defaultProps = {
   onErro: () => {},
   paramArrayFormat: 'brackets',
   temPaginacao: true,
+  setLista: () => {},
 };
 
 export default ListaPaginada;
