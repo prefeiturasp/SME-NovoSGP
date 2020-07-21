@@ -101,12 +101,12 @@ function CadastroDeAula({ match, location }) {
     {
       label: 'Repetir no Bimestre atual',
       value: recorrencia.REPETIR_BIMESTRE_ATUAL,
-      disabled: recorrenciaInicial !== recorrencia.REPETIR_BIMESTRE_ATUAL
+      disabled: id && recorrenciaInicial !== recorrencia.REPETIR_BIMESTRE_ATUAL
     },
     {
       label: 'Repetir em todos os Bimestres',
       value: recorrencia.REPETIR_TODOS_BIMESTRES,
-      disabled: recorrenciaInicial !== recorrencia.REPETIR_TODOS_BIMESTRES
+      disabled: id && recorrenciaInicial !== recorrencia.REPETIR_TODOS_BIMESTRES
     },
   ];
 
@@ -161,7 +161,7 @@ function CadastroDeAula({ match, location }) {
           setRecorrenciaInicial(respostaAula.recorrenciaAulaPai ?? respostaAula.recorrenciaAula);
           setAula(respostaAula);
           servicoCadastroAula
-            .obterRecorrenciaPorIdAula(id, aula.recorrenciaAula)
+            .obterRecorrenciaPorIdAula(id, respostaAula.recorrenciaAula)
             .then(resposta => {
               setRecorrenciaAulaEmEdicao(resposta.data);
             })
@@ -487,12 +487,14 @@ function CadastroDeAula({ match, location }) {
         recorrenciaAula: e.target.value,
       };
     });
-    servicoCadastroAula
-      .obterRecorrenciaPorIdAula(id, e.target.value)
-      .then(resposta => {
-        setRecorrenciaAulaEmEdicao(resposta.data);
-      })
-      .catch(e => erros(e));
+    if (id) {
+      servicoCadastroAula
+        .obterRecorrenciaPorIdAula(id, e.target.value)
+        .then(resposta => {
+          setRecorrenciaAulaEmEdicao(resposta.data);
+        })
+        .catch(e => erros(e));
+    }
   };
 
   const onClickVoltar = async () => {
@@ -690,7 +692,7 @@ function CadastroDeAula({ match, location }) {
                         bold
                         className="mr-2"
                         onClick={() => {
-                          if (aula.recorrenciaAula == recorrencia.AULA_UNICA && !recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula) {
+                          if (!id || (aula.recorrenciaAula == recorrencia.AULA_UNICA && !recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula)) {
                             form.handleSubmit();
                           }
                           else {
