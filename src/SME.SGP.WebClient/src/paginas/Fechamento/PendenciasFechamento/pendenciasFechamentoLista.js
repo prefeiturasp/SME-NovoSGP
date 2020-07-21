@@ -25,6 +25,7 @@ import RotasDto from '~/dtos/rotasDto';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import { BotaoImprimir } from './pendenciasFechamentoLista.css';
+import ServicoRelatorioPendencias from '~/servicos/Paginas/Relatorios/Pendencias/ServicoRelatorioPendencias';
 
 const PendenciasFechamentoLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -282,7 +283,27 @@ const PendenciasFechamentoLista = ({ match }) => {
     }
   };
 
-  const gerarRelatorio = () => {};
+  const gerarRelatorio = async () => {
+    setImprimido(true);
+    const params = {
+      anoLetivo: turmaSelecionada.anoLetivo,
+      dreCodigo: turmaSelecionada.dre,
+      ueCodigo: turmaSelecionada.unidadeEscolar,
+      modalidade: turmaSelecionada.modalidade,
+      turmaCodigo: [turmaSelecionada.turma],
+      bimestre: bimestreSelecionado,
+      componentesCurriculares: [disciplinaIdSelecionada],
+      exibirDetalhamento: true,
+    };
+    await ServicoRelatorioPendencias.gerar(params)
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
+      })
+      .catch(e => erros(e))
+      .finally(setImprimido(false));
+  };
 
   return (
     <>
