@@ -11,9 +11,12 @@ import {
 import { confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import servicoSalvarRelatorioSemestral from '../../servicoSalvarRelatorioSemestral';
+import modalidade from '~/dtos/modalidade';
 
 const BotoesAcoesRelatorioSemestral = () => {
   const dispatch = useDispatch();
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
 
   const alunosRelatorioSemestral = useSelector(
     store => store.relatorioSemestralPAP.alunosRelatorioSemestral
@@ -115,7 +118,11 @@ const BotoesAcoesRelatorioSemestral = () => {
         bold
         className="mr-2"
         onClick={onClickSalvar}
-        disabled={desabilitarCampos || !relatorioSemestralEmEdicao}
+        disabled={
+          String(turmaSelecionada.modalidade) === String(modalidade.INFANTIL) ||
+          desabilitarCampos ||
+          !relatorioSemestralEmEdicao
+        }
       />
     </>
   );

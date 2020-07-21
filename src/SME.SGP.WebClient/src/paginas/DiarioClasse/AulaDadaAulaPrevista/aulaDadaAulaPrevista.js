@@ -15,6 +15,8 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import { confirmar, erros, sucesso, erro, exibirAlerta } from '~/servicos/alertas';
 import { URL_HOME } from '~/constantes/url';
 import history from '~/servicos/history';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import modalidadeDto from '~/dtos/modalidade';
 
 const AulaDadaAulaPrevista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -33,9 +35,16 @@ const AulaDadaAulaPrevista = () => {
   const [dadoslista, setDadosLista] = useState([]);
   const [auditoria, setAuditoria] = useState(undefined);
   const permissoesTela = usuario.permissoes[RotasDto.AULA_DADA_AULA_PREVISTA];
-  const [somenteConsulta, setSomenteConsulta] = useState(
-    verificaSomenteConsulta(permissoesTela)
-  );
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
+
+  useEffect(() => {
+    const naoSetarSomenteConsultaNoStore =
+      String(turmaSelecionada.modalidade) === String(modalidadeDto.INFANTIL);
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
+    );
+  }, [turmaSelecionada, permissoesTela]);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -50,14 +59,15 @@ const AulaDadaAulaPrevista = () => {
         setDesabilitarDisciplina(true);
       }
     };
-    if (turmaId) {
+    if (turmaId && String(modalidade) !== String(modalidadeDto.INFANTIL)) {
       obterDisciplinas();
     } else {
       setDadosLista([]);
       setModoEdicao(false);
       setDisciplinaIdSelecionada(undefined);
+      setListaDisciplinas([]);
     }
-  }, [turmaSelecionada.turma]);
+  }, [turmaSelecionada.turma, modalidade]);
 
   const perguntaAoSalvar = async () => {
     return confirmar(
@@ -230,6 +240,7 @@ const AulaDadaAulaPrevista = () => {
           />
         </Grid>
       ) : null}{' '}
+      <AlertaModalidadeInfantil />
       <Grid cols={12} className="p-0">
         <Titulo>
           Aula prevista X Aula dada

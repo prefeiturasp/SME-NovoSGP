@@ -9,6 +9,7 @@ import { SelectComponent, Loader } from '~/componentes';
 
 // Serviços
 import AbrangenciaServico from '~/servicos/Abrangencia';
+import modalidade from '~/dtos/modalidade';
 
 function DropDownTerritorios({
   onChangeTerritorio,
@@ -38,14 +39,22 @@ function DropDownTerritorios({
       }
       setCarregando(false);
     }
-    if (Object.keys(turmaSelecionada).length > 0) {
+    if (
+      Object.keys(turmaSelecionada).length > 0 &&
+      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
+    ) {
       onChangeTerritorio(undefined);
       buscarTerritorios();
     } else {
       setListaTerritorios([]);
       onBuscarTerritorios(false);
     }
-  }, [onChangeTerritorio, turmaSelecionada, turmaSelecionada.turma]);
+  }, [
+    onChangeTerritorio,
+    turmaSelecionada,
+    turmaSelecionada.turma,
+    turmaSelecionada.modalidade,
+  ]);
 
   useEffect(() => {
     if (listaTerritorios.length === 1) {

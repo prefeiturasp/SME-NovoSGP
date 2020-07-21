@@ -33,6 +33,7 @@ const DadosConselhoClasse = props => {
   const { turmaCodigo, modalidade } = props;
 
   const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
   const permissoesTela = usuario.permissoes[RotasDto.CONSELHO_CLASSE];
 
   const dispatch = useDispatch();
@@ -74,7 +75,12 @@ const DadosConselhoClasse = props => {
 
   const validaPermissoes = useCallback(
     novoRegistro => {
-      const somenteConsulta = verificaSomenteConsulta(permissoesTela);
+      const naoSetarSomenteConsultaNoStore =
+        String(turmaSelecionada.modalidade) === String(modalidadeDto.INFANTIL);
+      const somenteConsulta = verificaSomenteConsulta(
+        permissoesTela,
+        naoSetarSomenteConsultaNoStore
+      );
 
       const desabilitar = novoRegistro
         ? somenteConsulta || !permissoesTela.podeIncluir
@@ -82,7 +88,7 @@ const DadosConselhoClasse = props => {
 
       dispatch(setDesabilitarCampos(desabilitar));
     },
-    [dispatch, permissoesTela]
+    [dispatch, permissoesTela, turmaSelecionada.modalidade]
   );
 
   // Quando passa bimestre 0 o retorno vai trazer dados do bimestre corrente!

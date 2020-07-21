@@ -1,15 +1,20 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Alert from '~/componentes/alert';
+import modalidade from '~/dtos/modalidade';
 
 const AlertaDentroPeriodoPAP = () => {
   const dentroPeriodo = useSelector(
     store => store.relatorioSemestralPAP.dentroPeriodo
   );
+  const { turmaSelecionada } = useSelector(store => store.usuario);
 
   return (
     <div className="col-md-12">
-      {!dentroPeriodo ? (
+      {!dentroPeriodo &&
+      turmaSelecionada &&
+      turmaSelecionada.turma &&
+      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL) ? (
         <Alert
           alerta={{
             tipo: 'warning',

@@ -42,6 +42,8 @@ import Reducer, {
 // Utils
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 import { MensagemAlerta } from '~/paginas/Perfil/meusDados.css';
+import modalidade from '~/dtos/modalidade';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 
 function RelatorioPAPAcompanhamento() {
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
@@ -287,30 +289,33 @@ function RelatorioPAPAcompanhamento() {
   return (
     <>
       <AlertaSelecionarTurma />
-      {somenteLeitura && (
-        <Alert
-          alerta={{
-            tipo: 'warning',
-            id: 'pap-somente-leitura',
-            mensagem:
-              'Não é possível preencher o relatório fora do período estipulado pela SME',
-            estiloTitulo: { fontSize: '18px' },
-          }}
-          className="mb-4"
-        />
-      )}
-      {semPeriodos && (
-        <Alert
-          alerta={{
-            tipo: 'warning',
-            id: 'sem-periodo-pap',
-            mensagem:
-              'Somente é possivel realizar o preenchimento do PAP para turmas PAP',
-            estiloTitulo: { fontSize: '18px' },
-          }}
-          className="mb-4"
-        />
-      )}
+      {somenteLeitura &&
+        String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL) && (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'pap-somente-leitura',
+              mensagem:
+                'Não é possível preencher o relatório fora do período estipulado pela SME',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-4"
+          />
+        )}
+      {semPeriodos &&
+        String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL) && (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'sem-periodo-pap',
+              mensagem:
+                'Somente é possivel realizar o preenchimento do PAP para turmas PAP',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-4"
+          />
+        )}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Relatório de encaminhamento e acompanhamento do PAP" />
       <Loader loading={carregando}>
         <Card mx="mx-0">
@@ -329,7 +334,11 @@ function RelatorioPAPAcompanhamento() {
             onClickCancelar={() => onClickCancelarHandler()}
             labelBotaoPrincipal="Salvar"
             desabilitarBotaoPrincipal={
-              somenteLeitura || !modoEdicao || !periodo
+              String(turmaSelecionada.modalidade) ===
+                String(modalidade.INFANTIL) ||
+              somenteLeitura ||
+              !modoEdicao ||
+              !periodo
             }
           />
           <Grid className="p-0" cols={12}>

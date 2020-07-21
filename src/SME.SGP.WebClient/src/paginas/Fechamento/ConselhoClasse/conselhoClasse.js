@@ -20,6 +20,10 @@ import DadosConselhoClasse from './DadosConselhoClasse/dadosConselhoClasse';
 import ObjectCardConselhoClasse from './DadosConselhoClasse/ObjectCardConselhoClasse/objectCardConselhoClasse';
 import TabelaRetratilConselhoClasse from './DadosConselhoClasse/TabelaRetratilConselhoClasse/tabelaRetratilConselhoClasse';
 import servicoSalvarConselhoClasse from './servicoSalvarConselhoClasse';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import modalidade from '~/dtos/modalidade';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const ConselhoClasse = () => {
   const dispatch = useDispatch();
@@ -27,6 +31,7 @@ const ConselhoClasse = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const { turma, anoLetivo, periodo } = turmaSelecionada;
+  const permissoesTela = usuario.permissoes[RotasDto.CONSELHO_CLASSE];
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [imprimindo, setImprimindo] = useState(false);
@@ -65,11 +70,21 @@ const ConselhoClasse = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    const naoSetarSomenteConsultaNoStore =
+      String(turmaSelecionada.modalidade) === String(modalidade.INFANTIL);
+    verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore);
+  }, [turmaSelecionada, permissoesTela]);
+
+  useEffect(() => {
     resetarInfomacoes();
-    if (turma) {
+    if (
+      turmaSelecionada &&
+      turmaSelecionada.turma &&
+      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
+    ) {
       obterListaAlunos();
     }
-  }, [obterListaAlunos, turma, resetarInfomacoes]);
+  }, [obterListaAlunos, turma, turmaSelecionada, resetarInfomacoes]);
 
   const obterFrequenciaAluno = async codigoAluno => {
     const retorno = await ServicoConselhoClasse.obterFrequenciaAluno(
@@ -133,6 +148,7 @@ const ConselhoClasse = () => {
       ) : (
         ''
       )}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Conselho de classe" />
       <Loader loading={carregandoGeral}>
         <Card>
@@ -145,7 +161,9 @@ const ConselhoClasse = () => {
                   </div>
                 </div>
               </div>
-              {exibirListas ? (
+              {exibirListas &&
+              String(turmaSelecionada.modalidade) !==
+                String(modalidade.INFANTIL) ? (
                 <>
                   <div className="col-md-12 mb-2 d-flex">
                     <BotaoOrdenarListaAlunos />
