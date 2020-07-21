@@ -19,6 +19,9 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Infra.Contexto;
+using SME.SGP.IoC;
+using SME.Background.Core;
+using Moq;
 
 namespace SME.SGP.Integracao.Teste
 {
@@ -43,13 +46,17 @@ namespace SME.SGP.Integracao.Teste
 
                 Environment.SetEnvironmentVariable("ApplicationInsights__InstrumentationKey", "ab");                
 
-                var projectPath = GetContentRootPath("../src/SME.SGP.Api");               
+                var projectPath = GetContentRootPath("../src/SME.SGP.Api");
+
+                var servicoLog = new Mock<IServicoLog>();                    
+                servicoLog.Setup(sl => sl.Registrar(new Exception()));
+                servicoLog.Setup(sl => sl.Registrar(string.Empty));
 
                 var builderCliente = new WebHostBuilder()
                         .UseContentRoot(projectPath)
                         .ConfigureServices(services =>
-                        {   
-                            services.AddSingleton<IConnectionMultiplexerSME>(new ConnectionMultiplexerSME($"localhost:{_redisRunner.Port}", null));
+                        {                            
+                            services.AddSingleton<IConnectionMultiplexerSME>(new ConnectionMultiplexerSME($"localhost:{_redisRunner.Port}", servicoLog.Object));
                         })
                         .UseEnvironment("teste-integrado")
                         .UseConfiguration(new ConfigurationBuilder()
