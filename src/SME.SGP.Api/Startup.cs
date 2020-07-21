@@ -16,6 +16,9 @@ using SME.SGP.IoC;
 using System.Collections.Generic;
 using System.Globalization;
 using SME.SGP.IoC.Extensions;
+using System;
+using System.Diagnostics;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Api
 {
@@ -81,19 +84,20 @@ namespace SME.SGP.Api
         {
             services.AddSingleton(Configuration);
             services.AddHttpContextAccessor();
-            services.AdicionarRedis(Configuration);
 
             RegistraDependencias.Registrar(services);
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
-            
-            DefaultTypeMap.MatchNamesWithUnderscores = true;            
+
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
+
+            services.AdicionarRedis(Configuration, Orquestrador.Provider.GetService<IServicoLog>());
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {
