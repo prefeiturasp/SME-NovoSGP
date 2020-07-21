@@ -385,10 +385,10 @@ const FaltasFrequencia = () => {
 
   const onClickCancelar = () => {
     setAnoLetivo(undefined);
-    setCodigoDre(undefined)
+    setCodigoDre(undefined);
     setTipoRelatorio(undefined);
     setCondicao(undefined);
-    setValorCondicao(undefined);;
+    setValorCondicao(undefined);
     setListaAnosLetivo([]);
     setListaDres([]);
 
