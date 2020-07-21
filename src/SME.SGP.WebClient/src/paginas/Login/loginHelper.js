@@ -20,7 +20,7 @@ class LoginHelper {
 
     this.dispatch(
       salvarDadosLogin({
-        token: autenticacao.dados.token,
+        token: autenticacao?.dados?.token,
         rf,
         usuario: login.usuario,
         modificarSenha: autenticacao.dados.modificarSenha,
