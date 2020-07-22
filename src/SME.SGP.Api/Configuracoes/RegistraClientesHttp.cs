@@ -34,6 +34,12 @@ namespace SME.SGP.Api
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
 
+            services.AddHttpClient(name: "servicoEOL", c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
             var cookieContainer = new CookieContainer();
             var jasperCookieHandler = new JasperCookieHandler() { CookieContainer = cookieContainer };
 

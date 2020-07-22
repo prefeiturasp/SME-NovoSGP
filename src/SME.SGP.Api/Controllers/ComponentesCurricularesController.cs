@@ -4,6 +4,7 @@ using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 
 
 namespace SME.SGP.Api.Controllers
@@ -19,7 +20,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> Obter(FiltroComponentesCurricularesPorTurmaECodigoUeDto filtroComponentesCurricularesPorTurmaECodigoUeDto, [FromServices] IObterComponentesCurricularesPorTurmaECodigoUeUseCase obterComponentesCurricularesPorTurmaECodigoUeUseCase)
         {
-            return Ok(await obterComponentesCurricularesPorTurmaECodigoUeUseCase.Executar(filtroComponentesCurricularesPorTurmaECodigoUeDto));
+            return Ok(await obterComponentesCurricularesPorTurmaECodigoUeUseCase.Executar(
+                filtroComponentesCurricularesPorTurmaECodigoUeDto));
         }
 
 

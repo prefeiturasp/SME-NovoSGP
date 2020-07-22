@@ -6,13 +6,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesPorTurmaECodigoUeQuery : IRequest<IEnumerable<ComponenteCurricularDto>>
     {
-        public ObterComponentesCurricularesPorTurmaECodigoUeQuery(string[] turmaCodigo, string codigoUe)
+        public ObterComponentesCurricularesPorTurmaECodigoUeQuery(string[] codigosDeTurmas, string codigoUe)
         {
-            TurmaCodigo = turmaCodigo;
+            CodigosDeTurmas = codigosDeTurmas;
             CodigoUe = codigoUe;
         }
 
-        public string[] TurmaCodigo { get; set; }
         public string CodigoUe { get; set; }
+        public string[] CodigosDeTurmas { get; set; }
     }
 }
