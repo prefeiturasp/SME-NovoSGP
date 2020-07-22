@@ -8,8 +8,8 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }
         public Modalidade Modalidade { get; set; }
-        public string TurmaCodigo { get; set; }
-        public ComponenteCurricular ComponenteCurricular { get; set; }
+        public string[] TurmasCodigo { get; set; }
+        public string[] ComponentesCurriculares { get; set; }
         public int Bimestre { get; set; }
         public bool ExibirDetalhamento { get; set; }
     }
