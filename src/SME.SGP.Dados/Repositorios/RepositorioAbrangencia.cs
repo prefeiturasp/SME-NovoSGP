@@ -300,7 +300,7 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo
             };
 
-            return (await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query, parametros)).AsList();
+            return await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query, parametros);
         }
 
         public bool PossuiAbrangenciaTurmaAtivaPorLogin(string login)
