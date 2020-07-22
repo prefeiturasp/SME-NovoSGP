@@ -9,5 +9,7 @@ namespace SME.SGP.Aplicacao
         Task<IEnumerable<GrupoComunicacaoDto>> Listar(FiltroGrupoComunicacaoDto filtro);
 
         Task<GrupoComunicacaoCompletoDto> ObterPorIdAsync(long id);
+
+        Task<IEnumerable<GrupoComunicacaoDto>> Listar(IEnumerable<long> ids);
     }
 }

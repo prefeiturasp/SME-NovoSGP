@@ -25,9 +25,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task RemoverTodosAlunosComunicado(long comunicadoId)
         {
-            var delete = "delete from comunicado_aluno where comunicado_id = @comunicadoId";
+            var update = "update comunicado_aluno set excluido=true where comunicado_id = @comunicadoId";
 
-            await database.Conexao.ExecuteAsync(delete, new { comunicadoId });
+            await database.Conexao.ExecuteAsync(update, new { comunicadoId });
         }
 
         public override void Remover(ComunicadoAluno entidade)
@@ -47,6 +47,7 @@ namespace SME.SGP.Dados.Repositorios
                     comunicado_id, 
                     criado_em, 
                     alterado_em, 
+                    excluido,
                     criado_por, 
                     alterado_por, 
                     criado_rf, 

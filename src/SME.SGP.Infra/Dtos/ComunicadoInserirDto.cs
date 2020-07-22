@@ -8,6 +8,12 @@ namespace SME.SGP.Dto
 {
     public class ComunicadoInserirDto
     {
+        public ComunicadoInserirDto()
+        {
+            Alunos = new List<string>();
+            Turmas = new List<string>();
+        }
+
         [DataRequerida(ErrorMessage = "A data de envio é obrigatória.")]
         [DataMaiorAtual(ErrorMessage = "A data de envio deve ser igual ou maior que a data atual.")]
         public DateTime DataEnvio { get; set; }
@@ -40,7 +46,7 @@ namespace SME.SGP.Dto
         [Required(ErrorMessage = "É necessário informar o codigo da UE")]
         public string CodigoUe { get; set; } 
 
-        public string Turma { get; set; }
+        public IEnumerable<string> Turmas { get; set; }
 
         public bool AlunosEspecificados { get; set; }
 

@@ -12,64 +12,46 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioComunicado : RepositorioBase<Comunicado>, IRepositorioComunicado
     {
-        private readonly string fromComunicado = @"comunicado";
+        private readonly Func<string, string> camposComunicado =
+            (prefixo) => string.Format(
+                @"{0}.id,
+                  {0}.titulo,
+                  {0}.descricao,
+                  {0}.data_envio,
+                  {0}.data_expiracao,
+                  {0}.criado_em,
+                  {0}.criado_por,
+                  {0}.alterado_em,
+                  {0}.alterado_por,
+                  {0}.criado_rf,
+                  {0}.alterado_rf,
+                  {0}.ano_letivo,
+                  {0}.modalidade,
+                  {0}.semestre,
+                  {0}.tipo_comunicado,
+                  {0}.codigo_dre,
+                  {0}.codigo_ue,
+                  {0}.excluido,
+                  {0}.alunos_especificados", prefixo);
 
-        private readonly string fromComunicadoGrupo =
-                                                @"(SELECT
-                                                    co.id,
-                                                    co.titulo,
-                                                    co.descricao,
-                                                    co.data_envio,
-                                                    co.data_expiracao,
-                                                    co.criado_em,
-                                                    co.criado_por,
-                                                    co.alterado_em,
-                                                    co.alterado_por,
-                                                    co.criado_rf,
-                                                    co.alterado_rf,
-                                                    co.excluido
-                                                from comunicado co inner join comunidado_grupo cgr
-                                                    on cgr.comunicado_id = co.id
-                                                {0}
-                                                where co.excluido = false
-                                                group by
-                                                    co.id,
-                                                    co.titulo,
-                                                    co.descricao,
-                                                    co.data_envio,
-                                                    co.data_expiracao ,
-                                                    co.criado_em,
-                                                    co.criado_por,
-                                                    co.alterado_em,
-                                                    co.alterado_por,
-                                                    co.criado_rf,
-                                                    co.alterado_rf,
-                                                    co.excluido
-                                                order by co.id
-                                                {1})";
-
-        private string queryComunicado(bool ehListagem)
+        private string queryComunicadoListagem()
         {
             var query = new StringBuilder();
 
             query.AppendLine(@"
 						SELECT
 							{0}
-						FROM {1} c
+						FROM ({1}) c
 						LEFT JOIN comunidado_grupo cg
-								on cg.comunicado_id = c.id
-							LEFT join grupo_comunicado g
-								on cg.grupo_comunicado_id = g.id
+							on cg.comunicado_id = c.id
+						LEFT join grupo_comunicado g
+							on cg.grupo_comunicado_id = g.id
+                        LEFT join comunicado_turma t
+                            on t.comunicado_id = c.id
                         ");
 
-            if (!ehListagem)
-                query.AppendLine(@"
-                        LEFT JOIN comunicado_aluno ca
-                            on ca.comunicado_id = c.id");
-
             query.AppendLine(@"
-						WHERE (c.excluido = false)
-						{2}");
+						WHERE c.excluido = false");
 
             return query.ToString();
         }
@@ -81,44 +63,17 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<Comunicado>> ListarPaginado(FiltroComunicadoDto filtro, Paginacao paginacao)
         {
             StringBuilder query = new StringBuilder();
-            string where = MontaWhereListar(filtro);
-            string from = "";
-            var whereGrupo = " AND ({0}.grupo_comunicado_id = ANY(@gruposId))";
+
+            var queryPrincipal = MontarConsultaPricipal(filtro, paginacao, ehContador: false);
+
+            var queryCount = MontarConsultaPricipal(filtro, paginacao, ehContador: true);
 
             if (paginacao == null)
                 paginacao = new Paginacao(1, 10);
 
-            from = ObterFrom(filtro, paginacao, whereGrupo);
+            query.AppendFormat(queryComunicadoListagem(), ObterCamposListagem("c", "g", "t"), queryPrincipal);
 
-            query.AppendFormat(queryComunicado(true), Montarcampos(), from, where);
-
-            var retornoPaginado = new PaginacaoResultadoDto<Comunicado>()
-            {
-                Items = await database.Conexao.QueryAsync<Comunicado, ComunicadoGrupo, GrupoComunicacao, ComunicadoAluno, Comunicado>(query.ToString(), (comunicado, g, grupo, ComunicadoAluno) =>
-                {
-                    comunicado.AdicionarGrupo(grupo);
-                    comunicado.AdicionarAluno(ComunicadoAluno);
-
-                    return comunicado;
-                }, new
-                {
-                    filtro.DataEnvio,
-                    filtro.DataExpiracao,
-                    filtro.Titulo,
-                    filtro.GruposId,
-                    filtro.AnoLetivo,
-                    filtro.Modalidade,
-                    filtro.Semestre,
-                    filtro.CodigoDre,
-                    filtro.CodigoUe,
-                    filtro.Turma
-                },
-            splitOn: "id,ComunicadoGrupoId,GrupoId,AlunoId")
-            };
-
-            var queryCount = new StringBuilder(string.Format(queryComunicado(true), "count(distinct c.id)", fromComunicado, $"{where}{(filtro.GruposId?.Length > 0 ? string.Format(whereGrupo, "cg") : "")}"));
-
-            retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), new
+            var parametros = new
             {
                 filtro.DataEnvio,
                 filtro.DataExpiracao,
@@ -130,114 +85,131 @@ namespace SME.SGP.Dados.Repositorios
                 filtro.CodigoDre,
                 filtro.CodigoUe,
                 filtro.Turma
-            })).Sum();
+            };
+
+            var retornoPaginado = new PaginacaoResultadoDto<Comunicado>()
+            {
+                Items = await database.Conexao.QueryAsync<Comunicado, ComunicadoGrupo, Comunicado>(query.ToString(), (comunicado, grupo) =>
+                {
+                    comunicado.AdicionarGrupo(grupo);
+
+                    return comunicado;
+                },
+                parametros,
+                splitOn: "id,GrupoId")
+            };
+                        
+            retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), parametros)).Sum();
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retornoPaginado;
         }
 
-        private string ObterFrom(FiltroComunicadoDto filtro, Paginacao paginacao, string whereGrupo)
+        private string ObterConsultaListagemPrincipal(string whereGrupo, string limite, string where, string whereTurma, bool ehContador)
         {
-            string from;
-            if (paginacao.QuantidadeRegistros != 0)
-                from = string.Format(fromComunicadoGrupo, filtro.GruposId?.Length > 0 ? string.Format(whereGrupo, "cgr") : "", string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros));
+            StringBuilder builder = new StringBuilder();
+
+            builder.AppendLine("select");
+
+            if (!ehContador)
+                builder.AppendLine(camposComunicado("co"));
             else
-                from = string.Format(fromComunicadoGrupo, filtro.GruposId?.Length > 0 ? string.Format(whereGrupo, "cgr") : "", "");
-            return from;
+                builder.AppendLine("count(*)");
+
+            builder.AppendLine(@" from comunicado co
+                                  where co.excluido = false");
+
+            if (!string.IsNullOrWhiteSpace(whereGrupo))
+                builder.AppendLine($@"and exists(select 1
+                                      from comunidado_grupo cgr
+                                      where {whereGrupo}
+                                      and cgr.comunicado_id = co.id)");
+
+            if (!string.IsNullOrWhiteSpace(whereTurma))
+                builder.AppendLine($@"and exists(select 1
+                                      from comunicado_turma ct
+                                       where {whereTurma}
+                                       and ct.comunicado_id = co.id
+                                       and ct.excluido = false)");
+
+            builder.AppendLine(where);
+
+            if (!ehContador)
+                builder.AppendLine("order by co.id");
+
+            if (!ehContador && !string.IsNullOrWhiteSpace(limite))
+                builder.AppendLine(limite);
+
+            return builder.ToString();
         }
 
-        public async Task<IEnumerable<ComunicadoResultadoDto>> ObterResultadoPorComunicadoIdAsync(long id)
+        private string MontarConsultaPricipal(FiltroComunicadoDto filtro, Paginacao paginacao, bool ehContador = false)
         {
-            var where = "AND c.id = @id";
-            var query = string.Format(queryComunicado(false), Montarcampos(false), fromComunicado, where);
+            var whereGrupo = filtro.GruposId?.Length > 0 ? "cgr.grupo_comunicado_id = ANY(@gruposId)" : "";
 
-            return await database.Conexao.QueryAsync<ComunicadoResultadoDto>(query, new { id });
+            var limite = paginacao.QuantidadeRegistros != 0 ? string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros) : "";
+
+            var whereTurma = !string.IsNullOrWhiteSpace(filtro.Turma) ? "ct.turma_codigo = @Turma" : "";
+
+            var where = MontaWhereListar(filtro, "co");
+
+            return ObterConsultaListagemPrincipal(whereGrupo, limite, where, whereTurma, ehContador);
         }
 
-        private static string MontaWhereListar(FiltroComunicadoDto filtro)
+        private string MontaWhereListar(FiltroComunicadoDto filtro, string prefixo)
         {
             var where = new StringBuilder();
 
-            where.AppendLine("c.ano_letivo = @AnoLetivo");
+            where.AppendLine($"AND {prefixo}.ano_letivo = @AnoLetivo");
 
             if (!string.IsNullOrEmpty(filtro.Titulo))
             {
                 filtro.Titulo = $"%{filtro.Titulo.ToUpperInvariant()}%";
-                where.AppendLine("AND (upper(f_unaccent(c.titulo)) LIKE @titulo)");
+                where.AppendLine($"AND (upper(f_unaccent({prefixo}.titulo)) LIKE @titulo)");
             }
 
             if (filtro.DataEnvio.HasValue)
-                where.AppendLine("AND (date(c.data_envio) = @DataEnvio)");
+                where.AppendLine($"AND (date({prefixo}.data_envio) = @DataEnvio)");
 
             if (filtro.DataExpiracao.HasValue)
-                where.AppendLine("AND (date(c.data_expiracao) = @DataExpiracao)");
+                where.AppendLine($"AND (date({prefixo}.data_expiracao) = @DataExpiracao)");
 
-            if (!string.IsNullOrWhiteSpace(filtro.CodigoDre))
-                where.AppendLine("AND c.codigo_dre = @CodigoDre");
+            if (!string.IsNullOrWhiteSpace(filtro.CodigoDre) && !filtro.CodigoDre.Equals("todas"))
+                where.AppendLine($"AND {prefixo}.codigo_dre = @CodigoDre");
 
-            if (!string.IsNullOrWhiteSpace(filtro.CodigoUe))
-                where.AppendLine("AND c.codigo_ue = @CodigoUe");
-
-            if (!string.IsNullOrWhiteSpace(filtro.Turma))
-                where.AppendLine("AND c.turma = @Turma");
+            if (!string.IsNullOrWhiteSpace(filtro.CodigoUe) && !filtro.CodigoUe.Equals("todas"))
+                where.AppendLine($"AND {prefixo}.codigo_ue = @CodigoUe");
 
             if (filtro.Modalidade > 0)
-                where.AppendLine("AND c.modalidade = @Modalidade");
+                where.AppendLine($"AND {prefixo}.modalidade = @Modalidade");
 
             if (filtro.Semestre > 0)
-                where.AppendLine("AND c.semestre = @Semestre");
+                where.AppendLine($"AND {prefixo}.semestre = @Semestre");
 
             return where.ToString();
         }
 
-        private string Montarcampos(bool EhListagem = true)
+        private string ObterCamposListagem(string prefixoComunicado, string prefixoGrupoComunicado, string prefixoTurmaComunicado)
         {
-            StringBuilder campos = new StringBuilder();
-            campos.Append(@"c.id,
-							c.titulo,
-							c.descricao,
-							c.data_envio as DataEnvio,
-							c.data_expiracao as DataExpiracao,
-							c.criado_em as CriadoEm,
-							c.criado_por as CriadoPor,
-							c.alterado_em as AlteradoEm,
-							c.alterado_por as AlteradoPor,
-							c.criado_rf as CriadoRf,
-							c.alterado_rf as AlteradoRf,
-                            c.ano_letivo as AnoLetivo,
-                            c.modalidade as Modalidade,
-                            c.semestre as Semestre,
-                            c.tipo_comunicado as TipoComunicado,
-                            c.codigo_dre as CodigoDre,
-                            c.codigo_ue as CodigoUe,
-                            c.turma as Turma,
-                            c.alunos_especificados as AlunosEspecificados,");
+            StringBuilder builder = new StringBuilder();
 
-            if (!EhListagem)
-                campos.Append(@"
-                                ca.id as AlunoId,
-                                ca.id,
-                                ca.aluno_codigo,
-                                ca.comunicado_id,
-                                ca.excluido,
-                                ca.criado_em,
-                                ca.alterado_em,
-                                ca.criado_por,
-                                ca.alterado_por,
-                                ca.criado_rf,
-                                ca.alterado_rf,
-                                g.nome as Grupo,
-                                g.id as GrupoId");
-            else
-                campos.Append(@"cg.id AS ComunicadoGrupoId,
-                                cg.comunicado_id,
-                                cg.grupo_comunicado_id,
-                                g.id as GrupoId,
-                                g.id,
-                                g.nome");
+            builder.AppendLine($"{camposComunicado(prefixoComunicado)},");
 
-            return campos.ToString();
+            builder.AppendLine($@"{prefixoGrupoComunicado}.id as GrupoId,");
+            builder.AppendLine($@"{prefixoGrupoComunicado}.id,");
+            builder.AppendLine($@"{prefixoGrupoComunicado}.nome,");
+            builder.AppendLine($@"{prefixoGrupoComunicado}.tipo_escola_id,");
+            builder.AppendLine($@"{prefixoGrupoComunicado}.tipo_ciclo_id,");
+            builder.AppendLine($@"{prefixoGrupoComunicado}.etapa_ensino_id,");
+
+            builder.AppendLine($@"{prefixoTurmaComunicado}.id as TurmaId,");
+            builder.AppendLine($@"{prefixoTurmaComunicado}.id,");
+            builder.AppendLine($@"{prefixoTurmaComunicado}.turma_codigo,");
+            builder.AppendLine($@"{prefixoTurmaComunicado}.comunicado_id,");
+            builder.AppendLine($@"{prefixoTurmaComunicado}.excluido");
+
+            return builder.ToString();
         }
     }
 }

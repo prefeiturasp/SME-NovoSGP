@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -73,5 +74,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<GrupoComunicacaoCompletoRespostaDto>(query, new { id });
         }
-    }
+
+		public async Task<IEnumerable<GrupoComunicacaoCompletoRespostaDto>> ObterCompletoPorListaId(IEnumerable<long> ids)
+		{
+			var where = "AND gc.id = Any(@ids)";
+
+			var query = string.Format(queryGrupo, where);
+
+			return await database.Conexao.QueryAsync<GrupoComunicacaoCompletoRespostaDto>(query, new { ids = ids.ToList() });
+		}
+	}
 }
