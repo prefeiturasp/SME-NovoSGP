@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
@@ -89,7 +90,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterDres([FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, ConsideraHistorico, anoLetivo);
+            IEnumerable<AbrangenciaDreRetorno> dres;
+            if (anoLetivo < DateTime.Now.Year)
+            {
+                dres = await consultasAbrangencia.ObterDres(modalidade, periodo, true, anoLetivo);
+            }
+            else
+            {
+                dres = await consultasAbrangencia.ObterDres(modalidade, periodo, ConsideraHistorico, anoLetivo);
+            }
 
             if (dres.Any())
                 return Ok(dres);
