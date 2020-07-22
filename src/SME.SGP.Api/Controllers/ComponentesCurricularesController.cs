@@ -4,8 +4,6 @@ using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-
 
 namespace SME.SGP.Api.Controllers
 {
@@ -13,17 +11,14 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/componentes-curriculares")]
     public class ComponentesCurricularesController : ControllerBase
     {
-        [HttpPost]
-        [Route("obter")]
+        [HttpGet("ues/{ueId}/turmas")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> Obter(FiltroComponentesCurricularesPorTurmaECodigoUeDto filtroComponentesCurricularesPorTurmaECodigoUeDto, [FromServices] IObterComponentesCurricularesPorTurmaECodigoUeUseCase obterComponentesCurricularesPorTurmaECodigoUeUseCase)
+        public async Task<IActionResult> Obter(string ueId, [FromQuery] string[] turmas, [FromServices] IObterComponentesCurricularesPorTurmaECodigoUeUseCase obterComponentesCurricularesPorTurmaECodigoUeUseCase)
         {
-            return Ok(await obterComponentesCurricularesPorTurmaECodigoUeUseCase.Executar(
-                filtroComponentesCurricularesPorTurmaECodigoUeDto));
+            var filtro = new FiltroComponentesCurricularesPorTurmaECodigoUeDto {CodigoUe = ueId, CodigosDeTurmas = turmas};
+            return Ok(await obterComponentesCurricularesPorTurmaECodigoUeUseCase.Executar(filtro));
         }
-
-
     }
 }
