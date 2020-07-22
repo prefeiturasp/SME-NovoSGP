@@ -10,14 +10,15 @@ namespace SME.SGP.Dominio
     {
         public Comunicado()
         {
-            Grupos = new List<GrupoComunicacao>();
+            Grupos = new List<ComunicadoGrupo>();
             Alunos = new List<ComunicadoAluno>();
+            Turmas = new List<ComunicadoTurma>();
         }
 
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-        public string Turma { get; set; }
+        public IList<ComunicadoTurma> Turmas { get; set; }
         public bool AlunoEspecificado { get; set; }
         public DateTime DataEnvio { get; set; }
         public DateTime? DataExpiracao { get; set; }
@@ -26,11 +27,11 @@ namespace SME.SGP.Dominio
         public Modalidade? Modalidade { get; set; }
         public int? Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
-        public List<GrupoComunicacao> Grupos { get; set; }
-        public IList<ComunicadoAluno> Alunos { get; internal set; }
+        public List<ComunicadoGrupo> Grupos { get; set; }
+        public IList<ComunicadoAluno> Alunos { get; set; }
         public string Titulo { get; set; }
 
-        public void AdicionarGrupo(GrupoComunicacao grupo)
+        public void AdicionarGrupo(ComunicadoGrupo grupo)
         {
             Grupos.Add(grupo);
         }
@@ -52,6 +53,23 @@ namespace SME.SGP.Dominio
             });
         }
 
+        public void AdicionarTurma(ComunicadoTurma turma)
+        {
+            if (Id > 0)
+                throw new NegocioException("Não é possivel editar as turmas de um comunicado");
+
+            Turmas.Add(turma);
+        }
+
+        public void AdicionarTurma(string codigoTurma)
+        {
+            AdicionarTurma(new ComunicadoTurma
+            {
+                CodigoTurma = codigoTurma,
+                ComunicadoId = Id
+            });
+        }
+
         public void SetarTipoComunicado()
         {
             TipoComunicado = IdentificarTipoComunicado();
@@ -62,7 +80,7 @@ namespace SME.SGP.Dominio
             if (AlunoEspecificado)
                 return TipoComunicado.ALUNO;
 
-            if (!string.IsNullOrEmpty(Turma))
+            if (Turmas != null && Turmas.Any())
                 return TipoComunicado.TURMA;
 
             if (Modalidade.HasValue)
@@ -89,6 +107,19 @@ namespace SME.SGP.Dominio
                 return;
 
             Alunos = Alunos.Select(x =>
+            {
+                x.ComunicadoId = Id;
+
+                return x;
+            }).ToList();
+        }
+
+        public void AtualizarIdTurmas()
+        {
+            if (Id == 0)
+                return;
+
+            Turmas = Turmas.Select(x =>
             {
                 x.ComunicadoId = Id;
 

@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Dto
 {
@@ -21,7 +22,25 @@ namespace SME.SGP.Dto
         public TipoComunicado TipoComunicado { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-        public string Turma { get; set; }
+        public IEnumerable<ComunicadoTurmaDto> Turmas { get; set; }
         public IEnumerable<ComunicadoAlunoDto> Alunos { get; set; }
+
+        public static explicit operator ComunicadoDto(Comunicado comunicado)
+        =>comunicado == null ? null : new ComunicadoDto
+        {
+            AnoLetivo = comunicado.AnoLetivo,
+            Turmas = comunicado.Turmas.Select(x => (ComunicadoTurmaDto)x),
+            Alunos = comunicado.Alunos.Select(x => (ComunicadoAlunoDto)x),
+            CodigoDre = comunicado.CodigoDre,
+            CodigoUe = comunicado.CodigoUe,
+            DataEnvio = comunicado.DataEnvio,
+            DataExpiracao = comunicado.DataExpiracao,
+            Descricao = comunicado.Descricao,
+            Id = comunicado.Id,
+            Modalidade = comunicado.Modalidade ?? default,
+            Semestre = comunicado.Semestre ?? default,
+            TipoComunicado = comunicado.TipoComunicado,
+            Titulo = comunicado.Titulo
+        };
     }
 }

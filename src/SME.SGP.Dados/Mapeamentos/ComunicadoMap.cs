@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Semestre).ToColumn("semestre");
             Map(c => c.CodigoDre).ToColumn("codigo_dre");
             Map(c => c.CodigoUe).ToColumn("codigo_ue");
-            Map(c => c.Turma).ToColumn("turma");
+            Map(c => c.Turmas).ToColumn("turma");
             Map(c => c.AlunoEspecificado).ToColumn("alunos_especificados");
             Map(c => c.TipoComunicado).ToColumn("tipo_comunicado");
         }

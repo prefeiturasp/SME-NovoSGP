@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -16,24 +17,44 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComunicado repositorio;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly IRepositorioComunicadoTurma repositorioComunicadoTurma;
+        private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
+        private readonly IRepositorioComunicadoGrupo repositorioComunicadoGrupo;
+        private readonly IConsultaGrupoComunicacao consultaGrupoComunicacao;
         private const string Todas = "todas";
 
         public ConsultaComunicado(
             IRepositorioComunicado repositorio,
             IContextoAplicacao contextoAplicacao,
             IServicoUsuario servicoUsuario,
-            IConsultasAbrangencia consultasAbrangencia) : base(contextoAplicacao)
+            IConsultasAbrangencia consultasAbrangencia,
+            IRepositorioComunicadoTurma repositorioComunicadoTurma,
+            IRepositorioComunicadoAluno repositorioComunicadoAluno,
+            IRepositorioComunicadoGrupo repositorioComunicadoGrupo,
+            IConsultaGrupoComunicacao consultaGrupoComunicacao) : base(contextoAplicacao)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
+            this.repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
+            this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
+            this.repositorioComunicadoGrupo = repositorioComunicadoGrupo ?? throw new ArgumentNullException(nameof(repositorioComunicadoGrupo));
+            this.consultaGrupoComunicacao = consultaGrupoComunicacao ?? throw new ArgumentNullException(nameof(consultaGrupoComunicacao));
         }
 
         public async Task<ComunicadoCompletoDto> BuscarPorIdAsync(long id)
         {
-            var comunicado = await repositorio.ObterResultadoPorComunicadoIdAsync(id);
+            var comunicado = await repositorio.ObterPorIdAsync(id);
 
-            var dto = MapearPorIdParaDto(comunicado);
+            comunicado.Alunos = (await repositorioComunicadoAluno.ObterPorComunicado(comunicado.Id)).ToList();
+
+            comunicado.Turmas = (await repositorioComunicadoTurma.ObterPorComunicado(comunicado.Id)).ToList();
+
+            comunicado.Grupos = (await repositorioComunicadoGrupo.ObterPorComunicado(comunicado.Id)).ToList();
+            
+            var dto = (ComunicadoCompletoDto)comunicado;
+
+            dto.Grupos = (await consultaGrupoComunicacao.Listar(comunicado.Grupos.Select(x => x.GrupoComunicadoId))).ToList();
 
             await ValidarAbrangenciaUsuario(dto);
 
@@ -52,104 +73,14 @@ namespace SME.SGP.Aplicacao
             return MapearParaDtoPaginado(comunicados);
         }
 
-        private static IEnumerable<ComunicadoCompletoDto> ConverterParaDto(IEnumerable<ComunicadoResultadoDto> comunicados)
-        {
-            var comunicadosDistintos = comunicados
-                        .Select(s => new
-                        {
-                            s.Titulo,
-                            s.Descricao,
-                            s.Id,
-                            s.Semestre,
-                            s.Modalidade,
-                            s.TipoComunicado,
-                            s.CodigoDre,
-                            s.CodigoUe,
-                            s.AnoLetivo,
-                            s.Turma,
-                            s.Alunos,
-                            s.AlteradoEm,
-                            s.AlteradoPor,
-                            s.AlteradoRF,
-                            s.CriadoEm,
-                            s.CriadoPor,
-                            s.CriadoRF,
-                            s.DataExpiracao,
-                            s.DataEnvio
-                        })
-                        .Distinct();
-
-            return comunicadosDistintos.Select(c => new ComunicadoCompletoDto
-            {
-                Id = c.Id,
-                Titulo = c.Titulo,
-                AnoLetivo = c.AnoLetivo,
-                CodigoDre = c.CodigoDre,
-                CodigoUe = c.CodigoUe,
-                Semestre = c.Semestre,                
-                Turma = c.Turma,
-                Alunos = c.Alunos,
-                Modalidade = c.Modalidade,
-                TipoComunicado = c.TipoComunicado,
-                Descricao = c.Descricao,
-                AlteradoEm = c.AlteradoEm,
-                AlteradoPor = c.AlteradoPor,
-                AlteradoRF = c.AlteradoRF,
-                CriadoEm = c.CriadoEm,
-                CriadoPor = c.CriadoPor,
-                CriadoRF = c.CriadoRF,
-                DataEnvio = c.DataEnvio,
-                DataExpiracao = c.DataExpiracao,
-                Grupos = comunicados.Where(w => w.Id == c.Id).Select(s => new GrupoComunicacaoDto { Id = s.GrupoId, Nome = s.Grupo }).ToList()
-            }); ;
-        }
-
-        private IEnumerable<ComunicadoDto> MapearParaDto(IEnumerable<Comunicado> items)
-        {
-            var comunicadosDistintos = items.Select(s => new { s.Id, s.Titulo, s.Descricao, s.DataEnvio, s.DataExpiracao, s.TipoComunicado, s.AlunoEspecificado, s.Alunos, s.AnoLetivo, s.CodigoDre, s.CodigoUe, s.Semestre, s.Modalidade, s.Turma }).Distinct();
-
-            return comunicadosDistintos.Select(s => new ComunicadoDto
-            {
-                Id = s.Id,
-                Titulo = s.Titulo,
-                DataEnvio = s.DataEnvio,
-                DataExpiracao = s.DataExpiracao,
-                Descricao = s.Descricao,
-                TipoComunicado = s.TipoComunicado,
-                CodigoUe = s.CodigoUe,
-                Turma = s.Turma,
-                Modalidade = s.Modalidade ?? 0,
-                Semestre = s.Semestre ?? 0,
-                AnoLetivo = s.AnoLetivo,
-                CodigoDre = s.CodigoDre,
-                Alunos = s.Alunos.Select(x => (ComunicadoAlunoDto)x),
-                Grupos = items.Where(w => w.Id == s.Id)
-                        .Select(x => x.Grupos
-                                      .Select(g =>
-                                        new GrupoComunicacaoDto
-                                        {
-                                            Id = g.Id,
-                                            Nome = g.Nome
-                                        })
-                                      .FirstOrDefault()
-                                )
-                        .ToList()
-            });
-        }
-
         private PaginacaoResultadoDto<ComunicadoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<Comunicado> comunicado)
         {
             return new PaginacaoResultadoDto<ComunicadoDto>
             {
-                Items = MapearParaDto(comunicado.Items),
+                Items = comunicado.Items.Select(x => (ComunicadoDto)x),
                 TotalPaginas = comunicado.TotalPaginas,
                 TotalRegistros = comunicado.TotalRegistros
             };
-        }
-
-        private ComunicadoCompletoDto MapearPorIdParaDto(IEnumerable<ComunicadoResultadoDto> comunicado)
-        {
-            return ConverterParaDto(comunicado).FirstOrDefault();
         }
 
         private async Task<bool> ValidarAbrangenciaListagem(FiltroComunicadoDto filtroDto)
@@ -167,7 +98,6 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
         }
-
         private static ComunicadoDto MapearFiltroDtoValidacao(FiltroComunicadoDto filtroDto)
         {
             return new ComunicadoDto
@@ -179,7 +109,7 @@ namespace SME.SGP.Aplicacao
                 DataExpiracao = filtroDto.DataExpiracao,
                 Modalidade = filtroDto.Modalidade,
                 Titulo = filtroDto.Titulo,
-                Turma = filtroDto.Turma,
+                Turmas = new List<ComunicadoTurmaDto> { new ComunicadoTurmaDto { CodigoTurma = filtroDto.Turma } },
                 Semestre = filtroDto.Semestre
             };
         }
@@ -203,10 +133,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarAbrangenciaTurma(ComunicadoDto filtroDto)
         {
-            var abrangenciaTurmas = await consultasAbrangencia.ObterAbrangenciaTurma(filtroDto.Turma);
+            foreach (var turma in filtroDto.Turmas)
+            {
+                var abrangenciaTurmas = await consultasAbrangencia.ObterAbrangenciaTurma(turma.CodigoTurma);
 
-            if (abrangenciaTurmas == null)
-                throw new NegocioException($"Usuário não possui permissão para visualizar comunicados da Turma com codigo {filtroDto.Turma}");
+                if (abrangenciaTurmas == null)
+                    throw new NegocioException($"Usuário não possui permissão para visualizar comunicados da Turma com codigo {turma.CodigoTurma}");
+            }
         }
 
         private async Task ValidarAbrangenciaUE(ComunicadoDto filtroDto)
@@ -218,7 +151,7 @@ namespace SME.SGP.Aplicacao
             if (ue == null)
                 throw new NegocioException($"Usuário não possui permissão para visualizar comunicados da UE com codigo {filtroDto.CodigoUe}");
 
-            if (!filtroDto.Turma.Equals(Todas))
+            if (filtroDto.Turmas != null && filtroDto.Turmas.Any())
                 await ValidarAbrangenciaTurma(filtroDto);
         }
 

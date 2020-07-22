@@ -23,8 +23,7 @@ namespace SME.SGP.Dto
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-        public string Turma { get; set; }
-        public Modalidade? Modalidade { get; set; }
+        public IEnumerable<string> Turmas { get; set; }
         public int? Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
     }

@@ -1,6 +1,8 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly IRepositorioComunicadoTurma repositorioComunicadoTurma;
         private const string Todas = "todas";
 
         public ComandoComunicado(IRepositorioComunicado repositorio,
@@ -27,7 +30,8 @@ namespace SME.SGP.Aplicacao
             IUnitOfWork unitOfWork,
             IRepositorioComunicadoAluno repositorioComunicadoAluno,
             IServicoUsuario servicoUsuario,
-            IConsultasAbrangencia consultasAbrangencia)
+            IConsultasAbrangencia consultasAbrangencia,
+            IRepositorioComunicadoTurma repositorioComunicadoTurma)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
             this.repositorioComunicadoGrupo = repositorioComunicadoGrupo ?? throw new System.ArgumentNullException(nameof(repositorioComunicadoGrupo));
@@ -36,6 +40,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
+            this.repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
         }
 
         public async Task<string> Alterar(long id, ComunicadoInserirDto comunicadoDto)
@@ -87,7 +92,10 @@ namespace SME.SGP.Aplicacao
                     {
                         await repositorioComunicadoGrupo.ExcluirPorIdComunicado(id);
                         await repositorioComunicadoAluno.RemoverTodosAlunosComunicado(id);
+                        await repositorioComunicadoTurma.RemoverTodasTurmasComunicado(id);
+
                         comunicado.MarcarExcluido();
+
                         await repositorio.SalvarAsync(comunicado);
                     }
                     catch
@@ -119,6 +127,10 @@ namespace SME.SGP.Aplicacao
 
                 comunicado.AtualizarIdAlunos();
 
+                comunicado.AtualizarIdTurmas();
+
+                await SalvarTurmas(comunicado.Turmas);
+
                 await SalvarAlunos(comunicado.Alunos);
 
                 MapearParaEntidadeServico(comunicadoServico, comunicado);
@@ -142,6 +154,18 @@ namespace SME.SGP.Aplicacao
                 await repositorioComunicadoAluno.SalvarAsync(aluno);
         }
 
+        private async Task SalvarTurmas(IEnumerable<ComunicadoTurma> turmas)
+        {
+            foreach (var turma in turmas)
+                await repositorioComunicadoTurma.SalvarAsync(turma);
+        }
+
+        private async Task SalvarGrupos(long id, ComunicadoInserirDto comunicadoDto)
+        {
+            foreach (var grupoId in comunicadoDto.GruposId)
+                await repositorioComunicadoGrupo.SalvarAsync(new ComunicadoGrupo { ComunicadoId = id, GrupoComunicadoId = grupoId });
+        }
+
         private void MapearAlteracao(ComunicadoInserirDto comunicadoDto, Comunicado comunicado)
         {
             comunicado.Descricao = comunicadoDto.Descricao;
@@ -158,10 +182,10 @@ namespace SME.SGP.Aplicacao
             if (comunicadoDto.CodigoDre.Equals(Todas) && !comunicadoDto.CodigoUe.Equals(Todas))
                 throw new NegocioException("Não é possivel especificar uma escola quando o comunicado é para todas as DREs");
 
-            if (comunicadoDto.CodigoUe.Equals(Todas) && !comunicadoDto.Turma.Equals(Todas))
+            if (comunicadoDto.CodigoUe.Equals(Todas) && comunicadoDto.Turmas.Any())
                 throw new NegocioException("Não é possivel especificar uma turma quando o comunicado é para todas as UEs");
 
-            if (comunicadoDto.Turma.Equals(Todas) && (comunicadoDto.AlunosEspecificados || comunicadoDto.Alunos.Any()))
+            if ((comunicadoDto.Turmas == null || !comunicadoDto.Turmas.Any()) && (comunicadoDto.AlunosEspecificados || (comunicadoDto.Alunos?.Any() ?? false)))
                 throw new NegocioException("Não é possivel especificar alunos quando o comunicado é para todas as Turmas");
         }
 
@@ -182,10 +206,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarAbrangenciaTurma(ComunicadoInserirDto comunicadoDto)
         {
-            var abrangenciaTurmas = await consultasAbrangencia.ObterAbrangenciaTurma(comunicadoDto.Turma);
+            foreach (var turma in comunicadoDto.Turmas)
+            {
+                var abrangenciaTurmas = await consultasAbrangencia.ObterAbrangenciaTurma(turma);
 
-            if (abrangenciaTurmas == null)
-                throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a Turma com codigo {comunicadoDto.Turma}");
+                if (abrangenciaTurmas == null)
+                    throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a Turma com codigo {turma}");
+            }
         }
 
         private async Task ValidarAbrangenciaUE(ComunicadoInserirDto comunicadoDto)
@@ -197,7 +224,7 @@ namespace SME.SGP.Aplicacao
             if (ue == null)
                 throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a UE com codigo {comunicadoDto.CodigoUe}");
 
-            if (!comunicadoDto.Turma.Equals(Todas))
+            if (comunicadoDto.Turmas != null && comunicadoDto.Turmas.Any())
                 await ValidarAbrangenciaTurma(comunicadoDto);
         }
 
@@ -226,14 +253,14 @@ namespace SME.SGP.Aplicacao
             if (!comunicadoDto.CodigoUe.Equals("todas"))
                 comunicado.CodigoUe = comunicadoDto.CodigoUe;
 
-            if (comunicadoDto.Turma != "todas")
-                comunicado.Turma = comunicadoDto.Turma;
+            if (comunicadoDto.Turmas != null && comunicadoDto.Turmas.Any())
+                comunicadoDto.Turmas.ToList().ForEach(x => comunicado.AdicionarTurma(x));
 
             if (comunicadoDto.Modalidade.HasValue)
                 comunicado.Modalidade = comunicadoDto.Modalidade;
 
             if (comunicadoDto.GruposId.Any())
-                comunicado.Grupos = comunicadoDto.GruposId.Select(s => new GrupoComunicacao { Id = s }).ToList();
+                comunicado.Grupos = comunicadoDto.GruposId.Select(s => new ComunicadoGrupo { Id = s }).ToList();
 
             if (comunicadoDto.AlunosEspecificados)
                 comunicadoDto.Alunos.ToList().ForEach(x => comunicado.AdicionarAluno(x));
@@ -267,18 +294,9 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.AnoLetivo = comunicado.AnoLetivo;
             comunicadoServico.CodigoDre = comunicado.CodigoDre;
             comunicadoServico.CodigoUe = comunicado.CodigoUe;
-            comunicadoServico.Turma = comunicado.Turma;
+            comunicadoServico.Turmas = comunicado.Turmas.Select(x => x.CodigoTurma);
             comunicadoServico.TipoComunicado = comunicado.TipoComunicado;
             comunicadoServico.Semestre = comunicado.Semestre;
-            comunicadoServico.Modalidade = comunicado.Modalidade;
-        }
-
-        private async Task SalvarGrupos(long id, ComunicadoInserirDto comunicadoDto)
-        {
-            foreach (var grupoId in comunicadoDto.GruposId)
-            {
-                await repositorioComunicadoGrupo.SalvarAsync(new ComunicadoGrupo { ComunicadoId = id, GrupoComunicadoId = grupoId });
-            }
         }
     }
 }
