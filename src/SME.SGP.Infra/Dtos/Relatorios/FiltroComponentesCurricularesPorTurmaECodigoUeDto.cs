@@ -2,7 +2,7 @@
 {
     public class FiltroComponentesCurricularesPorTurmaECodigoUeDto
     {
-        public string[] CodigoTurma { get; set; }
         public string CodigoUe { get; set; }
+        public string[] CodigosDeTurmas { get; set; }
     }
 }

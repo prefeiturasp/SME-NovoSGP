@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularDto>> Executar(FiltroComponentesCurricularesPorTurmaECodigoUeDto filtroComponentesCurricularesPorTurmaECodigoUeDto)
         {
-            var result = await mediator.Send(new ObterComponentesCurricularesPorTurmaECodigoUeQuery(filtroComponentesCurricularesPorTurmaECodigoUeDto.CodigoTurma, filtroComponentesCurricularesPorTurmaECodigoUeDto.CodigoUe));
+            var result = await mediator.Send(new ObterComponentesCurricularesPorTurmaECodigoUeQuery(filtroComponentesCurricularesPorTurmaECodigoUeDto.CodigosDeTurmas, filtroComponentesCurricularesPorTurmaECodigoUeDto.CodigoUe));
             return result;
         }
     }
