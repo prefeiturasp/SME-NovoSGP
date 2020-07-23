@@ -167,7 +167,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
                 if (tipoCalendario == null)
                     throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
-                var periodosEscolares = ObterPeriodosEscolares(tipoCalendario.Id);
+                var periodosEscolares = await ObterPeriodosEscolares(tipoCalendario.Id);
                 if (periodosEscolares == null)
                     throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
 
