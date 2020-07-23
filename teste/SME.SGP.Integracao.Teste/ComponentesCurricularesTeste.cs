@@ -1,6 +1,10 @@
-﻿using SME.SGP.Infra;
+﻿using Newtonsoft.Json;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using Xunit;
 
 namespace SME.SGP.Integracao.Teste
@@ -30,5 +34,20 @@ namespace SME.SGP.Integracao.Teste
             // Assert
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));
         }
+        //[Fact(DisplayName = "Retornar componentes curriculares")]
+        //[Trait("Componentes Curriculares", "Obter Componentes Curriculares Por Turma E CodigoUe")]
+        //public async void Obter_Componentes_Curriculares_PorTurma_E_CodigoUe()
+        //{
+        //    // Arrange
+        //    FiltroComponentesCurricularesPorTurmaECodigoUeDto filtro = new FiltroComponentesCurricularesPorTurmaECodigoUeDto();
+        //    var jsonParaPost = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+        //    // Act
+        //    fixture._clientApi.DefaultRequestHeaders.Clear();
+        //    fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }));
+        //    var result = await fixture._clientApi.PostAsync($"api/v1/componentes-curriculares/obter", jsonParaPost);
+
+        //    // Assert
+        //    Assert.True(fixture.ValidarStatusCodeComSucesso(result));
+        //}
     }
 }

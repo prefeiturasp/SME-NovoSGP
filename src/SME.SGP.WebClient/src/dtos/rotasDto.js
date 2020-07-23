@@ -44,6 +44,7 @@ const RotasDto = {
   ATA_FINAL_RESULTADOS: '/relatorios/atas/ata-final-resultados',
   FALTAS_FREQUENCIA: '/relatorios/frequencia/faltas-frequencia',
   DIARIO_BORDO: '/diario-classe/diario-bordo',
+  RELATORIO_PENDENCIAS: '/relatorios/pendencias',
 };
 
 export default RotasDto;

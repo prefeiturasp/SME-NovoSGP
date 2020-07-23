@@ -10,12 +10,18 @@ using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Infra.Contexto;
+using SME.SGP.IoC;
+using SME.Background.Core;
+using Moq;
 
 namespace SME.SGP.Integracao.Teste
 {
@@ -36,23 +42,28 @@ namespace SME.SGP.Integracao.Teste
                 _postgresRunner = PostgresRunner.Start(new PostgresRunnerOptions() { Port = 5434 });
                 MontaBaseDados(_postgresRunner);
 
-
                 _redisRunner = RedisRunner.Start();
 
                 Environment.SetEnvironmentVariable("ApplicationInsights__InstrumentationKey", "ab");                
 
                 var projectPath = GetContentRootPath("../src/SME.SGP.Api");
 
+                var servicoLog = new Mock<IServicoLog>();                    
+                servicoLog.Setup(sl => sl.Registrar(new Exception()));
+                servicoLog.Setup(sl => sl.Registrar(string.Empty));
+
                 var builderCliente = new WebHostBuilder()
                         .UseContentRoot(projectPath)
+                        .ConfigureServices(services =>
+                        {                            
+                            services.AddSingleton<IConnectionMultiplexerSME>(new ConnectionMultiplexerSME($"localhost:{_redisRunner.Port}", servicoLog.Object));
+                        })
                         .UseEnvironment("teste-integrado")
                         .UseConfiguration(new ConfigurationBuilder()
                         .SetBasePath(projectPath)
                         .AddJsonFile("appsettings.teste-integrado.json")
-                        .Build())
-                        .UseStartup<Startup>();
-
-                
+                        .Build())                        
+                        .UseStartup<Startup>();                
 
                 _testServerCliente = new TestServer(builderCliente);
 

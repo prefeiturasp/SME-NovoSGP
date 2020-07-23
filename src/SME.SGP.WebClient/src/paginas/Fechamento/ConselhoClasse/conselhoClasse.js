@@ -157,7 +157,7 @@ const ConselhoClasse = () => {
                         border
                         onClick={() => gerarConselhoClasseTurma()}
                         disabled={!podeImprimir}
-                        id="btn-imprimir-conselho-classe"
+                        id="btn-imprimir-relatorio-pendencias"
                       />
                     </Loader>
                   </div>

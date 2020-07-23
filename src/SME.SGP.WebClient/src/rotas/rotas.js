@@ -59,6 +59,7 @@ import AtaFinalResultados from '~/paginas/Relatorios/Atas/AtaFinalResultados/ata
 import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 import FaltasFrequencia from '~/paginas/Relatorios/Frequencia/faltasFrequencia';
 import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
+import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
 
 const rotas = new Map();
 
@@ -842,6 +843,17 @@ rotas.set(RotasDto.DIARIO_BORDO, {
   tipo: RotasTipo.EstruturadaAutenticada,
   // temPermissionamento: true,
   // chavePermissao: RotasDto.DIARIO_BORDO,
+});
+
+rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
+  breadcrumbName: 'Relatório de pendências',
+  menu: ['Relatórios'],
+  parent: '/',
+  component: RelatorioPendencias,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_PENDENCIAS,
 });
 
 const rotasArray = [];

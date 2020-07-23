@@ -7,7 +7,7 @@
 [Environment]::SetEnvironmentVariable("ExpiracaoCache__ObjetivosAprendizagem", "720", "Machine")
 [Environment]::SetEnvironmentVariable("Logging__LogLevel__Microsoft", "Information", "Machine")
 [Environment]::SetEnvironmentVariable("UrlApiJurema", "https://curriculo.sme.prefeitura.sp.gov.br/api/", "Machine")
-[Environment]::SetEnvironmentVariable("UrlApiEOL", "http://dev.smeintegracaoapi.sme.prefeitura.sp.gov.br/api/", "Machine")
+[Environment]::SetEnvironmentVariable("UrlApiEOL", "https://dev-smeintegracaoapi.sme.prefeitura.sp.gov.br/api/", "Machine")
 [Environment]::SetEnvironmentVariable("UrlApiAE", " https://dev-appaluno.sme.prefeitura.sp.gov.br/api/", "Machine")
 [Environment]::SetEnvironmentVariable("UrlApiGithub", "https://api.github.com/", "Machine")
 [Environment]::SetEnvironmentVariable("UsuarioGithub", "XXX", "Machine")
