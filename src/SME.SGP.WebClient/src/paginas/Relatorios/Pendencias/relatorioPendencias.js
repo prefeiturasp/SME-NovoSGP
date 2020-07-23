@@ -200,12 +200,14 @@ const RelatorioPendencias = () => {
     }
   }, [anoLetivo, ueId]);
 
-  const obterTurmas = useCallback(async (modalidadeSelecionada, ue) => {
+  const obterTurmas = useCallback(async (modalidadeSelecionada, ue, ano) => {
     if (ue && modalidadeSelecionada) {
       setCarregandoTurmas(true);
       const { data } = await AbrangenciaServico.buscarTurmas(
         ue,
-        modalidadeSelecionada
+        modalidadeSelecionada,
+        '',
+        ano
       );
       if (data) {
         const lista = [];
@@ -229,12 +231,12 @@ const RelatorioPendencias = () => {
 
   useEffect(() => {
     if (modalidadeId && ueId) {
-      obterTurmas(modalidadeId, ueId);
+      obterTurmas(modalidadeId, ueId, anoLetivo);
     } else {
       setTurmaId();
       setListaTurmas([]);
     }
-  }, [modalidadeId, ueId, obterTurmas]);
+  }, [modalidadeId, ueId, anoLetivo, obterTurmas]);
 
   useEffect(() => {
     if (modalidadeId === modalidade.EJA) {
