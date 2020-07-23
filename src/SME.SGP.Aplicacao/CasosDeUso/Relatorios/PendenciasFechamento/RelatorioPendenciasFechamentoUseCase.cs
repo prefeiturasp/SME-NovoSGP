@@ -21,10 +21,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtroRelatorioPendenciasFechamentoDto.DreCodigo));
             await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioPendenciasFechamentoDto.UeCodigo));
-            await mediator.Send(new ValidaSeExisteTurmaPorCodigoQuery(filtroRelatorioPendenciasFechamentoDto.TurmaCodigo));
+            //await mediator.Send(new ValidaSeExisteTurmaPorCodigoQuery(filtroRelatorioPendenciasFechamentoDto.TurmaCodigo));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.PendenciasFechamento, filtroRelatorioPendenciasFechamentoDto, usuarioLogado));
+            filtroRelatorioPendenciasFechamentoDto.UsuarioNome = usuarioLogado.Nome;
+            filtroRelatorioPendenciasFechamentoDto.UsuarioRf = usuarioLogado.CodigoRf;
+
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FechamentoPendencias, filtroRelatorioPendenciasFechamentoDto, usuarioLogado));
         }
     }
 }
