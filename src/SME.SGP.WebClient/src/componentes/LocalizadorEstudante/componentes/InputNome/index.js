@@ -17,7 +17,12 @@ const InputNome = props => {
   const [valor, setValor] = useState('');
 
   const onChangeValor = selecionado => {
-    if (regexIgnore && regexIgnore !== '') {
+    if (
+      regexIgnore &&
+      regexIgnore !== '' &&
+      selecionado &&
+      selecionado !== ''
+    ) {
       selecionado = selecionado.replace(regexIgnore, '');
     }
     setValor(selecionado);
