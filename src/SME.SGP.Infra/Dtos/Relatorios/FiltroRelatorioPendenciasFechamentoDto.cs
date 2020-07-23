@@ -12,7 +12,7 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public long[] ComponentesCurriculares { get; set; }
         public int? Bimestre { get; set; }
         public bool ExibirDetalhamento { get; set; }
-        public int Semestre { get; set; }
+        public int? Semestre { get; set; }
         public string UsuarioNome { get; set; }
         public string UsuarioRf { get; set; }
     }
