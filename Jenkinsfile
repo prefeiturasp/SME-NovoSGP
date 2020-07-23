@@ -19,23 +19,23 @@ pipeline {
         }
        }
        
-      // stage('Início Análise Código') {
-      //     when {
-      //       branch 'development'
-      //     }
-      //       steps {
-      //           //sh 'echo Analise SonarQube API'
-      //           //sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.host.url="http://sonar.sme.prefeitura.sp.gov.br" /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Integracao.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs"'
+      stage('Início Análise Código') {
+          when {
+            branch 'development'
+          }
+            steps {
+                sh 'echo Analise SonarQube API'
+                sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.host.url="http://sonar.sme.prefeitura.sp.gov.br" /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Integracao.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs"'
 
-      //       // anlise codigo frontend
-      //           // sh 'echo Analise SonarQube FRONTEND'
-      //           // sh 'sonar-scanner \
-      //           // -Dsonar.projectKey=SME-NovoSGP-WebClient \
-      //           // -Dsonar.sources=src/SME.SGP.WebClient \
-      //           // -Dsonar.host.url=http://sonar.sme.prefeitura.sp.gov.br \
-      //           // -Dsonar.login=1ab3b0eb51a0f51c846c13f2f5a0255fd5d7583e'
-      //       }
-      //  } 
+            //anlise codigo frontend
+                sh 'echo Analise SonarQube FRONTEND'
+                sh 'sonar-scanner \
+                -Dsonar.projectKey=SME-NovoSGP-WebClient \
+                -Dsonar.sources=src/SME.SGP.WebClient \
+                -Dsonar.host.url=http://sonar.sme.prefeitura.sp.gov.br \
+                -Dsonar.login=1ab3b0eb51a0f51c846c13f2f5a0255fd5d7583e'
+            }
+       } 
          
       stage('Build projeto') {
             steps {
@@ -48,19 +48,19 @@ pipeline {
       stage('Testes') {
             steps {
             //Executa os testes
-               sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+             sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
             }
         }
         
-      //         stage('Fim Análise Código') {
-      //     when {
-      //       branch 'development'
-      //     }
-      //       steps {
-      //           // sh 'echo Fim SonarQube API'
-      //           // sh 'dotnet-sonarscanner end /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b"'
-      //       }
-      //  }
+              stage('Fim Análise Código') {
+          when {
+            branch 'development'
+          }
+            steps {
+                sh 'echo Fim SonarQube API'
+                sh 'dotnet-sonarscanner end /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b"'
+            }
+       }
 
       stage('Deploy DEV') {
         when {
@@ -112,8 +112,8 @@ pipeline {
        
             }
         }
-		
-		  stage('Deploy DEV-rc2') {
+        
+          stage('Deploy DEV-rc2') {
             when {
                 branch 'development-r2'
             }
@@ -223,8 +223,8 @@ pipeline {
        
             }
         }
-	    
-	    stage('Deploy HOM-R2') {
+        
+        stage('Deploy HOM-R2') {
             when {
                 branch 'release-r2'
             }

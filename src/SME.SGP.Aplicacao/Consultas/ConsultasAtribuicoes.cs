@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
                 yield return new AbrangenciaUeRetorno()
                 {
                     Codigo = ue.CodigoUe,
-                    Nome = ue.Nome,
+                    NomeSimples = ue.Nome,
                     TipoEscola = ue.TipoEscola
                 };
             }

@@ -829,8 +829,8 @@ rotas.set(RotasDto.FALTAS_FREQUENCIA, {
   component: FaltasFrequencia,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.FALTAS_FREQUENCIA,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.FALTAS_FREQUENCIA,
 });
 
 rotas.set(RotasDto.RELATORIO_PENDENCIAS, {

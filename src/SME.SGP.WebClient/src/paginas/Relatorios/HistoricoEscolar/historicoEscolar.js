@@ -59,6 +59,14 @@ const HistoricoEscolar = () => {
   const [alunosSelecionados, setAlunosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
 
+  useEffect(() => {
+    if (codigosAlunosSelecionados?.length > 0) {
+      setAlunosSelecionados([]);
+      setEstudanteOpt('0');
+      setTurmaId();
+    }
+  }, [codigosAlunosSelecionados]);
+
   const listaEstudanteOpt = [
     { valor: '0', desc: 'Todos' },
     { valor: '1', desc: 'Estudantes selecionados' },
@@ -150,12 +158,10 @@ const HistoricoEscolar = () => {
         true
       );
       if (data) {
-        const lista = data
-          .map(item => ({
-            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
-            valor: String(item.codigo),
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'));
+        const lista = data.map(item => ({
+          desc: item.nome,
+          valor: String(item.codigo),
+        }));
 
         if (lista && lista.length && lista.length === 1) {
           setUeId(lista[0].valor);
@@ -306,6 +312,7 @@ const HistoricoEscolar = () => {
   useEffect(() => {
     const desabilitar =
       !alunoLocalizadorSelecionado &&
+      (!codigosAlunosSelecionados || codigosAlunosSelecionados?.length === 0) &&
       (!anoLetivo || !dreId || !ueId || !modalidadeId || !turmaId);
 
     if (String(modalidadeId) === String(modalidade.EJA)) {
@@ -315,6 +322,7 @@ const HistoricoEscolar = () => {
     }
   }, [
     alunoLocalizadorSelecionado,
+    codigosAlunosSelecionados,
     anoLetivo,
     dreId,
     ueId,
@@ -505,7 +513,10 @@ const HistoricoEscolar = () => {
                   lista={listaAnosLetivo}
                   valueOption="valor"
                   valueText="desc"
-                  disabled={listaAnosLetivo && listaAnosLetivo.length === 1}
+                  disabled={
+                    (listaAnosLetivo && listaAnosLetivo.length === 1) ||
+                    codigosAlunosSelecionados?.length > 0
+                  }
                   onChange={onChangeAnoLetivo}
                   valueSelect={anoLetivo}
                   placeholder="Ano letivo"
@@ -567,7 +578,8 @@ const HistoricoEscolar = () => {
                   disabled={
                     !ueId ||
                     alunoLocalizadorSelecionado?.length ||
-                    (listaModalidades && listaModalidades.length === 1)
+                    (listaModalidades && listaModalidades.length === 1) ||
+                    codigosAlunosSelecionados?.length > 0
                   }
                   onChange={onChangeModalidade}
                   valueSelect={modalidadeId}
@@ -611,7 +623,8 @@ const HistoricoEscolar = () => {
                   disabled={
                     !modalidadeId ||
                     alunoLocalizadorSelecionado?.length ||
-                    (listaTurmas && listaTurmas.length === 1)
+                    (listaTurmas && listaTurmas.length === 1) ||
+                    codigosAlunosSelecionados?.length > 0
                   }
                   valueSelect={turmaId}
                   onChange={onChangeTurma}
@@ -634,7 +647,11 @@ const HistoricoEscolar = () => {
                 valueSelect={estudanteOpt}
                 onChange={onChangeEstudanteOpt}
                 placeholder="Estudantes"
-                disabled={!turmaId || alunoLocalizadorSelecionado}
+                disabled={
+                  !turmaId ||
+                  alunoLocalizadorSelecionado ||
+                  codigosAlunosSelecionados?.length > 0
+                }
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
