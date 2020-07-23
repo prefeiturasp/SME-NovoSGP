@@ -38,11 +38,15 @@ const LocalizadorEstudante = props => {
 
     if (valor.length < 3) return;
 
-    const retorno = await service.buscarPorNome({
-      nome: valor,
-      codigoUe: ueId,
-      anoLetivo,
-    });
+    const retorno = await service
+      .buscarPorNome({
+        nome: valor,
+        codigoUe: ueId,
+        anoLetivo,
+      })
+      .catch(() => {
+        setDataSource([]);
+      });
 
     if (retorno && retorno?.data?.items?.length > 0) {
       setDataSource([]);
