@@ -128,12 +128,12 @@ class FiltroHelper {
         if (resposta.data) {
           resposta.data.forEach(unidade => {
             unidadesEscolares.push({
-              desc: `${tipoEscolaDTO[unidade.tipoEscola]} ${unidade.nome}`,
+              desc: unidade.nome,
               valor: unidade.codigo,
             });
           });
         }
-        return unidadesEscolares.sort(this.ordenarLista('desc'));
+        return unidadesEscolares;
       })
       .catch(() => unidadesEscolares);
   };
@@ -164,6 +164,7 @@ class FiltroHelper {
               desc: turma.nome,
               valor: turma.codigo,
               ano: turma.ano,
+              ensinoEspecial: turma.ensinoEspecial,
             });
           });
         }

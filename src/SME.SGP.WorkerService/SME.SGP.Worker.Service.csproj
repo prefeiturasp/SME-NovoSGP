@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
     <PackageReference Include="Sentry.Extensions.Logging" Version="1.2.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.1.58" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.6.0" />
   </ItemGroup>
 
