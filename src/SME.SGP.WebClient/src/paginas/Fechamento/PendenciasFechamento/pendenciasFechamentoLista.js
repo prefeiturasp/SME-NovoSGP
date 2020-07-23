@@ -290,9 +290,11 @@ const PendenciasFechamentoLista = ({ match }) => {
       dreCodigo: turmaSelecionada.dre,
       ueCodigo: turmaSelecionada.unidadeEscolar,
       modalidade: turmaSelecionada.modalidade,
-      turmaCodigo: [turmaSelecionada.turma],
+      turmasCodigo: [turmaSelecionada.turma],
       bimestre: bimestreSelecionado,
-      componentesCurriculares: [disciplinaIdSelecionada],
+      componentesCurriculares: disciplinaIdSelecionada
+        ? [disciplinaIdSelecionada]
+        : [],
       exibirDetalhamento: true,
     };
     await ServicoRelatorioPendencias.gerar(params)
@@ -333,7 +335,7 @@ const PendenciasFechamentoLista = ({ match }) => {
                     color={Colors.Azul}
                     border
                     onClick={() => gerarRelatorio()}
-                    disabled={lista.length === 0 || somenteConsulta}
+                    disabled={lista.length === 0}
                     id="btn-imprimir-conselho-classe"
                   />
                 </Loader>
