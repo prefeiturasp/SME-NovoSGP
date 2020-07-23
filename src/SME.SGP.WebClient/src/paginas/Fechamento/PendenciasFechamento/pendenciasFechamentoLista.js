@@ -292,7 +292,9 @@ const PendenciasFechamentoLista = ({ match }) => {
       modalidade: turmaSelecionada.modalidade,
       turmasCodigo: [turmaSelecionada.turma],
       bimestre: bimestreSelecionado,
-      componentesCurriculares: [disciplinaIdSelecionada],
+      componentesCurriculares: disciplinaIdSelecionada
+        ? [disciplinaIdSelecionada]
+        : [],
       exibirDetalhamento: true,
     };
     await ServicoRelatorioPendencias.gerar(params)
