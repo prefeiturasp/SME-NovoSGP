@@ -170,12 +170,10 @@ const HistoricoEscolar = () => {
         true
       );
       if (data) {
-        const lista = data
-          .map(item => ({
-            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
-            valor: String(item.codigo),
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'));
+        const lista = data.map(item => ({
+          desc: item.nome,
+          valor: String(item.codigo),
+        }));
 
         if (lista && lista.length && lista.length === 1) {
           setUeId(lista[0].valor);
@@ -228,6 +226,7 @@ const HistoricoEscolar = () => {
         }
       } else {
         setListaDres([]);
+        setDreId(undefined);
       }
       setCarregandoDres(false);
     }
@@ -235,12 +234,14 @@ const HistoricoEscolar = () => {
 
   const [carregandoTurmas, setCarregandoTurmas] = useState(false);
 
-  const obterTurmas = useCallback(async (modalidadeSelecionada, ue) => {
+  const obterTurmas = useCallback(async (modalidadeSelecionada, ue, ano) => {
     if (ue && modalidadeSelecionada) {
       setCarregandoTurmas(true);
       const { data } = await AbrangenciaServico.buscarTurmas(
         ue,
-        modalidadeSelecionada
+        modalidadeSelecionada,
+        '',
+        ano
       );
       if (data) {
         const lista = data.map(item => ({
@@ -300,13 +301,13 @@ const HistoricoEscolar = () => {
   }, [dreId, anoLetivo, obterUes]);
 
   useEffect(() => {
-    if (modalidadeId && ueId) {
-      obterTurmas(modalidadeId, ueId);
+    if (modalidadeId && ueId && anoLetivo) {
+      obterTurmas(modalidadeId, ueId, anoLetivo);
     } else {
       setTurmaId();
       setListaTurmas([]);
     }
-  }, [modalidadeId, ueId, obterTurmas]);
+  }, [modalidadeId, ueId, anoLetivo, obterTurmas]);
 
   useEffect(() => {
     if (modalidadeId && anoLetivo) {
@@ -325,6 +326,7 @@ const HistoricoEscolar = () => {
   useEffect(() => {
     const desabilitar =
       !alunoLocalizadorSelecionado &&
+      (!codigosAlunosSelecionados || codigosAlunosSelecionados?.length === 0) &&
       (!anoLetivo || !dreId || !ueId || !modalidadeId || !turmaId);
 
     if (String(modalidadeId) === String(modalidade.EJA)) {
@@ -334,6 +336,7 @@ const HistoricoEscolar = () => {
     }
   }, [
     alunoLocalizadorSelecionado,
+    codigosAlunosSelecionados,
     anoLetivo,
     dreId,
     ueId,

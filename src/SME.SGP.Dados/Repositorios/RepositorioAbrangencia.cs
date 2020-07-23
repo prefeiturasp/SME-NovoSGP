@@ -284,7 +284,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = @"select distinct codigo,
-	                                      nome,
+	                                      nome as NomeSimples,
 	                                      tipoescola
 	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo)
                           order by 2;";
@@ -300,7 +300,7 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo
             };
 
-            return (await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query, parametros)).AsList();
+            return await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query, parametros);
         }
 
         public bool PossuiAbrangenciaTurmaAtivaPorLogin(string login)
