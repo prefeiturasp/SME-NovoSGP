@@ -28,11 +28,11 @@ namespace SME.SGP.Dominio
         [Display(Name = "Centro Unificado de Educação - Escola Municipal de Educação Infantil", ShortName = "CEU EMEI")]
         CEUEMEI = 17,
 
-        [Display(Name = "Centro de Educação e Cultura Indígena", ShortName = "CECI")]
-        CECI = 20,
-
         [Display(Name = "Centro Municipal de Educação Infantil", ShortName = "CEMEI")]
         CEMEI = 28,
+
+        [Display(Name = "Centro de Educação e Cultura Indígena", ShortName = "CECI")]
+        CECI = 30,
 
         [Display(Name = "Centro Unificado de Educação - Centro Municipal de Educação Infantil", ShortName = "CEU CEMEI")]
         CEUCEMEI = 31

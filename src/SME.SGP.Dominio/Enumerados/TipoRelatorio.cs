@@ -24,5 +24,8 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/historicoescolarfundamental", ShortName = "HistoricoEscolar", Description = "Histórico Escolar Fundamental")]
         HistoricoEscolarFundamental = 7,
 
+        [Display(Name = "relatorios/fechamentopendencias", ShortName = "FechamentoPendencias", Description = "Relatório de Pendências do Fechamento")]
+        FechamentoPendencias = 8,
+
     }
 }
