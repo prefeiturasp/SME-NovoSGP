@@ -30,6 +30,7 @@ import {
   ListaCopiarCompensacoes,
 } from './styles';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const CompensacaoAusenciaForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -39,6 +40,10 @@ const CompensacaoAusenciaForm = ({ match }) => {
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
 
   const { turmaSelecionada } = usuario;
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const [refForm, setRefForm] = useState({});
   const [auditoria, setAuditoria] = useState([]);
@@ -163,12 +168,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
   }, [match.url, novoRegistro]);
 
   useEffect(() => {
-    const naoSetarSomenteConsultaNoStore =
-      String(turmaSelecionada.modalidade) === String(modalidade.INFANTIL);
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
     setSomenteConsulta(
       verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
     );
-  }, [turmaSelecionada, permissoesTela]);
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     const desabilitar = novoRegistro
@@ -475,17 +482,17 @@ const CompensacaoAusenciaForm = ({ match }) => {
       turmaSelecionada.turma &&
       turmaSelecionadaFiltroPrincipal == turmaSelecionada.turma &&
       listaDisciplinas.length < 1 &&
-      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
     ) {
       obterDisciplinas(turmaSelecionada.turma);
     }
   }, [
     obterDisciplinas,
-    turmaSelecionada.turma,
     resetarForm,
     turmaSelecionadaFiltroPrincipal,
     listaDisciplinas,
-    turmaSelecionada.modalidade,
+    turmaSelecionada,
+    modalidadesFiltroPrincipal,
   ]);
 
   const limparListas = () => {
@@ -885,7 +892,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
       )}
       {foraDoPeriodo &&
       turmaSelecionada &&
-      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL) ? (
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
         <ForaPerido />
       ) : (
         ''
@@ -951,7 +958,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     bold
                     className="mr-2"
                     onClick={() => validaAntesDoSubmit(form)}
-                    disabled={desabilitarCampos || !modoEdicao}
+                    disabled={
+                      ehTurmaInfantil(
+                        modalidadesFiltroPrincipal,
+                        turmaSelecionada
+                      ) ||
+                      desabilitarCampos ||
+                      !modoEdicao
+                    }
                   />
                 </div>
 

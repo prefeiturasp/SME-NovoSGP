@@ -35,7 +35,7 @@ import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 import RotasDto from '~/dtos/rotasDto';
 import { URL_HOME } from '~/constantes/url';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
-import modalidade from '~/dtos/modalidade';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 // Componentes internos
 const DesenvolvimentoReflexao = React.lazy(() =>
@@ -58,6 +58,9 @@ function TerritorioSaber() {
 
   const permissoesTela = useSelector(store => store.usuario.permissoes);
   const { turmaSelecionada } = useSelector(estado => estado.usuario);
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const habilitaCollapse = useMemo(
     () =>
@@ -65,14 +68,8 @@ function TerritorioSaber() {
       turmaSelecionada.anoLetivo &&
       turmaSelecionada.turma &&
       turmaSelecionada.unidadeEscolar &&
-      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL),
-    [
-      territorioSelecionado,
-      turmaSelecionada.anoLetivo,
-      turmaSelecionada.turma,
-      turmaSelecionada.unidadeEscolar,
-      turmaSelecionada.modalidade,
-    ]
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada),
+    [territorioSelecionado, turmaSelecionada, modalidadesFiltroPrincipal]
   );
 
   const buscarPlanejamento = useCallback(async () => {
@@ -103,19 +100,26 @@ function TerritorioSaber() {
     if (Object.keys(turmaSelecionada).length === 0) {
       setTerritorioSelecionado('');
     }
-    if (String(turmaSelecionada.modalidade) === String(modalidade.INFANTIL)) {
+    if (ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)) {
       setTerritorioSelecionado('');
     }
-  }, [buscarPlanejamento, habilitaCollapse, turmaSelecionada]);
+  }, [
+    buscarPlanejamento,
+    habilitaCollapse,
+    turmaSelecionada,
+    modalidadesFiltroPrincipal,
+  ]);
 
   useEffect(() => {
     const permissoes = permissoesTela[RotasDto.TERRITORIO_SABER];
-    const naoSetarSomenteConsultaNoStore =
-      String(turmaSelecionada.modalidade) === String(modalidade.INFANTIL);
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
     setSomenteConsulta(
       verificaSomenteConsulta(permissoes, naoSetarSomenteConsultaNoStore)
     );
-  }, [turmaSelecionada, permissoesTela]);
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   const salvarPlanejamento = useCallback(
     (irParaHome = false) => {
@@ -215,7 +219,7 @@ function TerritorioSaber() {
       <div className="col-md-12">
         {mostraMensagemSemTerritorios &&
         turmaSelecionada &&
-        String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL) ? (
+        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -240,8 +244,7 @@ function TerritorioSaber() {
           labelBotaoPrincipal="Salvar"
           somenteConsulta={somenteConsulta}
           desabilitarBotaoPrincipal={
-            String(turmaSelecionada.modalidade) ===
-              String(modalidade.INFANTIL) ||
+            ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
             !territorioSelecionado ||
             !modoEdicao
           }

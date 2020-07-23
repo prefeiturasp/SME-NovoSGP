@@ -10,6 +10,7 @@ import { SelectComponent, Loader } from '~/componentes';
 // Serviços
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import modalidade from '~/dtos/modalidade';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 function DropDownTerritorios({
   onChangeTerritorio,
@@ -21,6 +22,9 @@ function DropDownTerritorios({
   const [possuiUmUnicoTerritorio, setPossuiUmUnicoTerritorio] = useState(false);
 
   const { turmaSelecionada } = useSelector(state => state.usuario);
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   useEffect(() => {
     async function buscarTerritorios() {
@@ -41,7 +45,7 @@ function DropDownTerritorios({
     }
     if (
       Object.keys(turmaSelecionada).length > 0 &&
-      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
     ) {
       onChangeTerritorio(undefined);
       buscarTerritorios();
@@ -49,12 +53,7 @@ function DropDownTerritorios({
       setListaTerritorios([]);
       onBuscarTerritorios(false);
     }
-  }, [
-    onChangeTerritorio,
-    turmaSelecionada,
-    turmaSelecionada.turma,
-    turmaSelecionada.modalidade,
-  ]);
+  }, [onChangeTerritorio, turmaSelecionada, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     if (listaTerritorios.length === 1) {

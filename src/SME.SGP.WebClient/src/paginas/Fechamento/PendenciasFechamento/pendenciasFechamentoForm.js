@@ -27,10 +27,15 @@ import ServicoPendenciasFechamento from '~/servicos/Paginas/Fechamento/ServicoPe
 import Editor from '~/componentes/editor/editor';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const PendenciasFechamentoForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const permissoesTela = usuario.permissoes[RotasDto.PENDENCIAS_FECHAMENTO];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -64,8 +69,14 @@ const PendenciasFechamentoForm = ({ match }) => {
   };
 
   useEffect(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, [permissoesTela]);
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
+    );
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     const montaBimestre = () => {
@@ -102,14 +113,14 @@ const PendenciasFechamentoForm = ({ match }) => {
 
     if (
       turmaSelecionada.turma &&
-      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
     ) {
       montaBimestre();
       obterDisciplinas();
     } else {
       resetarTela();
     }
-  }, [turmaSelecionada.turma, turmaSelecionada.modalidade]);
+  }, [turmaSelecionada, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     const consultaPorId = async () => {
@@ -165,10 +176,10 @@ const PendenciasFechamentoForm = ({ match }) => {
       }
     };
 
-    if (String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)) {
+    if (!ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)) {
       consultaPorId();
     }
-  }, []);
+  }, [modalidadesFiltroPrincipal, turmaSelecionada, match]);
 
   const onClickVoltar = () => history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}`);
 
@@ -217,9 +228,8 @@ const PendenciasFechamentoForm = ({ match }) => {
 
   return (
     <Loader loading={carregandoDados} tip="">
-      {usuario && turmaSelecionada.turma ? (
-        ''
-      ) : (
+      {!turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
         <Alert
           alerta={{
             tipo: 'warning',
@@ -229,6 +239,8 @@ const PendenciasFechamentoForm = ({ match }) => {
           }}
           className="mb-2"
         />
+      ) : (
+        ''
       )}
       <AlertaModalidadeInfantil />
       <Cabecalho pagina="Análise de Pendências" />
@@ -252,8 +264,10 @@ const PendenciasFechamentoForm = ({ match }) => {
                 className="mr-2"
                 onClick={onClickAprovar}
                 disabled={
-                  String(turmaSelecionada.modalidade) ===
-                    String(modalidade.INFANTIL) ||
+                  ehTurmaInfantil(
+                    modalidadesFiltroPrincipal,
+                    turmaSelecionada
+                  ) ||
                   somenteConsulta ||
                   !permissoesTela.podeAlterar ||
                   !situacaoId ||

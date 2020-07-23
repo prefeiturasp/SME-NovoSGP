@@ -24,6 +24,7 @@ import periodo from '~/dtos/periodo';
 import { setExpandirLinha } from '~/redux/modulos/notasConceitos/actions';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import modalidade from '~/dtos/modalidade';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const FechamentoBismestre = () => {
   const dispatch = useDispatch();
@@ -35,13 +36,19 @@ const FechamentoBismestre = () => {
   const { podeIncluir, podeAlterar } = permissoesTela;
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
+
   useEffect(() => {
-    const naoSetarSomenteConsultaNoStore =
-      String(turmaSelecionada.modalidade) === String(modalidade.INFANTIL);
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
     setSomenteConsulta(
       verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
     );
-  }, [turmaSelecionada, permissoesTela]);
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
   const [carregandoBimestres, setCarregandoBimestres] = useState(false);
@@ -123,7 +130,7 @@ const FechamentoBismestre = () => {
       if (
         turmaSelecionada &&
         turmaSelecionada.turma &&
-        String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
+        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
       ) {
         setCarregandoDisciplinas(true);
         const lista = await ServicoDisciplina.obterDisciplinasPorTurma(
@@ -149,7 +156,7 @@ const FechamentoBismestre = () => {
     setListaDisciplinas([]);
     resetarTela();
     obterDisciplinas();
-  }, [turmaSelecionada]);
+  }, [turmaSelecionada, modalidadesFiltroPrincipal]);
 
   const obterDados = async (bimestre = 0) => {
     if (disciplinaIdSelecionada) {
@@ -288,7 +295,8 @@ const FechamentoBismestre = () => {
   //FechamentoFinal
   return (
     <>
-      {!turmaSelecionada.turma ? (
+      {!turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, usuario.turmaSelecionada) ? (
         <Grid cols={12} className="p-0">
           <Alert
             alerta={{
