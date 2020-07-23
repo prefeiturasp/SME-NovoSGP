@@ -13,6 +13,7 @@ import {
   setIdCamposNotasPosConselho,
 } from '~/redux/modulos/conselhoClasse/actions';
 import servicoSalvarConselhoClasse from '../../servicoSalvarConselhoClasse';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const BotoesAcoesConselhoClasse = () => {
   const dispatch = useDispatch();
@@ -36,6 +37,13 @@ const BotoesAcoesConselhoClasse = () => {
   const desabilitarCampos = useSelector(
     store => store.conselhoClasse.desabilitarCampos
   );
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
+
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
 
   const onClickSalvar = async () => {
     const validouNotaConceitoPosConselho = await servicoSalvarConselhoClasse.validarNotaPosConselho(
@@ -132,7 +140,11 @@ const BotoesAcoesConselhoClasse = () => {
         bold
         className="mr-2"
         onClick={onClickSalvar}
-        disabled={desabilitarCampos || !conselhoClasseEmEdicao}
+        disabled={
+          ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
+          desabilitarCampos ||
+          !conselhoClasseEmEdicao
+        }
       />
     </>
   );

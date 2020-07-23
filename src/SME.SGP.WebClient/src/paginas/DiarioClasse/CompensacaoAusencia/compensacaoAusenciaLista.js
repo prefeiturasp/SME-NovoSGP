@@ -18,10 +18,16 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import { AlunosCompensacao } from './styles';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const CompensacaoAusenciaLista = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const permissoesTela = usuario.permissoes[RotasDto.COMPENSACAO_AUSENCIA];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -42,8 +48,14 @@ const CompensacaoAusenciaLista = () => {
   );
 
   useEffect(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, [permissoesTela]);
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
+    );
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     if (!disciplinaIdSelecionada || disciplinaIdSelecionada === 0) return;
@@ -136,7 +148,10 @@ const CompensacaoAusenciaLista = () => {
       setCarregandoDisciplinas(false);
     };
 
-    if (turmaSelecionada.turma) {
+    if (
+      turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
+    ) {
       resetarFiltro();
       obterDisciplinas();
     } else {
@@ -158,7 +173,7 @@ const CompensacaoAusenciaLista = () => {
       ];
     }
     setListaBimestres(listaBi);
-  }, [turmaSelecionada.turma, turmaSelecionada.modalidade]);
+  }, [turmaSelecionada, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     if (disciplinaIdSelecionada) {
@@ -271,9 +286,8 @@ const CompensacaoAusenciaLista = () => {
 
   return (
     <>
-      {usuario && turmaSelecionada.turma ? (
-        ''
-      ) : (
+      {!turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
         <Alert
           alerta={{
             tipo: 'warning',
@@ -283,6 +297,8 @@ const CompensacaoAusenciaLista = () => {
           }}
           className="mb-2"
         />
+      ) : (
+        ''
       )}
       {componenteSemFrequencia && (
         <Alert
@@ -296,6 +312,7 @@ const CompensacaoAusenciaLista = () => {
           className="mb-2"
         />
       )}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Compensação de Ausência" />
       <Card>
         <div className="col-md-12">
@@ -329,6 +346,10 @@ const CompensacaoAusenciaLista = () => {
                 className="mr-2"
                 onClick={onClickNovo}
                 disabled={
+                  ehTurmaInfantil(
+                    modalidadesFiltroPrincipal,
+                    turmaSelecionada
+                  ) ||
                   somenteConsulta ||
                   componenteSemFrequencia ||
                   !permissoesTela.podeIncluir ||
