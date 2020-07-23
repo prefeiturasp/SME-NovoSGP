@@ -26,6 +26,8 @@ import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import { BotaoImprimir } from './pendenciasFechamentoLista.css';
+import ServicoRelatorioPendencias from '~/servicos/Paginas/Relatorios/Pendencias/ServicoRelatorioPendencias';
 
 const PendenciasFechamentoLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -37,6 +39,7 @@ const PendenciasFechamentoLista = ({ match }) => {
 
   const permissoesTela = usuario.permissoes[RotasDto.PENDENCIAS_FECHAMENTO];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [lista, setLista] = useState([]);
 
   const [exibirLista, setExibirLista] = useState(false);
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
@@ -50,6 +53,7 @@ const PendenciasFechamentoLista = ({ match }) => {
     undefined
   );
   const [filtrouValoresRota, setFiltrouValoresRota] = useState(false);
+  const [imprimindo, setImprimido] = useState(false);
 
   useEffect(() => {
     const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
@@ -59,6 +63,11 @@ const PendenciasFechamentoLista = ({ match }) => {
     setSomenteConsulta(
       verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
     );
+
+    if (naoSetarSomenteConsultaNoStore) {
+      resetarFiltro();
+      setListaBimestres([]);
+    }
   }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   const montaExibicaoSituacao = (situacaoId, pendencia) => {
@@ -184,7 +193,12 @@ const PendenciasFechamentoLista = ({ match }) => {
         setListaDisciplinas([]);
       }
 
-      if (temSugestaoBimestre && disciplinas && disciplinas.data && disciplinas.data.length === 1) {
+      if (
+        temSugestaoBimestre &&
+        disciplinas &&
+        disciplinas.data &&
+        disciplinas.data.length === 1
+      ) {
         const disciplina = disciplinas.data[0];
         setDisciplinaIdSelecionada(
           String(disciplina.codigoComponenteCurricular)
@@ -199,7 +213,9 @@ const PendenciasFechamentoLista = ({ match }) => {
         match.params.codigoComponenteCurricular
       ) {
         const { codigoComponenteCurricular } = match.params;
-        const temNaLista = disciplinas.data.find(item => item.codigoComponenteCurricular == codigoComponenteCurricular);
+        const temNaLista = disciplinas.data.find(
+          item => item.codigoComponenteCurricular == codigoComponenteCurricular
+        );
         if (temNaLista) {
           setDisciplinaIdSelecionada(String(codigoComponenteCurricular));
           setFiltrouValoresRota(true);
@@ -250,7 +266,9 @@ const PendenciasFechamentoLista = ({ match }) => {
 
   const onClickEditar = pendencia => {
     if (permissoesTela.podeConsultar) {
-      history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${pendencia.pendenciaId}`);
+      history.push(
+        `${RotasDto.PENDENCIAS_FECHAMENTO}/${pendencia.pendenciaId}`
+      );
     }
   };
 
@@ -266,7 +284,7 @@ const PendenciasFechamentoLista = ({ match }) => {
     const ids = pendenciasSelecionadas.map(e => e.pendenciaId);
     const retorno = await ServicoPendenciasFechamento.aprovar(ids).catch(e =>
       erros(e)
-      );
+    );
     if (retorno && retorno.data) {
       const comErros = retorno.data.filter(item => !item.sucesso);
       if (comErros && comErros.length) {
@@ -283,6 +301,30 @@ const PendenciasFechamentoLista = ({ match }) => {
         filtrar();
       }
     }
+  };
+
+  const gerarRelatorio = async () => {
+    setImprimido(true);
+    const params = {
+      anoLetivo: turmaSelecionada.anoLetivo,
+      dreCodigo: turmaSelecionada.dre,
+      ueCodigo: turmaSelecionada.unidadeEscolar,
+      modalidade: turmaSelecionada.modalidade,
+      turmasCodigo: [turmaSelecionada.turma],
+      bimestre: bimestreSelecionado,
+      componentesCurriculares: disciplinaIdSelecionada
+        ? [disciplinaIdSelecionada]
+        : [],
+      exibirDetalhamento: true,
+    };
+    await ServicoRelatorioPendencias.gerar(params)
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
+      })
+      .catch(e => erros(e))
+      .finally(setImprimido(false));
   };
 
   return (
@@ -307,6 +349,19 @@ const PendenciasFechamentoLista = ({ match }) => {
         <div className="col-md-12">
           <div className="row">
             <div className="col-md-12 d-flex justify-content-end pb-4">
+              <BotaoImprimir className="d-flex mr-2">
+                <Loader loading={imprimindo}>
+                  <Button
+                    className="btn-imprimir"
+                    icon="print"
+                    color={Colors.Azul}
+                    border
+                    onClick={() => gerarRelatorio()}
+                    disabled={lista.length === 0}
+                    id="btn-imprimir-conselho-classe"
+                  />
+                </Loader>
+              </BotaoImprimir>
               <Button
                 label="Voltar"
                 icon="arrow-left"
@@ -331,8 +386,11 @@ const PendenciasFechamentoLista = ({ match }) => {
                   somenteConsulta ||
                   !permissoesTela.podeAlterar ||
                   (turmaSelecionada.turma && listaDisciplinas.length < 1) ||
-                  (pendenciasSelecionadas && pendenciasSelecionadas.length < 1) ||
-                  pendenciasSelecionadas.filter(item => item.situacao == situacaoPendenciaDto.Aprovada).length > 0
+                  (pendenciasSelecionadas &&
+                    pendenciasSelecionadas.length < 1) ||
+                  pendenciasSelecionadas.filter(
+                    item => item.situacao == situacaoPendenciaDto.Aprovada
+                  ).length > 0
                 }
               />
             </div>
@@ -348,6 +406,10 @@ const PendenciasFechamentoLista = ({ match }) => {
                 lista={listaBimestres}
                 placeholder="Selecione o bimestre"
                 valueSelect={bimestreSelecionado}
+                disabled={ehTurmaInfantil(
+                  modalidadesFiltroPrincipal,
+                  turmaSelecionada
+                )}
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-2">
@@ -361,7 +423,14 @@ const PendenciasFechamentoLista = ({ match }) => {
                   valueSelect={disciplinaIdSelecionada}
                   onChange={onChangeDisciplinas}
                   placeholder="Selecione o componente curricular"
-                  disabled={desabilitarDisciplina || !bimestreSelecionado}
+                  disabled={
+                    ehTurmaInfantil(
+                      modalidadesFiltroPrincipal,
+                      turmaSelecionada
+                    ) ||
+                    desabilitarDisciplina ||
+                    !bimestreSelecionado
+                  }
                 />
               </Loader>
             </div>
@@ -378,6 +447,7 @@ const PendenciasFechamentoLista = ({ match }) => {
               onClick={onClickEditar}
               multiSelecao={!somenteConsulta}
               selecionarItems={onSelecionarItems}
+              setLista={dados => setLista(dados)}
             />
           </div>
         ) : (

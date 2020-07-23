@@ -1,8 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
+using SME.SGP.Dados;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -33,12 +37,27 @@ namespace SME.SGP.Worker.Service
             {
                 services.AddHostedService<WorkerService>();
                 WorkerService.ConfigurarDependencias(hostContext.Configuration, services);
-                WorkerService.Configurar(hostContext.Configuration, services);               
-
-                services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.
-                    Connect(hostContext.Configuration.GetConnectionString("SGP-Redis")));
+                WorkerService.Configurar(hostContext.Configuration, services);
 
                 services.AddApplicationInsightsTelemetryWorkerService(hostContext.Configuration.GetValue<string>("ApplicationInsights__InstrumentationKey"));
+
+                var provider = services.BuildServiceProvider();
+
+                services.AddSingleton<IConnectionMultiplexerSME>(
+                    new ConnectionMultiplexerSME(hostContext.Configuration.GetConnectionString("SGP-Redis"), provider.GetService<IServicoLog>()));
+
+                // Teste para injeção do client de telemetria em classe estática                 ,
+
+
+                var telemetryConfiguration = new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration(hostContext.Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey"));
+
+                var telemetryClient = new TelemetryClient(telemetryConfiguration);
+
+                DapperExtensionMethods.Init(telemetryClient);
+
+                //
+
+
             });
 
             builder.UseEnvironment(asService ? EnvironmentName.Production : EnvironmentName.Development);

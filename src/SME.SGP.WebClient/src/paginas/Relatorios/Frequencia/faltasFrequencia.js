@@ -114,16 +114,14 @@ const FaltasFrequencia = () => {
       });
       if (retorno && retorno.data) {
         const lista = retorno.data.map(item => ({
-          desc: `${
-            item.codigo === '-99' ? '' : tipoEscolaDTO[item.tipoEscola]
-          } ${item.nome}`,
+          desc: item.nome,
           valor: String(item.codigo),
         }));
 
         if (lista && lista.length && lista.length === 1) {
           setCodigoUe(lista[0].valor);
         }
-        setListaUes(lista.sort(FiltroHelper.ordenarLista('desc')));
+        setListaUes(lista);
       } else {
         setListaUes([]);
       }
@@ -388,6 +386,9 @@ const FaltasFrequencia = () => {
   const onClickCancelar = () => {
     setAnoLetivo(undefined);
     setCodigoDre(undefined);
+    setTipoRelatorio(undefined);
+    setCondicao(undefined);
+    setValorCondicao(undefined);
     setListaAnosLetivo([]);
     setListaDres([]);
 
