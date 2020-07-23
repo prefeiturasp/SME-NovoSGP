@@ -1014,5 +1014,16 @@ namespace SME.SGP.Aplicacao.Integracoes
             return Enumerable.Empty<ComponenteCurricularEol>();
         }
 
+        public async Task AtribuirPerfil(string codigoRf, Guid perfil)
+        {
+            var resposta = await httpClient.GetAsync($"perfis/servidores/{codigoRf}/perfil/{perfil}/atribuirPerfil");
+
+            if (resposta.IsSuccessStatusCode)
+                return;
+
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+
+            throw new NegocioException(mensagem);
+        }
     }
 }
