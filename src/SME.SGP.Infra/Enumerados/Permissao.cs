@@ -470,7 +470,7 @@
         HE_A = 155,
 
         [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/faltas-frequencia", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Faltas e frequência")]
-        FF_C = 156
+        FF_C = 156,
 
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pendenciasfechamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Pendências do Fechamento")]
         RPF_C = 157,

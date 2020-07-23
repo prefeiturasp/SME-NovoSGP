@@ -1,6 +1,10 @@
-﻿using SME.SGP.Infra;
+﻿using Newtonsoft.Json;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using Xunit;
 
 namespace SME.SGP.Integracao.Teste
