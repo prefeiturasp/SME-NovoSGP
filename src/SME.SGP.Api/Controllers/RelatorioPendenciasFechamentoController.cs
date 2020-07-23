@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/relatorio/pendencias-fechamento")]
+    [Route("api/v1/relatorios/fechamentos/pendencias")]
     public class RelatorioPendenciasFechamentoController : ControllerBase
     {
-        [HttpPost]
-        [Route("gerar")]
+        [HttpPost]        
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
