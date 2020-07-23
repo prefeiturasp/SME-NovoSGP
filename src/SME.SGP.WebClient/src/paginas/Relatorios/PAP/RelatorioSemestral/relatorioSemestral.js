@@ -26,7 +26,7 @@ import { Container } from './relatorioSemestral.css';
 import servicoSalvarRelatorioSemestral from './servicoSalvarRelatorioSemestral';
 import ModalErrosRalSemestralPAP from './DadosRelatorioSemestral/ModalErros/ModalErrosRalSemestralPAP';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
-import modalidade from '~/dtos/modalidade';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const RelatorioSemestral = () => {
   const dispatch = useDispatch();
@@ -35,6 +35,9 @@ const RelatorioSemestral = () => {
   const { turmaSelecionada } = usuario;
   const { turma, anoLetivo } = turmaSelecionada;
 
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
   const [carregandoGeral, setCarregandoGeral] = useState(false);
 
   const [listaSemestres, setListaSemestres] = useState([]);
@@ -81,7 +84,7 @@ const RelatorioSemestral = () => {
     dispatch(setAlunosRelatorioSemestral([]));
     if (
       turma &&
-      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
     ) {
       obterListaSemestres();
     } else {
@@ -94,7 +97,8 @@ const RelatorioSemestral = () => {
     resetarInfomacoes,
     dispatch,
     obterListaSemestres,
-    turmaSelecionada.modalidade,
+    turmaSelecionada,
+    modalidadesFiltroPrincipal,
   ]);
 
   useEffect(() => {
@@ -151,7 +155,8 @@ const RelatorioSemestral = () => {
   return (
     <Container>
       <ModalErrosRalSemestralPAP />
-      {!turmaSelecionada.turma ? (
+      {!turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
         <div className="col-md-12">
           <Alert
             alerta={{
@@ -171,15 +176,17 @@ const RelatorioSemestral = () => {
       <Cabecalho pagina="Relatório semestral" />
       <Loader loading={carregandoGeral}>
         <Card>
-          {turmaSelecionada.turma ? (
-            <>
-              <div className="col-md-12">
-                <div className="row">
-                  <div className="col-md-12 d-flex justify-content-end pb-4">
-                    <BotoesAcoesRelatorioSemestral />
-                  </div>
+          <>
+            <div className="col-md-12">
+              <div className="row">
+                <div className="col-md-12 d-flex justify-content-end pb-4">
+                  <BotoesAcoesRelatorioSemestral />
                 </div>
               </div>
+            </div>
+          </>
+          {turmaSelecionada.turma ? (
+            <>
               <div className="col-md-12">
                 <div className="row">
                   <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 mb-2">

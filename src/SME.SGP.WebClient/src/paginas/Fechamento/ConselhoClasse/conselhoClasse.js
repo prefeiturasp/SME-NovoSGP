@@ -24,6 +24,7 @@ import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil
 import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const ConselhoClasse = () => {
   const dispatch = useDispatch();
@@ -45,6 +46,10 @@ const ConselhoClasse = () => {
   const fechamentoTurmaId = useSelector(
     store =>
       store.conselhoClasse.dadosPrincipaisConselhoClasse.fechamentoTurmaId
+  );
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
   );
 
   useEffect(() => {
@@ -70,21 +75,29 @@ const ConselhoClasse = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const naoSetarSomenteConsultaNoStore =
-      String(turmaSelecionada.modalidade) === String(modalidade.INFANTIL);
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
     verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore);
-  }, [turmaSelecionada, permissoesTela]);
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     resetarInfomacoes();
     if (
       turmaSelecionada &&
       turmaSelecionada.turma &&
-      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL)
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
     ) {
       obterListaAlunos();
     }
-  }, [obterListaAlunos, turma, turmaSelecionada, resetarInfomacoes]);
+  }, [
+    obterListaAlunos,
+    turma,
+    turmaSelecionada,
+    resetarInfomacoes,
+    modalidadesFiltroPrincipal,
+  ]);
 
   const obterFrequenciaAluno = async codigoAluno => {
     const retorno = await ServicoConselhoClasse.obterFrequenciaAluno(
@@ -133,7 +146,8 @@ const ConselhoClasse = () => {
 
   return (
     <Container>
-      {!turmaSelecionada.turma ? (
+      {!turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
         <div className="col-md-12">
           <Alert
             alerta={{
@@ -152,18 +166,19 @@ const ConselhoClasse = () => {
       <Cabecalho pagina="Conselho de classe" />
       <Loader loading={carregandoGeral}>
         <Card>
-          {turmaSelecionada.turma ? (
-            <>
-              <div className="col-md-12">
-                <div className="row">
-                  <div className="col-md-12 d-flex justify-content-end pb-4">
-                    <BotoesAcoesConselhoClasse />
-                  </div>
+          <>
+            <div className="col-md-12">
+              <div className="row">
+                <div className="col-md-12 d-flex justify-content-end pb-4">
+                  <BotoesAcoesConselhoClasse />
                 </div>
               </div>
-              {exibirListas &&
-              String(turmaSelecionada.modalidade) !==
-                String(modalidade.INFANTIL) ? (
+            </div>
+          </>
+          {turmaSelecionada.turma &&
+          !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
+            <>
+              {exibirListas ? (
                 <>
                   <div className="col-md-12 mb-2 d-flex">
                     <BotaoOrdenarListaAlunos />

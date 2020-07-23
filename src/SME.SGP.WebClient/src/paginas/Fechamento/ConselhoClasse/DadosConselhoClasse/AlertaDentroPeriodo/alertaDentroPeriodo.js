@@ -1,11 +1,15 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Alert from '~/componentes/alert';
-import modalidade from '~/dtos/modalidade';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const AlertaDentroPeriodo = () => {
   const dentroPeriodo = useSelector(
     store => store.conselhoClasse.dentroPeriodo
+  );
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
   );
   const { turmaSelecionada } = useSelector(store => store.usuario);
 
@@ -14,7 +18,7 @@ const AlertaDentroPeriodo = () => {
       {!dentroPeriodo &&
       turmaSelecionada &&
       turmaSelecionada.turma &&
-      String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL) ? (
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
         <Alert
           alerta={{
             tipo: 'warning',

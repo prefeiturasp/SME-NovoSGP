@@ -41,9 +41,8 @@ import Reducer, {
 
 // Utils
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
-import { MensagemAlerta } from '~/paginas/Perfil/meusDados.css';
-import modalidade from '~/dtos/modalidade';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 function RelatorioPAPAcompanhamento() {
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
@@ -55,6 +54,9 @@ function RelatorioPAPAcompanhamento() {
   const { turmaSelecionada } = useSelector(store => store.usuario);
   const [semPeriodos, setSemPeriodos] = useState(false);
   const [somenteLeitura, setSomenteLeitura] = useState(false);
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const dispararAlteracoes = dados => {
     setEstadoOriginalAlunos(dados.periodo.alunos);
@@ -290,7 +292,7 @@ function RelatorioPAPAcompanhamento() {
     <>
       <AlertaSelecionarTurma />
       {somenteLeitura &&
-        String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL) && (
+        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) && (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -303,7 +305,7 @@ function RelatorioPAPAcompanhamento() {
           />
         )}
       {semPeriodos &&
-        String(turmaSelecionada.modalidade) !== String(modalidade.INFANTIL) && (
+        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) && (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -334,8 +336,7 @@ function RelatorioPAPAcompanhamento() {
             onClickCancelar={() => onClickCancelarHandler()}
             labelBotaoPrincipal="Salvar"
             desabilitarBotaoPrincipal={
-              String(turmaSelecionada.modalidade) ===
-                String(modalidade.INFANTIL) ||
+              ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
               somenteLeitura ||
               !modoEdicao ||
               !periodo

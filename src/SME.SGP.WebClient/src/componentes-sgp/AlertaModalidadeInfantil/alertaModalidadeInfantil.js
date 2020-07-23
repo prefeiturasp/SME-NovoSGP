@@ -2,10 +2,14 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Alert from '~/componentes/alert';
-import modalidade from '~/dtos/modalidade';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const AlertaModalidadeInfantil = props => {
   const { turmaSelecionada } = useSelector(store => store.usuario);
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const { exibir, validarModalidadeFiltroPrincipal } = props;
 
@@ -14,15 +18,18 @@ const AlertaModalidadeInfantil = props => {
   useEffect(() => {
     if (
       validarModalidadeFiltroPrincipal &&
-      turmaSelecionada &&
-      turmaSelecionada.turma &&
-      String(turmaSelecionada.modalidade) === String(modalidade.INFANTIL)
+      ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
     ) {
       setExibirMsg(true);
     } else {
       setExibirMsg(exibir);
     }
-  }, [turmaSelecionada, exibir, validarModalidadeFiltroPrincipal]);
+  }, [
+    turmaSelecionada,
+    exibir,
+    validarModalidadeFiltroPrincipal,
+    modalidadesFiltroPrincipal,
+  ]);
 
   return (
     <div className="col-md-12">
