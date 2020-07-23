@@ -93,8 +93,7 @@ const RelatorioPendencias = () => {
   };
 
   const onChangeComponenteCurricular = valor => {
-    if (valor !== '0') setComponentesCurricularesId([valor]);
-    else setComponentesCurricularesId([]);
+    setComponentesCurricularesId([valor]);
   };
 
   const onChangeBimestre = valor => {
@@ -387,10 +386,14 @@ const RelatorioPendencias = () => {
       dreCodigo: dreId,
       ueCodigo: ueId,
       modalidade: modalidadeId,
-      turmaCodigo: turmaId,
+      turmasCodigo: turmaId === '0' ? [] : turmaId,
       bimestre,
       componentesCurriculares:
-        componentesCurricularesId === '0' ? [] : componentesCurricularesId,
+        componentesCurricularesId?.length === 1 &&
+        componentesCurricularesId[0] === '0'
+          ? []
+          : componentesCurricularesId,
+      semestre,
       exibirDetalhamento: exibirDetalhamento === '1',
     };
     await ServicoRelatorioPendencias.gerar(params)
