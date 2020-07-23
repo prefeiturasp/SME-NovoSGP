@@ -1,4 +1,5 @@
-﻿namespace SME.SGP.Infra
+﻿
+namespace SME.SGP.Infra
 {
     public enum Permissao
     {
@@ -445,7 +446,7 @@
         //[PermissaoMenu(Menu = "Relatório Semestral PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/pap/relatorio-semestral")]
         //RSP_A = 147,
 
-        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/atas/ata-final-resultados", EhSubMenu=true, OrdemSubMenu=1, SubMenu= "Ata Final de Resultados")]
+        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/atas/ata-final-resultados", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Ata Final de Resultados")]
         AFR_C = 148,
 
         [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhInclusao = true, Url = "/relatorios/atas/ata-final-resultados", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Ata Final de Resultados")]
@@ -470,6 +471,10 @@
         HE_A = 155,
 
         [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/faltas-frequencia", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Faltas e frequência")]
-        FF_C = 156
+        FF_C = 156,
+
+        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pendencias-fechamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Pendências do Fechamento")]
+        RPF_C = 157,
+
     }
 }
