@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using SME.SGP.Infra;
+using System.Linq;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -15,16 +16,33 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<NotaConceito> ObterNotasPorAlunosAtividadesAvaliativas(IEnumerable<long> atividadesAvaliativas, IEnumerable<string> alunosIds, string disciplinaId)
         {
-            var atividadesAvaliativasString = string.Join(",", atividadesAvaliativas);
-            var alunosIdsString = $"'{string.Join("','", alunosIds)}'";
+            var atividadesAvaliativasString = string.Join(",", atividadesAvaliativas.Distinct());
+            var alunosIdsString = $"'{string.Join("','", alunosIds.Distinct())}'";
 
-            var sql = $@"select id, atividade_avaliativa, aluno_id, nota, conceito, tipo_nota, criado_em,
-                        criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
-                        from notas_conceito where atividade_avaliativa in
-                        ({atividadesAvaliativasString}) and aluno_id in ({alunosIdsString})
-                        and disciplina_id = '{disciplinaId}'";
+            var sql = $@"select id, 
+                                atividade_avaliativa, 
+                                aluno_id, 
+                                nota, 
+                                conceito, 
+                                tipo_nota, 
+                                criado_em,
+                                criado_por, 
+                                criado_rf, 
+                                alterado_em, 
+                                alterado_por, 
+                                alterado_rf
+                         from notas_conceito 
+                         where atividade_avaliativa = any(array[{atividadesAvaliativasString}]) 
+                            and aluno_id = any(array[@alunosIdsString])
+                            and disciplina_id = @disciplinaId";
 
-            return database.Query<NotaConceito>(sql);
+            var parametros = new
+            {                
+                alunosIdsString,
+                disciplinaId
+            };
+
+            return database.Query<NotaConceito>(sql, parametros);
         }
     }
 }
