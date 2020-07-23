@@ -16,6 +16,8 @@ import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import ObservacoesChat from '~/componentes-sgp/ObservacoesChat/observacoesChat';
+import ServicoDiarioBordo from '~/servicos/Paginas/DiarioBordo/ServicoDiarioBordo';
 
 const DiarioBordo = () => {
   const usuario = useSelector(state => state.usuario);
@@ -42,6 +44,7 @@ const DiarioBordo = () => {
   const [errosValidacao, setErrosValidacao] = useState([]);
   const [mostrarErros, setMostarErros] = useState(false);
   const [auditoria, setAuditoria] = useState('');
+  const [dadosObservacoes, setDadosObservacoes] = useState([]);
 
   const [valoresIniciais, setValoresIniciais] = useState({
     planejamento: '',
@@ -201,6 +204,15 @@ const DiarioBordo = () => {
     [listaDatasAulas]
   );
 
+  const obterDadosObservacoes = async () => {
+    const dados = await ServicoDiarioBordo.obterDadosObservacoes();
+    setDadosObservacoes(dados);
+  };
+  // TODO Remover!
+  useEffect(() => {
+    obterDadosObservacoes();
+  }, []);
+
   const validaSeTemIdAula = useCallback(
     async (data, form) => {
       form.resetForm();
@@ -208,6 +220,7 @@ const DiarioBordo = () => {
       const aulaDataSelecionada = await obterAulaSelecionada(data);
       console.log('Aula selecionada:' + aulaDataSelecionada);
       // TODO Chamar endpoint para obter os registros!
+      // TODO Caso tenha registros chamar endpoint de observacoes!
     },
     [obterAulaSelecionada]
   );
@@ -269,6 +282,10 @@ const DiarioBordo = () => {
     setMostarErros(false);
   };
 
+  const onClickSalvarNovaObs = e => {
+    console.log('Nova OBS:' + e);
+  };
+
   return (
     <Loader loading={carregandoGeral} className="w-100 my-2">
       {usuario && turmaSelecionada.turma ? null : (
@@ -320,7 +337,7 @@ const DiarioBordo = () => {
                 <div className="row">
                   <div className="col-md-12 d-flex justify-content-end pb-4">
                     <Button
-                      id="btn-voltar-ata-diario-bordo"
+                      id="btn-voltar-diario-bordo"
                       label="Voltar"
                       icon="arrow-left"
                       color={Colors.Azul}
@@ -329,7 +346,7 @@ const DiarioBordo = () => {
                       onClick={() => onClickVoltar(form)}
                     />
                     <Button
-                      id="btn-cancelar-ata-diario-bordo"
+                      id="btn-cancelar-diario-bordo"
                       label="Cancelar"
                       color={Colors.Roxo}
                       border
@@ -339,7 +356,7 @@ const DiarioBordo = () => {
                       disabled={!modoEdicao}
                     />
                     <Button
-                      id="btn-gerar-ata-diario-bordo"
+                      id="btn-gerar-diario-bordo"
                       label="Salvar"
                       color={Colors.Roxo}
                       border
@@ -448,6 +465,10 @@ const DiarioBordo = () => {
             )}
           </Formik>
         </div>
+        <ObservacoesChat
+          dados={dadosObservacoes}
+          onClickSalvarNovo={valor => onClickSalvarNovaObs(valor)}
+        />
       </Card>
     </Loader>
   );
