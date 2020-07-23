@@ -141,7 +141,16 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery]Modalidade modalidade, int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            IEnumerable<AbrangenciaTurmaRetorno> turmas;
+            if (anoLetivo < DateTime.Now.Year)
+            {
+
+                turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, true, anoLetivo);
+            }
+            else
+            {
+                turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            }
 
             if (!turmas.Any())
                 return NoContent();
@@ -156,7 +165,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            IEnumerable<AbrangenciaUeRetorno> ues;
+            if (anoLetivo < DateTime.Now.Year)
+            {
+                ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, true, anoLetivo);
+            }
+            else
+            {
+                ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            }
 
             if (!ues.Any())
                 return NoContent();
