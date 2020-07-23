@@ -13,6 +13,7 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoRelatorioPendencias from '~/servicos/Paginas/Relatorios/Pendencias/ServicoRelatorioPendencias';
+import ServicoComponentesCurriculares from '~/servicos/ServicoComponentesCurriculares';
 
 const RelatorioPendencias = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -281,30 +282,38 @@ const RelatorioPendencias = () => {
     obterAnosLetivos();
   }, [obterAnosLetivos]);
 
-  const obterComponentesCurriculares = useCallback(async idTurma => {
-    setCarregandoComponentesCurriculares(true);
-    const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
-      idTurma
-    ).catch(e => erros(e));
-    const componentesCurriculares = [];
-    componentesCurriculares.push({
-      codigoComponenteCurricular: '0',
-      nome: 'Todos',
-    });
+  const obterComponentesCurriculares = useCallback(
+    async (ueCodigo, idsTurma, lista) => {
+      setCarregandoComponentesCurriculares(true);
+      const idsTurmaArray =
+        idsTurma[0] === '0'
+          ? lista.map(a => a.valor).filter(a => a !== '0')
+          : idsTurma;
+      const disciplinas = await ServicoComponentesCurriculares.obterComponentesPorUeTurmas(
+        ueCodigo,
+        idsTurmaArray
+      ).catch(e => erros(e));
+      const componentesCurriculares = [];
+      componentesCurriculares.push({
+        codigoComponenteCurricular: '0',
+        nome: 'Todos',
+      });
 
-    if (disciplinas && disciplinas.data && disciplinas.data.length) {
-      componentesCurriculares.concat(disciplinas.data);
-      setListaComponentesCurriculares(componentesCurriculares);
-    } else {
-      setListaComponentesCurriculares([]);
-    }
-    setCarregandoComponentesCurriculares(false);
-  }, []);
+      if (disciplinas && disciplinas.data && disciplinas.data.length) {
+        componentesCurriculares.concat(disciplinas.data);
+        setListaComponentesCurriculares(componentesCurriculares);
+      } else {
+        setListaComponentesCurriculares([]);
+      }
+      setCarregandoComponentesCurriculares(false);
+    },
+    []
+  );
 
   useEffect(() => {
-    if (turmaId && turmaId !== '0') obterComponentesCurriculares(turmaId);
-    else setListaComponentesCurriculares([]);
-  }, [turmaId, obterComponentesCurriculares]);
+    if (ueId && turmaId && listaTurmas)
+      obterComponentesCurriculares(ueId, turmaId, listaTurmas);
+  }, [ueId, turmaId, listaTurmas, obterComponentesCurriculares]);
 
   const obterSemestres = async (
     modalidadeSelecionada,
