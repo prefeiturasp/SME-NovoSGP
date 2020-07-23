@@ -63,10 +63,10 @@ const RelatorioPendencias = () => {
     undefined
   );
   const [bimestre, setBimestre] = useState(undefined);
-  const [exibirDetalhamento, setExibirDetalhamento] = useState(true);
+  const [exibirDetalhamento, setExibirDetalhamento] = useState('1');
   const listaSimNao = [
-    { valor: true, desc: 'Sim' },
-    { valor: false, desc: 'Não' },
+    { valor: '1', desc: 'Sim' },
+    { valor: '0', desc: 'Não' },
   ];
 
   const onChangeAnoLetivo = valor => {
@@ -378,8 +378,8 @@ const RelatorioPendencias = () => {
       modalidade: modalidadeId,
       turmaCodigo: turmaId,
       bimestre,
-      componentesCurriculares: componentesCurricularesId.split(','),
-      exibirDetalhamento,
+      componentesCurricularesId,
+      exibirDetalhamento: exibirDetalhamento === '1',
     };
     await ServicoRelatorioPendencias.gerar(params)
       .then(() => {
