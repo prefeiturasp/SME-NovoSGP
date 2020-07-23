@@ -303,7 +303,11 @@ const Notas = ({ match }) => {
 
   const obterDisciplinas = useCallback(async () => {
     const url = `v1/professores/turmas/${usuario.turmaSelecionada.turma}/disciplinas`;
-    const disciplinas = await api.get(url);
+    const disciplinas = await api.get(url).then(res => {
+      if (res.data) setDesabilitarDisciplina(false);
+
+      return res;
+    });
 
     setListaDisciplinas(disciplinas.data);
     if (disciplinas.data && disciplinas.data.length === 1) {
@@ -567,10 +571,11 @@ const Notas = ({ match }) => {
     return pergutarParaSalvarNotaFinal(bimestresSemAvaliacaoBimestral)
       .then(salvarAvaliacaoFinal => {
         if (salvarAvaliacaoFinal) {
-          let valoresBimestresSalvarComNotas = valoresBimestresSalvar.filter(x => x.notaConceitoAlunos.length > 0);
+          let valoresBimestresSalvarComNotas = valoresBimestresSalvar.filter(
+            x => x.notaConceitoAlunos.length > 0
+          );
 
-          if (valoresBimestresSalvarComNotas.length < 1)
-            return resolve(false);
+          if (valoresBimestresSalvarComNotas.length < 1) return resolve(false);
 
           return api
             .post(`/v1/fechamentos/turmas`, valoresBimestresSalvarComNotas)
@@ -954,7 +959,7 @@ const Notas = ({ match }) => {
       <ModalConteudoHtml
         key="inserirJutificativa"
         visivel={exibeModalJustificativa}
-        onClose={() => { }}
+        onClose={() => {}}
         titulo="Inserir justificativa"
         esconderBotaoPrincipal
         esconderBotaoSecundario
