@@ -15,6 +15,7 @@ import api from '~/servicos/api';
 import history from '~/servicos/history';
 import ServicoConselhoAtaFinal from '~/servicos/Paginas/ConselhoAtaFinal/ServicoConselhoAtaFinal';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 
 const AtaFinalResultados = () => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -313,6 +314,10 @@ const AtaFinalResultados = () => {
 
   return (
     <>
+      <AlertaModalidadeInfantil
+        exibir={String(modalidadeId) === String(modalidade.INFANTIL)}
+        validarModalidadeFiltroPrincipal={false}
+      />
       <Cabecalho pagina="Ata de Conselho" />
       <Card>
         <div className="col-md-12">
@@ -345,7 +350,11 @@ const AtaFinalResultados = () => {
                 bold
                 className="mr-2"
                 onClick={() => onClickGerar()}
-                disabled={desabilitarBtnGerar || !permissoesTela.podeConsultar}
+                disabled={
+                  String(modalidadeId) === String(modalidade.INFANTIL) ||
+                  desabilitarBtnGerar ||
+                  !permissoesTela.podeConsultar
+                }
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
