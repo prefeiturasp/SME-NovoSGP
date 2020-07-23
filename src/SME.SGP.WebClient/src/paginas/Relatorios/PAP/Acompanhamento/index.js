@@ -41,7 +41,8 @@ import Reducer, {
 
 // Utils
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
-import { MensagemAlerta } from '~/paginas/Perfil/meusDados.css';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 function RelatorioPAPAcompanhamento() {
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
@@ -53,6 +54,9 @@ function RelatorioPAPAcompanhamento() {
   const { turmaSelecionada } = useSelector(store => store.usuario);
   const [semPeriodos, setSemPeriodos] = useState(false);
   const [somenteLeitura, setSomenteLeitura] = useState(false);
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const dispararAlteracoes = dados => {
     setEstadoOriginalAlunos(dados.periodo.alunos);
@@ -287,30 +291,33 @@ function RelatorioPAPAcompanhamento() {
   return (
     <>
       <AlertaSelecionarTurma />
-      {somenteLeitura && (
-        <Alert
-          alerta={{
-            tipo: 'warning',
-            id: 'pap-somente-leitura',
-            mensagem:
-              'Não é possível preencher o relatório fora do período estipulado pela SME',
-            estiloTitulo: { fontSize: '18px' },
-          }}
-          className="mb-4"
-        />
-      )}
-      {semPeriodos && (
-        <Alert
-          alerta={{
-            tipo: 'warning',
-            id: 'sem-periodo-pap',
-            mensagem:
-              'Somente é possivel realizar o preenchimento do PAP para turmas PAP',
-            estiloTitulo: { fontSize: '18px' },
-          }}
-          className="mb-4"
-        />
-      )}
+      {somenteLeitura &&
+        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) && (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'pap-somente-leitura',
+              mensagem:
+                'Não é possível preencher o relatório fora do período estipulado pela SME',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-4"
+          />
+        )}
+      {semPeriodos &&
+        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) && (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'sem-periodo-pap',
+              mensagem:
+                'Somente é possivel realizar o preenchimento do PAP para turmas PAP',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-4"
+          />
+        )}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Relatório de encaminhamento e acompanhamento do PAP" />
       <Loader loading={carregando}>
         <Card mx="mx-0">
@@ -329,7 +336,10 @@ function RelatorioPAPAcompanhamento() {
             onClickCancelar={() => onClickCancelarHandler()}
             labelBotaoPrincipal="Salvar"
             desabilitarBotaoPrincipal={
-              somenteLeitura || !modoEdicao || !periodo
+              ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
+              somenteLeitura ||
+              !modoEdicao ||
+              !periodo
             }
           />
           <Grid className="p-0" cols={12}>
