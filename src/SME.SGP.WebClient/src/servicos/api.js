@@ -36,14 +36,7 @@ api.interceptors.response.use(
   error => {
     if (axios.isCancel(error)) return Promise.reject(error);
 
-    const autenticacao =
-      error.response &&
-      error.response.config.url.includes('/api/v1/autenticacao');
-
-    if (error.response && error.response.status === 401 && !autenticacao)
-      return Promise.reject(error);
-
-    return autenticacao;
+    return Promise.reject(error);
   }
 );
 
