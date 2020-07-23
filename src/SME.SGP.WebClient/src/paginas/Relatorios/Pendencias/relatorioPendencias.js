@@ -1,19 +1,18 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { SelectComponent, Loader } from '~/componentes';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Loader, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import modalidade from '~/dtos/modalidade';
-import FiltroHelper from '~componentes-sgp/filtro/helper';
-import AbrangenciaServico from '~/servicos/Abrangencia';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
-import api from '~/servicos/api';
-import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
+import api from '~/servicos/api';
 import history from '~/servicos/history';
 import ServicoRelatorioPendencias from '~/servicos/Paginas/Relatorios/Pendencias/ServicoRelatorioPendencias';
 import ServicoComponentesCurriculares from '~/servicos/ServicoComponentesCurriculares';
+import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const RelatorioPendencias = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -94,7 +93,7 @@ const RelatorioPendencias = () => {
   };
 
   const onChangeComponenteCurricular = valor => {
-    setComponentesCurricularesId(valor);
+    setComponentesCurricularesId([valor]);
   };
 
   const onChangeBimestre = valor => {
@@ -201,12 +200,14 @@ const RelatorioPendencias = () => {
     }
   }, [anoLetivo, ueId]);
 
-  const obterTurmas = useCallback(async (modalidadeSelecionada, ue) => {
+  const obterTurmas = useCallback(async (modalidadeSelecionada, ue, ano) => {
     if (ue && modalidadeSelecionada) {
       setCarregandoTurmas(true);
       const { data } = await AbrangenciaServico.buscarTurmas(
         ue,
-        modalidadeSelecionada
+        modalidadeSelecionada,
+        '',
+        ano
       );
       if (data) {
         const lista = [];
@@ -230,12 +231,12 @@ const RelatorioPendencias = () => {
 
   useEffect(() => {
     if (modalidadeId && ueId) {
-      obterTurmas(modalidadeId, ueId);
+      obterTurmas(modalidadeId, ueId, anoLetivo);
     } else {
       setTurmaId();
       setListaTurmas([]);
     }
-  }, [modalidadeId, ueId, obterTurmas]);
+  }, [modalidadeId, ueId, anoLetivo, obterTurmas]);
 
   useEffect(() => {
     if (modalidadeId === modalidade.EJA) {
@@ -284,28 +285,39 @@ const RelatorioPendencias = () => {
 
   const obterComponentesCurriculares = useCallback(
     async (ueCodigo, idsTurma, lista) => {
-      setCarregandoComponentesCurriculares(true);
-      const idsTurmaArray =
-        idsTurma[0] === '0'
-          ? lista.map(a => a.valor).filter(a => a !== '0')
-          : idsTurma;
-      const disciplinas = await ServicoComponentesCurriculares.obterComponentesPorUeTurmas(
-        ueCodigo,
-        idsTurmaArray
-      ).catch(e => erros(e));
-      const componentesCurriculares = [];
-      componentesCurriculares.push({
-        codigoComponenteCurricular: '0',
-        nome: 'Todos',
-      });
+      if (idsTurma?.length > 0) {
+        setCarregandoComponentesCurriculares(true);
+        const idsTurmaArray =
+          idsTurma[0] === '0'
+            ? lista.map(a => a.valor).filter(a => a !== '0')
+            : idsTurma;
+        const disciplinas = await ServicoComponentesCurriculares.obterComponentesPorUeTurmas(
+          ueCodigo,
+          idsTurmaArray
+        ).catch(e => erros(e));
+        let componentesCurriculares = [];
+        componentesCurriculares.push({
+          codigo: '0',
+          descricao: 'Todos',
+        });
 
-      if (disciplinas && disciplinas.data && disciplinas.data.length) {
-        componentesCurriculares.concat(disciplinas.data);
-        setListaComponentesCurriculares(componentesCurriculares);
+        if (disciplinas && disciplinas.data && disciplinas.data.length) {
+          if (disciplinas.data.length > 1) {
+            componentesCurriculares = componentesCurriculares.concat(
+              disciplinas.data
+            );
+            setListaComponentesCurriculares(componentesCurriculares);
+          } else {
+            setListaComponentesCurriculares(disciplinas.data);
+          }
+        } else {
+          setListaComponentesCurriculares([]);
+        }
+        setCarregandoComponentesCurriculares(false);
       } else {
+        setComponentesCurricularesId(undefined);
         setListaComponentesCurriculares([]);
       }
-      setCarregandoComponentesCurriculares(false);
     },
     []
   );
@@ -376,9 +388,14 @@ const RelatorioPendencias = () => {
       dreCodigo: dreId,
       ueCodigo: ueId,
       modalidade: modalidadeId,
-      turmaCodigo: turmaId,
+      turmasCodigo: turmaId === '0' ? [] : turmaId,
       bimestre,
-      componentesCurricularesId,
+      componentesCurriculares:
+        componentesCurricularesId?.length === 1 &&
+        componentesCurricularesId[0] === '0'
+          ? []
+          : componentesCurricularesId,
+      semestre,
       exibirDetalhamento: exibirDetalhamento === '1',
     };
     await ServicoRelatorioPendencias.gerar(params)
@@ -556,8 +573,8 @@ const RelatorioPendencias = () => {
                 <SelectComponent
                   id="drop-componente-curricular-rel-pendencias"
                   lista={listaComponentesCurriculares}
-                  valueOption="codigoComponenteCurricular"
-                  valueText="nome"
+                  valueOption="codigo"
+                  valueText="descricao"
                   label="Componente curricular"
                   disabled={
                     !modalidadeId || listaComponentesCurriculares?.length === 1
