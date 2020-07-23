@@ -22,19 +22,19 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesPorTurmaECodigoUeQuery request, CancellationToken cancellationToken)
         {
-            using var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+
+            var turmas = String.Join("&turmas=", request.CodigosDeTurmas);
+
+            var resposta = await httpClient.GetAsync($"/api/v1/componentes-curriculares/ues/{request.CodigoUe}/turmas?turmas={turmas}");
+
+            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
-                var turmas = String.Join("&turmas=", request.CodigosDeTurmas);
-
-                var resposta = await httpClient.GetAsync($"/api/v1/componentes-curriculares/ues/{request.CodigoUe}/turmas?turmas={turmas}");
-
-                if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
-                {
-                    var json = await resposta.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularDto>>(json);
-                }
-                else throw new NegocioException("Não foi possível obter Componentes Curriculares.");
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularDto>>(json);
             }
+            else throw new NegocioException("Não foi possível obter Componentes Curriculares.");
+
         }
     }
 }
