@@ -18,6 +18,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task AtribuirCJSeNecessario(string codigoRf);
 
+        Task AtribuirPerfil(string codigoRf, Guid perfil);
+
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
         IEnumerable<CicloRetornoDto> BuscarCiclos();
