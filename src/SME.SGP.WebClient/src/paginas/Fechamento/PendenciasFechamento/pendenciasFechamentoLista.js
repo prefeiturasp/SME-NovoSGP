@@ -24,12 +24,18 @@ import api from '~/servicos/api';
 import RotasDto from '~/dtos/rotasDto';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import { BotaoImprimir } from './pendenciasFechamentoLista.css';
 import ServicoRelatorioPendencias from '~/servicos/Paginas/Relatorios/Pendencias/ServicoRelatorioPendencias';
 
 const PendenciasFechamentoLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const permissoesTela = usuario.permissoes[RotasDto.PENDENCIAS_FECHAMENTO];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -50,8 +56,19 @@ const PendenciasFechamentoLista = ({ match }) => {
   const [imprimindo, setImprimido] = useState(false);
 
   useEffect(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, [permissoesTela]);
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
+    );
+
+    if (naoSetarSomenteConsultaNoStore) {
+      resetarFiltro();
+      setListaBimestres([]);
+    }
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   const montaExibicaoSituacao = (situacaoId, pendencia) => {
     switch (situacaoId) {
@@ -209,14 +226,17 @@ const PendenciasFechamentoLista = ({ match }) => {
     };
 
     resetarFiltro();
-    if (turmaSelecionada.turma) {
+    if (
+      turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
+    ) {
       montaBimestres().then(temSugestaoBimestre => {
         obterDisciplinas(temSugestaoBimestre);
       });
     } else {
       resetarFiltro();
     }
-  }, [turmaSelecionada.turma, turmaSelecionada.modalidade]);
+  }, [turmaSelecionada, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     if (bimestreSelecionado) {
@@ -309,9 +329,8 @@ const PendenciasFechamentoLista = ({ match }) => {
 
   return (
     <>
-      {usuario && turmaSelecionada.turma ? (
-        ''
-      ) : (
+      {!turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
         <Alert
           alerta={{
             tipo: 'warning',
@@ -321,7 +340,10 @@ const PendenciasFechamentoLista = ({ match }) => {
           }}
           className="mb-2"
         />
+      ) : (
+        ''
       )}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Análise de Pendências" />
       <Card>
         <div className="col-md-12">
@@ -356,6 +378,10 @@ const PendenciasFechamentoLista = ({ match }) => {
                 className="mr-2"
                 onClick={onClickAprovar}
                 disabled={
+                  ehTurmaInfantil(
+                    modalidadesFiltroPrincipal,
+                    turmaSelecionada
+                  ) ||
                   !turmaSelecionada.turma ||
                   somenteConsulta ||
                   !permissoesTela.podeAlterar ||
@@ -380,6 +406,10 @@ const PendenciasFechamentoLista = ({ match }) => {
                 lista={listaBimestres}
                 placeholder="Selecione o bimestre"
                 valueSelect={bimestreSelecionado}
+                disabled={ehTurmaInfantil(
+                  modalidadesFiltroPrincipal,
+                  turmaSelecionada
+                )}
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-2">
@@ -393,7 +423,14 @@ const PendenciasFechamentoLista = ({ match }) => {
                   valueSelect={disciplinaIdSelecionada}
                   onChange={onChangeDisciplinas}
                   placeholder="Selecione o componente curricular"
-                  disabled={desabilitarDisciplina || !bimestreSelecionado}
+                  disabled={
+                    ehTurmaInfantil(
+                      modalidadesFiltroPrincipal,
+                      turmaSelecionada
+                    ) ||
+                    desabilitarDisciplina ||
+                    !bimestreSelecionado
+                  }
                 />
               </Loader>
             </div>
