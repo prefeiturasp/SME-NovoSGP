@@ -22,6 +22,8 @@ import ResumosGraficosPAPServico from '~/servicos/Paginas/Relatorios/PAP/Resumos
 
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 
 const ResumosGraficosPAP = () => {
   const permissoesTela = useSelector(store => store.usuario.permissoes);
@@ -31,6 +33,10 @@ const ResumosGraficosPAP = () => {
   const [dados, setDados] = useState({});
   const [carregandoRelatorios, setCarregandoRelatorios] = useState(false);
   const [carregandoGraficos, setCarregandoGraficos] = useState(false);
+  const { turmaSelecionada } = useSelector(state => state.usuario);
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const onClickVoltar = () => {
     history.push('/');
@@ -99,6 +105,7 @@ const ResumosGraficosPAP = () => {
 
   return (
     <>
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Resumos e gráficos PAP" />
       <Card>
         <ButtonGroup
@@ -107,65 +114,71 @@ const ResumosGraficosPAP = () => {
           onClickVoltar={onClickVoltar}
           desabilitarBotaoPrincipal
         />
-        <Filtro onFiltrar={filtroAtual => setFiltro(filtroAtual)} />
-        {filtroTela.DreId &&
-        filtroTela.UeId &&
-        filtroTela.CicloId &&
-        filtroTela.Periodo ? (
-          <ContainerTabs
-            tabPosition="top"
-            type="card"
-            tabBarGutter={10}
-            onChange={key => setTabAtiva(key)}
-            activeKey={tabAtiva}
-            defaultActiveKey="relatorios"
-          >
-            <Tabs.TabPane
-              disabled={carregandoRelatorios}
-              tab="Resumos"
-              key="relatorios"
-            >
-              <Loader loading={carregandoRelatorios}>
-                {tabAtiva === 'relatorios' ? (
-                  <LazyLoad>
-                    <Resumos
-                      dados={dadosTela}
-                      ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
-                      anos={!!filtroTela.Ano}
-                      isEncaminhamento={
-                        filtroTela &&
-                        filtroTela.Periodo &&
-                        filtroTela.Periodo.toString() === '1'
-                      }
-                    />
-                  </LazyLoad>
-                ) : (
-                  ''
-                )}
-              </Loader>
-            </Tabs.TabPane>
-            <Tabs.TabPane
-              disabled={carregandoGraficos}
-              tab="Gráficos"
-              key="graficos"
-            >
-              <Loader loading={carregandoGraficos}>
-                {tabAtiva === 'graficos' ? (
-                  <LazyLoad>
-                    <TabGraficos
-                      dados={dadosTela}
-                      ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
-                      anos={!!filtroTela.Ano}
-                      periodo={filtroTela.Periodo}
-                    />
-                  </LazyLoad>
-                ) : (
-                  ''
-                )}
-              </Loader>
-            </Tabs.TabPane>
-          </ContainerTabs>
-        ) : null}
+        {!ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
+          <>
+            <Filtro onFiltrar={filtroAtual => setFiltro(filtroAtual)} />
+            {filtroTela.DreId &&
+            filtroTela.UeId &&
+            filtroTela.CicloId &&
+            filtroTela.Periodo ? (
+              <ContainerTabs
+                tabPosition="top"
+                type="card"
+                tabBarGutter={10}
+                onChange={key => setTabAtiva(key)}
+                activeKey={tabAtiva}
+                defaultActiveKey="relatorios"
+              >
+                <Tabs.TabPane
+                  disabled={carregandoRelatorios}
+                  tab="Resumos"
+                  key="relatorios"
+                >
+                  <Loader loading={carregandoRelatorios}>
+                    {tabAtiva === 'relatorios' ? (
+                      <LazyLoad>
+                        <Resumos
+                          dados={dadosTela}
+                          ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
+                          anos={!!filtroTela.Ano}
+                          isEncaminhamento={
+                            filtroTela &&
+                            filtroTela.Periodo &&
+                            filtroTela.Periodo.toString() === '1'
+                          }
+                        />
+                      </LazyLoad>
+                    ) : (
+                      ''
+                    )}
+                  </Loader>
+                </Tabs.TabPane>
+                <Tabs.TabPane
+                  disabled={carregandoGraficos}
+                  tab="Gráficos"
+                  key="graficos"
+                >
+                  <Loader loading={carregandoGraficos}>
+                    {tabAtiva === 'graficos' ? (
+                      <LazyLoad>
+                        <TabGraficos
+                          dados={dadosTela}
+                          ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
+                          anos={!!filtroTela.Ano}
+                          periodo={filtroTela.Periodo}
+                        />
+                      </LazyLoad>
+                    ) : (
+                      ''
+                    )}
+                  </Loader>
+                </Tabs.TabPane>
+              </ContainerTabs>
+            ) : null}
+          </>
+        ) : (
+          ''
+        )}
       </Card>
     </>
   );

@@ -24,10 +24,16 @@ import api from '~/servicos/api';
 import RotasDto from '~/dtos/rotasDto';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const PendenciasFechamentoLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const permissoesTela = usuario.permissoes[RotasDto.PENDENCIAS_FECHAMENTO];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -45,9 +51,15 @@ const PendenciasFechamentoLista = ({ match }) => {
   );
   const [filtrouValoresRota, setFiltrouValoresRota] = useState(false);
 
-  useEffect(() => {    
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, [permissoesTela]);
+  useEffect(() => {
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
+    );
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   const montaExibicaoSituacao = (situacaoId, pendencia) => {
     switch (situacaoId) {
@@ -111,7 +123,7 @@ const PendenciasFechamentoLista = ({ match }) => {
   };
 
   useEffect(() => {
-    const montaBimestres = async () => {      
+    const montaBimestres = async () => {
       let listaBi = [];
       if (turmaSelecionada.modalidade == modalidade.EJA) {
         listaBi = [
@@ -150,8 +162,8 @@ const PendenciasFechamentoLista = ({ match }) => {
           .get(
             `v1/periodo-escolar/modalidades/${turmaSelecionada.modalidade}/bimestres/atual`
           )
-          .catch(e => erros(e));        
-  
+          .catch(e => erros(e));
+
         if (bimestreAtual && bimestreAtual.data) {
           setBimestreSelecionado(String(bimestreAtual.data));
           return true;
@@ -171,7 +183,7 @@ const PendenciasFechamentoLista = ({ match }) => {
       } else {
         setListaDisciplinas([]);
       }
-      
+
       if (temSugestaoBimestre && disciplinas && disciplinas.data && disciplinas.data.length === 1) {
         const disciplina = disciplinas.data[0];
         setDisciplinaIdSelecionada(
@@ -197,15 +209,18 @@ const PendenciasFechamentoLista = ({ match }) => {
       setCarregandoDisciplinas(false);
     };
 
-    resetarFiltro();    
-    if (turmaSelecionada.turma) {
-      montaBimestres().then(temSugestaoBimestre => {        
+    resetarFiltro();
+    if (
+      turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
+    ) {
+      montaBimestres().then(temSugestaoBimestre => {
         obterDisciplinas(temSugestaoBimestre);
       });
     } else {
       resetarFiltro();
     }
-  }, [turmaSelecionada.turma, turmaSelecionada.modalidade]);
+  }, [turmaSelecionada, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     if (bimestreSelecionado) {
@@ -257,7 +272,7 @@ const PendenciasFechamentoLista = ({ match }) => {
       if (comErros && comErros.length) {
         const mensagensErros = comErros.map(e => e.mensagemConsistencia);
         mensagensErros.forEach(msg => {
-          erro(msg);          
+          erro(msg);
         });
       } else {
         if (ids && ids.length > 1) {
@@ -272,9 +287,8 @@ const PendenciasFechamentoLista = ({ match }) => {
 
   return (
     <>
-      {usuario && turmaSelecionada.turma ? (
-        ''
-      ) : (
+      {!turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
         <Alert
           alerta={{
             tipo: 'warning',
@@ -284,7 +298,10 @@ const PendenciasFechamentoLista = ({ match }) => {
           }}
           className="mb-2"
         />
+      ) : (
+        ''
       )}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Análise de Pendências" />
       <Card>
         <div className="col-md-12">
@@ -305,12 +322,16 @@ const PendenciasFechamentoLista = ({ match }) => {
                 bold
                 className="mr-2"
                 onClick={onClickAprovar}
-                disabled={                  
+                disabled={
+                  ehTurmaInfantil(
+                    modalidadesFiltroPrincipal,
+                    turmaSelecionada
+                  ) ||
                   !turmaSelecionada.turma ||
                   somenteConsulta ||
                   !permissoesTela.podeAlterar ||
                   (turmaSelecionada.turma && listaDisciplinas.length < 1) ||
-                  (pendenciasSelecionadas && pendenciasSelecionadas.length < 1) || 
+                  (pendenciasSelecionadas && pendenciasSelecionadas.length < 1) ||
                   pendenciasSelecionadas.filter(item => item.situacao == situacaoPendenciaDto.Aprovada).length > 0
                 }
               />
