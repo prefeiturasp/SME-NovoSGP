@@ -40,16 +40,18 @@ namespace SME.SGP.Aplicacao
 
                 await servicoAtribuicaoCJ.Salvar(atribuicao, atribuicoesAtuais);
 
-                atribuiuCj = await AtribuirPerfilCJ(atribuicaoCJPersistenciaDto, atribuiuCj);
+                Guid perfilCJ = atribuicao.Modalidade == Modalidade.Infantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
+
+                atribuiuCj = await AtribuirPerfilCJ(atribuicaoCJPersistenciaDto, perfilCJ, atribuiuCj);
             }
         }
 
-        private async Task<bool> AtribuirPerfilCJ(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, bool atribuiuCj)
+        private async Task<bool> AtribuirPerfilCJ(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, Guid perfil, bool atribuiuCj)
         {
             if (atribuiuCj)
                 return atribuiuCj;
 
-            await servicoEOL.AtribuirCJSeNecessario(atribuicaoCJPersistenciaDto.UsuarioRf);
+            await servicoEOL.AtribuirPerfil(atribuicaoCJPersistenciaDto.UsuarioRf, perfil);
 
             servicoUsuario.RemoverPerfisUsuarioAtual();
 

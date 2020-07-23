@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio.Servicos
             if (atribuicoesConflitantes != null && atribuicoesConflitantes.Any())
                 throw new NegocioException("Já existem outras atribuições, para este professor, no periodo especificado");
 
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeTipoCalendario.FundamentalMedio);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ObterTipoCalendario(atribuicaoEsporadica.Modalidade));
 
             if (tipoCalendario == null)
                 throw new NegocioException("Nenhum tipo de calendario para o ano letivo vigente encontrado");
@@ -51,22 +51,34 @@ namespace SME.SGP.Dominio.Servicos
             {
                 repositorioAtribuicaoEsporadica.Salvar(atribuicaoEsporadica);
 
-                AdicionarAtribuicaoEOL(atribuicaoEsporadica.ProfessorRf).Wait();
+                Guid perfilAtribuicao = atribuicaoEsporadica.Modalidade == Modalidade.Infantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
+
+                await AdicionarAtribuicaoEOL(atribuicaoEsporadica.ProfessorRf, perfilAtribuicao);
 
                 unitOfWork.PersistirTransacao();
             }
         }
 
-        private async Task AdicionarAtribuicaoEOL(string codigoRF)
+        private async Task AdicionarAtribuicaoEOL(string codigoRF, Guid perfil)
         {
             try
             {
-                await servicoEOL.AtribuirCJSeNecessario(codigoRF);
+                await servicoEOL.AtribuirPerfil(codigoRF, perfil);
             }
             catch (Exception)
             {
                 throw new NegocioException("Não foi possivel realizar a atribuição esporadica, por favor contate o suporte");
             }
+        }
+
+        private ModalidadeTipoCalendario ObterTipoCalendario(Modalidade modalidade)
+        {
+            if (modalidade == Modalidade.EJA)
+                return ModalidadeTipoCalendario.EJA;
+            else if (modalidade == Modalidade.Infantil)
+                return ModalidadeTipoCalendario.Infantil;
+            else
+                return ModalidadeTipoCalendario.FundamentalMedio;
         }
     }
 }
