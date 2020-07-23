@@ -11,11 +11,11 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/componentes-curriculares")]
     public class ComponentesCurricularesController : ControllerBase
     {
-        [HttpGet("ues/{ueId}/turmas")]
+        [HttpPost("ues/{ueId}/turmas")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> Obter(string ueId, [FromQuery] string[] turmas, [FromServices] IObterComponentesCurricularesPorTurmaECodigoUeUseCase obterComponentesCurricularesPorTurmaECodigoUeUseCase)
+        public async Task<IActionResult> Obter(string ueId, string[] turmas, [FromServices] IObterComponentesCurricularesPorTurmaECodigoUeUseCase obterComponentesCurricularesPorTurmaECodigoUeUseCase)
         {
             var filtro = new FiltroComponentesCurricularesPorTurmaECodigoUeDto {CodigoUe = ueId, CodigosDeTurmas = turmas};
             return Ok(await obterComponentesCurricularesPorTurmaECodigoUeUseCase.Executar(filtro));
