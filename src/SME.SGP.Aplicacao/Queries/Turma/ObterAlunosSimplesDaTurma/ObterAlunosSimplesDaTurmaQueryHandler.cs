@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -42,6 +40,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Codigo = alunoEOL.CodigoAluno,
                     NumeroChamada = alunoEOL.NumeroAlunoChamada,
+                    SituacaoMatricula =  alunoEOL.SituacaoMatricula,
                     Nome = alunoEOL.NomeAluno
                 };
             }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class AlunoSimplesDto
     {
@@ -11,5 +7,7 @@ namespace SME.SGP.Infra
         public int NumeroChamada { get; set; }
 
         public string Nome { get; set; }
+
+        public string SituacaoMatricula { get; set; }
     }
 }
