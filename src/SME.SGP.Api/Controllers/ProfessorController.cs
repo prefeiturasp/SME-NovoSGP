@@ -81,32 +81,12 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
-        [HttpGet("{codigoRF}/resumo/{anoLetivo}/{incluirEmei}")]
-        [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo, bool incluirEmei)
-        {
-            var retorno = await consultasProfessor.ObterResumoPorRFAnoLetivo(codigoRF, anoLetivo, incluirEmei);
-
-            return Ok(retorno);
-        }
-
         [HttpGet("{codigoRF}/resumo/{anoLetivo}")]
         [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo)
         {
             var retorno = await consultasProfessor.ObterResumoPorRFAnoLetivo(codigoRF, anoLetivo);
-
-            return Ok(retorno);
-        }
-
-        [HttpGet("{anoLetivo}/autocomplete/{dreId}/{incluirEmei}")]
-        [ProducesResponseType(typeof(IEnumerable<ProfessorResumoDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor, bool incluirEmei)
-        {
-            var retorno = await consultasProfessor.ObterResumoAutoComplete(anoLetivo, dreId, nomeProfessor, incluirEmei);
 
             return Ok(retorno);
         }
