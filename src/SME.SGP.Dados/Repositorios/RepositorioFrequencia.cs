@@ -46,24 +46,35 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)
         {
-            var query = @"select a.turma_id as TurmaCodigo, a.data_aula as DataAula, fa.codigo_aluno as CodigoAluno
-	                        , sum(a.quantidade) as QuantidadeAulas , fa.qtd_faltas as QuantidadeFaltas, t.modalidade_codigo as modalidadeCodigo, t.ano 
-                          from aula a
-                         inner join registro_frequencia rf on a.id = rf.aula_id  
-                         inner join turma t on t.turma_id = a.turma_id
-                          left join (select aa.turma_id, aa.data_aula, raa.codigo_aluno, count(raa.id) qtd_faltas
-		                         from aula aa 
-		                        inner join registro_frequencia rfa on aa.id = rfa.aula_id  
-	  	                        inner join registro_ausencia_aluno raa on rfa.id = raa.registro_frequencia_id
-	                           where not rfa.excluido and not raa.excluido 
-	                            and aa.data_aula >= @dataReferencia
-	                            group by aa.turma_id, aa.data_aula, raa.codigo_aluno) fa on fa.turma_id = a.turma_id  and fa.data_aula = a.data_aula 
-                         where not a.excluido and not rf.excluido 
-                           and a.data_aula >= @dataReferencia
-                           and a.tipo_calendario_id = @tipoCalendarioId
-                        group by a.turma_id, a.data_aula, fa.codigo_aluno, fa.qtd_faltas,  t.modalidade_codigo, t.ano";
+            var query = new StringBuilder();
 
-            return database.Conexao.Query<AlunosFaltososDto>(query, new { dataReferencia, tipoCalendarioId });
+            query.AppendLine("select a.turma_id as TurmaCodigo");
+            query.AppendLine("     , a.data_aula as DataAula");
+            query.AppendLine("     , fa.codigo_aluno as CodigoAluno");
+            query.AppendLine("     , sum(a.quantidade) as QuantidadeAulas");
+            query.AppendLine("     , fa.qtd_faltas as QuantidadeFaltas");
+            query.AppendLine("     , t.modalidade_codigo as modalidadeCodigo");
+            query.AppendLine("     , t.ano");
+            query.AppendLine("from aula a");
+            query.AppendLine("  inner join registro_frequencia rf on a.id = rf.aula_id");
+            query.AppendLine("  inner join turma t on t.turma_id = a.turma_id");
+            query.AppendLine("  left join(select aa.turma_id, aa.data_aula, raa.codigo_aluno, count(raa.id) qtd_faltas");
+            query.AppendLine("            from aula aa");
+            query.AppendLine("              inner join registro_frequencia rfa on aa.id = rfa.aula_id");
+            query.AppendLine("              inner join registro_ausencia_aluno raa on rfa.id = raa.registro_frequencia_id");
+            query.AppendLine("            where not rfa.excluido");
+            query.AppendLine("              and not raa.excluido");
+            query.AppendLine("              and aa.tipo_calendario_id = @tipoCalendarioId");
+            query.AppendLine("              and aa.data_aula >= @dataReferencia");
+            query.AppendLine("            group by aa.turma_id, aa.data_aula, raa.codigo_aluno) fa");
+            query.AppendLine("  on fa.turma_id = a.turma_id and fa.data_aula = a.data_aula");
+            query.AppendLine("where not a.excluido");
+            query.AppendLine("  and not rf.excluido");
+            query.AppendLine("  and a.data_aula >= @dataReferencia");
+            query.AppendLine("  and a.tipo_calendario_id = @tipoCalendarioId");
+            query.AppendLine("group by a.turma_id, a.data_aula, fa.codigo_aluno, fa.qtd_faltas, t.modalidade_codigo, t.ano;");
+
+            return database.Conexao.Query<AlunosFaltososDto>(query.ToString(), new { dataReferencia, tipoCalendarioId });
         }
 
         public RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId)

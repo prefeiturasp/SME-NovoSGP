@@ -141,14 +141,7 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Usuário não encontrado.");
             }
 
-            var chaveRedis = $"perfis-usuario-{login}";
-            var perfisUsuarioString = repositorioCache.Obter(chaveRedis);
-
-            IEnumerable<PrioridadePerfil> perfisDoUsuario = null;
-
-            perfisDoUsuario = string.IsNullOrWhiteSpace(perfisUsuarioString)
-                ? await ObterPerfisUsuario(login)
-                : JsonConvert.DeserializeObject<IEnumerable<PrioridadePerfil>>(perfisUsuarioString);
+            var perfisDoUsuario = await repositorioCache.Obter($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
 
             usuario.DefinirPerfis(perfisDoUsuario);
             usuario.DefinirPerfilAtual(ObterPerfilAtual());
