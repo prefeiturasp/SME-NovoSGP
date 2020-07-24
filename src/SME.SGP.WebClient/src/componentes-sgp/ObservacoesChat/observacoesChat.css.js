@@ -28,7 +28,6 @@ export const LinhaObservacao = styled.div`
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
-  line-height: 20px;
   color: #000000;
 
   .btn-acao {
