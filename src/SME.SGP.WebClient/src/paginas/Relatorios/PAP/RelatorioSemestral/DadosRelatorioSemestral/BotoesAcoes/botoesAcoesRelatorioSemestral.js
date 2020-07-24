@@ -11,9 +11,16 @@ import {
 import { confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import servicoSalvarRelatorioSemestral from '../../servicoSalvarRelatorioSemestral';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const BotoesAcoesRelatorioSemestral = () => {
   const dispatch = useDispatch();
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const alunosRelatorioSemestral = useSelector(
     store => store.relatorioSemestralPAP.alunosRelatorioSemestral
@@ -115,7 +122,11 @@ const BotoesAcoesRelatorioSemestral = () => {
         bold
         className="mr-2"
         onClick={onClickSalvar}
-        disabled={desabilitarCampos || !relatorioSemestralEmEdicao}
+        disabled={
+          ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)||
+          desabilitarCampos ||
+          !relatorioSemestralEmEdicao
+        }
       />
     </>
   );
