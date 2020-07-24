@@ -228,7 +228,7 @@ namespace SME.SGP.Dominio
         public bool PodeVisualizarEventosOcorrenciaDre()
         {
             var perfilAtual = Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual);
-            if (perfilAtual.Tipo == TipoPerfil.UE)
+            if (perfilAtual!=null && perfilAtual.Tipo == TipoPerfil.UE)
                 return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_AD || PerfilAtual == Dominio.Perfis.PERFIL_CP || PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO);
             else return true;
         }
