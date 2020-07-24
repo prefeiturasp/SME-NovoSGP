@@ -69,10 +69,14 @@ const getObjetoStorageUsuario = objeto => {
   return resultado;
 }
 
-const verificaSomenteConsulta = permissoes => {
+const verificaSomenteConsulta = (permissoes, naoSetarResultadoNoStore) => {
   if (permissoes && permissoes[tipoPermissao.podeConsultar] && !permissoes[tipoPermissao.podeAlterar]
     && !permissoes[tipoPermissao.podeIncluir] && !permissoes[tipoPermissao.podeExcluir]) {
-    store.dispatch(setSomenteConsulta(true));
+    if (naoSetarResultadoNoStore) {
+      store.dispatch(setSomenteConsulta(false));
+    } else {
+      store.dispatch(setSomenteConsulta(true));
+    }
     return true;
   }
   store.dispatch(setSomenteConsulta(false));

@@ -30,6 +30,8 @@ import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
 import moment from 'moment';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const { TabPane } = Tabs;
 
@@ -41,6 +43,10 @@ const Notas = ({ match }) => {
   );
   const modoEdicaoGeralNotaFinal = useSelector(
     store => store.notasConceitos.modoEdicaoGeralNotaFinal
+  );
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
   );
   const { ehProfessorCj } = usuario;
 
@@ -90,44 +96,54 @@ const Notas = ({ match }) => {
     false
   );
 
-  const validaSeDesabilitaCampos = async bimestre => {
-    const somenteConsulta = verificaSomenteConsulta(permissoesTela);
-    const desabilitar =
-      somenteConsulta ||
-      !permissoesTela.podeAlterar ||
-      !permissoesTela.podeIncluir;
+  const validaSeDesabilitaCampos = useCallback(
+    async bimestre => {
+      const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+        modalidadesFiltroPrincipal,
+        usuario.turmaSelecionada
+      );
+      const somenteConsulta = verificaSomenteConsulta(
+        permissoesTela,
+        naoSetarSomenteConsultaNoStore
+      );
+      const desabilitar =
+        somenteConsulta ||
+        !permissoesTela.podeAlterar ||
+        !permissoesTela.podeIncluir;
 
-    let dentroDoPeriodo = true;
-    if (!desabilitar && bimestre && usuario.turmaSelecionada.turma) {
-      const retorno = await ServicoPeriodoFechamento.verificarSePodeAlterarNoPeriodo(
-        usuario.turmaSelecionada.turma,
-        bimestre
-      ).catch(e => {
-        erros(e);
-      });
-      if (retorno && retorno.status == 200) {
-        dentroDoPeriodo = retorno.data;
+      let dentroDoPeriodo = true;
+      if (!desabilitar && bimestre && usuario.turmaSelecionada.turma) {
+        const retorno = await ServicoPeriodoFechamento.verificarSePodeAlterarNoPeriodo(
+          usuario.turmaSelecionada.turma,
+          bimestre
+        ).catch(e => {
+          erros(e);
+        });
+        if (retorno && retorno.status == 200) {
+          dentroDoPeriodo = retorno.data;
+        }
       }
-    }
 
-    if (desabilitar) {
-      setDesabilitarCampos(desabilitar);
-      setShowMsgPeriodoFechamento(false);
-      return;
-    }
+      if (desabilitar) {
+        setDesabilitarCampos(desabilitar);
+        setShowMsgPeriodoFechamento(false);
+        return;
+      }
 
-    if (!dentroDoPeriodo) {
-      setDesabilitarCampos(true);
-      setShowMsgPeriodoFechamento(true);
-    } else {
-      setDesabilitarCampos(desabilitar);
-      setShowMsgPeriodoFechamento(false);
-    }
-  };
+      if (!dentroDoPeriodo) {
+        setDesabilitarCampos(true);
+        setShowMsgPeriodoFechamento(true);
+      } else {
+        setDesabilitarCampos(desabilitar);
+        setShowMsgPeriodoFechamento(false);
+      }
+    },
+    [usuario.turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]
+  );
 
   useEffect(() => {
     validaSeDesabilitaCampos(bimestreCorrente);
-  }, [permissoesTela, usuario.turmaSelecionada.turma]);
+  }, [bimestreCorrente, validaSeDesabilitaCampos]);
 
   const resetarTela = useCallback(() => {
     setDisciplinaSelecionada(undefined);
@@ -287,7 +303,11 @@ const Notas = ({ match }) => {
 
   const obterDisciplinas = useCallback(async () => {
     const url = `v1/professores/turmas/${usuario.turmaSelecionada.turma}/disciplinas`;
-    const disciplinas = await api.get(url);
+    const disciplinas = await api.get(url).then(res => {
+      if (res.data) setDesabilitarDisciplina(false);
+
+      return res;
+    });
 
     setListaDisciplinas(disciplinas.data);
     if (disciplinas.data && disciplinas.data.length === 1) {
@@ -332,7 +352,9 @@ const Notas = ({ match }) => {
   }, [obterTituloTela]);
 
   useEffect(() => {
-    if (usuario.turmaSelecionada.turma) {
+    if (
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, usuario.turmaSelecionada)
+    ) {
       obterDisciplinas();
       dispatch(setModoEdicaoGeral(false));
       dispatch(setModoEdicaoGeralNotaFinal(false));
@@ -549,10 +571,11 @@ const Notas = ({ match }) => {
     return pergutarParaSalvarNotaFinal(bimestresSemAvaliacaoBimestral)
       .then(salvarAvaliacaoFinal => {
         if (salvarAvaliacaoFinal) {
-          let valoresBimestresSalvarComNotas = valoresBimestresSalvar.filter(x => x.notaConceitoAlunos.length > 0);
+          let valoresBimestresSalvarComNotas = valoresBimestresSalvar.filter(
+            x => x.notaConceitoAlunos.length > 0
+          );
 
-          if (valoresBimestresSalvarComNotas.length < 1)
-            return resolve(false);
+          if (valoresBimestresSalvarComNotas.length < 1) return resolve(false);
 
           return api
             .post(`/v1/fechamentos/turmas`, valoresBimestresSalvarComNotas)
@@ -936,7 +959,7 @@ const Notas = ({ match }) => {
       <ModalConteudoHtml
         key="inserirJutificativa"
         visivel={exibeModalJustificativa}
-        onClose={() => { }}
+        onClose={() => {}}
         titulo="Inserir justificativa"
         esconderBotaoPrincipal
         esconderBotaoSecundario
@@ -963,7 +986,7 @@ const Notas = ({ match }) => {
                     id: 'justificativa-porcentagem',
                     mensagem: `A maioria dos estudantes está com ${
                       notasConceitos.Notas == notaTipo ? 'notas' : 'conceitos'
-                      } abaixo do
+                    } abaixo do
                                mínimo considerado para aprovação, por isso é necessário que você insira uma justificativa.`,
                     estiloTitulo: { fontSize: '18px' },
                   }}
@@ -1007,7 +1030,8 @@ const Notas = ({ match }) => {
           )}
         </Formik>
       </ModalConteudoHtml>
-      {!usuario.turmaSelecionada.turma ? (
+      {!usuario.turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, usuario.turmaSelecionada) ? (
         <Row className="mb-0 pb-0">
           <Grid cols={12} className="mb-0 pb-0">
             <Container>
@@ -1041,7 +1065,8 @@ const Notas = ({ match }) => {
           </Grid>
         </Row>
       ) : null}
-      {showMsgPeriodoFechamento ? (
+      {showMsgPeriodoFechamento &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, usuario.turmaSelecionada) ? (
         <Row className="mb-0 pb-0">
           <Grid cols={12} className="mb-0 pb-0">
             <Container>
@@ -1058,6 +1083,7 @@ const Notas = ({ match }) => {
           </Grid>
         </Row>
       ) : null}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina={tituloNotasConceitos} />
       <Loader loading={carregandoListaBimestres}>
         <Card>
@@ -1116,8 +1142,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {segundoBimestre.numero ? (
                         <TabPane
                           tab={segundoBimestre.descricao}
@@ -1133,8 +1159,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {terceiroBimestre.numero ? (
                         <TabPane
                           tab={terceiroBimestre.descricao}
@@ -1150,8 +1176,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                       {quartoBimestre.numero ? (
                         <TabPane
                           tab={quartoBimestre.descricao}
@@ -1167,8 +1193,8 @@ const Notas = ({ match }) => {
                           />
                         </TabPane>
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                     </ContainerTabsCard>
                   </div>
                 </div>
@@ -1194,8 +1220,8 @@ const Notas = ({ match }) => {
                 </div>
               </>
             ) : (
-                ''
-              )}
+              ''
+            )}
           </div>
         </Card>
       </Loader>

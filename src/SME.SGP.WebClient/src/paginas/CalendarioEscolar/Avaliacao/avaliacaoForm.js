@@ -21,6 +21,8 @@ import Alert from '~/componentes/alert';
 
 // Utils
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const AvaliacaoForm = ({ match, location }) => {
   const [
@@ -30,10 +32,14 @@ const AvaliacaoForm = ({ match, location }) => {
   const permissaoTela = useSelector(
     state => state.usuario.permissoes[RotasDTO.CADASTRO_DE_AVALIACAO]
   );
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const botaoCadastrarRef = useRef(null);
   const [refForm, setRefForm] = useState({});
 
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [dentroPeriodo, setDentroPeriodo] = useState(true);
   const [podeLancaNota, setPodeLancaNota] = useState(true);
@@ -434,8 +440,26 @@ const AvaliacaoForm = ({ match, location }) => {
   };
 
   useEffect(() => {
-    if (idAvaliacao) obterAvaliacao();
+    if (
+      idAvaliacao &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
+    )
+      obterAvaliacao();
   }, [idAvaliacao]);
+
+  useEffect(() => {
+    const turmaInfantil = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setDesabilitarCampos(turmaInfantil);
+
+    if (turmaInfantil && refForm && refForm.resetForm) {
+      refForm.resetForm();
+      setDescricao('');
+      setModoEdicao(false);
+    }
+  }, [turmaSelecionada, modalidadesFiltroPrincipal, refForm, inicial]);
 
   const selecionarDisciplina = indice => {
     const disciplinas = [...listaDisciplinasRegencia];
@@ -527,6 +551,7 @@ const AvaliacaoForm = ({ match, location }) => {
         ) : (
           ''
         )}
+        <AlertaModalidadeInfantil />
         <Grid cols={12} className="mb-1 p-0">
           <Titulo className="font-weight-bold">
             {`Cadastro de avaliação - ${renderDataAvaliacao()}`}
@@ -560,7 +585,9 @@ const AvaliacaoForm = ({ match, location }) => {
                     border
                     bold
                     className="mr-3"
-                    disabled={!dentroPeriodo || !modoEdicao}
+                    disabled={
+                      desabilitarCampos || !dentroPeriodo || !modoEdicao
+                    }
                   />
                   <Button
                     label="Excluir"
@@ -568,6 +595,7 @@ const AvaliacaoForm = ({ match, location }) => {
                     border
                     className="mr-3"
                     disabled={
+                      desabilitarCampos ||
                       !idAvaliacao ||
                       (permissaoTela && !permissaoTela.podeAlterar) ||
                       !dentroPeriodo
@@ -580,6 +608,7 @@ const AvaliacaoForm = ({ match, location }) => {
                     onClick={e => clicouBotaoCadastrar(form, e)}
                     ref={botaoCadastrarRef}
                     disabled={
+                      desabilitarCampos ||
                       (permissaoTela &&
                         (!permissaoTela.podeIncluir ||
                           !permissaoTela.podeAlterar)) ||
@@ -606,7 +635,7 @@ const AvaliacaoForm = ({ match, location }) => {
                           montaValidacoes(e.target.value);
                           validaInterdisciplinar(e.target.value);
                         }}
-                        desabilitado={!dentroPeriodo}
+                        desabilitado={desabilitarCampos || !dentroPeriodo}
                       />
                     </Grid>
                   </Div>
@@ -647,7 +676,11 @@ const AvaliacaoForm = ({ match, location }) => {
                             lista={listaDisciplinas}
                             valueOption="codigoComponenteCurricular"
                             valueText="nome"
-                            disabled={!dentroPeriodo || disciplinaDesabilitada}
+                            disabled={
+                              desabilitarCampos ||
+                              !dentroPeriodo ||
+                              disciplinaDesabilitada
+                            }
                             placeholder="Selecione um componente curricular"
                             valueSelect={listaDisciplinasSelecionadas}
                             form={form}
@@ -662,7 +695,11 @@ const AvaliacaoForm = ({ match, location }) => {
                             lista={listaDisciplinas}
                             valueOption="codigoComponenteCurricular"
                             valueText="nome"
-                            disabled={!dentroPeriodo || disciplinaDesabilitada}
+                            disabled={
+                              desabilitarCampos ||
+                              !dentroPeriodo ||
+                              disciplinaDesabilitada
+                            }
                             placeholder="Selecione um componente curricular"
                             form={form}
                             onChange={valor => {
@@ -685,7 +722,7 @@ const AvaliacaoForm = ({ match, location }) => {
                         placeholder="Atividade Avaliativa"
                         form={form}
                         onChange={aoTrocarCampos}
-                        disabled={!dentroPeriodo}
+                        disabled={desabilitarCampos || !dentroPeriodo}
                       />
                     </Grid>
                     <Grid cols={!temRegencia ? 4 : 6} className="mb-4">
@@ -702,7 +739,7 @@ const AvaliacaoForm = ({ match, location }) => {
                           form.setFieldValue('nome', e.target.value);
                           aoTrocarCampos();
                         }}
-                        desabilitado={!dentroPeriodo}
+                        desabilitado={desabilitarCampos || !dentroPeriodo}
                       />
                     </Grid>
                   </Div>
@@ -716,7 +753,7 @@ const AvaliacaoForm = ({ match, location }) => {
                         id="descricao"
                         onChange={aoTrocarTextEditor}
                         maxlength={500}
-                        desabilitar={!dentroPeriodo}
+                        desabilitar={desabilitarCampos || !dentroPeriodo}
                       />
                     </Grid>
                   </Div>
@@ -732,7 +769,11 @@ const AvaliacaoForm = ({ match, location }) => {
                         border
                         className="btnGroupItem"
                         onClick={() => setMostrarModalCopiarAvaliacao(true)}
-                        disabled={!dentroPeriodo || desabilitarCopiarAvaliacao}
+                        disabled={
+                          desabilitarCampos ||
+                          !dentroPeriodo ||
+                          desabilitarCopiarAvaliacao
+                        }
                       />
                       {copias.length > 0 && (
                         <div style={{ marginLeft: '14px' }}>
