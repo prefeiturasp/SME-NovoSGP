@@ -159,7 +159,7 @@ const CompensacaoAusenciaLista = () => {
     }
 
     let listaBi = [];
-    if (turmaSelecionada.modalidade == modalidade.EJA) {
+    if (String(turmaSelecionada.modalidade) === String(modalidade.EJA)) {
       listaBi = [
         { valor: 1, descricao: '1° Bimestre' },
         { valor: 2, descricao: '2° Bimestre' },
@@ -217,7 +217,7 @@ const CompensacaoAusenciaLista = () => {
 
     if (
       exucutandoCalculoFrequencia &&
-      exucutandoCalculoFrequencia.status == 200
+      exucutandoCalculoFrequencia.status === 200
     ) {
       const temProcessoEmExecucao =
         exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data;
