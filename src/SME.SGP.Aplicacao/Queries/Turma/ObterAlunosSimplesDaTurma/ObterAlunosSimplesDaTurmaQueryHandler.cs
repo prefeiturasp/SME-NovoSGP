@@ -36,12 +36,12 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var alunoEOL in alunosEOL)
             {
+                var situacao = alunoEOL.SituacaoMatricula == null ? "" : $"({alunoEOL.SituacaoMatricula})";
                 yield return new AlunoSimplesDto()
                 {
                     Codigo = alunoEOL.CodigoAluno,
                     NumeroChamada = alunoEOL.NumeroAlunoChamada,
-                    SituacaoMatricula =  alunoEOL.SituacaoMatricula,
-                    Nome = alunoEOL.NomeAluno
+                    Nome = $"{alunoEOL.NomeAluno} {situacao}"
                 };
             }
         }
