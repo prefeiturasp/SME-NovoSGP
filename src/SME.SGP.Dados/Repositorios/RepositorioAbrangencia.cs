@@ -143,30 +143,32 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
 
-            query.AppendLine(@"select
-                            va.modalidade_codigo as modalidade,
-                            va.turma_ano_letivo as anoLetivo,
-	                        va.turma_ano as  ano,
-                            va.dre_codigo as codigoDre,
-                            va.turma_id as codigoTurma,
-                            va.ue_codigo as codigoUe,
-	                        u.tipo_escola as tipoEscola,
-	                        va.dre_nome as nomeDre,
-	                        va.turma_nome as nomeTurma,
-	                        va.ue_nome as nomeUe,
-	                        va.turma_semestre as semestre,
-                            va.qt_duracao_aula as qtDuracaoAula,
-                            va.tipo_turno as tipoTurno from");
-
-            query.AppendLine($"{(consideraHistorico ? "v_abrangencia_historica" : "v_abrangencia_usuario")} va");
-
-            query.AppendLine(@"inner join ue u
-                            on u.ue_id = va.ue_codigo
-                        where
-	                        va.login = @login
-                            and va.usuario_perfil = @perfil
-                            and va.turma_id = @turma
-                        order by va.ue_nome");
+            query.AppendLine("select t.modalidade_codigo as modalidade,");
+            query.AppendLine("       t.turma_ano_letivo as anoLetivo,");
+            query.AppendLine("       t.turma_ano as ano,");
+            query.AppendLine("       t.dre_codigo as codigoDre,");
+            query.AppendLine("       t.turma_id as codigoTurma,");
+            query.AppendLine("       t.ue_codigo as codigoUe,");
+            query.AppendLine("       ue.tipo_escola as tipoEscola,");
+            query.AppendLine("       t.dre_nome as nomeDre,");
+            query.AppendLine("       t.turma_nome as nomeTurma,");
+            query.AppendLine("       t.ue_nome as nomeUe,");
+            query.AppendLine("       t.turma_semestre as semestre,");
+            query.AppendLine("       t.qt_duracao_aula as qtDuracaoAula,");
+            query.AppendLine("       t.tipo_turno as tipoTurno");
+            query.AppendLine("from abrangencia a");
+            query.AppendLine("  join usuario u");
+            query.AppendLine("      on a.usuario_id = u.id");
+            query.AppendLine("  inner join v_abrangencia_cadeia_turmas t");
+            query.AppendLine("     on (a.turma_id notnull and a.turma_id = t.turma_id) or");
+            query.AppendLine("        (a.turma_id is null and a.ue_id is null and a.dre_id = t.dre_id) or-- admin dre");
+            query.AppendLine("        (a.turma_id is null and a.dre_id is null and a.ue_id = t.ue_id) --admin ue");
+            query.AppendLine("  inner join ue");
+            query.AppendLine("      on ue.id = t.ue_id");
+            query.AppendLine($"where { (!consideraHistorico ? "not" : string.Empty) }a.historico");
+            query.AppendLine("  and u.login = @login");
+            query.AppendLine("  and a.perfil = @perfil");
+            query.AppendLine("  and t.turma_codigo = @turma;");
 
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { turma, login, perfil }))
                 .FirstOrDefault();
@@ -348,7 +350,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = "select 1 from prioridade_perfil where codigo_perfil = @perfil and tipo = any(@tipos)";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { perfil, tipos=tipos?.Select(c=>(int)c)?.ToArray() });
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { perfil, tipos = tipos?.Select(c => (int)c)?.ToArray() });
         }
         public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string codigoUe)
         {
