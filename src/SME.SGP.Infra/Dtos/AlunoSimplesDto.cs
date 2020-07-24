@@ -7,7 +7,5 @@
         public int NumeroChamada { get; set; }
 
         public string Nome { get; set; }
-
-        public string SituacaoMatricula { get; set; }
     }
 }
