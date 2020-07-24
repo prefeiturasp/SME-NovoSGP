@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Label } from '~/componentes';
-import {
-  ContainerObservacoesChat,
-  CampoObservacao,
-} from './observacoesChat.css';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
+import {
+  CampoObservacao,
+  ContainerObservacoesChat,
+} from './observacoesChat.css';
 import ObservacoesChatMontarDados from './observacoesChatMontarDados';
 
 const ObservacoesChat = props => {
-  const { onClickSalvarNovo, dados } = props;
+  const { onClickSalvarNovo, onClickSalvarEdicao, onClickExcluir } = props;
 
   const [novaObservacao, setNovaObservacao] = useState('');
 
@@ -22,9 +22,11 @@ const ObservacoesChat = props => {
     setNovaObservacao('');
   };
 
-  useEffect(() => {
-    console.log(dados);
-  }, [dados]);
+  const onClickSalvar = () => {
+    onClickSalvarNovo(novaObservacao).then(() => {
+      setNovaObservacao('');
+    });
+  };
 
   return (
     <div className="col-sm-12 mb-2 mt-2">
@@ -58,14 +60,15 @@ const ObservacoesChat = props => {
               color={Colors.Roxo}
               border
               bold
-              onClick={() => {
-                onClickSalvarNovo(novaObservacao);
-              }}
+              onClick={onClickSalvar}
               height="25px"
               disabled={!novaObservacao}
             />
           </div>
-          <ObservacoesChatMontarDados dados={dados} />
+          <ObservacoesChatMontarDados
+            onClickSalvarEdicao={onClickSalvarEdicao}
+            onClickExcluir={onClickExcluir}
+          />
         </div>
       </ContainerObservacoesChat>
     </div>
@@ -73,13 +76,15 @@ const ObservacoesChat = props => {
 };
 
 ObservacoesChat.propTypes = {
+  onClickSalvarEdicao: PropTypes.func,
   onClickSalvarNovo: PropTypes.func,
-  dados: PropTypes.oneOfType([PropTypes.array]),
+  onClickExcluir: PropTypes.func,
 };
 
 ObservacoesChat.defaultProps = {
+  onClickSalvarEdicao: () => {},
   onClickSalvarNovo: () => {},
-  dados: [],
+  onClickExcluir: () => {},
 };
 
 export default ObservacoesChat;

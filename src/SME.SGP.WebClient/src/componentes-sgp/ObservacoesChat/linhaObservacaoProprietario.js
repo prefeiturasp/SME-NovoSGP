@@ -1,35 +1,47 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
-import { LinhaObservacao, CampoObservacao } from './observacoesChat.css';
+import { setObservacaoEmEdicao } from '~/redux/modulos/observacoesChat/actions';
+import { CampoObservacao, LinhaObservacao } from './observacoesChat.css';
 
 const LinhaObservacaoProprietario = props => {
-  const { observacao } = props;
+  const {
+    observacao,
+    onClickSalvarEdicao,
+    onClickExcluir,
+    index,
+    children,
+  } = props;
 
-  const [modoEdicao, setModoEdicao] = useState(false);
-  const [valorObservacao, setValorObservacao] = useState(observacao.texto);
+  const dispatch = useDispatch();
+
+  const observacaoEmEdicao = useSelector(
+    store => store.observacoesChat.observacaoEmEdicao
+  );
 
   const onClickEditar = () => {
-    console.log(observacao);
-    setModoEdicao(true);
+    const obs = [...observacaoEmEdicao];
+    obs[index] = { ...observacao };
+    dispatch(setObservacaoEmEdicao([...obs]));
   };
-
-  const onClickExcluir = () => {
-    console.log(observacao);
-  };
-
   const onClickSalvar = () => {
-    console.log(observacao);
+    onClickSalvarEdicao(observacaoEmEdicao[index]).then(resultado => {
+      if (resultado && resultado.status === 200) {
+        dispatch(setObservacaoEmEdicao([]));
+      }
+    });
   };
 
   const onClickCancelar = () => {
-    console.log(observacao);
+    dispatch(setObservacaoEmEdicao([]));
   };
 
   const onChangeObs = ({ target: { value } }) => {
-    observacao.texto = value;
-    setValorObservacao(value);
+    const obs = [...observacaoEmEdicao];
+    obs[index].texto = value;
+    dispatch(setObservacaoEmEdicao([...obs]));
   };
 
   const btnSalvarCancelar = () => {
@@ -44,7 +56,6 @@ const LinhaObservacaoProprietario = props => {
           className="mr-3"
           onClick={onClickCancelar}
           height="25px"
-          hidden={!modoEdicao}
         />
         <Button
           id="btn-salvar-obs-novo"
@@ -54,7 +65,6 @@ const LinhaObservacaoProprietario = props => {
           bold
           onClick={onClickSalvar}
           height="25px"
-          hidden={!modoEdicao}
         />
       </div>
     );
@@ -62,7 +72,7 @@ const LinhaObservacaoProprietario = props => {
 
   const btnEditarExcluir = () => {
     return (
-      <div className="d-flex">
+      <div className="d-flex mt-2">
         <Button
           id="btn-editar"
           icon="edit"
@@ -73,6 +83,11 @@ const LinhaObservacaoProprietario = props => {
           onClick={onClickEditar}
           height="30px"
           width="30px"
+          disabled={
+            observacaoEmEdicao &&
+            observacaoEmEdicao.length &&
+            !observacaoEmEdicao[index]
+          }
         />
         <Button
           id="btn-excluir"
@@ -81,9 +96,14 @@ const LinhaObservacaoProprietario = props => {
           color={Colors.Azul}
           border
           className="btn-acao"
-          onClick={onClickExcluir}
+          onClick={() => onClickExcluir(observacao)}
           height="30px"
           width="30px"
+          disabled={
+            observacaoEmEdicao &&
+            observacaoEmEdicao.length &&
+            !observacaoEmEdicao[index]
+          }
         />
       </div>
     );
@@ -92,26 +112,24 @@ const LinhaObservacaoProprietario = props => {
   return (
     <div className="row">
       <div className="col-md-4" />
-      {modoEdicao ? (
+      {observacaoEmEdicao &&
+      observacaoEmEdicao[index] &&
+      observacaoEmEdicao[index].id ? (
         <div className="col-md-8 mb-5">
           <CampoObservacao
             id="editando-observacao"
             autoSize={{ minRows: 4 }}
-            value={valorObservacao}
+            value={observacaoEmEdicao[index].texto}
             onChange={onChangeObs}
           />
           {btnSalvarCancelar()}
+          {children}
         </div>
       ) : (
         <LinhaObservacao className="col-md-8 mb-5">
-          <div>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore reprehenderit in
-            voluptate velit esse cillum dolore Lorem ipsum dolor sit amet,
-            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-            labore et dolore reprehenderit in voluptate velit esse cillum dolore
-          </div>
+          <div>{observacao.texto}</div>
           {btnEditarExcluir()}
+          {children}
         </LinhaObservacao>
       )}
     </div>
@@ -120,10 +138,16 @@ const LinhaObservacaoProprietario = props => {
 
 LinhaObservacaoProprietario.propTypes = {
   observacao: PropTypes.oneOfType([PropTypes.object]),
+  onClickSalvarEdicao: PropTypes.func,
+  onClickExcluir: PropTypes.func,
+  index: PropTypes.number,
 };
 
 LinhaObservacaoProprietario.defaultProps = {
   observacao: {},
+  onClickSalvarEdicao: () => {},
+  onClickExcluir: () => {},
+  index: null,
 };
 
 export default LinhaObservacaoProprietario;

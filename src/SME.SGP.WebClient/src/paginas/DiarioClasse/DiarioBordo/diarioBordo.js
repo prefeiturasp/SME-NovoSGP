@@ -1,6 +1,6 @@
 import { Form, Formik } from 'formik';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import { Auditoria, CampoData, Loader, PainelCollapse } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -18,10 +18,15 @@ import history from '~/servicos/history';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import ObservacoesChat from '~/componentes-sgp/ObservacoesChat/observacoesChat';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioBordo/ServicoDiarioBordo';
+import {
+  setDadosObservacoesChat,
+  limparDadosObservacoesChat,
+} from '~/redux/modulos/observacoesChat/actions';
 
 const DiarioBordo = () => {
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
+  const dispatch = useDispatch();
 
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
@@ -44,7 +49,8 @@ const DiarioBordo = () => {
   const [errosValidacao, setErrosValidacao] = useState([]);
   const [mostrarErros, setMostarErros] = useState(false);
   const [auditoria, setAuditoria] = useState('');
-  const [dadosObservacoes, setDadosObservacoes] = useState([]);
+  // const [dadosObservacoes, setDadosObservacoes] = useState([]);
+  const [idDiarioBordo, setIdDiarioBordo] = useState(0);
 
   const [valoresIniciais, setValoresIniciais] = useState({
     planejamento: '',
@@ -74,7 +80,7 @@ const DiarioBordo = () => {
       turmaId
     ).catch(e => erros(e));
 
-    if (componentes.data && componentes.data.length) {
+    if (componentes && componentes.data && componentes.data.length) {
       setListaComponenteCurriculare(componentes.data);
 
       if (componentes.data.length === 1) {
@@ -205,12 +211,21 @@ const DiarioBordo = () => {
   );
 
   const obterDadosObservacoes = async () => {
-    const dados = await ServicoDiarioBordo.obterDadosObservacoes();
-    setDadosObservacoes(dados);
+    dispatch(limparDadosObservacoesChat());
+    setCarregandoGeral(true);
+    const dados = await ServicoDiarioBordo.obterDadosObservacoes().catch(e => {
+      erros(e);
+      setCarregandoGeral(false);
+    });
+
+    dispatch(setDadosObservacoesChat([...dados]));
+    setCarregandoGeral(false);
   };
+
   // TODO Remover!
   useEffect(() => {
     obterDadosObservacoes();
+    setIdDiarioBordo(123123);
   }, []);
 
   const validaSeTemIdAula = useCallback(
@@ -282,8 +297,39 @@ const DiarioBordo = () => {
     setMostarErros(false);
   };
 
-  const onClickSalvarNovaObs = e => {
-    console.log('Nova OBS:' + e);
+  const onClickSalvarObservacao = async obs => {
+    setCarregandoGeral(true);
+    return ServicoDiarioBordo.editarEditarObservacao(obs)
+      .then(resultado => {
+        if (resultado && resultado.status === 200) {
+          const msg = `Observação ${
+            obs.id ? 'alterada' : 'inserida'
+          } com sucesso.`;
+          sucesso(msg);
+        }
+        setCarregandoGeral(false);
+        return resultado;
+      })
+      .catch(e => {
+        erros(e);
+        setCarregandoGeral(false);
+        return e;
+      });
+  };
+
+  const onClickExcluirObservacao = async obs => {
+    setCarregandoGeral(true);
+    const resultado = await ServicoDiarioBordo.excluirObservacao(obs).catch(
+      e => {
+        erros(e);
+        setCarregandoGeral(false);
+      }
+    );
+    if (resultado && resultado.status === 200) {
+      const msg = `Observação excluída com sucesso.`;
+      sucesso(msg);
+    }
+    setCarregandoGeral(false);
   };
 
   return (
@@ -465,10 +511,15 @@ const DiarioBordo = () => {
             )}
           </Formik>
         </div>
-        <ObservacoesChat
-          dados={dadosObservacoes}
-          onClickSalvarNovo={valor => onClickSalvarNovaObs(valor)}
-        />
+        {idDiarioBordo ? (
+          <ObservacoesChat
+            onClickSalvarNovo={obs => onClickSalvarObservacao(obs)}
+            onClickSalvarEdicao={obs => onClickSalvarObservacao(obs)}
+            onClickExcluir={obs => onClickExcluirObservacao(obs)}
+          />
+        ) : (
+          ''
+        )}
       </Card>
     </Loader>
   );
