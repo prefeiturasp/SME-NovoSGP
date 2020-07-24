@@ -67,8 +67,10 @@ namespace SME.SGP.Aplicacao
 
             var lista = await repositorioAbrangencia.ObterModalidades(login, perfil, anoLetivo, consideraHistorico);
 
-            return from a in lista
+            var listaModalidades = from a in lista
                    select new EnumeradoRetornoDto() { Id = a, Descricao = ((Modalidade)a).GetAttribute<DisplayAttribute>().Name };
+
+            return listaModalidades.OrderBy(a => a.Descricao);
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)
