@@ -85,30 +85,52 @@ namespace SME.SGP.Dados.Repositorios
         {
             texto = $"%{texto.ToUpper()}%";
 
-            var query = $@"select distinct va.modalidade_codigo as modalidade,
-                                           va.turma_ano_letivo as anoLetivo,
-                                           va.turma_ano as  ano,
-                                           va.dre_codigo as codigoDre,
-                                           va.turma_id as codigoTurma,
-                                           va.ue_codigo as codigoUe,
-                                           u.tipo_escola as tipoEscola,
-                                           va.dre_nome as nomeDre,
-                                           va.turma_nome as nomeTurma,
-                                           va.ue_nome as nomeUe,
-                                           va.turma_semestre as semestre,
-                                           va.qt_duracao_aula as qtDuracaoAula,
-                                           va.tipo_turno as tipoTurno
-                           from
-                               { (consideraHistorico ? "v_abrangencia_historica" : "v_abrangencia_usuario") } va
-                           inner join ue u
-                               on u.ue_id = va.ue_codigo and (upper(va.turma_nome) like @texto OR upper(f_unaccent(va.ue_nome)) LIKE @texto)                           
-                           where
-                                va.login = @login
-                                and va.usuario_perfil = @perfil
-                           order by va.ue_nome
-                           limit 10";
+            var query = new StringBuilder();
 
-            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { texto, login, perfil })).AsList();
+            query.AppendLine("select distinct modalidade,");
+            query.AppendLine("                anoLetivo,");
+            query.AppendLine("                ano,");
+            query.AppendLine("                codigoDre,");
+            query.AppendLine("                codigoTurma,");
+            query.AppendLine("                codigoUe,");
+            query.AppendLine("                ue.tipo_escola as tipoEscola,");
+            query.AppendLine("                nomeDre,");
+            query.AppendLine("                nomeTurma,");
+            query.AppendLine("                nomeUe,");
+            query.AppendLine("                semestre,");
+            query.AppendLine("                qtDuracaoAula,");
+            query.AppendLine("                tipoTurno");
+            query.AppendLine("from(");
+            query.AppendLine("         select coalesce(t_tur.modalidade_codigo, t_ue.modalidade_codigo, t_dre.modalidade_codigo) as modalidade,");
+            query.AppendLine("                coalesce(t_tur.turma_ano_letivo, t_ue.turma_ano_letivo, t_dre.turma_ano_letivo) as anoLetivo,");
+            query.AppendLine("                coalesce(t_tur.turma_ano, t_ue.turma_ano, t_dre.turma_ano) as ano,");
+            query.AppendLine("                coalesce(t_tur.dre_codigo, t_ue.dre_codigo, t_dre.dre_codigo) as codigoDre,");
+            query.AppendLine("                coalesce(t_tur.turma_id, t_ue.turma_id, t_dre.turma_id) as codigoTurma,");
+            query.AppendLine("                coalesce(t_tur.ue_codigo, t_ue.ue_codigo, t_dre.ue_codigo) as codigoUe,");
+            query.AppendLine("                coalesce(t_tur.dre_nome, t_ue.dre_nome, t_dre.dre_nome) as nomeDre,");
+            query.AppendLine("                coalesce(t_tur.turma_nome, t_ue.turma_nome, t_dre.turma_nome) as nomeTurma,");
+            query.AppendLine("                coalesce(t_tur.ue_nome, t_ue.ue_nome, t_dre.ue_nome) as nomeUe,");
+            query.AppendLine("                coalesce(t_tur.turma_semestre, t_ue.turma_semestre, t_dre.turma_semestre) as semestre,");
+            query.AppendLine("                coalesce(t_tur.qt_duracao_aula, t_ue.qt_duracao_aula, t_dre.qt_duracao_aula) as qtDuracaoAula,");
+            query.AppendLine("                coalesce(t_tur.tipo_turno, t_ue.tipo_turno, t_dre.tipo_turno) as tipoTurno");
+            query.AppendLine("         from abrangencia a");
+            query.AppendLine("                  join usuario u on a.usuario_id = u.id");
+            query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_tur");            
+            query.AppendLine("              on (a.turma_id notnull and a.turma_id = t_tur.turma_id)");
+            query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_dre");
+            query.AppendLine("                            on(a.turma_id is null and a.ue_id is null and a.dre_id = t_dre.dre_id)-- admin dre");
+            query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_ue");
+            query.AppendLine("                            on(a.turma_id is null and a.dre_id is null and a.ue_id = t_ue.ue_id)-- admin ue");            
+            query.AppendLine($"         where { (!consideraHistorico ? "not": string.Empty) } a.historico");
+            query.AppendLine("           and u.login = @login");
+            query.AppendLine("           and a.perfil = @perfil");
+            query.AppendLine("     ) t");
+            query.AppendLine("         inner join ue on ue.ue_id = t.codigoUe");
+            query.AppendLine("where upper(t.nomeTurma) like @texto OR upper(f_unaccent(t.nomeUe)) LIKE @texto");
+            query.AppendLine("order by nomeUe");
+            query.AppendLine("limit 10;");
+
+            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { texto, login, perfil })).AsList();
         }
 
         public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "", bool consideraHistorico = false)
