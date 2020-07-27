@@ -167,7 +167,7 @@ const ComunicadosCadastro = ({ match }) => {
             String(comunicado.semestre) === '0'
               ? ''
               : String(comunicado.semestre),
-          alunos: comunicado.AlunoEspecificado ? '2' : 1,
+          alunos: comunicado.AlunoEspecificado ? '2' : '1',
           turmas:
             comunicado.turmas.length > 0
               ? [...comunicado.turmas.map(turma => String(turma.codigoTurma))]
