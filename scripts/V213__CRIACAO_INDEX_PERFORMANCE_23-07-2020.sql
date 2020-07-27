@@ -8,5 +8,5 @@ create index if not exists objetivo_aprendizagem_plano_plano_id_ix
 create index if not exists notificacao_frequencia_aula_id_idx 
 	on notificacao_frequencia(aula_id);
 
-create index concurrently if not exists notificacao_codigo_year_ix 
+create index if not exists notificacao_codigo_year_ix 
 	on notificacao (codigo desc, EXTRACT(year FROM criado_em));
