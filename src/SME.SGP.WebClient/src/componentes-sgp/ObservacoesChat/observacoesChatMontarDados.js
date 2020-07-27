@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import Auditoria from '~/componentes/auditoria';
 import LinhaObservacaoProprietario from './linhaObservacaoProprietario';
 import { LinhaObservacao } from './observacoesChat.css';
-import Auditoria from '~/componentes/auditoria';
 
 const ObservacoesChatMontarDados = props => {
   const { onClickSalvarEdicao, onClickExcluir } = props;
@@ -14,27 +14,27 @@ const ObservacoesChatMontarDados = props => {
 
   const auditoria = observacao => {
     return (
-      <Auditoria
-        alteradoEm={observacao.auditoria.alteradoEm}
-        alteradoPor={observacao.auditoria.alteradoPor}
-        alteradoRf={observacao.auditoria.alteradoRF}
-        criadoEm={observacao.auditoria.criadoEm}
-        criadoPor={observacao.auditoria.criadoPor}
-        criadoRf={observacao.auditoria.criadoRF}
-      />
+      <div className="row mt-1">
+        <Auditoria
+          alteradoEm={observacao.auditoria.alteradoEm}
+          alteradoPor={observacao.auditoria.alteradoPor}
+          alteradoRf={observacao.auditoria.alteradoRF}
+          criadoEm={observacao.auditoria.criadoEm}
+          criadoPor={observacao.auditoria.criadoPor}
+          criadoRf={observacao.auditoria.criadoRF}
+          ignorarMarginTop
+        />
+      </div>
     );
   };
 
   const montaLinhaObservacao = obs => {
     return (
-      <div className="row">
-        <LinhaObservacao className="col-md-8 mb-5">
+      <div className="mb-5">
+        <LinhaObservacao className="col-md-12">
           <div>{obs.texto}</div>
-          <div className="row">
-            {obs.auditoria ? <>{auditoria(obs)}</> : ''}
-          </div>
         </LinhaObservacao>
-        <div className="col-md-4" />
+        {obs.auditoria ? <>{auditoria(obs)}</> : ''}
       </div>
     );
   };
@@ -42,18 +42,16 @@ const ObservacoesChatMontarDados = props => {
   const montarValores = (obs, index) => {
     if (obs && obs.proprietario) {
       return (
-        <>
+        <div className="mb-5">
           <LinhaObservacaoProprietario
             observacao={obs}
             onClickSalvarEdicao={onClickSalvarEdicao}
             onClickExcluir={onClickExcluir}
             index={index}
           >
-            <div className="row">
-              {obs.auditoria ? <>{auditoria(obs)}</> : ''}
-            </div>
+            {obs.auditoria ? <>{auditoria(obs)}</> : ''}
           </LinhaObservacaoProprietario>
-        </>
+        </div>
       );
     }
     return montaLinhaObservacao(obs);

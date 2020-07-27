@@ -41,7 +41,7 @@ class ServicoDiarioBordo {
           alteradoRF: '7944560',
         },
       };
-      console.log(`Salvando observação ID ${observacao.id}`);
+      console.log(`Salvando observação ID ${params.id}`);
       const dadosObs = dadosObservacoes;
       dadosObs.unshift(params);
       dispatch(setDadosObservacoesChat([...dadosObs]));
