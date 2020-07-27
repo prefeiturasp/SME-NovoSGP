@@ -115,13 +115,13 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("                coalesce(t_tur.tipo_turno, t_ue.tipo_turno, t_dre.tipo_turno) as tipoTurno");
             query.AppendLine("         from abrangencia a");
             query.AppendLine("                  join usuario u on a.usuario_id = u.id");
-            query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_tur");            
+            query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_tur");
             query.AppendLine("              on (a.turma_id notnull and a.turma_id = t_tur.turma_id)");
             query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_dre");
             query.AppendLine("                            on(a.turma_id is null and a.ue_id is null and a.dre_id = t_dre.dre_id)-- admin dre");
             query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_ue");
-            query.AppendLine("                            on(a.turma_id is null and a.dre_id is null and a.ue_id = t_ue.ue_id)-- admin ue");            
-            query.AppendLine($"         where { (!consideraHistorico ? "not": string.Empty) } a.historico");
+            query.AppendLine("                            on(a.turma_id is null and a.dre_id is null and a.ue_id = t_ue.ue_id)-- admin ue");
+            query.AppendLine($"         where { (!consideraHistorico ? "not" : string.Empty) } a.historico");
             query.AppendLine("           and u.login = @login");
             query.AppendLine("           and a.perfil = @perfil");
             query.AppendLine("     ) t");
@@ -332,9 +332,9 @@ namespace SME.SGP.Dados.Repositorios
             var sql = @"select count(*) from usuario u
                         inner join abrangencia a on a.usuario_id = u.id
                         where u.login = @login and historico = false and turma_id is not null
-                              and a.perfil != @perfilCJ ;";
+                              and not a.perfil = ANY(@perfisCJ) ;";
 
-            var parametros = new { login, perfilCJ = Perfis.PERFIL_CJ };
+            var parametros = new { login, perfisCJ = new Guid[] { Perfis.PERFIL_CJ, Perfis.PERFIL_CJ_INFANTIL } };
 
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
