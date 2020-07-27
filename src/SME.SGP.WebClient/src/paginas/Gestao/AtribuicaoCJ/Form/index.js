@@ -165,7 +165,7 @@ function AtribuicaoCJForm({ match, location }) {
         modalidadeId: query.modalidadeId,
         turmaId: query.turmaId,
         ueId: query.ueId,
-        dreId: query.dreId
+        dreId: query.dreId,
       });
     }
   }, [location, match.url]);
@@ -264,7 +264,7 @@ function AtribuicaoCJForm({ match, location }) {
                       dreId={dreId}
                       form={form}
                       url="v1/dres"
-                      onChange={() => { }}
+                      onChange={() => {}}
                     />
                   </Grid>
                 </Row>
@@ -276,7 +276,8 @@ function AtribuicaoCJForm({ match, location }) {
                         anoLetivo={anoAtual}
                         showLabel
                         form={form}
-                        onChange={() => { }}
+                        onChange={() => {}}
+                        incluirEmei
                       />
                     </Row>
                   </Grid>
@@ -284,8 +285,11 @@ function AtribuicaoCJForm({ match, location }) {
                     <ModalidadesDropDown
                       label="Modalidade"
                       form={form}
-                      onChange={(value) => {
-                        if (value !== undefined && valoresIniciais.modalidadeId !== value) {
+                      onChange={value => {
+                        if (
+                          value !== undefined &&
+                          valoresIniciais.modalidadeId !== value
+                        ) {
                           form.setFieldValue('turmaId', undefined);
                           setValoresIniciais({
                             ...valoresIniciais,
@@ -300,7 +304,7 @@ function AtribuicaoCJForm({ match, location }) {
                     <TurmasDropDown
                       label="Turma"
                       form={form}
-                      onChange={(value) => {
+                      onChange={value => {
                         if (valoresIniciais.turmaId == undefined) {
                           setValoresForm({
                             ...valoresForm,

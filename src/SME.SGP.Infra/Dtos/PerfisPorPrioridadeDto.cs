@@ -19,5 +19,6 @@ namespace SME.SGP.Infra
         public bool PossuiPerfilDre { get; set; }
         public bool PossuiPerfilSme { get; set; }
         public bool PossuiPerfilSmeOuDre { get; set; }
+        public bool EhProfessorInfantil { get; set; }
     }
 }
