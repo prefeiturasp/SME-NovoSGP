@@ -55,7 +55,7 @@ const LinhaObservacaoProprietario = props => {
           bold
           className="mr-3"
           onClick={onClickCancelar}
-          height="25px"
+          height="30px"
         />
         <Button
           id="btn-salvar-obs-novo"
@@ -64,7 +64,7 @@ const LinhaObservacaoProprietario = props => {
           border
           bold
           onClick={onClickSalvar}
-          height="25px"
+          height="30px"
         />
       </div>
     );
@@ -110,29 +110,34 @@ const LinhaObservacaoProprietario = props => {
   };
 
   return (
-    <div className="row">
-      <div className="col-md-4" />
+    <>
       {observacaoEmEdicao &&
       observacaoEmEdicao[index] &&
       observacaoEmEdicao[index].id ? (
-        <div className="col-md-8 mb-5">
+        <>
           <CampoObservacao
             id="editando-observacao"
-            autoSize={{ minRows: 4 }}
+            autoSize={{ minRows: 3 }}
             value={observacaoEmEdicao[index].texto}
             onChange={onChangeObs}
           />
-          {btnSalvarCancelar()}
-          {children}
-        </div>
+          <div className="d-flex justify-content-between">
+            {children}
+            {btnSalvarCancelar()}
+          </div>
+        </>
       ) : (
-        <LinhaObservacao className="col-md-8 mb-5">
-          <div>{observacao.texto}</div>
-          {btnEditarExcluir()}
-          {children}
-        </LinhaObservacao>
+        <>
+          <LinhaObservacao className="col-md-12">
+            <div>{observacao.texto}</div>
+          </LinhaObservacao>
+          <div className="d-flex justify-content-between">
+            {children}
+            {btnEditarExcluir()}
+          </div>
+        </>
       )}
-    </div>
+    </>
   );
 };
 
@@ -141,6 +146,7 @@ LinhaObservacaoProprietario.propTypes = {
   onClickSalvarEdicao: PropTypes.func,
   onClickExcluir: PropTypes.func,
   index: PropTypes.number,
+  children: PropTypes.node,
 };
 
 LinhaObservacaoProprietario.defaultProps = {
@@ -148,6 +154,7 @@ LinhaObservacaoProprietario.defaultProps = {
   onClickSalvarEdicao: () => {},
   onClickExcluir: () => {},
   index: null,
+  children: () => {},
 };
 
 export default LinhaObservacaoProprietario;

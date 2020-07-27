@@ -5,7 +5,7 @@ const dados = [
     id: 1,
     texto:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore reprehenderit in voluptate velit esse cillum dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore reprehenderit in voluptate velit esse cillum dolore',
-    proprietario: false,
+    proprietario: true,
     codigoRf: '999999',
     auditoria: {
       criadoEm: moment(),

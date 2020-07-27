@@ -49,7 +49,6 @@ const DiarioBordo = () => {
   const [errosValidacao, setErrosValidacao] = useState([]);
   const [mostrarErros, setMostarErros] = useState(false);
   const [auditoria, setAuditoria] = useState('');
-  // const [dadosObservacoes, setDadosObservacoes] = useState([]);
   const [idDiarioBordo, setIdDiarioBordo] = useState(0);
 
   const [valoresIniciais, setValoresIniciais] = useState({
@@ -185,9 +184,8 @@ const DiarioBordo = () => {
         setMostarErros(false);
       }
 
-      if (form.isValid || Object.keys(form.errors).length == 0) {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
         return salvarDiarioDeBordo(form.values, form);
-        // form.handleSubmit(e => e);
       }
       return false;
     });
@@ -210,7 +208,7 @@ const DiarioBordo = () => {
     [listaDatasAulas]
   );
 
-  const obterDadosObservacoes = async () => {
+  const obterDadosObservacoes = useCallback(async () => {
     dispatch(limparDadosObservacoesChat());
     setCarregandoGeral(true);
     const dados = await ServicoDiarioBordo.obterDadosObservacoes().catch(e => {
@@ -220,13 +218,7 @@ const DiarioBordo = () => {
 
     dispatch(setDadosObservacoesChat([...dados]));
     setCarregandoGeral(false);
-  };
-
-  // TODO Remover!
-  useEffect(() => {
-    obterDadosObservacoes();
-    setIdDiarioBordo(123123);
-  }, []);
+  }, [dispatch]);
 
   const validaSeTemIdAula = useCallback(
     async (data, form) => {
@@ -236,8 +228,10 @@ const DiarioBordo = () => {
       console.log('Aula selecionada:' + aulaDataSelecionada);
       // TODO Chamar endpoint para obter os registros!
       // TODO Caso tenha registros chamar endpoint de observacoes!
+      obterDadosObservacoes();
+      setIdDiarioBordo(123123);
     },
-    [obterAulaSelecionada]
+    [obterAulaSelecionada, obterDadosObservacoes]
   );
 
   const onChangeData = async (data, form) => {

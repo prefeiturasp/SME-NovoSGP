@@ -33,7 +33,7 @@ const ObservacoesChat = props => {
       <Label text="Observações" />
       <ContainerObservacoesChat>
         <div style={{ margin: '15px' }}>
-          <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-2">
+          <div className="col-md-12 pb-2">
             <Label text="Escreva uma observação" />
             <CampoObservacao
               id="nova-observacao"
@@ -51,7 +51,7 @@ const ObservacoesChat = props => {
               bold
               className="mr-3"
               onClick={onClickCancelarNovo}
-              height="25px"
+              height="30px"
               disabled={!novaObservacao}
             />
             <Button
@@ -61,7 +61,7 @@ const ObservacoesChat = props => {
               border
               bold
               onClick={onClickSalvar}
-              height="25px"
+              height="30px"
               disabled={!novaObservacao}
             />
           </div>
