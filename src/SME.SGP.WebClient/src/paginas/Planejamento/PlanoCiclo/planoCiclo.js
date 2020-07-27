@@ -21,7 +21,10 @@ import {
 } from './planoCiclo.css';
 import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import {
+  verificaSomenteConsulta,
+  obterDescricaoNomeMenu,
+} from '~/servicos/servico-navegacao';
 import tipoPermissao from '~/dtos/tipoPermissao';
 import { Loader } from '~/componentes';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
@@ -502,7 +505,11 @@ export default function PlanoCiclo() {
       <AlertaModalidadeInfantil />
       <div className="col-md-12 mt-1">
         <Titulo>
-          {modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
+          {obterDescricaoNomeMenu(
+            RotasDto.PLANO_CICLO,
+            modalidadesFiltroPrincipal,
+            turmaSelecionada
+          )}
           <TituloAno>
             {` / ${anoAtual} `}
             <i className="fas fa-retweet" />
