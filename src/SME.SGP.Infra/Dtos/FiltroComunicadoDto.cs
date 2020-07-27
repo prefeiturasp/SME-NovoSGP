@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
@@ -18,6 +19,6 @@ namespace SME.SGP.Infra
         public string CodigoUe { get; set; }
         public Modalidade Modalidade { get; set; }
         public int Semestre { get; set; }
-        public string Turma { get; set; }
+        public string[] Turmas { get; set; }
     }
 }
