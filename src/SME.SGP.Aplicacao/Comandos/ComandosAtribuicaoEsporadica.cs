@@ -43,7 +43,8 @@ namespace SME.SGP.Aplicacao
                 DataInicio = Dto.DataInicio.Local(),
                 DreId = Dto.DreId,
                 Id = Dto.Id,
-                ProfessorRf = Dto.ProfessorRf
+                ProfessorRf = Dto.ProfessorRf,
+                Modalidade = Dto.Modalidade
             };
         }
 
