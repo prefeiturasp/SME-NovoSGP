@@ -33,6 +33,7 @@ class LocalizadorService {
   }
 
   buscarPorRf({ anoLetivo, rf, incluirEmei }) {
+    debugger;
     return api.get(
       `${this.urlProfessores}/${rf}/resumo/${anoLetivo}/${!!incluirEmei}`
     );
