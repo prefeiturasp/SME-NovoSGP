@@ -57,6 +57,7 @@ namespace SME.SGP.Aplicacao
             if (entidade == null || string.IsNullOrWhiteSpace(entidade.ProfessorRf))
                 throw new NegocioException($"Não foi encontrado atribuição de codigo {atribuicaoEsporadicaDto.Id}");
 
+            entidade.Modalidade = atribuicaoEsporadicaDto.Modalidade;
             entidade.DataFim = atribuicaoEsporadicaDto.DataFim.Local();
             entidade.DataInicio = atribuicaoEsporadicaDto.DataInicio.Local();
 

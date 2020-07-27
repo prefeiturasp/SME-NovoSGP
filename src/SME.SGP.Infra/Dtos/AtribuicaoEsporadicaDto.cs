@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
@@ -16,6 +17,9 @@ namespace SME.SGP.Infra
 
         [Required(ErrorMessage = "É necessario informar a DRE")]
         public string DreId { get; set; }
+
+        [DataRequerida(ErrorMessage = "É necessario informar a modalidade")]
+        public Modalidade Modalidade { get; set; }
 
         public bool Excluido { get; set; }
 
