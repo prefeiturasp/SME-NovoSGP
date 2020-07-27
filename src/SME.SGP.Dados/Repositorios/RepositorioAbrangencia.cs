@@ -387,5 +387,25 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe });
         }
+
+        public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine(@"select t.turma_id as valor, t.nome as descricao from turma t
+                            inner join ue ue on ue.id = t.ue_id");
+
+            query.AppendLine("where ue.ue_id = @codigoUe and ano_letivo = @anoLetivo");
+
+            if (modalidade.HasValue && modalidade != 0)
+                query.AppendLine("and t.modalidade_codigo = @modalidade");
+
+            if (semestre > 0)
+                query.AppendLine("and semestre = @semestre");
+
+            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre });
+
+            return dados.OrderBy(x => x.Descricao);
+        }
     }
 }
