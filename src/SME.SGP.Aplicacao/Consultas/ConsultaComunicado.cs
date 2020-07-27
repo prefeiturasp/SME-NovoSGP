@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dto;
@@ -21,6 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
         private readonly IRepositorioComunicadoGrupo repositorioComunicadoGrupo;
         private readonly IConsultaGrupoComunicacao consultaGrupoComunicacao;
+        private readonly IServicoEol servicoEol;
         private const string Todas = "todas";
 
         public ConsultaComunicado(
@@ -31,7 +33,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioComunicadoTurma repositorioComunicadoTurma,
             IRepositorioComunicadoAluno repositorioComunicadoAluno,
             IRepositorioComunicadoGrupo repositorioComunicadoGrupo,
-            IConsultaGrupoComunicacao consultaGrupoComunicacao) : base(contextoAplicacao)
+            IConsultaGrupoComunicacao consultaGrupoComunicacao,
+            IServicoEol servicoEol) : base(contextoAplicacao)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -40,6 +43,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
             this.repositorioComunicadoGrupo = repositorioComunicadoGrupo ?? throw new ArgumentNullException(nameof(repositorioComunicadoGrupo));
             this.consultaGrupoComunicacao = consultaGrupoComunicacao ?? throw new ArgumentNullException(nameof(consultaGrupoComunicacao));
+            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
         public async Task<ComunicadoCompletoDto> BuscarPorIdAsync(long id)
@@ -71,6 +75,16 @@ namespace SME.SGP.Aplicacao
             var comunicados = await repositorio.ListarPaginado(filtro, Paginacao);
 
             return MapearParaDtoPaginado(comunicados);
+        }
+
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string codigoTurma, int anoLetivo)
+        {
+            var alunos = await servicoEol.ObterAlunosPorTurma(codigoTurma, anoLetivo);
+
+            if (alunos == null || !alunos.Any())
+                throw new NegocioException($"Não foi encontrado alunos para a turma {codigoTurma} e ano letivo {anoLetivo}");
+
+            return alunos.OrderBy(x => x.NumeroAlunoChamada);
         }
 
         private PaginacaoResultadoDto<ComunicadoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<Comunicado> comunicado)
@@ -109,7 +123,7 @@ namespace SME.SGP.Aplicacao
                 DataExpiracao = filtroDto.DataExpiracao,
                 Modalidade = filtroDto.Modalidade,
                 Titulo = filtroDto.Titulo,
-                Turmas = new List<ComunicadoTurmaDto> { new ComunicadoTurmaDto { CodigoTurma = filtroDto.Turma } },
+                Turmas = filtroDto.Turmas?.Select(x => new ComunicadoTurmaDto { CodigoTurma = x}),
                 Semestre = filtroDto.Semestre
             };
         }
@@ -118,16 +132,16 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            if (filtroDto.CodigoDre.Equals(Todas) && !usuarioLogado.EhPerfilSME())
+            if ((filtroDto.CodigoDre?.Equals(Todas)?? true) && !usuarioLogado.EhPerfilSME())
                 throw new NegocioException("Apenas usuários SME podem visualizar comunicados de todas as DREs");
 
-            if (filtroDto.CodigoUe.Equals(Todas) && !(usuarioLogado.EhPerfilDRE() || usuarioLogado.EhPerfilSME()))
+            if ((filtroDto.CodigoUe?.Equals(Todas) ?? true) && !(usuarioLogado.EhPerfilDRE() || usuarioLogado.EhPerfilSME()))
                 throw new NegocioException("Apenas usuários SME e DRE podem visualizar comunicados de todas as Escolas");
 
-            if (usuarioLogado.EhPerfilDRE() && !filtroDto.CodigoDre.Equals(Todas))
+            if (usuarioLogado.EhPerfilDRE() && (!filtroDto.CodigoDre?.Equals(Todas) ?? false))
                 await ValidarAbrangenciaDre(filtroDto);
 
-            if (usuarioLogado.EhPerfilUE() && !filtroDto.CodigoUe.Equals(Todas))
+            if (usuarioLogado.EhPerfilUE() && (!filtroDto.CodigoUe?.Equals(Todas) ?? false))
                 await ValidarAbrangenciaUE(filtroDto);
         }
 

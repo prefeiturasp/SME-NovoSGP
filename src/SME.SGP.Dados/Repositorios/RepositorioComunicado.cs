@@ -84,14 +84,14 @@ namespace SME.SGP.Dados.Repositorios
                 filtro.Semestre,
                 filtro.CodigoDre,
                 filtro.CodigoUe,
-                filtro.Turma
+                filtro.Turmas
             };
 
             var retornoPaginado = new PaginacaoResultadoDto<Comunicado>()
             {
-                Items = await database.Conexao.QueryAsync<Comunicado, ComunicadoGrupo, Comunicado>(query.ToString(), (comunicado, grupo) =>
+                Items = await database.Conexao.QueryAsync<Comunicado, GrupoComunicacao, Comunicado>(query.ToString(), (comunicado, grupo) =>
                 {
-                    comunicado.AdicionarGrupo(grupo);
+                    comunicado.GruposComunicacao.Add(grupo);
 
                     return comunicado;
                 },
@@ -150,7 +150,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var limite = paginacao.QuantidadeRegistros != 0 ? string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros) : "";
 
-            var whereTurma = !string.IsNullOrWhiteSpace(filtro.Turma) ? "ct.turma_codigo = @Turma" : "";
+            var whereTurma = (filtro.Turmas?.Any() ?? false) ? "ct.turma_codigo = Any(@Turmas)" : "";
 
             var where = MontaWhereListar(filtro, "co");
 

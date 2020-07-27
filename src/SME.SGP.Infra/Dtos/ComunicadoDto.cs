@@ -22,15 +22,23 @@ namespace SME.SGP.Dto
         public TipoComunicado TipoComunicado { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
+        public bool AlunoEspecificado { get; set; }
         public IEnumerable<ComunicadoTurmaDto> Turmas { get; set; }
         public IEnumerable<ComunicadoAlunoDto> Alunos { get; set; }
 
+        public bool EmEdicao = true;
+
         public static explicit operator ComunicadoDto(Comunicado comunicado)
-        =>comunicado == null ? null : new ComunicadoDto
+        => comunicado == null ? null : new ComunicadoDto
         {
             AnoLetivo = comunicado.AnoLetivo,
             Turmas = comunicado.Turmas.Select(x => (ComunicadoTurmaDto)x),
             Alunos = comunicado.Alunos.Select(x => (ComunicadoAlunoDto)x),
+            Grupos = comunicado.GruposComunicacao.Select(x => new GrupoComunicacaoDto
+            {
+                Id = x.Id,
+                Nome = x.Nome
+            }).ToList(),
             CodigoDre = comunicado.CodigoDre,
             CodigoUe = comunicado.CodigoUe,
             DataEnvio = comunicado.DataEnvio,
@@ -40,7 +48,8 @@ namespace SME.SGP.Dto
             Modalidade = comunicado.Modalidade ?? default,
             Semestre = comunicado.Semestre ?? default,
             TipoComunicado = comunicado.TipoComunicado,
-            Titulo = comunicado.Titulo
+            Titulo = comunicado.Titulo,
+            AlunoEspecificado = comunicado.AlunoEspecificado,
         };
     }
 }

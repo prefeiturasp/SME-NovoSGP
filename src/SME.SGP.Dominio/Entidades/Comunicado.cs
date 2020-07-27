@@ -10,6 +10,7 @@ namespace SME.SGP.Dominio
     {
         public Comunicado()
         {
+            GruposComunicacao = new List<GrupoComunicacao>();
             Grupos = new List<ComunicadoGrupo>();
             Alunos = new List<ComunicadoAluno>();
             Turmas = new List<ComunicadoTurma>();
@@ -27,6 +28,7 @@ namespace SME.SGP.Dominio
         public Modalidade? Modalidade { get; set; }
         public int? Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
+        public IList<GrupoComunicacao> GruposComunicacao { get; set; }
         public List<ComunicadoGrupo> Grupos { get; set; }
         public IList<ComunicadoAluno> Alunos { get; set; }
         public string Titulo { get; set; }

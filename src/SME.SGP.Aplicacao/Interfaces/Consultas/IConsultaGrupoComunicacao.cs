@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,5 +12,7 @@ namespace SME.SGP.Aplicacao
         Task<GrupoComunicacaoCompletoDto> ObterPorIdAsync(long id);
 
         Task<IEnumerable<GrupoComunicacaoDto>> Listar(IEnumerable<long> ids);
+
+        Task<IEnumerable<long>> ObterIdsGrupoComunicadoPorModalidade(Modalidade modalidade);
     }
 }

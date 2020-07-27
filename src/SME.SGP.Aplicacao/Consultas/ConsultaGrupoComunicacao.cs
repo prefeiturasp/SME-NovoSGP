@@ -37,6 +37,11 @@ namespace SME.SGP.Aplicacao
             return MapearPorIdParaDto(grupo);
         }
 
+        public async Task<IEnumerable<long>> ObterIdsGrupoComunicadoPorModalidade(Modalidade modalidade)
+        {
+            return await repositorioGrupoComunicacao.ObterIdsGrupoComunicadoPorModalidade(modalidade);
+        }
+
         public async Task<IEnumerable<GrupoComunicacaoDto>> Listar(IEnumerable<long> ids)
         {
             var grupos = await repositorioGrupoComunicacao.ObterCompletoPorListaId(ids);
