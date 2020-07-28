@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
             if (alunos == null || !alunos.Any())
                 throw new NegocioException($"Não foi encontrado alunos para a turma {codigoTurma} e ano letivo {anoLetivo}");
 
-            return alunos.OrderBy(x => x.NumeroAlunoChamada);
+            return alunos.Where(x => x.DeveMostrarNaChamada(DateTime.Now)).OrderBy(x => x.NumeroAlunoChamada);
         }
 
         private PaginacaoResultadoDto<ComunicadoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<Comunicado> comunicado)
