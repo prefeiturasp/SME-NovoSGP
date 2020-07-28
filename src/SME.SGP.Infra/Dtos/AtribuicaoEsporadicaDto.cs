@@ -18,9 +18,7 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "É necessario informar a DRE")]
         public string DreId { get; set; }
 
-        [DataRequerida(ErrorMessage = "É necessario informar a modalidade")]
-        public Modalidade Modalidade { get; set; }
-
+        public bool EhInfantil { get; set; }
         public bool Excluido { get; set; }
 
         public long Id { get; set; }

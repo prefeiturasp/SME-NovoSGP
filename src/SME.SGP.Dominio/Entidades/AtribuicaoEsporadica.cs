@@ -12,7 +12,6 @@ namespace SME.SGP.Dominio
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
         public string ProfessorRf { get; set; }
-        public Modalidade Modalidade { get; set; }
         public string UeId { get; set; }
 
         public void Excluir()

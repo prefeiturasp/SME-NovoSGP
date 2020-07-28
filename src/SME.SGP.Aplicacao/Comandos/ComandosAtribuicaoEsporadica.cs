@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
         {
             var entidade = ObterEntidade(atruibuicaoEsporadicaDto);
 
-           await servicoAtribuicaoEsporadica.Salvar(entidade, atruibuicaoEsporadicaDto.AnoLetivo);
+            await servicoAtribuicaoEsporadica.Salvar(entidade, atruibuicaoEsporadicaDto.AnoLetivo, atruibuicaoEsporadicaDto.EhInfantil);
         }
 
         private AtribuicaoEsporadica DtoParaEntidade(AtribuicaoEsporadicaDto Dto)
@@ -43,8 +43,7 @@ namespace SME.SGP.Aplicacao
                 DataInicio = Dto.DataInicio.Local(),
                 DreId = Dto.DreId,
                 Id = Dto.Id,
-                ProfessorRf = Dto.ProfessorRf,
-                Modalidade = Dto.Modalidade
+                ProfessorRf = Dto.ProfessorRf
             };
         }
 
@@ -58,7 +57,6 @@ namespace SME.SGP.Aplicacao
             if (entidade == null || string.IsNullOrWhiteSpace(entidade.ProfessorRf))
                 throw new NegocioException($"Não foi encontrado atribuição de codigo {atribuicaoEsporadicaDto.Id}");
 
-            entidade.Modalidade = atribuicaoEsporadicaDto.Modalidade;
             entidade.DataFim = atribuicaoEsporadicaDto.DataFim.Local();
             entidade.DataInicio = atribuicaoEsporadicaDto.DataInicio.Local();
 

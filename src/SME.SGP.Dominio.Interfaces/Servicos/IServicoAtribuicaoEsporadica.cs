@@ -4,6 +4,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoAtribuicaoEsporadica
     {
-        Task Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo);
+        Task Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo, bool ehInfantil);
     }
 }
