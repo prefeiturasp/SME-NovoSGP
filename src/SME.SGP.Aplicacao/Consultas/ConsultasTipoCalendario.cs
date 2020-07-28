@@ -13,11 +13,18 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioTipoCalendario repositorio;
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioAbrangencia repositorioAbrangencia;
+        private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasTipoCalendario(IRepositorioTipoCalendario repositorio, IRepositorioEvento repositorioEvento)
+        public ConsultasTipoCalendario(IRepositorioTipoCalendario repositorio,
+                                       IRepositorioEvento repositorioEvento,
+                                       IRepositorioAbrangencia repositorioAbrangencia,
+                                       IServicoUsuario servicoUsuario)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioAbrangencia = repositorioAbrangencia?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
+            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<IEnumerable<TipoCalendarioDto>> BuscarPorAnoLetivo(int anoLetivo)
@@ -93,9 +100,25 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TipoCalendarioDto>> ListarPorAnoLetivo(int anoLetivo)
         {
-            var retorno = await repositorio.ListarPorAnoLetivo(anoLetivo);
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+
+            var modalidadesUsuario = await repositorioAbrangencia.ObterModalidades(login, perfil, anoLetivo, false);
+            var modalidadesTipoCalendario = MapearModalidadesUsuario(modalidadesUsuario.Select(s => (Modalidade)s));
+
+            var retorno = await repositorio.ListarPorAnoLetivoEModalidades(anoLetivo, modalidadesTipoCalendario.Select(a => (int)a).ToArray());
             return from t in retorno
                    select EntidadeParaDto(t);
+        }
+
+        private IEnumerable<ModalidadeTipoCalendario> MapearModalidadesUsuario(IEnumerable<Modalidade> modalidadesUsuario)
+        {
+            foreach (var modalidade in modalidadesUsuario)
+                yield return modalidade == Modalidade.EJA ?
+                            ModalidadeTipoCalendario.EJA :
+                            modalidade == Modalidade.Infantil ?
+                            ModalidadeTipoCalendario.Infantil :
+                            ModalidadeTipoCalendario.FundamentalMedio;
         }
 
         public async Task<TipoCalendario> ObterPorTurma(Turma turma)
