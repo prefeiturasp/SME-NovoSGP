@@ -427,7 +427,6 @@ const ComunicadosCadastro = ({ match }) => {
 
   const ResetarModalidade = async () => {
     setGruposId([]);
-    setSemestres([]);
     setModalidades(todosTurmasModalidade);
     setModalidadeSelecionada('-99');
     refForm.setFieldValue('modalidade', '-99');

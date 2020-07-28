@@ -68,6 +68,7 @@ const ComunicadosLista = () => {
   };
 
   const onChangeFiltro = valoresFiltro => {
+    setFiltro([]);
     setFiltro({
       ...valoresFiltro,
       dataEnvio: valoresFiltro.dataEnvio
