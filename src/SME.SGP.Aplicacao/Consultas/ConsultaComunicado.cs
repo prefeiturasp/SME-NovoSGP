@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             comunicado.Turmas = (await repositorioComunicadoTurma.ObterPorComunicado(comunicado.Id)).ToList();
 
             comunicado.Grupos = (await repositorioComunicadoGrupo.ObterPorComunicado(comunicado.Id)).ToList();
-            
+
             var dto = (ComunicadoCompletoDto)comunicado;
 
             dto.Grupos = (await consultaGrupoComunicacao.Listar(comunicado.Grupos.Select(x => x.GrupoComunicadoId))).ToList();
@@ -123,7 +123,7 @@ namespace SME.SGP.Aplicacao
                 DataExpiracao = filtroDto.DataExpiracao,
                 Modalidade = filtroDto.Modalidade,
                 Titulo = filtroDto.Titulo,
-                Turmas = filtroDto.Turmas?.Select(x => new ComunicadoTurmaDto { CodigoTurma = x}),
+                Turmas = filtroDto.Turmas?.Select(x => new ComunicadoTurmaDto { CodigoTurma = x }),
                 Semestre = filtroDto.Semestre
             };
         }
@@ -132,7 +132,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            if ((filtroDto.CodigoDre?.Equals(Todas)?? true) && !usuarioLogado.EhPerfilSME())
+            if ((filtroDto.CodigoDre?.Equals(Todas) ?? true) && !usuarioLogado.EhPerfilSME())
                 throw new NegocioException("Apenas usuários SME podem visualizar comunicados de todas as DREs");
 
             if ((filtroDto.CodigoUe?.Equals(Todas) ?? true) && !(usuarioLogado.EhPerfilDRE() || usuarioLogado.EhPerfilSME()))

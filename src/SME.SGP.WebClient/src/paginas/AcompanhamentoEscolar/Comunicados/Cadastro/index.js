@@ -167,7 +167,7 @@ const ComunicadosCadastro = ({ match }) => {
             String(comunicado.semestre) === '0'
               ? ''
               : String(comunicado.semestre),
-          alunos: comunicado.AlunoEspecificado ? '2' : '1',
+          alunos: comunicado.alunoEspecificado ? '2' : '1',
           turmas:
             comunicado.turmas.length > 0
               ? [...comunicado.turmas.map(turma => String(turma.codigoTurma))]
@@ -182,9 +182,16 @@ const ComunicadosCadastro = ({ match }) => {
           descricao: comunicado.descricao,
         });
 
-        console.log(comunicado);
-
         setModoEdicaoConsulta(true);
+
+        if (comunicado.alunoEspecificado) {
+          await ObterAlunos(
+            comunicado.turmas[0].codigoTurma,
+            comunicado.anoLetivo
+          );
+          setAlunoEspecificado(comunicado.alunoEspecificado);
+          setAlunosSelecionado(comunicado.alunos);
+        }
 
         setDescricaoComunicado(comunicado.descricao);
 
@@ -321,13 +328,15 @@ const ComunicadosCadastro = ({ match }) => {
   }, [alunoEspecificado]);
 
   useEffect(() => {
+    if (!refForm?.setFieldValue) return;
+
     async function obterListaGrupos() {
       const lista = await ServicoComunicados.listarGrupos();
       setGruposLista(lista);
     }
     obterListaGrupos();
     ObterAnoLetivo();
-  }, []);
+  }, [refForm]);
 
   const ObterAnoLetivo = async () => {
     const dados = await FiltroHelper.ObterAnoLetivo();
@@ -343,7 +352,10 @@ const ComunicadosCadastro = ({ match }) => {
 
     if (!dados || dados.length === 0) return;
 
-    if (dados.length === 1) refForm.setFieldValue('dre', dados[0].id);
+    if (dados.length === 1) {
+      refForm.setFieldValue('CodigoDre', dados[0].id);
+      ObterUes(dados[0].id);
+    }
 
     setDres(dados);
   };
@@ -353,7 +365,10 @@ const ComunicadosCadastro = ({ match }) => {
 
     if (!dados || dados.length === 0) return;
 
-    if (dados.length === 1) refForm.setFieldValue('ue', dados[0].id);
+    if (dados.length === 1) {
+      refForm.setFieldValue('CodigoUe', dados[0].id);
+      ObterModalidades(dados[0].id);
+    }
 
     setUes(dados);
   };
