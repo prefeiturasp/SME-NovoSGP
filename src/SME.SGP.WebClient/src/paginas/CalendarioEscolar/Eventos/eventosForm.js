@@ -135,9 +135,6 @@ const EventosForm = ({ match }) => {
   const carregarUes = async dre => {
     const ues = await obterUesPorDre(dre);
     if (ues.data) {
-      ues.data.forEach(
-        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
-      );
       setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
     } else {
       setListaUes([]);
@@ -365,10 +362,10 @@ const EventosForm = ({ match }) => {
 
       setPodeAlterarExcluir(
         usuarioStore.possuiPerfilSme === true ||
-          (usuarioStore.possuiPerfilDre === true &&
-            evento.data.dreId &&
-            evento.data.ueId) ||
-          evento.data.criadoRF === usuarioStore.rf
+        (usuarioStore.possuiPerfilDre === true &&
+          evento.data.dreId &&
+          evento.data.ueId) ||
+        evento.data.criadoRF === usuarioStore.rf
       );
 
       setValoresIniciais({
@@ -557,7 +554,7 @@ const EventosForm = ({ match }) => {
         } else {
           sucesso(
             `Evento ${
-              idEvento ? 'alterado' : 'cadastrado'
+            idEvento ? 'alterado' : 'cadastrado'
             } com sucesso. Serão cadastrados eventos recorrentes, em breve você receberá uma notificação com o resultado do processamento.`
           );
         }
@@ -954,7 +951,7 @@ const EventosForm = ({ match }) => {
                     eventoTipoFeriadoSelecionado
                       ? 'col-md-3 col-lg-3 col-xl-3'
                       : 'col-md-6 col-lg-6 col-xl-6'
-                  } pb-2`}
+                    } pb-2`}
                 >
                   <SelectComponent
                     form={form}
@@ -986,8 +983,8 @@ const EventosForm = ({ match }) => {
                     />
                   </div>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
                   <CampoData
                     form={form}
@@ -1005,18 +1002,18 @@ const EventosForm = ({ match }) => {
                 {tipoDataUnico ? (
                   ''
                 ) : (
-                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
-                    <CampoData
-                      form={form}
-                      label="Data fim do evento"
-                      placeholder="Data fim do evento"
-                      formatoData="DD/MM/YYYY"
-                      name="dataFim"
-                      onChange={onChangeCampos}
-                      desabilitado={desabilitarCampos || !usuarioPodeAlterar}
-                    />
-                  </div>
-                )}
+                    <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
+                      <CampoData
+                        form={form}
+                        label="Data fim do evento"
+                        placeholder="Data fim do evento"
+                        formatoData="DD/MM/YYYY"
+                        name="dataFim"
+                        onChange={onChangeCampos}
+                        desabilitado={desabilitarCampos || !usuarioPodeAlterar}
+                      />
+                    </div>
+                  )}
                 <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
                   <Button
                     id={shortid.generate()}
@@ -1078,16 +1075,16 @@ const EventosForm = ({ match }) => {
                     disabled={desabilitarCampos || !usuarioPodeAlterar}
                   />
                   {listaCalendarioParaCopiar &&
-                  listaCalendarioParaCopiar.length ? (
-                    <ListaCopiarEventos>
-                      <div className="mb-1">
-                        Evento será copiado para os calendários:
+                    listaCalendarioParaCopiar.length ? (
+                      <ListaCopiarEventos>
+                        <div className="mb-1">
+                          Evento será copiado para os calendários:
                       </div>
-                      {montarExibicaoEventosCopiar()}
-                    </ListaCopiarEventos>
-                  ) : (
-                    ''
-                  )}
+                        {montarExibicaoEventosCopiar()}
+                      </ListaCopiarEventos>
+                    ) : (
+                      ''
+                    )}
                 </div>
               </div>
             </Form>
@@ -1103,8 +1100,8 @@ const EventosForm = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
         <ModalConteudoHtml
           key="copiarEvento"
           visivel={exibirModalCopiarEvento}
@@ -1150,11 +1147,11 @@ const EventosForm = ({ match }) => {
                   {item.mensagem}
                 </strong>
               ) : (
-                <strong className="text-danger">
-                  <i className="fas fa-times mr-3" />
-                  {item.mensagem}
-                </strong>
-              )}
+                  <strong className="text-danger">
+                    <i className="fas fa-times mr-3" />
+                    {item.mensagem}
+                  </strong>
+                )}
             </p>
           ))}
         </ModalConteudoHtml>

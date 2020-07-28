@@ -1,18 +1,26 @@
 import modalidade from '~/dtos/modalidade';
 
-const ehTurmaInfantil = (modalidades, turmaSelecionada) => {
+const obterModalidadeFiltroPrincipal = (modalidades, turmaSelecionada) => {
   const temSomenteUmaModalidade = modalidades && modalidades.length === 1;
 
-  let ehModalidadeInfantil = false;
+  let modalidadeAtual = 0;
 
   if (temSomenteUmaModalidade) {
-    ehModalidadeInfantil =
-      String(modalidades[0].valor) === String(modalidade.INFANTIL);
+    modalidadeAtual = String(modalidades[0].valor);
   } else {
-    ehModalidadeInfantil =
-      String(turmaSelecionada.modalidade) === String(modalidade.INFANTIL);
+    modalidadeAtual =
+      turmaSelecionada && turmaSelecionada.modalidade
+        ? String(turmaSelecionada.modalidade)
+        : modalidade.FUNDAMENTAL;
   }
-  return ehModalidadeInfantil;
+  return modalidadeAtual;
 };
 
-export { ehTurmaInfantil };
+const ehTurmaInfantil = (modalidades, turmaSelecionada) => {
+  return (
+    obterModalidadeFiltroPrincipal(modalidades, turmaSelecionada) ===
+    String(modalidade.INFANTIL)
+  );
+};
+
+export { ehTurmaInfantil, obterModalidadeFiltroPrincipal };

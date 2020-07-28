@@ -21,6 +21,22 @@ class ServicoComunicados {
     return lista;
   };
 
+  obterIdGrupoComunicadoPorModalidade = async modalidade => {
+    try {
+      var retorno = await api.get(`listar/modalidade/${modalidade}`);
+
+      return {
+        sucesso: true,
+        data: retorno.data,
+      };
+    } catch (error) {
+      return {
+        sucesso: false,
+        erro: error,
+      };
+    }
+  };
+
   consultarPorId = async id => {
     let comunicado = {};
 
@@ -68,6 +84,34 @@ class ServicoComunicados {
 
     return exclusao;
   };
+
+  async obterGruposPorModalidade(modalidade) {
+    try {
+      const requisicao = await api.get(
+        `v1/comunicacao/grupos/listar/modalidade/${modalidade}`
+      );
+
+      if (requisicao && requisicao.status === 204) return [];
+
+      return requisicao.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async obterAlunos(codigoTurma, anoLetivo) {
+    try {
+      const requisicao = await api.get(
+        `v1/comunicado/${codigoTurma}/alunos/${anoLetivo}`
+      );
+
+      if (requisicao && requisicao.status === 204) return [];
+
+      return requisicao.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new ServicoComunicados();
