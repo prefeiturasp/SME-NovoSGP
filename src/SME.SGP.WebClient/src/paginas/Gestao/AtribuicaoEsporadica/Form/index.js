@@ -59,6 +59,7 @@ function AtribuicaoEsporadicaForm({ match }) {
   const [refForm, setRefForm] = useState({});
 
   const anoAtual = window.moment().format('YYYY');
+  const [ehInfantil, setEhInfantil] = useState(false);
 
   const [valoresIniciais, setValoresIniciais] = useState({
     professorRf: '',
@@ -103,6 +104,7 @@ function AtribuicaoEsporadicaForm({ match }) {
         {
           ...filtroListagem,
           ...valores,
+          ehInfantil,
         }
       );
       if (cadastrado && cadastrado.status === 200) {
@@ -276,7 +278,9 @@ function AtribuicaoEsporadicaForm({ match }) {
                       label="Unidade Escolar (UE)"
                       dreId={dreId}
                       form={form}
-                      onChange={() => null}
+                      onChange={(v, infantil) => {
+                        setEhInfantil(infantil);
+                      }}
                       desabilitado={somenteConsulta}
                     />
                   </Grid>

@@ -11,7 +11,7 @@ import { Grid, Label } from '~/componentes';
 
 // Services
 import service from './services/LocalizadorService';
-import { erro } from '~/servicos/alertas';
+import { erros } from '~/servicos/alertas';
 
 // Funções
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
@@ -85,7 +85,7 @@ function Localizador({
           nome: true,
         }));
       } catch (error) {
-        erro(error.response.data.mensagens[0]);
+        erros(error);
       }
     },
     [anoLetivo, incluirEmei]
