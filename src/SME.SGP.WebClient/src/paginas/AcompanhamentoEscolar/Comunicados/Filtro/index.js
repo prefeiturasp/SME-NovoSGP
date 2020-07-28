@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useLayoutEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 
 import { Form, Formik } from 'formik';
@@ -69,11 +75,6 @@ function Filtro({ onFiltrar }) {
     );
   });
 
-  useEffect(() => {
-    obterListaGrupos();
-    ObterAnoLetivo();
-  }, []);
-
   const [valoresIniciais] = useState({
     gruposId: '',
     dataEnvio: '',
@@ -110,37 +111,50 @@ function Filtro({ onFiltrar }) {
     })
   );
 
-  const ObterAnoLetivo = async () => {
+  const ObterDres = useCallback(async () => {
+    const dados = await FiltroHelper.ObterDres();
+
+    if (!dados || dados.length === 0) return;
+
+    if (dados.length === 1) {
+      refForm.setFieldValue('CodigoDre', String(dados[0].id));
+      ObterUes(dados[0].id);
+    }
+
+    setDres(dados);
+  }, [setDres, refForm]);
+
+  const ObterAnoLetivo = useCallback(async () => {
     const dados = await FiltroHelper.ObterAnoLetivo();
 
     if (!dados || dados.length === 0) return;
 
     setAnosLetivos(dados);
-    onSubmitFiltro(valoresIniciais);
-    ObterDres();
-  };
+    await ObterDres();
+  }, [setAnosLetivos, ObterDres]);
 
-  const ObterDres = async () => {
-    const dados = await FiltroHelper.ObterDres();
+  useEffect(() => {
+    if (!refForm?.setFieldValue) return;
 
-    if (!dados || dados.length === 0) return;
-
-    if (dados.length === 1) refForm.setFieldValue('dre', dados[0].id);
-
-    setDres(dados);
-  };
+    obterListaGrupos();
+    ObterAnoLetivo();
+  }, [ObterAnoLetivo, refForm]);
 
   const ObterUes = async dre => {
     const dados = await FiltroHelper.ObterUes(dre);
 
     if (!dados || dados.length === 0) return;
 
-    if (dados.length === 1) refForm.setFieldValue('ue', dados[0].id);
+    if (dados.length === 1) {
+      refForm.setFieldValue('CodigoUe', dados[0].id);
+      ObterModalidades(dados[0].id);
+      validarFiltro();
+    }
 
     setUes(dados);
   };
 
-  const ObterModalidades = async ue => {
+  async function ObterModalidades(ue) {
     const dados = await FiltroHelper.ObterModalidades(ue);
 
     if (!dados || dados.length === 0) return;
@@ -148,7 +162,7 @@ function Filtro({ onFiltrar }) {
     if (dados.length === 1) refForm.setFieldValue('modalidade', dados[0].id);
 
     setModalidades(dados);
-  };
+  }
 
   const ObterTurmas = async (anoLetivo, codigoUe, modalidade, semestre) => {
     const dados = await FiltroHelper.ObterTurmas(

@@ -33,6 +33,8 @@ const ListaAlunosSelecionados = props => {
     },
   ];
 
+  console.log(alunosSelecionados);
+
   const ObterAlunos = useCallback(() => {
     if (!dadosAlunos || dadosAlunos.length === 0) return;
     const alunosLista = dadosAlunos.map(x => {
@@ -50,7 +52,11 @@ const ListaAlunosSelecionados = props => {
     setAlunos(alunosLista.filter(x => x.selecionado));
   }, [dadosAlunos, alunosSelecionados]);
 
-  useEffect(() => ObterAlunos(), [ObterAlunos]);
+  useEffect(() => ObterAlunos(), [
+    ObterAlunos,
+    alunosSelecionados,
+    dadosAlunos,
+  ]);
 
   return (
     <>
