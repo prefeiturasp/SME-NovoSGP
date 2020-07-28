@@ -68,6 +68,8 @@ namespace SME.SGP.Aplicacao.Integracoes
                 PossuiPerfilDre = usuario.PossuiPerfilDre(),
                 EhProfessor = usuario.EhProfessor(),
                 EhProfessorCj = usuario.EhProfessorCj(),
+                EhProfessorInfantil = usuario.EhProfessorInfantil(),
+                EhProfessorCjInfantil = usuario.EhProfessorCjInfantil(),
                 EhProfessorPoa = usuario.EhProfessorPoa()
             };
             return perfisPorPrioridade;
