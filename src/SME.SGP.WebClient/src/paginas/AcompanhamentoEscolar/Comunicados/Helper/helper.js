@@ -7,7 +7,8 @@ class FiltroHelper {
   async mapearParaSelect(array, todas, ue) {
     return array.map(x => {
       var id = x.codigo == '-99' ? todas : x.codigo;
-      return { id, nome: ue ? x.nomeSimples : x.nome };
+      var nome = x.codigo == '-99' ? x.nomeSimples : x.nome;
+      return { id, nome: ue ? nome : x.nome };
     });
   }
 

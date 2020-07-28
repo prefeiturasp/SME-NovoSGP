@@ -92,12 +92,32 @@ namespace SME.SGP.Aplicacao
 
         private PaginacaoResultadoDto<ComunicadoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<Comunicado> comunicado)
         {
-            return new PaginacaoResultadoDto<ComunicadoDto>
+            var itens = new List<ComunicadoDto>();
+
+            var retornoPaginado = new PaginacaoResultadoDto<ComunicadoDto>
             {
-                Items = comunicado.Items.Select(x => (ComunicadoDto)x),
+                Items = new List<ComunicadoDto>(),
                 TotalPaginas = comunicado.TotalPaginas,
                 TotalRegistros = comunicado.TotalRegistros
             };
+
+            foreach (var item in comunicado.Items)
+            {
+                var comunicadoDto = itens.FirstOrDefault(x => x.Id == item.Id);
+
+                if (comunicadoDto == null)
+                    itens.Add((ComunicadoDto)item);
+                else
+                    comunicadoDto.Grupos.AddRange(item.GruposComunicacao.Select(x => new GrupoComunicacaoDto
+                    {
+                        Id = x.Id,
+                        Nome = x.Nome
+                    }));
+            }
+
+            retornoPaginado.Items = itens;
+
+            return retornoPaginado;
         }
 
         private async Task<bool> ValidarAbrangenciaListagem(FiltroComunicadoDto filtroDto)
