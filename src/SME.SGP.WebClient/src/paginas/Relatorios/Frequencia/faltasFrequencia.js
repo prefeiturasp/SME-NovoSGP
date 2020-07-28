@@ -728,7 +728,6 @@ const FaltasFrequencia = () => {
                   valueText="desc"
                   valueSelect={formato}
                   onChange={onChangeFormato}
-                  disabled
                   placeholder="Selecione o formato"
                 />
               </div>
