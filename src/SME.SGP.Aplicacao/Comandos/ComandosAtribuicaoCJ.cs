@@ -34,22 +34,30 @@ namespace SME.SGP.Aplicacao
 
             await RemoverDisciplinasCache(atribuicaoCJPersistenciaDto);
 
+            var professorValidoNoEol = await servicoEOL.ValidarProfessor(atribuicaoCJPersistenciaDto.UsuarioRf);
+            if (!professorValidoNoEol)
+                throw new NegocioException("Este professor não é válido para ser CJ.");
+
+            var professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(atribuicaoCJPersistenciaDto.TurmaId);
+
             foreach (var atribuicaoDto in atribuicaoCJPersistenciaDto.Disciplinas)
             {
                 var atribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
 
-                await servicoAtribuicaoCJ.Salvar(atribuicao, atribuicoesAtuais);
+                await servicoAtribuicaoCJ.Salvar(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais);
 
-                atribuiuCj = await AtribuirPerfilCJ(atribuicaoCJPersistenciaDto, atribuiuCj);
+                Guid perfilCJ = atribuicao.Modalidade == Modalidade.Infantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
+
+                atribuiuCj = await AtribuirPerfilCJ(atribuicaoCJPersistenciaDto, perfilCJ, atribuiuCj);
             }
         }
 
-        private async Task<bool> AtribuirPerfilCJ(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, bool atribuiuCj)
+        private async Task<bool> AtribuirPerfilCJ(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, Guid perfil, bool atribuiuCj)
         {
             if (atribuiuCj)
                 return atribuiuCj;
 
-            await servicoEOL.AtribuirCJSeNecessario(atribuicaoCJPersistenciaDto.UsuarioRf);
+            await servicoEOL.AtribuirPerfil(atribuicaoCJPersistenciaDto.UsuarioRf, perfil);
 
             servicoUsuario.RemoverPerfisUsuarioAtual();
 

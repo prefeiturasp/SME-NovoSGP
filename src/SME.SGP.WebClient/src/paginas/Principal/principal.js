@@ -61,6 +61,8 @@ const Principal = () => {
       !modalidades.length &&
       !usuario.ehProfessorCj &&
       !usuario.ehProfessor &&
+      !usuario.ehProfessorInfantil &&
+      !usuario.ehProfessorCjInfantil &&
       !usuario.ehProfessorPoa &&
       perfil &&
       perfil.nomePerfil === 'Supervisor' ? (
