@@ -192,7 +192,7 @@ const ComunicadosCadastro = ({ match }) => {
             comunicado.anoLetivo
           );
           setAlunoEspecificado(comunicado.alunoEspecificado);
-          setAlunosSelecionado(comunicado.alunos);
+          setAlunosSelecionado(comunicado.alunos.map(x => x.alunoCodigo));
         }
 
         setDescricaoComunicado(comunicado.descricao);
