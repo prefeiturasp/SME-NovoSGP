@@ -7,6 +7,8 @@ import { store } from '../redux';
 import styled from 'styled-components';
 import { rotaAtiva } from '../redux/modulos/navegacao/actions';
 import modalidade from '~/dtos/modalidade';
+import { obterDescricaoNomeMenu } from '~/servicos/servico-navegacao';
+import RotasDto from '~/dtos/rotasDto';
 
 const BreadcrumbBody = styled.div`
   padding: 10px 0 5px 15px !important;
@@ -30,6 +32,9 @@ const BreadcrumbSgp = () => {
   );
 
   const UsuarioStrore = useSelector(storeUsuario => storeUsuario.usuario);
+  const modalidadesFiltroPrincipal = useSelector(
+    state => state.filtro.modalidades
+  );
 
   const rotas = NavegacaoStore.rotas;
 
@@ -42,18 +47,25 @@ const BreadcrumbSgp = () => {
   const itemRotaDinamica = rotaDinamica ? JSON.parse(rotaDinamica) : null;
 
   const verificaTrocaNomesBreadcrumb = () => {
-    if (
-      UsuarioStrore &&
-      UsuarioStrore.turmaSelecionada &&
-      UsuarioStrore.turmaSelecionada.length &&
-      UsuarioStrore.turmaSelecionada[0].codModalidade == modalidade.EJA
-    ) {
-      rotas.get('/planejamento/plano-ciclo').breadcrumbName = 'Plano de Etapa';
-      rotas.get('/planejamento/plano-anual').breadcrumbName = 'Plano Semestral';
-    } else {
-      rotas.get('/planejamento/plano-ciclo').breadcrumbName = 'Plano de Ciclo';
-      rotas.get('/planejamento/plano-anual').breadcrumbName = 'Plano Anual';
-    }
+    const rotaPlanoCiclo = rotas.get(RotasDto.PLANO_CICLO);
+    rotaPlanoCiclo.breadcrumbName = obterDescricaoNomeMenu(
+      RotasDto.PLANO_CICLO,
+      modalidadesFiltroPrincipal,
+      UsuarioStrore.turmaSelecionada
+    );
+
+    const rotaPlanoAnual = rotas.get(RotasDto.PLANO_ANUAL);
+    rotaPlanoAnual.breadcrumbName = obterDescricaoNomeMenu(
+      RotasDto.PLANO_ANUAL,
+      modalidadesFiltroPrincipal,
+      UsuarioStrore.turmaSelecionada
+    );
+    const rotaFrequencia = rotas.get(RotasDto.FREQUENCIA_PLANO_AULA);
+    rotaFrequencia.breadcrumbName = obterDescricaoNomeMenu(
+      RotasDto.FREQUENCIA_PLANO_AULA,
+      modalidadesFiltroPrincipal,
+      UsuarioStrore.turmaSelecionada
+    );
   };
 
   useEffect(() => {

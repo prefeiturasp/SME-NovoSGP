@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,11 +36,12 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var alunoEOL in alunosEOL)
             {
+                var situacao = alunoEOL.SituacaoMatricula == null ? "" : $"({alunoEOL.SituacaoMatricula})";
                 yield return new AlunoSimplesDto()
                 {
                     Codigo = alunoEOL.CodigoAluno,
                     NumeroChamada = alunoEOL.NumeroAlunoChamada,
-                    Nome = alunoEOL.NomeAluno
+                    Nome = $"{alunoEOL.NomeAluno} {situacao}"
                 };
             }
         }
