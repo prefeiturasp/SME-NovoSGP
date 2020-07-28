@@ -50,6 +50,9 @@ namespace SME.SGP.Aplicacao
         {
             var comunicado = await repositorio.ObterPorIdAsync(id);
 
+            if (comunicado.Excluido)
+                throw new NegocioException("Não é possivel acessar um registro excluido");
+
             comunicado.Alunos = (await repositorioComunicadoAluno.ObterPorComunicado(comunicado.Id)).ToList();
 
             comunicado.Turmas = (await repositorioComunicadoTurma.ObterPorComunicado(comunicado.Id)).ToList();
@@ -79,7 +82,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string codigoTurma, int anoLetivo)
         {
-            var alunos = await servicoEol.ObterAlunosPorTurma(codigoTurma, anoLetivo);
+            var alunos = await servicoEol.ObterAlunosPorTurma(codigoTurma);
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException($"Não foi encontrado alunos para a turma {codigoTurma} e ano letivo {anoLetivo}");
