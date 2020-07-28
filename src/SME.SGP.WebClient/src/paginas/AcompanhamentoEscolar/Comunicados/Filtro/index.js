@@ -110,25 +110,28 @@ function Filtro({ onFiltrar }) {
     })
   );
 
-  const ObterAnoLetivo = async () => {
+  async function ObterAnoLetivo() {
     const dados = await FiltroHelper.ObterAnoLetivo();
 
     if (!dados || dados.length === 0) return;
 
     setAnosLetivos(dados);
-    onSubmitFiltro(valoresIniciais);
     ObterDres();
-  };
+  }
 
-  const ObterDres = async () => {
+  async function ObterDres() {
     const dados = await FiltroHelper.ObterDres();
 
     if (!dados || dados.length === 0) return;
 
+    console.log(refForm);
+
     if (dados.length === 1) refForm.setFieldValue('dre', dados[0].id);
 
+    console.log(dados);
+
     setDres(dados);
-  };
+  }
 
   const ObterUes = async dre => {
     const dados = await FiltroHelper.ObterUes(dre);
@@ -140,7 +143,7 @@ function Filtro({ onFiltrar }) {
     setUes(dados);
   };
 
-  const ObterModalidades = async ue => {
+  async function ObterModalidades(ue) {
     const dados = await FiltroHelper.ObterModalidades(ue);
 
     if (!dados || dados.length === 0) return;
@@ -148,7 +151,7 @@ function Filtro({ onFiltrar }) {
     if (dados.length === 1) refForm.setFieldValue('modalidade', dados[0].id);
 
     setModalidades(dados);
-  };
+  }
 
   const ObterTurmas = async (anoLetivo, codigoUe, modalidade, semestre) => {
     const dados = await FiltroHelper.ObterTurmas(
