@@ -114,6 +114,9 @@ namespace SME.SGP.Dominio
             return PerfilAtual == Dominio.Perfis.PERFIL_CJ;
         }
 
+        
+
+
         public bool EhProfessorPoa()
         {
             return PerfilAtual == Dominio.Perfis.PERFIL_POA;
@@ -297,6 +300,16 @@ namespace SME.SGP.Dominio
         public bool PossuiPerfilSme()
         {
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.SME);
+        }
+
+        public bool EhProfessorInfantil()
+        {
+            return PerfilAtual == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
+        }
+
+        public bool EhProfessorCjInfantil()
+        {
+            return PerfilAtual == Dominio.Perfis.PERFIL_CJ_INFANTIL;
         }
 
         public bool PossuiPerfilSmeOuDre()
