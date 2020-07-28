@@ -157,8 +157,10 @@ const ComunicadosCadastro = ({ match }) => {
           id: comunicado.id,
           anoLetivo: comunicado.anoLetivo,
           gruposId: [...comunicado.grupos.map(grupo => String(grupo.id))],
-          CodigoDre: String(comunicado.codigoDre),
-          CodigoUe: String(comunicado.codigoUe),
+          CodigoDre: comunicado.codigoDre
+            ? String(comunicado.codigoDre)
+            : 'todas',
+          CodigoUe: comunicado.codigoUe ? String(comunicado.codigoUe) : 'todas',
           modalidade:
             String(comunicado.modalidade) === '0'
               ? '-99'
@@ -469,8 +471,8 @@ const ComunicadosCadastro = ({ match }) => {
     ResetarModalidade();
 
     if (ue == 'todas') {
-      setModalidades([]);
-      setTurmas([]);
+      setModalidades(todosTurmasModalidade);
+      setTurmas(todosTurmasModalidade);
       return;
     }
 
