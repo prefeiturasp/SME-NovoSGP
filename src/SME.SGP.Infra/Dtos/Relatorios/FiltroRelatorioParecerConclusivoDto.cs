@@ -11,6 +11,6 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public int? Semestre { get; set; }
         public string Ciclo { get; set; }
         public string AnoEscolar { get; set; }
-        public string ParecerConclusivo { get; set; }
+        public long ParecerConclusivoId { get; set; }
     }
 }

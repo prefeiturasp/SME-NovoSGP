@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/relatorios/parecer/conclusivo")]
+    [Route("api/v1/relatorios/pareceres-conclusivos")]
     public class RelatorioParecerConclusivoController : ControllerBase
     {
         [HttpPost]
