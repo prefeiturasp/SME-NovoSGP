@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
             {
                 ComunicadoDto comunicado = MapearFiltroDtoValidacao(filtroDto);
 
-                await ValidarAbrangenciaUsuario(comunicado);
+               // await ValidarAbrangenciaUsuario(comunicado);
 
                 return true;
             }

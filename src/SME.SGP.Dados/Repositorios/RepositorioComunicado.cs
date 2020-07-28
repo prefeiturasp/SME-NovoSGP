@@ -46,8 +46,6 @@ namespace SME.SGP.Dados.Repositorios
 							on cg.comunicado_id = c.id
 						LEFT join grupo_comunicado g
 							on cg.grupo_comunicado_id = g.id
-                        LEFT join comunicado_turma t
-                            on t.comunicado_id = c.id
                         ");
 
             query.AppendLine(@"
@@ -98,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
                 parametros,
                 splitOn: "id,GrupoId")
             };
-                        
+                                               
             retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), parametros)).Sum();
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
@@ -201,14 +199,8 @@ namespace SME.SGP.Dados.Repositorios
             builder.AppendLine($@"{prefixoGrupoComunicado}.nome,");
             builder.AppendLine($@"{prefixoGrupoComunicado}.tipo_escola_id,");
             builder.AppendLine($@"{prefixoGrupoComunicado}.tipo_ciclo_id,");
-            builder.AppendLine($@"{prefixoGrupoComunicado}.etapa_ensino_id,");
-
-            builder.AppendLine($@"{prefixoTurmaComunicado}.id as TurmaId,");
-            builder.AppendLine($@"{prefixoTurmaComunicado}.id,");
-            builder.AppendLine($@"{prefixoTurmaComunicado}.turma_codigo,");
-            builder.AppendLine($@"{prefixoTurmaComunicado}.comunicado_id,");
-            builder.AppendLine($@"{prefixoTurmaComunicado}.excluido");
-
+            builder.AppendLine($@"{prefixoGrupoComunicado}.etapa_ensino_id");
+            
             return builder.ToString();
         }
     }
