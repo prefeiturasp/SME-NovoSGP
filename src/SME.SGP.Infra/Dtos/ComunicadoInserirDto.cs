@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,6 +8,12 @@ namespace SME.SGP.Dto
 {
     public class ComunicadoInserirDto
     {
+        public ComunicadoInserirDto()
+        {
+            Alunos = new List<string>();
+            Turmas = new List<string>();
+        }
+
         [DataRequerida(ErrorMessage = "A data de envio é obrigatória.")]
         [DataMaiorAtual(ErrorMessage = "A data de envio deve ser igual ou maior que a data atual.")]
         public DateTime DataEnvio { get; set; }
@@ -28,5 +35,25 @@ namespace SME.SGP.Dto
         [MinLength(10, ErrorMessage = "O título deve conter no mínimo 10 caracteres.")]
         [MaxLength(50, ErrorMessage = "O título deve conter no máximo 50 caracteres.")]
         public string Titulo { get; set; }
+
+        [Required(ErrorMessage = "É necessario informar o ano letivo")]
+        [Range(0, int.MaxValue, ErrorMessage = "É necessário informar o ano letivo")]
+        public int AnoLetivo { get; set; }
+
+        [Required(ErrorMessage = "É necessário informar o codigo da DRE")]
+        public string CodigoDre { get; set; }
+
+        [Required(ErrorMessage = "É necessário informar o codigo da UE")]
+        public string CodigoUe { get; set; } 
+
+        public IEnumerable<string> Turmas { get; set; }
+
+        public bool AlunosEspecificados { get; set; }
+
+        public Modalidade? Modalidade { get; set; }
+
+        public int Semestre { get; set; }
+        
+        public IEnumerable<string> Alunos { get; set; }
     }
 }
