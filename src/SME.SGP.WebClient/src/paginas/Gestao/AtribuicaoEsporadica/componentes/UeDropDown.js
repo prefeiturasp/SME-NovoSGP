@@ -7,16 +7,13 @@ import { SelectComponent } from '~/componentes';
 // Servicos
 import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
 
-import FiltroHelper from '~/componentes-sgp/filtro/helper';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
-
 function UeDropDown({ form, onChange, dreId, label, desabilitado }) {
   const [listaUes, setListaUes] = useState([]);
 
   const ehInfantil = valor => {
     if (listaUes && listaUes.length) {
-      const ue = listaUes.find(item => item.codigo === valor);
-      return ue.ehInfantil;
+      const ue = listaUes.find(item => item.valor === valor);
+      return ue && ue.ehInfantil;
     }
     return false;
   };

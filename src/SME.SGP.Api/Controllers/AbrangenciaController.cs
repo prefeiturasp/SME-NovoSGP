@@ -91,7 +91,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterDres([FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
             IEnumerable<AbrangenciaDreRetorno> dres;
-            if (anoLetivo < DateTime.Now.Year)
+            if (anoLetivo >0 && anoLetivo < DateTime.Now.Year)
             {
                 dres = await consultasAbrangencia.ObterDres(modalidade, periodo, true, anoLetivo);
             }
@@ -166,7 +166,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
             IEnumerable<AbrangenciaUeRetorno> ues;
-            if (anoLetivo < DateTime.Now.Year)
+            if (anoLetivo > 0 && anoLetivo < DateTime.Now.Year)
             {
                 ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, true, anoLetivo);
             }
