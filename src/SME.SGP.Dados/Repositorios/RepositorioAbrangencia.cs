@@ -115,13 +115,13 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("                coalesce(t_tur.tipo_turno, t_ue.tipo_turno, t_dre.tipo_turno) as tipoTurno");
             query.AppendLine("         from abrangencia a");
             query.AppendLine("                  join usuario u on a.usuario_id = u.id");
-            query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_tur");            
+            query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_tur");
             query.AppendLine("              on (a.turma_id notnull and a.turma_id = t_tur.turma_id)");
             query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_dre");
             query.AppendLine("                            on(a.turma_id is null and a.ue_id is null and a.dre_id = t_dre.dre_id)-- admin dre");
             query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_ue");
-            query.AppendLine("                            on(a.turma_id is null and a.dre_id is null and a.ue_id = t_ue.ue_id)-- admin ue");            
-            query.AppendLine($"         where { (!consideraHistorico ? "not": string.Empty) } a.historico");
+            query.AppendLine("                            on(a.turma_id is null and a.dre_id is null and a.ue_id = t_ue.ue_id)-- admin ue");
+            query.AppendLine($"         where { (!consideraHistorico ? "not" : string.Empty) } a.historico");
             query.AppendLine("           and u.login = @login");
             query.AppendLine("           and a.perfil = @perfil");
             query.AppendLine("     ) t");
@@ -332,9 +332,9 @@ namespace SME.SGP.Dados.Repositorios
             var sql = @"select count(*) from usuario u
                         inner join abrangencia a on a.usuario_id = u.id
                         where u.login = @login and historico = false and turma_id is not null
-                              and a.perfil != @perfilCJ ;";
+                              and not a.perfil = ANY(@perfisCJ) ;";
 
-            var parametros = new { login, perfilCJ = Perfis.PERFIL_CJ };
+            var parametros = new { login, perfisCJ = new Guid[] { Perfis.PERFIL_CJ, Perfis.PERFIL_CJ_INFANTIL } };
 
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
@@ -386,6 +386,26 @@ namespace SME.SGP.Dados.Repositorios
                                 u.ue_id = @codigoUe";
 
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe });
+        }
+
+        public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine(@"select t.turma_id as valor, t.nome as descricao from turma t
+                            inner join ue ue on ue.id = t.ue_id");
+
+            query.AppendLine("where ue.ue_id = @codigoUe and ano_letivo = @anoLetivo");
+
+            if (modalidade.HasValue && modalidade != 0)
+                query.AppendLine("and t.modalidade_codigo = @modalidade");
+
+            if (semestre > 0)
+                query.AppendLine("and semestre = @semestre");
+
+            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre });
+
+            return dados.OrderBy(x => x.Descricao);
         }
     }
 }

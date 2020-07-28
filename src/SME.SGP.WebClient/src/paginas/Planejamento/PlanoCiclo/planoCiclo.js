@@ -2,6 +2,7 @@ import * as moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
+import shortid from 'shortid';
 import Alert from '../../../componentes/alert';
 import Button from '../../../componentes/button';
 import Card from '../../../componentes/card';
@@ -21,7 +22,10 @@ import {
 } from './planoCiclo.css';
 import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import {
+  verificaSomenteConsulta,
+  obterDescricaoNomeMenu,
+} from '~/servicos/servico-navegacao';
 import tipoPermissao from '~/dtos/tipoPermissao';
 import { Loader } from '~/componentes';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
@@ -45,6 +49,10 @@ export default function PlanoCiclo() {
   const [eventoTrocarCiclo, setEventoTrocarCiclo] = useState(false);
   const [registroMigrado, setRegistroMigrado] = useState(false);
   const [cicloParaTrocar, setCicloParaTrocar] = useState('');
+  const [estadoAdicionalTextEditor, setEstadoAdicionalTextEditor] = useState({
+    focado: false,
+    ultimoFoco: null,
+  });
   const [inseridoAlterado, setInseridoAlterado] = useState({
     alteradoEm: '',
     alteradoPor: '',
@@ -312,11 +320,13 @@ export default function PlanoCiclo() {
     setInseridoAlterado({});
   }
 
-  const onChangeTextEditor = value => {
-    setDescricaoCiclo(value);
-
-    if (pronto) {
+  const onClickTextEditor = ultimoFoco => {
+    if (!modoEdicao) {
       setModoEdicao(true);
+      setEstadoAdicionalTextEditor({
+        focado: true,
+        ultimoFoco,
+      });
     }
   };
 
@@ -502,7 +512,11 @@ export default function PlanoCiclo() {
       <AlertaModalidadeInfantil />
       <div className="col-md-12 mt-1">
         <Titulo>
-          {modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
+          {obterDescricaoNomeMenu(
+            RotasDto.PLANO_CICLO,
+            modalidadesFiltroPrincipal,
+            turmaSelecionada
+          )}
           <TituloAno>
             {` / ${anoAtual} `}
             <i className="fas fa-retweet" />
@@ -548,6 +562,7 @@ export default function PlanoCiclo() {
             </div>
             <div className="col-md-6 d-flex justify-content-end">
               <Button
+                id={shortid.generate()}
                 label="Voltar"
                 icon="arrow-left"
                 color={Colors.Azul}
@@ -556,6 +571,7 @@ export default function PlanoCiclo() {
                 onClick={onClickVoltar}
               />
               <Button
+                id={shortid.generate()}
                 label="Cancelar"
                 color={Colors.Roxo}
                 border
@@ -566,6 +582,7 @@ export default function PlanoCiclo() {
               />
               <Loader loading={carregandoSalvar} tip="">
                 <Button
+                  id={shortid.generate()}
                   label="Salvar"
                   color={Colors.Roxo}
                   border
@@ -607,6 +624,8 @@ export default function PlanoCiclo() {
                     maxHeight="calc(100vh)"
                     value={descricaoCiclo}
                     disabled={somenteConsulta}
+                    onClick={onClickTextEditor}
+                    estadoAdicional={estadoAdicionalTextEditor}
                   />
                   <InseridoAlterado>
                     {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (

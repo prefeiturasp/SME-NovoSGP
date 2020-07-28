@@ -15,7 +15,10 @@ import { confirmar, erros, sucesso, erro } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import Alert from '~/componentes/alert';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import {
+  verificaSomenteConsulta,
+  obterDescricaoNomeMenu,
+} from '~/servicos/servico-navegacao';
 import RotasDto from '~/dtos/rotasDto';
 import { SelecionarDisciplina } from '~/redux/modulos/planoAula/actions';
 import { stringNulaOuEmBranco } from '~/utils/funcoes/gerais';
@@ -27,6 +30,7 @@ import Grid from '~/componentes/grid';
 import { store } from '~/redux';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
 import AlertaPeriodoEncerrado from '~/componentes-sgp/Calendario/componentes/MesCompleto/componentes/Dias/componentes/DiaCompleto/componentes/AlertaPeriodoEncerrado';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(state => state.usuario);
@@ -102,6 +106,17 @@ const FrequenciaPlanoAula = () => {
     state => state.calendarioProfessor.dadosAulaFrequencia
   );
   const [temPeriodoAberto, setTemPeriodoAberto] = useState(true);
+  const [ehInfantil, setEhInfantil] = useState(false);
+
+  const modalidadesFiltroPrincipal = useSelector(
+    state => state.filtro.modalidades
+  );
+
+  useEffect(() => {
+    setEhInfantil(
+      ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
+    );
+  }, [turmaSelecionada, modalidadesFiltroPrincipal]);
 
   const obterDatasDeAulasDisponiveis = useCallback(
     async disciplinaId => {
@@ -921,7 +936,13 @@ const FrequenciaPlanoAula = () => {
           </Grid>
         </div>
       ) : null}
-      <Cabecalho pagina="Frequência/Plano de aula" />
+      <Cabecalho
+        pagina={obterDescricaoNomeMenu(
+          RotasDto.FREQUENCIA_PLANO_AULA,
+          modalidadesFiltroPrincipal,
+          turmaSelecionada
+        )}
+      />
       <Card>
         <div className="col-md-12">
           <div className="row">
@@ -1018,6 +1039,7 @@ const FrequenciaPlanoAula = () => {
                               onChangeFrequencia={onChangeFrequencia}
                               permissoesTela={permissoesTela}
                               temPeriodoAberto={temPeriodoAberto}
+                              ehInfantil={ehInfantil}
                             />
                           </div>
                           {exibirAuditoria && (
@@ -1033,34 +1055,38 @@ const FrequenciaPlanoAula = () => {
                       ) : null}
                     </CardCollapse>
                   </div>
-                  <div className="col-sm-12 col-md-12 col-lg-12">
-                    <PlanoAula
-                      onClick={onClickPlanoAula}
-                      disciplinaIdSelecionada={disciplinaIdSelecionada}
-                      dataSelecionada={dataSelecionada}
-                      planoAula={planoAula}
-                      ehProfessorCj={ehProfessorCj}
-                      carregandoMaterias={carregandoMaterias}
-                      listaMaterias={materias}
-                      dataAula={aula && aula.data ? aula.data : null}
-                      ehEja={ehEja}
-                      ehMedio={ehMedio}
-                      setModoEdicao={e => setModoEdicaoPlanoAula(e)}
-                      setTemObjetivos={e => setTemObjetivos(e)}
-                      permissoesTela={permissoesTela}
-                      somenteConsulta={somenteConsulta || !temPeriodoAberto}
-                      expandido={planoAulaExpandido}
-                      temObjetivos={temObjetivos}
-                      temAvaliacao={temAvaliacao}
-                      auditoria={auditoriaPlano}
-                      ehRegencia={
-                        disciplinaSelecionada
-                          ? disciplinaSelecionada.regencia
-                          : false
-                      }
-                      possuiPlanoAnual={possuiPlanoAnual}
-                    />
-                  </div>
+                  {!ehInfantil ? (
+                    <div className="col-sm-12 col-md-12 col-lg-12">
+                      <PlanoAula
+                        onClick={onClickPlanoAula}
+                        disciplinaIdSelecionada={disciplinaIdSelecionada}
+                        dataSelecionada={dataSelecionada}
+                        planoAula={planoAula}
+                        ehProfessorCj={ehProfessorCj}
+                        carregandoMaterias={carregandoMaterias}
+                        listaMaterias={materias}
+                        dataAula={aula && aula.data ? aula.data : null}
+                        ehEja={ehEja}
+                        ehMedio={ehMedio}
+                        setModoEdicao={e => setModoEdicaoPlanoAula(e)}
+                        setTemObjetivos={e => setTemObjetivos(e)}
+                        permissoesTela={permissoesTela}
+                        somenteConsulta={somenteConsulta || !temPeriodoAberto}
+                        expandido={planoAulaExpandido}
+                        temObjetivos={temObjetivos}
+                        temAvaliacao={temAvaliacao}
+                        auditoria={auditoriaPlano}
+                        ehRegencia={
+                          disciplinaSelecionada
+                            ? disciplinaSelecionada.regencia
+                            : false
+                        }
+                        possuiPlanoAnual={possuiPlanoAnual}
+                      />
+                    </div>
+                  ) : (
+                    ''
+                  )}
                 </>
               ) : null}
             </Loader>
