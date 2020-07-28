@@ -79,7 +79,7 @@ const ComunicadosCadastro = ({ match }) => {
   const [semestres, setSemestres] = useState(semestresLista);
   const [turmas, setTurmas] = useState(todosTurmasModalidade);
   const [alunos, setAlunos] = useState([]);
-  const [alunosSelecionados, setAlunosSelecionado] = useState(['']);
+  const [alunosSelecionados, setAlunosSelecionado] = useState([]);
 
   const [turmasSelecionadas, setTurmasSelecionadas] = useState([]);
   const [alunoEspecificado, setAlunoEspecificado] = useState();
