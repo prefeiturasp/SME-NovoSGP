@@ -34,11 +34,17 @@ namespace SME.SGP.Aplicacao
 
             await RemoverDisciplinasCache(atribuicaoCJPersistenciaDto);
 
+            var professorValidoNoEol = await servicoEOL.ValidarProfessor(atribuicaoCJPersistenciaDto.UsuarioRf);
+            if (!professorValidoNoEol)
+                throw new NegocioException("Este professor não é válido para ser CJ.");
+
+            var professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(atribuicaoCJPersistenciaDto.TurmaId);
+
             foreach (var atribuicaoDto in atribuicaoCJPersistenciaDto.Disciplinas)
             {
                 var atribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
 
-                await servicoAtribuicaoCJ.Salvar(atribuicao, atribuicoesAtuais);
+                await servicoAtribuicaoCJ.Salvar(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais);
 
                 Guid perfilCJ = atribuicao.Modalidade == Modalidade.Infantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
