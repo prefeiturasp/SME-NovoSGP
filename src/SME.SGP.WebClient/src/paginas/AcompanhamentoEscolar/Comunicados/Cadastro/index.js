@@ -406,6 +406,8 @@ const ComunicadosCadastro = ({ match }) => {
   };
 
   const ObterGruposIdPorModalidade = async modalidade => {
+    if (!modalidade || modalidade === '') return;
+
     const dados = await FiltroHelper.ObterGruposIdPorModalidade(modalidade);
 
     if (!dados || dados.length === 0) return;
@@ -429,6 +431,7 @@ const ComunicadosCadastro = ({ match }) => {
     setGruposId([]);
     setModalidades(todosTurmasModalidade);
     setModalidadeSelecionada('-99');
+    refForm.setFieldValue('gruposId', []);
     refForm.setFieldValue('modalidade', '-99');
     refForm.setFieldValue('semestre', '');
   };
@@ -483,14 +486,18 @@ const ComunicadosCadastro = ({ match }) => {
     handleModoEdicao();
 
     refForm.setFieldValue('semestre', '');
+    refForm.setFieldValue('gruposId', []);
     setModalidadeSelecionada(modalidade);
     resetarTurmas();
 
     if (
       !refForm.state.values.CodigoUe ||
       refForm.state.values.CodigoUe === 'todas'
-    )
+    ) {
+      setGruposId([]);
+      refForm.setFieldValue('gruposId', []);
       return;
+    }
 
     if (modalidade !== '-99') ObterGruposIdPorModalidade(modalidade);
 
