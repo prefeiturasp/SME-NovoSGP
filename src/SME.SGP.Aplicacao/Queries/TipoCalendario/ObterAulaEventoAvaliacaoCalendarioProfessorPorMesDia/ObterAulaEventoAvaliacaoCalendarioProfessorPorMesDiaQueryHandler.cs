@@ -87,6 +87,9 @@ namespace SME.SGP.Aplicacao
 
         private bool ObterPodeCadastrarAvaliacao(IEnumerable<AtividadeAvaliativa> atividadesAvaliativasDaAula, DisciplinaDto componenteCurricular)
         {
+            if (!componenteCurricular.LancaNota)
+                return false;
+
             if (componenteCurricular.Regencia)
                 return true;
 
