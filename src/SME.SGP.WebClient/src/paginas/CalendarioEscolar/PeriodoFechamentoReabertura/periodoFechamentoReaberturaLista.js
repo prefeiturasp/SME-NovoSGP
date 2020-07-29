@@ -169,16 +169,13 @@ const PeriodoFechamentoReaberturaLista = () => {
         anoLetivo
       );
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
-        const listaTipoPorAnoLetivo = obterListaTiposCalAnoLetivo(
-          listaTipo.data
-        );
-        listaTipoPorAnoLetivo.map(item => {
+        listaTipo.data.map(item => {
           item.id = String(item.id);
           item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
         });
-        setListaTipoCalendarioEscolar(listaTipoPorAnoLetivo);
-        if (listaTipoPorAnoLetivo.length === 1) {
-          setTipoCalendarioSelecionado(String(listaTipoPorAnoLetivo[0].id));
+        setListaTipoCalendarioEscolar(listaTipo.data);
+        if (listaTipo.data.length === 1) {
+          setTipoCalendarioSelecionado(String(listaTipo.data[0].id));
           setDesabilitarTipoCalendario(true);
         } else {
           setDesabilitarTipoCalendario(false);

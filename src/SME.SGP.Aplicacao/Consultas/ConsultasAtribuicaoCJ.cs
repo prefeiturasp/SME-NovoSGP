@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             var listaAtribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidadeId, turmaId, ueId, 0,
                 professorRf, string.Empty, null);
 
-            if (professoresTitularesDisciplinasEol.Any())
+            if (professoresTitularesDisciplinasEol!=null && professoresTitularesDisciplinasEol.Any())
                 return TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(listaAtribuicoes, professoresTitularesDisciplinasEol);
             else return null;
         }

@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
         private AtribuicaoEsporadicaCompletaDto EntidadeParaDtoCompleto(AtribuicaoEsporadica entidade)
         {
-            var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year, true).Result;
+            var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year).Result;
 
             return new AtribuicaoEsporadicaCompletaDto
             {

@@ -50,12 +50,15 @@ namespace SME.SGP.Aplicacao
         {
             var comunicado = await repositorio.ObterPorIdAsync(id);
 
+            if (comunicado.Excluido)
+                throw new NegocioException("Não é possivel acessar um registro excluido");
+
             comunicado.Alunos = (await repositorioComunicadoAluno.ObterPorComunicado(comunicado.Id)).ToList();
 
             comunicado.Turmas = (await repositorioComunicadoTurma.ObterPorComunicado(comunicado.Id)).ToList();
 
             comunicado.Grupos = (await repositorioComunicadoGrupo.ObterPorComunicado(comunicado.Id)).ToList();
-            
+
             var dto = (ComunicadoCompletoDto)comunicado;
 
             dto.Grupos = (await consultaGrupoComunicacao.Listar(comunicado.Grupos.Select(x => x.GrupoComunicadoId))).ToList();
@@ -79,22 +82,42 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string codigoTurma, int anoLetivo)
         {
-            var alunos = await servicoEol.ObterAlunosPorTurma(codigoTurma, anoLetivo);
+            var alunos = await servicoEol.ObterAlunosPorTurma(codigoTurma);
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException($"Não foi encontrado alunos para a turma {codigoTurma} e ano letivo {anoLetivo}");
 
-            return alunos.OrderBy(x => x.NumeroAlunoChamada);
+            return alunos.Where(x => x.DeveMostrarNaChamada(DateTime.Now)).OrderBy(x => x.NumeroAlunoChamada);
         }
 
         private PaginacaoResultadoDto<ComunicadoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<Comunicado> comunicado)
         {
-            return new PaginacaoResultadoDto<ComunicadoDto>
+            var itens = new List<ComunicadoDto>();
+
+            var retornoPaginado = new PaginacaoResultadoDto<ComunicadoDto>
             {
-                Items = comunicado.Items.Select(x => (ComunicadoDto)x),
+                Items = new List<ComunicadoDto>(),
                 TotalPaginas = comunicado.TotalPaginas,
                 TotalRegistros = comunicado.TotalRegistros
             };
+
+            foreach (var item in comunicado.Items)
+            {
+                var comunicadoDto = itens.FirstOrDefault(x => x.Id == item.Id);
+
+                if (comunicadoDto == null)
+                    itens.Add((ComunicadoDto)item);
+                else
+                    comunicadoDto.Grupos.AddRange(item.GruposComunicacao.Select(x => new GrupoComunicacaoDto
+                    {
+                        Id = x.Id,
+                        Nome = x.Nome
+                    }));
+            }
+
+            retornoPaginado.Items = itens;
+
+            return retornoPaginado;
         }
 
         private async Task<bool> ValidarAbrangenciaListagem(FiltroComunicadoDto filtroDto)
@@ -123,7 +146,7 @@ namespace SME.SGP.Aplicacao
                 DataExpiracao = filtroDto.DataExpiracao,
                 Modalidade = filtroDto.Modalidade,
                 Titulo = filtroDto.Titulo,
-                Turmas = filtroDto.Turmas?.Select(x => new ComunicadoTurmaDto { CodigoTurma = x}),
+                Turmas = filtroDto.Turmas?.Select(x => new ComunicadoTurmaDto { CodigoTurma = x }),
                 Semestre = filtroDto.Semestre
             };
         }
@@ -132,7 +155,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            if ((filtroDto.CodigoDre?.Equals(Todas)?? true) && !usuarioLogado.EhPerfilSME())
+            if ((filtroDto.CodigoDre?.Equals(Todas) ?? true) && !usuarioLogado.EhPerfilSME())
                 throw new NegocioException("Apenas usuários SME podem visualizar comunicados de todas as DREs");
 
             if ((filtroDto.CodigoUe?.Equals(Todas) ?? true) && !(usuarioLogado.EhPerfilDRE() || usuarioLogado.EhPerfilSME()))
