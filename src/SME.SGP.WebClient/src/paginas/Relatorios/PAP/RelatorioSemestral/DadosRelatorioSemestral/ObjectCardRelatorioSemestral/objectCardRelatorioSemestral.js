@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import DetalhesAluno from '~/componentes/Alunos/Detalhes';
 
@@ -7,7 +7,12 @@ const ObjectCardRelatorioSemestral = () => {
     store => store.relatorioSemestralPAP.dadosAlunoObjectCard
   );
 
-  return <DetalhesAluno dados={dadosAlunoObjectCard} />;
+  const relatorioSemestralAlunoId = useSelector(
+    store =>
+      store.relatorioSemestralPAP.dadosRelatorioSemestral.relatorioSemestralAlunoId
+  );
+  
+  return <DetalhesAluno dados={dadosAlunoObjectCard} desabilitarImprimir={!relatorioSemestralAlunoId} />;
 };
 
 export default ObjectCardRelatorioSemestral;
