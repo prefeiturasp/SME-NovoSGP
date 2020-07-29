@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
         {
             var entidade = ObterEntidade(atruibuicaoEsporadicaDto);
 
-           await servicoAtribuicaoEsporadica.Salvar(entidade, atruibuicaoEsporadicaDto.AnoLetivo);
+            await servicoAtribuicaoEsporadica.Salvar(entidade, atruibuicaoEsporadicaDto.AnoLetivo, atruibuicaoEsporadicaDto.EhInfantil);
         }
 
         private AtribuicaoEsporadica DtoParaEntidade(AtribuicaoEsporadicaDto Dto)

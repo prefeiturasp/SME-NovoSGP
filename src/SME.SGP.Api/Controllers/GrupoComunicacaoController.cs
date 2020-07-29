@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -38,6 +40,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterPorId(long id)
         {
             return Ok(await consultaGrupoComunicacao.ObterPorIdAsync(id));
+        } 
+
+        [HttpGet("listar/modalidade/{modalidade}")]
+        [ProducesResponseType(typeof(IEnumerable<long>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [AllowAnonymous]
+        public async Task<IActionResult> ListarIdsPorModalidade(Modalidade modalidade, [FromServices]IConsultaGrupoComunicacao consultaGrupoComunicacao)
+        {
+            return Ok(await consultaGrupoComunicacao.ObterIdsGrupoComunicadoPorModalidade(modalidade));
         }
     }
 }
