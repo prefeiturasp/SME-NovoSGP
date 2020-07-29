@@ -50,7 +50,7 @@ const RelatorioParecerConclusivo = () => {
   const [semestre, setSemestre] = useState(undefined);
   const [ciclo, setCiclo] = useState(undefined);
   const [ano, setAno] = useState(undefined);
-  const [parecerConclusivo, setParecerConclusivo] = useState(undefined);
+  const [parecerConclusivoId, setParecerConclusivoId] = useState(undefined);
   const [formato, setFormato] = useState('1');
 
   const onChangeAnoLetivo = valor => {
@@ -82,7 +82,7 @@ const RelatorioParecerConclusivo = () => {
   };
 
   const onChangeParecerConclusivo = valor => {
-    setParecerConclusivo(valor);
+    setParecerConclusivoId(valor);
   };
 
   const onChangeFormato = valor => {
@@ -217,10 +217,15 @@ const RelatorioParecerConclusivo = () => {
     anoLetivoSelecionado
   ) => {
     setCarregandoSemestres(true);
-    const retorno = await api.get(
-      `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
-        0}`
-    );
+    const retorno = await api
+      .get(
+        `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
+          0}`
+      )
+      .catch(e => erros(e))
+      .finally(() => {
+        setCarregandoSemestres(false);
+      });
     if (retorno && retorno.data) {
       const lista = retorno.data.map(periodo => {
         return { desc: periodo, valor: periodo };
@@ -231,27 +236,32 @@ const RelatorioParecerConclusivo = () => {
       }
       setListaSemestres(lista);
     }
-    setCarregandoSemestres(false);
   };
 
   const obterCiclos = async () => {
     setCarregandoCiclos(true);
-    const retorno = await ServicoRelatorioParecerConclusivo.buscarCiclos();
+    const retorno = await ServicoRelatorioParecerConclusivo.buscarCiclos()
+      .catch(e => erros(e))
+      .finally(() => {
+        setCarregandoCiclos(false);
+      });
     if (retorno && retorno.data) {
       const lista = retorno.data;
       setListaCiclos(lista);
     }
-    setCarregandoCiclos(false);
   };
 
   const obterPareceresConclusivos = async () => {
     setCarregandoPareceresConclusivos(true);
-    const retorno = await ServicoRelatorioParecerConclusivo.buscarPareceresConclusivos();
+    const retorno = await ServicoRelatorioParecerConclusivo.buscarPareceresConclusivos()
+      .catch(e => erros(e))
+      .finally(() => {
+        setCarregandoPareceresConclusivos(false);
+      });
     if (retorno && retorno.data) {
       const lista = retorno.data;
       setListaPareceresConclusivos(lista);
     }
-    setCarregandoPareceresConclusivos(false);
   };
 
   const obterAnos = async (codigoUe, modalidadeIdSelecionada) => {
@@ -298,7 +308,11 @@ const RelatorioParecerConclusivo = () => {
     !dreId ||
     !ueId ||
     !modalidadeId ||
-    (String(modalidadeId) === String(modalidade.EJA) ? !semestre : false);
+    (String(modalidadeId) === String(modalidade.EJA) ? !semestre : false) ||
+    !ciclo ||
+    !ano ||
+    !parecerConclusivoId ||
+    !formato;
 
   const gerar = async () => {
     setCarregandoGerar(true);
@@ -308,6 +322,9 @@ const RelatorioParecerConclusivo = () => {
       ueCodigo: ueId,
       modalidade: modalidadeId,
       semestre,
+      ciclo,
+      anoEscolar: ano,
+      parecerConclusivoId,
     };
     await ServicoRelatorioParecerConclusivo.gerar(params)
       .then(() => {
@@ -498,7 +515,7 @@ const RelatorioParecerConclusivo = () => {
                     listaPareceresConclusivos.length === 1
                   }
                   onChange={onChangeParecerConclusivo}
-                  valueSelect={parecerConclusivo}
+                  valueSelect={parecerConclusivoId}
                   placeholder="Parecer conclusivo"
                 />
               </Loader>

@@ -20,9 +20,9 @@ class ServicoRelatorioParecerConclusivo {
     });
   };
 
-  gerar = async params => {
-    const url = '/v1/relatorios/fechamentos/pendencias';
-    return await api.post(url, params);
+  gerar = params => {
+    const url = '/v1/relatorios/pareceres-conclusivos';
+    return api.post(url, params);
   };
 }
 
