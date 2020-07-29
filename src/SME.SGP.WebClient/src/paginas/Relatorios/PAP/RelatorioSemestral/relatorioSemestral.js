@@ -42,6 +42,7 @@ const RelatorioSemestral = () => {
 
   const [listaSemestres, setListaSemestres] = useState([]);
   const [semestreSelecionado, setSemestreSelecionado] = useState(undefined);
+  const [podeImprimir, setPodeImprimir] = useState(false);
 
   const resetarInfomacoes = useCallback(() => {
     dispatch(limparDadosRelatorioSemestral());
@@ -152,6 +153,14 @@ const RelatorioSemestral = () => {
     dispatch(setDentroPeriodo(dentroPeriodo));
   };
 
+  const relatorioSemestralId = useSelector(
+    store => store.relatorioSemestralPAP.dadosRelatorioSemestral.relatorioSemestralId
+  );
+
+  useEffect(() => {
+    setPodeImprimir(relatorioSemestralId);
+  }, [relatorioSemestralId]);
+
   return (
     <Container>
       <ModalErrosRalSemestralPAP />
@@ -214,7 +223,7 @@ const RelatorioSemestral = () => {
                       color={Colors.Azul}
                       border
                       onClick={() => {}}
-                      disabled
+                      disabled={!podeImprimir}
                       id="btn-imprimir-relatorio-semestral"
                     />
                   </div>
