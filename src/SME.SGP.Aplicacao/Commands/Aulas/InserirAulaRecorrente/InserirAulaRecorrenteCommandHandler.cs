@@ -324,7 +324,8 @@ namespace SME.SGP.Aplicacao
             entidadeAula.DataAula = aulaRecorrente.DataAula.Date;
             entidadeAula.Quantidade = aulaRecorrente.Quantidade;
             entidadeAula.TipoAula = aulaRecorrente.TipoAula;
-            entidadeAula.AulaCJ = usuario.EhProfessorCj();
+            entidadeAula.AulaCJ = usuario.EhProfessorCj()
+                               || usuario.EhProfessorCjInfantil();
             return entidadeAula;
         }
 
