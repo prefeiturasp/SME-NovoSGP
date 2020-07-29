@@ -31,6 +31,7 @@ namespace SME.SGP.Dto
                  CriadoRF = comunicado.CriadoRF,
                  DataExpiracao = comunicado.DataExpiracao,
                  Descricao = comunicado.Descricao,
+                 AlunoEspecificado = comunicado.AlunoEspecificado,
                  Modalidade = comunicado.Modalidade ?? default,
                  Id = comunicado.Id,
                  TipoComunicado = comunicado.TipoComunicado,
