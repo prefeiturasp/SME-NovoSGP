@@ -3,6 +3,7 @@ using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -18,8 +19,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task ExcluirPorIdComunicado(long id)
         {
-            var query = "DELETE FROM comunidado_grupo WHERE comunicado_id = @id";
+            var query = "update comunidado_grupo set excluido=true WHERE comunicado_id = @id";
             await database.Conexao.ExecuteAsync(query, new { id });
+        }
+
+        public async Task<IEnumerable<ComunicadoGrupo>> ObterPorComunicado(long comunicadoId)
+        {
+            var query = "select * from comunidado_grupo where comunicado_id = @comunicadoId";
+
+            return await database.QueryAsync<ComunicadoGrupo>(query, new { comunicadoId });
         }
 
         public virtual async Task<long> SalvarAsync(ComunicadoGrupo comunicadoGrupo)

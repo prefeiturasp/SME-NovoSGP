@@ -43,6 +43,20 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultas.BuscarPorIdAsync(id));
         }
 
+        [HttpGet("{codigoTurma}/alunos/{anoLetivo}")]
+        [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> BuscarAlunos(string codigoTurma, int anoLetivo)
+        {
+            var retorno = await consultas.ObterAlunosPorTurma(codigoTurma, anoLetivo);
+
+            if (retorno == null || !retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
         [HttpGet("listar")]
         [ProducesResponseType(typeof(IEnumerable<ComunicadoCompletoDto>), 200)]
         [ProducesResponseType(typeof(IEnumerable<ComunicadoCompletoDto>), 204)]
@@ -51,8 +65,10 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> BuscarTodosAsync([FromQuery]FiltroComunicadoDto filtro)
         {
             var resultado = await consultas.ListarPaginado(filtro);
+
             if (!resultado.Items.Any())
                 return NoContent();
+
             return Ok(resultado);
         }
 

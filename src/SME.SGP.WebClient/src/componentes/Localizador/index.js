@@ -11,7 +11,7 @@ import { Grid, Label } from '~/componentes';
 
 // Services
 import service from './services/LocalizadorService';
-import { erro } from '~/servicos/alertas';
+import { erros } from '~/servicos/alertas';
 
 // Funções
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
@@ -35,6 +35,14 @@ function Localizador({
     rf: false,
     nome: false,
   });
+  const {
+    ehProfessor,
+    ehProfessorCj,
+    ehProfessorPoa,
+    rf,
+    ehProfessorInfantil,
+    ehProfessorCjInfantil,
+  } = usuario;
 
   const onChangeInput = async valor => {
     if (valor.length === 0) {
@@ -85,7 +93,7 @@ function Localizador({
           nome: true,
         }));
       } catch (error) {
-        erro(error.response.data.mensagens[0]);
+        erros(error);
       }
     },
     [anoLetivo, incluirEmei]
@@ -130,13 +138,27 @@ function Localizador({
     }
   }, [form.initialValues]);
 
-  const { ehProfessor, ehProfessorCj, ehProfessorPoa, rf } = usuario;
-
   useEffect(() => {
-    if (dreId && (ehProfessor || ehProfessorCj || ehProfessorPoa)) {
+    if (
+      dreId &&
+      (ehProfessor ||
+        ehProfessorCj ||
+        ehProfessorPoa ||
+        ehProfessorInfantil ||
+        ehProfessorCjInfantil)
+    ) {
       onBuscarPorRF({ rf });
     }
-  }, [dreId, ehProfessor, ehProfessorCj, ehProfessorPoa, rf, onBuscarPorRF]);
+  }, [
+    dreId,
+    ehProfessor,
+    ehProfessorCj,
+    ehProfessorPoa,
+    ehProfessorInfantil,
+    ehProfessorCjInfantil,
+    rf,
+    onBuscarPorRF,
+  ]);
 
   return (
     <>
@@ -154,6 +176,8 @@ function Localizador({
             desabilitado ||
             usuario.ehProfessor ||
             usuario.ehProfessorCj ||
+            usuario.ehProfessorInfantil ||
+            usuario.ehProfessorCjInfantil ||
             usuario.ehProfessorPoa ||
             desabilitarCampo.rf
           }
@@ -172,6 +196,8 @@ function Localizador({
             desabilitado ||
             usuario.ehProfessor ||
             usuario.ehProfessorCj ||
+            usuario.ehProfessorInfantil ||
+            usuario.ehProfessorCjInfantil ||
             usuario.ehProfessorPoa ||
             desabilitarCampo.nome
           }
@@ -191,7 +217,6 @@ Localizador.propTypes = {
   dreId: PropTypes.string,
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   desabilitado: PropTypes.bool,
-  incluirEmei: PropTypes.bool,
 };
 
 Localizador.defaultProps = {
@@ -201,7 +226,6 @@ Localizador.defaultProps = {
   dreId: null,
   anoLetivo: null,
   desabilitado: false,
-  incluirEmei: false,
 };
 
 export default Localizador;
