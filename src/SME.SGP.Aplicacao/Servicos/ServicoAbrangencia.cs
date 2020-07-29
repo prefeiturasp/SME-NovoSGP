@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 Task<AbrangenciaCompactaVigenteRetornoEOLDTO> consultaEol = null;
 
                 var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
-                var ehProfessorCJ = perfil == Perfis.PERFIL_CJ;
+                var ehProfessorCJ = perfil == Perfis.PERFIL_CJ || perfil == Perfis.PERFIL_CJ_INFANTIL;
 
                 SentrySdk.AddBreadcrumb($"{breadcrumb} - Chamada BuscaAbrangenciaEPersiste - Login: {login}, perfil {perfil} - EhSupervisor: {ehSupervisor}, EhProfessorCJ: {ehProfessorCJ}", "SGP Api - Negócio");
 
