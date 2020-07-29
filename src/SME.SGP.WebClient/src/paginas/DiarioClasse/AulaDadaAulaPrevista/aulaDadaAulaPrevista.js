@@ -15,6 +15,8 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import { confirmar, erros, sucesso, erro, exibirAlerta } from '~/servicos/alertas';
 import { URL_HOME } from '~/constantes/url';
 import history from '~/servicos/history';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const AulaDadaAulaPrevista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -33,9 +35,21 @@ const AulaDadaAulaPrevista = () => {
   const [dadoslista, setDadosLista] = useState([]);
   const [auditoria, setAuditoria] = useState(undefined);
   const permissoesTela = usuario.permissoes[RotasDto.AULA_DADA_AULA_PREVISTA];
-  const [somenteConsulta, setSomenteConsulta] = useState(
-    verificaSomenteConsulta(permissoesTela)
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
   );
+
+  useEffect(() => {
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
+    );
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -50,14 +64,18 @@ const AulaDadaAulaPrevista = () => {
         setDesabilitarDisciplina(true);
       }
     };
-    if (turmaId) {
+    if (
+      turmaId &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
+    ) {
       obterDisciplinas();
     } else {
       setDadosLista([]);
       setModoEdicao(false);
       setDisciplinaIdSelecionada(undefined);
+      setListaDisciplinas([]);
     }
-  }, [turmaSelecionada.turma]);
+  }, [turmaSelecionada, modalidade, modalidadesFiltroPrincipal]);
 
   const perguntaAoSalvar = async () => {
     return confirmar(
@@ -217,7 +235,8 @@ const AulaDadaAulaPrevista = () => {
 
   return (
     <>
-      {!turmaSelecionada.turma ? (
+      {!turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
         <Grid cols={12} className="p-0">
           <Alert
             alerta={{
@@ -230,6 +249,7 @@ const AulaDadaAulaPrevista = () => {
           />
         </Grid>
       ) : null}{' '}
+      <AlertaModalidadeInfantil />
       <Grid cols={12} className="p-0">
         <Titulo>
           Aula prevista X Aula dada

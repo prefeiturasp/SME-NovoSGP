@@ -18,6 +18,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task AtribuirCJSeNecessario(string codigoRf);
 
+        Task AtribuirPerfil(string codigoRf, Guid perfil);
+
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
         IEnumerable<CicloRetornoDto> BuscarCiclos();
@@ -99,8 +101,6 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
 
         Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo);
-
-        Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool incluirEmei);
 
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores);
 

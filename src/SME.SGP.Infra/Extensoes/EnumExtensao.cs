@@ -39,6 +39,7 @@ namespace SME.SGP.Infra
         public static string ShortName(this Enum enumValue)
             => enumValue.GetAttribute<DisplayAttribute>().ShortName;
 
+
         public static string Description(this Enum enumValue)
            => enumValue.GetAttribute<DisplayAttribute>().Description;
 

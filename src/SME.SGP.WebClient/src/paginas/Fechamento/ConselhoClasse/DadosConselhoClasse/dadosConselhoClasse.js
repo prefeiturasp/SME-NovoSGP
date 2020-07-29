@@ -26,6 +26,7 @@ import Sintese from './Sintese/Sintese';
 import MarcadorParecerConclusivo from './MarcadorParecerConclusivo/marcadorParecerConclusivo';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import RotasDto from '~/dtos/rotasDto';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const { TabPane } = Tabs;
 
@@ -33,6 +34,7 @@ const DadosConselhoClasse = props => {
   const { turmaCodigo, modalidade } = props;
 
   const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
   const permissoesTela = usuario.permissoes[RotasDto.CONSELHO_CLASSE];
 
   const dispatch = useDispatch();
@@ -43,6 +45,10 @@ const DadosConselhoClasse = props => {
 
   const dadosAlunoObjectCard = useSelector(
     store => store.conselhoClasse.dadosAlunoObjectCard
+  );
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
   );
 
   const { codigoEOL, desabilitado } = dadosAlunoObjectCard;
@@ -74,7 +80,14 @@ const DadosConselhoClasse = props => {
 
   const validaPermissoes = useCallback(
     novoRegistro => {
-      const somenteConsulta = verificaSomenteConsulta(permissoesTela);
+      const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+        modalidadesFiltroPrincipal,
+        turmaSelecionada
+      );
+      const somenteConsulta = verificaSomenteConsulta(
+        permissoesTela,
+        naoSetarSomenteConsultaNoStore
+      );
 
       const desabilitar = novoRegistro
         ? somenteConsulta || !permissoesTela.podeIncluir
@@ -82,7 +95,7 @@ const DadosConselhoClasse = props => {
 
       dispatch(setDesabilitarCampos(desabilitar));
     },
-    [dispatch, permissoesTela]
+    [dispatch, permissoesTela, turmaSelecionada, modalidadesFiltroPrincipal]
   );
 
   // Quando passa bimestre 0 o retorno vai trazer dados do bimestre corrente!
