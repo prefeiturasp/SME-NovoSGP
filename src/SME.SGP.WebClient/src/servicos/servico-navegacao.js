@@ -3,6 +3,9 @@ import { store } from '~/redux';
 import { setSomenteConsulta } from '~/redux/modulos/navegacao/actions';
 import { setMenu, setPermissoes } from '~/redux/modulos/usuario/actions';
 import api from '~/servicos/api';
+import RotasDto from '~/dtos/rotasDto';
+import modalidade from '~/dtos/modalidade';
+import { obterModalidadeFiltroPrincipal } from './Validacoes/validacoesInfatil';
 
 const setMenusPermissoes = () => {
   let permissoes = {};
@@ -69,15 +72,62 @@ const getObjetoStorageUsuario = objeto => {
   return resultado;
 }
 
-const verificaSomenteConsulta = permissoes => {
+const verificaSomenteConsulta = (permissoes, naoSetarResultadoNoStore) => {
   if (permissoes && permissoes[tipoPermissao.podeConsultar] && !permissoes[tipoPermissao.podeAlterar]
     && !permissoes[tipoPermissao.podeIncluir] && !permissoes[tipoPermissao.podeExcluir]) {
-    store.dispatch(setSomenteConsulta(true));
+    if (naoSetarResultadoNoStore) {
+      store.dispatch(setSomenteConsulta(false));
+    } else {
+      store.dispatch(setSomenteConsulta(true));
+    }
     return true;
   }
   store.dispatch(setSomenteConsulta(false));
   return false;
-}
+};
 
-export { setMenusPermissoes, getObjetoStorageUsuario, verificaSomenteConsulta };
+const obterDescricaoNomeMenu = (
+  url,
+  modalidadesFiltroPrincipal,
+  turmaSelecionada,
+  descricao
+) => {
+  const urls = {
+    [RotasDto.FREQUENCIA_PLANO_AULA]: {
+      [String(modalidade.INFANTIL)]: 'Frequência',
+      [String(modalidade.EJA)]: 'Frequência/Plano Aula',
+      [String(modalidade.FUNDAMENTAL)]: 'Frequência/Plano Aula',
+      [String(modalidade.ENSINO_MEDIO)]: 'Frequência/Plano Aula',
+    },
+    [RotasDto.PLANO_ANUAL]: {
+      [String(modalidade.INFANTIL)]: 'Plano Anual',
+      [String(modalidade.EJA)]: 'Plano Semestral',
+      [String(modalidade.FUNDAMENTAL)]: 'Plano Anual',
+      [String(modalidade.ENSINO_MEDIO)]: 'Plano Anual',
+    },
+    [RotasDto.PLANO_CICLO]: {
+      [String(modalidade.INFANTIL)]: 'Plano de Ciclo',
+      [String(modalidade.EJA)]: 'Plano de Etapa',
+      [String(modalidade.FUNDAMENTAL)]: 'Plano de Ciclo',
+      [String(modalidade.ENSINO_MEDIO)]: 'Plano de Ciclo',
+    },
+  };
+  const rota = urls[url];
+  if (rota) {
+    const modalidadeAtual = obterModalidadeFiltroPrincipal(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
 
+    return rota[modalidadeAtual];
+  }
+
+  return descricao;
+};
+
+export {
+  setMenusPermissoes,
+  getObjetoStorageUsuario,
+  verificaSomenteConsulta,
+  obterDescricaoNomeMenu,
+};
