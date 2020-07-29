@@ -18,6 +18,7 @@ const ListaFrequencia = props => {
     permissoesTela,
     frequenciaId,
     temPeriodoAberto,
+    ehInfantil,
   } = props;
 
   const [dataSource, setDataSource] = useState(dados);
@@ -107,7 +108,9 @@ const ListaFrequencia = props => {
               <thead className="tabela-frequencia-thead">
                 <tr>
                   <th className="width-60" />
-                  <th className="text-left">Lista de estudantes</th>
+                  <th className="text-left">
+                    Lista de {ehInfantil ? 'crianças' : 'estudantes'}
+                  </th>
                   {dataSource[0].aulas.length > 1 ? (
                     <>
                       <th
@@ -297,6 +300,7 @@ ListaFrequencia.propTypes = {
   permissoesTela: PropTypes.oneOfType([PropTypes.any]),
   frequenciaId: PropTypes.oneOfType([PropTypes.any]),
   temPeriodoAberto: PropTypes.oneOfType([PropTypes.bool]),
+  ehInfantil: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 ListaFrequencia.defaultProps = {
@@ -305,6 +309,7 @@ ListaFrequencia.defaultProps = {
   permissoesTela: {},
   frequenciaId: 0,
   temPeriodoAberto: false,
+  ehInfantil: false,
 };
 
 export default ListaFrequencia;

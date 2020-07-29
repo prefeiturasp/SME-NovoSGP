@@ -42,6 +42,9 @@ namespace SME.SGP.Infra.Enumerados
         POEI = 34,
         POED = 35,
         POSL = 36,
-        SupervisorConsulta = 37
+        SupervisorConsulta = 37,
+        CoordenadorSME = 38,
+        ProfessorInfantil = 39,
+        ProfessorCJInfantil = 40
     }
 }
