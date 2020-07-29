@@ -93,7 +93,6 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                 TipoAula = inserirAulaUnicaCommand.TipoAula,
                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
                 AulaCJ = inserirAulaUnicaCommand.Usuario.EhProfessorCj()
-                      || inserirAulaUnicaCommand.Usuario.EhProfessorCjInfantil()
             };
         }
 
