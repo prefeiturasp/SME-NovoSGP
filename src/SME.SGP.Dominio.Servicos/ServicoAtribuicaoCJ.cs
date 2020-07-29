@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,13 +32,12 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public async Task Salvar(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
+        public async Task Salvar(AtribuicaoCJ atribuicaoCJ,IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
         {
-            var professorValidoNoEol = await servicoEOL.ValidarProfessor(atribuicaoCJ.ProfessorRf);
-            if (!professorValidoNoEol)
-                throw new NegocioException("Este professor não é válido para ser CJ.");
-
             ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
+
+            if (professoresTitularesDisciplinasEol != null && professoresTitularesDisciplinasEol.Any(c => c.ProfessorRf.Contains(atribuicaoCJ.ProfessorRf) && c.DisciplinaId == atribuicaoCJ.DisciplinaId))
+                throw new NegocioException("Não é possível realizar substituição na turma onde o professor já é o titular.");
 
             if (atribuicoesAtuais == null)
                 atribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJ.Modalidade, atribuicaoCJ.TurmaId,
@@ -78,7 +78,9 @@ namespace SME.SGP.Dominio.Servicos
                     if (turma == null)
                         throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
 
-                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = Perfis.PERFIL_CJ, TurmaId = turma.Id } };
+                    var perfil = atribuicaoCJ.Modalidade == Modalidade.Infantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
+
+                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id } };
 
                     servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }

@@ -13,6 +13,8 @@ import {
 import ListaNotificacoes from './listaNotificacoes';
 import modalidade from '~/dtos/modalidade';
 import { Container, Label, Dashboard } from './principal.css';
+import { obterDescricaoNomeMenu } from '~/servicos/servico-navegacao';
+import RotasDto from '~/dtos/rotasDto';
 
 const Principal = () => {
   const FREQUENCIA_TYPE = 'frequencia';
@@ -20,25 +22,10 @@ const Principal = () => {
   const ANUAL_TYPE = 'anual';
   const [escolaSelecionada, setEscolaSelecionada] = useState(false);
   const [turmaSelecionada, setTurmaSelecionada] = useState(false);
-  const [modalidadeEja, setModalidadeEja] = useState(false);
 
   const usuario = useSelector(state => state.usuario);
   const perfil = useSelector(state => state.perfil.perfilSelecionado);
   const modalidades = useSelector(state => state.filtro.modalidades);
-
-  useEffect(() => {
-    if (
-      usuario &&
-      usuario.turmaSelecionada &&
-      usuario.turmaSelecionada.modalidade &&
-      usuario.turmaSelecionada.modalidade.toString() ===
-        modalidade.EJA.toString()
-    ) {
-      setModalidadeEja(true);
-    } else {
-      setModalidadeEja(false);
-    }
-  }, [usuario, usuario.turmaSelecionada]);
 
   const validarFiltro = useCallback(() => {
     if (!usuario.turmaSelecionada) {
@@ -74,6 +61,8 @@ const Principal = () => {
       !modalidades.length &&
       !usuario.ehProfessorCj &&
       !usuario.ehProfessor &&
+      !usuario.ehProfessorInfantil &&
+      !usuario.ehProfessorCjInfantil &&
       !usuario.ehProfessorPoa &&
       perfil &&
       perfil.nomePerfil === 'Supervisor' ? (
@@ -131,7 +120,11 @@ const Principal = () => {
               disabled={isDesabilitado(FREQUENCIA_TYPE)}
               icone="fa-columns"
               pack="fas"
-              label="Frequência/ Plano de Aula"
+              label={obterDescricaoNomeMenu(
+                RotasDto.FREQUENCIA_PLANO_AULA,
+                modalidades,
+                usuario.turmaSelecionada
+              )}
               minHeight="177px"
             />
             <CardLink
@@ -142,7 +135,11 @@ const Principal = () => {
               disabled={isDesabilitado(CICLOS_TYPE)}
               icone="fa-calendar-minus"
               pack="far"
-              label={modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
+              label={obterDescricaoNomeMenu(
+                RotasDto.PLANO_CICLO,
+                modalidades,
+                usuario.turmaSelecionada
+              )}
               minHeight="177px"
             />
             <CardLink
@@ -153,7 +150,11 @@ const Principal = () => {
               disabled={isDesabilitado(ANUAL_TYPE)}
               icone="fa-calendar-alt"
               pack="far"
-              label={modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
+              label={obterDescricaoNomeMenu(
+                RotasDto.PLANO_ANUAL,
+                modalidades,
+                usuario.turmaSelecionada
+              )}
               minHeight="177px"
             />
           </Grid>

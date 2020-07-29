@@ -5,12 +5,15 @@ import { useSelector } from 'react-redux';
 
 // Componentes
 import { Alert } from '~/componentes';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 function AlertaSelecionarTurma() {
   const { turmaSelecionada } = useSelector(state => state.usuario);
-  return turmaSelecionada && turmaSelecionada.turma ? (
-    ''
-  ) : (
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
+  return !turmaSelecionada.turma &&
+    !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
     <Alert
       alerta={{
         tipo: 'warning',
@@ -20,6 +23,8 @@ function AlertaSelecionarTurma() {
       }}
       className="mb-4"
     />
+  ) : (
+    ''
   );
 }
 
