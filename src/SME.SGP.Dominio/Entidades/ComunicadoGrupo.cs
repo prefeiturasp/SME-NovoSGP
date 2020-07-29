@@ -3,7 +3,7 @@
     public class ComunicadoGrupo
     {
         public long ComunicadoId { get; set; }
-        public int GrupoComunicadoId { get; set; }
+        public long GrupoComunicadoId { get; set; }
         public long Id { get; set; }
     }
 }

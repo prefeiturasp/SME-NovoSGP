@@ -17,6 +17,8 @@ import { Cabecalho } from '~/componentes-sgp';
 // Componentes
 import { Loader, Card, ButtonGroup, ListaPaginada } from '~/componentes';
 import Filtro from './componentes/Filtro';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 function RegistroPOALista() {
   const [itensSelecionados, setItensSelecionados] = useState([]);
@@ -29,6 +31,10 @@ function RegistroPOALista() {
   const permissoesTela = usuarioLogado.permissoes;
   const anoLetivo =
     usuarioLogado.turmaSelecionada.anoLetivo || window.moment().format('YYYY');
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
+  const { turmaSelecionada } = usuarioLogado;
 
   const renderizarBimestres = valor => {
     const bimestres = [
@@ -115,8 +121,15 @@ function RegistroPOALista() {
   };
 
   useEffect(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, [permissoesTela]);
+    const permissoes = permissoesTela[RotasDto.REGISTRO_POA];
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoes, naoSetarSomenteConsultaNoStore)
+    );
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     setFiltroValido(
@@ -152,6 +165,7 @@ function RegistroPOALista() {
 
   return (
     <>
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Registro do professor orientador de área" />
       <Loader loading={loaderSecao}>
         <Card mx="mx-0">
@@ -166,25 +180,32 @@ function RegistroPOALista() {
             onClickBotaoPrincipal={onClickBotaoPrincipal}
             labelBotaoPrincipal="Novo"
             desabilitarBotaoPrincipal={
-              !!filtro.dreId === false && !!filtro.ueId === false
+              ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
+              (!!filtro.dreId === false && !!filtro.ueId === false)
             }
           />
-          <Filtro onFiltrar={onChangeFiltro} />
-          <div className="col-md-12 pt-2 py-0 px-0">
-            <ListaPaginada
-              id="lista-atribuicoes-cj"
-              url="v1/atribuicao/poa/listar"
-              idLinha="id"
-              colunaChave="id"
-              colunas={colunas}
-              onClick={onClickEditar}
-              multiSelecao
-              filtro={filtro}
-              selecionarItems={onSelecionarItems}
-              filtroEhValido={filtroValido}
-              onErro={err => erro(JSON.stringify(err))}
-            />
-          </div>
+          {!ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
+            <>
+              <Filtro onFiltrar={onChangeFiltro} />
+              <div className="col-md-12 pt-2 py-0 px-0">
+                <ListaPaginada
+                  id="lista-atribuicoes-cj"
+                  url="v1/atribuicao/poa/listar"
+                  idLinha="id"
+                  colunaChave="id"
+                  colunas={colunas}
+                  onClick={onClickEditar}
+                  multiSelecao
+                  filtro={filtro}
+                  selecionarItems={onSelecionarItems}
+                  filtroEhValido={filtroValido}
+                  onErro={err => erro(JSON.stringify(err))}
+                />
+              </div>
+            </>
+          ) : (
+            ''
+          )}
         </Card>
       </Loader>
     </>
