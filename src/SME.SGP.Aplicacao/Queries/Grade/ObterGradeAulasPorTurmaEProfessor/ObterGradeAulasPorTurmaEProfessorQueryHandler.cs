@@ -40,13 +40,8 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
 
-            // Busca grade a partir dos dados da abrangencia da turma
-            var grade = await repositorioGrade.ObterGradeTurma(turma.Ue.TipoEscola, turma.ModalidadeCodigo, turma.QuantidadeDuracaoAula);
-            if (grade == null)
-                return null;
-
             // verifica se é regencia de classe
-            var horasGrade = await TratarHorasGrade(request.ComponenteCurricular, turma, grade, request.EhRegencia);
+            var horasGrade = await TratarHorasGrade(request.ComponenteCurricular, turma, request.EhRegencia);
             if (horasGrade == 0)
                 return null;
 
@@ -67,7 +62,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<int> TratarHorasGrade(long componenteCurricularId, Turma turma, Grade grade, bool ehRegencia)
+        private async Task<int> TratarHorasGrade(long componenteCurricularId, Turma turma, bool ehRegencia)
         {
             if (ehRegencia)
                 return turma.ObterHorasGradeRegencia();
@@ -77,6 +72,12 @@ namespace SME.SGP.Aplicacao
 
             int ano;
             int.TryParse(turma.Ano, out ano);
+
+            // Busca grade a partir dos dados da abrangencia da turma
+            var grade = await repositorioGrade.ObterGradeTurma(turma.Ue.TipoEscola, turma.ModalidadeCodigo, turma.QuantidadeDuracaoAula);
+            if (grade == null)
+                return 0;
+
             return await repositorioGrade.ObterHorasComponente(grade.Id, componenteCurricularId, ano);
         }
 

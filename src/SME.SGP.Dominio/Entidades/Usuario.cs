@@ -111,10 +111,9 @@ namespace SME.SGP.Dominio
 
         public bool EhProfessorCj()
         {
-            return PerfilAtual == Dominio.Perfis.PERFIL_CJ;
+            return PerfilAtual == Dominio.Perfis.PERFIL_CJ
+                || PerfilAtual == Dominio.Perfis.PERFIL_CJ_INFANTIL;
         }
-
-        
 
 
         public bool EhProfessorPoa()
