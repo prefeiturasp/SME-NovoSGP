@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
@@ -19,15 +18,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(FiltroRelatorioParecerConclusivoDto filtroRelatorioParecerConclusivoDto)
         {
-            await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtroRelatorioParecerConclusivoDto.DreCodigo));
-            await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioParecerConclusivoDto.UeCodigo));
-
-            if (filtroRelatorioParecerConclusivoDto.Modalidade == Modalidade.Infantil)
-            {
+            if (filtroRelatorioParecerConclusivoDto.Modalidade.HasValue && filtroRelatorioParecerConclusivoDto.Modalidade.Value == Modalidade.Infantil)
                 throw new NegocioException("Não é possível gerar este relatório para a modalidade infantil!");
-            }
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            filtroRelatorioParecerConclusivoDto.UsuarioNome = usuarioLogado.Nome;
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ParecerConclusivo, filtroRelatorioParecerConclusivoDto, usuarioLogado));
         }
