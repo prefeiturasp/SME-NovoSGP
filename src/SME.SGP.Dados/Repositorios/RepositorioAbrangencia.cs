@@ -121,7 +121,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("                            on(a.turma_id is null and a.ue_id is null and a.dre_id = t_dre.dre_id)-- admin dre");
             query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_ue");
             query.AppendLine("                            on(a.turma_id is null and a.dre_id is null and a.ue_id = t_ue.ue_id)-- admin ue");
-            query.AppendLine($"         where { (!consideraHistorico ? "not" : string.Empty) } a.historico");
+            query.AppendLine($"         where { (!consideraHistorico ? " not " : string.Empty) } a.historico");
             query.AppendLine("           and u.login = @login");
             query.AppendLine("           and a.perfil = @perfil");
             query.AppendLine("     ) t");
@@ -187,7 +187,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("        (a.turma_id is null and a.dre_id is null and a.ue_id = t.ue_id) --admin ue");
             query.AppendLine("  inner join ue");
             query.AppendLine("      on ue.id = t.ue_id");
-            query.AppendLine($"where { (!consideraHistorico ? "not" : string.Empty) }a.historico");
+            query.AppendLine($"where { (!consideraHistorico ? " not " : string.Empty) } a.historico");
             query.AppendLine("  and u.login = @login");
             query.AppendLine("  and a.perfil = @perfil");
             query.AppendLine("  and t.turma_codigo = @turma;");
@@ -386,6 +386,26 @@ namespace SME.SGP.Dados.Repositorios
                                 u.ue_id = @codigoUe";
 
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe });
+        }
+
+        public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine(@"select t.turma_id as valor, t.nome as descricao from turma t
+                            inner join ue ue on ue.id = t.ue_id");
+
+            query.AppendLine("where ue.ue_id = @codigoUe and ano_letivo = @anoLetivo");
+
+            if (modalidade.HasValue && modalidade != 0)
+                query.AppendLine("and t.modalidade_codigo = @modalidade");
+
+            if (semestre > 0)
+                query.AppendLine("and semestre = @semestre");
+
+            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre });
+
+            return dados.OrderBy(x => x.Descricao);
         }
     }
 }
