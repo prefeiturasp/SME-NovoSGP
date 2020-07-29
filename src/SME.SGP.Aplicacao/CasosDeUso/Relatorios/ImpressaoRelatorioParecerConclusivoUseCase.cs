@@ -14,10 +14,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(FiltroRelatorioParecerConclusivoDto filtro)
         {
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = filtro.TurmaCodigo });
-            if (turma == null)
-                throw new NegocioException("Não foi possivel localizar a turma informada.");
-
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ParecerConclusivo, filtro, usuarioLogado.Id));
         }
