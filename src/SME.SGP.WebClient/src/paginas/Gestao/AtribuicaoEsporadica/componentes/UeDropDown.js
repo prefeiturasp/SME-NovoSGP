@@ -29,7 +29,7 @@ function UeDropDown({ form, onChange, dreId, label, desabilitado }) {
       setListaUes(lista);
       if (lista.length === 1) {
         form.setFieldValue('ueId', lista[0].valor);
-        onChange(lista[0].valor, ehInfantil(lista[0].valor));
+        onChange(lista[0].valor, lista[0].ehInfantil);
       }
     }
   }
@@ -73,7 +73,7 @@ UeDropDown.propTypes = {
 
 UeDropDown.defaultProps = {
   form: {},
-  onChange: () => {},
+  onChange: () => { },
   dreId: '',
   label: null,
   desabilitado: null,
