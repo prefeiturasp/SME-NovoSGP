@@ -360,7 +360,7 @@ function CadastroDeAula({ match, location }) {
       if (componente) valoresForm.disciplinaNome = componente.nome;
       setCarregandoDados(true);
       servicoCadastroAula
-        .salvar(id, valoresForm, valoresForm.regencia || false)
+        .salvar(id, valoresForm, componente.regencia || false)
         .then(resposta => {
           resposta.data.mensagens.forEach(mensagem => sucesso(mensagem));
           navegarParaCalendarioProfessor();
@@ -391,7 +391,7 @@ function CadastroDeAula({ match, location }) {
         disciplinaId: componenteSelecionado
           ? String(componenteSelecionado.codigoComponenteCurricular)
           : null,
-        disciplinaCompartilhadaId: componenteSelecionado?.compartilhada
+        disciplinaCompartilhadaId: componenteSelecionado ?.compartilhada
           ? componenteSelecionado.componenteCurricularId
           : 0,
       };
@@ -548,7 +548,7 @@ function CadastroDeAula({ match, location }) {
             const componente = obterComponenteSelecionadoPorId(
               aula.disciplinaId
             );
-            return componente?.nome;
+            return componente ?.nome;
           }}
           recorrencia={recorrenciaAulaEmEdicao}
           onFecharModal={() => {
@@ -714,7 +714,7 @@ function CadastroDeAula({ match, location }) {
                         min={1}
                         onChange={onChangeQuantidadeAula}
                         disabled={quantidadeBloqueada}
-                        // ehDecimal={false}
+                      // ehDecimal={false}
                       />
                     </div>
                     <div className="col-xs-12 col-md-6 col-lg-6">

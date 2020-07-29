@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -52,7 +53,11 @@ namespace SME.SGP.Dados.Repositorios
 						WHERE (gc.excluido = false)
 						{0}";
 
-        public RepositorioGrupoComunicacao(ISgpContext conexao) : base(conexao)
+		private readonly string queryObterIdGrupoPorModalidade = @"select id, etapa_ensino_id from grupo_comunicado
+																	where excluido = false and etapa_ensino_id notnull";
+
+
+		public RepositorioGrupoComunicacao(ISgpContext conexao) : base(conexao)
         {
         }
 
@@ -73,5 +78,32 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<GrupoComunicacaoCompletoRespostaDto>(query, new { id });
         }
-    }
+
+		public async Task<IEnumerable<GrupoComunicacaoCompletoRespostaDto>> ObterCompletoPorListaId(IEnumerable<long> ids)
+		{
+			var where = "AND gc.id = Any(@ids)";
+
+			var query = string.Format(queryGrupo, where);
+
+			return await database.Conexao.QueryAsync<GrupoComunicacaoCompletoRespostaDto>(query, new { ids = ids.ToList() });
+		}
+
+		public async Task<IEnumerable<long>> ObterIdsGrupoComunicadoPorModalidade(Modalidade modalidade)
+		{
+			var grupos = await database.Conexao.QueryAsync<GrupoComunicacao>(queryObterIdGrupoPorModalidade);
+
+			if (grupos == null || !grupos.Any())
+				throw new NegocioException($"Não foi encontrado grupos com a modalidade {modalidade.ToString()}");
+
+			var modalidadeString = ((int)modalidade).ToString();
+
+			var etapaEnsinoSplit = grupos.Select(x => new
+			{
+				Id = x.Id,
+				Etapas = x.EtapaEnsino.Split(',')
+			});
+
+			return etapaEnsinoSplit.Where(x => x.Etapas.Contains(modalidadeString)).Select(x => x.Id);
+		}
+	}
 }

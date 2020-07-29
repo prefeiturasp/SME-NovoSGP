@@ -117,6 +117,8 @@ const Perfil = props => {
               ehProfessorCj,
               ehProfessorPoa,
               dataHoraExpiracao,
+              ehProfessorInfantil,
+              ehProfessorCjInfantil,
             } = resp.data;
 
             const {
@@ -142,6 +144,8 @@ const Perfil = props => {
                 menu,
                 ehProfessorPoa,
                 dataHoraExpiracao,
+                ehProfessorInfantil,
+                ehProfessorCjInfantil,
               })
             );
 

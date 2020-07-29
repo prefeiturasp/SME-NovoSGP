@@ -9,5 +9,9 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<GrupoComunicacaoCompletoRespostaDto>> Listar(FiltroGrupoComunicacaoDto filtro);
 
         Task<IEnumerable<GrupoComunicacaoCompletoRespostaDto>> ObterCompletoPorIdAsync(long id);
+
+        Task<IEnumerable<GrupoComunicacaoCompletoRespostaDto>> ObterCompletoPorListaId(IEnumerable<long> ids);
+
+        Task<IEnumerable<long>> ObterIdsGrupoComunicadoPorModalidade(Modalidade modalidade);
     }
 }
