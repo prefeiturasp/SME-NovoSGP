@@ -29,7 +29,7 @@ const RotasDto = {
   FECHAMENTO_BIMESTRE: '/fechamento/fechamento-bimestre',
   PERIODO_FECHAMENTO_ABERTURA:
     '/calendario-escolar/periodo-fechamento-abertura',
-  PAP: '/relatorios/pap/resumos-e-graficos',
+  PAP: '/relatorios/pap/relatorio-graficos',
   PERIODO_FECHAMENTO_REABERTURA:
     '/calendario-escolar/periodo-fechamento-reabertura',
   RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/relatorio-preenchimento',
