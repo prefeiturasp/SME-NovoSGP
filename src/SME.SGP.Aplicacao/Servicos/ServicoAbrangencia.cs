@@ -115,35 +115,32 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
         {
-            try
+            const string breadcrumb = "SGP API - Tratamento de Abrangência";
+
+            Task<AbrangenciaCompactaVigenteRetornoEOLDTO> consultaEol = null;
+
+            var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
+            var ehProfessorCJ = perfil == Perfis.PERFIL_CJ;
+
+            SentrySdk.AddBreadcrumb($"{breadcrumb} - Chamada BuscaAbrangenciaEPersiste - Login: {login}, perfil {perfil} - EhSupervisor: {ehSupervisor}, EhProfessorCJ: {ehProfessorCJ}", "SGP Api - Negócio");
+
+            if (ehSupervisor)
+                consultaEol = TratarRetornoSupervisor(ObterAbrangenciaEolSupervisor(login));
+            else if (ehProfessorCJ)
+                return;
+            else
+                consultaEol = servicoEOL.ObterAbrangenciaCompactaVigente(login, perfil);
+
+            if (consultaEol != null)
             {
-                const string breadcrumb = "SGP API - Tratamento de Abrangência";
+                // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
+                var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil, string.Empty);
 
-                Task<AbrangenciaCompactaVigenteRetornoEOLDTO> consultaEol = null;
+                var abrangenciaEol = await consultaEol;
+                var abrangenciaSintetica = await consultaAbrangenciaSintetica;
 
-                var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
-                var ehProfessorCJ = perfil == Perfis.PERFIL_CJ;
-
-                SentrySdk.AddBreadcrumb($"{breadcrumb} - Chamada BuscaAbrangenciaEPersiste - Login: {login}, perfil {perfil} - EhSupervisor: {ehSupervisor}, EhProfessorCJ: {ehProfessorCJ}", "SGP Api - Negócio");
-
-                if (ehSupervisor)
-                    consultaEol = TratarRetornoSupervisor(ObterAbrangenciaEolSupervisor(login));
-                else if (ehProfessorCJ)
-                    return;
-                else
-                    consultaEol = servicoEOL.ObterAbrangenciaCompactaVigente(login, perfil);
-
-                if (consultaEol != null)
+                if (abrangenciaEol != null)
                 {
-                    // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
-                    var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil, string.Empty);
-
-                    var abrangenciaEol = await consultaEol;
-                    var abrangenciaSintetica = await consultaAbrangenciaSintetica;
-
-                    if (abrangenciaEol == null)
-                        throw new NegocioException("Não foi possível localizar registros de abrangência para este usuário.");
-
                     IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
                     IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
                     IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
@@ -163,11 +160,6 @@ namespace SME.SGP.Aplicacao.Servicos
                     unitOfWork.PersistirTransacao();
                 }
             }
-            catch (Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
-                throw;
-            }
         }
 
         private async Task<IEnumerable<Turma>> ImportarTurmasNaoEncontradas(string[] codigosNaoEncontrados)
@@ -186,16 +178,19 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             string[] codigosNaoEncontrados;
 
-            if (abrangenciaEol.IdDres != null && abrangenciaEol.IdDres.Length > 0)
-                dres = repositorioDre.MaterializarCodigosDre(abrangenciaEol.IdDres, out codigosNaoEncontrados);
-
-            if (abrangenciaEol.IdUes != null && abrangenciaEol.IdUes.Length > 0)
-                ues = repositorioUe.MaterializarCodigosUe(abrangenciaEol.IdUes, out codigosNaoEncontrados);
-
-            if (abrangenciaEol.IdTurmas != null && abrangenciaEol.IdTurmas.Length > 0)
+            if (abrangenciaEol != null)
             {
-                turmas = repositorioTurma.MaterializarCodigosTurma(abrangenciaEol.IdTurmas, out codigosNaoEncontrados)
-                    .Union(await ImportarTurmasNaoEncontradas(codigosNaoEncontrados));
+                if (abrangenciaEol.IdDres != null && abrangenciaEol.IdDres.Length > 0)
+                    dres = repositorioDre.MaterializarCodigosDre(abrangenciaEol.IdDres, out codigosNaoEncontrados);
+
+                if (abrangenciaEol.IdUes != null && abrangenciaEol.IdUes.Length > 0)
+                    ues = repositorioUe.MaterializarCodigosUe(abrangenciaEol.IdUes, out codigosNaoEncontrados);
+
+                if (abrangenciaEol.IdTurmas != null && abrangenciaEol.IdTurmas.Length > 0)
+                {
+                    turmas = repositorioTurma.MaterializarCodigosTurma(abrangenciaEol.IdTurmas, out codigosNaoEncontrados)
+                        .Union(await ImportarTurmasNaoEncontradas(codigosNaoEncontrados));
+                }
             }
 
             return new Tuple<IEnumerable<Dre>, IEnumerable<Ue>, IEnumerable<Turma>>(dres, ues, turmas);

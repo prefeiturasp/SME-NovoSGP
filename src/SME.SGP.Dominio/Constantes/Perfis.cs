@@ -14,5 +14,6 @@ namespace SME.SGP.Dominio
         public readonly static Guid PERFIL_SUPERVISOR = Guid.Parse("4EE1E074-37D6-E911-ABD6-F81654FE895D");
         public readonly static Guid PERFIL_PROFESSOR_INFANTIL = Guid.Parse("60E1E074-37D6-E911-ABD6-F81654FE895D");
         public readonly static Guid PERFIL_CJ_INFANTIL = Guid.Parse("61E1E074-37D6-E911-ABD6-F81654FE895D");
+        public readonly static Guid PERFIL_SUPERVISOR_CONSULTA = Guid.Parse("5FE1E074-37D6-E911-ABD6-F81654FE895D");
     }
 }
