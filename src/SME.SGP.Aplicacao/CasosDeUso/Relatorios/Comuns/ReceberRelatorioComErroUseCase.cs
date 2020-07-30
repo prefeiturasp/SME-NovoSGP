@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
             }
 
-            var command = new NotificarUsuarioCommand("Erro ao gerar relatório.",
+            var command = new NotificarUsuarioCommand($"{relatorioCorrelacao.TipoRelatorio.Description()} - Erro ao gerar relatório.",
                                                       $"Ocorreu um erro na geração do seu '{relatorioCorrelacao.TipoRelatorio.Description()}'.{System.Environment.NewLine}{erro.Mensagem}",
                                                       mensagemRabbit.UsuarioLogadoRF,
                                                       NotificacaoCategoria.Aviso,

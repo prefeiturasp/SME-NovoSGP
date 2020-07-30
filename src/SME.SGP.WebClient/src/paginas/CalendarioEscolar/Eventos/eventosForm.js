@@ -135,10 +135,7 @@ const EventosForm = ({ match }) => {
   const carregarUes = async dre => {
     const ues = await obterUesPorDre(dre);
     if (ues.data) {
-      ues.data.forEach(
-        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
-      );
-      setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+      setListaUes(ues.data);
     } else {
       setListaUes([]);
     }
@@ -309,10 +306,7 @@ const EventosForm = ({ match }) => {
         inicial.dreId = String(listaDres[0].codigo);
         const ues = await obterUesPorDre(inicial.dreId);
         if (ues.data) {
-          ues.data.forEach(
-            ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
-          );
-          setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+          setListaUes(ues.data);
           setUeDesabilitada(ues.data.length === 1);
         } else {
           setListaUes([]);

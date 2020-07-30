@@ -638,13 +638,11 @@ namespace SME.SGP.Dados.Repositorios
                     paginacao = new Paginacao(1, 10);
 
                 var retornoPaginado = new PaginacaoResultadoDto<Evento>();
-                var totalRegistros = 0;
-
 
                 var queryTotalRegistros = new StringBuilder("select count(0) ");
                 ObterParametrosDaFuncaoEventosListarSemPaginacao(tipoCalendarioId, tipoEventoId, nomeEvento, dataInicio, dataFim, dreId, ueId, ehTodasDres, ehTodasUes, usuario, usuarioPerfil, usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLocalOcorrenciaDre, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, consideraHistorico, queryTotalRegistros);
 
-                var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<long>(queryTotalRegistros.ToString());
+                var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros.ToString());
 
 
                 var queryEventos = new StringBuilder(@"select eventoid,
@@ -675,25 +673,21 @@ namespace SME.SGP.Dados.Repositorios
 								 total_registros ");
 
                 ObterParametrosDaFuncaoEventosListarSemPaginacao(tipoCalendarioId, tipoEventoId, nomeEvento, dataInicio, dataFim, dreId, ueId, ehTodasDres, ehTodasUes, usuario, usuarioPerfil, usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLocalOcorrenciaDre, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, consideraHistorico, queryEventos);
+                queryEventos.AppendLine("offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;");
 
-                if (paginacao.QuantidadeRegistrosIgnorados > 0 && paginacao.QuantidadeRegistros > 0)
-                    queryEventos.AppendLine("offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;");
-
-                retornoPaginado.Items = await database.Conexao.QueryAsync<Evento, EventoTipo, int, Evento>(queryEventos.ToString(), (evento, tipoEvento, qtdeRegistros) =>
+                retornoPaginado.Items = await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(queryEventos.ToString(), (evento, tipoEvento) =>
                 {
                     evento.AdicionarTipoEvento(tipoEvento);
-                    totalRegistros = qtdeRegistros;
                     return evento;
                 },
-                splitOn: "EventoId, TipoEventoId, total_registros");
+               param: new { qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados, qtde_registros = paginacao.QuantidadeRegistros },
+               splitOn: "EventoId, TipoEventoId");
 
-                retornoPaginado.TotalRegistros = totalRegistros;
+                retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
                 retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
                 return retornoPaginado;
             }
-
-
 
             catch (Exception)
             {
@@ -710,13 +704,13 @@ namespace SME.SGP.Dados.Repositorios
             queryNova.AppendLine($"{tipoCalendarioId}, ");
             queryNova.AppendLine($"{usuarioTemPerfilSupervisorOuDiretor}, ");
             queryNova.AppendLine($"{!podeVisualizarEventosLocalOcorrenciaDre},");
-            queryNova.AppendLine($"{ (ehTodasDres ? "null" : dreId ?? "null")}, ");
-            queryNova.AppendLine($"{(ehTodasUes ? "null" : ueId ?? "null")},");
+            queryNova.AppendLine($"{ (ehTodasDres ? "null" : string.IsNullOrWhiteSpace(dreId) ? "null" : $"'{dreId}'")}, ");
+            queryNova.AppendLine($"{(ehTodasUes ? "null" : string.IsNullOrWhiteSpace(ueId) ? "null" : $"'{ueId}'")},");
             queryNova.AppendLine($"{!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme}, ");
             queryNova.AppendLine($"{(dataInicio.HasValue ? dataInicio.Value.Date.ToString() : "null")}, ");
             queryNova.AppendLine($"{(dataFim.HasValue ? dataFim.Value.Date.ToString() : "null")}, ");
             queryNova.AppendLine($"{(tipoEventoId.HasValue ? tipoEventoId.ToString() : "null")}, ");
-            queryNova.AppendLine($"{(string.IsNullOrEmpty(nomeEvento) ? "null" : nomeEvento)})");
+            queryNova.AppendLine($"{(string.IsNullOrWhiteSpace(nomeEvento) ? "null" : $"'{nomeEvento}'")})");
         }
 
         #endregion Listar
