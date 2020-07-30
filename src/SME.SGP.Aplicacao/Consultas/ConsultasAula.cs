@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turmaCodigo, string disciplina)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            var usuarioRF = usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : string.Empty;
+            var usuarioRF = usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorInfantil() ? usuarioLogado.CodigoRf : string.Empty;
 
             var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
             if (turma == null)
