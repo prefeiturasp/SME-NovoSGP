@@ -682,7 +682,8 @@ namespace SME.SGP.Dados.Repositorios
                     evento.AdicionarTipoEvento(tipoEvento);
                     return evento;
                 },
-                splitOn: "EventoId, TipoEventoId, total_registros");
+               param: new { qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados, qtde_registros = paginacao.QuantidadeRegistros }, 
+               splitOn: "EventoId, TipoEventoId");
 
                 retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
                 retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
