@@ -119,7 +119,7 @@ namespace SME.SGP.Api
                 Orquestrador.Desativar();
 
             services.AddHealthChecks()
-                    .AddRedis(
+                   .AddRedis(
                         Configuration.GetConnectionString("SGP-Redis"),
                         "Redis Cache",
                         null,
