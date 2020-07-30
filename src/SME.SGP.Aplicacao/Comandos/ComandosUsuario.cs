@@ -204,7 +204,9 @@ namespace SME.SGP.Aplicacao
                     DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao(),
                     EhProfessor = usuario.EhProfessor(),
                     EhProfessorCj = usuario.EhProfessorCj(),
-                    EhProfessorPoa = usuario.EhProfessorPoa()
+                    EhProfessorPoa = usuario.EhProfessorPoa(),
+                    EhProfessorInfantil = usuario.EhProfessorInfantil(),
+                    EhProfessorCjInfantil = usuario.EhProfessorCjInfantil()
                 };
             }
         }

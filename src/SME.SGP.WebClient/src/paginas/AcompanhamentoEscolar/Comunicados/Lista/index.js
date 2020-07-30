@@ -68,6 +68,7 @@ const ComunicadosLista = () => {
   };
 
   const onChangeFiltro = valoresFiltro => {
+    setFiltro([]);
     setFiltro({
       ...valoresFiltro,
       dataEnvio: valoresFiltro.dataEnvio
@@ -80,24 +81,6 @@ const ComunicadosLista = () => {
   };
 
   const colunas = [
-    {
-      title: 'Grupo',
-      dataIndex: 'grupos',
-      render: grupos => {
-        return (
-          grupos &&
-          grupos.map(grupo => (
-            <Badge
-              key={shortid.generate()}
-              alt={grupo.nome}
-              className="badge badge-pill bg-white border text-dark font-weight-light px-2 py-1 mr-2"
-            >
-              {grupo.nome}
-            </Badge>
-          ))
-        );
-      },
-    },
     {
       title: 'Título',
       dataIndex: 'titulo',
@@ -114,6 +97,24 @@ const ComunicadosLista = () => {
       dataIndex: 'dataExpiracao',
       render: data => {
         return data && window.moment(data).format('DD/MM/YYYY');
+      },
+    },
+    {
+      title: 'Grupo',
+      dataIndex: 'grupos',
+      render: grupos => {
+        return (
+          grupos &&
+          grupos.map(grupo => (
+            <Badge
+              key={shortid.generate()}
+              alt={grupo.nome}
+              className="badge badge-pill bg-white border text-dark font-weight-light px-2 py-1 mr-2"
+            >
+              {grupo.nome}
+            </Badge>
+          ))
+        );
       },
     },
   ];

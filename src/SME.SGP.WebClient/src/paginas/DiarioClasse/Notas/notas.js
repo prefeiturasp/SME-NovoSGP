@@ -30,6 +30,8 @@ import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
 import moment from 'moment';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const { TabPane } = Tabs;
 
@@ -41,6 +43,10 @@ const Notas = ({ match }) => {
   );
   const modoEdicaoGeralNotaFinal = useSelector(
     store => store.notasConceitos.modoEdicaoGeralNotaFinal
+  );
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
   );
   const { ehProfessorCj } = usuario;
 
@@ -90,44 +96,54 @@ const Notas = ({ match }) => {
     false
   );
 
-  const validaSeDesabilitaCampos = async bimestre => {
-    const somenteConsulta = verificaSomenteConsulta(permissoesTela);
-    const desabilitar =
-      somenteConsulta ||
-      !permissoesTela.podeAlterar ||
-      !permissoesTela.podeIncluir;
+  const validaSeDesabilitaCampos = useCallback(
+    async bimestre => {
+      const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+        modalidadesFiltroPrincipal,
+        usuario.turmaSelecionada
+      );
+      const somenteConsulta = verificaSomenteConsulta(
+        permissoesTela,
+        naoSetarSomenteConsultaNoStore
+      );
+      const desabilitar =
+        somenteConsulta ||
+        !permissoesTela.podeAlterar ||
+        !permissoesTela.podeIncluir;
 
-    let dentroDoPeriodo = true;
-    if (!desabilitar && bimestre && usuario.turmaSelecionada.turma) {
-      const retorno = await ServicoPeriodoFechamento.verificarSePodeAlterarNoPeriodo(
-        usuario.turmaSelecionada.turma,
-        bimestre
-      ).catch(e => {
-        erros(e);
-      });
-      if (retorno && retorno.status == 200) {
-        dentroDoPeriodo = retorno.data;
+      let dentroDoPeriodo = true;
+      if (!desabilitar && bimestre && usuario.turmaSelecionada.turma) {
+        const retorno = await ServicoPeriodoFechamento.verificarSePodeAlterarNoPeriodo(
+          usuario.turmaSelecionada.turma,
+          bimestre
+        ).catch(e => {
+          erros(e);
+        });
+        if (retorno && retorno.status == 200) {
+          dentroDoPeriodo = retorno.data;
+        }
       }
-    }
 
-    if (desabilitar) {
-      setDesabilitarCampos(desabilitar);
-      setShowMsgPeriodoFechamento(false);
-      return;
-    }
+      if (desabilitar) {
+        setDesabilitarCampos(desabilitar);
+        setShowMsgPeriodoFechamento(false);
+        return;
+      }
 
-    if (!dentroDoPeriodo) {
-      setDesabilitarCampos(true);
-      setShowMsgPeriodoFechamento(true);
-    } else {
-      setDesabilitarCampos(desabilitar);
-      setShowMsgPeriodoFechamento(false);
-    }
-  };
+      if (!dentroDoPeriodo) {
+        setDesabilitarCampos(true);
+        setShowMsgPeriodoFechamento(true);
+      } else {
+        setDesabilitarCampos(desabilitar);
+        setShowMsgPeriodoFechamento(false);
+      }
+    },
+    [usuario.turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]
+  );
 
   useEffect(() => {
     validaSeDesabilitaCampos(bimestreCorrente);
-  }, [permissoesTela, usuario.turmaSelecionada.turma]);
+  }, [bimestreCorrente, validaSeDesabilitaCampos]);
 
   const resetarTela = useCallback(() => {
     setDisciplinaSelecionada(undefined);
@@ -336,7 +352,9 @@ const Notas = ({ match }) => {
   }, [obterTituloTela]);
 
   useEffect(() => {
-    if (usuario.turmaSelecionada.turma) {
+    if (
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, usuario.turmaSelecionada)
+    ) {
       obterDisciplinas();
       dispatch(setModoEdicaoGeral(false));
       dispatch(setModoEdicaoGeralNotaFinal(false));
@@ -1012,7 +1030,8 @@ const Notas = ({ match }) => {
           )}
         </Formik>
       </ModalConteudoHtml>
-      {!usuario.turmaSelecionada.turma ? (
+      {!usuario.turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, usuario.turmaSelecionada) ? (
         <Row className="mb-0 pb-0">
           <Grid cols={12} className="mb-0 pb-0">
             <Container>
@@ -1046,7 +1065,8 @@ const Notas = ({ match }) => {
           </Grid>
         </Row>
       ) : null}
-      {showMsgPeriodoFechamento ? (
+      {showMsgPeriodoFechamento &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, usuario.turmaSelecionada) ? (
         <Row className="mb-0 pb-0">
           <Grid cols={12} className="mb-0 pb-0">
             <Container>
@@ -1063,6 +1083,7 @@ const Notas = ({ match }) => {
           </Grid>
         </Row>
       ) : null}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina={tituloNotasConceitos} />
       <Loader loading={carregandoListaBimestres}>
         <Card>

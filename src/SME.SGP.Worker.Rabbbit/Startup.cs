@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Net;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.IoC;
 using SME.SGP.Worker.RabbitMQ;
@@ -40,7 +42,18 @@ namespace SME.SGP.Worker.Rabbbit
                 services.AddRabbit();
             }
 
-            services.AddHostedService<WorkerRabbitMQ>();
+            services.AddHostedService<WorkerRabbitMQ> ();
+
+
+            // Teste para injeção do client de telemetria em classe estática 
+
+            var serviceProvider = services.BuildServiceProvider();
+            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+            DapperExtensionMethods.Init(clientTelemetry);
+
+            //
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -98,6 +111,8 @@ namespace SME.SGP.Worker.Rabbbit
             {
                 return new JasperCookieHandler() { CookieContainer = cookieContainer };
             });
+
+
         }
 
     }

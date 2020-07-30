@@ -40,6 +40,8 @@ import { Row } from './styles';
 
 // Funçoes
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 function RegistroPOAForm({ match }) {
   const dispatch = useDispatch();
@@ -49,10 +51,14 @@ function RegistroPOAForm({ match }) {
   const anoLetivo =
     useSelector(store => store.usuario.turmaSelecionada.anoLetivo) ||
     window.moment().format('YYYY');
-  const somenteConsulta = verificaSomenteConsulta(
-    permissoesTela[RotasDto.REGISTRO_POA]
-  );
 
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [auditoria, setAuditoria] = useState({});
@@ -69,6 +75,22 @@ function RegistroPOAForm({ match }) {
     dreId: '',
     ueId: '',
   });
+
+  useEffect(() => {
+    const permissoes = permissoesTela[RotasDto.REGISTRO_POA];
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoes, naoSetarSomenteConsultaNoStore)
+    );
+    if (naoSetarSomenteConsultaNoStore && refForm.resetForm) {
+      refForm.resetForm();
+      setDescricao('');
+      setModoEdicao(false);
+    }
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   const validacoes = () => {
     return Yup.object({
@@ -244,6 +266,7 @@ function RegistroPOAForm({ match }) {
 
   return (
     <>
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Registro" />
       <Loader loading={carregando}>
         <Card>
@@ -271,79 +294,93 @@ function RegistroPOAForm({ match }) {
                   onClickVoltar={() => onClickVoltar()}
                   onClickExcluir={() => onClickExcluir(form)}
                   modoEdicao={modoEdicao}
+                  desabilitarBotaoPrincipal={ehTurmaInfantil(
+                    modalidadesFiltroPrincipal,
+                    turmaSelecionada
+                  )}
                 />
-                <Row className="row mb-2">
-                  <Grid cols={6}>
-                    <DreDropDown
-                      url="v1/dres/atribuicoes"
-                      label="Diretoria Regional de Educação (DRE)"
-                      form={form}
-                      onChange={() => null}
-                      desabilitado={somenteConsulta}
-                    />
-                  </Grid>
-                  <Grid cols={6}>
-                    <UeDropDown
-                      dreId={form.values.dreId}
-                      label="Unidade Escolar (UE)"
-                      form={form}
-                      url="v1/dres"
-                      onChange={() => null}
-                      desabilitado={somenteConsulta}
-                    />
-                  </Grid>
-                </Row>
-                <Row className="row mb-2">
-                  <Localizador
-                    dreId={form.values.dreId}
-                    anoLetivo={anoLetivo}
-                    form={form}
-                    onChange={() => null}
-                    showLabel
-                    desabilitado={somenteConsulta}
-                  />
-                </Row>
-                <Row className="row">
-                  <Grid cols={2}>
-                    <MesesDropDown
-                      label="Bimestre"
-                      name="bimestre"
-                      form={form}
-                      desabilitado={somenteConsulta}
-                    />
-                  </Grid>
-                  <Grid cols={10}>
-                    <CampoTexto
-                      name="titulo"
-                      id="titulo"
-                      label="Título"
-                      placeholder="Digite o título do registro"
-                      form={form}
-                      desabilitado={somenteConsulta}
-                    />
-                  </Grid>
-                </Row>
-                <Row className="row">
-                  <Grid cols={12}>
-                    <Label text="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente" />
-                    <TextEditor
-                      className="form-control w-100"
-                      ref={textEditorRef}
-                      id="descricao"
-                      alt="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente"
-                      name="descricao"
-                      onBlur={valor => setDescricao(valor)}
-                      value={descricao}
-                      maxlength={500}
-                      toolbar
-                      disabled={somenteConsulta}
-                    />
-                  </Grid>
-                </Row>
+                {!ehTurmaInfantil(
+                  modalidadesFiltroPrincipal,
+                  turmaSelecionada
+                ) ? (
+                  <>
+                    <Row className="row mb-2">
+                      <Grid cols={6}>
+                        <DreDropDown
+                          url="v1/dres/atribuicoes"
+                          label="Diretoria Regional de Educação (DRE)"
+                          form={form}
+                          onChange={() => null}
+                          desabilitado={somenteConsulta}
+                        />
+                      </Grid>
+                      <Grid cols={6}>
+                        <UeDropDown
+                          dreId={form.values.dreId}
+                          label="Unidade Escolar (UE)"
+                          form={form}
+                          url="v1/dres"
+                          onChange={() => null}
+                          desabilitado={somenteConsulta}
+                        />
+                      </Grid>
+                    </Row>
+                    <Row className="row mb-2">
+                      <Localizador
+                        dreId={form.values.dreId}
+                        anoLetivo={anoLetivo}
+                        form={form}
+                        onChange={() => null}
+                        showLabel
+                        desabilitado={somenteConsulta}
+                      />
+                    </Row>
+                    <Row className="row">
+                      <Grid cols={2}>
+                        <MesesDropDown
+                          label="Bimestre"
+                          name="bimestre"
+                          form={form}
+                          desabilitado={somenteConsulta}
+                        />
+                      </Grid>
+                      <Grid cols={10}>
+                        <CampoTexto
+                          name="titulo"
+                          id="titulo"
+                          label="Título"
+                          placeholder="Digite o título do registro"
+                          form={form}
+                          desabilitado={somenteConsulta}
+                        />
+                      </Grid>
+                    </Row>
+                    <Row className="row">
+                      <Grid cols={12}>
+                        <Label text="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente" />
+                        <TextEditor
+                          className="form-control w-100"
+                          ref={textEditorRef}
+                          id="descricao"
+                          alt="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente"
+                          name="descricao"
+                          onBlur={valor => setDescricao(valor)}
+                          value={descricao}
+                          maxlength={500}
+                          toolbar
+                          disabled={somenteConsulta}
+                        />
+                      </Grid>
+                    </Row>
+                  </>
+                ) : (
+                  ''
+                )}
               </Form>
             )}
           </Formik>
-          {auditoria && (
+          {auditoria &&
+          !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
             <Auditoria
               criadoEm={auditoria.criadoEm}
               criadoPor={auditoria.criadoPor}
@@ -352,6 +389,8 @@ function RegistroPOAForm({ match }) {
               alteradoEm={auditoria.alteradoEm}
               alteradoRf={auditoria.alteradoRf}
             />
+          ) : (
+            ''
           )}
         </Card>
       </Loader>

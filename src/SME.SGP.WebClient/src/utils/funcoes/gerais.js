@@ -53,6 +53,11 @@ const removerCaracteresEspeciais = especialChar => {
   return especialChar;
 };
 
+const removerNumeros = numChar => {
+  numChar = numChar.replace(/\d+/g, '');
+  return numChar;
+};
+
 export {
   validaSeObjetoEhNuloOuVazio,
   valorNuloOuVazio,
@@ -61,4 +66,5 @@ export {
   removerCaracteresEspeciais,
   ordenarPor,
   ordenarDescPor,
+  removerNumeros,
 };

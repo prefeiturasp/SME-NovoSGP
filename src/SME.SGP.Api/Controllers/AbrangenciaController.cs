@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
@@ -89,7 +90,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterDres([FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, ConsideraHistorico, anoLetivo);
+            var consideraHistorico = ((anoLetivo != 0) && (anoLetivo < DateTime.Now.Year))
+                                    || ConsideraHistorico;
+
+            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, consideraHistorico, anoLetivo);
 
             if (dres.Any())
                 return Ok(dres);
@@ -132,7 +136,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery]Modalidade modalidade, int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            var consideraHistorico = ((anoLetivo != 0) && (anoLetivo < DateTime.Now.Year))
+                                    || ConsideraHistorico;
+
+            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, consideraHistorico, anoLetivo);
 
             if (!turmas.Any())
                 return NoContent();
@@ -147,7 +154,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            var consideraHistorico = ((anoLetivo != 0) && (anoLetivo < DateTime.Now.Year))
+                                    || ConsideraHistorico;
+
+            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, consideraHistorico, anoLetivo);
 
             if (!ues.Any())
                 return NoContent();

@@ -7,23 +7,30 @@ import { SelectComponent } from '~/componentes';
 // Servicos
 import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
 
-import FiltroHelper from '~/componentes-sgp/filtro/helper';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
-
 function UeDropDown({ form, onChange, dreId, label, desabilitado }) {
   const [listaUes, setListaUes] = useState([]);
+
+  const ehInfantil = valor => {
+    if (listaUes && listaUes.length) {
+      const ue = listaUes.find(item => item.valor === valor);
+      return ue && ue.ehInfantil;
+    }
+    return false;
+  };
 
   async function buscarUes() {
     const { data } = await AtribuicaoEsporadicaServico.buscarUes(dreId);
     if (data) {
-      setListaUes(
-        data
-          .map(item => ({
-            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
-            valor: item.codigo,
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'))
-      );
+      const lista = data.map(item => ({
+        desc: item.nome,
+        valor: item.codigo,
+        ehInfantil: item.ehInfantil,
+      }));
+      setListaUes(lista);
+      if (lista.length === 1) {
+        form.setFieldValue('ueId', lista[0].valor);
+        onChange(lista[0].valor, lista[0].ehInfantil);
+      }
     }
   }
 
@@ -35,20 +42,15 @@ function UeDropDown({ form, onChange, dreId, label, desabilitado }) {
     }
   }, [dreId]);
 
-  useEffect(() => {
-    if (listaUes.length === 1) {
-      form.setFieldValue('ueId', listaUes[0].valor);
-      onChange(listaUes[0].valor);
-    }
-  }, [listaUes]);
-
   return (
     <SelectComponent
       form={form}
       name="ueId"
       className="fonte-14"
       label={!label ? null : label}
-      onChange={onChange}
+      onChange={v => {
+        onChange(v, ehInfantil(v));
+      }}
       lista={listaUes}
       valueOption="valor"
       valueText="desc"
@@ -71,7 +73,7 @@ UeDropDown.propTypes = {
 
 UeDropDown.defaultProps = {
   form: {},
-  onChange: () => {},
+  onChange: () => { },
   dreId: '',
   label: null,
   desabilitado: null,

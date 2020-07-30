@@ -110,6 +110,9 @@ const CalendarioEscolar = () => {
   }, [modalidadesAbrangencia]);
 
   const tiposDeCalendario = useMemo(() => {
+    if (tiposCalendario.length === 0)
+      return;
+
     let tipos = tiposCalendario;
 
     if (tipos.length > 0 && modalidadesPorAbrangencia.length === 1) {
@@ -122,7 +125,9 @@ const CalendarioEscolar = () => {
       const modalidadeSelecionada =
         turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
           ? 2
-          : 1;
+          : turmaSelecionadaStore.modalidade === ModalidadeDTO.INFANTIL.toString()
+            ? 3
+            : 1;
 
       tipos =
         tiposCalendario &&
@@ -317,11 +322,11 @@ const CalendarioEscolar = () => {
           if (resposta.data) {
             resposta.data.forEach(unidade => {
               lista.push({
-                desc: `${tipoEscolaDTO[unidade.tipoEscola]} ${unidade.nome}`,
+                desc: unidade.nome,
                 valor: unidade.codigo,
               });
             });
-            setUnidadesEscolares(lista.sort(FiltroHelper.ordenarLista('desc')));
+            setUnidadesEscolares(lista);
             setCarregandoUes(false);
           }
         }
@@ -455,7 +460,7 @@ const CalendarioEscolar = () => {
                     eventoSme
                       ? 'Exibindo eventos da SME'
                       : 'Não exibindo eventos da SME'
-                  }`}
+                    }`}
                 >
                   <Switch
                     onChange={aoTrocarEventoSme}

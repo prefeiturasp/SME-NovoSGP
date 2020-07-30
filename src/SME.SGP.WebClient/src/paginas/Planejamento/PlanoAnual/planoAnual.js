@@ -4,7 +4,10 @@ import { useSelector } from 'react-redux';
 import { Collapse } from 'antd';
 import shortid from 'shortid';
 import Row from '~/componentes/row';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import {
+  verificaSomenteConsulta,
+  obterDescricaoNomeMenu,
+} from '~/servicos/servico-navegacao';
 
 import {
   Grid,
@@ -75,6 +78,9 @@ const PlanoAnual = () => {
     objetivosAprendizagemOpcionais,
     setObjetivosAprendizagemOpcionais,
   ] = useState([]);
+  const modalidadesFiltroPrincipal = useSelector(
+    state => state.filtro.modalidades
+  );
 
   const onChangeDisciplinas = codigoDisciplina => {
     const disciplina = listaDisciplinas.find(
@@ -470,7 +476,11 @@ const PlanoAnual = () => {
         </div>
         <Grid cols={12} className="p-0">
           <Titulo>
-            {ehEja ? 'Plano Semestral' : 'Plano Anual'}
+            {obterDescricaoNomeMenu(
+              RotasDto.PLANO_ANUAL,
+              modalidadesFiltroPrincipal,
+              turmaSelecionada
+            )}
             {registroMigrado && (
               <RegistroMigrado className="float-right">
                 Registro Migrado

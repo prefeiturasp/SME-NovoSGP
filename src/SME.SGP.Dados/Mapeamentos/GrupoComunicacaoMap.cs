@@ -12,6 +12,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Nome).ToColumn("Nome");
             Map(c => c.TipoCicloId).ToColumn("Tipo_Ciclo_Id");
             Map(c => c.TipoEscolaId).ToColumn("Tipo_Escola_Id");
+            Map(c => c.EtapaEnsino).ToColumn("etapa_ensino_id");
         }
     }
 }
