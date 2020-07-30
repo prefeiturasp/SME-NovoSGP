@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 throw new NegocioException("Não é possível gerar este relatório para a modalidade infantil!");
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            filtroRelatorioParecerConclusivoDto.UsuarioNome = usuarioLogado.Nome;
+            filtroRelatorioParecerConclusivoDto.UsuarioNome = usuarioLogado.Nome;            
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ParecerConclusivo, filtroRelatorioParecerConclusivoDto, usuarioLogado));
         }
