@@ -22,6 +22,7 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import moment from 'moment';
+import { Loader } from '~/componentes';
 
 export default function ReiniciarSenha() {
   const [linhaSelecionada, setLinhaSelecionada] = useState({});
@@ -48,6 +49,8 @@ export default function ReiniciarSenha() {
 
   const [dreDesabilitada, setDreDesabilitada] = useState(false);
   const [ueDesabilitada, setUeDesabilitada] = useState(false);
+
+  const [carregando, setCarregando] = useState(false);
 
   const { usuario } = store.getState();
   const anoLetivo = useMemo(
@@ -168,10 +171,7 @@ export default function ReiniciarSenha() {
         `/v1/abrangencias/${consideraHistorico}/dres/${dre}/ues`
       );
       if (ues.data) {
-        ues.data.forEach(ue => {
-          ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`;
-        });
-        setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+        setListaUes(ues.data);
       } else {
         setListaUes([]);
       }
@@ -228,9 +228,15 @@ export default function ReiniciarSenha() {
   };
 
   const reiniciarSenha = async linha => {
+    const parametros = {
+      dreCodigo: dreSelecionada,
+      ueCodigo: ueSelecionada,
+    };
+
     let deveAtualizarEmail = false;
+    setCarregando(true);
     await api
-      .put(`v1/autenticacao/${linha.codigoRf}/reiniciar-senha`)
+      .put(`v1/autenticacao/${linha.codigoRf}/reiniciar-senha`, parametros)
       .then(resposta => {
         setExibirModalMensagemReiniciarSenha(true);
         setMensagemSenhaAlterada(resposta.data.mensagem);
@@ -239,6 +245,7 @@ export default function ReiniciarSenha() {
         if (error && error.response && error.response.data) {
           deveAtualizarEmail = error.response.data.deveAtualizarEmail;
         }
+        setCarregando(false);
       });
     if (deveAtualizarEmail) {
       setEmailUsuarioSelecionado('');
@@ -248,6 +255,7 @@ export default function ReiniciarSenha() {
       setSemEmailCadastrado(false);
       onClickFiltrar();
     }
+    setCarregando(false);
   };
 
   const onCloseModalReiniciarSenha = () => {
@@ -259,15 +267,18 @@ export default function ReiniciarSenha() {
 
   const onConfirmarReiniciarSenha = async form => {
     const parametro = { novoEmail: form.emailUsuario };
+    onCloseModalReiniciarSenha();
+    setCarregando(true);
     api
       .put(`v1/usuarios/${linhaSelecionada.codigoRf}/email`, parametro)
-      .then(resposta => {
+      .then(() => {
         reiniciarSenha(linhaSelecionada);
         refForm.resetForm();
+        setCarregando(false);
       })
-      .catch(e => erros(e))
-      .finally(() => {
-        onCloseModalReiniciarSenha();
+      .catch(e => {
+        erros(e);
+        setCarregando(false);
       });
   };
 
@@ -283,7 +294,7 @@ export default function ReiniciarSenha() {
   };
 
   return (
-    <>
+    <Loader loading={carregando}>
       <Cabecalho pagina="Reiniciar senha" />
       <Card>
         <div className="col-md-12 d-flex justify-content-end pb-4">
@@ -415,6 +426,6 @@ export default function ReiniciarSenha() {
       >
         <b> {mensagemSenhaAlterada} </b>
       </ModalConteudoHtml>
-    </>
+    </Loader>
   );
 }

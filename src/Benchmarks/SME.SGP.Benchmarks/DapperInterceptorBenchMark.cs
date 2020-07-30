@@ -4,7 +4,6 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados;
 using System;
 
-
 namespace SME.SGP.Benchmarks
 {
     [MemoryDiagnoser]

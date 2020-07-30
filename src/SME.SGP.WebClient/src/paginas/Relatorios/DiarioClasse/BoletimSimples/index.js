@@ -9,6 +9,8 @@ import history from '~/servicos/history';
 import Filtro from './componentes/Filtro';
 import ServicoBoletimSimples from '~/servicos/Paginas/Relatorios/DiarioClasse/BoletimSimples/ServicoBoletimSimples';
 import { sucesso, erro } from '~/servicos/alertas';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import modalidade from '~/dtos/modalidade';
 
 const BoletimSimples = () => {
   const [loaderSecao] = useState(false);
@@ -81,6 +83,10 @@ const BoletimSimples = () => {
 
   return (
     <>
+      <AlertaModalidadeInfantil
+        exibir={String(filtro.modalidade) === String(modalidade.INFANTIL)}
+        validarModalidadeFiltroPrincipal={false}
+      />
       <Cabecalho pagina="Impressão de Boletim" />
       <Loader loading={loaderSecao}>
         <Card mx="mx-0">
@@ -96,7 +102,13 @@ const BoletimSimples = () => {
             onClickVoltar={onClickVoltar}
             onClickCancelar={onClickCancelar}
             onClickBotaoPrincipal={onClickBotaoPrincipal}
-            desabilitarBotaoPrincipal={false}
+            desabilitarBotaoPrincipal={
+              String(filtro.modalidade) === String(modalidade.INFANTIL) ||
+              (filtro &&
+                filtro.turmaCodigo > 0 &&
+                selecionarAlunos &&
+                !itensSelecionados?.length)
+            }
             botoesEstadoVariavel={false}
             labelBotaoPrincipal="Gerar"
             modoEdicao

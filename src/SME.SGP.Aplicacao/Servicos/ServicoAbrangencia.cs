@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 Task<AbrangenciaCompactaVigenteRetornoEOLDTO> consultaEol = null;
 
                 var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
-                var ehProfessorCJ = perfil == Perfis.PERFIL_CJ;
+                var ehProfessorCJ = perfil == Perfis.PERFIL_CJ || perfil == Perfis.PERFIL_CJ_INFANTIL;
 
                 SentrySdk.AddBreadcrumb($"{breadcrumb} - Chamada BuscaAbrangenciaEPersiste - Login: {login}, perfil {perfil} - EhSupervisor: {ehSupervisor}, EhProfessorCJ: {ehProfessorCJ}", "SGP Api - Negócio");
 
@@ -141,26 +141,26 @@ namespace SME.SGP.Aplicacao.Servicos
                     var abrangenciaEol = await consultaEol;
                     var abrangenciaSintetica = await consultaAbrangenciaSintetica;
 
-                    if (abrangenciaEol == null)
-                        throw new NegocioException("Não foi possível localizar registros de abrangência para este usuário.");
+                    if (abrangenciaEol != null)
+                    {
+                        IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
+                        IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
+                        IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
 
-                    IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
-                    IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
-                    IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
+                        // sincronizamos as dres, ues e turmas
+                        var estrutura = await MaterializarEstruturaInstitucional(abrangenciaEol, dres, ues, turmas);
 
-                    // sincronizamos as dres, ues e turmas
-                    var estrutura = await MaterializarEstruturaInstitucional(abrangenciaEol, dres, ues, turmas);
+                        dres = estrutura.Item1;
+                        ues = estrutura.Item2;
+                        turmas = estrutura.Item3;
 
-                    dres = estrutura.Item1;
-                    ues = estrutura.Item2;
-                    turmas = estrutura.Item3;
+                        // sincronizamos a abrangencia do login + perfil
+                        unitOfWork.IniciarTransacao();
 
-                    // sincronizamos a abrangencia do login + perfil
-                    unitOfWork.IniciarTransacao();
+                        SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
 
-                    SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
-
-                    unitOfWork.PersistirTransacao();
+                        unitOfWork.PersistirTransacao();
+                    }
                 }
             }
             catch (Exception ex)
@@ -307,7 +307,8 @@ namespace SME.SGP.Aplicacao.Servicos
                  Nome = z.NomeTurma,
                  Semestre = z.Semestre,
                  TipoTurno = z.TipoTurno,
-                 Ue = new Ue() { CodigoUe = y.Codigo }
+                 Ue = new Ue() { CodigoUe = y.Codigo },
+                 EnsinoEspecial = z.EnsinoEspecial
              })));
 
             dres = repositorioDre.Sincronizar(dres);

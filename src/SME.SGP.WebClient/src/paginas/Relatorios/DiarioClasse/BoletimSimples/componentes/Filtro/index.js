@@ -42,14 +42,6 @@ function Filtro({ onFiltrar, resetForm }) {
   }, [modalidadeId, semestreId, anoLetivo]);
 
   useEffect(() => {
-    if (modalidadeId && anoLetivo && dreId) {
-      let url = `v1/abrangencias/false/dres/${dreId}/ues?modalidade=${modalidadeId}&anoLetivo=${anoLetivo}`;
-      if (modalidadeId === '3' && semestreId) url += `&periodo=${semestreId}`;
-      setUrlUe(url);
-    }
-  }, [modalidadeId, semestreId, anoLetivo, dreId]);
-
-  useEffect(() => {
     setCarregandoModalidades(true);
     if (modalidadesStore && modalidadesStore.length && !modalidades.length)
       setModalidades(modalidadesStore);
@@ -132,6 +124,11 @@ function Filtro({ onFiltrar, resetForm }) {
   const aoTrocarDreId = id => {
     if (!id) refForm.setFieldValue('ueId', undefined);
     setDreId(id);
+    if (modalidadeId && anoLetivo && id) {
+      let url = `v1/abrangencias/false/dres/${id}/ues?modalidade=${modalidadeId}&anoLetivo=${anoLetivo}`;
+      if (modalidadeId === '3' && semestreId) url += `&periodo=${semestreId}`;
+      setUrlUe(url);
+    }
   };
 
   const aoTrocarUeId = id => {
@@ -205,7 +202,7 @@ function Filtro({ onFiltrar, resetForm }) {
                     valueText="desc"
                     placeholder="Semestre"
                     label="Semestre"
-                    disabled={!modalidadeId || periodos.length}
+                    disabled={!modalidadeId || periodos?.length > 0}
                   />
                 </Loader>
               </Grid>
@@ -214,6 +211,7 @@ function Filtro({ onFiltrar, resetForm }) {
           <Linha className="row mb-2">
             <Grid cols={6}>
               <DreDropDown
+                temModalidade={!!modalidadeId}
                 form={form}
                 onChange={dre => aoTrocarDreId(dre)}
                 url={urlDre}

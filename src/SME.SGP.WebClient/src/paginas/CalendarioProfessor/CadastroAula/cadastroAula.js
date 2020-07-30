@@ -46,6 +46,7 @@ function CadastroDeAula({ match, location }) {
       .required('Informe a data da aula')
       .typeError('Informe a data da aula'),
     quantidade: Yup.number()
+      .integer('O valor informado deve ser um número inteiro')
       .typeError('O valor informado deve ser um número')
       .nullable()
       .required('Informe a quantidade de aulas'),
@@ -206,6 +207,7 @@ function CadastroDeAula({ match, location }) {
       return {
         ...validacoesState,
         quantidade: Yup.number()
+          .integer('O valor informado deve ser um número inteiro')
           .typeError('O valor informado deve ser um número')
           .nullable()
           .required('Informe a quantidade de aulas')
@@ -228,6 +230,7 @@ function CadastroDeAula({ match, location }) {
       return {
         ...validacoesState,
         quantidade: Yup.number()
+          .integer('O valor informado deve ser um número inteiro')
           .typeError('O valor informado deve ser um número')
           .nullable()
           .required('Informe a quantidade de aulas')
@@ -247,6 +250,7 @@ function CadastroDeAula({ match, location }) {
       return {
         ...validacoesState,
         quantidade: Yup.number()
+          .integer('O valor informado deve ser um número inteiro')
           .typeError('O valor informado deve ser um número')
           .nullable()
           .required('Informe a quantidade de aulas'),
@@ -356,7 +360,7 @@ function CadastroDeAula({ match, location }) {
       if (componente) valoresForm.disciplinaNome = componente.nome;
       setCarregandoDados(true);
       servicoCadastroAula
-        .salvar(id, valoresForm, valoresForm.regencia || false)
+        .salvar(id, valoresForm, componente.regencia || false)
         .then(resposta => {
           resposta.data.mensagens.forEach(mensagem => sucesso(mensagem));
           navegarParaCalendarioProfessor();
@@ -387,7 +391,7 @@ function CadastroDeAula({ match, location }) {
         disciplinaId: componenteSelecionado
           ? String(componenteSelecionado.codigoComponenteCurricular)
           : null,
-        disciplinaCompartilhadaId: componenteSelecionado?.compartilhada
+        disciplinaCompartilhadaId: componenteSelecionado ?.compartilhada
           ? componenteSelecionado.componenteCurricularId
           : 0,
       };
@@ -544,7 +548,7 @@ function CadastroDeAula({ match, location }) {
             const componente = obterComponenteSelecionadoPorId(
               aula.disciplinaId
             );
-            return componente?.nome;
+            return componente ?.nome;
           }}
           recorrencia={recorrenciaAulaEmEdicao}
           onFecharModal={() => {
@@ -710,6 +714,7 @@ function CadastroDeAula({ match, location }) {
                         min={1}
                         onChange={onChangeQuantidadeAula}
                         disabled={quantidadeBloqueada}
+                      // ehDecimal={false}
                       />
                     </div>
                     <div className="col-xs-12 col-md-6 col-lg-6">

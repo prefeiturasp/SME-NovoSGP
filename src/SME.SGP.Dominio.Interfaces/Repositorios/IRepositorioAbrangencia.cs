@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -42,6 +43,12 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool PossuiAbrangenciaTurmaAtivaPorLogin(string login);
 
-        void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia escopo);
+        void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo);
+
+        Task<bool> UsuarioPossuiAbrangenciaDeUmDosTipos(Guid perfil, IEnumerable<TipoPerfil> tipos);
+
+        Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string codigoUe);
+
+        Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre);
     }
 }

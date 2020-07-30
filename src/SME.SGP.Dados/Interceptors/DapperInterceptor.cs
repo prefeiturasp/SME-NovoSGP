@@ -10,9 +10,14 @@ namespace SME.SGP.Dados
 
     public static class DapperExtensionMethods
     {
+        private static TelemetryClient insightsClient;
+        public static void Init(TelemetryClient telemetryClientInjected)
+        {
+            insightsClient = telemetryClientInjected;
+        }
         public static IEnumerable<dynamic> Query(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -36,7 +41,7 @@ namespace SME.SGP.Dados
         }
         public static IEnumerable<T> Query<T>(this IDbConnection Connection, string sql, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -61,7 +66,7 @@ namespace SME.SGP.Dados
 
         public static async Task<IEnumerable<T>> QueryAsync<T>(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -85,7 +90,7 @@ namespace SME.SGP.Dados
 
         public static async Task<T> QueryFirstOrDefaultAsync<T>(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -108,7 +113,7 @@ namespace SME.SGP.Dados
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -132,7 +137,7 @@ namespace SME.SGP.Dados
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -156,7 +161,7 @@ namespace SME.SGP.Dados
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -180,7 +185,7 @@ namespace SME.SGP.Dados
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TFifth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -203,7 +208,7 @@ namespace SME.SGP.Dados
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -226,7 +231,7 @@ namespace SME.SGP.Dados
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -249,7 +254,7 @@ namespace SME.SGP.Dados
         }
         public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -272,7 +277,7 @@ namespace SME.SGP.Dados
         }
         public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -295,7 +300,7 @@ namespace SME.SGP.Dados
         }
         public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -318,7 +323,7 @@ namespace SME.SGP.Dados
         }
         public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -341,7 +346,7 @@ namespace SME.SGP.Dados
         }
         public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -364,7 +369,7 @@ namespace SME.SGP.Dados
         }
         public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -387,7 +392,7 @@ namespace SME.SGP.Dados
         }
         public static int Execute(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -411,7 +416,7 @@ namespace SME.SGP.Dados
 
         public static int Execute(this IDbConnection cnn, CommandDefinition command)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -438,7 +443,7 @@ namespace SME.SGP.Dados
 
         public static IEnumerable<TEntity> GetAll<TEntity>(this IDbConnection connection, bool buffered = true) where TEntity : class
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -458,22 +463,10 @@ namespace SME.SGP.Dados
                 insightsClient.TrackDependency("PostgreSQL", "GetAll", $"{nameof(TEntity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
-        }
-
-        private static TelemetryClient ObterClientInsights()
-        {
-            var insightsKeys = Environment.GetEnvironmentVariable("ApplicationInsights__InstrumentationKey") ?? "x";
-
-            var insightsClient = new TelemetryClient(new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration(insightsKeys))
-            {
-                InstrumentationKey = insightsKeys
-            };
-            return insightsClient;
-        }
-
+        }      
         public static object Insert<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null) where TEntity : class
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -498,7 +491,7 @@ namespace SME.SGP.Dados
 
         public static bool Update<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -521,7 +514,7 @@ namespace SME.SGP.Dados
         }
         public static TEntity Get<TEntity>(this IDbConnection connection, object id) where TEntity : class
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -545,7 +538,7 @@ namespace SME.SGP.Dados
         }
         public static bool Delete<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -569,8 +562,8 @@ namespace SME.SGP.Dados
         }
         public static async Task<TEntity> GetAsync<TEntity>(this IDbConnection connection, object id) where TEntity : class
         {
+
             
-            TelemetryClient insightsClient = ObterClientInsights();
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -593,7 +586,7 @@ namespace SME.SGP.Dados
         }
         public static async Task<bool> UpdateAsync<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null)
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -617,7 +610,7 @@ namespace SME.SGP.Dados
         }
         public static async Task<object> InsertAsync<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null) where TEntity : class
         {
-            TelemetryClient insightsClient = ObterClientInsights();
+            
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();

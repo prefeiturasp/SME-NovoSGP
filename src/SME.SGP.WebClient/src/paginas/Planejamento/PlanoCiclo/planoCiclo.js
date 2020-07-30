@@ -22,10 +22,15 @@ import {
 } from './planoCiclo.css';
 import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import {
+  verificaSomenteConsulta,
+  obterDescricaoNomeMenu,
+} from '~/servicos/servico-navegacao';
 import tipoPermissao from '~/dtos/tipoPermissao';
 import { Loader } from '~/componentes';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 export default function PlanoCiclo() {
   const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
@@ -65,6 +70,21 @@ export default function PlanoCiclo() {
   const turmaSelecionada = useSelector(store => store.usuario.turmaSelecionada);
   const permissoesTela = usuario.permissoes[RotasDto.PLANO_CICLO];
 
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
+  const [ehModalidadeInfantil, setEhModalidadeInfantil] = useState(false);
+
+  useEffect(() => {
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
+    );
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
+
   useEffect(() => {
     async function carregarListas() {
       const matrizes = await api.get('v1/matrizes-saber');
@@ -74,7 +94,6 @@ export default function PlanoCiclo() {
       setListaODS(ods.data);
     }
     carregarListas();
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, []);
 
   useEffect(() => {
@@ -89,11 +108,23 @@ export default function PlanoCiclo() {
   const [carregandoSalvar, setCarregandoSalvar] = useState(false);
 
   useEffect(() => {
-    setCarregando(true);
-    carregarCiclos();
+    const ehInfantil = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setEhModalidadeInfantil(ehInfantil);
+
+    if (turmaSelecionada && !ehInfantil) {
+      setCarregando(true);
+      carregarCiclos();
+    } else {
+      setCarregandoCiclos(false);
+      setCicloSelecionado();
+      setListaCiclos([]);
+    }
 
     if (!Object.entries(turmaSelecionada).length) setCicloSelecionado();
-  }, [turmaSelecionada]);
+  }, [turmaSelecionada, modalidadesFiltroPrincipal]);
 
   const carregarCiclos = async () => {
     if (usuario && turmaSelecionada.turma) {
@@ -463,9 +494,8 @@ export default function PlanoCiclo() {
   return (
     <>
       <div className="col-md-12">
-        {usuario && turmaSelecionada.turma ? (
-          ''
-        ) : (
+        {!turmaSelecionada.turma &&
+        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -475,11 +505,18 @@ export default function PlanoCiclo() {
             }}
             className="mb-0"
           />
+        ) : (
+          ''
         )}
       </div>
+      <AlertaModalidadeInfantil />
       <div className="col-md-12 mt-1">
         <Titulo>
-          {modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
+          {obterDescricaoNomeMenu(
+            RotasDto.PLANO_CICLO,
+            modalidadesFiltroPrincipal,
+            turmaSelecionada
+          )}
           <TituloAno>
             {` / ${anoAtual} `}
             <i className="fas fa-retweet" />
@@ -551,12 +588,17 @@ export default function PlanoCiclo() {
                   border
                   bold
                   onClick={() => salvarPlanoCiclo(false)}
-                  disabled={desabilitaCamposEdicao()}
+                  disabled={
+                    ehTurmaInfantil(
+                      modalidadesFiltroPrincipal,
+                      turmaSelecionada
+                    ) || desabilitaCamposEdicao()
+                  }
                 />
               </Loader>
             </div>
           </div>
-          {usuario && turmaSelecionada.turma && (
+          {usuario && turmaSelecionada.turma && !ehModalidadeInfantil && (
             <Loader loading={carregando}>
               <div className="row mb-3">
                 <div className="col-md-6">

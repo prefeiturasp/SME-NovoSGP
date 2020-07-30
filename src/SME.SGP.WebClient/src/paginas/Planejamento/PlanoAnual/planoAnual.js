@@ -1,9 +1,13 @@
+import { Switch } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Collapse } from 'antd';
 import shortid from 'shortid';
 import Row from '~/componentes/row';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import {
+  verificaSomenteConsulta,
+  obterDescricaoNomeMenu,
+} from '~/servicos/servico-navegacao';
 
 import {
   Grid,
@@ -12,6 +16,7 @@ import {
   Button,
   Colors,
   Loader,
+  Label,
 } from '~/componentes';
 import CopiarConteudo from './copiarConteudo';
 import Alert from '~/componentes/alert';
@@ -65,6 +70,17 @@ const PlanoAnual = () => {
 
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [errosModal, setErrosModal] = useState([]);
+  const [
+    exibirSwitchObjAprOpcionais,
+    setExibirSwitchObjAprOpcionais,
+  ] = useState(false);
+  const [
+    objetivosAprendizagemOpcionais,
+    setObjetivosAprendizagemOpcionais,
+  ] = useState([]);
+  const modalidadesFiltroPrincipal = useSelector(
+    state => state.filtro.modalidades
+  );
 
   const onChangeDisciplinas = codigoDisciplina => {
     const disciplina = listaDisciplinas.find(
@@ -72,6 +88,7 @@ const PlanoAnual = () => {
     );
     setDisciplinaSelecionada(disciplina);
     setCodigoDisciplinaSelecionada(codigoDisciplina);
+    setExibirSwitchObjAprOpcionais(disciplina.objetivosAprendizagemOpcionais);
   };
 
   const obterPlano = bimestre => {
@@ -120,9 +137,14 @@ const PlanoAnual = () => {
     if (planos && planos.length > 0) {
       planos.forEach(plano => {
         if (
-          disciplinaSelecionada.possuiObjetivos &&
-          (!plano.objetivosAprendizagem ||
-            (!plano.objetivosAprendizagem.length > 0 && !ehEja))
+          (exibirSwitchObjAprOpcionais &&
+            !objetivosAprendizagemOpcionais[plano.bimestre] &&
+            plano.objetivosAprendizagem &&
+            !plano.objetivosAprendizagem.length) ||
+          (!exibirSwitchObjAprOpcionais &&
+            disciplinaSelecionada.possuiObjetivos &&
+            (!plano.objetivosAprendizagem ||
+              (!plano.objetivosAprendizagem.length > 0 && !ehEja)))
         ) {
           possuiErro = true;
           err[plano.bimestre - 1].push(
@@ -281,6 +303,9 @@ const PlanoAnual = () => {
             setCodigoDisciplinaSelecionada(
               String(disciplina.codigoComponenteCurricular)
             );
+            setExibirSwitchObjAprOpcionais(
+              disciplina.objetivosAprendizagemOpcionais
+            );
           }
         })
         .catch(e => {
@@ -315,6 +340,13 @@ const PlanoAnual = () => {
         )
         .then(resposta => {
           limparErros();
+          resposta.data.forEach(item => {
+            objetivosAprendizagemOpcionais[item.bimestre] =
+              item.objetivosAprendizagemOpcionais;
+          });
+          setObjetivosAprendizagemOpcionais([
+            ...objetivosAprendizagemOpcionais,
+          ]);
           setPlanoAnual(resposta.data);
           const migrado = resposta.data.filter(c => c.migrado);
           setRegistroMigrado(migrado && migrado.length > 0);
@@ -444,7 +476,11 @@ const PlanoAnual = () => {
         </div>
         <Grid cols={12} className="p-0">
           <Titulo>
-            {ehEja ? 'Plano Semestral' : 'Plano Anual'}
+            {obterDescricaoNomeMenu(
+              RotasDto.PLANO_ANUAL,
+              modalidadesFiltroPrincipal,
+              turmaSelecionada
+            )}
             {registroMigrado && (
               <RegistroMigrado className="float-right">
                 Registro Migrado
@@ -537,12 +573,41 @@ const PlanoAnual = () => {
                       header={`${plano.bimestre}º Bimestre`}
                       key={plano.bimestre}
                     >
+                      {exibirSwitchObjAprOpcionais ? (
+                        <div className="row">
+                          <div className="col-md-6" />
+                          <div className="col-md-6">
+                            <Label text="Obrigar Objetivos de Aprendizagem" />
+                            <Switch
+                              onChange={valor => {
+                                objetivosAprendizagemOpcionais[
+                                  plano.bimestre
+                                ] = !valor;
+                                setObjetivosAprendizagemOpcionais([
+                                  ...objetivosAprendizagemOpcionais,
+                                ]);
+                                plano.alterado = true;
+                                setEmEdicao(true);
+                                plano.objetivosAprendizagemOpcionais = !valor;
+                              }}
+                              checked={
+                                !objetivosAprendizagemOpcionais[plano.bimestre]
+                              }
+                              size="default"
+                              className="mr-2"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        ''
+                      )}
                       <div ref={refsPainel[plano.bimestre - 1]}>
                         <Bimestre
                           className="fade"
                           disciplinas={listaDisciplinasPlanejamento}
                           bimestre={plano}
                           ano={turmaSelecionada.ano}
+                          ensinoEspecial={turmaSelecionada.ensinoEspecial}
                           ehEja={ehEja}
                           ehMedio={
                             turmaSelecionada &&
@@ -559,6 +624,12 @@ const PlanoAnual = () => {
                           erros={listaErros[plano.bimestre - 1]}
                           selecionarObjetivo={selecionarObjetivo}
                           onChangeDescricaoObjetivo={onChangeDescricaoObjetivo}
+                          exibirSwitchObjAprOpcionais={
+                            exibirSwitchObjAprOpcionais
+                          }
+                          objetivosAprendizagemOpcionais={
+                            objetivosAprendizagemOpcionais[plano.bimestre]
+                          }
                         />
                       </div>
                     </Panel>

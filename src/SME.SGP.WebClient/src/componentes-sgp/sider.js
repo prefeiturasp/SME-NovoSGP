@@ -16,6 +16,7 @@ import {
   menuRetraido,
   menuSelecionado,
 } from '../redux/modulos/navegacao/actions';
+import { obterDescricaoNomeMenu } from '~/servicos/servico-navegacao';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
@@ -24,6 +25,10 @@ const Sider = () => {
   const [openKeys, setOpenKeys] = useState([]);
 
   const usuario = useSelector(state => state.usuario);
+
+  const modalidadesFiltroPrincipal = useSelector(
+    state => state.filtro.modalidades
+  );
 
   const [subMenusPrincipais, setSubMenusPrincipais] = useState([]);
 
@@ -99,11 +104,18 @@ const Sider = () => {
       return item.subMenus && item.subMenus.length > 0 ? (
         criarMenus([item])
       ) : (
-          <Menu.Item key={item.codigo} id={item.codigo}>
-            <span className="menuItem"> {item.descricao}</span>
-            {item.url ? <Link to={item.url} id={'link-' + item.codigo} /> : ''}
-          </Menu.Item>
-        );
+        <Menu.Item key={item.codigo} id={item.codigo}>
+          <span className="menuItem">
+            {obterDescricaoNomeMenu(
+              item.url,
+              modalidadesFiltroPrincipal,
+              usuario.turmaSelecionada,
+              item.descricao
+            )}
+          </span>
+          {item.url ? <Link to={item.url} id={'link-' + item.codigo} /> : ''}
+        </Menu.Item>
+      );
     });
     return itens;
   };
@@ -136,16 +148,16 @@ const Sider = () => {
                     <span>{subMenu.descricao}</span>
                   </div>
                 ) : (
-                    <div
-                      className={
-                        'item-menu-retraido' + temSubmenu
-                          ? ' submenu-subnivel'
-                          : ''
-                      }
-                    >
-                      <span>{subMenu.descricao}</span>
-                    </div>
-                  )
+                  <div
+                    className={
+                      'item-menu-retraido' + temSubmenu
+                        ? ' submenu-subnivel'
+                        : ''
+                    }
+                  >
+                    <span>{subMenu.descricao}</span>
+                  </div>
+                )
               }
             >
               {criarItensMenu(subMenu.menus ? subMenu.menus : subMenu.subMenus)}
@@ -216,7 +228,7 @@ const Sider = () => {
           <div
             className={`menu-scope${
               NavegacaoStore.retraido ? ' menu-scope-retraido' : ''
-              }`}
+            }`}
           >
             <Menu
               id="menuPrincipal"

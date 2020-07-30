@@ -53,9 +53,12 @@ import RelatorioSemestral from '~/paginas/Relatorios/PAP/RelatorioSemestral/rela
 
 import CalendarioProfessor from '~/paginas/CalendarioEscolar/CalendarioProfessor';
 import TerritorioSaber from '~/paginas/Planejamento/TerritorioSaber';
+import HistoricoEscolar from '~/paginas/Relatorios/HistoricoEscolar/historicoEscolar';
 import AtaFinalResultados from '~/paginas/Relatorios/Atas/AtaFinalResultados/ataFinalResultados';
 
 import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
+import FaltasFrequencia from '~/paginas/Relatorios/Frequencia/faltasFrequencia';
+import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
 
 const rotas = new Map();
 
@@ -806,6 +809,39 @@ rotas.set(RotasDto.ATA_FINAL_RESULTADOS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.ATA_FINAL_RESULTADOS,
+});
+
+rotas.set(RotasDto.HISTORICO_ESCOLAR, {
+  breadcrumbName: 'Histórico Escolar',
+  menu: ['Relatórios'],
+  parent: '/',
+  component: HistoricoEscolar,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.HISTORICO_ESCOLAR,
+});
+
+rotas.set(RotasDto.FALTAS_FREQUENCIA, {
+  breadcrumbName: 'Faltas e frequência',
+  menu: ['Relatórios', 'Frequência'],
+  parent: '/',
+  component: FaltasFrequencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.FALTAS_FREQUENCIA,
+});
+
+rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
+  breadcrumbName: 'Relatório de pendências',
+  menu: ['Relatórios'],
+  parent: '/',
+  component: RelatorioPendencias,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_PENDENCIAS,
 });
 
 const rotasArray = [];

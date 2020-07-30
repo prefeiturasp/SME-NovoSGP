@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using HealthChecks.UI.Client;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -10,9 +11,16 @@ using SME.Background.Core;
 using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
+using SME.SGP.Dados;
 using SME.SGP.IoC;
 using System.Collections.Generic;
 using System.Globalization;
+using SME.SGP.IoC.Extensions;
+using System;
+using System.Diagnostics;
+using SME.SGP.Infra;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.IO.Compression;
 
 namespace SME.SGP.Api
 {
@@ -31,6 +39,8 @@ namespace SME.SGP.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseResponseCompression();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -76,6 +86,13 @@ namespace SME.SGP.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCompression();
+
+            services.Configure<BrotliCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Fastest;
+            });
+
             services.AddSingleton(Configuration);
             services.AddHttpContextAccessor();
 
@@ -84,18 +101,14 @@ namespace SME.SGP.Api
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
-            
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-            services.AddDistributedRedisCache(options =>
-            {
-                options.Configuration = "10.50.1.174:6379,connectTimeout=500,syncTimeout=500";
-                options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
-            });
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
+
+            services.AdicionarRedis(Configuration, Orquestrador.Provider.GetService<IServicoLog>());
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {
@@ -106,8 +119,8 @@ namespace SME.SGP.Api
                 Orquestrador.Desativar();
 
             services.AddHealthChecks()
-                    .AddRedis(
-                        "10.50.1.174:6379,connectTimeout=500,syncTimeout=500",
+                   .AddRedis(
+                        Configuration.GetConnectionString("SGP-Redis"),
                         "Redis Cache",
                         null,
                         tags: new string[] { "db", "redis" })
@@ -127,6 +140,14 @@ namespace SME.SGP.Api
             {
                 services.AddRabbit();
             }
+
+            // Teste para injeção do client de telemetria em classe estática 
+
+            var serviceProvider = services.BuildServiceProvider();
+            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+            DapperExtensionMethods.Init(clientTelemetry);
+
+            //
         }
     }
 }
