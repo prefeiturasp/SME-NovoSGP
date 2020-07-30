@@ -10,12 +10,21 @@ const InputNome = props => {
     onChange,
     pessoaSelecionada,
     desabilitado,
+    regexIgnore,
   } = props;
 
   const [sugestoes, setSugestoes] = useState([]);
   const [valor, setValor] = useState('');
 
   const onChangeValor = selecionado => {
+    if (
+      regexIgnore &&
+      regexIgnore !== '' &&
+      selecionado &&
+      selecionado !== ''
+    ) {
+      selecionado = selecionado.replace(regexIgnore, '');
+    }
     setValor(selecionado);
   };
 
@@ -66,6 +75,7 @@ InputNome.propTypes = {
   onSelect: PropTypes.func,
   onChange: PropTypes.func,
   desabilitado: PropTypes.bool,
+  regexIgnore: PropTypes.string,
 };
 
 InputNome.defaultProps = {
@@ -74,6 +84,7 @@ InputNome.defaultProps = {
   onSelect: {},
   onChange: {},
   desabilitado: false,
+  regexIgnore: '',
 };
 
 export default InputNome;

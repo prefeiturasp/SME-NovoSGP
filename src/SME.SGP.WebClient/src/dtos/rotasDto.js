@@ -29,10 +29,10 @@ const RotasDto = {
   FECHAMENTO_BIMESTRE: '/fechamento/fechamento-bimestre',
   PERIODO_FECHAMENTO_ABERTURA:
     '/calendario-escolar/periodo-fechamento-abertura',
-  PAP: '/relatorios/pap/resumos-e-graficos',
+  PAP: '/relatorios/pap/relatorio-graficos',
   PERIODO_FECHAMENTO_REABERTURA:
     '/calendario-escolar/periodo-fechamento-reabertura',
-  RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/acompanhamento',
+  RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/relatorio-preenchimento',
   PENDENCIAS_FECHAMENTO: '/fechamento/pendencias-fechamento',
   ACOMPANHAMENTO_COMUNICADOS: '/gestao/acompanhamento-escolar/comunicados',
   CONSELHO_CLASSE: '/fechamento/conselho-classe',
@@ -43,6 +43,7 @@ const RotasDto = {
   RELATORIO_BOLETIM_SIMPLES: '/relatorios/diario-classe/boletim-simples',
   ATA_FINAL_RESULTADOS: '/relatorios/atas/ata-final-resultados',
   FALTAS_FREQUENCIA: '/relatorios/frequencia/faltas-frequencia',
+  RELATORIO_PENDENCIAS: '/relatorios/pendencias-fechamento',
 };
 
 export default RotasDto;

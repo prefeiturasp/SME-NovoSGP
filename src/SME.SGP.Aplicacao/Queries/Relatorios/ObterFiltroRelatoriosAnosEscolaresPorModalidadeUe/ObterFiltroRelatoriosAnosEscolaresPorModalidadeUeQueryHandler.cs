@@ -46,6 +46,7 @@ namespace SME.SGP.Aplicacao
                     lista.AddRange(Enumerable.Range(1, 3).Select(c => new OpcaoDropdownDto(c.ToString(), $"{c}º ano - {modalidade.Name()}")));
                     break;
                 case Modalidade.EJA:
+                case Modalidade.Infantil:
                     return lista;
                 default:
                     throw new NegocioException("Modalidade não atendida pelo SGP.");

@@ -171,9 +171,9 @@ namespace SME.SGP.Aplicacao.Consultas
                 if (periodosEscolares == null)
                     throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
 
-                return ObterPeriodoPorData(periodosEscolares, DateTime.Today)
-                    ?? ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
-            }
+            return ObterPeriodoPorData(periodosEscolares, DateTime.Today)
+                ?? ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
+        }
 
             return periodoEscolar;
         }        

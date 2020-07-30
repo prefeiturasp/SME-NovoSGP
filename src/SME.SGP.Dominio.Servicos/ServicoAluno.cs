@@ -6,11 +6,12 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAluno : IServicoAluno
     {
-        public MarcadorFrequenciaDto ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolar bimestre)
+        public MarcadorFrequenciaDto ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolar bimestre, bool ehInfantil = false)
         {
             MarcadorFrequenciaDto marcador = null;
 
             string dataSituacao = $"{aluno.DataSituacao.Day}/{aluno.DataSituacao.Month}/{aluno.DataSituacao.Year}";
+          
             switch (aluno.CodigoSituacaoMatricula)
             {
                 case SituacaoMatriculaAluno.Ativo:
@@ -19,7 +20,7 @@ namespace SME.SGP.Dominio.Servicos
                         marcador = new MarcadorFrequenciaDto()
                         {
                             Tipo = TipoMarcadorFrequencia.Novo,
-                            Descricao = $"Estudante Novo: Data da matrícula {dataSituacao}"
+                            Descricao = $"{(ehInfantil ? "Criança Nova" : "Estudante Novo")}: Data da matrícula {dataSituacao}"
                         };
                     break;
 
@@ -31,7 +32,7 @@ namespace SME.SGP.Dominio.Servicos
                     marcador = new MarcadorFrequenciaDto()
                     {
                         Tipo = TipoMarcadorFrequencia.Transferido,
-                        Descricao = $"Estudante transferido: {detalheEscola} em {dataSituacao}"
+                        Descricao = $"{(ehInfantil ? "Criança Transferida" : "Estudante Transferido")}: {detalheEscola} em {dataSituacao}"
                     };
 
                     break;
@@ -40,7 +41,7 @@ namespace SME.SGP.Dominio.Servicos
                     marcador = new MarcadorFrequenciaDto()
                     {
                         Tipo = TipoMarcadorFrequencia.Remanejado,
-                        Descricao = $"Estudante remanejado: turma {aluno.TurmaRemanejamento} em {dataSituacao}"
+                        Descricao = $"{(ehInfantil ? "Criança Remanejada" : "Estudante Remanejado")}: turma {aluno.TurmaRemanejamento} em {dataSituacao}"
                     };
 
                     break;
@@ -55,7 +56,7 @@ namespace SME.SGP.Dominio.Servicos
                     marcador = new MarcadorFrequenciaDto()
                     {
                         Tipo = TipoMarcadorFrequencia.Inativo,
-                        Descricao = $"Aluno inativo em {dataSituacao}"
+                        Descricao = $"{(ehInfantil ? "Criança Inativa" : "Estudante Inativo")} em {dataSituacao}"
                     };
 
                     break;

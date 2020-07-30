@@ -106,13 +106,16 @@ namespace SME.SGP.Dominio
 
         public bool EhProfessor()
         {
-            return PerfilAtual == Dominio.Perfis.PERFIL_PROFESSOR;
+            return PerfilAtual == Dominio.Perfis.PERFIL_PROFESSOR
+                || PerfilAtual == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
         }
 
         public bool EhProfessorCj()
         {
-            return PerfilAtual == Dominio.Perfis.PERFIL_CJ;
+            return PerfilAtual == Dominio.Perfis.PERFIL_CJ
+                || PerfilAtual == Dominio.Perfis.PERFIL_CJ_INFANTIL;
         }
+
 
         public bool EhProfessorPoa()
         {
@@ -136,20 +139,35 @@ namespace SME.SGP.Dominio
             ExpiracaoRecuperacaoSenha = DateTime.Now.AddHours(6);
         }
 
-        public Guid ObterPerfilPrioritario(bool possuiTurmaAtiva, bool ehProfCJSemTurmaTitular)
+        public Guid ObterPerfilPrioritario(bool possuiTurmaAtiva, Guid perfilCJPrioritario)
         {
             if (Perfis == null || !Perfis.Any())
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
 
-            if (ehProfCJSemTurmaTitular)
-                return Dominio.Perfis.PERFIL_CJ;
+            if (perfilCJPrioritario != Guid.Empty)
+            {
+                VerificarOrdenacaoPerfilInfantil(perfilCJPrioritario);
+                return perfilCJPrioritario;
+            }
 
             var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR && possuiTurmaAtiva);
 
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_PROFESSOR;
 
+            possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL && possuiTurmaAtiva);
+
+            if (possuiPerfilPrioritario)
+                return Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
+
             return Perfis.FirstOrDefault().CodigoPerfil;
+        }
+
+        private void VerificarOrdenacaoPerfilInfantil(Guid perfil)
+        {
+            if (perfil == Dominio.Perfis.PERFIL_CJ_INFANTIL ||
+                perfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL)
+                Perfis = Perfis.OrderByDescending(o => o.EhPerfilInfantil());
         }
 
         public TipoPerfil? ObterTipoPerfilAtual()
@@ -204,7 +222,7 @@ namespace SME.SGP.Dominio
         {
             if ((evento.DataInicio.Date < DateTime.Today) &&
                 (ObterTipoPerfilAtual() != TipoPerfil.SME && ObterTipoPerfilAtual() != TipoPerfil.DRE))
-                    throw new NegocioException("Não é possível criar evento com data passada.");
+                throw new NegocioException("Não é possível criar evento com data passada.");
         }
 
         public bool PodeRegistrarFrequencia(Aula aula)
@@ -228,7 +246,7 @@ namespace SME.SGP.Dominio
         public bool PodeVisualizarEventosOcorrenciaDre()
         {
             var perfilAtual = Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual);
-            if (perfilAtual.Tipo == TipoPerfil.UE)
+            if (perfilAtual != null && perfilAtual.Tipo == TipoPerfil.UE)
                 return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_AD || PerfilAtual == Dominio.Perfis.PERFIL_CP || PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO);
             else return true;
         }
@@ -237,9 +255,17 @@ namespace SME.SGP.Dominio
             => Perfis != null &&
                 Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ);
 
+        public bool PossuiPerfilCJInfantil()
+           => Perfis != null &&
+               Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ_INFANTIL);
+
         public bool PossuiPerfilProfessor()
            => Perfis != null &&
                Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);
+
+        public bool PossuiPerfilProfessorInfantil()
+           => Perfis != null &&
+               Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL);
 
         public bool PossuiPerfilDre()
         {
@@ -263,9 +289,27 @@ namespace SME.SGP.Dominio
                                                      c.CodigoPerfil == Dominio.Perfis.PERFIL_AD);
         }
 
+        public bool PossuiPerfilCJInfantilPrioritario()
+        {
+            return Perfis != null && PossuiPerfilCJInfantil() && PossuiPerfilProfessorInfantil() &&
+                   !Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR ||
+                                                     c.CodigoPerfil == Dominio.Perfis.PERFIL_CP ||
+                                                     c.CodigoPerfil == Dominio.Perfis.PERFIL_AD);
+        }
+
         public bool PossuiPerfilSme()
         {
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.SME);
+        }
+
+        public bool EhProfessorInfantil()
+        {
+            return PerfilAtual == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
+        }
+
+        public bool EhProfessorCjInfantil()
+        {
+            return PerfilAtual == Dominio.Perfis.PERFIL_CJ_INFANTIL;
         }
 
         public bool PossuiPerfilSmeOuDre()

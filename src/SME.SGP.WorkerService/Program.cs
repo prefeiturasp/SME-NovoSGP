@@ -57,6 +57,7 @@ namespace SME.SGP.Worker.Service
 
                 //
 
+
             });
 
             builder.UseEnvironment(asService ? EnvironmentName.Production : EnvironmentName.Development);
