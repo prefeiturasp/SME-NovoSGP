@@ -17,6 +17,7 @@ import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import ServicoHistoricoEscolar from '~/servicos/Paginas/HistoricoEscolar/ServicoHistoricoEscolar';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import RotasDto from '~/dtos/rotasDto';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 
 const HistoricoEscolar = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -58,6 +59,17 @@ const HistoricoEscolar = () => {
 
   const [alunosSelecionados, setAlunosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
+
+  const vaidaDesabilitarBtnGerar = useCallback(
+    desabilitar => {
+      if (String(modalidadeId) === String(modalidade.INFANTIL)) {
+        setDesabilitarBtnGerar(true);
+      } else {
+        setDesabilitarBtnGerar(desabilitar);
+      }
+    },
+    [modalidadeId]
+  );
 
   useEffect(() => {
     if (codigosAlunosSelecionados?.length > 0) {
@@ -158,12 +170,10 @@ const HistoricoEscolar = () => {
         true
       );
       if (data) {
-        const lista = data
-          .map(item => ({
-            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
-            valor: String(item.codigo),
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'));
+        const lista = data.map(item => ({
+          desc: item.nome,
+          valor: String(item.codigo),
+        }));
 
         if (lista && lista.length && lista.length === 1) {
           setUeId(lista[0].valor);
@@ -216,6 +226,7 @@ const HistoricoEscolar = () => {
         }
       } else {
         setListaDres([]);
+        setDreId(undefined);
       }
       setCarregandoDres(false);
     }
@@ -223,12 +234,14 @@ const HistoricoEscolar = () => {
 
   const [carregandoTurmas, setCarregandoTurmas] = useState(false);
 
-  const obterTurmas = useCallback(async (modalidadeSelecionada, ue) => {
+  const obterTurmas = useCallback(async (modalidadeSelecionada, ue, ano) => {
     if (ue && modalidadeSelecionada) {
       setCarregandoTurmas(true);
       const { data } = await AbrangenciaServico.buscarTurmas(
         ue,
-        modalidadeSelecionada
+        modalidadeSelecionada,
+        '',
+        ano
       );
       if (data) {
         const lista = data.map(item => ({
@@ -288,13 +301,13 @@ const HistoricoEscolar = () => {
   }, [dreId, anoLetivo, obterUes]);
 
   useEffect(() => {
-    if (modalidadeId && ueId) {
-      obterTurmas(modalidadeId, ueId);
+    if (modalidadeId && ueId && anoLetivo) {
+      obterTurmas(modalidadeId, ueId, anoLetivo);
     } else {
       setTurmaId();
       setListaTurmas([]);
     }
-  }, [modalidadeId, ueId, obterTurmas]);
+  }, [modalidadeId, ueId, anoLetivo, obterTurmas]);
 
   useEffect(() => {
     if (modalidadeId && anoLetivo) {
@@ -313,21 +326,24 @@ const HistoricoEscolar = () => {
   useEffect(() => {
     const desabilitar =
       !alunoLocalizadorSelecionado &&
+      (!codigosAlunosSelecionados || codigosAlunosSelecionados?.length === 0) &&
       (!anoLetivo || !dreId || !ueId || !modalidadeId || !turmaId);
 
     if (String(modalidadeId) === String(modalidade.EJA)) {
-      setDesabilitarBtnGerar(!semestre || desabilitar);
+      vaidaDesabilitarBtnGerar(!semestre || desabilitar);
     } else {
-      setDesabilitarBtnGerar(desabilitar);
+      vaidaDesabilitarBtnGerar(desabilitar);
     }
   }, [
     alunoLocalizadorSelecionado,
+    codigosAlunosSelecionados,
     anoLetivo,
     dreId,
     ueId,
     modalidadeId,
     turmaId,
     semestre,
+    vaidaDesabilitarBtnGerar,
   ]);
 
   useEffect(() => {
@@ -450,7 +466,7 @@ const HistoricoEscolar = () => {
       setAlunoLocalizadorSelecionado(aluno);
       setModalidadeId();
       setTurmaId();
-      setDesabilitarBtnGerar(false);
+      vaidaDesabilitarBtnGerar(false);
     } else {
       setAlunoLocalizadorSelecionado();
       if (listaModalidades && listaModalidades.length === 1)
@@ -464,6 +480,10 @@ const HistoricoEscolar = () => {
 
   return (
     <>
+      <AlertaModalidadeInfantil
+        exibir={String(modalidadeId) === String(modalidade.INFANTIL)}
+        validarModalidadeFiltroPrincipal={false}
+      />
       <Cabecalho pagina="Histórico Escolar" />
       <Card>
         <div className="col-md-12">

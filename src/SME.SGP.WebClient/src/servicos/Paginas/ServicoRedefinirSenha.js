@@ -27,6 +27,8 @@ class ServicoRedefinirSenha {
             possuiPerfilSme: res.data.perfisUsuario.possuiPerfilSme,
             ehProfessor: res.data.perfisUsuario.ehProfessor,
             ehProfessorCj: res.data.perfisUsuario.ehProfessorCj,
+            ehProfessorInfantil: res.data.perfisUsuario.ehProfessorInfantil,
+            ehProfessorCjInfantil: res.data.perfisUsuario.ehProfessorCjInfantil,
             ehProfessorPoa: res.data.perfisUsuario.ehProfessorPoa,
             dataHoraExpiracao: res.data.dataHoraExpiracao,
           })

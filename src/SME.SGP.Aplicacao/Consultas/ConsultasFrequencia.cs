@@ -189,7 +189,7 @@ namespace SME.SGP.Aplicacao
                 };
 
                 // Marcador visual da situação
-                registroFrequenciaAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestre);
+                registroFrequenciaAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestre, turma.EhTurmaInfantil);
 
                 // Indicativo de frequencia do aluno
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(aluno, aula.DisciplinaId, bimestre, percentualAlerta, percentualCritico);
@@ -251,7 +251,7 @@ namespace SME.SGP.Aplicacao
             return periodoEscolar;
         }
 
-        private async Task <Turma> BuscaTurma(string turmaId)
+        private async Task<Turma> BuscaTurma(string turmaId)
         {
             var turma = await repositorioTurma.ObterPorCodigo(turmaId);
             if (turma == null)

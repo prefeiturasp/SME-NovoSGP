@@ -37,6 +37,21 @@ namespace SME.SGP.Aplicacao
             return MapearPorIdParaDto(grupo);
         }
 
+        public async Task<IEnumerable<long>> ObterIdsGrupoComunicadoPorModalidade(Modalidade modalidade)
+        {
+            return await repositorioGrupoComunicacao.ObterIdsGrupoComunicadoPorModalidade(modalidade);
+        }
+
+        public async Task<IEnumerable<GrupoComunicacaoDto>> Listar(IEnumerable<long> ids)
+        {
+            var grupos = await repositorioGrupoComunicacao.ObterCompletoPorListaId(ids);
+
+            if (grupos is null || !grupos.Any())
+                throw new NegocioException("Não encontrado grupos de comunicação");
+
+            return MapearParaDto(grupos);
+        }
+
         private static IEnumerable<GrupoComunicacaoCompletoDto> ConverterParaDto(IEnumerable<GrupoComunicacaoCompletoRespostaDto> grupos)
         {
             var gruposDistintos = grupos

@@ -36,13 +36,13 @@ namespace SME.SGP.Aplicacao
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            if (perfilAtual == Perfis.PERFIL_CJ)
+            if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
                 var codigosDres = new List<string>();
 
                 ObterAtribuicoesCjDre(loginAtual, codigosDres);
                 ObterAtribuicoesEsporadicasDre(loginAtual, codigosDres);
-                await ObterAtribuicoesEolDre(loginAtual, codigosDres);
+                await ObterAtribuicoesEolDre(loginAtual, perfilAtual, codigosDres);
 
                 var dres = repositorioDre.ListarPorCodigos(codigosDres.Distinct().ToArray());
 
@@ -59,12 +59,12 @@ namespace SME.SGP.Aplicacao
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            if (perfilAtual == Perfis.PERFIL_CJ)
+            if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
                 var codigosUes = new List<string>();
                 await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
                 ObterAtribuicoesEsporadicasUe(loginAtual, codigosUes, codigoDre);
-                await ObterAtribuicoesEolUe(loginAtual, codigosUes, codigoDre);
+                await ObterAtribuicoesEolUe(loginAtual, perfilAtual, codigosUes, codigoDre);
 
                 IEnumerable<Ue> ues = repositorioUe.ListarPorCodigos(codigosUes.Distinct().ToArray());
 
@@ -95,9 +95,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task ObterAtribuicoesEolDre(string professorRf, List<string> codigosDres)
+        private async Task ObterAtribuicoesEolDre(string professorRf, Guid perfil, List<string> codigosDres)
         {
-            var abrangencia = await servicoEOL.ObterAbrangencia(professorRf, Perfis.PERFIL_CJ);
+            var abrangencia = await servicoEOL.ObterAbrangencia(professorRf, perfil);
 
             if (abrangencia != null && abrangencia.Dres != null && abrangencia.Dres.Any())
             {
@@ -105,9 +105,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task ObterAtribuicoesEolUe(string professorRf, List<string> codigosUes, string codigoDre)
+        private async Task ObterAtribuicoesEolUe(string professorRf, Guid perfil, List<string> codigosUes, string codigoDre)
         {
-            var abrangencia = await servicoEOL.ObterAbrangencia(professorRf, Perfis.PERFIL_CJ);
+            var abrangencia = await servicoEOL.ObterAbrangencia(professorRf, perfil);
 
             if (abrangencia != null && abrangencia.Dres != null && abrangencia.Dres.Any(a => a.Codigo == codigoDre))
             {
@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
                 yield return new AbrangenciaUeRetorno()
                 {
                     Codigo = ue.CodigoUe,
-                    Nome = ue.Nome,
+                    NomeSimples = ue.Nome,
                     TipoEscola = ue.TipoEscola
                 };
             }

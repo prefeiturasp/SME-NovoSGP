@@ -289,9 +289,6 @@ const EventosLista = ({ match }) => {
         setCampoUeDesabilitado(true);
 
       if (ues.conteudo) {
-        ues.conteudo.forEach(
-          ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
-        );
         ues.conteudo.sort(FiltroHelper.ordenarLista('nome'));
         if (ues.conteudo.length > 1) {
           ues.conteudo.unshift({ codigo: 0, nome: 'Todas' });
@@ -337,7 +334,7 @@ const EventosLista = ({ match }) => {
         'Excluir evento',
         listaNomeExcluir,
         `Deseja realmente excluir ${
-          eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
+        eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
         }?`,
         'Excluir',
         'Cancelar'
@@ -352,7 +349,7 @@ const EventosLista = ({ match }) => {
             eventosSelecionados.length > 1
               ? 'Eventos excluídos'
               : 'Evento excluído'
-          } com sucesso.`;
+            } com sucesso.`;
           sucesso(mensagemSucesso);
           validarFiltrar();
           setEventosSelecionados([]);
@@ -613,8 +610,8 @@ const EventosLista = ({ match }) => {
               filtroEhValido={filtroValido.valido}
             />
           ) : (
-            ''
-          )}
+              ''
+            )}
         </div>
       </Card>
     </>
