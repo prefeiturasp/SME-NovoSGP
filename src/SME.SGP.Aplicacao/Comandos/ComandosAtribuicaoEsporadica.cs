@@ -39,8 +39,8 @@ namespace SME.SGP.Aplicacao
             return new AtribuicaoEsporadica
             {
                 UeId = Dto.UeId,
-                DataFim = Dto.DataFim.Local(),
-                DataInicio = Dto.DataInicio.Local(),
+                DataFim = Dto.DataFim.Local().Date,
+                DataInicio = Dto.DataInicio.Local().Date,
                 DreId = Dto.DreId,
                 Id = Dto.Id,
                 ProfessorRf = Dto.ProfessorRf
