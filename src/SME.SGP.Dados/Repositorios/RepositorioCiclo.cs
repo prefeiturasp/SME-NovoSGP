@@ -71,28 +71,23 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<CicloDto>(query.ToString()).ToList();
         }
 
-        public async Task<IEnumerable<RetornoCicloDto>> ObterCiclosPorAnoModalidadeECodigoUe(FiltroCicloPorModalidadeECodigoUeDto filtroCicloPorModalidadeECodigoUeDto)
+        public async Task<IEnumerable<RetornoCicloDto>> ObterCiclosPorAnoModalidadeECodigoUe(FiltroCicloPorModalidadeECodigoUeDto filtro)
         {
-            try
-            {
-                var query = @"select distinct tc.id, tc.descricao from tipo_ciclo tc
-	                            inner join tipo_ciclo_ano tca
-	                            on tca.tipo_ciclo_id = tc.id 
-	                            inner join turma t 
-	                            on t.ano = tca.ano 
-	                            inner join ue ue 
-	                            on t.ue_id = ue.id 
-	                        where tca.modalidade  = @modalidade and 
-                                  ue.ue_id = @codigoUe";
+                StringBuilder query = new StringBuilder();
+                query.AppendLine("select distinct tc.id, tc.descricao from tipo_ciclo tc ");
+                query.AppendLine("inner join tipo_ciclo_ano tca on tca.tipo_ciclo_id = tc.id ");
+                query.AppendLine("inner join turma t on t.ano = tca.ano ");
+                query.AppendLine("inner join ue ue on t.ue_id = ue.id ");
+                query.AppendLine("where tc.descricao is not null ");
 
-                var parametros = new { filtroCicloPorModalidadeECodigoUeDto.Modalidade, filtroCicloPorModalidadeECodigoUeDto.CodigoUe };
-                return await database.Conexao.QueryAsync<RetornoCicloDto>(query, parametros);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+                if(filtro.Modalidade > 0)
+                    query.AppendLine("and tca.modalidade = @modalidade ");
+
+                if (!string.IsNullOrEmpty(filtro.CodigoUe))
+                    query.AppendLine("and ue.ue_id = @codigoUe ");
+
+                var parametros = new { filtro.Modalidade, filtro.CodigoUe };
+                return await database.Conexao.QueryAsync<RetornoCicloDto>(query.ToString(), parametros);
         }
     }
 }

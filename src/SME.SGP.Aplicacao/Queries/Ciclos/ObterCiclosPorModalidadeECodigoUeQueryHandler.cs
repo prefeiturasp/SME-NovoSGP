@@ -2,8 +2,10 @@
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
@@ -19,7 +21,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<RetornoCicloDto>> Handle(ObterCiclosPorModalidadeECodigoUeQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCiclo.ObterCiclosPorAnoModalidadeECodigoUe(new FiltroCicloPorModalidadeECodigoUeDto(request.Modalidade, request.CodigoUe));
+            var ciclos = await repositorioCiclo.ObterCiclosPorAnoModalidadeECodigoUe(new FiltroCicloPorModalidadeECodigoUeDto(request.Modalidade, request.CodigoUe));
+            
+            if (ciclos == null || !ciclos.Any())
+                throw new NegocioException("Não foi possível obter os ciclos");
+            
+            return ciclos;
         }
     }
 }
