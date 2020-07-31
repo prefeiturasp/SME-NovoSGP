@@ -33,16 +33,10 @@ namespace SME.SGP.Dados.Repositorios
                                 alterado_rf
                          from notas_conceito 
                          where atividade_avaliativa = any(array[{atividadesAvaliativasString}]) 
-                            and aluno_id = any(array[@alunosIdsString])
+                            and aluno_id = any(array[{alunosIdsString}])
                             and disciplina_id = @disciplinaId";
 
-            var parametros = new
-            {                
-                alunosIdsString,
-                disciplinaId
-            };
-
-            return database.Query<NotaConceito>(sql, parametros);
+            return database.Query<NotaConceito>(sql, new { disciplinaId });
         }
     }
 }
