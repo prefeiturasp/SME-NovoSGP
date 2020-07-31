@@ -35,13 +35,12 @@ namespace SME.SGP.Worker.Service
             {
                 services.AddHostedService<WorkerService>();
                 WorkerService.ConfigurarDependencias(hostContext.Configuration, services);
-                WorkerService.Configurar(hostContext.Configuration, services);               
+                WorkerService.Configurar(hostContext.Configuration, services);
 
-                services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.
-                    Connect(hostContext.Configuration.GetConnectionString("SGP-Redis")));
+                services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer
+                    .Connect(string.Concat(hostContext.Configuration.GetConnectionString("SGP-Redis"), $",ConnectTimeout={TimeSpan.FromSeconds(1).TotalMilliseconds}")));
 
                 services.AddApplicationInsightsTelemetryWorkerService(hostContext.Configuration.GetValue<string>("ApplicationInsights__InstrumentationKey"));
-
 
                 // Teste para injeção do client de telemetria em classe estática                 
 
