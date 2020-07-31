@@ -11,7 +11,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/relatorios/filtros")]
-    
+    [Authorize("Bearer")]
     public class FiltroRelatorioController : ControllerBase
     {
         [HttpGet("dres")]
