@@ -1,10 +1,12 @@
-﻿using Dapper;
+﻿using System;
+using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -40,6 +42,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.QueryFirstOrDefault<CicloDto>(sql, parametros);
         }
 
+
         public IEnumerable<CicloDto> ObterCiclosPorAnoModalidade(FiltroCicloDto filtroCicloDto)
         {
             var anos = "'" + string.Join("','", filtroCicloDto.Anos) + "'";
@@ -66,6 +69,30 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine($"  AND modalidade = {filtroCicloDto.Modalidade} ");
             query.AppendLine($"ORDER BY Selecionado DESC");
             return database.Conexao.Query<CicloDto>(query.ToString()).ToList();
+        }
+
+        public async Task<IEnumerable<RetornoCicloDto>> ObterCiclosPorAnoModalidadeECodigoUe(FiltroCicloPorModalidadeECodigoUeDto filtroCicloPorModalidadeECodigoUeDto)
+        {
+            try
+            {
+                var query = @"select distinct tc.id, tc.descricao from tipo_ciclo tc
+	                            inner join tipo_ciclo_ano tca
+	                            on tca.tipo_ciclo_id = tc.id 
+	                            inner join turma t 
+	                            on t.ano = tca.ano 
+	                            inner join ue ue 
+	                            on t.ue_id = ue.id 
+	                        where tca.modalidade  = @modalidade and 
+                                  ue.ue_id = @codigoUe";
+
+                var parametros = new { filtroCicloPorModalidadeECodigoUeDto.Modalidade, filtroCicloPorModalidadeECodigoUeDto.CodigoUe };
+                return await database.Conexao.QueryAsync<RetornoCicloDto>(query, parametros);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }
