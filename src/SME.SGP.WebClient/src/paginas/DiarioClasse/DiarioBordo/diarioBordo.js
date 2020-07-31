@@ -6,6 +6,7 @@ import { Auditoria, CampoData, Loader, PainelCollapse } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Button from '~/componentes/button';
+import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import Editor from '~/componentes/editor/editor';
@@ -16,11 +17,16 @@ import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const DiarioBordo = () => {
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
 
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
 
@@ -32,7 +38,6 @@ const DiarioBordo = () => {
     componenteCurricularSelecionado,
     setComponenteCurricularSelecionado,
   ] = useState();
-  const [ehTurmaInfantil, setEhTurmaInfantil] = useState(true);
   const [dataSelecionada, setDataSelecionada] = useState();
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
@@ -42,6 +47,8 @@ const DiarioBordo = () => {
   const [errosValidacao, setErrosValidacao] = useState([]);
   const [mostrarErros, setMostarErros] = useState(false);
   const [auditoria, setAuditoria] = useState('');
+  const [turmaInfantil, setTurmaInfantil] = useState(false);
+  const [refForm, setRefForm] = useState({});
 
   const [valoresIniciais, setValoresIniciais] = useState({
     planejamento: '',
@@ -54,15 +61,35 @@ const DiarioBordo = () => {
       .required('Campo planejamento é obrigatório')
       .min(
         200,
-        'Campo planejamento é obrigatório ter no mínimo 200 caracteres'
+        'Você precisa preencher o planejamento com no mínimo 200 caracteres'
       ),
   });
 
   const resetarTela = form => {
-    form.resetForm();
+    if (form && form.resetForm) {
+      form.resetForm();
+    }
     setDataSelecionada('');
     setModoEdicao(false);
   };
+
+  useEffect(() => {
+    const infantil = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setTurmaInfantil(infantil);
+
+    if (!turmaInfantil) {
+      resetarTela(refForm);
+    }
+  }, [turmaSelecionada, modalidadesFiltroPrincipal, turmaInfantil, refForm]);
+
+  useEffect(() => {
+    setListaDatasAulas();
+    setDiasParaHabilitar();
+    resetarTela(refForm);
+  }, [turmaSelecionada.turma, refForm]);
 
   const obterComponentesCurriculares = useCallback(async () => {
     setCarregandoGeral(true);
@@ -80,8 +107,6 @@ const DiarioBordo = () => {
           String(componente.codigoComponenteCurricular)
         );
         setEhRegencia(componente.regencia);
-        // TODO - alterar o valor fixo!
-        setEhTurmaInfantil(true);
       }
     }
 
@@ -89,10 +114,14 @@ const DiarioBordo = () => {
   }, [turmaId]);
 
   useEffect(() => {
-    if (turmaId) {
+    if (turmaId && turmaInfantil) {
       obterComponentesCurriculares();
+    } else {
+      setListaComponenteCurriculare([]);
+      setComponenteCurricularSelecionado(undefined);
+      resetarTela();
     }
-  }, [turmaId, obterComponentesCurriculares]);
+  }, [turmaId, obterComponentesCurriculares, turmaInfantil]);
 
   const obterDatasDeAulasDisponiveis = useCallback(async () => {
     setCarregandoGeral(true);
@@ -130,9 +159,6 @@ const DiarioBordo = () => {
       const componente = listaComponenteCurriculare.find(
         item => item.codigoComponenteCurricular == valor
       );
-      // TODO - alterar o valor fixo!
-      componente.ehTurmaInfantil = true;
-      setEhTurmaInfantil(componente.ehTurmaInfantil);
     } else {
       setDiasParaHabilitar([]);
     }
@@ -252,7 +278,7 @@ const DiarioBordo = () => {
   };
 
   const onClickVoltar = async form => {
-    if (modoEdicao) {
+    if (modoEdicao && turmaInfantil) {
       const confirmado = await pergutarParaSalvar();
       if (confirmado) {
         validaAntesDoSubmit(form);
@@ -271,7 +297,7 @@ const DiarioBordo = () => {
 
   return (
     <Loader loading={carregandoGeral} className="w-100 my-2">
-      {usuario && turmaSelecionada.turma ? null : (
+      {!turmaSelecionada.turma && turmaInfantil ? (
         <Alert
           alerta={{
             tipo: 'warning',
@@ -280,20 +306,10 @@ const DiarioBordo = () => {
           }}
           className="mb-2"
         />
-      )}
-      {componenteCurricularSelecionado && !ehTurmaInfantil ? (
-        <Alert
-          alerta={{
-            tipo: 'warning',
-            id: 'eh-turma-infantil',
-            mensagem:
-              'Esta interface só pode ser utilizada para turmas da educação infantil',
-          }}
-          className="mb-2"
-        />
       ) : (
         ''
       )}
+      <AlertaModalidadeInfantil naoPermiteTurmaInfantil={false} />
       <ModalMultiLinhas
         key="erros-diario-bordo"
         visivel={mostrarErros}
@@ -314,6 +330,7 @@ const DiarioBordo = () => {
             initialValues={valoresIniciais}
             validateOnBlur
             validateOnChange
+            ref={refFormik => setRefForm(refFormik)}
           >
             {form => (
               <Form>
@@ -346,7 +363,7 @@ const DiarioBordo = () => {
                       bold
                       className="mr-2"
                       onClick={() => validaAntesDoSubmit(form)}
-                      disabled={!modoEdicao}
+                      disabled={!modoEdicao || !turmaInfantil}
                     />
                   </div>
                   <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
@@ -360,8 +377,9 @@ const DiarioBordo = () => {
                       onChange={onChangeComponenteCurricular}
                       placeholder="Selecione um componente curricular"
                       disabled={
-                        listaComponenteCurriculare &&
-                        listaComponenteCurriculare.length == 1
+                        !turmaInfantil ||
+                        (listaComponenteCurriculare &&
+                          listaComponenteCurriculare.length === 1)
                       }
                     />
                   </div>
@@ -372,6 +390,7 @@ const DiarioBordo = () => {
                       placeholder="DD/MM/AAAA"
                       formatoData="DD/MM/YYYY"
                       desabilitado={
+                        !turmaInfantil ||
                         !listaComponenteCurriculare ||
                         !componenteCurricularSelecionado ||
                         !diasParaHabilitar
@@ -381,10 +400,12 @@ const DiarioBordo = () => {
                   </div>
                 </div>
                 <div className="row">
-                  {componenteCurricularSelecionado && dataSelecionada ? (
+                  {turmaInfantil &&
+                  componenteCurricularSelecionado &&
+                  dataSelecionada ? (
                     <>
                       <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                        <PainelCollapse activeKey="1">
+                        <PainelCollapse defaultActiveKey="1">
                           <PainelCollapse.Painel
                             temBorda
                             header="Planejamento"
@@ -400,7 +421,7 @@ const DiarioBordo = () => {
                         </PainelCollapse>
                       </div>
                       <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                        <PainelCollapse activeKey="2">
+                        <PainelCollapse defaultActiveKey="2">
                           <PainelCollapse.Painel
                             temBorda
                             header="Reflexões e Replanejamentos"
@@ -418,11 +439,12 @@ const DiarioBordo = () => {
                       <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                         <PainelCollapse>
                           <PainelCollapse.Painel temBorda header="Devolutivas">
-                            <Editor
-                              form={form}
-                              name="devolutivas"
+                            <CampoTexto
                               id="editor-devolutivas"
-                              desabilitar
+                              name="devolutivas"
+                              type="textarea"
+                              form={form}
+                              desabilitado
                             />
                           </PainelCollapse.Painel>
                         </PainelCollapse>
