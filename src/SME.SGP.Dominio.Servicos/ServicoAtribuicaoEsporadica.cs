@@ -63,14 +63,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task AdicionarAtribuicaoEOL(string codigoRF, Guid perfil)
         {
-            try
-            {
-                await servicoEOL.AtribuirPerfil(codigoRF, perfil);
-            }
-            catch (Exception)
-            {
-                throw new NegocioException("Não foi possivel realizar a atribuição esporadica, por favor contate o suporte");
-            }
+            await servicoEOL.AtribuirPerfil(codigoRF, perfil);
         }
     }
 }
