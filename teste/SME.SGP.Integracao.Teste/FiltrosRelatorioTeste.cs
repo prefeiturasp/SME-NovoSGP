@@ -1,7 +1,10 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace SME.SGP.Integracao.Teste
@@ -77,6 +80,23 @@ namespace SME.SGP.Integracao.Teste
             var codigoUe = "094765";
             var modalidade = (int)Modalidade.Fundamental;
             var result = await fixture._clientApi.GetAsync($"api/v1/relatorios/filtros/ues/{codigoUe}/modalidades/{modalidade}/anos-escolares");
+
+            // Assert
+            Assert.True(fixture.ValidarStatusCodeComSucesso(result));
+        }
+
+
+        [Fact(DisplayName = "Obter Ciclos por modalidade e código da ue")]
+        [Trait("FiltrosRelatorio", "obter ciclos")]
+        public async void Deve_Retornar_Ciclos_Por_Modalidade_E_CodigoUe()
+        {
+            // Arrange
+            var filtro = new FiltroCicloPorModalidadeECodigoUeDto(3, "092789");
+            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+            // & Act
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }));
+            var result = await fixture._clientApi.PostAsync($"api/v1/relatorios/filtros/ciclos", jsonParaPost);
 
             // Assert
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));

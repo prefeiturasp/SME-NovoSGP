@@ -46,5 +46,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase.Executar(codigoUe, anoLetivo, modalidade, semestre));
         }
+
+        [HttpPost("ciclos")]
+        [ProducesResponseType(typeof(IEnumerable<RetornoCicloDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterCiclosPorModalidadeECodigoUe(FiltroCicloPorModalidadeECodigoUeDto filtro, [FromServices] IObterCiclosPorModalidadeECodigoUeUseCase obterCiclosPorModalidadeECodigoUeUseCase)
+        {
+            return Ok(await obterCiclosPorModalidadeECodigoUeUseCase.Executar(filtro));
+        }
     }
 }
