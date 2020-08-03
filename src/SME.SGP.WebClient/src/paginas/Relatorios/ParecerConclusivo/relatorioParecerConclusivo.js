@@ -38,10 +38,7 @@ const RelatorioParecerConclusivo = () => {
   const [listaPareceresConclusivos, setListaPareceresConclusivos] = useState(
     []
   );
-  const listaFormatos = [
-    { valor: '1', desc: 'PDF' },
-    { valor: '2', desc: 'Excel' },
-  ];
+  const listaFormatos = [{ valor: '1', desc: 'PDF' }];
 
   const [anoLetivo, setAnoLetivo] = useState(undefined);
   const [dreId, setDreId] = useState(undefined);
@@ -61,12 +58,23 @@ const RelatorioParecerConclusivo = () => {
     setDreId(valor);
   };
 
+  const limparCicloEAno = valor => {
+    setAno();
+    setCiclo();
+    if (!valor) {
+      setListaAnos([]);
+      setListaCiclos([]);
+    }
+  };
+
   const onChangeUe = valor => {
     setUeId(valor);
+    limparCicloEAno(valor);
   };
 
   const onChangeModalidade = valor => {
     setModalidadeId(valor);
+    limparCicloEAno(valor);
   };
 
   const onChangeSemestre = valor => {
@@ -238,20 +246,30 @@ const RelatorioParecerConclusivo = () => {
     }
   };
 
-  const obterCiclos = async () => {
+  const obterCiclos = async (modalidadeSelecionada, codigoUe) => {
     setCarregandoCiclos(true);
-    const retorno = await ServicoRelatorioParecerConclusivo.buscarCiclos()
+    const params = { modalidade: modalidadeSelecionada, codigoUe };
+    const retorno = await ServicoRelatorioParecerConclusivo.buscarCiclos(params)
       .catch(e => erros(e))
       .finally(() => {
         setCarregandoCiclos(false);
       });
     if (retorno && retorno.data) {
-      const lista = retorno.data;
+      setCiclo();
+      let lista =
+        retorno.data.length > 1 ? [{ id: '-99', descricao: 'Todos' }] : [];
+      lista = lista.concat(retorno.data);
       setListaCiclos(lista);
+      if (
+        String(modalidadeId) === String(modalidade.EJA) &&
+        lista.find(e => e.id === '-99')
+      ) {
+        setCiclo('-99');
+      }
     }
   };
 
-  const obterPareceresConclusivos = async () => {
+  const obterPareceresConclusivos = useCallback(async () => {
     setCarregandoPareceresConclusivos(true);
     const retorno = await ServicoRelatorioParecerConclusivo.buscarPareceresConclusivos()
       .catch(e => erros(e))
@@ -259,10 +277,16 @@ const RelatorioParecerConclusivo = () => {
         setCarregandoPareceresConclusivos(false);
       });
     if (retorno && retorno.data) {
-      const lista = retorno.data;
+      setParecerConclusivoId();
+      let lista = retorno.data.length > 1 ? [{ id: '-99', nome: 'Todos' }] : [];
+      lista = lista.concat(retorno.data);
       setListaPareceresConclusivos(lista);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    obterPareceresConclusivos();
+  }, [obterPareceresConclusivos]);
 
   const obterAnos = async (codigoUe, modalidadeIdSelecionada) => {
     setCarregandoAnos(true);
@@ -277,21 +301,25 @@ const RelatorioParecerConclusivo = () => {
   };
 
   useEffect(() => {
-    if (modalidadeId && anoLetivo) {
-      obterCiclos();
-      obterPareceresConclusivos();
-    }
     if (
       modalidadeId &&
       anoLetivo &&
       String(modalidadeId) === String(modalidade.EJA)
     ) {
+      setSemestre();
       obterSemestres(modalidadeId, anoLetivo);
     } else {
       setSemestre();
       setListaSemestres([]);
     }
   }, [modalidadeId, anoLetivo]);
+
+  useEffect(() => {
+    if (modalidadeId && ueId) {
+      setCiclo();
+      obterCiclos(modalidadeId, ueId);
+    }
+  }, [modalidadeId, ueId]);
 
   useEffect(() => {
     if (modalidadeId && ueId) {
@@ -309,7 +337,9 @@ const RelatorioParecerConclusivo = () => {
     !ueId ||
     !modalidadeId ||
     (String(modalidadeId) === String(modalidade.EJA) ? !semestre : false) ||
-    !ciclo ||
+    (String(modalidadeId) !== String(modalidade.ENSINO_MEDIO)
+      ? !ciclo
+      : false) ||
     !ano ||
     !parecerConclusivoId ||
     !formato;
@@ -323,7 +353,7 @@ const RelatorioParecerConclusivo = () => {
       modalidade: modalidadeId,
       semestre,
       ciclo,
-      anoEscolar: ano,
+      anos: ano,
       parecerConclusivoId,
     };
     await ServicoRelatorioParecerConclusivo.gerar(params)
@@ -478,8 +508,8 @@ const RelatorioParecerConclusivo = () => {
                   id="drop-ciclos-rel-parecer"
                   label="Ciclo"
                   lista={listaCiclos}
-                  valueOption="valor"
-                  valueText="desc"
+                  valueOption="id"
+                  valueText="descricao"
                   disabled={listaCiclos && listaCiclos.length === 1}
                   onChange={onChangeCiclos}
                   valueSelect={ciclo}
@@ -499,6 +529,7 @@ const RelatorioParecerConclusivo = () => {
                   onChange={onChangeAnos}
                   valueSelect={ano}
                   placeholder="Ano"
+                  multiple={String(modalidadeId) !== String(modalidade.EJA)}
                 />
               </Loader>
             </div>
@@ -508,8 +539,8 @@ const RelatorioParecerConclusivo = () => {
                   id="drop-parecer-conclucivo-rel-parecer"
                   label="Parecer conclusivo"
                   lista={listaPareceresConclusivos}
-                  valueOption="valor"
-                  valueText="desc"
+                  valueOption="id"
+                  valueText="nome"
                   disabled={
                     listaPareceresConclusivos &&
                     listaPareceresConclusivos.length === 1
@@ -529,6 +560,7 @@ const RelatorioParecerConclusivo = () => {
                 valueText="desc"
                 onChange={onChangeFormato}
                 valueSelect={formato}
+                disabled
                 placeholder="Formato"
               />
             </div>
