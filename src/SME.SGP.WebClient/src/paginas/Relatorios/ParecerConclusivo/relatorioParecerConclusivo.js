@@ -124,6 +124,9 @@ const RelatorioParecerConclusivo = () => {
         setListaDres([]);
         setDreId(undefined);
       }
+    } else {
+      setListaDres([]);
+      setDreId();
     }
   }, [anoLetivo]);
 
@@ -333,17 +336,16 @@ const RelatorioParecerConclusivo = () => {
     if (modalidadeId && ueId) {
       setCiclo();
       obterCiclos(modalidadeId, ueId);
-    }
-  }, [modalidadeId, ueId]);
-
-  useEffect(() => {
-    if (modalidadeId && ueId) {
       obterAnos(ueId, modalidadeId);
     }
   }, [modalidadeId, ueId]);
 
-  const cancelar = () => {
-    setAnoLetivo(anoAtual);
+  const cancelar = async () => {
+    await setCiclo();
+    await setAno();
+    await setParecerConclusivoId();
+    await setAnoLetivo(null);
+    await setAnoLetivo(anoAtual);
   };
 
   const desabilitarGerar =
@@ -364,13 +366,15 @@ const RelatorioParecerConclusivo = () => {
     setCarregandoGerar(true);
     const params = {
       anoLetivo,
-      dreCodigo: dreId,
-      ueCodigo: ueId,
-      modalidade: modalidadeId,
-      semestre,
-      ciclo,
-      anos: [].concat(ano),
-      parecerConclusivoId,
+      dreCodigo: dreId === '-99' ? '' : dreId,
+      ueCodigo: ueId === '-99' ? '' : ueId,
+      modalidade: modalidadeId === '-99' ? null : modalidadeId,
+      semestre:
+        String(modalidadeId) === String(modalidade.EJA) ? semestre : null,
+      ciclo: ciclo === '-99' ? 0 : ciclo,
+      anos: ano.toString() !== '-99' ? ano : [],
+      parecerConclusivoId:
+        parecerConclusivoId === '-99' ? 0 : parecerConclusivoId,
     };
     await ServicoRelatorioParecerConclusivo.gerar(params)
       .then(() => {
