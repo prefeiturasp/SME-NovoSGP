@@ -68,20 +68,34 @@ const RelatorioPendencias = () => {
     { valor: '0', desc: 'Não' },
   ];
 
-  const onChangeAnoLetivo = valor => {
+  const onChangeAnoLetivo = async valor => {
+    setDreId();
+    setUeId();
+    setModalidadeId();
+    setTurmaId();
+    setComponentesCurricularesId();
     setAnoLetivo(valor);
   };
 
   const onChangeDre = valor => {
     setDreId(valor);
-    setUeId(undefined)
+    setUeId();
+    setModalidadeId();
+    setTurmaId();
+    setComponentesCurricularesId();
+    setUeId(undefined);
   };
 
   const onChangeUe = valor => {
+    setModalidadeId();
+    setTurmaId();
+    setComponentesCurricularesId();
     setUeId(valor);
   };
 
   const onChangeModalidade = valor => {
+    setTurmaId();
+    setComponentesCurricularesId();
     setModalidadeId(valor);
   };
 
@@ -90,6 +104,7 @@ const RelatorioPendencias = () => {
   };
 
   const onChangeTurma = valor => {
+    setComponentesCurricularesId();
     setTurmaId(valor);
   };
 
@@ -286,13 +301,14 @@ const RelatorioPendencias = () => {
     async (ueCodigo, idsTurma, lista) => {
       if (idsTurma?.length > 0) {
         setCarregandoComponentesCurriculares(true);
-        const idsTurmaArray =
+        const turmas = [].concat(
           idsTurma[0] === '0'
             ? lista.map(a => a.valor).filter(a => a !== '0')
-            : idsTurma;
+            : idsTurma
+        );
         const disciplinas = await ServicoComponentesCurriculares.obterComponentesPorUeTurmas(
           ueCodigo,
-          idsTurmaArray
+          turmas
         ).catch(e => erros(e));
         let componentesCurriculares = [];
         componentesCurriculares.push({
