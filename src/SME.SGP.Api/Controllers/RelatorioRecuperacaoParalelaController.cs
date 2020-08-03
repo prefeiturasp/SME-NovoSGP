@@ -8,7 +8,7 @@ using SME.SGP.Infra.Dtos.Relatorios.RecuperacaoParalela;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/relatorios/recuperacao/paralela")]
+    [Route("api/v1/relatorios/recuperacao-paralela")]
     public class RelatorioRecuperacaoParalelaController : ControllerBase
     {
         [HttpPost]        
