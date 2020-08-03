@@ -4,6 +4,6 @@
     {
         public string TurmaCodigo { get; set; }
 
-        public string[] Alunos { get; set; }
+        public string AlunoCodigo { get; set; }
     }
 }
