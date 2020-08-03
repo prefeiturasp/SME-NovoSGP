@@ -102,9 +102,13 @@ const RelatorioParecerConclusivo = () => {
   const obterDres = useCallback(async () => {
     if (anoLetivo) {
       setCarregandoDres(true);
-      const { data } = await ServicoFiltroRelatorio.obterDres();
-      if (data && data.length) {
-        const lista = data
+      const response = await ServicoFiltroRelatorio.obterDres()
+        .catch(e => erros(e))
+        .finally(() => {
+          setCarregandoDres(false);
+        });
+      if (response?.data?.length) {
+        const lista = response.data
           .map(item => ({
             desc: item.nome,
             valor: String(item.codigo),
@@ -120,7 +124,6 @@ const RelatorioParecerConclusivo = () => {
         setListaDres([]);
         setDreId(undefined);
       }
-      setCarregandoDres(false);
     }
   }, [anoLetivo]);
 
@@ -131,9 +134,13 @@ const RelatorioParecerConclusivo = () => {
   const obterUes = useCallback(async dre => {
     if (dre) {
       setCarregandoUes(true);
-      const { data } = await ServicoFiltroRelatorio.obterUes(dre);
-      if (data) {
-        const lista = data
+      const response = await ServicoFiltroRelatorio.obterUes(dre)
+        .catch(e => erros(e))
+        .finally(() => {
+          setCarregandoUes(false);
+        });
+      if (response?.data?.length) {
+        const lista = response.data
           .map(item => ({
             desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
             valor: String(item.codigo),
@@ -148,7 +155,6 @@ const RelatorioParecerConclusivo = () => {
       } else {
         setListaUes([]);
       }
-      setCarregandoUes(false);
     }
   }, []);
 
@@ -164,14 +170,17 @@ const RelatorioParecerConclusivo = () => {
   const obterModalidades = async ue => {
     if (ue) {
       setCarregandoModalidades(true);
-      const { data } = await ServicoFiltroRelatorio.obterModalidades(ue);
+      const { data } = await ServicoFiltroRelatorio.obterModalidades(ue)
+        .catch(e => erros(e))
+        .finally(() => {
+          setCarregandoModalidades(false);
+        });
       if (data) {
         if (data && data.length && data.length === 1) {
           setModalidadeId(data[0].valor);
         }
         setListaModalidades(data);
       }
-      setCarregandoModalidades(false);
     }
   };
 
@@ -247,24 +256,25 @@ const RelatorioParecerConclusivo = () => {
   };
 
   const obterCiclos = async (modalidadeSelecionada, codigoUe) => {
-    setCarregandoCiclos(true);
-    const params = { modalidade: modalidadeSelecionada, codigoUe };
-    const retorno = await ServicoRelatorioParecerConclusivo.buscarCiclos(params)
-      .catch(e => erros(e))
-      .finally(() => {
-        setCarregandoCiclos(false);
-      });
-    if (retorno && retorno.data) {
-      setCiclo();
-      let lista =
-        retorno.data.length > 1 ? [{ id: '-99', descricao: 'Todos' }] : [];
-      lista = lista.concat(retorno.data);
-      setListaCiclos(lista);
-      if (
-        String(modalidadeId) === String(modalidade.EJA) &&
-        lista.find(e => e.id === '-99')
-      ) {
-        setCiclo('-99');
+    if (String(modalidadeSelecionada) === String(modalidade.EJA)) {
+      setListaCiclos([{ id: '-99', descricao: 'Todos' }]);
+      setCiclo('-99');
+    } else {
+      setCarregandoCiclos(true);
+      const params = { modalidade: modalidadeSelecionada, codigoUe };
+      const retorno = await ServicoRelatorioParecerConclusivo.buscarCiclos(
+        params
+      )
+        .catch(e => erros(e))
+        .finally(() => {
+          setCarregandoCiclos(false);
+        });
+      if (retorno && retorno.data) {
+        setCiclo();
+        let lista =
+          retorno.data.length > 1 ? [{ id: '-99', descricao: 'Todos' }] : [];
+        lista = lista.concat(retorno.data);
+        setListaCiclos(lista);
       }
     }
   };
@@ -289,14 +299,19 @@ const RelatorioParecerConclusivo = () => {
   }, [obterPareceresConclusivos]);
 
   const obterAnos = async (codigoUe, modalidadeIdSelecionada) => {
-    setCarregandoAnos(true);
-    const retorno = await ServicoFiltroRelatorio.obterAnosEscolares(
-      codigoUe,
-      modalidadeIdSelecionada
-    ).finally(setCarregandoAnos(false));
-    if (retorno && retorno.data) {
-      const lista = retorno.data;
-      setListaAnos(lista);
+    if (String(modalidadeIdSelecionada) === String(modalidade.EJA)) {
+      setListaAnos([{ valor: '-99', descricao: 'Todos' }]);
+      setAno('-99');
+    } else {
+      setCarregandoAnos(true);
+      const retorno = await ServicoFiltroRelatorio.obterAnosEscolares(
+        codigoUe,
+        modalidadeIdSelecionada
+      ).finally(setCarregandoAnos(false));
+      if (retorno && retorno.data) {
+        const lista = retorno.data;
+        setListaAnos(lista);
+      }
     }
   };
 
@@ -341,6 +356,7 @@ const RelatorioParecerConclusivo = () => {
       ? !ciclo
       : false) ||
     !ano ||
+    ano?.length <= 0 ||
     !parecerConclusivoId ||
     !formato;
 
@@ -353,7 +369,7 @@ const RelatorioParecerConclusivo = () => {
       modalidade: modalidadeId,
       semestre,
       ciclo,
-      anos: ano,
+      anos: [].concat(ano),
       parecerConclusivoId,
     };
     await ServicoRelatorioParecerConclusivo.gerar(params)
