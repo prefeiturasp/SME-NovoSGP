@@ -74,6 +74,7 @@ const RelatorioPendencias = () => {
 
   const onChangeDre = valor => {
     setDreId(valor);
+    setUeId(undefined)
   };
 
   const onChangeUe = valor => {
