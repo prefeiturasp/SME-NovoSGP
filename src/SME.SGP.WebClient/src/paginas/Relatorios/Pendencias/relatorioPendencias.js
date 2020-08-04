@@ -258,7 +258,7 @@ const RelatorioPendencias = () => {
     } else {
       setListaBimestres(bimestresFundMedio);
     }
-    setBimestre('0');
+    setBimestre();
   }, [modalidadeId]);
 
   const obterAnosLetivos = useCallback(async () => {
