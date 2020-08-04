@@ -383,15 +383,15 @@ const RelatorioPendencias = () => {
     }
   }, [obterAnosLetivos, modalidadeId, anoLetivo]);
 
-  const cancelar = () => {
-    setAnoLetivo(anoAtual);
-    setDreId();
-    setUeId();
-    setModalidadeId();
-    setComponentesCurricularesId(undefined);
-    setBimestre('0');
-    setExibirDetalhamento(true);
-    setTurmaId(undefined);
+  const cancelar = async () => {
+    await setDreId();
+    await setUeId();
+    await setModalidadeId();
+    await setComponentesCurricularesId(undefined);
+    await setBimestre('0');
+    await setExibirDetalhamento(true);
+    await setTurmaId(undefined);
+    await setAnoLetivo(anoAtual);
   };
 
   const desabilitarGerar =
