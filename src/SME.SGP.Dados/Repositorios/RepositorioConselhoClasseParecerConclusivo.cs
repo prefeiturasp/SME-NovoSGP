@@ -30,6 +30,16 @@ namespace SME.SGP.Dados.Repositorios
             return await ObterListaPorTurma(where, turmaCodigo, dataConsulta);
         }
 
+        public async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterListaVigente(DateTime dataConsulta)
+        {
+            var sql = @"select ccp.* from conselho_classe_parecer ccp 
+                        where ccp.inicio_vigencia <= @dataConsulta and (ccp.fim_vigencia >= @dataConsulta or ccp.fim_vigencia is null)";
+
+            var param = new { dataConsulta };
+
+            return await database.Conexao.QueryAsync<ConselhoClasseParecerConclusivo>(sql, param);
+        }
+
         private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterListaPorTurma(string where, object parametro, DateTime dataConsulta)
         {
             var sql = string.Format(ObterSqlParecerConclusivoTurma(), where);
@@ -46,5 +56,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join turma t on cast(ccpa.ano_turma as varchar) = t.ano and ccpa.modalidade = t.modalidade_codigo
                         where {0} and ccpa.inicio_vigencia <= @dataConsulta and (ccpa.fim_vigencia >= @dataConsulta or ccpa.fim_vigencia is null)";
         }
+
+      
     }
 }
