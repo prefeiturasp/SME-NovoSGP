@@ -385,10 +385,14 @@ const RelatorioPendencias = () => {
 
   const cancelar = () => {
     setAnoLetivo(anoAtual);
+    setDreId();
+    setUeId();
+    setModalidadeId();
     setComponentesCurricularesId(undefined);
     setBimestre('0');
     setExibirDetalhamento(true);
     setTurmaId(undefined);
+
   };
 
   const desabilitarGerar =
