@@ -47,11 +47,11 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase.Executar(codigoUe, anoLetivo, modalidade, semestre));
         }
 
-        [HttpGet("ciclos")]
+        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/ciclos")]
         [ProducesResponseType(typeof(IEnumerable<RetornoCicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterCiclosPorModalidadeECodigoUe([FromQuery] int modalidade, string codigoUe, [FromServices] IObterCiclosPorModalidadeECodigoUeUseCase obterCiclosPorModalidadeECodigoUeUseCase)
+        public async Task<IActionResult> ObterCiclosPorModalidadeECodigoUe(int modalidade, string codigoUe, [FromServices] IObterCiclosPorModalidadeECodigoUeUseCase obterCiclosPorModalidadeECodigoUeUseCase)
         {
             return Ok(await obterCiclosPorModalidadeECodigoUeUseCase.Executar(new FiltroCicloPorModalidadeECodigoUeDto(modalidade, codigoUe)));
         }
