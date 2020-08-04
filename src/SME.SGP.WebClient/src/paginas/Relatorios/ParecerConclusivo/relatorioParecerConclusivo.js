@@ -238,7 +238,7 @@ const RelatorioParecerConclusivo = () => {
     const retorno = await api
       .get(
         `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
-          0}`
+        0}`
       )
       .catch(e => erros(e))
       .finally(() => {
@@ -386,7 +386,7 @@ const RelatorioParecerConclusivo = () => {
 
   return (
     <>
-      <Cabecalho pagina="Relatório de pendências" />
+      <Cabecalho pagina="Parecer Conclusivo" />
       <Card>
         <div className="col-md-12">
           <div className="row">
