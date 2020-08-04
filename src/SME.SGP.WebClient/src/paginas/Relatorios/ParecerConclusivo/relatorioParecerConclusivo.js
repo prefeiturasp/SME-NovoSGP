@@ -36,7 +36,10 @@ const RelatorioParecerConclusivo = () => {
   const [listaPareceresConclusivos, setListaPareceresConclusivos] = useState(
     []
   );
-  const listaFormatos = [{ valor: '1', desc: 'PDF' }];
+  const listaFormatos = [
+    { valor: '1', desc: 'PDF' },
+    { valor: '4', desc: 'Excel' },
+  ];
 
   const [anoLetivo, setAnoLetivo] = useState(undefined);
   const [dreId, setDreId] = useState(undefined);
@@ -238,7 +241,7 @@ const RelatorioParecerConclusivo = () => {
     const retorno = await api
       .get(
         `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
-        0}`
+          0}`
       )
       .catch(e => erros(e))
       .finally(() => {
@@ -373,6 +376,7 @@ const RelatorioParecerConclusivo = () => {
       anos: ano.toString() !== '-99' ? ano : [],
       parecerConclusivoId:
         parecerConclusivoId === '-99' ? 0 : parecerConclusivoId,
+      tipoFormatoRelatorio: formato,
     };
     await ServicoRelatorioParecerConclusivo.gerar(params)
       .then(() => {
@@ -570,7 +574,6 @@ const RelatorioParecerConclusivo = () => {
                 valueText="desc"
                 onChange={onChangeFormato}
                 valueSelect={formato}
-                disabled
                 placeholder="Formato"
               />
             </div>

@@ -13,7 +13,7 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public long ParecerConclusivoId { get; set; }
         public string[] Anos { get; set; }
         public string UsuarioNome { get; set; }
+        public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
 
- 
     }
 }
