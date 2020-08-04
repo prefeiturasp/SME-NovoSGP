@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterFiltroRelatoriosModalidadesPorUeUseCase
+    public interface IObterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase
     {
         Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe);
     }

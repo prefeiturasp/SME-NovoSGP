@@ -407,5 +407,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return dados.OrderBy(x => x.Descricao);
         }
+
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual)
+        {
+            var query = @"select distinct vau.modalidade_codigo from v_abrangencia_usuario vau 
+                            where vau.login = @login
+                            and usuario_perfil  = @perfilAtual
+                            and vau.ue_codigo = @codigoUe";
+
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual });
+        }
     }
 }
