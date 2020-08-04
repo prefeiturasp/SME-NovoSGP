@@ -412,7 +412,7 @@ const RelatorioPendencias = () => {
       dreCodigo: dreId,
       ueCodigo: ueId,
       modalidade: modalidadeId,
-      turmasCodigo: turmaId === '0' ? [] : turmaId,
+      turmasCodigo: turmaId === '0' ? [] : [].concat(turmaId),
       bimestre,
       componentesCurriculares:
         componentesCurricularesId?.length === 1 &&
