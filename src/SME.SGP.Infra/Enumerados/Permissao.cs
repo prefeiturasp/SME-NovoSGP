@@ -476,5 +476,21 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pendencias-fechamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Pendências do Fechamento")]
         RPF_C = 157,
 
+
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/diario-classe/diario-bordo")]
+        DDB_C = 159,
+
+
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 8, OrdemMenu = 2, EhInclusao = true, Url = "/diario-classe/diario-bordo")]
+        DDB_I = 160,
+
+
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 8, OrdemMenu = 2, EhExclusao = true, Url = "/diario-classe/diario-bordo")]
+        DDB_E = 160,
+
+
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = true, Url = "/diario-classe/diario-bordo")]
+        DDB_A = 161
+
     }
 }
