@@ -14,6 +14,5 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public string[] Anos { get; set; }
         public string UsuarioNome { get; set; }
         public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
-
     }
 }
