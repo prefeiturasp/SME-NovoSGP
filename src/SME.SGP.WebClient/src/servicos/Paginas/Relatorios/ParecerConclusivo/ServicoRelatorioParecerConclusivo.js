@@ -1,9 +1,9 @@
 import api from '~/servicos/api';
 
 class ServicoRelatorioParecerConclusivo {
-  buscarCiclos = params => {
-    const url = `/v1/relatorios/filtros/ciclos`;
-    return api.post(url, params);
+  buscarCiclos = (codigoUe, modalidade) => {
+    const url = `/v1/relatorios/filtros/ues/${codigoUe}/modalidades/${modalidade}/ciclos`;
+    return api.get(url);
   };
 
   buscarPareceresConclusivos = () => {
