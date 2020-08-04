@@ -84,17 +84,17 @@ namespace SME.SGP.Integracao.Teste
             // Assert
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));
         }
-        [Fact(DisplayName = "Obter Ciclos por modalidade e código da ue")]
-        [Trait("FiltrosRelatorio", "obter ciclos")]
-        public async void Deve_Retornar_Ciclos_Por_Modalidade_E_CodigoUe()
-        {
-            // Arrange & Act
-            fixture._clientApi.DefaultRequestHeaders.Clear();
-            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }));
-            var result = await fixture._clientApi.GetAsync($"api/v1/relatorios/filtros/ciclos");
+        //[Fact(DisplayName = "Obter Ciclos por modalidade e código da ue")]
+        //[Trait("FiltrosRelatorio", "obter ciclos")]
+        //public async void Deve_Retornar_Ciclos_Por_Modalidade_E_CodigoUe()
+        //{
+        //    // Arrange & Act
+        //    fixture._clientApi.DefaultRequestHeaders.Clear();
+        //    fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }));
+        //    var result = await fixture._clientApi.GetAsync($"api/v1/relatorios/filtros/ciclos");
 
-            // Assert
-            Assert.True(fixture.ValidarStatusCodeComSucesso(result));
-        }
+        //    // Assert
+        //    Assert.True(fixture.ValidarStatusCodeComSucesso(result));
+        //}
     }
 }
