@@ -258,7 +258,7 @@ const RelatorioPendencias = () => {
     } else {
       setListaBimestres(bimestresFundMedio);
     }
-    setBimestre('0');
+    setBimestre();
   }, [modalidadeId]);
 
   const obterAnosLetivos = useCallback(async () => {
@@ -388,7 +388,7 @@ const RelatorioPendencias = () => {
     await setUeId();
     await setModalidadeId();
     await setComponentesCurricularesId(undefined);
-    await setBimestre('0');
+    await setBimestre();
     await setExibirDetalhamento(true);
     await setTurmaId(undefined);
     await setAnoLetivo(anoAtual);
