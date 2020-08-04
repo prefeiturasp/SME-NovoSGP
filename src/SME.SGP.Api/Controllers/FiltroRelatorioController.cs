@@ -32,9 +32,9 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe));
         }
         [HttpGet("ues/{codigoUe}/modalidades/abrangencias")]
-        public async Task<IActionResult> ObterModalidadesPorUeAbrangencia(string codigoUe, [FromServices] IObterFiltroRelatoriosModalidadesPorUeUseCase obterFiltroRelatoriosModalidadesPorUeUseCase)
+        public async Task<IActionResult> ObterModalidadesPorUeAbrangencia(string codigoUe, [FromServices] IObterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase obterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase )
         {
-            return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe, true));
+            return Ok(await obterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase.Executar(codigoUe));
         }
         [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/anos-escolares")]
         public async Task<IActionResult> ObterAnosEscolaresPorModalidadeUe(string codigoUe, Modalidade modalidade, [FromServices] IObterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase obterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase)
