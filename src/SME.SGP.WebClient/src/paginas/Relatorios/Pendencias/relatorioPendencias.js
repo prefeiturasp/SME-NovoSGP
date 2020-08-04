@@ -392,7 +392,6 @@ const RelatorioPendencias = () => {
     setBimestre('0');
     setExibirDetalhamento(true);
     setTurmaId(undefined);
-
   };
 
   const desabilitarGerar =
