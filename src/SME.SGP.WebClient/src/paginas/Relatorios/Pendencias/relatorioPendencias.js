@@ -272,7 +272,7 @@ const RelatorioPendencias = () => {
       consideraHistorico: false,
     });
 
-    anosLetivos.concat(anosLetivoComHistorico);
+    anosLetivos = anosLetivos.concat(anosLetivoComHistorico);
 
     anosLetivoSemHistorico.forEach(ano => {
       if (!anosLetivoComHistorico.find(a => a.valor === ano.valor)) {
