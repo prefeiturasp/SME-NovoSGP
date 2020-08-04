@@ -6,14 +6,12 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import modalidade from '~/dtos/modalidade';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
-import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
-import ServicoRelatorioPendencias from '~/servicos/Paginas/Relatorios/Pendencias/ServicoRelatorioPendencias';
-import FiltroHelper from '~componentes-sgp/filtro/helper';
-import ServicoRelatorioParecerConclusivo from '~/servicos/Paginas/Relatorios/ParecerConclusivo/ServicoRelatorioParecerConclusivo';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
+import ServicoRelatorioParecerConclusivo from '~/servicos/Paginas/Relatorios/ParecerConclusivo/ServicoRelatorioParecerConclusivo';
+import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const RelatorioParecerConclusivo = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -264,9 +262,9 @@ const RelatorioParecerConclusivo = () => {
       setCiclo('-99');
     } else {
       setCarregandoCiclos(true);
-      const params = { modalidade: modalidadeSelecionada, codigoUe };
       const retorno = await ServicoRelatorioParecerConclusivo.buscarCiclos(
-        params
+        codigoUe,
+        modalidadeSelecionada
       )
         .catch(e => erros(e))
         .finally(() => {
@@ -478,13 +476,7 @@ const RelatorioParecerConclusivo = () => {
                 />
               </Loader>
             </div>
-            <div
-              className={`"col-sm-12 col-md-6 ${
-                modalidadeId && String(modalidadeId) === String(modalidade.EJA)
-                  ? `col-lg-3 col-xl-3`
-                  : `col-lg-4 col-xl-4`
-              } mb-2"`}
-            >
+            <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
               <Loader loading={carregandoModalidades} tip="">
                 <SelectComponent
                   id="drop-modalidade-rel-parecer"
@@ -501,27 +493,25 @@ const RelatorioParecerConclusivo = () => {
                 />
               </Loader>
             </div>
-            {String(modalidadeId) === String(modalidade.EJA) ? (
-              <div className="col-sm-12 col-md-6 col-lg-1 col-xl-1 mb-2">
-                <Loader loading={carregandoSemestres} tip="">
-                  <SelectComponent
-                    id="drop-semestre-rel-parecer"
-                    lista={listaSemestres}
-                    valueOption="valor"
-                    valueText="desc"
-                    label="Semestre"
-                    disabled={
-                      !modalidadeId ||
-                      (listaSemestres && listaSemestres.length === 1) ||
-                      String(modalidadeId) === String(modalidade.FUNDAMENTAL)
-                    }
-                    valueSelect={semestre}
-                    onChange={onChangeSemestre}
-                    placeholder="Semestre"
-                  />
-                </Loader>
-              </div>
-            ) : null}
+            <div className="col-sm-12 col-md-6 col-lg-1 col-xl-1 mb-2">
+              <Loader loading={carregandoSemestres} tip="">
+                <SelectComponent
+                  id="drop-semestre-rel-parecer"
+                  lista={listaSemestres}
+                  valueOption="valor"
+                  valueText="desc"
+                  label="Semestre"
+                  disabled={
+                    !modalidadeId ||
+                    (listaSemestres && listaSemestres.length === 1) ||
+                    String(modalidadeId) !== String(modalidade.EJA)
+                  }
+                  valueSelect={semestre}
+                  onChange={onChangeSemestre}
+                  placeholder="Semestre"
+                />
+              </Loader>
+            </div>
             <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 mb-2">
               <Loader loading={carregandoCiclos} tip="">
                 <SelectComponent
