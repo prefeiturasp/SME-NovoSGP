@@ -521,13 +521,7 @@ const RelatorioPendencias = () => {
                 />
               </Loader>
             </div>
-            <div
-              className={`"col-sm-12 col-md-6 ${
-                modalidadeId && String(modalidadeId) === String(modalidade.EJA)
-                  ? `col-lg-3 col-xl-3`
-                  : `col-lg-4 col-xl-4`
-              } mb-2"`}
-            >
+            <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3  mb-2">
               <Loader loading={carregandoModalidades} tip="">
                 <SelectComponent
                   id="drop-modalidade-rel-pendencias"
@@ -544,27 +538,25 @@ const RelatorioPendencias = () => {
                 />
               </Loader>
             </div>
-            {String(modalidadeId) === String(modalidade.EJA) ? (
-              <div className="col-sm-12 col-md-6 col-lg-1 col-xl-1 mb-2">
-                <Loader loading={carregandoSemestres} tip="">
-                  <SelectComponent
-                    id="drop-semestre-rel-pendencias"
-                    lista={listaSemestres}
-                    valueOption="valor"
-                    valueText="desc"
-                    label="Semestre"
-                    disabled={
-                      !modalidadeId ||
-                      (listaSemestres && listaSemestres.length === 1) ||
-                      String(modalidadeId) === String(modalidade.FUNDAMENTAL)
-                    }
-                    valueSelect={semestre}
-                    onChange={onChangeSemestre}
-                    placeholder="Semestre"
-                  />
-                </Loader>
-              </div>
-            ) : null}
+            <div className="col-sm-12 col-md-6 col-lg-1 col-xl-1 mb-2">
+              <Loader loading={carregandoSemestres} tip="">
+                <SelectComponent
+                  id="drop-semestre-rel-pendencias"
+                  lista={listaSemestres}
+                  valueOption="valor"
+                  valueText="desc"
+                  label="Semestre"
+                  disabled={
+                    !modalidadeId ||
+                    (listaSemestres && listaSemestres.length === 1) ||
+                    String(modalidadeId) !== String(modalidade.EJA)
+                  }
+                  valueSelect={semestre}
+                  onChange={onChangeSemestre}
+                  placeholder="Semestre"
+                />
+              </Loader>
+            </div>
             <div className={`"col-sm-12 col-md-6 col-lg-2`}>
               <Loader loading={carregandoTurmas} tip="">
                 <SelectComponent
