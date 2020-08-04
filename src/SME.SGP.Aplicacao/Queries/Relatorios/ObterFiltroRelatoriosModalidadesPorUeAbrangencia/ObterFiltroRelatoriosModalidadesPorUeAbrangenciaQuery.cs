@@ -15,14 +15,14 @@ namespace SME.SGP.Aplicacao
             CodigoUe = codigoUe;
         }
     }
-    //public class ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQueryValidator : AbstractValidator<ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery>
-    //{
-    //    public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQueryValidator()
-    //    {
+    public class ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQueryValidator : AbstractValidator<ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery>
+    {
+        public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQueryValidator()
+        {
 
-    //        RuleFor(c => c.CodigoUe)
-    //        .NotEmpty()
-    //        .WithMessage("O código da ue ser informado.");
-    //    }
-    //}
+            RuleFor(c => c.CodigoUe)
+            .NotEmpty()
+            .WithMessage("O código da ue ser informado.");
+        }
+    }
 }
