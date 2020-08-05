@@ -760,5 +760,11 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DateTime>(query, new { aulaId });
         }
+
+        public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId)
+        {
+            var query = @"select * from aula where tipo_calendario_id = @tipoCalendarioId and turma_id = @turmaId";
+            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId });
+        }
     }
 }

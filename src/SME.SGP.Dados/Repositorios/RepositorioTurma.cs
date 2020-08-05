@@ -251,5 +251,13 @@ namespace SME.SGP.Dados.Repositorios
 
             return resultado;
         }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo)
+        {
+            var modalidade = Modalidade.Infantil;
+            var query = @"select * from turma where modalidade_codigo = @modalidade and historica = false and ano_letivo = @anoLetivo and ano~E'^[0-9\.]+$'";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { anoLetivo, modalidade });
+        }
     }
 }
