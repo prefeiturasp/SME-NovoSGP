@@ -24,9 +24,9 @@ namespace SME.SGP.Integracao.Teste
             // Arrange
             // Act
             fixture._clientApi.DefaultRequestHeaders.Clear();
-            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }));
+            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_C }));
 
-            var id = "123";
+            var id = "31886";
             var result = await fixture._clientApi.GetAsync($"api/v1/diario-bordo/{id}");
 
             // Assert
