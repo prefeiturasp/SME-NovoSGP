@@ -189,7 +189,9 @@ const RelatorioPendencias = () => {
   const obterModalidades = async (ue, ano) => {
     if (ue && ano) {
       setCarregandoModalidades(true);
-      const { data } = await api.get(`/v1/relatorios/filtros/ues/${ue}/modalidades/abrangencias`);
+      const { data } = await api.get(
+        `/v1/relatorios/filtros/ues/${ue}/modalidades/abrangencias`
+      );
 
       if (data) {
         const lista = data.map(item => ({
@@ -392,6 +394,7 @@ const RelatorioPendencias = () => {
     await setBimestre();
     await setExibirDetalhamento(true);
     await setTurmaId(undefined);
+    await setAnoLetivo();
     await setAnoLetivo(anoAtual);
   };
 
