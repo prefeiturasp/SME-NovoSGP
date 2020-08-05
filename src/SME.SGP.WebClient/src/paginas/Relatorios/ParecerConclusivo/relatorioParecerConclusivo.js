@@ -71,13 +71,14 @@ const RelatorioParecerConclusivo = () => {
   };
 
   const onChangeUe = valor => {
-    setUeId(valor);
     limparCicloEAno(valor);
+    setModalidadeId();
+    setUeId(valor);
   };
 
   const onChangeModalidade = valor => {
-    setModalidadeId(valor);
     limparCicloEAno(valor);
+    setModalidadeId(valor);
   };
 
   const onChangeSemestre = valor => {
