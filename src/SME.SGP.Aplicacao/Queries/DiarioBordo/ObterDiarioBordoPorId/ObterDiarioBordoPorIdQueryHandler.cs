@@ -1,11 +1,14 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
-namespace SME.SGP.Aplicacao.Queries.DiarioBordo.ObterDiarioBordoPorId
+namespace SME.SGP.Aplicacao
 {
     public class ObterDiarioBordoPorIdQueryHandler : IRequestHandler<ObterDiarioBordoPorIdQuery, DiarioBordo>
     {
@@ -18,7 +21,9 @@ namespace SME.SGP.Aplicacao.Queries.DiarioBordo.ObterDiarioBordoPorId
 
         public async Task<DiarioBordo> Handle(ObterDiarioBordoPorIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioDiarioBordo.ObterPorIdAsync(request.DiarioBordoId);
+            var diarioBordo = await repositorioDiarioBordo.ObterPorIdAsync(request.DiarioBordoId);
+
+            return diarioBordo;
         }
     }
 }
