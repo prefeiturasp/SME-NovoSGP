@@ -1,12 +1,13 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Queries.Aula.ObterAulasDaTurma;
 using SME.SGP.Dominio;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.Aula.CriacaoAutomatica
+namespace SME.SGP.Aplicacao
 {
-    public class CriarAulasInfantilAutomaticamenteUseCase
+    public class CriarAulasInfantilAutomaticamenteUseCase : ICriarAulasInfantilAutomaticamenteUseCase
     {
         private readonly IMediator mediator;
 
@@ -18,17 +19,32 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Aula.CriacaoAutomatica
         public async Task Executar()
         {
             var anoAtual = DateTime.Now.Year;
-            var idTipoCalendario = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.Infantil, anoAtual, null));
-            if (idTipoCalendario > 0)
+            var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.Infantil, anoAtual, null));
+            if (tipoCalendarioId > 0)
             {
-                var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(idTipoCalendario));
-                if(periodosEscolares!=null && periodosEscolares.Any())
+                var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
+                if (periodosEscolares != null && periodosEscolares.Any())
                 {
-                    
+
                     var turmas = await mediator.Send(new ObterTurmasInfantilNaoDeProgramaQuery(anoAtual));
-                    if(turmas!=null && turmas.Any())
+                    if (turmas != null && turmas.Any())
                     {
-                        var aulas = await mediator.Send();
+                        foreach (var turma in turmas)
+                        {
+                            var aulas = await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId));
+                            if (aulas == null)
+                            {
+                                //TODO Criar todas aulas da turma
+                            }
+                            else
+                            {
+                                if (!aulas.Any())
+                                {
+                                    //TODO Criar todas aulas da turma
+                                }
+                                //TODO validar aulas que devem ser criadas e aulas que devem ser excluidas
+                            }
+                        }
                     }
                 }
             }
