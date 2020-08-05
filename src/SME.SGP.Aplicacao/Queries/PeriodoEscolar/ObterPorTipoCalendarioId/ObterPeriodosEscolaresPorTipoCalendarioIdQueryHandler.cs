@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using System.Threading;
