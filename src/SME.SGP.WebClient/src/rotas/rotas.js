@@ -59,6 +59,7 @@ import AtaFinalResultados from '~/paginas/Relatorios/Atas/AtaFinalResultados/ata
 import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 import FaltasFrequencia from '~/paginas/Relatorios/Frequencia/faltasFrequencia';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
+import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 
 const rotas = new Map();
 
@@ -842,6 +843,17 @@ rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_PENDENCIAS,
+});
+
+rotas.set(RotasDto.CARTA_INTENCOES, {
+  breadcrumbName: 'Carta de intenções',
+  menu: ['Planejamento '],
+  parent: '/',
+  component: CartaIntencoes,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: tre,
+  // chavePermissao: RotasDto.CARTA_INTENCOES,
 });
 
 const rotasArray = [];
