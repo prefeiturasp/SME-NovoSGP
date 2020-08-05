@@ -117,5 +117,13 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ImprimirConselhoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices] IImpressaoConselhoClasseAlunoUseCase impressaoConselhoClasseAlunoUseCase)
           => Ok(await impressaoConselhoClasseAlunoUseCase.Executar(new FiltroRelatorioConselhoClasseAlunoDto() { ConselhoClasseId = conselhoClasseId, CodigoAluno = alunoCodigo, FechamentoTurmaId = fechamentoTurmaId }));
+
+        [HttpGet("pareceres-conclusivos")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(IEnumerable<ConselhoClasseParecerConclusivoDto>), 200)]
+        [Permissao(Permissao.RPC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarPareceresConclusivos([FromServices] IObterPareceresConclusivosUseCase obterPareceresConclusivosUseCase)
+         => Ok(await obterPareceresConclusivosUseCase.Executar());
     }
 }

@@ -45,6 +45,7 @@ const RotasDto = {
   FALTAS_FREQUENCIA: '/relatorios/frequencia/faltas-frequencia',
   RELATORIO_PENDENCIAS: '/relatorios/pendencias-fechamento',
   CARTA_INTENCOES: '/planejamento/carta-intencoes',
+  RELATORIO_PARECER_CONCLUSIVO: '/relatorios/parecer-conclusivo',
 };
 
 export default RotasDto;

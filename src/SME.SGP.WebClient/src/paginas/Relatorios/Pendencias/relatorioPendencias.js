@@ -13,6 +13,7 @@ import history from '~/servicos/history';
 import ServicoRelatorioPendencias from '~/servicos/Paginas/Relatorios/Pendencias/ServicoRelatorioPendencias';
 import ServicoComponentesCurriculares from '~/servicos/ServicoComponentesCurriculares';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
+import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 
 const RelatorioPendencias = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -189,11 +190,14 @@ const RelatorioPendencias = () => {
   const obterModalidades = async (ue, ano) => {
     if (ue && ano) {
       setCarregandoModalidades(true);
-      const { data } = await api.get(`/v1/ues/${ue}/modalidades?ano=${ano}`);
+      const {
+        data,
+      } = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(ue);
+
       if (data) {
         const lista = data.map(item => ({
-          desc: item.nome,
-          valor: String(item.id),
+          desc: item.descricao,
+          valor: String(item.valor),
         }));
 
         if (lista && lista.length && lista.length === 1) {
@@ -258,12 +262,12 @@ const RelatorioPendencias = () => {
     } else {
       setListaBimestres(bimestresFundMedio);
     }
-    setBimestre('0');
+    setBimestre();
   }, [modalidadeId]);
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoAnos(true);
-    let anosLetivo = [];
+    let anosLetivos = [];
 
     const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
       consideraHistorico: true,
@@ -272,24 +276,30 @@ const RelatorioPendencias = () => {
       consideraHistorico: false,
     });
 
-    anosLetivo = anosLetivoComHistorico.concat(anosLetivoSemHistorico);
+    anosLetivos = anosLetivos.concat(anosLetivoComHistorico);
 
-    if (!anosLetivo.length) {
-      anosLetivo.push({
+    anosLetivoSemHistorico.forEach(ano => {
+      if (!anosLetivoComHistorico.find(a => a.valor === ano.valor)) {
+        anosLetivos.push(ano);
+      }
+    });
+
+    if (!anosLetivos.length) {
+      anosLetivos.push({
         desc: anoAtual,
         valor: anoAtual,
       });
     }
 
-    if (anosLetivo && anosLetivo.length) {
-      const temAnoAtualNaLista = anosLetivo.find(
+    if (anosLetivos && anosLetivos.length) {
+      const temAnoAtualNaLista = anosLetivos.find(
         item => String(item.valor) === String(anoAtual)
       );
       if (temAnoAtualNaLista) setAnoLetivo(anoAtual);
-      else setAnoLetivo(anosLetivo[0].valor);
+      else setAnoLetivo(anosLetivos[0].valor);
     }
 
-    setListaAnosLetivo(anosLetivo);
+    setListaAnosLetivo(anosLetivos);
     setCarregandoAnos(false);
   }, [anoAtual]);
 
@@ -377,12 +387,16 @@ const RelatorioPendencias = () => {
     }
   }, [obterAnosLetivos, modalidadeId, anoLetivo]);
 
-  const cancelar = () => {
-    setAnoLetivo(anoAtual);
-    setComponentesCurricularesId(undefined);
-    setBimestre('0');
-    setExibirDetalhamento(true);
-    setTurmaId(undefined);
+  const cancelar = async () => {
+    await setDreId();
+    await setUeId();
+    await setModalidadeId();
+    await setComponentesCurricularesId(undefined);
+    await setBimestre();
+    await setExibirDetalhamento(true);
+    await setTurmaId(undefined);
+    await setAnoLetivo();
+    await setAnoLetivo(anoAtual);
   };
 
   const desabilitarGerar =
@@ -403,7 +417,7 @@ const RelatorioPendencias = () => {
       dreCodigo: dreId,
       ueCodigo: ueId,
       modalidade: modalidadeId,
-      turmasCodigo: turmaId === '0' ? [] : turmaId,
+      turmasCodigo: turmaId === '0' ? [] : [].concat(turmaId),
       bimestre,
       componentesCurriculares:
         componentesCurricularesId?.length === 1 &&
@@ -515,13 +529,7 @@ const RelatorioPendencias = () => {
                 />
               </Loader>
             </div>
-            <div
-              className={`"col-sm-12 col-md-6 ${
-                modalidadeId && String(modalidadeId) === String(modalidade.EJA)
-                  ? `col-lg-3 col-xl-3`
-                  : `col-lg-4 col-xl-4`
-              } mb-2"`}
-            >
+            <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3  mb-2">
               <Loader loading={carregandoModalidades} tip="">
                 <SelectComponent
                   id="drop-modalidade-rel-pendencias"
@@ -538,27 +546,25 @@ const RelatorioPendencias = () => {
                 />
               </Loader>
             </div>
-            {String(modalidadeId) === String(modalidade.EJA) ? (
-              <div className="col-sm-12 col-md-6 col-lg-1 col-xl-1 mb-2">
-                <Loader loading={carregandoSemestres} tip="">
-                  <SelectComponent
-                    id="drop-semestre-rel-pendencias"
-                    lista={listaSemestres}
-                    valueOption="valor"
-                    valueText="desc"
-                    label="Semestre"
-                    disabled={
-                      !modalidadeId ||
-                      (listaSemestres && listaSemestres.length === 1) ||
-                      String(modalidadeId) === String(modalidade.FUNDAMENTAL)
-                    }
-                    valueSelect={semestre}
-                    onChange={onChangeSemestre}
-                    placeholder="Semestre"
-                  />
-                </Loader>
-              </div>
-            ) : null}
+            <div className="col-sm-12 col-md-6 col-lg-1 col-xl-1 mb-2">
+              <Loader loading={carregandoSemestres} tip="">
+                <SelectComponent
+                  id="drop-semestre-rel-pendencias"
+                  lista={listaSemestres}
+                  valueOption="valor"
+                  valueText="desc"
+                  label="Semestre"
+                  disabled={
+                    !modalidadeId ||
+                    (listaSemestres && listaSemestres.length === 1) ||
+                    String(modalidadeId) !== String(modalidade.EJA)
+                  }
+                  valueSelect={semestre}
+                  onChange={onChangeSemestre}
+                  placeholder="Semestre"
+                />
+              </Loader>
+            </div>
             <div className={`"col-sm-12 col-md-6 col-lg-2`}>
               <Loader loading={carregandoTurmas} tip="">
                 <SelectComponent
