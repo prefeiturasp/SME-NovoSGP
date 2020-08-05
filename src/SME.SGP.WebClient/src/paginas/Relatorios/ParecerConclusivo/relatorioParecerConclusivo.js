@@ -196,7 +196,7 @@ const RelatorioParecerConclusivo = () => {
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoAnosLetivos(true);
-    let anosLetivo = [];
+    let anosLetivos = [];
 
     const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
       consideraHistorico: true,
@@ -205,24 +205,30 @@ const RelatorioParecerConclusivo = () => {
       consideraHistorico: false,
     });
 
-    anosLetivo = anosLetivoComHistorico.concat(anosLetivoSemHistorico);
+    anosLetivos = anosLetivos.concat(anosLetivoComHistorico);
 
-    if (!anosLetivo.length) {
-      anosLetivo.push({
+    anosLetivoSemHistorico.forEach(ano => {
+      if (!anosLetivoComHistorico.find(a => a.valor === ano.valor)) {
+        anosLetivos.push(ano);
+      }
+    });
+
+    if (!anosLetivos.length) {
+      anosLetivos.push({
         desc: anoAtual,
         valor: anoAtual,
       });
     }
 
-    if (anosLetivo && anosLetivo.length) {
-      const temAnoAtualNaLista = anosLetivo.find(
+    if (anosLetivos  && anosLetivos.length) {
+      const temAnoAtualNaLista = anosLetivos.find(
         item => String(item.valor) === String(anoAtual)
       );
       if (temAnoAtualNaLista) setAnoLetivo(anoAtual);
-      else setAnoLetivo(anosLetivo[0].valor);
+      else setAnoLetivo(anosLetivos[0].valor);
     }
 
-    setListaAnosLetivo(anosLetivo);
+    setListaAnosLetivo(anosLetivos);
     setCarregandoAnosLetivos(false);
   }, [anoAtual]);
 
