@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
             if (turma == null)
                 throw new NegocioException($"Turma de codigo [{turmaCodigo}] não localizada!");
-
+            
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataReferencia, bimestre, ehAnoLetivo));
         }
     }
