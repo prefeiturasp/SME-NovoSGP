@@ -19,6 +19,11 @@ class ServicoFiltroRelatorio {
     return api.get(url);
   };
 
+  obterModalidadesPorAbrangencia = codigoUe => {
+    const url = `${urlPadrao}/ues/${codigoUe}/modalidades/abrangencias`;
+    return api.get(url);
+  };
+
   obterAnosEscolares = (codigoUe, modalidade) => {
     const url = `${urlPadrao}/ues/${codigoUe}/modalidades/${modalidade}/anos-escolares`;
     return api.get(url);
