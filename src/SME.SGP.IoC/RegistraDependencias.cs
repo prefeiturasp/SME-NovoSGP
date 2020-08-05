@@ -350,6 +350,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ICopiarCodigoCorrelacaoUseCase, CopiarCodigoCorrelacaoUseCase>();
             services.TryAddScoped<IObterDiarioBordoUseCase, ObterDiarioBordoUseCase>();
             services.TryAddScoped<IInserirDiarioBordoUseCase, InserirDiarioBordoUseCase>();
+            services.TryAddScoped<IAlterarDiarioBordoUseCase, AlterarDiarioBordoUseCase>();
         }
     }
 }

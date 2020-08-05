@@ -33,5 +33,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(diarioBordoDto));
         }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_A, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar([FromServices] IAlterarDiarioBordoUseCase useCase, [FromBody] AlterarDiarioBordoDto diarioBordoDto)
+        {
+            return Ok(await useCase.Executar(diarioBordoDto));
+        }
     }
 }
