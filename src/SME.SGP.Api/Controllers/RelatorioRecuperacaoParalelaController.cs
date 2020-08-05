@@ -3,7 +3,6 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos.Relatorios.RecuperacaoParalela;
 
 namespace SME.SGP.Api.Controllers
 {
