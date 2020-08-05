@@ -130,6 +130,7 @@ function Filtro({ onFiltrar }) {
     if (!dados || dados.length === 0) return;
 
     setAnosLetivos(dados);
+    validarFiltro();
     await ObterDres();
   }, [setAnosLetivos, ObterDres]);
 

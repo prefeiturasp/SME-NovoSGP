@@ -149,7 +149,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
         public PeriodoEscolar ObterUltimoPeriodoPorData(IEnumerable<PeriodoEscolar> periodosEscolares, DateTime data)
             => periodosEscolares.OrderByDescending(o => o.PeriodoInicio)
-                .FirstOrDefault(p => p.PeriodoFim <= data);
+                .FirstOrDefault(p => p.PeriodoFim <= data);        
 
         public async Task<PeriodoEscolar> ObterUltimoPeriodoAbertoAsync(Turma turma)
         {
@@ -176,6 +176,6 @@ namespace SME.SGP.Aplicacao.Consultas
         }
 
             return periodoEscolar;
-        }
+        }        
     }
 }

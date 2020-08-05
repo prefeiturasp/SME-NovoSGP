@@ -25,11 +25,13 @@ namespace SME.SGP.Aplicacao
             var ues = (await repositorioAbrangencia.ObterUes(request.CodigoDre, request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual))?.ToList();
 
             var possuiAbrangenciaEmTodasAsUes = await mediator.Send(new ObterUsuarioPossuiAbrangenciaEmTodasAsUesQuery(request.UsuarioLogado.PerfilAtual));
+
+            ues.OrderBy(c => c.Nome);
+
             if (possuiAbrangenciaEmTodasAsUes)
-            {
                 ues?.Insert(0, new AbrangenciaUeRetorno { Codigo = "-99", NomeSimples = "Todas" });
-            }
-            return ues.OrderBy(c=>c.Nome).ToList();
+
+            return ues;
         }
     }
 }

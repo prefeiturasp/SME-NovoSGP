@@ -691,21 +691,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
         }
 
-        public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool incluirEmei)
-        {
-            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}/{incluirEmei}");
-
-            if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException("Ocorreu uma falha ao consultar o professor");
-
-            if (resposta.StatusCode == HttpStatusCode.NoContent)
-                throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
-
-            var json = await resposta.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
-        }
-
         public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
         {
             var resposta = httpClient.PostAsync("funcionarios/supervisores", new StringContent(JsonConvert.SerializeObject(codigoSupervisores), Encoding.UTF8, "application/json-patch+json")).Result;
@@ -1014,5 +999,16 @@ namespace SME.SGP.Aplicacao.Integracoes
             return Enumerable.Empty<ComponenteCurricularEol>();
         }
 
+        public async Task AtribuirPerfil(string codigoRf, Guid perfil)
+        {
+            var resposta = await httpClient.GetAsync($"perfis/servidores/{codigoRf}/perfil/{perfil}/atribuirPerfil");
+
+            if (resposta.IsSuccessStatusCode)
+                return;
+
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+
+            throw new NegocioException(mensagem);
+        }
     }
 }

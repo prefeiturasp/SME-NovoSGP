@@ -27,8 +27,10 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/fechamentopendencias", ShortName = "FechamentoPendencias", Description = "Relatório de Pendências do Fechamento")]
         FechamentoPendencias = 8,
 
-
+        [Display(Name = "relatorios/parecerconclusivo", ShortName = "ParecerConclusivo", Description = "Relatório de Parecer Conclusivo")]
+        ParecerConclusivo = 9,
+        
         [Display(Name = "relatorios/recuperacaoparalela", ShortName = "RecuperacaoParalela", Description = "Relatório de Recuperação Paralela")]
-        RecuperacaoParalela = 9,
+        RecuperacaoParalela = 10,        
     }
 }
