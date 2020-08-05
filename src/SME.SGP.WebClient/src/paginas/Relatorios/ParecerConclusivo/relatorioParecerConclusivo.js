@@ -144,12 +144,10 @@ const RelatorioParecerConclusivo = () => {
           setCarregandoUes(false);
         });
       if (response?.data?.length) {
-        const lista = response.data
-          .map(item => ({
-            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
-            valor: String(item.codigo),
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'));
+        const lista = response.data.map(item => ({
+          desc: `${item.nome}`,
+          valor: String(item.codigo),
+        }));
 
         if (lista && lista.length && lista.length === 1) {
           setUeId(lista[0].valor);
