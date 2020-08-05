@@ -109,13 +109,11 @@ const RelatorioParecerConclusivo = () => {
           setCarregandoDres(false);
         });
       if (response?.data?.length) {
-        const lista = response.data
-          .map(item => ({
-            desc: item.nome,
-            valor: String(item.codigo),
-            abrev: item.abreviacao,
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'));
+        const lista = response.data.map(item => ({
+          desc: item.nome,
+          valor: String(item.codigo),
+          abrev: item.abreviacao,
+        }));
         setListaDres(lista);
 
         if (lista && lista.length && lista.length === 1) {
