@@ -172,7 +172,9 @@ const RelatorioParecerConclusivo = () => {
   const obterModalidades = async ue => {
     if (ue) {
       setCarregandoModalidades(true);
-      const { data } = await ServicoFiltroRelatorio.obterModalidades(ue)
+      const {
+        data,
+      } = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(ue)
         .catch(e => erros(e))
         .finally(() => {
           setCarregandoModalidades(false);
@@ -221,7 +223,7 @@ const RelatorioParecerConclusivo = () => {
       });
     }
 
-    if (anosLetivos  && anosLetivos.length) {
+    if (anosLetivos && anosLetivos.length) {
       const temAnoAtualNaLista = anosLetivos.find(
         item => String(item.valor) === String(anoAtual)
       );
