@@ -15,13 +15,13 @@ namespace SME.SGP.Api.Controllers
     public class DiarioBordoController : ControllerBase
     {
 
-        [HttpGet("{id}")]
+        [HttpGet("{aulaId}")]
         [ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> Obter(long id, [FromServices] IMediator mediator)
+        public async Task<IActionResult> Obter(long aulaId, [FromServices] IMediator mediator)
         {
-            return Ok(await ObterDiarioBordoPorIdUseCase.Executar(mediator, id));
+            return Ok(await ObterDiarioBordoPorAulaIdUseCase.Executar(mediator, aulaId));
         }
     }
 }

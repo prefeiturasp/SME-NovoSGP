@@ -10,18 +10,18 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDiarioBordoPorIdQueryHandler : IRequestHandler<ObterDiarioBordoPorIdQuery, DiarioBordo>
+    public class ObterDiarioBordoPorAulaIdQueryHandler : IRequestHandler<ObterDiarioBordoPorAulaIdQuery, DiarioBordo>
     {
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
 
-        public ObterDiarioBordoPorIdQueryHandler(IRepositorioDiarioBordo repositorioDiarioBordo)
+        public ObterDiarioBordoPorAulaIdQueryHandler(IRepositorioDiarioBordo repositorioDiarioBordo)
         {
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
         }
 
-        public async Task<DiarioBordo> Handle(ObterDiarioBordoPorIdQuery request, CancellationToken cancellationToken)
+        public async Task<DiarioBordo> Handle(ObterDiarioBordoPorAulaIdQuery request, CancellationToken cancellationToken)
         {
-            var diarioBordo = await repositorioDiarioBordo.ObterPorIdAsync(request.DiarioBordoId);
+            var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId);
 
             return diarioBordo;
         }
