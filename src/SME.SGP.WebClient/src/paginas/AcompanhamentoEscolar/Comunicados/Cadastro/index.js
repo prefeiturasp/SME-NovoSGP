@@ -157,8 +157,10 @@ const ComunicadosCadastro = ({ match }) => {
           id: comunicado.id,
           anoLetivo: comunicado.anoLetivo,
           gruposId: [...comunicado.grupos.map(grupo => String(grupo.id))],
-          CodigoDre: String(comunicado.codigoDre),
-          CodigoUe: String(comunicado.codigoUe),
+          CodigoDre: comunicado.codigoDre
+            ? String(comunicado.codigoDre)
+            : 'todas',
+          CodigoUe: comunicado.codigoUe ? String(comunicado.codigoUe) : 'todas',
           modalidade:
             String(comunicado.modalidade) === '0'
               ? '-99'
@@ -190,7 +192,7 @@ const ComunicadosCadastro = ({ match }) => {
             comunicado.anoLetivo
           );
           setAlunoEspecificado(comunicado.alunoEspecificado);
-          setAlunosSelecionado(comunicado.alunos);
+          setAlunosSelecionado(comunicado.alunos.map(x => x.alunoCodigo));
         }
 
         setDescricaoComunicado(comunicado.descricao);
@@ -404,6 +406,8 @@ const ComunicadosCadastro = ({ match }) => {
   };
 
   const ObterGruposIdPorModalidade = async modalidade => {
+    if (!modalidade || modalidade === '') return;
+
     const dados = await FiltroHelper.ObterGruposIdPorModalidade(modalidade);
 
     if (!dados || dados.length === 0) return;
@@ -425,9 +429,9 @@ const ComunicadosCadastro = ({ match }) => {
 
   const ResetarModalidade = async () => {
     setGruposId([]);
-    setSemestres([]);
     setModalidades(todosTurmasModalidade);
     setModalidadeSelecionada('-99');
+    refForm.setFieldValue('gruposId', []);
     refForm.setFieldValue('modalidade', '-99');
     refForm.setFieldValue('semestre', '');
   };
@@ -469,8 +473,8 @@ const ComunicadosCadastro = ({ match }) => {
     ResetarModalidade();
 
     if (ue == 'todas') {
-      setModalidades([]);
-      setTurmas([]);
+      setModalidades(todosTurmasModalidade);
+      setTurmas(todosTurmasModalidade);
       return;
     }
 
@@ -482,14 +486,18 @@ const ComunicadosCadastro = ({ match }) => {
     handleModoEdicao();
 
     refForm.setFieldValue('semestre', '');
+    refForm.setFieldValue('gruposId', []);
     setModalidadeSelecionada(modalidade);
     resetarTurmas();
 
     if (
       !refForm.state.values.CodigoUe ||
       refForm.state.values.CodigoUe === 'todas'
-    )
+    ) {
+      setGruposId([]);
+      refForm.setFieldValue('gruposId', []);
       return;
+    }
 
     if (modalidade !== '-99') ObterGruposIdPorModalidade(modalidade);
 

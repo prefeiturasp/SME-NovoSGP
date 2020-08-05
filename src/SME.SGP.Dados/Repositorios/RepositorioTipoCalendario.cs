@@ -181,5 +181,13 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
         }
+
+        public async Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivoEModalidades(int anoLetivo, int[] modalidades)
+        {
+            StringBuilder query = ObterQueryListarPorAnoLetivo();
+            query.AppendLine("and modalidade = any(@modalidades)");
+
+             return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidades });
+        }
     }
 }

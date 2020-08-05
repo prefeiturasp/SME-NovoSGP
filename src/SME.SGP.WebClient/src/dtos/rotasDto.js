@@ -29,7 +29,7 @@ const RotasDto = {
   FECHAMENTO_BIMESTRE: '/fechamento/fechamento-bimestre',
   PERIODO_FECHAMENTO_ABERTURA:
     '/calendario-escolar/periodo-fechamento-abertura',
-  PAP: '/relatorios/pap/resumos-e-graficos',
+  PAP: '/relatorios/pap/relatorio-graficos',
   PERIODO_FECHAMENTO_REABERTURA:
     '/calendario-escolar/periodo-fechamento-reabertura',
   RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/relatorio-preenchimento',
@@ -44,6 +44,7 @@ const RotasDto = {
   ATA_FINAL_RESULTADOS: '/relatorios/atas/ata-final-resultados',
   FALTAS_FREQUENCIA: '/relatorios/frequencia/faltas-frequencia',
   RELATORIO_PENDENCIAS: '/relatorios/pendencias-fechamento',
+  RELATORIO_PARECER_CONCLUSIVO: '/relatorios/parecer-conclusivo',
 };
 
 export default RotasDto;

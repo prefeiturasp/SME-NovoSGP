@@ -121,7 +121,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("                            on(a.turma_id is null and a.ue_id is null and a.dre_id = t_dre.dre_id)-- admin dre");
             query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_ue");
             query.AppendLine("                            on(a.turma_id is null and a.dre_id is null and a.ue_id = t_ue.ue_id)-- admin ue");
-            query.AppendLine($"         where { (!consideraHistorico ? "not" : string.Empty) } a.historico");
+            query.AppendLine($"         where { (!consideraHistorico ? " not " : string.Empty) } a.historico");
             query.AppendLine("           and u.login = @login");
             query.AppendLine("           and a.perfil = @perfil");
             query.AppendLine("     ) t");
@@ -187,7 +187,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("        (a.turma_id is null and a.dre_id is null and a.ue_id = t.ue_id) --admin ue");
             query.AppendLine("  inner join ue");
             query.AppendLine("      on ue.id = t.ue_id");
-            query.AppendLine($"where { (!consideraHistorico ? "not" : string.Empty) }a.historico");
+            query.AppendLine($"where { (!consideraHistorico ? "not " : string.Empty) }a.historico");
             query.AppendLine("  and u.login = @login");
             query.AppendLine("  and a.perfil = @perfil");
             query.AppendLine("  and t.turma_codigo = @turma;");
@@ -406,6 +406,16 @@ namespace SME.SGP.Dados.Repositorios
             var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre });
 
             return dados.OrderBy(x => x.Descricao);
+        }
+
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual)
+        {
+            var query = @"select distinct vau.modalidade_codigo from v_abrangencia_usuario vau 
+                            where vau.login = @login
+                            and usuario_perfil  = @perfilAtual
+                            and vau.ue_codigo = @codigoUe";
+
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual });
         }
     }
 }
