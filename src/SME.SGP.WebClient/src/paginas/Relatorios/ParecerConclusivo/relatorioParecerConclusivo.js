@@ -58,6 +58,7 @@ const RelatorioParecerConclusivo = () => {
 
   const onChangeDre = valor => {
     setDreId(valor);
+    setUeId();
   };
 
   const limparCicloEAno = valor => {
