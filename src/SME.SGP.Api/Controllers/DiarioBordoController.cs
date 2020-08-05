@@ -20,9 +20,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> Obter(long aulaId, [FromServices] IMediator mediator)
+        public async Task<IActionResult> Obter([FromServices] IObterDiarioBordoUseCase useCase, long aulaId)
         {
-            return Ok(await ObterDiarioBordoPorAulaIdUseCase.Executar(mediator, aulaId));
+            return Ok(await useCase.Executar(aulaId));
         }
 
         [HttpPost]

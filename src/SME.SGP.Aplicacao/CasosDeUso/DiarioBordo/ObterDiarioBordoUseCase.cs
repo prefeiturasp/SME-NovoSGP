@@ -1,14 +1,20 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public static class ObterDiarioBordoPorAulaIdUseCase
+    public class ObterDiarioBordoUseCase : AbstractUseCase, IObterDiarioBordoUseCase
     {
-        public static async Task<DiarioBordoDto> Executar(IMediator mediator, long aulaId)
+        public ObterDiarioBordoUseCase(IMediator mediator) : base(mediator)
+        {
+        }
+
+        public async Task<DiarioBordoDto> Executar(long aulaId)
         {
             Aula aula = await mediator.Send(new ObterAulaPorIdQuery(aulaId));
             if (aula == null || aula.Excluido)
@@ -31,7 +37,8 @@ namespace SME.SGP.Aplicacao
 
             return dto;
         }
-        private static async Task<bool> AulaDentroDoPeriodo(IMediator mediator, string turmaCodigo, DateTime dataAula)
+
+        private async Task<bool> AulaDentroDoPeriodo(IMediator mediator, string turmaCodigo, DateTime dataAula)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
             if (turma == null)
@@ -47,7 +54,7 @@ namespace SME.SGP.Aplicacao
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));
         }
 
-        private static DiarioBordoDto MapearParaDto(DiarioBordo diarioBordo, bool aberto)
+        private DiarioBordoDto MapearParaDto(DiarioBordo diarioBordo, bool aberto)
         {
             return new DiarioBordoDto
             {
