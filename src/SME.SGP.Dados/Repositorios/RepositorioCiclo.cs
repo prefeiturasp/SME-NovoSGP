@@ -83,7 +83,7 @@ namespace SME.SGP.Dados.Repositorios
                 if(filtro.Modalidade > 0)
                     query.AppendLine("and tca.modalidade = @modalidade ");
 
-                if (!string.IsNullOrEmpty(filtro.CodigoUe) && filtro.CodigoUe.Equals("-99"))
+                if (!string.IsNullOrEmpty(filtro.CodigoUe) && !filtro.CodigoUe.Equals("-99"))
                     query.AppendLine("and ue.ue_id = @codigoUe ");
 
                 var parametros = new { filtro.Modalidade, filtro.CodigoUe };
