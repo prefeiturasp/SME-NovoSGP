@@ -13,6 +13,7 @@ import history from '~/servicos/history';
 import ServicoRelatorioPendencias from '~/servicos/Paginas/Relatorios/Pendencias/ServicoRelatorioPendencias';
 import ServicoComponentesCurriculares from '~/servicos/ServicoComponentesCurriculares';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
+import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 
 const RelatorioPendencias = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -189,9 +190,9 @@ const RelatorioPendencias = () => {
   const obterModalidades = async (ue, ano) => {
     if (ue && ano) {
       setCarregandoModalidades(true);
-      const { data } = await api.get(
-        `/v1/relatorios/filtros/ues/${ue}/modalidades/abrangencias`
-      );
+      const {
+        data,
+      } = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(ue);
 
       if (data) {
         const lista = data.map(item => ({
