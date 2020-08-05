@@ -12,6 +12,7 @@ import history from '~/servicos/history';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoRelatorioParecerConclusivo from '~/servicos/Paginas/Relatorios/ParecerConclusivo/ServicoRelatorioParecerConclusivo';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 
 const RelatorioParecerConclusivo = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -261,6 +262,9 @@ const RelatorioParecerConclusivo = () => {
     if (String(modalidadeSelecionada) === String(modalidade.EJA)) {
       setListaCiclos([{ id: '-99', descricao: 'Todos' }]);
       setCiclo('-99');
+    } else if (String(modalidadeSelecionada) === String(modalidade.INFANTIL)) {
+      setListaCiclos([]);
+      setCiclo();
     } else {
       setCarregandoCiclos(true);
       const retorno = await ServicoRelatorioParecerConclusivo.buscarCiclos(
@@ -388,6 +392,10 @@ const RelatorioParecerConclusivo = () => {
 
   return (
     <>
+      <AlertaModalidadeInfantil
+        exibir={String(modalidadeId) === String(modalidade.INFANTIL)}
+        validarModalidadeFiltroPrincipal={false}
+      />
       <Cabecalho pagina="Parecer Conclusivo" />
       <Card>
         <div className="col-md-12">
