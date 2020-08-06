@@ -23,8 +23,18 @@ class ServicoFiltroRelatorio {
     return api.get(url);
   };
 
-  obterAnosEscolares = (modalidade, cicloId) => {
-    const url = `${urlPadrao}/modalides/${modalidade}/ciclos/${cicloId}/anos-escolares`;
+  obterAnosEscolares = (codigoUe, modalidade) => {
+    const url = `${urlPadrao}/ues/${codigoUe}/modalidades/${modalidade}/anos-escolares`;
+    return api.get(url);
+  };
+
+  obterAnosEscolaresPorAbrangencia = (modalidade, cicloId) => {
+    const url = `${urlPadrao}/modalidades/${modalidade}/ciclos/${cicloId}/anos-escolares`;
+    return api.get(url);
+  };
+
+  buscarCiclos = (codigoUe, modalidade) => {
+    const url = `/v1/relatorios/filtros/ues/${codigoUe}/modalidades/${modalidade}/ciclos?consideraAbrangencia=true`;
     return api.get(url);
   };
 
