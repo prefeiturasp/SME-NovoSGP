@@ -285,7 +285,7 @@ const RelatorioParecerConclusivo = () => {
       setCiclo();
     } else {
       setCarregandoCiclos(true);
-      const retorno = await ServicoRelatorioParecerConclusivo.buscarCiclos(
+      const retorno = await ServicoFiltroRelatorio.buscarCiclos(
         codigoUe,
         modalidadeSelecionada
       )
@@ -293,12 +293,16 @@ const RelatorioParecerConclusivo = () => {
         .finally(() => {
           setCarregandoCiclos(false);
         });
-      if (retorno && retorno.data) {
-        setCiclo();
-        let lista =
-          retorno.data.length > 1 ? [{ id: '-99', descricao: 'Todos' }] : [];
-        lista = lista.concat(retorno.data);
-        setListaCiclos(lista);
+      if (retorno?.data?.length) {
+        if (retorno.data.length === 1) {
+          await setListaCiclos(retorno.data);
+          await setCiclo(String(retorno.data[0].id));
+        } else {
+          setCiclo();
+          let lista = [{ id: '-99', descricao: 'Todos' }];
+          lista = lista.concat(retorno.data);
+          setListaCiclos(lista);
+        }
       }
     }
   };
@@ -323,25 +327,34 @@ const RelatorioParecerConclusivo = () => {
   }, [obterPareceresConclusivos]);
 
   const obterAnos = async (modalidadeIdSelecionada, cicloSelecionado) => {
-    if (String(modalidadeIdSelecionada) === String(modalidade.EJA)) {
+    if (
+      String(modalidadeIdSelecionada) === String(modalidade.EJA) ||
+      String(modalidadeIdSelecionada) === String(modalidade.ENSINO_MEDIO)
+    ) {
       setListaAnos([{ valor: '-99', descricao: 'Todos' }]);
       setAno('-99');
-    } else {
+    } else if (modalidadeId && ciclo) {
       setCarregandoAnos(true);
       cicloSelecionado = cicloSelecionado === '-99' ? '0' : cicloSelecionado;
-      const retorno = await ServicoFiltroRelatorio.obterAnosEscolares(
+      const retorno = await ServicoFiltroRelatorio.obterAnosEscolaresPorAbrangencia(
         modalidadeIdSelecionada,
         cicloSelecionado
       ).finally(setCarregandoAnos(false));
-      if (retorno && retorno.data) {
-        let lista =
-          retorno.data.length > 1 ? [{ valor: '-99', descricao: 'Todos' }] : [];
-        lista = lista.concat(retorno.data);
-        if (cicloSelecionado === '0' && retorno.data.length > 1) {
-          setAno('-99');
+      if (retorno?.data?.length) {
+        if (retorno.data.length === 1) {
+          setListaAnos(retorno.data);
+          setAno(String(retorno.data[0].valor));
+        } else {
+          let lista = [{ valor: '-99', descricao: 'Todos' }];
+          lista = lista.concat(retorno.data);
+          if (cicloSelecionado === '0' && retorno.data.length > 1) {
+            setAno('-99');
+          }
+          setListaAnos(lista);
         }
-        setListaAnos(lista);
       }
+    } else {
+      setAno();
     }
   };
 
@@ -367,7 +380,7 @@ const RelatorioParecerConclusivo = () => {
   }, [modalidadeId, ueId]);
 
   useEffect(() => {
-    if (modalidadeId && ciclo) obterAnos(modalidadeId, ciclo);
+    obterAnos(modalidadeId, ciclo);
   }, [modalidadeId, ciclo]);
 
   const cancelar = async () => {
@@ -576,7 +589,7 @@ const RelatorioParecerConclusivo = () => {
                   onChange={onChangeAnos}
                   valueSelect={ano}
                   placeholder="Ano"
-                  multiple={String(modalidadeId) !== String(modalidade.EJA)}
+                  multiple
                 />
               </Loader>
             </div>
