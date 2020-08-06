@@ -277,7 +277,10 @@ const RelatorioParecerConclusivo = () => {
   };
 
   const obterCiclos = async (modalidadeSelecionada, codigoUe) => {
-    if (String(modalidadeSelecionada) === String(modalidade.EJA)) {
+    if (
+      String(modalidadeSelecionada) === String(modalidade.EJA) ||
+      String(modalidadeSelecionada) === String(modalidade.ENSINO_MEDIO)
+    ) {
       setListaCiclos([{ id: '-99', descricao: 'Todos' }]);
       setCiclo('-99');
     } else if (String(modalidadeSelecionada) === String(modalidade.INFANTIL)) {
@@ -327,15 +330,16 @@ const RelatorioParecerConclusivo = () => {
   }, [obterPareceresConclusivos]);
 
   const obterAnos = async (modalidadeIdSelecionada, cicloSelecionado) => {
-    if (
-      String(modalidadeIdSelecionada) === String(modalidade.EJA) ||
-      String(modalidadeIdSelecionada) === String(modalidade.ENSINO_MEDIO)
-    ) {
+    if (String(modalidadeIdSelecionada) === String(modalidade.EJA)) {
       setListaAnos([{ valor: '-99', descricao: 'Todos' }]);
       setAno('-99');
-    } else if (modalidadeId && ciclo) {
+    } else if (modalidadeIdSelecionada && cicloSelecionado) {
       setCarregandoAnos(true);
-      cicloSelecionado = cicloSelecionado === '-99' ? '0' : cicloSelecionado;
+      cicloSelecionado =
+        cicloSelecionado === '-99' ||
+        String(modalidadeIdSelecionada) === String(modalidade.ENSINO_MEDIO)
+          ? '0'
+          : cicloSelecionado;
       const retorno = await ServicoFiltroRelatorio.obterAnosEscolaresPorAbrangencia(
         modalidadeIdSelecionada,
         cicloSelecionado
@@ -570,7 +574,10 @@ const RelatorioParecerConclusivo = () => {
                   lista={listaCiclos}
                   valueOption="id"
                   valueText="descricao"
-                  disabled={listaCiclos && listaCiclos.length === 1}
+                  disabled={
+                    (listaCiclos && listaCiclos.length === 1) ||
+                    String(modalidadeId) === String(modalidade.MEDIO)
+                  }
                   onChange={onChangeCiclos}
                   valueSelect={ciclo}
                   placeholder="Ciclo"
