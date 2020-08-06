@@ -99,7 +99,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join ue ue on t.ue_id = ue.id ");
             query.AppendLine("inner join v_abrangencia_usuario vau");
             query.AppendLine("on vau.turma_id = t.turma_id");
-            query.AppendLine("where tc.descricao is not null and vau.usuario_id = @usuarioId and vau.usuario_perfil = @perfil ");
+            query.AppendLine("where tc.descricao is not null and vau.usuario_id = @usuarioId and vau.usuario_perfil = @perfil and tc.id <> 4");
 
             if (filtro.Modalidade > 0)
                 query.AppendLine("and tca.modalidade = @modalidade ");
