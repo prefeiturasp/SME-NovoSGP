@@ -29,6 +29,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/parecerconclusivo", ShortName = "ParecerConclusivo", Description = "Relatório de Parecer Conclusivo")]
         ParecerConclusivo = 9,
-
+        
+        [Display(Name = "relatorios/recuperacaoparalela", ShortName = "RecuperacaoParalela", Description = "Relatório de Recuperação Paralela")]
+        RecuperacaoParalela = 10,        
     }
 }
