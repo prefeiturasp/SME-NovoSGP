@@ -57,20 +57,32 @@ const RelatorioParecerConclusivo = () => {
   };
 
   const onChangeDre = valor => {
-    setDreId(valor);
+    setListaUes([]);
     setUeId();
-  };
-
-  const onChangeUe = valor => {
     setCiclo();
     setListaCiclos([]);
     setModalidadeId();
+    setListaModalidades([]);
+    setAno();
+    setListaAnos([]);
+    setDreId(valor);
+  };
+
+  const onChangeUe = valor => {
+    setModalidadeId();
+    setListaModalidades([]);
+    setCiclo();
+    setListaCiclos([]);
+    setAno();
+    setListaAnos([]);
     setUeId(valor);
   };
 
   const onChangeModalidade = valor => {
     setAno();
     setListaAnos([]);
+    setCiclo();
+    setListaCiclos([]);
     setModalidadeId(valor);
   };
 
@@ -85,6 +97,9 @@ const RelatorioParecerConclusivo = () => {
   };
 
   const onChangeAnos = valor => {
+    if (valor.find(e => e === '-99')) {
+      valor = '-99';
+    }
     setAno(valor);
   };
 
@@ -307,18 +322,24 @@ const RelatorioParecerConclusivo = () => {
     obterPareceresConclusivos();
   }, [obterPareceresConclusivos]);
 
-  const obterAnos = async (codigoUe, modalidadeIdSelecionada) => {
+  const obterAnos = async (modalidadeIdSelecionada, cicloSelecionado) => {
     if (String(modalidadeIdSelecionada) === String(modalidade.EJA)) {
       setListaAnos([{ valor: '-99', descricao: 'Todos' }]);
       setAno('-99');
     } else {
       setCarregandoAnos(true);
+      cicloSelecionado = cicloSelecionado === '-99' ? '0' : cicloSelecionado;
       const retorno = await ServicoFiltroRelatorio.obterAnosEscolares(
-        codigoUe,
-        modalidadeIdSelecionada
+        modalidadeIdSelecionada,
+        cicloSelecionado
       ).finally(setCarregandoAnos(false));
       if (retorno && retorno.data) {
-        const lista = retorno.data;
+        let lista =
+          retorno.data.length > 1 ? [{ valor: '-99', descricao: 'Todos' }] : [];
+        lista = lista.concat(retorno.data);
+        if (cicloSelecionado === '0' && retorno.data.length > 1) {
+          setAno('-99');
+        }
         setListaAnos(lista);
       }
     }
@@ -342,7 +363,6 @@ const RelatorioParecerConclusivo = () => {
     if (modalidadeId && ueId) {
       setCiclo();
       obterCiclos(modalidadeId, ueId);
-      obterAnos(ueId, modalidadeId);
     }
   }, [modalidadeId, ueId]);
 
