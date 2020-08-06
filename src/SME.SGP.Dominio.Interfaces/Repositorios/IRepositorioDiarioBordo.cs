@@ -9,5 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioDiarioBordo: IRepositorioBase<DiarioBordo>
     {
         Task<DiarioBordo> ObterPorAulaId(long aulaId);
+        Task<bool> ExisteDiarioParaAula(long aulaId);
+        Task ExcluirDiarioBordoDaAula(long aulaId);
     }
 }

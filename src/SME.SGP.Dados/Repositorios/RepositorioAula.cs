@@ -760,5 +760,17 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DateTime>(query, new { aulaId });
         }
+
+        public async Task<bool> ObterTurmaInfantilPorAula(long aulaId)
+        {
+            var query = @"select t.modalidade_codigo
+                            from aula a
+                           inner join turma t on t.turma_id = a.turma_id
+                           where a.id = @aulaId";
+
+            var modalidade = await database.Conexao.QueryFirstAsync<int>(query, new { aulaId });
+
+            return modalidade == (int)Modalidade.Infantil;
+        }
     }
 }
