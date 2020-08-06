@@ -60,7 +60,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterCiclosPorModalidadeECodigoUeUseCase.Executar(new FiltroCicloPorModalidadeECodigoUeDto(modalidade, codigoUe, consideraAbrangencia)));
         }
 
-        [HttpGet("modalides/{modalidade}/ciclos/{cicloId}/anos-escolares")]
+        [HttpGet("modalidades/{modalidade}/ciclos/{cicloId}/anos-escolares")]
         [ProducesResponseType(typeof(IEnumerable<RetornoCicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
