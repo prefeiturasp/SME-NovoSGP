@@ -61,23 +61,16 @@ const RelatorioParecerConclusivo = () => {
     setUeId();
   };
 
-  const limparCicloEAno = valor => {
-    setAno();
-    setCiclo();
-    if (!valor) {
-      setListaAnos([]);
-      setListaCiclos([]);
-    }
-  };
-
   const onChangeUe = valor => {
-    limparCicloEAno(valor);
+    setCiclo();
+    setListaCiclos([]);
     setModalidadeId();
     setUeId(valor);
   };
 
   const onChangeModalidade = valor => {
-    limparCicloEAno(valor);
+    setAno();
+    setListaAnos([]);
     setModalidadeId(valor);
   };
 
@@ -86,6 +79,8 @@ const RelatorioParecerConclusivo = () => {
   };
 
   const onChangeCiclos = valor => {
+    setAno();
+    setListaAnos([]);
     setCiclo(valor);
   };
 
@@ -350,6 +345,10 @@ const RelatorioParecerConclusivo = () => {
       obterAnos(ueId, modalidadeId);
     }
   }, [modalidadeId, ueId]);
+
+  useEffect(() => {
+    if (modalidadeId && ciclo) obterAnos(modalidadeId, ciclo);
+  }, [modalidadeId, ciclo]);
 
   const cancelar = async () => {
     await setCiclo();
