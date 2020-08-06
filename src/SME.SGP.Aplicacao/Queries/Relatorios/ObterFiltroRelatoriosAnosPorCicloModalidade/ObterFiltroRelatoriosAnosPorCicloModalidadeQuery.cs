@@ -10,10 +10,10 @@ namespace SME.SGP.Aplicacao
         public ObterFiltroRelatoriosAnosPorCicloModalidadeQuery(long cicloId, Modalidade modalidade)
         {
             CicloId = cicloId;
-            Modalidade = modalidade;
+            Modalidade = modalidade;            
         }
 
         public long CicloId { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public Modalidade Modalidade { get; set; }        
     }
 }

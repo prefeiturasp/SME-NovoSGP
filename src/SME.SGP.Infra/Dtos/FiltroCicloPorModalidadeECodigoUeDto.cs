@@ -6,10 +6,15 @@
 
         public string CodigoUe { get; set; }
 
-        public FiltroCicloPorModalidadeECodigoUeDto(int modalidade, string codigoUe)
+        public bool ConsideraAbrangencia { get; set; }
+
+        public FiltroCicloPorModalidadeECodigoUeDto(int modalidade, string codigoUe, bool consideraAbrangencia)
         {
             Modalidade = modalidade;
             CodigoUe = codigoUe;
+            ConsideraAbrangencia = consideraAbrangencia;
         }
+
+
     }
 }
