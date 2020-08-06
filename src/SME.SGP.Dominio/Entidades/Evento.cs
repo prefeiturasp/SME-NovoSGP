@@ -398,5 +398,10 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("O tipo de evento não foi encontrado.");
             }
         }
+
+        public bool DataEstaNoRangeDoEvento(DateTime data)
+        {
+            return data >= DataInicio && data <= DataFim;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -20,6 +21,14 @@ namespace SME.SGP.Dominio
         public bool DataDentroPeriodo(DateTime data)
         {
             return PeriodoInicio.Date <= data.Date && PeriodoFim.Date >= data.Date;
+        }
+
+        public IEnumerable<DateTime> ObterIntervaloDatas()
+        {
+            var datas = new List<DateTime>();
+            for (var dia = PeriodoInicio.Date; dia <= PeriodoFim.Date; dia = dia.AddDays(1))
+                datas.Add(dia);
+            return datas;
         }
 
         public void Validar(int anoBase, bool eja)
