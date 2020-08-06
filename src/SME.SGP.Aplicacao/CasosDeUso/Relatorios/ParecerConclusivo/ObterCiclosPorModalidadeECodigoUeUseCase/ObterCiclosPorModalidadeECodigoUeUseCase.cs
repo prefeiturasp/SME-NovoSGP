@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         
         public async Task<IEnumerable<RetornoCicloDto>> Executar(FiltroCicloPorModalidadeECodigoUeDto filtro)
         {
-            return await mediator.Send(new ObterCiclosPorModalidadeECodigoUeQuery(filtro.Modalidade, filtro.CodigoUe));
+            return await mediator.Send(new ObterCiclosPorModalidadeECodigoUeQuery(filtro.Modalidade, filtro.CodigoUe, filtro.ConsideraAbrangencia));
         }
     }
 }
