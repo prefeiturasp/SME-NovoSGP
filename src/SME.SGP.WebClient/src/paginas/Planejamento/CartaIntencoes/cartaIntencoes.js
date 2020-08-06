@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import AlertaNaoPermiteTurmaInfantil from '~/componentes-sgp/AlertaNaoPermiteTurmaInfantil/alertaNaoPermiteTurmaInfantil';
+import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
@@ -139,7 +139,7 @@ const CartaIntencoes = () => {
       ) : (
         ''
       )}
-      {/* <AlertaNaoPermiteTurmaInfantil /> */}
+      <AlertaPermiteSomenteTurmaInfantil />
       <ModalErrosCartaIntencoes />
       <Cabecalho pagina="Carta de Intenções" />
       <LoaderCartaIntencoes>
