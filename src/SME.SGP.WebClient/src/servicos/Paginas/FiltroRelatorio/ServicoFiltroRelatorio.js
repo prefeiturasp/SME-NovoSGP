@@ -1,5 +1,4 @@
 import api from '~/servicos/api';
-import modalidade from '~/dtos/modalidade';
 import { erros } from '~/servicos/alertas';
 
 const urlPadrao = `v1/relatorios/filtros`;
@@ -24,8 +23,8 @@ class ServicoFiltroRelatorio {
     return api.get(url);
   };
 
-  obterAnosEscolares = (codigoUe, modalidade) => {
-    const url = `${urlPadrao}/ues/${codigoUe}/modalidades/${modalidade}/anos-escolares`;
+  obterAnosEscolares = (modalidade, cicloId) => {
+    const url = `${urlPadrao}/modalides/${modalidade}/ciclos/${cicloId}/anos-escolares`;
     return api.get(url);
   };
 
@@ -38,11 +37,11 @@ class ServicoFiltroRelatorio {
     try {
       let url = `${urlPadrao}/ues/${codigoUe}/anoletivo/${anoLetivo}/turmas?`;
 
-      if (semestre && semestre != 0) url += `semestre=${semestre}&`;
+      if (semestre && semestre !== 0) url += `semestre=${semestre}&`;
 
-      if (modalidade && modalidade != 0) url += `modalidade=${modalidade}`;
+      if (modalidade && modalidade !== 0) url += `modalidade=${modalidade}`;
 
-      var dados = await api.get(url);
+      const dados = await api.get(url);
 
       return dados;
     } catch (error) {
