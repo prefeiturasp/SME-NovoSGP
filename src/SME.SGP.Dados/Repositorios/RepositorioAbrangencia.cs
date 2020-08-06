@@ -416,6 +416,6 @@ namespace SME.SGP.Dados.Repositorios
                             and vau.ue_codigo = @codigoUe";
 
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual });
-        }
+        }       
     }
 }
