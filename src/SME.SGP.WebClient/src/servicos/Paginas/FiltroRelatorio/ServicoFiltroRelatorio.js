@@ -29,7 +29,12 @@ class ServicoFiltroRelatorio {
   };
 
   obterAnosEscolaresPorAbrangencia = (modalidade, cicloId) => {
-    const url = `${urlPadrao}/modalides/${modalidade}/ciclos/${cicloId}/anos-escolares`;
+    const url = `${urlPadrao}/modalidades/${modalidade}/ciclos/${cicloId}/anos-escolares`;
+    return api.get(url);
+  };
+
+  buscarCiclos = (codigoUe, modalidade) => {
+    const url = `/v1/relatorios/filtros/ues/${codigoUe}/modalidades/${modalidade}/ciclos?consideraAbrangencia=true`;
     return api.get(url);
   };
 
