@@ -88,40 +88,6 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(aula, disciplinaId, aberto);
         }
 
-        public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
-        {
-            var existeRegistro = await consultasFrequencia.FrequenciaAulaRegistrada(aulaId);
-            if (!existeRegistro)
-                existeRegistro = await repositorioPlanoAula.PlanoAulaRegistradoAsync(aulaId);
-
-            return existeRegistro;
-        }
-
-        public async Task<bool> ChecarFrequenciaPlanoNaRecorrencia(long aulaId)
-        {
-            var existeRegistro = await ChecarFrequenciaPlanoAula(aulaId);
-
-            if (!existeRegistro)
-            {
-                var aulaAtual = repositorio.ObterPorId(aulaId);
-
-                var aulasRecorrentes = await repositorio.ObterAulasRecorrencia(aulaAtual.AulaPaiId ?? aulaAtual.Id, aulaId);
-
-                if (aulasRecorrentes != null)
-                {
-                    foreach (var aula in aulasRecorrentes)
-                    {
-                        existeRegistro = await ChecarFrequenciaPlanoAula(aula.Id);
-
-                        if (existeRegistro)
-                            break;
-                    }
-                }
-            }
-
-            return existeRegistro;
-        }
-
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             return await repositorio.ObterAulaDataTurmaDisciplina(data, turmaId, disciplinaId);
