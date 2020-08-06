@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<DiarioBordo> ObterPorAulaId(long aulaId);
         Task<bool> ExisteDiarioParaAula(long aulaId);
+        Task ExcluirDiarioBordoDaAula(long aulaId);
     }
 }

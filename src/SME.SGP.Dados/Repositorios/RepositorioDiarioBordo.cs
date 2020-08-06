@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -31,5 +32,11 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<int>(query, new { aulaId })).Any();
         }
 
+        public async Task ExcluirDiarioBordoDaAula(long aulaId)
+        {
+            // Excluir plano de aula
+            var command = "update diario_bordo set excluido = true where not excluido and aula_id = @aulaId";
+            await database.ExecuteAsync(command, new { aulaId });
+        }
     }
 }
