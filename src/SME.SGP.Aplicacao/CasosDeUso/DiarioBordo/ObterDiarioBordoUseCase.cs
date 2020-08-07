@@ -64,7 +64,8 @@ namespace SME.SGP.Aplicacao
                 Migrado = diarioBordo.Migrado,
                 Planejamento = diarioBordo.Planejamento,
                 ReflexoesReplanejamento = diarioBordo.ReflexoesReplanejamento,
-                TemPeriodoAberto = aberto
+                TemPeriodoAberto = aberto,
+                Auditoria = (AuditoriaDto)diarioBordo
             };
         }
     }
