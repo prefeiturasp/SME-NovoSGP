@@ -42,6 +42,8 @@ namespace SME.SGP.Aplicacao
                     {
                         var aulasACriar = new List<Aula>();
                         var aulasAExcluir = new List<Aula>();
+
+                        //TODO dividir processamento em mais threads
                         foreach (var turma in turmas)
                         {
                             var aulas = await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId));
@@ -59,19 +61,21 @@ namespace SME.SGP.Aplicacao
                                 {
                                     var diasSemAula = diasParaCriarAula.Where(c => !aulas.Any(a => a.DataAula == c.Data));
                                     aulasACriar.AddRange(ObterAulasParaCriacao(tipoCalendarioId, diasSemAula, turma));
-
                                     var aulasDaTurmaParaExcluir = aulas.Where(c => diasParaExcluirAula.Any(a => a.Data == c.DataAula));
-                                    //TODO OBTER FREQUENCIA E DIARIO DE BORDO DAS AULAS PARA EXCLUIR
+                                    //TODO VALIDAR SE AULAS POSSUEM FREQUENCIA
+                                    //TODO NOTIFICACAO SE POSSUIR FREQUENCIA
+                                    //TODO EXCLUIR AULAS
                                 }
                             }
+                            if (aulasACriar.Count >= 1000)
+                            {
+                                repositorioAula.SalvarVarias(aulasACriar);
+                                aulasACriar.Clear();
+                            }
+
                         }
-                        //TODO CRIAR
-                        unitOfWork.IniciarTransacao();
-                        foreach (var aula in aulasACriar)
-                        {
-                            await repositorioAula.SalvarAsync(aula);
-                        }
-                        unitOfWork.PersistirTransacao();
+                        if (aulasACriar.Any())
+                            repositorioAula.SalvarVarias(aulasACriar);
                     }
                 }
             }

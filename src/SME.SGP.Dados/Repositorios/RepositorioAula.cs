@@ -1,9 +1,14 @@
 ﻿using Dapper;
+using Dommel;
+using Npgsql;
+using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -765,6 +770,50 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select * from aula where tipo_calendario_id = @tipoCalendarioId and turma_id = @turmaId";
             return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId });
+        }
+
+        public void SalvarVarias(IEnumerable<Aula> aulas)
+        {
+            var sql = @"copy aula ( 
+                                        data_aula, 
+                                        disciplina_id, 
+                                        quantidade, 
+                                        recorrencia_aula, 
+                                        tipo_aula, 
+                                        tipo_calendario_id, 
+                                        turma_id, 
+                                        ue_id, 
+                                        professor_rf,
+                                        criado_em,
+                                        criado_por,
+                                        criado_rf)
+                            from
+                            stdin (FORMAT binary)";
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            {
+                foreach (var aula in aulas)
+                {
+                    writer.StartRow();
+                    writer.Write(aula.DataAula);
+                    writer.Write(aula.DisciplinaId);
+                    writer.Write(aula.Quantidade);
+                    writer.Write((int)aula.RecorrenciaAula, NpgsqlDbType.Integer);
+                    writer.Write((int)aula.TipoAula, NpgsqlDbType.Integer);
+                    writer.Write(aula.TipoCalendarioId);
+                    writer.Write(aula.TurmaId);
+                    writer.Write(aula.UeId);
+                    writer.Write(aula.ProfessorRf);
+                    writer.Write(aula.CriadoEm);
+                    writer.Write("Sistema");
+                    writer.Write("Sistema");
+                }
+                writer.Complete();
+            }
+        }
+
+        public async Task ExcluirPeloSistemaAsync(Aula aula)
+        {
+            await database.Conexao.DeleteAsync(aula);
         }
     }
 }
