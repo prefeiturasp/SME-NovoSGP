@@ -419,7 +419,7 @@ const RelatorioParecerConclusivo = () => {
       semestre:
         String(modalidadeId) === String(modalidade.EJA) ? semestre : null,
       ciclo: ciclo === '-99' ? 0 : ciclo,
-      anos: ano.toString() !== '-99' ? ano : [],
+      anos: ano.toString() !== '-99' ? [].concat(ano) : [],
       parecerConclusivoId:
         parecerConclusivoId === '-99' ? 0 : parecerConclusivoId,
       tipoFormatoRelatorio: formato,
