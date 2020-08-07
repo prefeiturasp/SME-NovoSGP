@@ -19,5 +19,7 @@ namespace SME.SGP.Infra.Dtos
         public bool Migrado { get; set; }
 
         public bool TemPeriodoAberto { get; set; }
+
+        public AuditoriaDto Auditoria { get; set; }
     }
 }
