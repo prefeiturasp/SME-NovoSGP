@@ -27,10 +27,6 @@ namespace SME.SGP.Aplicacao
     {
         public ObterDatasAulasPorProfessorEComponenteQueryValidator()
         {
-            RuleFor(a => a.ProfessorRf)
-                .NotEmpty()
-                .WithMessage("Necessário informar o código do professor para consulta de suas aulas!");
-
             RuleFor(a => a.TurmaCodigo)
                 .NotEmpty()
                 .WithMessage("Necessário informar o código da turma para consulta de suas aulas!");
