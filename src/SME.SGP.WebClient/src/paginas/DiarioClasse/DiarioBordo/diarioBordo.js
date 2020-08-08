@@ -22,10 +22,13 @@ import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import ModalSelecionarAula from './modalSelecionarAula';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const DiarioBordo = () => {
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
+  const permissoesTela = usuario.permissoes[RotasDto.DIARIO_BORDO];
 
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
@@ -56,6 +59,8 @@ const DiarioBordo = () => {
   const [exibirModalSelecionarAula, setExibirModalSelecionarAula] = useState(
     false
   );
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const inicial = {
     aulaId: 0,
@@ -74,6 +79,34 @@ const DiarioBordo = () => {
       ),
   });
 
+  useEffect(() => {
+    const naoSetarSomenteConsultaNoStore = !ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+
+    const soConsulta = verificaSomenteConsulta(
+      permissoesTela,
+      naoSetarSomenteConsultaNoStore
+    );
+    setSomenteConsulta(soConsulta);
+    const desabilitar =
+      auditoria && auditoria.id > 0
+        ? soConsulta || !permissoesTela.podeAlterar
+        : soConsulta || !permissoesTela.podeIncluir;
+    setDesabilitarCampos(desabilitar);
+
+    if (!temPeriodoAberto) {
+      setDesabilitarCampos(true);
+    }
+  }, [
+    auditoria,
+    permissoesTela,
+    temPeriodoAberto,
+    modalidadesFiltroPrincipal,
+    turmaSelecionada,
+  ]);
+
   const resetarTela = useCallback(
     form => {
       setValoresIniciais(inicial);
@@ -84,6 +117,7 @@ const DiarioBordo = () => {
       setAulaSelecionada();
       setModoEdicao(false);
       setAuditoria();
+      setTemPeriodoAberto(true);
     },
     [inicial]
   );
@@ -220,7 +254,7 @@ const DiarioBordo = () => {
       sucesso('Diário de bordo salvo com sucesso.');
       if (clicouBtnSalvar) {
         setModoEdicao(false);
-        obterDiarioBordo(aulaSelecionada.aulaId);
+        resetarTela();
       }
       salvouComSucesso = true;
     }
@@ -338,10 +372,11 @@ const DiarioBordo = () => {
   };
 
   const onClickVoltar = async form => {
-    if (modoEdicao && turmaInfantil) {
+    if (modoEdicao && turmaInfantil && !desabilitarCampos) {
       const confirmado = await pergutarParaSalvar();
       if (confirmado) {
-        validaAntesDoSubmit(form);
+        await validaAntesDoSubmit(form);
+        history.push(URL_HOME);
       } else {
         history.push(URL_HOME);
       }
@@ -382,7 +417,7 @@ const DiarioBordo = () => {
         ''
       )}
       <AlertaModalidadeInfantil naoPermiteTurmaInfantil={false} />
-      <AlertaPeriodoEncerrado exibir={!temPeriodoAberto} />
+      <AlertaPeriodoEncerrado exibir={!temPeriodoAberto && !somenteConsulta} />
       <ModalMultiLinhas
         key="erros-diario-bordo"
         visivel={mostrarErros}
@@ -434,7 +469,7 @@ const DiarioBordo = () => {
                       bold
                       className="mr-3"
                       onClick={() => onClickCancelar(form)}
-                      disabled={!modoEdicao}
+                      disabled={!modoEdicao || desabilitarCampos}
                     />
                     <Button
                       id="btn-gerar-ata-diario-bordo"
@@ -444,7 +479,9 @@ const DiarioBordo = () => {
                       bold
                       className="mr-2"
                       onClick={() => validaAntesDoSubmit(form, true)}
-                      disabled={!modoEdicao || !turmaInfantil}
+                      disabled={
+                        !modoEdicao || !turmaInfantil || desabilitarCampos
+                      }
                     />
                   </div>
                   <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
@@ -502,6 +539,7 @@ const DiarioBordo = () => {
                                   onChangeCampos();
                                 }
                               }}
+                              desabilitar={desabilitarCampos}
                             />
                           </PainelCollapse.Painel>
                         </PainelCollapse>
@@ -524,6 +562,7 @@ const DiarioBordo = () => {
                                   onChangeCampos();
                                 }
                               }}
+                              desabilitar={desabilitarCampos}
                             />
                           </PainelCollapse.Painel>
                         </PainelCollapse>
