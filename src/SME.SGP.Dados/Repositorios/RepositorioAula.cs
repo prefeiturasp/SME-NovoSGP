@@ -767,8 +767,8 @@ namespace SME.SGP.Dados.Repositorios
                  from aula
                 where not excluido
                   and DATE(data_aula) = @data
-                  and turma_id = @turmaId
-                  and disciplina_id = @disciplinaId
+                  and turma_id = @codigoTurma
+                  and disciplina_id = @componenteCurricularCodigo
                   and aula_cj = @aulaCJ";
 
             return await database.Conexao.QueryAsync<AulaConsultaDto>(query, new
