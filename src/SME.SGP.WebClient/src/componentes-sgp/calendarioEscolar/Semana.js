@@ -99,17 +99,16 @@ const Dia = props => {
           tipoEventosDiaLista &&
           tipoEventosDiaLista.tiposEvento && (
             <TipoEventosLista className="position-absolute">
-              {tipoEventosDiaLista.tiposEvento.map(tipoEvento => {
-                return (
-                  <TipoEvento
-                    key={shortid.generate()}
-                    className="d-block badge badge-pill ml-auto mr-0"
-                    cor={Base.RoxoEventoCalendario}
-                  >
-                    {tipoEvento && 'Evento'}
-                  </TipoEvento>
-                );
-              })}
+              {tipoEventosDiaLista?.tiposEvento &&
+              tipoEventosDiaLista.tiposEvento?.length ? (
+                <TipoEvento
+                  key={shortid.generate()}
+                  className="d-block badge badge-pill ml-auto mr-0"
+                  cor={Base.RoxoEventoCalendario}
+                >
+                  Evento
+                </TipoEvento>
+              ) : null}
             </TipoEventosLista>
           )}
       </Div>

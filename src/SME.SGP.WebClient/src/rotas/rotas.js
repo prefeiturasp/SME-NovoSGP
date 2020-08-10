@@ -60,6 +60,7 @@ import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 import FaltasFrequencia from '~/paginas/Relatorios/Frequencia/faltasFrequencia';
 import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
+import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
 
 const rotas = new Map();
 
@@ -854,6 +855,17 @@ rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_PENDENCIAS,
+});
+
+rotas.set(RotasDto.RELATORIO_PARECER_CONCLUSIVO, {
+  breadcrumbName: 'Parecer conclusivo',
+  menu: ['Relatórios', 'Fechamento'],
+  parent: '/',
+  component: RelatorioParecerConclusivo,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_PARECER_CONCLUSIVO,
 });
 
 const rotasArray = [];

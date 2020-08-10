@@ -45,6 +45,7 @@ const RotasDto = {
   FALTAS_FREQUENCIA: '/relatorios/frequencia/faltas-frequencia',
   DIARIO_BORDO: '/diario-classe/diario-bordo',
   RELATORIO_PENDENCIAS: '/relatorios/pendencias-fechamento',
+  RELATORIO_PARECER_CONCLUSIVO: '/relatorios/parecer-conclusivo',
 };
 
 export default RotasDto;
