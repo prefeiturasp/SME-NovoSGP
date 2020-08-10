@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, request.CodigoComponenteCurricular, usuarioLogado.CodigoRf));
+            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularQuery(request.DataAula, request.CodigoTurma, request.CodigoComponenteCurricular, usuarioLogado.EhProfessorCj()));
             if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
                 throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
 

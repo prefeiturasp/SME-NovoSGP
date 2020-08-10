@@ -534,7 +534,7 @@ namespace SME.SGP.Dados.Repositorios
                         }, param: new { id })).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf, long? aulaPaiId = null)
+        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, bool aulaCJ, long? aulaPaiId = null)
         {
             var query = @"select DATE(data_aula)
                  from aula
@@ -542,7 +542,7 @@ namespace SME.SGP.Dados.Repositorios
                   and DATE(data_aula) = ANY(@datas)
                   and turma_id = @turmaId
                   and disciplina_id = @disciplinaId
-                  and professor_rf = @professorRf";
+                  and aula_cj = @aulaCJ";
 
             if (aulaPaiId.HasValue)
                 query += " and ((aula_pai_id is null and id <> @aulaPaiId) or (aula_pai_id is not null and aula_pai_id <> @aulaPaiId))";
@@ -552,7 +552,7 @@ namespace SME.SGP.Dados.Repositorios
                 datas,
                 turmaId,
                 disciplinaId,
-                professorRf,
+                aulaCJ,
                 aulaPaiId
             }));
         }
@@ -759,6 +759,25 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select data_aula from aula where id = @aulaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DateTime>(query, new { aulaId });
+        }
+
+        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricular(DateTime dataAula, string codigoTurma, string componenteCurricularCodigo, bool aulaCJ)
+        {
+            var query = @"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = @data
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId
+                  and aula_cj = @aulaCJ";
+
+            return await database.Conexao.QueryAsync<AulaConsultaDto>(query, new
+            {
+                data = dataAula.Date,
+                codigoTurma,
+                componenteCurricularCodigo,
+                aulaCJ
+            });
         }
 
         public async Task<bool> ObterTurmaInfantilPorAula(long aulaId)
