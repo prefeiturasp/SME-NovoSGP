@@ -9,18 +9,20 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDatasAulasPorProfessorEComponenteQuery: IRequest<IEnumerable<DatasAulasDto>>
     {
-        public ObterDatasAulasPorProfessorEComponenteQuery(string professorRf, string turmaCodigo, string componenteCurricularCodigo, bool ehProfessorCj, bool temPerfilSupervisorOuDiretor)
+        public ObterDatasAulasPorProfessorEComponenteQuery(string professorRf, string turmaCodigo, string componenteCurricularCodigo, bool ehProfessorCj, bool ehProfessor)
         {
             ProfessorRf = professorRf;
             TurmaCodigo = turmaCodigo;
             ComponenteCurricularCodigo = componenteCurricularCodigo;
+            EhProfessorCj = ehProfessorCj;
+            EhProfessor = ehProfessor;
         }
 
         public string ProfessorRf { get; set; }
         public string TurmaCodigo { get; set; }
         public string ComponenteCurricularCodigo { get; set; }
         public bool EhProfessorCj { get; set; }
-        public bool TemPerfilSupervisorOuDiretor { get; set; }
+        public bool EhProfessor { get; set; }
     }
 
     public class ObterDatasAulasPorProfessorEComponenteQueryValidator: AbstractValidator<ObterDatasAulasPorProfessorEComponenteQuery>

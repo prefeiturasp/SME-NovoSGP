@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var professorRF = usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorInfantil() ? usuarioLogado.CodigoRf : string.Empty;
 
-            return await mediator.Send(new ObterDatasAulasPorProfessorEComponenteQuery(professorRF, param.TurmaCodigo, param.ComponenteCurricularCodigo, usuarioLogado.EhProfessorCj(), usuarioLogado.TemPerfilSupervisorOuDiretor()));
+            return await mediator.Send(new ObterDatasAulasPorProfessorEComponenteQuery(professorRF, param.TurmaCodigo, param.ComponenteCurricularCodigo, usuarioLogado.EhProfessorCj(), usuarioLogado.EhProfessor()));
         }
     }
 }
