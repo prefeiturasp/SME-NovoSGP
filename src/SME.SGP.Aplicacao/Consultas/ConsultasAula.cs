@@ -88,40 +88,6 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(aula, disciplinaId, aberto);
         }
 
-        public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
-        {
-            var existeRegistro = await consultasFrequencia.FrequenciaAulaRegistrada(aulaId);
-            if (!existeRegistro)
-                existeRegistro = await repositorioPlanoAula.PlanoAulaRegistradoAsync(aulaId);
-
-            return existeRegistro;
-        }
-
-        public async Task<bool> ChecarFrequenciaPlanoNaRecorrencia(long aulaId)
-        {
-            var existeRegistro = await ChecarFrequenciaPlanoAula(aulaId);
-
-            if (!existeRegistro)
-            {
-                var aulaAtual = repositorio.ObterPorId(aulaId);
-
-                var aulasRecorrentes = await repositorio.ObterAulasRecorrencia(aulaAtual.AulaPaiId ?? aulaAtual.Id, aulaId);
-
-                if (aulasRecorrentes != null)
-                {
-                    foreach (var aula in aulasRecorrentes)
-                    {
-                        existeRegistro = await ChecarFrequenciaPlanoAula(aula.Id);
-
-                        if (existeRegistro)
-                            break;
-                    }
-                }
-            }
-
-            return existeRegistro;
-        }
-
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             return await repositorio.ObterAulaDataTurmaDisciplina(data, turmaId, disciplinaId);
@@ -235,7 +201,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var periodoEscolar in periodosEscolares.Periodos)
             {
-                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, disciplina, usuarioRF, usuarioLogado.EhProfessorCj(), usuarioLogado.TemPerfilSupervisorOuDiretor()))
+                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, disciplina, usuarioRF, usuarioLogado.EhProfessorCj(), usuarioLogado.EhProfessor()))
                 {
                     yield return new DataAulasProfessorDto
                     {

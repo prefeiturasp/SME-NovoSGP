@@ -11,16 +11,25 @@ const AlertaModalidadeInfantil = props => {
     store => store.filtro.modalidades
   );
 
-  const { exibir, validarModalidadeFiltroPrincipal } = props;
+  const {
+    exibir,
+    validarModalidadeFiltroPrincipal,
+    naoPermiteTurmaInfantil,
+  } = props;
 
   const [exibirMsg, setExibirMsg] = useState(exibir);
 
   useEffect(() => {
-    if (
-      validarModalidadeFiltroPrincipal &&
-      ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
-    ) {
-      setExibirMsg(true);
+    if (validarModalidadeFiltroPrincipal) {
+      const turmaInfantil = ehTurmaInfantil(
+        modalidadesFiltroPrincipal,
+        turmaSelecionada
+      );
+      if (naoPermiteTurmaInfantil) {
+        setExibirMsg(turmaInfantil);
+      } else {
+        setExibirMsg(!turmaInfantil);
+      }
     } else {
       setExibirMsg(exibir);
     }
@@ -29,6 +38,7 @@ const AlertaModalidadeInfantil = props => {
     exibir,
     validarModalidadeFiltroPrincipal,
     modalidadesFiltroPrincipal,
+    naoPermiteTurmaInfantil,
   ]);
 
   return (
@@ -38,8 +48,11 @@ const AlertaModalidadeInfantil = props => {
           alerta={{
             tipo: 'warning',
             id: 'alerta-modalidade-infantil',
-            mensagem:
-              'Esta tela não está disponível para turmas de Educação Infantil',
+            mensagem: `Esta interface ${
+              naoPermiteTurmaInfantil
+                ? 'não está disponível'
+                : 'só pode ser utilizada'
+            } para turmas da educação infantil`,
             estiloTitulo: { fontSize: '18px' },
           }}
           className="mb-2"
@@ -54,11 +67,13 @@ const AlertaModalidadeInfantil = props => {
 AlertaModalidadeInfantil.propTypes = {
   exibir: PropTypes.bool,
   validarModalidadeFiltroPrincipal: PropTypes.bool,
+  naoPermiteTurmaInfantil: PropTypes.bool,
 };
 
 AlertaModalidadeInfantil.defaultProps = {
   exibir: false,
   validarModalidadeFiltroPrincipal: true,
+  naoPermiteTurmaInfantil: true,
 };
 
 export default AlertaModalidadeInfantil;
