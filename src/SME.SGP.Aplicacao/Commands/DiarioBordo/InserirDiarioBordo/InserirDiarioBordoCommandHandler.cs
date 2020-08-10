@@ -12,15 +12,21 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirDiarioBordoCommandHandler : IRequestHandler<InserirDiarioBordoCommand, AuditoriaDto>
     {
+        private readonly IMediator mediator;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
 
-        public InserirDiarioBordoCommandHandler(IRepositorioDiarioBordo repositorioDiarioBordo)
+        public InserirDiarioBordoCommandHandler(IMediator mediator,
+                                                IRepositorioDiarioBordo repositorioDiarioBordo)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
         }
 
         public async Task<AuditoriaDto> Handle(InserirDiarioBordoCommand request, CancellationToken cancellationToken)
         {
+            if (!await mediator.Send(new AulaExisteQuery(request.AulaId)))
+                throw new NegocioException("Aula informada não existe");
+
             var diarioBordo = MapearParaEntidade(request);
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
