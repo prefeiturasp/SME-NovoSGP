@@ -841,8 +841,8 @@ rotas.set(RotasDto.DIARIO_BORDO, {
   component: DiarioBordo,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.DIARIO_BORDO,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DIARIO_BORDO,
 });
 
 rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
