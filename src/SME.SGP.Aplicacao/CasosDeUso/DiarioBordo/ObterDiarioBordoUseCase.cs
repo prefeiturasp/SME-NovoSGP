@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             Aula aula = await mediator.Send(new ObterAulaPorIdQuery(aulaId));
             if (aula == null || aula.Excluido)
-                throw new NegocioException($"Aula de id {aulaId} não encontrada");
+                throw new NegocioException($"Diário de bordo não encontrado", 204);
 
             var aberto = await AulaDentroDoPeriodo(mediator, aula.TurmaId, aula.DataAula);
 

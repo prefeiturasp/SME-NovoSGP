@@ -40,7 +40,7 @@ namespace SME.SGP.Integracao.Teste
             var turmaCodigo = "2120528";
             var componenteCurricularCodigo = "1105";
 
-            var result = await _fixture._clientApi.GetAsync($"api/v1/frequencias/aulas/datas/turmas/{turmaCodigo}/componente/{componenteCurricularCodigo}");
+            var result = await _fixture._clientApi.GetAsync($"api/v1/calendarios/frequencias/aulas/datas/turmas/{turmaCodigo}/componente/{componenteCurricularCodigo}");
 
             Assert.True(_fixture.ValidarStatusCodeComSucesso(result));
         }
