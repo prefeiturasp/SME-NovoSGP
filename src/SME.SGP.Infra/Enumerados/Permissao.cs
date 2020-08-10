@@ -477,20 +477,20 @@ namespace SME.SGP.Infra
         RPF_C = 157,
 
 
-        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/diario-classe/diario-bordo")]
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhConsulta = true, Url = "/diario-classe/diario-bordo")]
         DDB_C = 159,
 
 
-        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 8, OrdemMenu = 2, EhInclusao = true, Url = "/diario-classe/diario-bordo")]
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhInclusao = true, Url = "/diario-classe/diario-bordo")]
         DDB_I = 160,
 
 
-        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 8, OrdemMenu = 2, EhExclusao = true, Url = "/diario-classe/diario-bordo")]
-        DDB_E = 160,
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhExclusao = true, Url = "/diario-classe/diario-bordo")]
+        DDB_E = 161,
 
 
-        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = true, Url = "/diario-classe/diario-bordo")]
-        DDB_A = 161
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhAlteracao = true, Url = "/diario-classe/diario-bordo")]
+        DDB_A = 162
 
     }
 }
