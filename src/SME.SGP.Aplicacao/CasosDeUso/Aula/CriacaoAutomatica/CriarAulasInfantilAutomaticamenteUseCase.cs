@@ -14,13 +14,11 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioAula repositorioAula;
-        private readonly IUnitOfWork unitOfWork;
 
-        public CriarAulasInfantilAutomaticamenteUseCase(IMediator mediator, IRepositorioAula repositorioAula, IUnitOfWork unitOfWork)
+        public CriarAulasInfantilAutomaticamenteUseCase(IMediator mediator, IRepositorioAula repositorioAula)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task Executar()
@@ -44,6 +42,7 @@ namespace SME.SGP.Aplicacao
                         var aulasAExcluir = new List<Aula>();
 
                         //TODO dividir processamento em mais threads
+                        var idsAulasAExcluir = new List<long>();
                         foreach (var turma in turmas)
                         {
                             var aulas = await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId));
@@ -61,11 +60,25 @@ namespace SME.SGP.Aplicacao
                                 {
                                     var diasSemAula = diasParaCriarAula.Where(c => !aulas.Any(a => a.DataAula == c.Data));
                                     aulasACriar.AddRange(ObterAulasParaCriacao(tipoCalendarioId, diasSemAula, turma));
-                                    var aulasDaTurmaParaExcluir = aulas.Where(c => diasParaExcluirAula.Any(a => a.Data == c.DataAula));
-                                    //TODO VALIDAR SE AULAS POSSUEM FREQUENCIA
-                                    //TODO NOTIFICACAO SE POSSUIR FREQUENCIA
-                                    //TODO EXCLUIR AULAS
+                                    var aulasDaTurmaParaExcluir = aulas.Where(c => diasParaExcluirAula.Any(a => a.Data == c.DataAula) && !c.Excluido);
+                                    foreach (var aula in aulasDaTurmaParaExcluir)
+                                    {
+                                        var existeFrequencia = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(aula.Id));
+                                        if (existeFrequencia)
+                                        {
+                                            //TODO NOTIFICACAO SE POSSUIR FREQUENCIA
+                                        }
+                                        else
+                                        {
+                                            idsAulasAExcluir.Add(aula.Id);
+                                        }
+                                    }
                                 }
+                            }
+                            if (idsAulasAExcluir.Count > 1000)
+                            {
+                                await repositorioAula.ExcluirPeloSistemaAsync(idsAulasAExcluir.ToArray());
+                                idsAulasAExcluir.Clear();
                             }
                             if (aulasACriar.Count >= 1000)
                             {
@@ -74,8 +87,12 @@ namespace SME.SGP.Aplicacao
                             }
 
                         }
+
                         if (aulasACriar.Any())
                             repositorioAula.SalvarVarias(aulasACriar);
+
+                        if (idsAulasAExcluir.Any())
+                            await repositorioAula.ExcluirPeloSistemaAsync(idsAulasAExcluir.ToArray());
                     }
                 }
             }

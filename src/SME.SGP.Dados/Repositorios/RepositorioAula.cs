@@ -811,9 +811,10 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task ExcluirPeloSistemaAsync(Aula aula)
+        public async Task ExcluirPeloSistemaAsync(long[] idsAulas)
         {
-            await database.Conexao.DeleteAsync(aula);
+            var sql = "update aula set excluido = true where id = any(@idsAulas)";
+            await database.Conexao.ExecuteAsync(sql, new { idsAulas });
         }
     }
 }
