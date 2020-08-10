@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
 
-            var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo, request.ProfessorRf, request.EhProfessorCj, request.TemPerfilSupervisorOuDiretor);
+            var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo, request.ProfessorRf, request.EhProfessorCj, request.EhProfessor);
 
             return datasAulas.GroupBy(g => g.Data)
                     .Select(x => new DatasAulasDto()
@@ -73,11 +73,11 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string professorRf, bool ehProfessorCj, bool temPerfilSupervisorOuDiretor)
+        private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string professorRf, bool ehProfessorCj, bool ehProfessor)
         {
             foreach (var periodoEscolar in periodosEscolares)
             {
-                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, componenteCurricularCodigo, professorRf, ehProfessorCj, temPerfilSupervisorOuDiretor))
+                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, componenteCurricularCodigo, professorRf, ehProfessorCj, ehProfessor))
                 {
                     yield return new DataAulasProfessorDto
                     {
