@@ -81,7 +81,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosEventoTipo, ComandosEventoTipo>();
             services.TryAddScopedWorkerService<IComandosEvento, ComandosEvento>();
             services.TryAddScopedWorkerService<IComandosDiasLetivos, ComandosDiasLetivos>();
-            services.TryAddScopedWorkerService<IComandosAula, ComandosAula>();
             services.TryAddScopedWorkerService<IComandosGrade, ComandosGrade>();
             services.TryAddScopedWorkerService<IComandoFrequencia, ComandoFrequencia>();
             services.TryAddScopedWorkerService<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
@@ -298,7 +297,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoDiaLetivo, ServicoDiaLetivo>();
             services.TryAddScopedWorkerService<IServicoLog, ServicoLog>();
             services.TryAddScopedWorkerService<IServicoFrequencia, ServicoFrequencia>();
-            services.TryAddScopedWorkerService<IServicoAula, ServicoAula>();
             services.TryAddScopedWorkerService<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
             services.TryAddScopedWorkerService<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
