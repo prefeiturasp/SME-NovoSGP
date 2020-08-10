@@ -393,6 +393,7 @@ const RelatorioParecerConclusivo = () => {
     await setParecerConclusivoId();
     await setAnoLetivo(null);
     await setAnoLetivo(anoAtual);
+    await setFormato('1');
   };
 
   const desabilitarGerar =
