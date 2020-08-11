@@ -1,10 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace SME.SGP.Aplicacao.Queries.Turma.ObterTurmaIdPorCodigo
+namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaIdPorCodigoQuery : IRequest<long>
     {
