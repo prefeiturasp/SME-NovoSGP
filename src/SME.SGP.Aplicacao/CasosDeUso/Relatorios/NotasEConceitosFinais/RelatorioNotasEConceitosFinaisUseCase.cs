@@ -4,6 +4,8 @@ using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
@@ -17,17 +19,35 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Executar(FiltroRelatorioNotasEConceitosFinaisDto filtroRelatorioNotasEConceitosFinaisDto)
+        public async Task<bool> Executar(FiltroRelatorioNotasEConceitosFinaisDto filtro)
         {
-            await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtroRelatorioNotasEConceitosFinaisDto.DreCodigo));
-            await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioNotasEConceitosFinaisDto.UeCodigo));
+            await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtro.DreCodigo));
+            await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtro.UeCodigo));
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            filtroRelatorioNotasEConceitosFinaisDto.UsuarioNome = usuarioLogado.Nome;
-            filtroRelatorioNotasEConceitosFinaisDto.UsuarioRf = usuarioLogado.CodigoRf;
+            if (usuarioLogado == null)
+                throw new NegocioException("Não foi possível localizar o usuário.");
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FechamentoPendencias, filtroRelatorioNotasEConceitosFinaisDto, usuarioLogado));
+            filtro.UsuarioNome = usuarioLogado.Nome;
+            filtro.UsuarioRf = usuarioLogado.CodigoRf;
+
+            if (filtro.Bimestres.Any(c => c == -99))
+            {
+                filtro.Bimestres = new List<int>();
+                switch (filtro.Modalidade)
+                {
+                    case Modalidade.Fundamental:
+                    case Modalidade.Medio:
+                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4, -99 });
+                        break;
+                    case Modalidade.EJA:
+                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, -99 });
+                        break;
+                }
+            }
+
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.NotasEConceitosFinais, filtro, usuarioLogado));
         }
     }
 }
