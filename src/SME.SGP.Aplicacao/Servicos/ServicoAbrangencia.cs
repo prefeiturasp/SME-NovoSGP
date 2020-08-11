@@ -308,7 +308,8 @@ namespace SME.SGP.Aplicacao.Servicos
                  Semestre = z.Semestre,
                  TipoTurno = z.TipoTurno,
                  Ue = new Ue() { CodigoUe = y.Codigo },
-                 EnsinoEspecial = z.EnsinoEspecial
+                 EnsinoEspecial = z.EnsinoEspecial,
+                 EtapaEJA = z.EtapaEJA
              })));
 
             dres = repositorioDre.Sincronizar(dres);
