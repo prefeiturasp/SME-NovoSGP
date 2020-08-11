@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
 
             // Assert
             repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<DiarioBordo>()), Times.Once);
-            Assert.True(auditoriaDto.Id == 1);
+            Assert.True(auditoriaDto.Id > 0);
         }
 
         [Fact]
