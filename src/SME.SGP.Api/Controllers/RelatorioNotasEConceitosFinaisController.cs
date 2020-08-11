@@ -15,9 +15,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> Gerar(FiltroRelatorioNotasEConceitosFinaisDto filtroRelatorioNotasEConceitosFinaisDto, [FromServices] IRelatorioNotasEConceitosFinaisUseCase relatorioNotasEConceitosFinaisUseCase)
+        public async Task<IActionResult> Gerar(FiltroRelatorioNotasEConceitosFinaisDto filtro, [FromServices] IRelatorioNotasEConceitosFinaisUseCase relatorioNotasEConceitosFinaisUseCase)
         {
-            return Ok(await relatorioNotasEConceitosFinaisUseCase.Executar(filtroRelatorioNotasEConceitosFinaisDto));
+            return Ok(await relatorioNotasEConceitosFinaisUseCase.Executar(filtro));
         }
     }
 }
