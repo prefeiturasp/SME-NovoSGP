@@ -352,7 +352,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioParecerConclusivoUseCase, RelatorioParecerConclusivoUseCase>();
             services.TryAddScoped<IObterCiclosPorModalidadeECodigoUeUseCase, ObterCiclosPorModalidadeECodigoUeUseCase>();
             services.TryAddScoped<IObterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase, ObterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase>();
-            
+
+
+            services.TryAddScoped<IInserirCartaIntencoesUseCase, InserirCartaIntencoesUseCase>();
+
         }
     }
 }
