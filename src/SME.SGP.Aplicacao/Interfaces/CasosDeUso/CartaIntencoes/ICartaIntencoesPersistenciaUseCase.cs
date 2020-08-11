@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IInserirCartaIntencoesUseCase : IUseCase<InserirCartaIntencoesDto, List<AuditoriaDto>>
+    public interface ICartaIntencoesPersistenciaUseCase : IUseCase<CartaIntencoesPersistenciaDto, List<CartaIntencoesRetornoPersistenciaDto>>
     {
     }
 }

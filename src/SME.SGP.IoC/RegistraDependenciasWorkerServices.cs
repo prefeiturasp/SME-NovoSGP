@@ -338,7 +338,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioPendenciasFechamentoUseCase, RelatorioPendenciasFechamentoUseCase>();
 
 
-            services.TryAddScopedWorkerService<IInserirCartaIntencoesUseCase, InserirCartaIntencoesUseCase>();
+            services.TryAddScopedWorkerService<ICartaIntencoesPersistenciaUseCase, CartaIntencoesPersistenciaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
