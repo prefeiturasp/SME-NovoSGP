@@ -354,7 +354,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase, ObterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase>();
 
 
-            services.TryAddScoped<IInserirCartaIntencoesUseCase, InserirCartaIntencoesUseCase>();
+            services.TryAddScoped<ICartaIntencoesPersistenciaUseCase, CartaIntencoesPersistenciaUseCase>();
 
         }
     }

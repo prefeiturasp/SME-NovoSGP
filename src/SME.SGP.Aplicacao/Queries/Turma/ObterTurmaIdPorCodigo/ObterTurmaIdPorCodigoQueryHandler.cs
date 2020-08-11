@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Turma.ObterTurmaIdPorCodigo
+namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaIdPorCodigoQueryHandler : IRequestHandler<ObterTurmaIdPorCodigoQuery, long>
     {
@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao.Queries.Turma.ObterTurmaIdPorCodigo
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
+
         public async Task<long> Handle(ObterTurmaIdPorCodigoQuery request, CancellationToken cancellationToken)
         {
             return await repositorioTurma.ObterTurmaIdPorCodigo(request.TurmaCodigo);
