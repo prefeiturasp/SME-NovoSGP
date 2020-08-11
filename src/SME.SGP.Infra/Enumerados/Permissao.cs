@@ -479,21 +479,19 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/parecer-conclusivo", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Parecer Conclusivo")]
         RPC_C = 158,
 
-
         [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhConsulta = true, Url = "/diario-classe/diario-bordo")]
         DDB_C = 159,
-
 
         [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhInclusao = true, Url = "/diario-classe/diario-bordo")]
         DDB_I = 160,
 
-
         [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhExclusao = true, Url = "/diario-classe/diario-bordo")]
         DDB_E = 161,
 
-
         [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhAlteracao = true, Url = "/diario-classe/diario-bordo")]
-        DDB_A = 162
+        DDB_A = 162,
 
+        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/notas-conceitos-finais", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Notas e Conceitos Finais")]
+        RNC_F = 163
     }
 }
