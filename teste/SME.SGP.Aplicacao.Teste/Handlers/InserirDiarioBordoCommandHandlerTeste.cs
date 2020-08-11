@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         {
             // Arrange
             mediator.Setup(a => a.Send(It.IsAny<AulaExisteQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
+                .ReturnsAsync(true);
 
             repositorioDiarioBordo.Setup(a => a.SalvarAsync(It.IsAny<DiarioBordo>()))
                 .ReturnsAsync(1);
