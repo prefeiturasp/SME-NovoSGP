@@ -6,6 +6,7 @@ namespace SME.SGP.Infra.Dtos
 {
     public class CartaIntencoesDto
     {
+        public string CodigoTurma { get; set; }
         public long TurmaId { get; set; }
 
         public TurmaDto Turma { get; set; }
