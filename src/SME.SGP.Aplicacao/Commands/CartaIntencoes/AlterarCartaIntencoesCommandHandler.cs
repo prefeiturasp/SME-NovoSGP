@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands
 {
-    public class InserirCartaIntencoesCommandHandler : IRequestHandler<InserirCartaIntencoesCommand, AuditoriaDto>
+    public class AlterarCartaIntencoesCommandHandler : IRequestHandler<AlterarCartaIntencoesCommand, AuditoriaDto>
     {
         private readonly IRepositorioCartaIntencoes repositorioCartaIntencoes;
 
-        public InserirCartaIntencoesCommandHandler(IRepositorioCartaIntencoes repositorioCartaIntencoes)
+        public AlterarCartaIntencoesCommandHandler(IRepositorioCartaIntencoes repositorioCartaIntencoes)
         {
             this.repositorioCartaIntencoes = repositorioCartaIntencoes ?? throw new ArgumentNullException(nameof(repositorioCartaIntencoes));
         }
 
-        public async Task<AuditoriaDto> Handle(InserirCartaIntencoesCommand request, CancellationToken cancellationToken)
+        public async Task<AuditoriaDto> Handle(AlterarCartaIntencoesCommand request, CancellationToken cancellationToken)
         {
             var cartaIntencoes = MapearParaEntidade(request);
 
@@ -28,13 +28,21 @@ namespace SME.SGP.Aplicacao.Commands
             return (AuditoriaDto)cartaIntencoes;
         }
 
-        private CartaIntencoes MapearParaEntidade(InserirCartaIntencoesCommand request)
+        private CartaIntencoes MapearParaEntidade(AlterarCartaIntencoesCommand request)
             => new CartaIntencoes()
             {
+                Id = request.Carta.Id,
                 TurmaId = request.TurmaId,
                 PeriodoEscolarId = request.Carta.PeriodoEscolarId,
                 ComponenteCurricularId = request.ComponenteCurricularId,
                 Planejamento = request.Carta.Planejamento,
+                AlteradoEm = request.Existente.AlteradoEm,
+                AlteradoPor = request.Existente.AlteradoPor,
+                AlteradoRF = request.Existente.AlteradoRF,
+                CriadoEm = request.Existente.CriadoEm,
+                CriadoPor = request.Existente.CriadoPor,
+                CriadoRF = request.Existente.CriadoRF,
+                Excluido = request.Existente.Excluido
             };
     }
 }

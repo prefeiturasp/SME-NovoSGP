@@ -4,12 +4,10 @@ using System.Text;
 
 namespace SME.SGP.Infra.Dtos
 {
-    public class CartaIntencoesDto
+    public class CartaIntencoesRetornoPersistenciaDto
     {
-        public long Id { get; set; }
-
         public long PeriodoEscolarId { get; set; }
 
-        public string Planejamento { get; set; }
+        public AuditoriaDto Auditoria { get; set; }
     }
 }
