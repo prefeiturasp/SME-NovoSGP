@@ -21,5 +21,10 @@ namespace SME.SGP.Dominio
         public string Planejamento { get; set; }
 
         public bool Excluido { get; set; }
+
+        public void AdicionarPeriodoEscolar(PeriodoEscolar periodoEscolar)
+        {
+            PeriodoEscolar = periodoEscolar;
+        }
     }
 }
