@@ -12,8 +12,6 @@ namespace SME.SGP.Dominio
 
         public long PeriodoEscolarId { get; set; }
 
-        public int Bimestre { get; set; }
-
         public PeriodoEscolar PeriodoEscolar { get; set; }
 
         public long ComponenteCurricularId { get; set; }

@@ -14,7 +14,6 @@ namespace SME.SGP.Dados
             Map(x => x.PeriodoEscolarId).ToColumn("periodo_escolar_id");
             Map(x => x.ComponenteCurricularId).ToColumn("componente_curricular_id");
             Map(x => x.Planejamento).ToColumn("planejamento");
-            Map(x => x.Bimestre).Ignore();
         }
     }
 }
