@@ -11,6 +11,12 @@ BEGIN TRY
 	BEGIN
 		INSERT INTO SYS_Modulo(sis_id, mod_id, mod_nome, mod_descricao, mod_idPai, mod_auditoria, mod_situacao, mod_dataCriacao, mod_dataAlteracao) VALUES (1000, 57, 'Diário de Bordo', NULL, NULL, 0, 1, GETDATE(), GETDATE())
 	END
+	
+	-- insere associacao de modulo 57 - Diário de Bordo com visao 2 - Novo SGP
+	IF NOT EXISTS(select * from SYS_VisaoModulo where sis_id = 1000 AND mod_id = 57 AND vis_id = 2)
+	BEGIN
+		INSERT INTO SYS_VisaoModulo(vis_id, sis_id, mod_id) VALUES (2, 1000, 57)
+	END
 
 	-- insere associacao de modulo 57 - Diário de Bordo com visao 10 - Novo SGP
 	IF NOT EXISTS(select * from SYS_VisaoModulo where sis_id = 1000 AND mod_id = 57 AND vis_id = 10)
