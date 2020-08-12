@@ -18,5 +18,7 @@ namespace SME.SGP.Dominio.Interfaces
         long Salvar(T entidade);
 
         Task<long> SalvarAsync(T entidade);
+
+        Task<bool> Exists(long id);
     }
 }

@@ -58,6 +58,7 @@ import AtaFinalResultados from '~/paginas/Relatorios/Atas/AtaFinalResultados/ata
 
 import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 import FaltasFrequencia from '~/paginas/Relatorios/Frequencia/faltasFrequencia';
+import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
 import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
@@ -833,6 +834,17 @@ rotas.set(RotasDto.FALTAS_FREQUENCIA, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.FALTAS_FREQUENCIA,
+});
+
+rotas.set(RotasDto.DIARIO_BORDO, {
+  breadcrumbName: 'Diário de Bordo',
+  menu: ['Diário de Classe'],
+  parent: '/',
+  component: DiarioBordo,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DIARIO_BORDO,
 });
 
 rotas.set(RotasDto.RELATORIO_PENDENCIAS, {

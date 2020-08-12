@@ -26,10 +26,24 @@ namespace SME.SGP.Aplicacao
             if (pareceresConclusivos == null || !pareceresConclusivos.Any())
                 throw new NegocioException("Não foi possível obter os pareceres conclusivos");
 
-            return MapearListaEntidadeParaDto(pareceresConclusivos);
+            var listaPareceres =  MapearListaEntidadeParaDto(pareceresConclusivos);
+
+            listaPareceres = listaPareceres.Append(AdicionarSemParecer());
+
+            return listaPareceres.OrderBy(p => p.Id);
         }
 
-        private static ConselhoClasseParecerConclusivoDto TransformaEntidadeEmDtoListagem(ConselhoClasseParecerConclusivo item)
+        private ConselhoClasseParecerConclusivoDto AdicionarSemParecer()
+        {
+             return new ConselhoClasseParecerConclusivoDto()
+            {
+                Id = -1,
+                Nome = "Sem Parecer",
+            };
+        }
+
+
+        private ConselhoClasseParecerConclusivoDto TransformaEntidadeEmDtoListagem(ConselhoClasseParecerConclusivo item)
         {
             return new ConselhoClasseParecerConclusivoDto()
             {

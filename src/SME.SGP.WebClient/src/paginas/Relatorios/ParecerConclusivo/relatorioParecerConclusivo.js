@@ -5,7 +5,6 @@ import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import modalidade from '~/dtos/modalidade';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
@@ -13,6 +12,7 @@ import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFi
 import ServicoRelatorioParecerConclusivo from '~/servicos/Paginas/Relatorios/ParecerConclusivo/ServicoRelatorioParecerConclusivo';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { CorpoRelatorio } from './relatorioParecerConclusivo.css';
 
 const RelatorioParecerConclusivo = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -57,27 +57,32 @@ const RelatorioParecerConclusivo = () => {
   };
 
   const onChangeDre = valor => {
-    setDreId(valor);
+    setListaUes([]);
     setUeId();
-  };
-
-  const limparCicloEAno = valor => {
-    setAno();
     setCiclo();
-    if (!valor) {
-      setListaAnos([]);
-      setListaCiclos([]);
-    }
+    setListaCiclos([]);
+    setModalidadeId();
+    setListaModalidades([]);
+    setAno();
+    setListaAnos([]);
+    setDreId(valor);
   };
 
   const onChangeUe = valor => {
-    limparCicloEAno(valor);
     setModalidadeId();
+    setListaModalidades([]);
+    setCiclo();
+    setListaCiclos([]);
+    setAno();
+    setListaAnos([]);
     setUeId(valor);
   };
 
   const onChangeModalidade = valor => {
-    limparCicloEAno(valor);
+    setAno();
+    setListaAnos([]);
+    setCiclo();
+    setListaCiclos([]);
     setModalidadeId(valor);
   };
 
@@ -86,10 +91,15 @@ const RelatorioParecerConclusivo = () => {
   };
 
   const onChangeCiclos = valor => {
+    setAno();
+    setListaAnos([]);
     setCiclo(valor);
   };
 
   const onChangeAnos = valor => {
+    if (valor.find(e => e === '-99')) {
+      valor = '-99';
+    }
     setAno(valor);
   };
 
@@ -211,9 +221,9 @@ const RelatorioParecerConclusivo = () => {
 
     anosLetivos = anosLetivos.concat(anosLetivoComHistorico);
 
-    anosLetivoSemHistorico.forEach(ano => {
-      if (!anosLetivoComHistorico.find(a => a.valor === ano.valor)) {
-        anosLetivos.push(ano);
+    anosLetivoSemHistorico.forEach(itemAno => {
+      if (!anosLetivoComHistorico.find(a => a.valor === itemAno.valor)) {
+        anosLetivos.push(itemAno);
       }
     });
 
@@ -267,7 +277,10 @@ const RelatorioParecerConclusivo = () => {
   };
 
   const obterCiclos = async (modalidadeSelecionada, codigoUe) => {
-    if (String(modalidadeSelecionada) === String(modalidade.EJA)) {
+    if (
+      String(modalidadeSelecionada) === String(modalidade.EJA) ||
+      String(modalidadeSelecionada) === String(modalidade.ENSINO_MEDIO)
+    ) {
       setListaCiclos([{ id: '-99', descricao: 'Todos' }]);
       setCiclo('-99');
     } else if (String(modalidadeSelecionada) === String(modalidade.INFANTIL)) {
@@ -275,7 +288,7 @@ const RelatorioParecerConclusivo = () => {
       setCiclo();
     } else {
       setCarregandoCiclos(true);
-      const retorno = await ServicoRelatorioParecerConclusivo.buscarCiclos(
+      const retorno = await ServicoFiltroRelatorio.buscarCiclos(
         codigoUe,
         modalidadeSelecionada
       )
@@ -283,12 +296,16 @@ const RelatorioParecerConclusivo = () => {
         .finally(() => {
           setCarregandoCiclos(false);
         });
-      if (retorno && retorno.data) {
-        setCiclo();
-        let lista =
-          retorno.data.length > 1 ? [{ id: '-99', descricao: 'Todos' }] : [];
-        lista = lista.concat(retorno.data);
-        setListaCiclos(lista);
+      if (retorno?.data?.length) {
+        if (retorno.data.length === 1) {
+          await setListaCiclos(retorno.data);
+          await setCiclo(String(retorno.data[0].id));
+        } else {
+          setCiclo();
+          let lista = [{ id: '-99', descricao: 'Todos' }];
+          lista = lista.concat(retorno.data);
+          setListaCiclos(lista);
+        }
       }
     }
   };
@@ -312,20 +329,36 @@ const RelatorioParecerConclusivo = () => {
     obterPareceresConclusivos();
   }, [obterPareceresConclusivos]);
 
-  const obterAnos = async (codigoUe, modalidadeIdSelecionada) => {
+  const obterAnos = async (modalidadeIdSelecionada, cicloSelecionado) => {
     if (String(modalidadeIdSelecionada) === String(modalidade.EJA)) {
       setListaAnos([{ valor: '-99', descricao: 'Todos' }]);
       setAno('-99');
-    } else {
+    } else if (modalidadeIdSelecionada && cicloSelecionado) {
       setCarregandoAnos(true);
-      const retorno = await ServicoFiltroRelatorio.obterAnosEscolares(
-        codigoUe,
-        modalidadeIdSelecionada
+      cicloSelecionado =
+        cicloSelecionado === '-99' ||
+        String(modalidadeIdSelecionada) === String(modalidade.ENSINO_MEDIO)
+          ? '0'
+          : cicloSelecionado;
+      const retorno = await ServicoFiltroRelatorio.obterAnosEscolaresPorAbrangencia(
+        modalidadeIdSelecionada,
+        cicloSelecionado
       ).finally(setCarregandoAnos(false));
-      if (retorno && retorno.data) {
-        const lista = retorno.data;
-        setListaAnos(lista);
+      if (retorno?.data?.length) {
+        if (retorno.data.length === 1) {
+          setListaAnos(retorno.data);
+          setAno(String(retorno.data[0].valor));
+        } else {
+          let lista = [{ valor: '-99', descricao: 'Todos' }];
+          lista = lista.concat(retorno.data);
+          if (cicloSelecionado === '0' && retorno.data.length > 1) {
+            setAno('-99');
+          }
+          setListaAnos(lista);
+        }
       }
+    } else {
+      setAno();
     }
   };
 
@@ -347,9 +380,12 @@ const RelatorioParecerConclusivo = () => {
     if (modalidadeId && ueId) {
       setCiclo();
       obterCiclos(modalidadeId, ueId);
-      obterAnos(ueId, modalidadeId);
     }
   }, [modalidadeId, ueId]);
+
+  useEffect(() => {
+    obterAnos(modalidadeId, ciclo);
+  }, [modalidadeId, ciclo]);
 
   const cancelar = async () => {
     await setCiclo();
@@ -357,6 +393,7 @@ const RelatorioParecerConclusivo = () => {
     await setParecerConclusivoId();
     await setAnoLetivo(null);
     await setAnoLetivo(anoAtual);
+    await setFormato('1');
   };
 
   const desabilitarGerar =
@@ -383,7 +420,7 @@ const RelatorioParecerConclusivo = () => {
       semestre:
         String(modalidadeId) === String(modalidade.EJA) ? semestre : null,
       ciclo: ciclo === '-99' ? 0 : ciclo,
-      anos: ano.toString() !== '-99' ? ano : [],
+      anos: ano.toString() !== '-99' ? [].concat(ano) : [],
       parecerConclusivoId:
         parecerConclusivoId === '-99' ? 0 : parecerConclusivoId,
       tipoFormatoRelatorio: formato,
@@ -399,7 +436,7 @@ const RelatorioParecerConclusivo = () => {
   };
 
   return (
-    <>
+    <CorpoRelatorio>
       <AlertaModalidadeInfantil
         exibir={String(modalidadeId) === String(modalidade.INFANTIL)}
         validarModalidadeFiltroPrincipal={false}
@@ -538,7 +575,10 @@ const RelatorioParecerConclusivo = () => {
                   lista={listaCiclos}
                   valueOption="id"
                   valueText="descricao"
-                  disabled={listaCiclos && listaCiclos.length === 1}
+                  disabled={
+                    (listaCiclos && listaCiclos.length === 1) ||
+                    String(modalidadeId) === String(modalidade.MEDIO)
+                  }
                   onChange={onChangeCiclos}
                   valueSelect={ciclo}
                   placeholder="Ciclo"
@@ -557,7 +597,7 @@ const RelatorioParecerConclusivo = () => {
                   onChange={onChangeAnos}
                   valueSelect={ano}
                   placeholder="Ano"
-                  multiple={String(modalidadeId) !== String(modalidade.EJA)}
+                  multiple
                 />
               </Loader>
             </div>
@@ -594,7 +634,7 @@ const RelatorioParecerConclusivo = () => {
           </div>
         </div>
       </Card>
-    </>
+    </CorpoRelatorio>
   );
 };
 
