@@ -20,6 +20,8 @@ import DadosCartaIntencoes from './DadosCartaIntencoes/dadosCartaIntencoes';
 import ModalErrosCartaIntencoes from './DadosCartaIntencoes/ModalErros/ModalErrosCartaIntencoes';
 import LoaderCartaIntencoes from './LoaderCartaIntencoes/laderCartaIntencoes';
 import servicoSalvarCartaIntencoes from './servicoSalvarCartaIntencoes';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const CartaIntencoes = () => {
   const dispatch = useDispatch();
@@ -27,6 +29,7 @@ const CartaIntencoes = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const { turma } = turmaSelecionada;
+  const permissoesTela = usuario.permissoes[RotasDto.CARTA_INTENCOES];
 
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
@@ -36,6 +39,20 @@ const CartaIntencoes = () => {
     []
   );
   const [componenteCurricular, setComponenteCurricular] = useState(undefined);
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
+  useEffect(() => {
+    const naoSetarSomenteConsultaNoStore = !ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+
+    const soConsulta = verificaSomenteConsulta(
+      permissoesTela,
+      naoSetarSomenteConsultaNoStore
+    );
+    setSomenteConsulta(soConsulta);
+  }, [permissoesTela, modalidadesFiltroPrincipal, turmaSelecionada]);
 
   const resetarInfomacoes = useCallback(() => {
     dispatch(limparDadosCartaIntencoes());
@@ -102,12 +119,21 @@ const CartaIntencoes = () => {
   ]);
 
   useEffect(() => {
-    if (componenteCurricular) {
+    if (
+      componenteCurricular &&
+      ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
+    ) {
       obterListaBimestres(componenteCurricular);
     } else {
       resetarInfomacoes();
     }
-  }, [componenteCurricular, obterListaBimestres, resetarInfomacoes]);
+  }, [
+    componenteCurricular,
+    obterListaBimestres,
+    resetarInfomacoes,
+    modalidadesFiltroPrincipal,
+    turmaSelecionada,
+  ]);
 
   const onChangeSemestreComponenteCurricular = async valor => {
     const continuar = await servicoSalvarCartaIntencoes.perguntaDescartarRegistros();
@@ -151,6 +177,13 @@ const CartaIntencoes = () => {
                   <BotoesAcoesCartaIntencoes
                     onClickCancelar={recaregarDados}
                     onClickSalvar={recaregarDados}
+                    componenteCurricularId={componenteCurricular}
+                    codigoTurma={turma}
+                    ehTurmaInfantil={ehTurmaInfantil(
+                      modalidadesFiltroPrincipal,
+                      turmaSelecionada
+                    )}
+                    somenteConsulta={somenteConsulta}
                   />
                 </div>
               </div>
@@ -178,7 +211,10 @@ const CartaIntencoes = () => {
                   </div>
                   {componenteCurricular ? (
                     <div className="col-md-12">
-                      <DadosCartaIntencoes />
+                      <DadosCartaIntencoes
+                        permissoesTela={permissoesTela}
+                        somenteConsulta={somenteConsulta}
+                      />
                     </div>
                   ) : (
                     ''
