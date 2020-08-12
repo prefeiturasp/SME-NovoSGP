@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public RepositorioObjetivoAprendizagem(IConfiguration configuration)
         {
-            this.connectionString = configuration.GetConnectionString("SGP-Postgres");
+            this.connectionString = configuration.GetConnectionString("SGP-PostgresDev");
         }
 
         public async Task AtualizarAsync(ObjetivoAprendizagem objetivoAprendizagem)
