@@ -88,7 +88,6 @@ const BimestresCartaIntencoes = props => {
               alteradoPor={auditoria.alteradoPor}
               alteradoEm={auditoria.alteradoEm}
               alteradoRf={auditoria.alteradoRF}
-              ignorarMarginTop
             />
           </div>
         ) : (
