@@ -5,7 +5,6 @@ import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import modalidade from '~/dtos/modalidade';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
@@ -13,6 +12,7 @@ import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFi
 import ServicoRelatorioParecerConclusivo from '~/servicos/Paginas/Relatorios/ParecerConclusivo/ServicoRelatorioParecerConclusivo';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { CorpoRelatorio } from './relatorioParecerConclusivo.css';
 
 const RelatorioParecerConclusivo = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -221,9 +221,9 @@ const RelatorioParecerConclusivo = () => {
 
     anosLetivos = anosLetivos.concat(anosLetivoComHistorico);
 
-    anosLetivoSemHistorico.forEach(ano => {
-      if (!anosLetivoComHistorico.find(a => a.valor === ano.valor)) {
-        anosLetivos.push(ano);
+    anosLetivoSemHistorico.forEach(itemAno => {
+      if (!anosLetivoComHistorico.find(a => a.valor === itemAno.valor)) {
+        anosLetivos.push(itemAno);
       }
     });
 
@@ -393,6 +393,7 @@ const RelatorioParecerConclusivo = () => {
     await setParecerConclusivoId();
     await setAnoLetivo(null);
     await setAnoLetivo(anoAtual);
+    await setFormato('1');
   };
 
   const desabilitarGerar =
@@ -435,7 +436,7 @@ const RelatorioParecerConclusivo = () => {
   };
 
   return (
-    <>
+    <CorpoRelatorio>
       <AlertaModalidadeInfantil
         exibir={String(modalidadeId) === String(modalidade.INFANTIL)}
         validarModalidadeFiltroPrincipal={false}
@@ -633,7 +634,7 @@ const RelatorioParecerConclusivo = () => {
           </div>
         </div>
       </Card>
-    </>
+    </CorpoRelatorio>
   );
 };
 

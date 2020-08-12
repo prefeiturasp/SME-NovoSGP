@@ -18,6 +18,11 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new System.ArgumentNullException(nameof(database));
         }
 
+        public Task<bool> Exists(long id)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<Ciclo> Listar()
         {
             throw new System.NotImplementedException();
