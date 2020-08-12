@@ -117,7 +117,7 @@ O Roadmap do Produto é vivo e dinâmico. Essa é a foto atual do plano de evolu
 
 Configuração inicial de ambiente de desenvolvimento
 
-Esta solução contém o projet de [API](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.Api) (backend) e [Front](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.WebClient)
+Esta solução contém o projeto de [API](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.Api) (backend) e [Front](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.WebClient)
 
 Cada projeto contém seu próprio readme e nestes contem instruções para conseguir um ambiente de desenvolvimento local.
 
