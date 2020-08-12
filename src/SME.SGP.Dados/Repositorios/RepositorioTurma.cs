@@ -43,7 +43,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    qt_duracao_aula = @qtDuracaoAula,
 	                    tipo_turno = @tipoTurno,
 	                    data_atualizacao = @dataAtualizacao,
-                        ensino_especial = @ensinoEspecial
+                        ensino_especial = @ensinoEspecial,
+                        data_inicio = @dataInicio
                     where
 	                    id = @id;";
 
@@ -189,6 +190,9 @@ namespace SME.SGP.Dados.Repositorios
 
                 var idsArmazenados = armazenados.Select(y => y.CodigoTurma);
                 var novos = iteracao.Where(x => !idsArmazenados.Contains(x.CodigoTurma)).ToList();
+                var excluir = idsArmazenados.Where(a => iteracao.Any(t => t.CodigoTurma == a)).ToList();
+                //TODO update turma set excluido where id in(@exluir)
+
 
                 foreach (var item in novos)
                 {
@@ -209,7 +213,8 @@ namespace SME.SGP.Dados.Repositorios
                                         c.Semestre != l.Semestre ||
                                         c.QuantidadeDuracaoAula != l.QuantidadeDuracaoAula ||
                                         c.TipoTurno != l.TipoTurno ||
-                                        c.EnsinoEspecial != l.EnsinoEspecial)
+                                        c.EnsinoEspecial != l.EnsinoEspecial ||
+                                        c.DataInicio != l.DataInicio)
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -224,7 +229,8 @@ namespace SME.SGP.Dados.Repositorios
                                       TipoTurno = c.TipoTurno,
                                       Ue = l.Ue,
                                       UeId = l.UeId,
-                                      EnsinoEspecial = c.EnsinoEspecial
+                                      EnsinoEspecial = c.EnsinoEspecial,
+                                      DataInicio = c.DataInicio
                                   };
 
                 foreach (var item in modificados)
@@ -240,7 +246,8 @@ namespace SME.SGP.Dados.Repositorios
                         tipoTurno = item.TipoTurno,
                         dataAtualizacao = item.DataAtualizacao,
                         id = item.Id,
-                        ensinoEspecial = item.EnsinoEspecial
+                        ensinoEspecial = item.EnsinoEspecial,
+                        dataInicio = item.DataInicio
                     });
 
                     resultado.Add(item);
@@ -258,26 +265,31 @@ namespace SME.SGP.Dados.Repositorios
             var turmas = new List<Turma>();
             var query = @"select
 	                            t.*,
-	                            u.*
+	                            u.*,
+                                d.*
                             from
 	                            turma t
                             inner join ue u on
 	                            u.id = t.ue_id
+                            inner join dre d on
+	                            u.dre_id = d.id
                             where
 	                            t.modalidade_codigo = :modalidade
 	                            and t.historica = false
 	                            and t.ano_letivo = :anoLetivo
 	                            and ano ~ E'^[0-9\.]+$'";
 
-            await contexto.Conexao.QueryAsync<Turma, Ue, Turma>(query, (turma, ue) =>
-            {
-                turma.AdicionarUe(ue);
-                
-                var turmaExistente = turmas.FirstOrDefault(c => c.Id == turma.Id);
-                if (turmaExistente == null)
-                    turmas.Add(turma);
-                return turma;
-            }, new { anoLetivo, modalidade });
+            await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+             {
+                 ue.AdicionarDre(dre);
+                 turma.AdicionarUe(ue);
+
+                 var turmaExistente = turmas.FirstOrDefault(c => c.Id == turma.Id);
+                 if (turmaExistente == null)
+                     turmas.Add(turma);
+
+                 return turma;
+             }, new { anoLetivo, modalidade });
 
             return turmas;
         }
