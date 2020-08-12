@@ -67,7 +67,7 @@ class ServicoSalvarCartaIntencoes {
 
       dadosParaSalvarCartaIntencoes.forEach(bimestreAlterado => {
         if (bimestreAlterado && !bimestreAlterado.planejamento) {
-          const msg = `A descrição da carta de intensões do ${bimestreAlterado.bimestre}º bimestre deve ser informada`;
+          const msg = `A descrição da carta de intenções do ${bimestreAlterado.bimestre}º bimestre deve ser informada`;
           camposInvalidos[bimestreAlterado.bimestre] = msg;
         }
       });
