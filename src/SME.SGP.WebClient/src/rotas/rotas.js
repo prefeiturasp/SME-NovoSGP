@@ -864,8 +864,8 @@ rotas.set(RotasDto.CARTA_INTENCOES, {
   component: CartaIntencoes,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: tre,
-  // chavePermissao: RotasDto.CARTA_INTENCOES,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.CARTA_INTENCOES,
 });
 
 const rotasArray = [];

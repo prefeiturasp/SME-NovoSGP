@@ -51,7 +51,7 @@ class ServicoSalvarCartaIntencoes {
     return ehInvalido;
   };
 
-  validarSalvarCartaIntencoes = async () => {
+  validarSalvarCartaIntencoes = async (componenteCurricularId, codigoTurma) => {
     const { dispatch } = store;
     const state = store.getState();
 
@@ -60,16 +60,15 @@ class ServicoSalvarCartaIntencoes {
     const {
       cartaIntencoesEmEdicao,
       dadosParaSalvarCartaIntencoes,
-      desabilitarCampos,
     } = cartaIntencoes;
 
     const todosCamposValidos = () => {
       const camposInvalidos = [];
 
       dadosParaSalvarCartaIntencoes.forEach(bimestreAlterado => {
-        if (bimestreAlterado && !bimestreAlterado.descricao) {
+        if (bimestreAlterado && !bimestreAlterado.planejamento) {
           const msg = `A descrição da carta de intensões do ${bimestreAlterado.bimestre}º bimestre deve ser informada`;
-          camposInvalidos.push(msg);
+          camposInvalidos[bimestreAlterado.bimestre] = msg;
         }
       });
 
@@ -82,8 +81,14 @@ class ServicoSalvarCartaIntencoes {
     };
 
     const salvar = async () => {
-      const retorno = await ServicoCartaIntencoes.salvarCartaIntencoes(
-        dadosParaSalvarCartaIntencoes
+      const dados = [...dadosParaSalvarCartaIntencoes];
+      const params = {
+        componenteCurricularId,
+        codigoTurma,
+        cartas: dados,
+      };
+      const retorno = await ServicoCartaIntencoes.salvarEditarCartaIntencoes(
+        params
       ).catch(e => erros(e));
 
       if (retorno && retorno.status === 200) {
@@ -95,10 +100,6 @@ class ServicoSalvarCartaIntencoes {
       }
       return false;
     };
-
-    if (desabilitarCampos) {
-      return true;
-    }
 
     if (cartaIntencoesEmEdicao) {
       // Voltar para a tela e não executa a ação!

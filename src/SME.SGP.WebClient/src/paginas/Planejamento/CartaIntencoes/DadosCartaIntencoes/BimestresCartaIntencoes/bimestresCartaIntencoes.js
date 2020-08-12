@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Auditoria } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
@@ -11,19 +11,45 @@ import {
 import servicoSalvarCartaIntencoes from '../../servicoSalvarCartaIntencoes';
 
 const BimestresCartaIntencoes = props => {
-  const { descricao, bimestre, auditoria } = props;
+  const { permissoesTela, carta } = props;
+  const {
+    planejamento,
+    bimestre,
+    auditoria,
+    periodoEscolarId,
+    id,
+    periodoAberto,
+    somenteConsulta,
+  } = carta;
 
   const dispatch = useDispatch();
+
+  const [desabilitarCampo, setDesabilitarCampo] = useState(false);
+
+  useEffect(() => {
+    const desabilitar =
+      id > 0
+        ? somenteConsulta || !permissoesTela.podeAlterar
+        : somenteConsulta || !permissoesTela.podeIncluir;
+
+    if (!periodoAberto) {
+      setDesabilitarCampo(true);
+    } else {
+      setDesabilitarCampo(desabilitar);
+    }
+  }, [permissoesTela, id, periodoAberto, somenteConsulta]);
 
   const onChange = useCallback(
     valorNovo => {
       const dadosEmEdicao = {
+        id,
+        periodoEscolarId,
         bimestre,
-        descricao: valorNovo,
+        planejamento: valorNovo,
       };
       dispatch(setDadosParaSalvarCartaIntencoes(dadosEmEdicao));
     },
-    [dispatch, bimestre]
+    [dispatch, bimestre, periodoEscolarId, id]
   );
 
   const validarSeTemErro = valorEditado => {
@@ -46,12 +72,12 @@ const BimestresCartaIntencoes = props => {
           validarSeTemErro={validarSeTemErro}
           mensagemErro="Campo obrigatório"
           id={`bimestre-${bimestre}-editor`}
-          inicial={descricao}
+          inicial={planejamento}
           onChange={valorNovo => {
             onChange(valorNovo);
             dispatch(setCartaIntencoesEmEdicao(true));
           }}
-          // desabilitar={alunoDesabilitado || !dentroPeriodo || desabilitarCampos}
+          desabilitar={desabilitarCampo}
         />
         {auditoria ? (
           <div className="row">
@@ -74,15 +100,15 @@ const BimestresCartaIntencoes = props => {
 };
 
 BimestresCartaIntencoes.propTypes = {
-  descricao: PropTypes.string,
-  bimestre: PropTypes.oneOfType([PropTypes.any]),
-  auditoria: PropTypes.oneOfType([PropTypes.object]),
+  carta: PropTypes.oneOfType([PropTypes.object]),
+  permissoesTela: PropTypes.oneOfType([PropTypes.object]),
+  somenteConsulta: PropTypes.bool,
 };
 
 BimestresCartaIntencoes.defaultProps = {
-  descricao: '',
-  bimestre: '',
-  auditoria: null,
+  carta: {},
+  permissoesTela: {},
+  somenteConsulta: false,
 };
 
 export default BimestresCartaIntencoes;
