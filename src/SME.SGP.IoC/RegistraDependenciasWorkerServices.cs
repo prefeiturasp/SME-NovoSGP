@@ -81,7 +81,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosEventoTipo, ComandosEventoTipo>();
             services.TryAddScopedWorkerService<IComandosEvento, ComandosEvento>();
             services.TryAddScopedWorkerService<IComandosDiasLetivos, ComandosDiasLetivos>();
-            services.TryAddScopedWorkerService<IComandosAula, ComandosAula>();
             services.TryAddScopedWorkerService<IComandosGrade, ComandosGrade>();
             services.TryAddScopedWorkerService<IComandoFrequencia, ComandoFrequencia>();
             services.TryAddScopedWorkerService<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
@@ -277,7 +276,10 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioHistoricoReinicioSenha, RepositorioHistoricoReinicioSenha>();
             services.TryAddScopedWorkerService<IRepositorioComunicadoAluno, RepositorioComunicadoAluno>();
             services.TryAddScopedWorkerService<IRepositorioComunicadoTurma, RepositorioComunicadoTurma>();
+            services.TryAddScopedWorkerService<IRepositorioDiarioBordo, RepositorioDiarioBordo>();
+            services.TryAddScopedWorkerService<IRepositorioDevolutivaDiarioBordo, RepositorioDevolutivaDiarioBordo>();
             services.TryAddScoped<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
+            services.TryAddScopedWorkerService<IRepositorioCartaIntencoes, RepositorioCartaIntencoes>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -297,7 +299,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoDiaLetivo, ServicoDiaLetivo>();
             services.TryAddScopedWorkerService<IServicoLog, ServicoLog>();
             services.TryAddScopedWorkerService<IServicoFrequencia, ServicoFrequencia>();
-            services.TryAddScopedWorkerService<IServicoAula, ServicoAula>();
             services.TryAddScopedWorkerService<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
             services.TryAddScopedWorkerService<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
@@ -336,7 +337,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IHistoricoEscolarUseCase, HistoricoEscolarUseCase>();
             services.TryAddScoped<IObterAlunosPorCodigoEolNomeUseCase, ObterAlunosPorCodigoEolNomeUseCase>();
             services.TryAddScoped<IRelatorioPendenciasFechamentoUseCase, RelatorioPendenciasFechamentoUseCase>();
+            services.TryAddScoped<IInserirDiarioBordoUseCase, InserirDiarioBordoUseCase>();
+            services.TryAddScoped<IObterDatasAulasPorTurmaEComponenteUseCase, ObterDatasAulasPorTurmaEComponenteUseCase>();
+            services.TryAddScoped<IObterFrequenciaOuPlanoNaRecorrenciaUseCase, ObterFrequenciaOuPlanoNaRecorrenciaUseCase>();
             services.TryAddScoped<IObterFiltroRelatoriosAnosPorCicloModalidadeUseCase, ObterFiltroRelatoriosAnosPorCicloModalidadeUseCase>();
+
+
+            services.TryAddScopedWorkerService<ICartaIntencoesPersistenciaUseCase, CartaIntencoesPersistenciaUseCase>();
+            services.TryAddScopedWorkerService<IObterCartasDeIntencoesPorTurmaEComponenteUseCase, ObterCartasDeIntencoesPorTurmaEComponenteUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
