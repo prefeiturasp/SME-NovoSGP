@@ -188,42 +188,41 @@ const CartaIntencoes = () => {
               </div>
             </div>
           </>
-          {turmaSelecionada.turma &&
-          ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
-            <>
-              <div className="col-md-12">
-                <div className="row">
-                  <div className="col-sm-12 col-md-12 col-lg-6 col-xl-4 mb-2">
-                    <SelectComponent
-                      id="componente-curricular"
-                      lista={listaComponenteCurricular || []}
-                      valueOption="codigoComponenteCurricular"
-                      valueText="nome"
-                      valueSelect={componenteCurricular}
-                      onChange={onChangeSemestreComponenteCurricular}
-                      placeholder="Selecione um componente curricular"
-                      disabled={
-                        listaComponenteCurricular &&
-                        listaComponenteCurricular.length === 1
-                      }
-                    />
-                  </div>
-                  {componenteCurricular ? (
-                    <div className="col-md-12">
-                      <DadosCartaIntencoes
-                        permissoesTela={permissoesTela}
-                        somenteConsulta={somenteConsulta}
-                      />
-                    </div>
-                  ) : (
-                    ''
-                  )}
-                </div>
+
+          <div className="col-md-12">
+            <div className="row">
+              <div className="col-sm-12 col-md-12 col-lg-6 col-xl-4 mb-2">
+                <SelectComponent
+                  id="componente-curricular"
+                  lista={listaComponenteCurricular || []}
+                  valueOption="codigoComponenteCurricular"
+                  valueText="nome"
+                  valueSelect={componenteCurricular}
+                  onChange={onChangeSemestreComponenteCurricular}
+                  placeholder="Selecione um componente curricular"
+                  disabled={
+                    !ehTurmaInfantil(
+                      modalidadesFiltroPrincipal,
+                      turmaSelecionada
+                    ) ||
+                    (listaComponenteCurricular &&
+                      listaComponenteCurricular.length === 1)
+                  }
+                />
               </div>
-            </>
-          ) : (
-            ''
-          )}
+              {componenteCurricular &&
+              ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
+                <div className="col-md-12">
+                  <DadosCartaIntencoes
+                    permissoesTela={permissoesTela}
+                    somenteConsulta={somenteConsulta}
+                  />
+                </div>
+              ) : (
+                ''
+              )}
+            </div>
+          </div>
         </Card>
       </LoaderCartaIntencoes>
     </Container>

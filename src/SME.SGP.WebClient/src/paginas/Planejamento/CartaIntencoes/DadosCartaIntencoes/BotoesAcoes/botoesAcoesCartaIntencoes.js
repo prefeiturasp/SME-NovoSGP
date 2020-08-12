@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
-import { setCarregandoCartaIntencoes } from '~/redux/modulos/cartaIntencoes/actions';
+import {
+  setCarregandoCartaIntencoes,
+  limparDadosCartaIntencoes,
+} from '~/redux/modulos/cartaIntencoes/actions';
 import { confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
@@ -76,6 +79,7 @@ const BotoesAcoesCartaIntencoes = props => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
+        dispatch(limparDadosCartaIntencoes());
         onClickCancelar();
       }
     }
