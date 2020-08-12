@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Deve_Obter_Carta_Intencoes()
         {
             // Arrange 
-            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma());
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTipoCalendarioIdPorTurmaQuery>(), It.IsAny<CancellationToken>()))
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Deve_Obter_Dto_Vazio()
         {
             // Arrange 
-            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma());
 
             mediator.Setup(a => a.Send(It.IsAny<ObterTipoCalendarioIdPorTurmaQuery>(), It.IsAny<CancellationToken>()))
