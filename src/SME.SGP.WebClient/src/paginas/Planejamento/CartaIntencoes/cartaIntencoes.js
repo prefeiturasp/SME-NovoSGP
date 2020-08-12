@@ -149,8 +149,7 @@ const CartaIntencoes = () => {
 
   return (
     <Container>
-      {!turmaSelecionada.turma &&
-      ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
+      {!turmaSelecionada.turma ? (
         <div className="col-md-12">
           <Alert
             alerta={{
@@ -165,7 +164,7 @@ const CartaIntencoes = () => {
       ) : (
         ''
       )}
-      <AlertaPermiteSomenteTurmaInfantil />
+      {turmaSelecionada.turma ? <AlertaPermiteSomenteTurmaInfantil /> : ''}
       <ModalErrosCartaIntencoes />
       <Cabecalho pagina="Carta de Intenções" />
       <LoaderCartaIntencoes>
