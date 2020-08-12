@@ -1,16 +1,24 @@
 -- Data de criacao: 12/08/2020
--- Descricao: Remove permissão de Plano Anual para Professor Ed. Infantil
+-- Descricao: Remove permissï¿½o de Plano Anual para Professor Ed. Infantil
 
 BEGIN TRY
     BEGIN TRAN
-	PRINT 'Permissionamento do Plano Anual - INÍCIO'
+	PRINT 'Permissionamento do Plano Anual - INï¿½CIO'
 
 	--Permissoes
-	-- remove permissão do Plano Anual para perfil Professor Ed. Infantil
+	-- remove permissï¿½o do Plano Anual para perfil Professor Ed. Infantil
 	IF EXISTS(select * from SYS_GrupoPermissao where sis_id = 1000 and mod_id = 23 and gru_id = '60E1E074-37D6-E911-ABD6-F81654FE895D')
 	BEGIN
 		DELETE FROM SYS_GrupoPermissao WHERE gru_id = '60E1E074-37D6-E911-ABD6-F81654FE895D' and sis_id = 1000 and mod_id = 23
 	END
+
+	--Permissoes
+	-- remove permissÃ£o do Plano Anual para perfil Professor CJ Ed. Infantil
+	IF EXISTS(select * from SYS_GrupoPermissao where sis_id = 1000 and mod_id = 23 and gru_id = '61E1E074-37D6-E911-ABD6-F81654FE895D')
+	BEGIN
+		DELETE FROM SYS_GrupoPermissao WHERE gru_id = '61E1E074-37D6-E911-ABD6-F81654FE895D' and sis_id = 1000 and mod_id = 23
+	END
+
 
     PRINT 'Permissionamento do Plano de Aula - FIM'
 
