@@ -171,7 +171,7 @@ namespace SME.SGP.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Teste([FromServices] ICriarAulasInfantilAutomaticamenteUseCase criarAulasInfantilAutomaticamenteUseCase)
         {
-            await criarAulasInfantilAutomaticamenteUseCase.Executar();
+            await criarAulasInfantilAutomaticamenteUseCase.Executar(new MensagemRabbit(string.Empty,Guid.NewGuid(),string.Empty, string.Empty,null));
             return Ok();
         }
     }

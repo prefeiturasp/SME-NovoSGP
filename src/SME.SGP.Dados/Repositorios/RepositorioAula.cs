@@ -813,8 +813,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task ExcluirPeloSistemaAsync(long[] idsAulas)
         {
-            var sql = "update aula set excluido = true where id = any(@idsAulas)";
-            await database.Conexao.ExecuteAsync(sql, new { idsAulas });
+            var sql = "update aula set excluido = true, alterado_por = @alteradoPor, alterado_em = @alteradoEm, alterado_rf = @alteradoRf where id = any(@idsAulas)";
+            await database.Conexao.ExecuteAsync(sql, new { idsAulas, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
         }
     }
 }

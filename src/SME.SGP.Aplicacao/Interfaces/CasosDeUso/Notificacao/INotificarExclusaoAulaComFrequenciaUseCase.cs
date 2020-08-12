@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface ICriarAulasInfantilAutomaticamenteUseCase
+    public interface INotificarExclusaoAulaComFrequenciaUseCase
     {
         Task<bool> Executar(MensagemRabbit mensagemRabbit);
     }
