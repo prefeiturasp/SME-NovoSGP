@@ -37,9 +37,6 @@ const { Panel } = Collapse;
 
 const PlanoAnual = () => {
   const permissoesTela = useSelector(state => state.usuario.permissoes);
-  const somenteConsulta = verificaSomenteConsulta(
-    permissoesTela[RotasDto.PLANO_ANUAL]
-  );
   const turmaSelecionada = useSelector(c => c.usuario.turmaSelecionada);
   const [possuiTurmaSelecionada, setPossuiTurmaSelecionada] = useState(false);
   const [ehEja, setEhEja] = useState(false);
@@ -83,6 +80,12 @@ const PlanoAnual = () => {
   const modalidadesFiltroPrincipal = useSelector(
     state => state.filtro.modalidades
   );
+  const somenteConsulta = !ehTurmaInfantil(
+    modalidadesFiltroPrincipal,
+    turmaSelecionada
+  )
+    ? verificaSomenteConsulta(permissoesTela[RotasDto.PLANO_ANUAL])
+    : false;
   const [turmaInfantil, setTurmaInfantil] = useState(false);
 
   useEffect(() => {
