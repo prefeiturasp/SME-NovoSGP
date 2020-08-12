@@ -1,4 +1,3 @@
-// import * as moment from 'moment';
 import api from '~/servicos/api';
 
 const urlPadrao = '/v1/carta-intencoes';
