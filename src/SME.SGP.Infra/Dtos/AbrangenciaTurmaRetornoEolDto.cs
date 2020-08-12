@@ -12,6 +12,7 @@ namespace SME.SGP.Dto
         public int Semestre { get; set; }
         public int DuracaoTurno { get; set; }
         public int TipoTurno { get; set; }
+        public int EtapaEJA { get; set; }
         public DateTime? DataFIm { get; set; }
         public bool EHistorico { get; set; }
         public bool EnsinoEspecial { get; set; }
