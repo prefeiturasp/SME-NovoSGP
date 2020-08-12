@@ -38,15 +38,14 @@ export default function cartaIntencoes(state = inicial, action) {
         };
       }
       case '@cartaIntencoes/setDadosParaSalvarCartaIntencoes': {
-        // TODO - TESTAR!
         const dados = state.dadosParaSalvarCartaIntencoes;
         if (dados.length > 0) {
           const valor = dados.find(
-            item => item.bimestre == action.payload.bimestre
+            item => item.bimestre === action.payload.bimestre
           );
           if (valor) {
             const indexItem = dados.findIndex(
-              item => item.bimestre == action.payload.bimestre
+              item => item.bimestre === action.payload.bimestre
             );
             draft.dadosParaSalvarCartaIntencoes[indexItem] = action.payload;
           } else {
