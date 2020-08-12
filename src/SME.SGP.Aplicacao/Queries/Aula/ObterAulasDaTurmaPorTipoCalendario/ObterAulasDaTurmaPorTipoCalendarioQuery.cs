@@ -2,7 +2,7 @@
 using MediatR;
 using System.Collections.Generic;
 
-namespace SME.SGP.Aplicacao.Queries.Aula.ObterAulasDaTurma
+namespace SME.SGP.Aplicacao
 {
     public class ObterAulasDaTurmaPorTipoCalendarioQuery : IRequest<IEnumerable<Dominio.Aula>>
     {

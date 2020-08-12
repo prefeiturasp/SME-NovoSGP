@@ -258,24 +258,29 @@ namespace SME.SGP.Dados.Repositorios
             var turmas = new List<Turma>();
             var query = @"select
 	                            t.*,
-	                            u.*
+	                            u.*,
+                                d.*
                             from
 	                            turma t
                             inner join ue u on
 	                            u.id = t.ue_id
+                            inner join dre d on
+	                            u.dre_id = d.id
                             where
 	                            t.modalidade_codigo = :modalidade
 	                            and t.historica = false
 	                            and t.ano_letivo = :anoLetivo
 	                            and ano ~ E'^[0-9\.]+$'";
 
-            await contexto.Conexao.QueryAsync<Turma, Ue, Turma>(query, (turma, ue) =>
+            await contexto.Conexao.QueryAsync<Turma, Ue,Dre, Turma>(query, (turma, ue,dre) =>
             {
+                ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 
                 var turmaExistente = turmas.FirstOrDefault(c => c.Id == turma.Id);
                 if (turmaExistente == null)
                     turmas.Add(turma);
+                
                 return turma;
             }, new { anoLetivo, modalidade });
 
