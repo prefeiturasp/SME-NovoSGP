@@ -59,6 +59,11 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.RotaNotificacaoUsuario, new ComandoRabbit("Notificar usuário", typeof(INotificarUsuarioUseCase)));
             comandos.Add(RotasRabbit.RotaRelatorioComErro, new ComandoRabbit("Notificar relatório com erro", typeof(IReceberRelatorioComErroUseCase)));
             comandos.Add(RotasRabbit.RotaRelatorioCorrelacaoCopiar, new ComandoRabbit("Copiar e gerar novo código de correlação", typeof(ICopiarCodigoCorrelacaoUseCase)));
+            comandos.Add(RotasRabbit.RotaSincronizarAulasInfatil, new ComandoRabbit("Sincronizar aulas da modalidade Infantil que devem ser criadas ou excluídas", typeof(ICriarAulasInfantilAutomaticamenteUseCase)));
+            comandos.Add(RotasRabbit.RotaCriarAulasInfatilAutomaticamente, new ComandoRabbit("Criar aulas da modalidade Infantil automaticamente", typeof(ICriarAulasInfantilUseCase)));
+            comandos.Add(RotasRabbit.RotaNotificacaoExclusaoAulasComFrequencia, new ComandoRabbit("Notificar usuário sobre a exclusão de aulas com frequência registrada", typeof(INotificarExclusaoAulaComFrequenciaUseCase)));
+
+
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -90,6 +95,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     }
                     catch (NegocioException nex)
                     {
+                        canalRabbit.BasicReject(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {nex.Message}");
                         RegistrarSentry(ea, mensagemRabbit, nex);
                         if (mensagemRabbit.NotificarErroUsuario)
@@ -97,6 +103,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     }
                     catch (ValidacaoException vex)
                     {
+                        canalRabbit.BasicReject(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
                         RegistrarSentry(ea, mensagemRabbit, vex);
                         if (mensagemRabbit.NotificarErroUsuario)
@@ -104,6 +111,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     }
                     catch (Exception ex)
                     {
+                        canalRabbit.BasicReject(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {ex.Message}");
                         RegistrarSentry(ea, mensagemRabbit, ex);
                         if (mensagemRabbit.NotificarErroUsuario)
@@ -117,7 +125,6 @@ namespace SME.SGP.Worker.RabbitMQ
         {
             SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - ERRO - {ea.RoutingKey}", SentryLevel.Error);
             SentrySdk.CaptureException(ex);
-            canalRabbit.BasicReject(ea.DeliveryTag, false);
         }
 
         private static void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)

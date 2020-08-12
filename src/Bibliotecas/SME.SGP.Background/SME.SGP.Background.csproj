@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
     <ProjectReference Include="..\..\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
     <ProjectReference Include="..\..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
     <ProjectReference Include="..\SME.Background.Core\SME.Background.Core.csproj" />

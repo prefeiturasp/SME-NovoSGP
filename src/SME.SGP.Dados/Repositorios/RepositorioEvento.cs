@@ -1077,7 +1077,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select
 	                        data_inicio,
 	                        data_fim,
-	                        letivo
+	                        letivo,
+                            e.ue_id,
+                            e.dre_id
                         from
 	                        evento e
                         where

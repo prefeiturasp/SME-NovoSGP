@@ -25,21 +25,40 @@ namespace SME.SGP.Aplicacao
             {
                 datasDosPeriodosEscolares.AddRange(periodoEscolar.ObterIntervaloDatas().Select(c => new DiaLetivoDto
                 {
-                    Data = c
+                    Data = c,
+                    EhLetivo = !c.FimDeSemana()
                 }));
             }
 
-            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioAsync(request.TipoCalendarioId);
+            var eventos = (await repositorioEvento.ObterEventosPorTipoDeCalendarioAsync(request.TipoCalendarioId))?.Where(c => (c.EhEventoUE() || c.EhEventoSME()));
 
-            foreach (var dia in datasDosPeriodosEscolares)
+            if (eventos != null)
             {
-                var eventosNoDia = eventos.Where(c => c.DataEstaNoRangeDoEvento(dia.Data));
-                var temEventoLetivo = eventosNoDia.Any(c => c.Letivo == EventoLetivo.Sim);
-                var temEventoNaoLetivo = eventosNoDia.Any(c => c.Letivo == EventoLetivo.Nao);
+                var eventosNoMesmoDia = eventos.Where(c => c.DataInicio == c.DataFim);
+                var eventosComRangeDeDatas = eventos.Where(c => c.DataInicio != c.DataFim);
 
-                dia.EhLetivo = eventosNoDia == null ? !dia.Data.FimDeSemana() : (temEventoLetivo || (!temEventoNaoLetivo && !dia.Data.FimDeSemana()));
+                var datasComEventos = eventos.SelectMany(e => e.ObterIntervaloDatas().Select(c => new DiaLetivoDto
+                {
+                    Data = c,
+                    EhLetivo = e.EhEventoLetivo() || (!e.EhEventoLetivo() && !e.DataInicio.FimDeSemana()),
+                    UesIds = string.IsNullOrWhiteSpace(e.UeId) ? new List<string>() : new List<string> { e.UeId }
+                }));
+
+                datasDosPeriodosEscolares.AddRange(datasComEventos);
+
+                foreach (var dia in datasDosPeriodosEscolares.OrderBy(c => c.Data))
+                {
+                    var eventosNoDia = eventos.Where(c => c.DataEstaNoRangeDoEvento(dia.Data) && (dia.UesIds.Any() ? dia.UesIds.Contains(c.UeId) : string.IsNullOrWhiteSpace(c.UeId)));
+
+
+                    var temEventoLetivo = eventosNoDia.Any(c => c.EhEventoLetivo());
+                    var temEventoNaoLetivo = eventosNoDia.Any(c => c.NaoEhEventoLetivo());
+                    var ehEventoSme = eventosNoDia.Any(c => c.EhEventoSME());
+
+                    dia.EhLetivo = eventosNoDia == null ? !dia.Data.FimDeSemana() : (temEventoLetivo || (!temEventoNaoLetivo && !dia.Data.FimDeSemana()));
+                    dia.UesIds = ehEventoSme ? new List<string>() : eventosNoDia?.Select(c => c.UeId)?.ToList();
+                }
             }
-
             return datasDosPeriodosEscolares;
         }
     }

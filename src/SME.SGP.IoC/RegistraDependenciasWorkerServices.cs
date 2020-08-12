@@ -336,6 +336,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAlunosPorCodigoEolNomeUseCase, ObterAlunosPorCodigoEolNomeUseCase>();
             services.TryAddScoped<IRelatorioPendenciasFechamentoUseCase, RelatorioPendenciasFechamentoUseCase>();
             services.TryAddScoped<ICriarAulasInfantilAutomaticamenteUseCase, CriarAulasInfantilAutomaticamenteUseCase>();
+            services.TryAddScoped<ICriarAulasInfantilUseCase, CriarAulasInfantilUseCase>();
+            services.TryAddScoped<ISincronizarAulasInfantilUseCase, SincronizarAulasInfantilUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
