@@ -89,5 +89,27 @@ namespace SME.SGP.Dados.Repositorios
                 var parametros = new { filtro.Modalidade, filtro.CodigoUe };
                 return await database.Conexao.QueryAsync<RetornoCicloDto>(query.ToString(), parametros);
         }
+
+        public async Task<IEnumerable<RetornoCicloDto>> ObterCiclosPorAnoModalidadeECodigoUeAbrangencia(FiltroCicloPorModalidadeECodigoUeDto filtro, long usuarioId, Guid perfil)
+        {
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("select distinct tc.id, tc.descricao from tipo_ciclo tc ");
+            query.AppendLine("inner join tipo_ciclo_ano tca on tca.tipo_ciclo_id = tc.id ");
+            query.AppendLine("inner join turma t on t.ano = tca.ano ");
+            query.AppendLine("inner join ue ue on t.ue_id = ue.id ");
+            query.AppendLine("inner join v_abrangencia_usuario vau");
+            query.AppendLine("on vau.turma_id = t.turma_id");
+            query.AppendLine("where tc.descricao is not null and vau.usuario_id = @usuarioId and vau.usuario_perfil = @perfil and tc.id <> 4");
+
+            if (filtro.Modalidade > 0)
+                query.AppendLine("and tca.modalidade = @modalidade ");
+
+            if (!string.IsNullOrEmpty(filtro.CodigoUe) && !filtro.CodigoUe.Equals("-99"))
+                query.AppendLine("and ue.ue_id = @codigoUe ");
+
+            var parametros = new { filtro.Modalidade, filtro.CodigoUe, usuarioId, perfil };
+            
+            return await database.Conexao.QueryAsync<RetornoCicloDto>(query.ToString(), parametros);
+        }
     }
 }

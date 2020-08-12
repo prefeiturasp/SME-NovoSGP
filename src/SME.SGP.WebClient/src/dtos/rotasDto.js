@@ -43,6 +43,7 @@ const RotasDto = {
   RELATORIO_BOLETIM_SIMPLES: '/relatorios/diario-classe/boletim-simples',
   ATA_FINAL_RESULTADOS: '/relatorios/atas/ata-final-resultados',
   FALTAS_FREQUENCIA: '/relatorios/frequencia/faltas-frequencia',
+  DIARIO_BORDO: '/diario-classe/diario-bordo',
   RELATORIO_PENDENCIAS: '/relatorios/pendencias-fechamento',
   CARTA_INTENCOES: '/planejamento/carta-intencoes',
   RELATORIO_PARECER_CONCLUSIVO: '/relatorios/parecer-conclusivo',
