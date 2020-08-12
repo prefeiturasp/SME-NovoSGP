@@ -92,7 +92,7 @@ const BotoesAcoesCartaIntencoes = props => {
         icon="arrow-left"
         color={Colors.Azul}
         border
-        className="mr-2"
+        className="mr-3"
         onClick={onClickVoltar}
       />
       <Button
@@ -100,7 +100,7 @@ const BotoesAcoesCartaIntencoes = props => {
         label="Cancelar"
         color={Colors.Roxo}
         border
-        className="mr-2"
+        className="mr-3"
         onClick={onCancelar}
         disabled={
           !ehTurmaInfantil || somenteConsulta || !cartaIntencoesEmEdicao
@@ -112,7 +112,6 @@ const BotoesAcoesCartaIntencoes = props => {
         color={Colors.Roxo}
         border
         bold
-        className="mr-2"
         onClick={onSalvar}
         disabled={
           !ehTurmaInfantil || somenteConsulta || !cartaIntencoesEmEdicao

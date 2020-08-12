@@ -5,6 +5,7 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
 import SelectComponent from '~/componentes/select';
+import Loader from '~/componentes/loader';
 import {
   limparDadosCartaIntencoes,
   setCarregandoCartaIntencoes,
@@ -26,6 +27,7 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 const CartaIntencoes = () => {
   const dispatch = useDispatch();
 
+  const [carregandoComponentes, setCarregandoComponentes] = useState(false);
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const { turma } = turmaSelecionada;
@@ -83,9 +85,11 @@ const CartaIntencoes = () => {
   }, [dispatch, turma, resetarInfomacoes, componenteCurricular, mostrarLoader]);
 
   const obterListaComponenteCurricular = useCallback(async () => {
+    setCarregandoComponentes(true);
     const resposta = await servicoDisciplinas
       .obterDisciplinasPorTurma(turma)
-      .catch(e => erros(e));
+      .catch(e => erros(e))
+      .finally(() => setCarregandoComponentes(false));
 
     if (resposta && resposta.data) {
       setListaComponenteCurricular(resposta.data);
@@ -192,23 +196,25 @@ const CartaIntencoes = () => {
           <div className="col-md-12">
             <div className="row">
               <div className="col-sm-12 col-md-12 col-lg-6 col-xl-4 mb-2">
-                <SelectComponent
-                  id="componente-curricular"
-                  lista={listaComponenteCurricular || []}
-                  valueOption="codigoComponenteCurricular"
-                  valueText="nome"
-                  valueSelect={componenteCurricular}
-                  onChange={onChangeSemestreComponenteCurricular}
-                  placeholder="Selecione um componente curricular"
-                  disabled={
-                    !ehTurmaInfantil(
-                      modalidadesFiltroPrincipal,
-                      turmaSelecionada
-                    ) ||
-                    (listaComponenteCurricular &&
-                      listaComponenteCurricular.length === 1)
-                  }
-                />
+                <Loader loading={carregandoComponentes} tip="">
+                  <SelectComponent
+                    id="componente-curricular"
+                    lista={listaComponenteCurricular || []}
+                    valueOption="codigoComponenteCurricular"
+                    valueText="nome"
+                    valueSelect={componenteCurricular}
+                    onChange={onChangeSemestreComponenteCurricular}
+                    placeholder="Selecione um componente curricular"
+                    disabled={
+                      !ehTurmaInfantil(
+                        modalidadesFiltroPrincipal,
+                        turmaSelecionada
+                      ) ||
+                      (listaComponenteCurricular &&
+                        listaComponenteCurricular.length === 1)
+                    }
+                  />
+                </Loader>
               </div>
               {componenteCurricular &&
               ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
