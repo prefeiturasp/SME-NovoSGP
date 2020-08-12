@@ -3,10 +3,6 @@
 
 Modelo de README do **SGP - Sistema de Gestão Pedagógica** no [GitHub](https://github.com/prefeiturasp/SME-NovoSGP).
 
-## Índice de Conteúdo
-[[_TOC_]]
-
-
 # **Introdução**
 O Sistema de Gestão Pedagógica (SGP) é o novo sistema de gestão pedagógica dos gestores e professores de toda a rede de ensino do Município de São Paulo, como parte de uma proposta de transformação digital da Secretaria de Educação. O Sistema é utilizado diariamente por milhares de professores e funcionários da Rede Pública, trazendo alto impacto no ambiente escolar.
 
