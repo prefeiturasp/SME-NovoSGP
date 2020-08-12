@@ -1,9 +1,12 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import BimestresCartaIntencoes from './BimestresCartaIntencoes/bimestresCartaIntencoes';
 
-const DadosCartaIntencoes = () => {
+const DadosCartaIntencoes = props => {
+  const { permissoesTela, somenteConsulta } = props;
+
   const dadosCartaIntencoes = useSelector(
     store => store.cartaIntencoes.dadosCartaIntencoes
   );
@@ -15,9 +18,9 @@ const DadosCartaIntencoes = () => {
             return (
               <div key={shortid.generate()} className="mb-4">
                 <BimestresCartaIntencoes
-                  descricao={item.descricao}
-                  bimestre={item.bimestre}
-                  auditoria={item.auditoria}
+                  carta={item}
+                  permissoesTela={permissoesTela}
+                  somenteConsulta={somenteConsulta}
                 />
               </div>
             );
@@ -25,6 +28,16 @@ const DadosCartaIntencoes = () => {
         : ''}
     </>
   );
+};
+
+DadosCartaIntencoes.propTypes = {
+  permissoesTela: PropTypes.oneOfType([PropTypes.object]),
+  somenteConsulta: PropTypes.bool,
+};
+
+DadosCartaIntencoes.defaultProps = {
+  permissoesTela: {},
+  somenteConsulta: false,
 };
 
 export default DadosCartaIntencoes;
