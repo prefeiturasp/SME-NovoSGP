@@ -26,6 +26,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Deve_Obter_Carta_Intencoes()
         {
             // Arrange 
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Usuario() { CodigoRf = "123" });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma());
 
@@ -62,6 +68,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Deve_Obter_Dto_Vazio()
         {
             // Arrange 
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Usuario() { CodigoRf = "123" });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma());
 
