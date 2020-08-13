@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
         public long PeriodoEscolarId { get; set; }
         public int Bimestre { get; set; }
         public bool PeriodoAberto { get; set; }
+        public bool UsuarioTemAtribuicao { get; set; }
         public AuditoriaDto Auditoria { get; set; }
     }
 }
