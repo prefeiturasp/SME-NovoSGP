@@ -19,6 +19,7 @@ const BimestresCartaIntencoes = props => {
     periodoEscolarId,
     id,
     periodoAberto,
+    usuarioTemAtribuicao,
     somenteConsulta,
   } = carta;
 
@@ -32,7 +33,7 @@ const BimestresCartaIntencoes = props => {
         ? somenteConsulta || !permissoesTela.podeAlterar
         : somenteConsulta || !permissoesTela.podeIncluir;
 
-    if (!periodoAberto) {
+    if (!periodoAberto || !usuarioTemAtribuicao) {
       setDesabilitarCampo(true);
     } else {
       setDesabilitarCampo(desabilitar);
@@ -91,8 +92,8 @@ const BimestresCartaIntencoes = props => {
             />
           </div>
         ) : (
-          ''
-        )}
+            ''
+          )}
       </>
     </CardCollapse>
   );
