@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<CartaIntencoesRetornoDto>> Executar(ObterCartaIntencoesDto param)
         {
             var cartas = await mediator.Send(new ObterCartaDeIntencoesPorTurmaEComponenteQuery(param.TurmaCodigo, param.ComponenteCurricularId));
-            return await CarregarDto(param.TurmaCodigo, cartas);
+            return await CarregarDto(param.TurmaCodigo, cartas, param.ComponenteCurricularId);
         }
 
         private async Task<long> ObterTipoCalendarioId(Turma turma)
@@ -39,31 +39,43 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private async Task<IEnumerable<CartaIntencoesRetornoDto>> CarregarDto(string turmaCodigo, IEnumerable<CartaIntencoes> cartas)
+        private async Task<IEnumerable<CartaIntencoesRetornoDto>> CarregarDto(string turmaCodigo, IEnumerable<CartaIntencoes> cartas, long componenteCurricularId)
         {
             var turma = await ObterTurma(turmaCodigo);
             var tipoCalendarioId = await ObterTipoCalendarioId(turma);
 
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
-            return MapearParaDto(periodosEscolares, cartas, turma);
+            return await MapearParaDto(periodosEscolares, cartas, turma, componenteCurricularId);
         }
 
-        private IEnumerable<CartaIntencoesRetornoDto> MapearParaDto(IEnumerable<PeriodoEscolar> periodosEscolares, IEnumerable<CartaIntencoes> cartas, Turma turma)
+        private async Task<IEnumerable<CartaIntencoesRetornoDto>> MapearParaDto(IEnumerable<PeriodoEscolar> periodosEscolares, IEnumerable<CartaIntencoes> cartas, Turma turma, long componenteCurricularId)
         {
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var listaCartasDto = new List<CartaIntencoesRetornoDto>();
+
             foreach (var periodoEscolar in periodosEscolares.OrderBy(x => x.Bimestre))
             {
                 var carta = cartas?.FirstOrDefault(a => a.PeriodoEscolarId == periodoEscolar.Id);
 
-                yield return new CartaIntencoesRetornoDto()
+                listaCartasDto.Add(new CartaIntencoesRetornoDto()
                 {
                     Id = carta?.Id ?? 0,
                     Planejamento = carta?.Planejamento,
                     PeriodoEscolarId = periodoEscolar.Id,
                     Bimestre = periodoEscolar.Bimestre,
-                    PeriodoAberto = TurmaEmPeridoAberto(turma, periodoEscolar.Bimestre).Result,
+                    PeriodoAberto = await TurmaEmPeridoAberto(turma, periodoEscolar.Bimestre),
+                    UsuarioTemAtribuicao = await UsuarioTemAtribuicao(usuarioLogado, turma.CodigoTurma, componenteCurricularId, periodoEscolar),
                     Auditoria = (AuditoriaDto)carta
-                };
+                });
             }
+
+            return listaCartasDto;
+        }
+
+        private async Task<bool> UsuarioTemAtribuicao(Usuario usuario, string turmaCodigo, long componenteCurricularId, PeriodoEscolar periodoEscolar)
+        {
+            var validacao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(componenteCurricularId, turmaCodigo, usuario.CodigoRf, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim));
+            return validacao;
         }
 
         private async Task<bool> TurmaEmPeridoAberto(Turma turma, int bimestre)
