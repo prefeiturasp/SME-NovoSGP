@@ -375,8 +375,10 @@ const DiarioBordo = () => {
     if (modoEdicao && turmaInfantil && !desabilitarCampos) {
       const confirmado = await pergutarParaSalvar();
       if (confirmado) {
-        await validaAntesDoSubmit(form);
-        history.push(URL_HOME);
+        const salvou = await validaAntesDoSubmit(form);
+        if (salvou) {
+          history.push(URL_HOME);
+        }
       } else {
         history.push(URL_HOME);
       }
