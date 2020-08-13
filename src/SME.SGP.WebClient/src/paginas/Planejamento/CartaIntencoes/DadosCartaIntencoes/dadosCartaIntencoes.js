@@ -15,16 +15,16 @@ const DadosCartaIntencoes = props => {
     <>
       {dadosCartaIntencoes && dadosCartaIntencoes.length
         ? dadosCartaIntencoes.map(item => {
-            return (
-              <div key={shortid.generate()} className="mb-4">
-                <BimestresCartaIntencoes
-                  carta={item}
-                  permissoesTela={permissoesTela}
-                  somenteConsulta={somenteConsulta}
-                />
-              </div>
-            );
-          })
+          return (
+            <div key={shortid.generate()} className="mb-4">
+              <BimestresCartaIntencoes
+                carta={item}
+                permissoesTela={permissoesTela}
+                somenteConsulta={somenteConsulta}
+              />
+            </div>
+          );
+        })
         : ''}
     </>
   );
