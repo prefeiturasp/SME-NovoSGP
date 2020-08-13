@@ -69,7 +69,7 @@ const CampoRelatorioSemestral = props => {
             onChange(valorNovo);
             setarRelatorioSemestralEmEdicao(true);
           }}
-          desabilitar={alunoDesabilitado || !dentroPeriodo || desabilitarCampos}
+          // desabilitar={alunoDesabilitado || !dentroPeriodo || desabilitarCampos}
         />
       </CardCollapse>
     </div>
