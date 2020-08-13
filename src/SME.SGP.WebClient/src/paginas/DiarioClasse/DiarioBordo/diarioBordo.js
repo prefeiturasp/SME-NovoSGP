@@ -460,7 +460,7 @@ const DiarioBordo = () => {
                       icon="arrow-left"
                       color={Colors.Azul}
                       border
-                      className="mr-2"
+                      className="mr-3"
                       onClick={() => onClickVoltar(form)}
                     />
                     <Button
@@ -479,7 +479,6 @@ const DiarioBordo = () => {
                       color={Colors.Roxo}
                       border
                       bold
-                      className="mr-2"
                       onClick={() => validaAntesDoSubmit(form, true)}
                       disabled={
                         !modoEdicao || !turmaInfantil || desabilitarCampos
