@@ -1,2 +1,2 @@
 ALTER TABLE turma
-ADD COLUMN etapa_eja int;
+ADD COLUMN IF NOT EXISTS etapa_eja int;
