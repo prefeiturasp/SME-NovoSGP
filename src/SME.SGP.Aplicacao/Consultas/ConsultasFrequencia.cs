@@ -131,7 +131,7 @@ namespace SME.SGP.Aplicacao
             if (aula == null)
                 throw new NegocioException("Aula não encontrada.");
 
-            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId, aula.DataAula.Year);
+            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
@@ -170,8 +170,10 @@ namespace SME.SGP.Aplicacao
 
             foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
             {
-                // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia
-                if (aluno.EstaInativo(aula.DataAula) && (aluno.DataSituacao < bimestre.PeriodoInicio))
+                // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
+                // se a matrícula foi ativada após a data da aula
+                if ((aluno.EstaInativo(aula.DataAula) && aluno.DataSituacao < bimestre.PeriodoInicio) ||
+                    (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataSituacao > aula.DataAula))
                     continue;
 
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
