@@ -47,6 +47,7 @@ const RotasDto = {
   RELATORIO_PENDENCIAS: '/relatorios/pendencias-fechamento',
   CARTA_INTENCOES: '/planejamento/carta-intencoes',
   RELATORIO_PARECER_CONCLUSIVO: '/relatorios/parecer-conclusivo',
+  DEVOLUTIVAS: '/diario-classe/devolutivas',
 };
 
 export default RotasDto;
