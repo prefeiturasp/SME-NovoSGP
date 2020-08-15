@@ -62,6 +62,7 @@ import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
 import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
+import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 
 const rotas = new Map();
@@ -890,6 +891,17 @@ rotas.set(RotasDto.CARTA_INTENCOES, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.CARTA_INTENCOES,
+});
+
+rotas.set(RotasDto.DEVOLUTIVAS, {
+  breadcrumbName: 'Devolutivas',
+  menu: ['Diário de Classe '],
+  parent: '/',
+  component: DevolutivasLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.DEVOLUTIVAS,
 });
 
 const rotasArray = [];
