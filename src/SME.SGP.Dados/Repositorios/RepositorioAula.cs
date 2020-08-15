@@ -539,7 +539,7 @@ namespace SME.SGP.Dados.Repositorios
                         }, param: new { id })).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf, long? aulaPaiId = null)
+        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, bool aulaCJ, long? aulaPaiId = null)
         {
             var query = @"select DATE(data_aula)
                  from aula
@@ -547,7 +547,7 @@ namespace SME.SGP.Dados.Repositorios
                   and DATE(data_aula) = ANY(@datas)
                   and turma_id = @turmaId
                   and disciplina_id = @disciplinaId
-                  and professor_rf = @professorRf";
+                  and aula_cj = @aulaCJ";
 
             if (aulaPaiId.HasValue)
                 query += " and ((aula_pai_id is null and id <> @aulaPaiId) or (aula_pai_id is not null and aula_pai_id <> @aulaPaiId))";
@@ -557,12 +557,12 @@ namespace SME.SGP.Dados.Repositorios
                 datas,
                 turmaId,
                 disciplinaId,
-                professorRf,
+                aulaCJ,
                 aulaPaiId
             }));
         }
 
-        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehDiretorOuSupervisor = false)
+        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehProfessor = false)
         {
             var query = new StringBuilder("select distinct a.* ");
             query.AppendLine("from aula a ");
@@ -582,7 +582,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.professor_rf = @usuarioRF ");
             }
 
-            if (!ehDiretorOuSupervisor)
+            if (ehProfessor)
             {
                 var filtroAulaCJ = aulaCJ ? "" : "not";
                 query.AppendLine($"and {filtroAulaCJ} a.aula_cj ");
@@ -764,6 +764,37 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select data_aula from aula where id = @aulaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DateTime>(query, new { aulaId });
+        }
+
+        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricular(DateTime dataAula, string codigoTurma, string componenteCurricularCodigo, bool aulaCJ)
+        {
+            var query = @"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = @data
+                  and turma_id = @codigoTurma
+                  and disciplina_id = @componenteCurricularCodigo
+                  and aula_cj = @aulaCJ";
+
+            return await database.Conexao.QueryAsync<AulaConsultaDto>(query, new
+            {
+                data = dataAula.Date,
+                codigoTurma,
+                componenteCurricularCodigo,
+                aulaCJ
+            });
+        }
+
+        public async Task<bool> ObterTurmaInfantilPorAula(long aulaId)
+        {
+            var query = @"select t.modalidade_codigo
+                            from aula a
+                           inner join turma t on t.turma_id = a.turma_id
+                           where a.id = @aulaId";
+
+            var modalidade = await database.Conexao.QueryFirstAsync<int>(query, new { aulaId });
+
+            return modalidade == (int)Modalidade.Infantil;
         }
 
         public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId)

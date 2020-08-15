@@ -513,8 +513,10 @@ const EventosForm = ({ match }) => {
 
   const [carregandoSalvar, setCarregandoSalvar] = useState(false);
 
-  const onClickCadastrar = async valoresForm => {
+  const onClickCadastrar = async valores => {
     setCarregandoSalvar(true);
+
+    const valoresForm = { ...valores };
 
     valoresForm.dataInicio = new Date(
       valoresForm.dataInicio.year(),
