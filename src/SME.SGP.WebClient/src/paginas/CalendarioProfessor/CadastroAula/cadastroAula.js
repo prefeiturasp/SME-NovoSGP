@@ -31,6 +31,7 @@ import ExcluirAula from './excluirAula';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import RotasDto from '~/dtos/rotasDto';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 function CadastroDeAula({ match, location }) {
   const { id, tipoCalendarioId } = match.params;
@@ -39,6 +40,9 @@ function CadastroDeAula({ match, location }) {
     permissoesTela[RotasDto.CADASTRO_DE_AULA]
   );
   const refForm = useRef();
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const [validacoes, setValidacoes] = useState({
     disciplinaId: Yup.string().required('Informe o componente curricular'),
@@ -491,11 +495,12 @@ function CadastroDeAula({ match, location }) {
     if (recorrenciaAulaEmEdicao.recorrenciaAula == 1) {
       let mensagem = 'Você tem certeza que deseja excluir esta aula?';
       if (recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula) {
+        const infantil = ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada);
         mensagem +=
-          ' Obs: Esta aula ou sua recorrência possui frequência ou plano de aula registrado, ao excluí-la estará excluindo esse registro também';
+          ` Obs: Esta aula ou sua recorrência possui frequência ou ${infantil ? 'diário de bordo' : 'plano de aula'} registrado, ao excluí - la estará excluindo esse registro também`;
       }
       const confirmado = await confirmar(
-        `Excluir aula - ${obterDataFormatada()}`,
+        `Excluir aula - ${obterDataFormatada()} `,
         mensagem,
         'Deseja Continuar?',
         'Excluir',
@@ -556,6 +561,8 @@ function CadastroDeAula({ match, location }) {
             navegarParaCalendarioProfessor();
           }}
           onCancelar={() => setExibirModalExclusao(false)}
+          modalidadesFiltroPrincipal={modalidadesFiltroPrincipal}
+          turmaSelecionada={turmaSelecionada}
         />
         <div className="col-md-12">
           {controlaGrade && gradeAtingida && !id && (
@@ -584,7 +591,7 @@ function CadastroDeAula({ match, location }) {
             />
           )}
         </div>
-        <Cabecalho pagina={`Cadastro de Aula - ${obterDataFormatada()}`}>
+        <Cabecalho pagina={`Cadastro de Aula - ${obterDataFormatada()} `}>
           {registroMigrado && (
             <div className="col-md-2 float-right">
               <RegistroMigrado>Registro Migrado</RegistroMigrado>

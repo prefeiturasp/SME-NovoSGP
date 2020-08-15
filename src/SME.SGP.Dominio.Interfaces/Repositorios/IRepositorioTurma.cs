@@ -17,6 +17,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<Turma>> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
         Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo);
+
+        Task<long> ObterTurmaIdPorCodigo(string turmaCodigo);
         Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo);
     }
 }

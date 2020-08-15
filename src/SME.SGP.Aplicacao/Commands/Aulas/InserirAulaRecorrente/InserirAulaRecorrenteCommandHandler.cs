@@ -158,7 +158,7 @@ namespace SME.SGP.Aplicacao
         private async Task<(IEnumerable<DateTime> datasPersistencia, IEnumerable<string> mensagensValidacao)> ValidarDatasAula(IEnumerable<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, long componenteCurricularCodigo, long tipoCalendarioId, bool ehRegencia, int quantidade, Usuario usuario, Turma turma)
         {
             // Aulas Existentes
-            var validacaoAulasExistentes = await ValidarAulaExistenteNaData(diasParaIncluirRecorrencia, turmaCodigo, componenteCurricularCodigo, usuario.CodigoRf);
+            var validacaoAulasExistentes = await ValidarAulaExistenteNaData(diasParaIncluirRecorrencia, turmaCodigo, componenteCurricularCodigo, usuario.EhProfessorCj());
             var datasValidas = validacaoAulasExistentes.datasValidas;
 
             // Grade Curricular
@@ -238,10 +238,10 @@ namespace SME.SGP.Aplicacao
             return (datasValidas, mensagensValidacao);
         }
 
-        private async Task<(IEnumerable<DateTime> datasValidas, IEnumerable<string> mensagensValidacao)> ValidarAulaExistenteNaData(IEnumerable<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, long componenteCurricularCodigo, string codigoRf)
+        private async Task<(IEnumerable<DateTime> datasValidas, IEnumerable<string> mensagensValidacao)> ValidarAulaExistenteNaData(IEnumerable<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, long componenteCurricularCodigo, bool professorCJ)
         {
             var mensagensValidacao = new List<string>();
-            var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia.ToList(), turmaCodigo, componenteCurricularCodigo.ToString(), codigoRf);
+            var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia.ToList(), turmaCodigo, componenteCurricularCodigo.ToString(), professorCJ);
 
             if (datasComRegistro != null && datasComRegistro.Any())
             {

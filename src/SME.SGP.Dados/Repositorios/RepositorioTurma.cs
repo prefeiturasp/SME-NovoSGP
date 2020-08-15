@@ -80,6 +80,11 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
+        public async Task<long> ObterTurmaIdPorCodigo(string turmaCodigo)
+        {
+            return await contexto.QueryFirstOrDefaultAsync<long>("select id from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+        }
+
         public async Task<Turma> ObterPorId(long id)
         {
             return await contexto.QueryFirstOrDefaultAsync<Turma>("select * from turma where id = @id", new { id });
