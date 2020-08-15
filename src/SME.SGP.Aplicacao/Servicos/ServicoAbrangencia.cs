@@ -344,10 +344,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task TrataAbrangenciaModificaoPerfil(string login, Guid perfil)
         {
-            if (!(await repositorioAbrangencia.JaExisteAbrangencia(login, perfil)))
-            {
-                await BuscaAbrangenciaEPersiste(login, perfil);
-            }
+            await BuscaAbrangenciaEPersiste(login, perfil);
         }
     }
 }
