@@ -16,30 +16,37 @@ namespace SME.SGP.Api.Controllers
     public class DevolutivaController : ControllerBase
     {
 
-        [HttpGet("turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularId}")]
+        [HttpGet("turmas/{turmaCodigo}/componentes-curriculares")]
         //[ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> Obter(string turmaCodigo, string componenteCurricularId, DateTime data, int numeroPagina, int numeroRegistros)
+        public async Task<IActionResult> Obter(string turmaCodigo, [FromQuery] string componenteCurricularId, [FromQuery] DateTime data)
         {
-            var text = @"[
-                          {
-                            id: 1,
-                            periodoInicio: ""2020-07-01T00:00:00.000000"",
-                            periodoFim: ""2020-07-31T00:00:00.000000"",
-                            criadoEm: ""2020-07-05T00:00:00.000000"",
-                            criadoPor: ""DIONE LEMOS DE SOUZA OLIVEIRA"",
-                          },
-                          {
-                            id: 2,
-                            periodoInicio: ""2020-08-01T00:00:00.000000"",
-                            periodoFim: ""2020-08-14T00:00:00.000000"",
-                            criadoEm: ""2020-08-05T00:00:00.000000"",
-                            criadoPor: ""DIONE LEMOS DE SOUZA OLIVEIRA"",
-                          },
-                        ]";
 
-            var json = JArray.Parse(text);
+            var text = @"
+                          {
+                            'totalPaginas': 5,
+                            'totalRegistros': 20,
+                            'items': [
+                              {
+                                'id': 1,
+                                'periodoInicio': '2020-07-01T00:00:00.000000',
+                                'periodoFim': '2020-07-01T00:00:00.000000',
+                                'criadoEm': '2020-07-05T00:00:00.000000',
+                                'criadoPor': 'DIONE LEMOS DE SOUZA OLIVEIRA'
+                              },
+                              {
+                                'id': 2,
+                                'periodoInicio': '2020-08-14T00:00:00.000000',
+                                'periodoFim': '2020-08-14T00:00:00.000000',
+                                'criadoEm': '2020-08-05T00:00:00.000000',
+                                'criadoPor': 'DIONE LEMOS DE SOUZA OLIVEIRA'
+                              }
+                            ]
+                          }
+                        ";
+
+            var json = JObject.Parse(text);
 
             return Ok(json);
         }
