@@ -14,6 +14,7 @@ import { erros } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import RotasDto from '~/dtos/rotasDto';
 
 const DevolutivasLista = () => {
   const usuario = useSelector(state => state.usuario);
@@ -142,8 +143,12 @@ const DevolutivasLista = () => {
     history.push(URL_HOME);
   };
 
-  const onClickNovo = () => {};
-  const onClickEditar = () => {};
+  const onClickNovo = () => {
+    history.push(`${RotasDto.DEVOLUTIVAS}/novo`);
+  };
+  const onClickEditar = item => {
+    history.push(`${RotasDto.DEVOLUTIVAS}/editar/${item.id}`);
+  };
 
   return (
     <Loader loading={carregandoGeral} className="w-100 my-2">
