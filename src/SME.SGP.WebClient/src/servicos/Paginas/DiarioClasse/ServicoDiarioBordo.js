@@ -14,6 +14,16 @@ class ServicoDiarioBordo {
     }
     return api.post(urlPadrao, params);
   };
+
+  obterPlanejamentosPorIntervalo = (
+    turmaCodigo,
+    componenteCurricularId,
+    dataInicio,
+    dataFim
+  ) => {
+    const url = `${urlPadrao}/turmas/${turmaCodigo}/componentes-curriculares/${componenteCurricularId}/inicio/${dataInicio}/fim/${dataFim}`;
+    return api.get(url);
+  };
 }
 
 export default new ServicoDiarioBordo();
