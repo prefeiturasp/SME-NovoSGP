@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         Task<bool> AulaDentroPeriodo(string turmaId, DateTime dataAula);
 
-        Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turma, string disciplina);
+        Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turmaCodigo, string disciplinaCodigo);
 
         Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia);
 
