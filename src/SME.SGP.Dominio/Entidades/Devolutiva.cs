@@ -4,9 +4,9 @@ using System.Text;
 
 namespace SME.SGP.Dominio
 {
-    public class DevolutivaDiarioBordo: EntidadeBase
+    public class Devolutiva: EntidadeBase
     {
-        public DevolutivaDiarioBordo()
+        public Devolutiva()
         {
             DiariosBordo = new List<DiarioBordo>();
         }
@@ -14,7 +14,12 @@ namespace SME.SGP.Dominio
         public string Descricao { get; set; }
         public List<DiarioBordo> DiariosBordo { get; set; }
 
+        public long CodigoComponenteCurricular { get; set; }
+
+        public DateTime PeriodoInicio { get; set; }
+
+        public DateTime PeriodoFim { get; set; }
+
         public bool Excluido { get; set; }
-        public bool Migrado { get; set; }
     }
 }

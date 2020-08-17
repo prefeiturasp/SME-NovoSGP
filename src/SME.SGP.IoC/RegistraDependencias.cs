@@ -270,7 +270,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioComunicadoAluno, RepositorioComunicadoAluno>();
             services.TryAddScoped<IRepositorioComunicadoTurma, RepositorioComunicadoTurma>();
             services.TryAddScoped<IRepositorioDiarioBordo, RepositorioDiarioBordo>();
-            services.TryAddScoped<IRepositorioDevolutivaDiarioBordo, RepositorioDevolutivaDiarioBordo>();
+            services.TryAddScoped<IRepositorioDevolutiva, RepositorioDevolutiva>();
             services.TryAddScoped<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
             services.TryAddScoped<IRepositorioCartaIntencoes, RepositorioCartaIntencoes>();
             services.TryAddScoped<IRepositorioDiarioBordoObservacao, RepositorioDiarioBordoObservacao>();
