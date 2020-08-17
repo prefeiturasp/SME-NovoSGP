@@ -21,9 +21,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(FiltroRelatorioNotasEConceitosFinaisDto filtro)
         {
-            await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtro.DreCodigo));
-            await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtro.UeCodigo));
-
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             if (usuarioLogado == null)
@@ -39,10 +36,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 {
                     case Modalidade.Fundamental:
                     case Modalidade.Medio:
-                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4, -99 });
+                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4 });
                         break;
                     case Modalidade.EJA:
-                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, -99 });
+                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2 });
                         break;
                 }
             }
