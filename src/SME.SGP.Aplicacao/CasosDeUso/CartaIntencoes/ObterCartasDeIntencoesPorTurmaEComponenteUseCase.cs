@@ -57,6 +57,9 @@ namespace SME.SGP.Aplicacao
             {
                 var carta = cartas?.FirstOrDefault(a => a.PeriodoEscolarId == periodoEscolar.Id);
 
+                var usuarioTemAtribuicao = await UsuarioTemAtribuicao(usuarioLogado, turma.CodigoTurma, componenteCurricularId, periodoEscolar);
+                var usuarioEhCp = await UsuarioEhCp(usuarioLogado);
+
                 listaCartasDto.Add(new CartaIntencoesRetornoDto()
                 {
                     Id = carta?.Id ?? 0,
@@ -64,7 +67,7 @@ namespace SME.SGP.Aplicacao
                     PeriodoEscolarId = periodoEscolar.Id,
                     Bimestre = periodoEscolar.Bimestre,
                     PeriodoAberto = await TurmaEmPeridoAberto(turma, periodoEscolar.Bimestre),
-                    UsuarioTemAtribuicao = await UsuarioTemAtribuicao(usuarioLogado, turma.CodigoTurma, componenteCurricularId, periodoEscolar),
+                    UsuarioTemAtribuicao = usuarioTemAtribuicao || usuarioEhCp,
                     Auditoria = (AuditoriaDto)carta
                 });
             }
@@ -76,6 +79,11 @@ namespace SME.SGP.Aplicacao
         {
             var validacao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(componenteCurricularId, turmaCodigo, usuario.CodigoRf, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim));
             return validacao;
+        }
+
+        private async Task<bool> UsuarioEhCp(Usuario usuario)
+        {
+            return usuario.Perfis.Any(x => x.Tipo == TipoPerfil.UE && x.CodigoPerfil == Dominio.Perfis.PERFIL_CP);
         }
 
         private async Task<bool> TurmaEmPeridoAberto(Turma turma, int bimestre)
