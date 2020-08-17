@@ -15,14 +15,11 @@ namespace SME.SGP.Api
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiJurema").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
-
-            var hashEol = UtilCriptografia.GerarHashSha1(configuration.GetValue<string>("ApiKeyEolApi"));
-
             services.AddHttpClient<IServicoEOL, ServicoEOL>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
-                c.DefaultRequestHeaders.Add("x-api-eol-key", hashEol);
+                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetValue<string>("ApiKeyEolApi"));
             });
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
             {
