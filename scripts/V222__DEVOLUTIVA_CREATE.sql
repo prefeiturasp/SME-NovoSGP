@@ -18,6 +18,5 @@ CREATE TABLE public.devolutiva (
 	alterado_por varchar(200) NULL,
 	alterado_rf varchar(200) NULL,
 	excluido bool NOT NULL DEFAULT false,
-	migrado bool NOT NULL DEFAULT false,
 	CONSTRAINT devolutiva_pk PRIMARY KEY (id)
 );
