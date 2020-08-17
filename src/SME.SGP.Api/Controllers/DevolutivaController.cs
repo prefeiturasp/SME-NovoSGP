@@ -61,7 +61,7 @@ namespace SME.SGP.Api.Controllers
         {
             var text = @"{
                             id: 1,
-                            devolutiva: ""devolutiva mockada"",
+                            devolutiva: ""<p>devolutiva mockada</p>"",
                             diariosIds: [1, 2, 3, 4],
                             auditoria: {
                                 id: 1,
@@ -88,7 +88,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(true);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.DDB_A, Policy = "Bearer")]
