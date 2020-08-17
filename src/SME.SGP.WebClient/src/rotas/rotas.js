@@ -61,6 +61,7 @@ import FaltasFrequencia from '~/paginas/Relatorios/Frequencia/faltasFrequencia';
 import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
+import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 
 const rotas = new Map();
 
@@ -866,6 +867,17 @@ rotas.set(RotasDto.RELATORIO_PARECER_CONCLUSIVO, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_PARECER_CONCLUSIVO,
+});
+
+rotas.set(RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS, {
+  breadcrumbName: 'Notas e conceitos finais',
+  menu: ['Relatórios', 'Fechamento'],
+  parent: '/',
+  component: RelatorioNotasConceitosFinais,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS,
 });
 
 const rotasArray = [];
