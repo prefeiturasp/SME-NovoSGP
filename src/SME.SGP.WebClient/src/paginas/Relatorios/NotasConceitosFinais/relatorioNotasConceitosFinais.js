@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Loader, SelectComponent } from '~/componentes';
+import { Loader, SelectComponent, CampoTexto } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import CampoNumero from '~/componentes/campoNumero';
@@ -242,17 +242,6 @@ const RelatorioNotasConceitosFinais = () => {
     return todosAnosEscolares;
   }, [anosEscolares, listaAnosEscolares]);
 
-  const obterCodigoTodosComponentesCorriculares = () => {
-    let todosComponentesCurriculares = componentesCurriculares;
-    const selecionouTodos = componentesCurriculares.find(ano => ano === '-99');
-    if (selecionouTodos) {
-      todosComponentesCurriculares = listaComponenteCurricular.map(
-        item => item.valor
-      );
-    }
-    return todosComponentesCurriculares;
-  };
-
   const obterComponenteCurricular = useCallback(async () => {
     const codigoTodosAnosEscolares = obterCodigoTodosAnosEscolares();
     if (anoLetivo) {
@@ -387,18 +376,17 @@ const RelatorioNotasConceitosFinais = () => {
 
   const onClickGerar = async () => {
     setCarregandoGeral(true);
-
-    const codigoTodosAnosEscolares = obterCodigoTodosAnosEscolares();
-    const codigoTodosComponentesCorriculares = obterCodigoTodosComponentesCorriculares();
-
     const params = {
       anoLetivo,
-      codigoDre,
-      codigoUe,
+      dreCodigo: codigoDre === '-99' ? '' : codigoDre,
+      ueCodigo: codigoUe === '-99' ? '' : codigoUe,
       modalidade: modalidadeId,
       semestre,
-      anosEscolares: codigoTodosAnosEscolares,
-      componentesCurriculares: codigoTodosComponentesCorriculares,
+      anos: anosEscolares.toString() !== '-99' ? [].concat(anosEscolares) : [],
+      componentesCurriculares:
+        componentesCurriculares.toString() !== '-99'
+          ? [].concat(componentesCurriculares)
+          : [],
       bimestres: [bimestres],
       condicao,
       valorCondicao,
@@ -465,7 +453,9 @@ const RelatorioNotasConceitosFinais = () => {
     setComponentesCurriculares(valor);
   const onChangeBimestre = valor => setBimestres(valor);
   const onChangeCondicao = valor => setCondicao(valor);
-  const onChangeComparacao = valor => setValorCondicao(valor);
+  const onChangeComparacao = valor => {
+    setValorCondicao(valor.toUpperCase());
+  };
   const onChangeFormato = valor => setFormato(valor);
 
   const removeAdicionaOpcaoTodos = (
@@ -674,10 +664,9 @@ const RelatorioNotasConceitosFinais = () => {
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4">
-                <CampoNumero
-                  onChange={onChangeComparacao}
+                <CampoTexto
+                  onChange={e => onChangeComparacao(e.target.value)}
                   value={valorCondicao}
-                  min={0}
                   label="Valor"
                   className="w-100"
                   placeholder="Digite o valor"
