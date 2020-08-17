@@ -73,18 +73,8 @@ namespace SME.SGP.Api.Controllers
                           {
                             cj: true,
                             data: ""2020-08-07T00:00:00.000000"",
-                            planejamento: ""planejamento do diario de bordo"",
+                            planejamento: ""planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordo"",
                           },
-                          {
-                            cj: false,
-                            data: ""2020-08-08T00:00:00.000000"",
-                            planejamento: ""planejamento do diario de bordo"",
-                          },
-                          {
-                            cj: false,
-                            data: ""2020-08-09T00:00:00.000000"",
-                            planejamento: ""planejamento do diario de bordo"",
-                          }
                         ]}";
 
             var json = JObject.Parse(text);
@@ -104,14 +94,14 @@ namespace SME.SGP.Api.Controllers
                         totalRegistros: 20,
                         itens : [
                           {
-                            cj: false,
+                            cj: true,
                             data: ""2020-08-05T00:00:00.000000"",
                             planejamento: ""planejamento do diario de bordo"",
                           },
                           {
                             cj: false,
                             data: ""2020-08-06T00:00:00.000000"",
-                            planejamento: ""planejamento do diario de bordo"",
+                            planejamento: ""planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordo"",
                           },
                           {
                             cj: true,
@@ -123,11 +113,6 @@ namespace SME.SGP.Api.Controllers
                             data: ""2020-08-08T00:00:00.000000"",
                             planejamento: ""planejamento do diario de bordo"",
                           },
-                          {
-                            cj: false,
-                            data: ""2020-08-09T00:00:00.000000"",
-                            planejamento: ""planejamento do diario de bordo"",
-                          }
                         ]}";
 
             var json = JObject.Parse(text);
