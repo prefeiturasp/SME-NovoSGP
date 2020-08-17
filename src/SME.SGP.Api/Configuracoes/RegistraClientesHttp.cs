@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Infra.Utilitarios;
 using System;
-using System.Net.Http.Headers;
-using System.Text;
 
 namespace SME.SGP.Api
 {
@@ -16,10 +15,14 @@ namespace SME.SGP.Api
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiJurema").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
+
+            var hashEol = UtilCriptografia.GerarHashSha1(configuration.GetValue<string>("ApiKeyEolApi"));
+
             services.AddHttpClient<IServicoEOL, ServicoEOL>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-api-eol-key", hashEol);
             });
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
             {
