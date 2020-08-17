@@ -2,7 +2,7 @@ import { Form, Formik } from 'formik';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import { CampoData, Loader, momentSchema, Auditoria } from '~/componentes';
 import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
@@ -20,8 +20,13 @@ import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
+import DadosPlanejamentoDiarioBordo from './DadosPlanejamentoDiarioBordo/dadosPlanejamentoDiarioBordo';
+import { setDadosPlanejamentos } from '~/redux/modulos/devolutivas/actions';
+import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
 
 const DevolutivasForm = ({ match }) => {
+  const dispatch = useDispatch();
+
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
 
@@ -232,10 +237,26 @@ const DevolutivasForm = ({ match }) => {
     setModoEdicao(true);
   };
 
+  const obterDadosPlanejamento = async (dataFim, form) => {
+    const { dataInicio, codigoComponenteCurricular } = form.values;
+    setCarregandoGeral(true);
+    const retorno = await ServicoDiarioBordo.obterPlanejamentosPorIntervalo(
+      turmaCodigo,
+      codigoComponenteCurricular,
+      dataInicio.format('YYYY-MM-DD'),
+      dataFim.format('YYYY-MM-DD')
+    ).catch(e => erros(e));
+    setCarregandoGeral(false);
+    if (retorno && retorno.data) {
+      dispatch(setDadosPlanejamentos(retorno.data));
+    }
+  };
+
   const onChangeDataFim = (data, form) => {
     if (!data) {
       form.setFieldValue('devolutiva', '');
     }
+    obterDadosPlanejamento(data, form);
     setModoEdicao(true);
   };
 
@@ -468,6 +489,9 @@ const DevolutivasForm = ({ match }) => {
                   {(form.values.dataInicio && form.values.dataFim) ||
                   idDevolutiva ? (
                     <>
+                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <DadosPlanejamentoDiarioBordo />
+                      </div>
                       <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <Editor
                           label="Devolutiva"
