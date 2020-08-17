@@ -11,7 +11,7 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public Modalidade? Modalidade { get; set; }
         public int? Semestre { get; set; }
         public string[] Anos { get; set; }
-        public string[] ComponentesCurriculares { get; set; }
+        public long[] ComponentesCurriculares { get; set; }
         public List<int> Bimestres { get; set; }
         public string UsuarioRf { get; set; }
         public string UsuarioNome { get; set; }
