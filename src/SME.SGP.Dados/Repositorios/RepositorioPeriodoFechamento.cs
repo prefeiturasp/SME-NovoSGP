@@ -48,10 +48,16 @@ namespace SME.SGP.Dados.Repositorios
             var lookup = new Dictionary<long, PeriodoFechamento>();
 
             await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoFechamento>(query.ToString(), (periodoFechamento, periodoFechamentoBimestre) => {
+                var retorno = new PeriodoFechamento();
+                if (!lookup.TryGetValue(periodoFechamento.Id, out retorno))
+                {
+                    retorno = periodoFechamento;
+                    lookup.Add(periodoFechamento.Id, retorno);
+                }
 
-                periodoFechamento.AdicionarFechamentoBimestre(periodoFechamentoBimestre);
+                retorno.AdicionarFechamentoBimestre(periodoFechamentoBimestre);
 
-                return periodoFechamento;
+                return retorno;
             },  new
             {
                 ueId,
