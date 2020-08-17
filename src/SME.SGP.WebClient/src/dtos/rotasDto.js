@@ -46,6 +46,7 @@ const RotasDto = {
   DIARIO_BORDO: '/diario-classe/diario-bordo',
   RELATORIO_PENDENCIAS: '/relatorios/pendencias-fechamento',
   RELATORIO_PARECER_CONCLUSIVO: '/relatorios/parecer-conclusivo',
+  RELATORIO_NOTAS_CONCEITOS_FINAIS: '/relatorios/notas-conceitos-finais',
 };
 
 export default RotasDto;
