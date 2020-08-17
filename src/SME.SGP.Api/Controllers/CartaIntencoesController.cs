@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<CartaIntencoesRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CI_C, Policy = "Bearer")]
-        public async Task<IActionResult> Salvar([FromServices] IObterCartasDeIntencoesPorTurmaEComponenteUseCase useCase, string turmaCodigo, long componenteCurricularId)
+        public async Task<IActionResult> Obter([FromServices] IObterCartasDeIntencoesPorTurmaEComponenteUseCase useCase, string turmaCodigo, long componenteCurricularId)
         {
             return Ok(await useCase.Executar(new ObterCartaIntencoesDto(turmaCodigo, componenteCurricularId)));
         }
