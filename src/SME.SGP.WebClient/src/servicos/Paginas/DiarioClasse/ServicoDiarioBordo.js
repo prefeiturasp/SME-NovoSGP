@@ -1,6 +1,6 @@
 import api from '~/servicos/api';
 
-const urlPadrao = `/v1/diario-bordo`;
+const urlPadrao = `/v1/diarios-bordo`;
 
 class ServicoDiarioBordo {
   obterDiarioBordo = aulaId => {
