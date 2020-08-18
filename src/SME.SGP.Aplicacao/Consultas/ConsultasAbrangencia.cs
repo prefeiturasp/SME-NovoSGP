@@ -45,6 +45,14 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterAnosLetivos(login, perfil, consideraHistorico);
         }
 
+        public async Task<IEnumerable<int>> ObterAnosLetivosPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+
+            return await repositorioAbrangencia.ObterAnosLetivosPorCodigoUeModalidade(login, perfil, codigoUe, modalidade, consideraHistorico);
+        }
+
         public Task<IEnumerable<int>> ObterAnosLetivosTodos()
         {
             var anos = Enumerable.Range(2014, 7).OrderByDescending(x => x).AsEnumerable();
