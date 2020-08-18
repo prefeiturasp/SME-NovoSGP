@@ -203,6 +203,42 @@ namespace SME.SGP.Dados.Repositorios
                                                              order by 1", new { login, perfil, consideraHistorico }));
         }
 
+        public async Task<IEnumerable<int>> ObterAnosLetivosPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico)
+        {
+            var query = @"select distinct act.turma_ano_letivo
+	                        from v_abrangencia_nivel_ue a
+		                        inner join v_abrangencia_cadeia_turmas act
+			                        on a.ue_id = act.ue_id
+                        where a.login = @login and 
+	                          a.perfil_id = @perfil and	  
+	                          act.turma_historica = @consideraHistorico and
+                              act.modalidade_codigo = @modalidade and
+                              act.ue_codigo = @codigoUe and 
+	                          ((@perfil <> '4ee1e074-37d6-e911-abd6-f81654fe895d') or
+	                           (@consideraHistorico = true and 
+	                            @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' and 
+	                            act.dre_id in (select dre_id from v_abrangencia_nivel_dre where login = @login and historico = false) and 
+	   	                        act.ue_id in (select ue_id from v_abrangencia_nivel_ue where login = @login and historico = false)) or
+	                            (@consideraHistorico = false and @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' and a.historico = false))
+
+                        union
+
+                        select distinct act.turma_ano_letivo
+	                        from v_abrangencia_nivel_turma a
+		                        inner join v_abrangencia_cadeia_turmas act
+			                        on a.turma_id = act.turma_id
+                        where a.login = @login and 
+	                          a.perfil_id = @perfil and
+                              act.turma_historica = @consideraHistorico and
+                              act.modalidade_codigo = @modalidade and
+                              act.ue_codigo = @codigoUe and 
+	                          ((@consideraHistorico = true and a.historico = true) or
+	                           (@consideraHistorico = false and a.historico  = false and act.turma_historica = false));	";
+
+            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
+            return (await database.Conexao.QueryAsync<int>(query, new { login, perfil, codigoUe, modalidade = (int)modalidade, consideraHistorico }));
+        }
+
         public async Task<AbrangenciaDreRetorno> ObterDre(string dreCodigo, string ueCodigo, string login, Guid perfil)
         {
             var query = new StringBuilder();
@@ -416,6 +452,6 @@ namespace SME.SGP.Dados.Repositorios
                             and vau.ue_codigo = @codigoUe";
 
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual });
-        }       
+        }
     }
 }
