@@ -83,41 +83,13 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularId}/inicio/{dataInicio}/fim/{dataFim}")]
-        [ProducesResponseType(typeof(DiarioBordoDto), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<DiarioBordoDevolutivaDto>), 200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPorIntervalo([FromServices] IObterDiarioBordoUseCase useCase, long turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim, int numeroPagina, int numeroRegistros)
+        public async Task<IActionResult> ObterPorIntervalo([FromServices] IObterDiariosDeBordoPorPeriodoUseCase useCase, string turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
         {
-            var text = @"
-                        {
-                        totalPaginas: 5,
-                        totalRegistros: 20,
-                        itens : [
-                          {
-                            cj: true,
-                            data: ""2020-08-05T00:00:00.000000"",
-                            planejamento: ""planejamento do diario de bordo"",
-                          },
-                          {
-                            cj: false,
-                            data: ""2020-08-06T00:00:00.000000"",
-                            planejamento: ""planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordo"",
-                          },
-                          {
-                            cj: true,
-                            data: ""2020-08-07T00:00:00.000000"",
-                            planejamento: ""planejamento do diario de bordo"",
-                          },
-                          {
-                            cj: false,
-                            data: ""2020-08-08T00:00:00.000000"",
-                            planejamento: ""planejamento do diario de bordo"",
-                          },
-                        ]}";
-
-            var json = JObject.Parse(text);
-
-            return Ok(json);
+            return Ok(await useCase.Executar(new FiltroTurmaComponentePeriodoDto(turmaCodigo, componenteCurricularId, dataInicio, dataFim)));
         }
     }
 }
