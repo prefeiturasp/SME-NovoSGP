@@ -16,6 +16,11 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
+        public async Task RemoverAsync(RelatorioSemestralPAPAlunoSecao secaoRelatorioAluno)
+        {
+            await database.Conexao.DeleteAsync(secaoRelatorioAluno);
+        }
+
         public async Task SalvarAsync(RelatorioSemestralPAPAlunoSecao secaoRelatorioAluno)
         {
             if (secaoRelatorioAluno.Id > 0)
