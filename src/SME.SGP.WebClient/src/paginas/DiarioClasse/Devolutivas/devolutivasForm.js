@@ -21,7 +21,10 @@ import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import DadosPlanejamentoDiarioBordo from './DadosPlanejamentoDiarioBordo/dadosPlanejamentoDiarioBordo';
-import { setDadosPlanejamentos } from '~/redux/modulos/devolutivas/actions';
+import {
+  setDadosPlanejamentos,
+  limparDadosPlanejamento,
+} from '~/redux/modulos/devolutivas/actions';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
 
 const DevolutivasForm = ({ match }) => {
@@ -186,6 +189,29 @@ const DevolutivasForm = ({ match }) => {
     []
   );
 
+  const obterPlanejamentosPorDevolutiva = useCallback(
+    async pagina => {
+      setCarregandoGeral(true);
+      const retorno = await ServicoDiarioBordo.obterPlanejamentosPorDevolutiva(
+        idDevolutiva,
+        pagina || 1
+      ).catch(e => erros(e));
+      setCarregandoGeral(false);
+      if (retorno && retorno.data) {
+        dispatch(setDadosPlanejamentos(retorno.data));
+      } else {
+        dispatch(limparDadosPlanejamento());
+      }
+    },
+    [idDevolutiva, dispatch]
+  );
+
+  useEffect(() => {
+    if (idDevolutiva) {
+      obterPlanejamentosPorDevolutiva();
+    }
+  }, [idDevolutiva, obterPlanejamentosPorDevolutiva]);
+
   useEffect(() => {
     if (listaComponenteCurriculare && listaComponenteCurriculare.length) {
       if (listaComponenteCurriculare.length === 1) {
@@ -209,6 +235,7 @@ const DevolutivasForm = ({ match }) => {
 
   const obterComponentesCurriculares = useCallback(async () => {
     setCarregandoGeral(true);
+    dispatch(limparDadosPlanejamento());
     const componentes = await ServicoDisciplina.obterDisciplinasPorTurma(
       turmaCodigo
     ).catch(e => erros(e));
@@ -218,7 +245,7 @@ const DevolutivasForm = ({ match }) => {
     }
 
     setCarregandoGeral(false);
-  }, [turmaCodigo]);
+  }, [turmaCodigo, dispatch]);
 
   useEffect(() => {
     if (turmaCodigo && turmaInfantil) {
@@ -235,6 +262,7 @@ const DevolutivasForm = ({ match }) => {
       setDatasParaHabilitar(paraHabilitar);
     }
     form.setFieldValue('dataFim', '');
+    dispatch(limparDadosPlanejamento());
     setModoEdicao(true);
   };
 
@@ -251,6 +279,8 @@ const DevolutivasForm = ({ match }) => {
     setCarregandoGeral(false);
     if (retorno && retorno.data) {
       dispatch(setDadosPlanejamentos(retorno.data));
+    } else {
+      dispatch(setDadosPlanejamentos({}));
     }
   };
 
@@ -258,7 +288,10 @@ const DevolutivasForm = ({ match }) => {
     if (!data) {
       form.setFieldValue('devolutiva', '');
     }
-    obterDadosPlanejamento(data, form);
+    if (data) {
+      obterDadosPlanejamento(data, form);
+    }
+    dispatch(limparDadosPlanejamento());
     setModoEdicao(true);
   };
 
@@ -358,6 +391,14 @@ const DevolutivasForm = ({ match }) => {
           history.push(RotasDto.DEVOLUTIVAS);
         }
       }
+    }
+  };
+
+  const onChangePage = (pagina, form) => {
+    if (idDevolutiva) {
+      obterPlanejamentosPorDevolutiva(pagina);
+    } else {
+      obterDadosPlanejamento(form.values.dataFim, form, pagina);
     }
   };
 
@@ -493,13 +534,7 @@ const DevolutivasForm = ({ match }) => {
                     <>
                       <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <DadosPlanejamentoDiarioBordo
-                          onChangePage={pagina =>
-                            obterDadosPlanejamento(
-                              form.values.dataFim,
-                              form,
-                              pagina
-                            )
-                          }
+                          onChangePage={pagina => onChangePage(pagina, form)}
                         />
                       </div>
                       <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-3">
