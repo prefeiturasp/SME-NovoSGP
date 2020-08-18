@@ -22,7 +22,11 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> Obter([FromServices] IObterDiarioBordoUseCase useCase, long aulaId)
         {
-            return Ok(await useCase.Executar(aulaId));
+            var result = await useCase.Executar(aulaId);
+            if (result == null)
+                return NoContent();
+
+            return Ok(result);
         }
 
         [HttpPost]

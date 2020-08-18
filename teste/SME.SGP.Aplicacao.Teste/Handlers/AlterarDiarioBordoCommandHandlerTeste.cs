@@ -8,18 +8,22 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation.TestHelper;
 using Xunit;
+using MediatR;
+using System.Threading;
 
 namespace SME.SGP.Aplicacao.Teste.Handlers
 {
     public class AlterarDiarioBordoCommandHandlerTeste
     {
+        private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioDiarioBordo> repositorioDiarioBordo;
         private readonly AlterarDiarioBordoCommandHandler inserirDiarioBordoCommandHandler;
 
         public AlterarDiarioBordoCommandHandlerTeste()
         {
+            mediator = new Mock<IMediator>();
             repositorioDiarioBordo = new Mock<IRepositorioDiarioBordo>();
-            inserirDiarioBordoCommandHandler = new AlterarDiarioBordoCommandHandler(repositorioDiarioBordo.Object);
+            inserirDiarioBordoCommandHandler = new AlterarDiarioBordoCommandHandler(mediator.Object, repositorioDiarioBordo.Object);
         }
 
         [Fact]
@@ -33,6 +37,9 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 Planejamento = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
             };
 
+            mediator.Setup(a => a.Send(It.IsAny<AulaExisteQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
             repositorioDiarioBordo.Setup(a => a.ObterPorAulaId(1))
                 .ReturnsAsync(mockEntity);
             repositorioDiarioBordo.Setup(a => a.SalvarAsync(It.IsAny<DiarioBordo>()))
@@ -43,7 +50,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
 
             // Assert
             repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<DiarioBordo>()), Times.Once);
-            Assert.True(auditoriaDto.Id == 1);
+            Assert.True(auditoriaDto.Id > 0);
         }
 
         [Fact]
