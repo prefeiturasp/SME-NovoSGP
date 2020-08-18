@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/diario-bordo")]
+    [Route("api/v1/diarios-bordo")]
     [Authorize("Bearer")]
     public class DiarioBordoController : ControllerBase
     {
