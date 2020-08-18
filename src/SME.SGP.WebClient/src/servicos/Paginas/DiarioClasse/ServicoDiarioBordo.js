@@ -19,9 +19,10 @@ class ServicoDiarioBordo {
     turmaCodigo,
     componenteCurricularId,
     dataInicio,
-    dataFim
+    dataFim,
+    numeroPagina
   ) => {
-    const url = `${urlPadrao}/turmas/${turmaCodigo}/componentes-curriculares/${componenteCurricularId}/inicio/${dataInicio}/fim/${dataFim}`;
+    const url = `${urlPadrao}/turmas/${turmaCodigo}/componentes-curriculares/${componenteCurricularId}/inicio/${dataInicio}/fim/${dataFim}?numeroPagina=${numeroPagina}`;
     return api.get(url);
   };
 }
