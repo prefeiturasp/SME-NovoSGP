@@ -9,5 +9,7 @@ namespace SME.SGP.Aplicacao
     public interface IComandosRelatorioSemestralPAPAlunoSecao
     {
         Task SalvarAsync(RelatorioSemestralPAPAlunoSecao secaoRelatorioAluno);
+
+        Task RemoverAsync(RelatorioSemestralPAPAlunoSecao secaoRelatorioAluno);
     }
 }
