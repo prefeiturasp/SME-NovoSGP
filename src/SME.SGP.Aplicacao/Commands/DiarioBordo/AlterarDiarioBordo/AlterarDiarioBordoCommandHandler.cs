@@ -12,21 +12,24 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarDiarioBordoCommandHandler : IRequestHandler<AlterarDiarioBordoCommand, AuditoriaDto>
     {
+        private readonly IMediator mediator;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
 
-        public AlterarDiarioBordoCommandHandler(IRepositorioDiarioBordo repositorioDiarioBordo)
+        public AlterarDiarioBordoCommandHandler(IMediator mediator,
+                                                IRepositorioDiarioBordo repositorioDiarioBordo)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
         }
 
         public async Task<AuditoriaDto> Handle(AlterarDiarioBordoCommand request, CancellationToken cancellationToken)
         {
-            var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId);
+            if (!await mediator.Send(new AulaExisteQuery(request.AulaId)))
+                throw new NegocioException("Aula informada não existe");
 
+            var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId);
             if (diarioBordo == null)
-            {
                 throw new NegocioException($"Diário de Bordo para a aula {request.AulaId} não encontrado!");
-            }
 
             MapearAlteracoes(diarioBordo, request);
 
