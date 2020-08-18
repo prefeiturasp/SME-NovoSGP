@@ -26,7 +26,7 @@ namespace SME.SGP.Integracao.Teste
             fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_C }));
 
             string id = "1";
-            HttpResponseMessage result = await fixture._clientApi.GetAsync($"api/v1/diario-bordo/{id}");
+            HttpResponseMessage result = await fixture._clientApi.GetAsync($"api/v1/diarios-bordo/{id}");
 
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));
         }
@@ -45,7 +45,7 @@ namespace SME.SGP.Integracao.Teste
             };
 
             StringContent jsonParaPost = new StringContent(TransformarEmJson(diarioBordoDto), UnicodeEncoding.UTF8, "application/json");
-            var postResult = fixture._clientApi.PostAsync("api/v1/diario-bordo/", jsonParaPost).Result;
+            var postResult = fixture._clientApi.PostAsync("api/v1/diarios-bordo/", jsonParaPost).Result;
 
             Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
@@ -65,7 +65,7 @@ namespace SME.SGP.Integracao.Teste
             };
 
             StringContent jsonParaPut = new StringContent(TransformarEmJson(diarioBordoDto), UnicodeEncoding.UTF8, "application/json");
-            var putResult = fixture._clientApi.PutAsync($"api/v1/diario-bordo/", jsonParaPut).Result;
+            var putResult = fixture._clientApi.PutAsync($"api/v1/diarios-bordo/", jsonParaPut).Result;
 
             Assert.True(fixture.ValidarStatusCodeComSucesso(putResult));
         }
