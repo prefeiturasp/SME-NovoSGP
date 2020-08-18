@@ -1,6 +1,6 @@
 import api from '~/servicos/api';
 
-const urlPadrao = `/v1/diario-bordo`;
+const urlPadrao = `/v1/diarios-bordo`;
 
 class ServicoDiarioBordo {
   obterDiarioBordo = aulaId => {
@@ -22,7 +22,14 @@ class ServicoDiarioBordo {
     dataFim,
     numeroPagina
   ) => {
-    const url = `${urlPadrao}/turmas/${turmaCodigo}/componentes-curriculares/${componenteCurricularId}/inicio/${dataInicio}/fim/${dataFim}?numeroPagina=${numeroPagina}`;
+    const url = `${urlPadrao}/turmas/${turmaCodigo}/componentes-curriculares/${componenteCurricularId}/inicio/${dataInicio}/fim/${dataFim}?numeroPagina=${numeroPagina ||
+      1}`;
+    return api.get(url);
+  };
+
+  obterPlanejamentosPorDevolutiva = (idDevolutiva, numeroPagina) => {
+    const url = `${urlPadrao}/devolutivas/${idDevolutiva}?numeroPagina=${numeroPagina ||
+      1}`;
     return api.get(url);
   };
 }
