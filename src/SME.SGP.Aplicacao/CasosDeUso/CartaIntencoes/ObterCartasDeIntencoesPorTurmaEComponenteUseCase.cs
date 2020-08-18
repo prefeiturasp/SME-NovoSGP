@@ -83,6 +83,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> UsuarioEhCp(Usuario usuario)
         {
+            if (usuario.Perfis == null)
+            {
+                return false;
+            }
+
             return usuario.Perfis.Any(x => x.Tipo == TipoPerfil.UE && x.CodigoPerfil == Dominio.Perfis.PERFIL_CP);
         }
 
