@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -106,18 +107,19 @@ namespace SME.SGP.Api.Controllers
             return Ok(true);
         }
 
-
-
-
-
         [HttpGet("turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularId}/sugestao")]
-        //[ProducesResponseType(typeof(DiarioBordoDto), 200)]
+        [ProducesResponseType(typeof(DateTime), 200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> SugestaoDataInicio(string turmaCodigo, string componenteCurricularId)
+        public async Task<IActionResult> SugestaoDataInicio(string turmaCodigo, long componenteCurricularId, [FromServices] IObterUltimaDataDevolutivaPorTurmaComponenteUseCase useCase)
         {
+            var data = await useCase.Executar(new FiltroTurmaComponenteDto(turmaCodigo, componenteCurricularId));
 
-            return Ok(DateTime.Today.AddDays(-5));
+            if (data == DateTime.MinValue)
+                return NoContent();
+
+            return Ok(data.AddDays(1));
         }
     }
 
