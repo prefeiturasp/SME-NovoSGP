@@ -166,6 +166,7 @@ const DevolutivasForm = ({ match }) => {
       dataFim: '',
       devolutiva: dados.devolutiva,
       auditoria: dados.auditoria,
+      diariosIds: dados.diariosIds,
     };
     setValoresIniciais({ ...valores });
   };
@@ -237,14 +238,15 @@ const DevolutivasForm = ({ match }) => {
     setModoEdicao(true);
   };
 
-  const obterDadosPlanejamento = async (dataFim, form) => {
+  const obterDadosPlanejamento = async (dataFim, form, pagina) => {
     const { dataInicio, codigoComponenteCurricular } = form.values;
     setCarregandoGeral(true);
     const retorno = await ServicoDiarioBordo.obterPlanejamentosPorIntervalo(
       turmaCodigo,
       codigoComponenteCurricular,
       dataInicio.format('YYYY-MM-DD'),
-      dataFim.format('YYYY-MM-DD')
+      dataFim.format('YYYY-MM-DD'),
+      pagina || 1
     ).catch(e => erros(e));
     setCarregandoGeral(false);
     if (retorno && retorno.data) {
@@ -289,7 +291,7 @@ const DevolutivasForm = ({ match }) => {
     };
 
     if (!idDevolutiva) {
-      params.diariosIds = [1, 2, 3];
+      params.diariosIds = valores.diariosIds;
     }
     const retorno = await ServicoDevolutivas.salvarAlterarDevolutiva(
       params,
@@ -468,7 +470,7 @@ const DevolutivasForm = ({ match }) => {
                       }
                     />
                   </div>
-                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
+                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-5">
                     <CampoData
                       label="Data fim"
                       form={form}
@@ -490,9 +492,17 @@ const DevolutivasForm = ({ match }) => {
                   idDevolutiva ? (
                     <>
                       <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                        <DadosPlanejamentoDiarioBordo />
+                        <DadosPlanejamentoDiarioBordo
+                          onChangePage={pagina =>
+                            obterDadosPlanejamento(
+                              form.values.dataFim,
+                              form,
+                              pagina
+                            )
+                          }
+                        />
                       </div>
-                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-3">
                         <Editor
                           label="Devolutiva"
                           form={form}
