@@ -48,6 +48,7 @@ const DevolutivasForm = ({ match }) => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [datasParaHabilitar, setDatasParaHabilitar] = useState();
   const [idDevolutiva, setIdDevolutiva] = useState(0);
+  const [refForm, setRefForm] = useState({});
 
   const inicial = {
     codigoComponenteCurricular: 0,
@@ -86,8 +87,11 @@ const DevolutivasForm = ({ match }) => {
   }, [match]);
 
   const resetarTela = useCallback(() => {
-    // TODO
-  }, []);
+    dispatch(limparDadosPlanejamento());
+    if (refForm && refForm.resetForm) {
+      refForm.resetForm();
+    }
+  }, [dispatch, refForm]);
 
   useEffect(() => {
     const infantil = ehTurmaInfantil(
@@ -96,17 +100,16 @@ const DevolutivasForm = ({ match }) => {
     );
     setTurmaInfantil(infantil);
 
-    if (!turmaInfantil) {
+    if (!infantil) {
       resetarTela();
+      history.push(RotasDto.DEVOLUTIVAS);
     }
-  }, [
-    turmaSelecionada,
-    modalidadesFiltroPrincipal,
-    turmaInfantil,
-    resetarTela,
-  ]);
+  }, [turmaSelecionada, modalidadesFiltroPrincipal, resetarTela]);
 
   useEffect(() => {
+    if (!turmaSelecionada.turma) {
+      history.push(RotasDto.DEVOLUTIVAS);
+    }
     resetarTela();
   }, [turmaSelecionada.turma, resetarTela]);
 
@@ -252,9 +255,8 @@ const DevolutivasForm = ({ match }) => {
       obterComponentesCurriculares();
     } else {
       setListaComponenteCurriculare([]);
-      resetarTela();
     }
-  }, [turmaCodigo, obterComponentesCurriculares, turmaInfantil, resetarTela]);
+  }, [turmaCodigo, obterComponentesCurriculares, turmaInfantil]);
 
   const onChangeDataInicio = async (dataInicio, form) => {
     if (dataInicio) {
@@ -428,6 +430,7 @@ const DevolutivasForm = ({ match }) => {
             initialValues={valoresIniciais}
             validateOnBlur
             validateOnChange
+            ref={refFormik => setRefForm(refFormik)}
           >
             {form => (
               <Form>
