@@ -78,9 +78,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(await alterarObservacaoDiarioBordoUseCase.Executar(dto.Observacao, observacaoId));
         }
 
+        [HttpGet("turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularId}/inicio/{dataInicio}/fim/{dataFim}")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<DiarioBordoDevolutivaDto>), 200)]
+        [ProducesResponseType(204)]
         [HttpDelete("observacoes/{observacaoId}")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPorIntervalo([FromServices] IObterDiariosDeBordoPorPeriodoUseCase useCase, string turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
+        {
+            return Ok(await useCase.Executar(new FiltroTurmaComponentePeriodoDto(turmaCodigo, componenteCurricularId, dataInicio, dataFim)));
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> ExcluirObservacao(long observacaoId, [FromServices] IExcluirObservacaoDiarioBordoUseCase excluirObservacaoDiarioBordoUseCase)
         {
