@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioDevolutivaDiarioBordo: IRepositorioBase<DevolutivaDiarioBordo>
+    public interface IRepositorioDevolutiva: IRepositorioBase<Devolutiva>
     {
     }
 }

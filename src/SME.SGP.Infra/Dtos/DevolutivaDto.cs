@@ -4,17 +4,23 @@ using System.Text;
 
 namespace SME.SGP.Infra.Dtos
 {
-    public class DevolutivaDiarioBordoDto
+    public class DevolutivaDto
     {
-        public DevolutivaDiarioBordoDto()
+        public DevolutivaDto()
         {
             DiariosBordo = new List<DiarioBordoDto>();
         }
 
         public string Descricao { get; set; }
+
         public List<DiarioBordoDto> DiariosBordo { get; set; }
 
+        public long CodigoComponenteCurricular { get; set; }
+
+        public DateTime PeriodoInicio { get; set; }
+
+        public DateTime PeriodoFim { get; set; }
+
         public bool Excluido { get; set; }
-        public bool Migrado { get; set; }
     }
 }
