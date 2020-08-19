@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -41,8 +42,7 @@ namespace SME.SGP.Integracao.Teste
             InserirDevolutivaDto DevolutivaDto = new InserirDevolutivaDto()
             {
                 CodigoComponenteCurricular = 1,
-                PeriodoInicio = DateTime.Today.AddDays(-15),
-                PeriodoFim = DateTime.Today.AddDays(15),
+                DiariosBordoIds = new List<long> { 1, 2, 3, 4},
                 Descricao = "Teste de Inclusão de Devolutivas... Teste de Inclusão de Devolutivas... Teste de Inclusão de Devolutivas... Teste de Inclusão de Devolutivas... Teste de Inclusão de Devolutivas... "
             };
 

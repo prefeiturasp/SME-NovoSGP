@@ -30,13 +30,25 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                     Id = 1
                 });
 
+            mediator.Setup(a => a.Send(It.IsAny<AtualizarDiarioBordoComDevolutivaCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterDatasDiariosPorIdsQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<DateTime> {
+                    DateTime.Today.AddDays(-15),
+                    DateTime.Today.AddDays(-5),
+                    DateTime.Today.AddDays(-10),
+                    DateTime.Today.AddDays(5),
+                    DateTime.Today.AddDays(10),
+                    DateTime.Today.AddDays(15)
+                });
+
             //Act
             var auditoriaDto = await inserirDevolutivaUseCase.Executar(new Infra.InserirDevolutivaDto()
             {
                 CodigoComponenteCurricular = 1,
                 Descricao = "teste",
-                PeriodoInicio = DateTime.Today.AddDays(-15),
-                PeriodoFim = DateTime.Today.AddDays(15)
+                DiariosBordoIds = new List<long> { 1, 2, 3, 4 }
             }); ;
 
             //Asert
