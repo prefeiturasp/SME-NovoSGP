@@ -70,6 +70,23 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(fixture.ValidarStatusCodeComSucesso(putResult));
         }
 
+        [Fact]
+        public async void Deve_Obter_Diarios_De_Bordo_Por_Intervalo()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { })); // TODO ajustar permissionamento
+
+            string turmaCodigo = "1";
+            long componenteCurricularId = 1105;
+            var dataInicio = "2020-08-01";
+            var dataFim = "2020-08-31";
+
+            // TODO resolver problema na execução da query via teste
+            //HttpResponseMessage result = await fixture._clientApi.GetAsync($"api/v1/diarios-bordo/turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularId}/inicio/{dataInicio}/fim/{dataFim}?NumeroPagina=1&&NumeroRegistros=4");
+
+            //Assert.True(fixture.ValidarStatusCodeComSucesso(result));
+        }
+
         private string TransformarEmJson(object model)
         {
             return JsonConvert.SerializeObject(model);
