@@ -56,13 +56,13 @@ namespace SME.SGP.Api.Controllers
             else return StatusCode(204);
         }
 
-        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/anos-letivos")]
+        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/turmas/anos")]
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterAnosLetivos(string codigoUe, int modalidade)
         {
-            int[] retorno = (await consultasAbrangencia.ObterAnosLetivosPorUeModalidade(codigoUe, (Modalidade)modalidade, ConsideraHistorico)).ToArray();
+            string[] retorno = (await consultasAbrangencia.ObterAnosTurmasPorUeModalidade(codigoUe, (Modalidade)modalidade, ConsideraHistorico)).ToArray();
 
             if (!retorno.Any())
                 return NoContent();

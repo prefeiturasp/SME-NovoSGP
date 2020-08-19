@@ -203,9 +203,9 @@ namespace SME.SGP.Dados.Repositorios
                                                              order by 1", new { login, perfil, consideraHistorico }));
         }
 
-        public async Task<IEnumerable<int>> ObterAnosLetivosPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico)
+        public async Task<IEnumerable<string>> ObterAnosTurmasPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico)
         {
-            var query = @"select distinct act.turma_ano_letivo
+            var query = @"select distinct act.turma_ano
 	                            from v_abrangencia_nivel_dre a
 		                            inner join v_abrangencia_cadeia_turmas act
 			                            on a.dre_id = act.dre_id
@@ -213,11 +213,11 @@ namespace SME.SGP.Dados.Repositorios
 	                              a.perfil_id = @perfil and	  
 	                              act.turma_historica = @consideraHistorico and
 	                              act.modalidade_codigo = @modalidade and
-                                  act.ue_codigo = @codigoUe
+                                  (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe))
 	 
                             union
 
-                            select distinct act.turma_ano_letivo
+                            select distinct act.turma_ano
 	                            from v_abrangencia_nivel_ue a
 		                            inner join v_abrangencia_cadeia_turmas act
 			                            on a.ue_id = act.ue_id
@@ -225,7 +225,7 @@ namespace SME.SGP.Dados.Repositorios
 	                              a.perfil_id = @perfil and	  
 	                              act.turma_historica = @consideraHistorico and
 	                              act.modalidade_codigo = @modalidade and
-                                  act.ue_codigo = @codigoUe and
+                                  (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe)) and
 	                              ((@perfil <> '4ee1e074-37d6-e911-abd6-f81654fe895d') or
 	                               (@consideraHistorico = true and 
 	                                @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' and 
@@ -235,19 +235,19 @@ namespace SME.SGP.Dados.Repositorios
 
                             union
 
-                            select distinct act.turma_ano_letivo
+                            select distinct act.turma_ano
 	                            from v_abrangencia_nivel_turma a
 		                            inner join v_abrangencia_cadeia_turmas act
 			                            on a.turma_id = act.turma_id
                             where a.login = @login and 
 	                              a.perfil_id = @perfil and
 	                              act.modalidade_codigo = @modalidade and
-                                  act.ue_codigo = @codigoUe and
+                                  (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe)) and
 	                              ((@consideraHistorico = true and a.historico = true) or
 	                               (@consideraHistorico = false and a.historico  = false and act.turma_historica = false));	  	";
 
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            return (await database.Conexao.QueryAsync<int>(query, new { login, perfil, codigoUe, modalidade = (int)modalidade, consideraHistorico }));
+            return (await database.Conexao.QueryAsync<string>(query, new { login, perfil, codigoUe, modalidade = (int)modalidade, consideraHistorico }));
         }
 
         public async Task<AbrangenciaDreRetorno> ObterDre(string dreCodigo, string ueCodigo, string login, Guid perfil)
