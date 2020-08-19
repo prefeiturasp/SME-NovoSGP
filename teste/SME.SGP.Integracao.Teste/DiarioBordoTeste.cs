@@ -88,6 +88,36 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
 
+        [Fact]
+        public void Deve_Alterar_Observacao_Diario_De_Bordo()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_C }));
+
+            var dto = new ObservacaoDiarioBordoDto()
+            {
+                Observacao = "Teste de Observação"
+            };
+
+            StringContent jsonParaPost = new StringContent(TransformarEmJson(dto), UnicodeEncoding.UTF8, "application/json");
+            var postResult = fixture._clientApi.PutAsync("api/v1/diarios-bordo/observacoes/1", jsonParaPost).Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
+        }
+
+        [Fact]
+        public void Deve_Excluir_Observacao_Diario_De_Bordo()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_C }));
+
+            var postResult = fixture._clientApi.DeleteAsync("api/v1/diarios-bordo/observacoes/1").Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
+        }
+
         private string TransformarEmJson(object model)
         {
             return JsonConvert.SerializeObject(model);
