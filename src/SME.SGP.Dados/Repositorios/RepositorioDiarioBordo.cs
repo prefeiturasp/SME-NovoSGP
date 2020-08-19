@@ -73,5 +73,22 @@ namespace SME.SGP.Dados.Repositorios
             };
         }
 
+        public async Task<IEnumerable<DateTime>> ObterDatasPorIds(IEnumerable<long> diariosBordoIds)
+        {
+            var query = "select criado_em from diario_bordo db where id in @diariosBordoIds";
+
+            var resultado = await database.Conexao.QueryAsync<DateTime>(query, diariosBordoIds.ToArray());
+
+            return resultado;
+        }
+
+        public async Task AtualizaDiariosComDevolutivaId(long devolutivaId, IEnumerable<long> diariosBordoIds)
+        {
+            var query = "update diario_bordo set devolutiva_id = @devolutivaId where id in @ids";
+
+            var ids = diariosBordoIds.ToArray();
+
+            await database.Conexao.ExecuteAsync(query, new { devolutivaId, ids });
+        }
     }
 }
