@@ -18,5 +18,6 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public CondicoesRelatorioNotasEConceitosFinais Condicao { get; set; }
         public int ValorCondicao { get; set; }
         public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
+        public TipoNota TipoNota { get; set; }
     }
 }
