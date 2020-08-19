@@ -79,5 +79,32 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<long>(query, new { devolutivaId });
         }
+
+        public async Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> ObterDiariosBordoPorDevolutivaPaginado(long devolutivaId, Paginacao paginacao)
+        {
+            var query = $"select count(0) from diario_bordo db where db.devolutiva_id = @devolutivaId ";
+
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
+                new { devolutivaId });
+
+            query = $@"select db.planejamento, a.aula_cj as AulaCj, a.data_aula as Data
+                        from diario_bordo db
+                       inner join aula a on a.id = db.aula_id
+                       where db.devolutiva_id = @devolutivaId
+                      offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
+
+            return new PaginacaoResultadoDto<DiarioBordoDevolutivaDto>()
+            {
+                Items = await database.Conexao.QueryAsync<DiarioBordoDevolutivaDto>(query,
+                                                    new
+                                                    {
+                                                        devolutivaId,
+                                                        qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
+                                                        qtdeRegistros = paginacao.QuantidadeRegistros
+                                                    }),
+                TotalRegistros = totalRegistrosDaQuery,
+                TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
+            };
+        }
     }
 }
