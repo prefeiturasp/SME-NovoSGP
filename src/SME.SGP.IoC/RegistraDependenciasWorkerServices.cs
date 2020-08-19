@@ -345,6 +345,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IObterUltimaDataDevolutivaPorTurmaComponenteUseCase, ObterUltimaDataDevolutivaPorTurmaComponenteUseCase>();
             services.TryAddScopedWorkerService<ICartaIntencoesPersistenciaUseCase, CartaIntencoesPersistenciaUseCase>();
             services.TryAddScopedWorkerService<IObterCartasDeIntencoesPorTurmaEComponenteUseCase, ObterCartasDeIntencoesPorTurmaEComponenteUseCase>();
+
+            services.TryAddScopedWorkerService<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

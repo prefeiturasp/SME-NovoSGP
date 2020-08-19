@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -83,10 +85,10 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.DDB_I, Policy = "Bearer")]
-        public async Task<IActionResult> Salvar([FromBody] TempSalvarDto model)
+        //[Permissao(Permissao.DE_I, Policy = "Bearer")]
+        public async Task<IActionResult> Salvar([FromServices] IInserirDevolutivaUseCase useCase, [FromBody] InserirDevolutivaDto devolutivaDto)
         {
-            return Ok(true);
+            return Ok(await useCase.Executar(devolutivaDto));
         }
 
         [HttpPut("{id}")]
