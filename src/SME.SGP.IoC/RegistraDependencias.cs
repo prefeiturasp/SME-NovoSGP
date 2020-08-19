@@ -384,6 +384,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAlterarAnotacaoFrequenciaAlunoUseCase, AlterarAnotacaoFrequenciaAlunoUseCase>();
             services.TryAddScoped<IExcluirAnotacaoFrequenciaAlunoUseCase, ExcluirAnotacaoFrequenciaAlunoUseCase>();
             services.TryAddScoped<IObterMotivosAusenciaUseCase, ObterMotivosAusenciaUseCase> ();
+
+            services.TryAddScoped<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
         }
     }
 }
