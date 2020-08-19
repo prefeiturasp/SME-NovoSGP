@@ -208,7 +208,7 @@ const FaltasFrequencia = () => {
   }, [codigoDre, obterUes]);
 
   const obterAnosEscolares = useCallback(async (mod, ue) => {
-    if (mod == modalidade.EJA) {
+    if (mod == modalidade.EJA || mod == modalidade.INFANTIL) {
       setListaAnosEscolares([{ descricao: 'Todos', valor: '-99' }]);
       setAnosEscolares(['-99']);
     } else {
@@ -728,7 +728,6 @@ const FaltasFrequencia = () => {
                   valueText="desc"
                   valueSelect={formato}
                   onChange={onChangeFormato}
-                  disabled
                   placeholder="Selecione o formato"
                 />
               </div>
