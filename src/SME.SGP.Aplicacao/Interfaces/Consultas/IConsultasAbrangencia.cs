@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, bool consideraHistorico = false);
 
-        Task<IEnumerable<int>> ObterAnosLetivosPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico);
+        Task<IEnumerable<string>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico);
 
         Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico);
 
