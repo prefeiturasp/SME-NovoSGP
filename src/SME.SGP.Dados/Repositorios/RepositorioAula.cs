@@ -799,7 +799,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId)
         {
-            var query = @"select * from aula where tipo_calendario_id = @tipoCalendarioId and turma_id = @turmaId";
+            var query = @"select * from aula where tipo_calendario_id = @tipoCalendarioId and turma_id = @turmaId and not excluido";
             return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId });
         }
 
