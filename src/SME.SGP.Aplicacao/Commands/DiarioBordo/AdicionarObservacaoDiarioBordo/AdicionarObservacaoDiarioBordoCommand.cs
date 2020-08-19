@@ -4,9 +4,9 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AdicionarObservacaoCommand : IRequest<AuditoriaDto>
+    public class AdicionarObservacaoDiarioBordoCommand : IRequest<AuditoriaDto>
     {
-        public AdicionarObservacaoCommand(long diarioBordoId, string observacao, long usuarioId)
+        public AdicionarObservacaoDiarioBordoCommand(long diarioBordoId, string observacao, long usuarioId)
         {
             DiarioBordoId = diarioBordoId;
             Observacao = observacao;
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
     }
 
 
-    public class AdicionarObservacaoCommandValidator : AbstractValidator<AdicionarObservacaoCommand>
+    public class AdicionarObservacaoCommandValidator : AbstractValidator<AdicionarObservacaoDiarioBordoCommand>
     {
         public AdicionarObservacaoCommandValidator()
         {

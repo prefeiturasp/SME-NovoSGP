@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Deve_Adicionar_Observacao_Diario_De_Bordo()
         {
             //Arrange
-            mediator.Setup(a => a.Send(It.IsAny<AdicionarObservacaoCommand>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<AdicionarObservacaoDiarioBordoCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new AuditoriaDto()
                 {
                     Id = 1
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var auditoriaDto = await adicionarObservacaoDiarioBordoUseCase.Executar("observacao", 1);
 
             //Asert
-            mediator.Verify(x => x.Send(It.IsAny<AdicionarObservacaoCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(x => x.Send(It.IsAny<AdicionarObservacaoDiarioBordoCommand>(), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.True(auditoriaDto.Id == 1);
         }

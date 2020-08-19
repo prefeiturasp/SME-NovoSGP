@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         public async Task<AuditoriaDto> Executar(string observacao, long diarioBordoId)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
-            return await mediator.Send(new AdicionarObservacaoCommand(diarioBordoId, observacao, usuarioId));
+            return await mediator.Send(new AdicionarObservacaoDiarioBordoCommand(diarioBordoId, observacao, usuarioId));
         }
     }
 }
