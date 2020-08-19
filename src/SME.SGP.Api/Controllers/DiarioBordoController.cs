@@ -51,12 +51,17 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(diarioBordoDto));
         }
 
+        [HttpGet("devolutivas/{devolutivaId}")]
+        [ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [HttpGet("{diarioBordoId}/observacoes")]
         [ProducesResponseType(typeof(IEnumerable<ListarObservacaoDiarioBordoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPorDevolutiva([FromServices] IObterDiariosBordoPorDevolutiva useCase, long devolutivaId)
+        [Permissao(Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarObservacoes(long diarioBordoId,[FromServices] IListarObservacaoDiarioBordoUseCase listarObservacaoDiarioBordoUseCase)
         {
+            return Ok(await useCase.Executar(devolutivaId));
             return Ok(await listarObservacaoDiarioBordoUseCase.Executar(diarioBordoId));
         }
 
