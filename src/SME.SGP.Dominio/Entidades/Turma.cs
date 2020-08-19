@@ -10,9 +10,9 @@ namespace SME.SGP.Dominio
         public DateTime DataAtualizacao { get; set; }
         public long Id { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
-        public ModalidadeTipoCalendario ModalidadeTipoCalendario 
-        { 
-            get => ModalidadeCodigo == Modalidade.EJA ? 
+        public ModalidadeTipoCalendario ModalidadeTipoCalendario
+        {
+            get => ModalidadeCodigo == Modalidade.EJA ?
                 ModalidadeTipoCalendario.EJA :
                 ModalidadeCodigo == Modalidade.Infantil ?
                     ModalidadeTipoCalendario.Infantil :
@@ -64,15 +64,18 @@ namespace SME.SGP.Dominio
         public bool EhTurmaInfantil => ModalidadeCodigo == Modalidade.Infantil;
 
         public bool EnsinoEspecial { get; set; }
+        public DateTime? DataInicio { get; set; }
 
         public int EtapaEJA { get; set; }
 
         public bool AulasReposicaoPrecisamAprovacao(int quantidadeAulasExistentesNoDia)
         {
             int.TryParse(Ano, out int anoTurma);
-            return (EhTurmaFund1 || (EhEJA() && (anoTurma == 1 || anoTurma == 2)) && quantidadeAulasExistentesNoDia > 1) || 
-                   (EhTurmaFund2 || (EhEJA() && (anoTurma == 3 || anoTurma == 4))) || 
+            return (EhTurmaFund1 || (EhEJA() && (anoTurma == 1 || anoTurma == 2)) && quantidadeAulasExistentesNoDia > 1) ||
+                   (EhTurmaFund2 || (EhEJA() && (anoTurma == 3 || anoTurma == 4))) ||
                    (EhTurmaEnsinoMedio && quantidadeAulasExistentesNoDia > 2);
         }
+        public string Situacao { get; set; }
+        public bool Ativa => !string.IsNullOrWhiteSpace(Situacao) && (Situacao.Equals("A") || Situacao.Equals("O"));
     }
 }
