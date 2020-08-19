@@ -55,6 +55,11 @@ const AbrangenciaServico = {
   usuarioTemAbrangenciaTodasTurmas() {
     return api.get(`v1/abrangencias/false/adm`);
   },
+  buscarAnosEscolares(codigoUe, modalidade, consideraHistorico = false) {
+    return api.get(
+      `v1/abrangencias/${consideraHistorico}/ues/${codigoUe}/modalidades/${modalidade}/turmas/anos`
+    );
+  },
 };
 
 export default AbrangenciaServico;
