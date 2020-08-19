@@ -7,18 +7,10 @@ import DataTable from '~/componentes/table/dataTable';
 import { Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
-import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 import { Loader } from '~/componentes';
 
 const ListaNotificacoes = () => {
-  const usuario = useSelector(state => state.usuario);
   const [carregando, setCarregando] = useState(true);
-
-  const anoAtual = window.moment().format('YYYY');
-
-  useEffect(() => {
-    servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
-  }, [anoAtual, usuario.rf]);
 
   const notificacoes = useSelector(state => state.notificacoes);
 
@@ -83,37 +75,28 @@ const ListaNotificacoes = () => {
     history.push(`/notificacoes`);
   };
 
-  const Container = styled.span`
-    .data-hora {
-      // line-height: 1rem;
-      // white-space: normal !important;
-    }
-  `;
-
   return (
-    <Container>
-      <Loader loading={carregando}>
-        <DataTable
-          columns={colunas}
-          dataSource={notificacoes.notificacoes}
-          pagination={false}
-          onClickRow={aoClicarNaLinha}
-          locale={{ emptyText: 'Você não tem nenhuma notificação!' }}
-        />
-        <Button
-          id={shortid.generate()}
-          label="Ver tudo"
-          className="btn-lg btn-block"
-          color={Colors.Roxo}
-          fontSize="14px"
-          height="48px"
-          customRadius="border-top-right-radius: 0 !important; border-top-left-radius: 0 !important;"
-          border
-          bold
-          onClick={onClickVerTudo}
-        />
-      </Loader>
-    </Container>
+    <Loader loading={carregando}>
+      <DataTable
+        columns={colunas}
+        dataSource={notificacoes.notificacoes}
+        pagination={false}
+        onClickRow={aoClicarNaLinha}
+        locale={{ emptyText: 'Você não tem nenhuma notificação!' }}
+      />
+      <Button
+        id={shortid.generate()}
+        label="Ver tudo"
+        className="btn-lg btn-block"
+        color={Colors.Roxo}
+        fontSize="14px"
+        height="48px"
+        customRadius="border-top-right-radius: 0 !important; border-top-left-radius: 0 !important;"
+        border
+        bold
+        onClick={onClickVerTudo}
+      />
+    </Loader>
   );
 };
 
