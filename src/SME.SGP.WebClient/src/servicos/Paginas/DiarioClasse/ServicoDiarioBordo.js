@@ -3,7 +3,7 @@ import { store } from '~/redux';
 import { setDadosObservacoesChat } from '~/redux/modulos/observacoesChat/actions';
 import api from '~/servicos/api';
 
-const urlPadrao = `/v1/diario-bordo`;
+const urlPadrao = `/v1/diarios-bordo`;
 
 const dados = [
   {

@@ -2,6 +2,16 @@
 {
     public class DiarioBordoObservacao : EntidadeBase
     {
+        public DiarioBordoObservacao(string observacao, long diarioBordoId, long usuarioId)
+        {
+            Observacao = observacao;
+            DiarioBordoId = diarioBordoId;
+            UsuarioId = usuarioId;
+        }
+        protected DiarioBordoObservacao()
+        {
+        }
+
         public string Observacao { get; set; }
         public long DiarioBordoId { get; set; }
         public long UsuarioId { get; set; }
