@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.Servicos
             var dres = repositorioAbrangencia
                 .ObterDres(login, perfilId).Result;
 
-            return dres.Any(dre => dre.Codigo.Equals(codigoDre, StringComparison.InvariantCultureIgnoreCase));            
+            return dres.Any(dre => dre.Codigo.Equals(codigoDre, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public void RemoverAbrangencias(long[] ids)
@@ -66,12 +66,12 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioAbrangencia.InserirAbrangencias(abrangencias, login);
         }
 
-        public void SincronizarEstruturaInstitucionalVigenteCompleta()
+        public async Task SincronizarEstruturaInstitucionalVigenteCompleta()
         {
             var estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
 
             if (estruturaInstitucionalVigente != null && estruturaInstitucionalVigente.Dres != null && estruturaInstitucionalVigente.Dres.Count > 0)
-                SincronizarEstruturaInstitucional(estruturaInstitucionalVigente);
+                await SincronizarEstruturaInstitucional(estruturaInstitucionalVigente);
             else
             {
                 var erro = new NegocioException("Não foi possível obter dados de estrutura institucional do EOL");
@@ -289,7 +289,7 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioCicloEnsino.Sincronizar(ciclosEnsino);
         }
 
-        private void SincronizarEstruturaInstitucional(EstruturaInstitucionalRetornoEolDTO estrutura)
+        private async Task SincronizarEstruturaInstitucional(EstruturaInstitucionalRetornoEolDTO estrutura)
         {
             IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
             IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
@@ -311,9 +311,9 @@ namespace SME.SGP.Aplicacao.Servicos
                 Ue = new Ue() { CodigoUe = y.Codigo }
             })));
 
-            dres = repositorioDre.Sincronizar(dres);
-            ues = repositorioUe.Sincronizar(ues, dres);
-            repositorioTurma.Sincronizar(turmas, ues);
+            dres = await repositorioDre.SincronizarAsync(dres);
+            ues = await repositorioUe.SincronizarAsync(ues, dres);
+            await repositorioTurma.SincronizarAsync(turmas, ues);
         }
 
         private void SincronizarTiposEscola(IEnumerable<TipoEscolaRetornoDto> tiposEscolasDto)
