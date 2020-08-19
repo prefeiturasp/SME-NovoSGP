@@ -120,25 +120,35 @@ namespace SME.SGP.Aplicacao.Servicos
                 const string breadcrumb = "SGP API - Tratamento de Abrangência";
 
                 Task<AbrangenciaCompactaVigenteRetornoEOLDTO> consultaEol = null;
+                AbrangenciaCompactaVigenteRetornoEOLDTO abrangenciaEol = null;
 
                 var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
-                var ehProfessorCJ = perfil == Perfis.PERFIL_CJ;
+                var ehProfessorCJ = perfil == Perfis.PERFIL_CJ || perfil == Perfis.PERFIL_CJ_INFANTIL;
 
                 SentrySdk.AddBreadcrumb($"{breadcrumb} - Chamada BuscaAbrangenciaEPersiste - Login: {login}, perfil {perfil} - EhSupervisor: {ehSupervisor}, EhProfessorCJ: {ehProfessorCJ}", "SGP Api - Negócio");
 
                 if (ehSupervisor)
-                    consultaEol = TratarRetornoSupervisor(ObterAbrangenciaEolSupervisor(login));
+                {
+                    var uesIds = ObterAbrangenciaEolSupervisor(login);
+                    var abrangenciaSupervisor = await servicoEOL.ObterAbrangenciaParaSupervisor(uesIds.ToArray());
+                    abrangenciaEol = new AbrangenciaCompactaVigenteRetornoEOLDTO()
+                    {
+                        Abrangencia = abrangenciaSupervisor.Abrangencia,
+                        IdUes = abrangenciaSupervisor.Dres.SelectMany(x => x.Ues.Select(y => y.Codigo)).ToArray()
+                    };
+                }
                 else if (ehProfessorCJ)
                     return;
                 else
                     consultaEol = servicoEOL.ObterAbrangenciaCompactaVigente(login, perfil);
 
-                if (consultaEol != null)
+                if (consultaEol != null || abrangenciaEol != null)
                 {
                     // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
                     var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil, string.Empty);
 
-                    var abrangenciaEol = await consultaEol;
+                    if (abrangenciaEol == null)
+                        abrangenciaEol = await consultaEol;
                     var abrangenciaSintetica = await consultaAbrangenciaSintetica;
 
                     if (abrangenciaEol != null)
@@ -201,9 +211,8 @@ namespace SME.SGP.Aplicacao.Servicos
             return new Tuple<IEnumerable<Dre>, IEnumerable<Ue>, IEnumerable<Turma>>(dres, ues, turmas);
         }
 
-        private Task<AbrangenciaRetornoEolDto> ObterAbrangenciaEolSupervisor(string login)
+        private string[] ObterAbrangenciaEolSupervisor(string login)
         {
-            Task<AbrangenciaRetornoEolDto> consultaEol = null;
             var listaEscolasDresSupervior = consultasSupervisor.ObterPorDreESupervisor(login, string.Empty);
 
             if (listaEscolasDresSupervior.Any())
@@ -211,11 +220,10 @@ namespace SME.SGP.Aplicacao.Servicos
                 var escolas = from a in listaEscolasDresSupervior
                               from b in a.Escolas
                               select b.Codigo;
-
-                consultaEol = servicoEOL.ObterAbrangenciaParaSupervisor(escolas.ToArray());
+                return escolas.ToArray();
             }
 
-            return consultaEol;
+            return Array.Empty<string>();
         }
 
         private void SincronizarAbragenciaPorTurmas(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Turma> turmas, string login, Guid perfil)
@@ -336,27 +344,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task TrataAbrangenciaModificaoPerfil(string login, Guid perfil)
         {
-            if (!(await repositorioAbrangencia.JaExisteAbrangencia(login, perfil)))
-            {
-                await BuscaAbrangenciaEPersiste(login, perfil);
-            }
-        }
-
-        private Task<AbrangenciaCompactaVigenteRetornoEOLDTO> TratarRetornoSupervisor(Task<AbrangenciaRetornoEolDto> consultaEol)
-        {
-            if (consultaEol != null)
-            {
-                return Task.Factory.StartNew(() =>
-                {
-                    var resultado = consultaEol.Result;
-                    return new AbrangenciaCompactaVigenteRetornoEOLDTO()
-                    {
-                        Abrangencia = resultado.Abrangencia,
-                        IdUes = resultado.Dres.SelectMany(x => x.Ues.Select(y => y.Codigo)).ToArray()
-                    };
-                });
-            }
-            return Task.FromResult<AbrangenciaCompactaVigenteRetornoEOLDTO>(null);
+            await BuscaAbrangenciaEPersiste(login, perfil);
         }
     }
 }
