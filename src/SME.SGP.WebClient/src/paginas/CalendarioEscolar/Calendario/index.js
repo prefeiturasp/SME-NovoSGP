@@ -22,6 +22,7 @@ import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 import { Loader } from '~/componentes';
 import { erro } from '~/servicos/alertas';
+import AbrangenciaServico from '~/servicos/Abrangencia';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -111,7 +112,7 @@ const CalendarioEscolar = () => {
 
   const tiposDeCalendario = useMemo(() => {
     if (tiposCalendario.length === 0)
-      return;
+     return;
 
     let tipos = tiposCalendario;
 
@@ -126,8 +127,8 @@ const CalendarioEscolar = () => {
         turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
           ? 2
           : turmaSelecionadaStore.modalidade === ModalidadeDTO.INFANTIL.toString()
-            ? 3
-            : 1;
+          ? 3
+          : 1;
 
       tipos =
         tiposCalendario &&
@@ -312,10 +313,16 @@ const CalendarioEscolar = () => {
   );
   const [unidadesEscolares, setUnidadesEscolares] = useState([]);
 
-  const obterUnidadesEscolares = () => {
+  const obterUnidadesEscolares = dre => {
     setCarregandoUes(true);
-    api
-      .get(`v1/abrangencias/false/dres/${dreSelecionada}/ues`)
+    const calendario = tiposDeCalendario.find(
+      item => String(item.valor) === tipoCalendarioSelecionado
+    );
+
+    const modalidade = ServicoCalendarios.converterModalidade(
+      calendario.modalidade
+    );
+    AbrangenciaServico.buscarUes(dre, '', false, modalidade)
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -362,7 +369,7 @@ const CalendarioEscolar = () => {
   useEffect(() => {
     if (dreSelecionada) {
       consultarDiasLetivos();
-      obterUnidadesEscolares();
+      obterUnidadesEscolares(dreSelecionada);
     } else {
       setUnidadeEscolarSelecionada();
     }
@@ -460,7 +467,7 @@ const CalendarioEscolar = () => {
                     eventoSme
                       ? 'Exibindo eventos da SME'
                       : 'Não exibindo eventos da SME'
-                    }`}
+                  }`}
                 >
                   <Switch
                     onChange={aoTrocarEventoSme}

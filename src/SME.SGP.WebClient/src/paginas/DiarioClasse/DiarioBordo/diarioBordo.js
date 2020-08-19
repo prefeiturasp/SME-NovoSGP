@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Auditoria, CampoData, Loader, PainelCollapse } from '~/componentes';
-import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import AlertaPeriodoEncerrado from '~/componentes-sgp/Calendario/componentes/MesCompleto/componentes/Dias/componentes/DiaCompleto/componentes/AlertaPeriodoEncerrado';
 import Alert from '~/componentes/alert';
@@ -24,6 +23,7 @@ import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import ModalSelecionarAula from './modalSelecionarAula';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
 
 const DiarioBordo = () => {
   const usuario = useSelector(state => state.usuario);
@@ -375,8 +375,10 @@ const DiarioBordo = () => {
     if (modoEdicao && turmaInfantil && !desabilitarCampos) {
       const confirmado = await pergutarParaSalvar();
       if (confirmado) {
-        await validaAntesDoSubmit(form);
-        history.push(URL_HOME);
+        const salvou = await validaAntesDoSubmit(form);
+        if (salvou) {
+          history.push(URL_HOME);
+        }
       } else {
         history.push(URL_HOME);
       }
@@ -404,7 +406,7 @@ const DiarioBordo = () => {
 
   return (
     <Loader loading={carregandoGeral} className="w-100 my-2">
-      {!turmaSelecionada.turma && turmaInfantil ? (
+      {!turmaSelecionada.turma ? (
         <Alert
           alerta={{
             tipo: 'warning',
@@ -416,7 +418,7 @@ const DiarioBordo = () => {
       ) : (
         ''
       )}
-      <AlertaModalidadeInfantil naoPermiteTurmaInfantil={false} />
+      {turmaSelecionada.turma ? <AlertaPermiteSomenteTurmaInfantil /> : ''}
       <AlertaPeriodoEncerrado exibir={!temPeriodoAberto && !somenteConsulta} />
       <ModalMultiLinhas
         key="erros-diario-bordo"
@@ -458,7 +460,7 @@ const DiarioBordo = () => {
                       icon="arrow-left"
                       color={Colors.Azul}
                       border
-                      className="mr-2"
+                      className="mr-3"
                       onClick={() => onClickVoltar(form)}
                     />
                     <Button
@@ -477,7 +479,6 @@ const DiarioBordo = () => {
                       color={Colors.Roxo}
                       border
                       bold
-                      className="mr-2"
                       onClick={() => validaAntesDoSubmit(form, true)}
                       disabled={
                         !modoEdicao || !turmaInfantil || desabilitarCampos

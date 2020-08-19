@@ -60,6 +60,7 @@ import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 import FaltasFrequencia from '~/paginas/Relatorios/Frequencia/faltasFrequencia';
 import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
+import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 
@@ -878,6 +879,17 @@ rotas.set(RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS,
+});
+
+rotas.set(RotasDto.CARTA_INTENCOES, {
+  breadcrumbName: 'Carta de intenções',
+  menu: ['Planejamento '],
+  parent: '/',
+  component: CartaIntencoes,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.CARTA_INTENCOES,
 });
 
 const rotasArray = [];

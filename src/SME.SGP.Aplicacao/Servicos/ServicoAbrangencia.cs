@@ -316,7 +316,8 @@ namespace SME.SGP.Aplicacao.Servicos
                  Semestre = z.Semestre,
                  TipoTurno = z.TipoTurno,
                  Ue = new Ue() { CodigoUe = y.Codigo },
-                 EnsinoEspecial = z.EnsinoEspecial
+                 EnsinoEspecial = z.EnsinoEspecial,
+                 EtapaEJA = z.EtapaEJA
              })));
 
             dres = repositorioDre.Sincronizar(dres);
@@ -344,10 +345,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task TrataAbrangenciaModificaoPerfil(string login, Guid perfil)
         {
-            if (!(await repositorioAbrangencia.JaExisteAbrangencia(login, perfil)))
-            {
-                await BuscaAbrangenciaEPersiste(login, perfil);
-            }
+            await BuscaAbrangenciaEPersiste(login, perfil);
         }
     }
 }
