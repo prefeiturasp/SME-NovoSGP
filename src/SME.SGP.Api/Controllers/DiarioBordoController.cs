@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/diario-bordo")]
+    [Route("api/v1/diarios-bordo")]
     [Authorize("Bearer")]
     public class DiarioBordoController : ControllerBase
     {
@@ -45,6 +45,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Alterar([FromServices] IAlterarDiarioBordoUseCase useCase, [FromBody] AlterarDiarioBordoDto diarioBordoDto)
         {
             return Ok(await useCase.Executar(diarioBordoDto));
+        }
+
+        [HttpPost("{diarioBordoId}/observacoes")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> AdicionarObservacao(long diarioBordoId, [FromBody] ObservacaoDiarioBordoDto dto, [FromServices] IAdicionarObservacaoDiarioBordoUseCase adicionarObservacaoDiarioBordoUseCase)
+        {
+            return Ok(await adicionarObservacaoDiarioBordoUseCase.Executar(dto.Observacao, diarioBordoId));
         }
     }
 }
