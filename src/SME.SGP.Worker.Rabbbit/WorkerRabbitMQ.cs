@@ -84,7 +84,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
                             AtribuirContextoAplicacao(mensagemRabbit, scope);
 
-                            SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey}", SentryLevel.Debug);
+                            SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey} - {DateTime.Now:dd/MM/yyyy HH:mm:ss}", SentryLevel.Debug);
                             var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
                             await ObterMetodo(comandoRabbit.TipoCasoUso, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });

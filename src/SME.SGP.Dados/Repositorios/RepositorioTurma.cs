@@ -26,7 +26,9 @@ namespace SME.SGP.Dados.Repositorios
 	                    qt_duracao_aula,
 	                    tipo_turno,
 	                    data_atualizacao,
-                        ensino_especial
+                        ensino_especial,
+                        situacao,
+                        data_inicio
                     from
 	                    public.turma
                     where turma_id in (#ids);";
@@ -44,7 +46,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    tipo_turno = @tipoTurno,
 	                    data_atualizacao = @dataAtualizacao,
                         ensino_especial = @ensinoEspecial,
-                        data_inicio = @dataInicio
+                        data_inicio = @dataInicio,
+                        situacao = @situacao
                     where
 	                    id = @id;";
 
@@ -219,7 +222,8 @@ namespace SME.SGP.Dados.Repositorios
                                         c.QuantidadeDuracaoAula != l.QuantidadeDuracaoAula ||
                                         c.TipoTurno != l.TipoTurno ||
                                         c.EnsinoEspecial != l.EnsinoEspecial ||
-                                        c.DataInicio != l.DataInicio)
+                                        c.DataInicio != l.DataInicio ||
+                                        c.Situacao != l.Situacao)
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -235,7 +239,8 @@ namespace SME.SGP.Dados.Repositorios
                                       Ue = l.Ue,
                                       UeId = l.UeId,
                                       EnsinoEspecial = c.EnsinoEspecial,
-                                      DataInicio = c.DataInicio
+                                      DataInicio = c.DataInicio,
+                                      Situacao = c.Situacao
                                   };
 
                 foreach (var item in modificados)
@@ -252,7 +257,8 @@ namespace SME.SGP.Dados.Repositorios
                         dataAtualizacao = item.DataAtualizacao,
                         id = item.Id,
                         ensinoEspecial = item.EnsinoEspecial,
-                        dataInicio = item.DataInicio
+                        dataInicio = item.DataInicio,
+                        situacao = item.Situacao
                     });
 
                     resultado.Add(item);

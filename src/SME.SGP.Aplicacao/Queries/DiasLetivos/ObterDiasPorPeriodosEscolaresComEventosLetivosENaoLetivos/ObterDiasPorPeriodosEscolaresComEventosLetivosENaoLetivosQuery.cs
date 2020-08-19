@@ -5,15 +5,15 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDiasLetivosPorPeriodosEscolaresQuery : IRequest<List<DiaLetivoDto>>
+    public class ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery : IRequest<List<DiaLetivoDto>>
     {
-        public ObterDiasLetivosPorPeriodosEscolaresQuery(IEnumerable<Dominio.PeriodoEscolar> periodosEscolares, long tipoCalendarioId)
+        public ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(IEnumerable<Dominio.PeriodoEscolar> periodosEscolares, long tipoCalendarioId)
         {
             PeriodosEscolares = periodosEscolares;
             TipoCalendarioId = tipoCalendarioId;
         }
 
-        public ObterDiasLetivosPorPeriodosEscolaresQuery(Dominio.PeriodoEscolar periodoEscolar, long tipoCalendarioId)
+        public ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(Dominio.PeriodoEscolar periodoEscolar, long tipoCalendarioId)
         {
             PeriodosEscolares = new List<Dominio.PeriodoEscolar> { periodoEscolar };
             TipoCalendarioId = tipoCalendarioId;

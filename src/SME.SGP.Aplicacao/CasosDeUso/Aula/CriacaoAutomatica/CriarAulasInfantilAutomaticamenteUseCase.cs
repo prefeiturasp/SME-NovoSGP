@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Sentry;
+using Sentry.Protocol;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -28,33 +29,34 @@ namespace SME.SGP.Aplicacao
                 var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
                 if (periodosEscolares != null && periodosEscolares.Any())
                 {
-                    var diasLetivos = await mediator.Send(new ObterDiasLetivosPorPeriodosEscolaresQuery(periodosEscolares, tipoCalendarioId));
+                    var diasLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
 
                     var turmas = await mediator.Send(new ObterTurmasInfantilNaoDeProgramaQuery(anoAtual));
                     if (turmas != null && turmas.Any())
                     {
-                        var turmasPorUe = turmas.GroupBy(c => c.UeId);
-
-                        foreach (var ue in turmasPorUe)
+                        var paginador = 900;
+                        for (int pagina = 0; pagina <= turmas.Count(); pagina += paginador)
                         {
-
-                        }
-                        
-                        SentrySdk.AddBreadcrumb($"Iniciando manutenção para {turmas.Count()} turmas.");
-                        for (int pagina = 0; pagina <= turmas.Count(); pagina += 2000)
-                        {
-                            var lista = turmas.Skip(pagina).Take(2000);
+                            var lista = turmas.Skip(pagina).Take(paginador);
                             if (lista.Any())
                             {
                                 var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivos.ToList(), lista, tipoCalendarioId);
 
+                                SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Iniciando Rotina de manutenção de aulas do Infantil");
                                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
                             }
                         }
-                        SentrySdk.CaptureMessage($"Criação automática de aulas Infantil.");
                     }
                     return true;
                 }
+                else
+                {
+                    SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Período Escolar cadastrado.", SentryLevel.Error);
+                }
+            }
+            else
+            {
+                SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Calendário Escolar cadastrado.", SentryLevel.Error);
             }
             return false;
         }
