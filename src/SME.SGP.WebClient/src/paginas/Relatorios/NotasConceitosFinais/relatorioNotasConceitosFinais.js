@@ -203,9 +203,10 @@ const RelatorioNotasConceitosFinais = () => {
       setAnosEscolares(['-99']);
     } else {
       setCarregandoGeral(true);
-      const respota = await ServicoFiltroRelatorio.obterAnosEscolares(
+      const respota = await AbrangenciaServico.buscarAnosEscolares(
         ue,
-        mod
+        mod,
+        true
       ).catch(e => {
         erros(e);
         setCarregandoGeral(false);
