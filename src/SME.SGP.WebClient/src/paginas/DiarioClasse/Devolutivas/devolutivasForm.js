@@ -21,7 +21,10 @@ import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import DadosPlanejamentoDiarioBordo from './DadosPlanejamentoDiarioBordo/dadosPlanejamentoDiarioBordo';
-import { setDadosPlanejamentos } from '~/redux/modulos/devolutivas/actions';
+import {
+  setDadosPlanejamentos,
+  limparDadosPlanejamento,
+} from '~/redux/modulos/devolutivas/actions';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
 
 const DevolutivasForm = ({ match }) => {
@@ -45,6 +48,7 @@ const DevolutivasForm = ({ match }) => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [datasParaHabilitar, setDatasParaHabilitar] = useState();
   const [idDevolutiva, setIdDevolutiva] = useState(0);
+  const [refForm, setRefForm] = useState({});
 
   const inicial = {
     codigoComponenteCurricular: 0,
@@ -83,8 +87,11 @@ const DevolutivasForm = ({ match }) => {
   }, [match]);
 
   const resetarTela = useCallback(() => {
-    // TODO
-  }, []);
+    dispatch(limparDadosPlanejamento());
+    if (refForm && refForm.resetForm) {
+      refForm.resetForm();
+    }
+  }, [dispatch, refForm]);
 
   useEffect(() => {
     const infantil = ehTurmaInfantil(
@@ -93,17 +100,16 @@ const DevolutivasForm = ({ match }) => {
     );
     setTurmaInfantil(infantil);
 
-    if (!turmaInfantil) {
+    if (!infantil) {
       resetarTela();
+      history.push(RotasDto.DEVOLUTIVAS);
     }
-  }, [
-    turmaSelecionada,
-    modalidadesFiltroPrincipal,
-    turmaInfantil,
-    resetarTela,
-  ]);
+  }, [turmaSelecionada, modalidadesFiltroPrincipal, resetarTela]);
 
   useEffect(() => {
+    if (!turmaSelecionada.turma) {
+      history.push(RotasDto.DEVOLUTIVAS);
+    }
     resetarTela();
   }, [turmaSelecionada.turma, resetarTela]);
 
@@ -166,6 +172,7 @@ const DevolutivasForm = ({ match }) => {
       dataFim: '',
       devolutiva: dados.devolutiva,
       auditoria: dados.auditoria,
+      diariosIds: dados.diariosIds,
     };
     setValoresIniciais({ ...valores });
   };
@@ -184,6 +191,29 @@ const DevolutivasForm = ({ match }) => {
     },
     []
   );
+
+  const obterPlanejamentosPorDevolutiva = useCallback(
+    async pagina => {
+      setCarregandoGeral(true);
+      const retorno = await ServicoDiarioBordo.obterPlanejamentosPorDevolutiva(
+        idDevolutiva,
+        pagina || 1
+      ).catch(e => erros(e));
+      setCarregandoGeral(false);
+      if (retorno && retorno.data) {
+        dispatch(setDadosPlanejamentos(retorno.data));
+      } else {
+        dispatch(limparDadosPlanejamento());
+      }
+    },
+    [idDevolutiva, dispatch]
+  );
+
+  useEffect(() => {
+    if (idDevolutiva) {
+      obterPlanejamentosPorDevolutiva();
+    }
+  }, [idDevolutiva, obterPlanejamentosPorDevolutiva]);
 
   useEffect(() => {
     if (listaComponenteCurriculare && listaComponenteCurriculare.length) {
@@ -208,6 +238,7 @@ const DevolutivasForm = ({ match }) => {
 
   const obterComponentesCurriculares = useCallback(async () => {
     setCarregandoGeral(true);
+    dispatch(limparDadosPlanejamento());
     const componentes = await ServicoDisciplina.obterDisciplinasPorTurma(
       turmaCodigo
     ).catch(e => erros(e));
@@ -217,16 +248,15 @@ const DevolutivasForm = ({ match }) => {
     }
 
     setCarregandoGeral(false);
-  }, [turmaCodigo]);
+  }, [turmaCodigo, dispatch]);
 
   useEffect(() => {
     if (turmaCodigo && turmaInfantil) {
       obterComponentesCurriculares();
     } else {
       setListaComponenteCurriculare([]);
-      resetarTela();
     }
-  }, [turmaCodigo, obterComponentesCurriculares, turmaInfantil, resetarTela]);
+  }, [turmaCodigo, obterComponentesCurriculares, turmaInfantil]);
 
   const onChangeDataInicio = async (dataInicio, form) => {
     if (dataInicio) {
@@ -234,21 +264,25 @@ const DevolutivasForm = ({ match }) => {
       setDatasParaHabilitar(paraHabilitar);
     }
     form.setFieldValue('dataFim', '');
+    dispatch(limparDadosPlanejamento());
     setModoEdicao(true);
   };
 
-  const obterDadosPlanejamento = async (dataFim, form) => {
+  const obterDadosPlanejamento = async (dataFim, form, pagina) => {
     const { dataInicio, codigoComponenteCurricular } = form.values;
     setCarregandoGeral(true);
     const retorno = await ServicoDiarioBordo.obterPlanejamentosPorIntervalo(
       turmaCodigo,
       codigoComponenteCurricular,
       dataInicio.format('YYYY-MM-DD'),
-      dataFim.format('YYYY-MM-DD')
+      dataFim.format('YYYY-MM-DD'),
+      pagina || 1
     ).catch(e => erros(e));
     setCarregandoGeral(false);
     if (retorno && retorno.data) {
       dispatch(setDadosPlanejamentos(retorno.data));
+    } else {
+      dispatch(setDadosPlanejamentos({}));
     }
   };
 
@@ -256,7 +290,10 @@ const DevolutivasForm = ({ match }) => {
     if (!data) {
       form.setFieldValue('devolutiva', '');
     }
-    obterDadosPlanejamento(data, form);
+    if (data) {
+      obterDadosPlanejamento(data, form);
+    }
+    dispatch(limparDadosPlanejamento());
     setModoEdicao(true);
   };
 
@@ -289,7 +326,7 @@ const DevolutivasForm = ({ match }) => {
     };
 
     if (!idDevolutiva) {
-      params.diariosIds = [1, 2, 3];
+      params.diariosIds = valores.diariosIds;
     }
     const retorno = await ServicoDevolutivas.salvarAlterarDevolutiva(
       params,
@@ -359,6 +396,14 @@ const DevolutivasForm = ({ match }) => {
     }
   };
 
+  const onChangePage = (pagina, form) => {
+    if (idDevolutiva) {
+      obterPlanejamentosPorDevolutiva(pagina);
+    } else {
+      obterDadosPlanejamento(form.values.dataFim, form, pagina);
+    }
+  };
+
   return (
     <Loader loading={carregandoGeral} className="w-100 my-2">
       {!turmaSelecionada.turma ? (
@@ -385,6 +430,7 @@ const DevolutivasForm = ({ match }) => {
             initialValues={valoresIniciais}
             validateOnBlur
             validateOnChange
+            ref={refFormik => setRefForm(refFormik)}
           >
             {form => (
               <Form>
@@ -468,7 +514,7 @@ const DevolutivasForm = ({ match }) => {
                       }
                     />
                   </div>
-                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
+                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-5">
                     <CampoData
                       label="Data fim"
                       form={form}
@@ -490,11 +536,13 @@ const DevolutivasForm = ({ match }) => {
                   idDevolutiva ? (
                     <>
                       <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                        <DadosPlanejamentoDiarioBordo />
+                        <DadosPlanejamentoDiarioBordo
+                          onChangePage={pagina => onChangePage(pagina, form)}
+                        />
                       </div>
-                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-3">
                         <Editor
-                          label="Devolutiva"
+                          label="Registre a sua devolutiva para este intervalo de datas"
                           form={form}
                           name="devolutiva"
                           id="editor-devolutiva"
