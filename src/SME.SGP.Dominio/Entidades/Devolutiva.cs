@@ -12,6 +12,7 @@ namespace SME.SGP.Dominio
         }
 
         public string Descricao { get; set; }
+
         public List<DiarioBordo> DiariosBordo { get; set; }
 
         public long CodigoComponenteCurricular { get; set; }
