@@ -27,6 +27,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    tipo_turno,
 	                    data_atualizacao,
                         ensino_especial,
+                        situacao,
+                        data_inicio,
                         etapa_eja
                     from
 	                    public.turma
@@ -45,6 +47,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    tipo_turno = @tipoTurno,
 	                    data_atualizacao = @dataAtualizacao,
                         ensino_especial = @ensinoEspecial,
+                        data_inicio = @dataInicio,
+                        situacao = @situacao,
                         etapa_eja = @etapaEja
                     where
 	                    id = @id;";
@@ -197,6 +201,7 @@ namespace SME.SGP.Dados.Repositorios
                 var idsArmazenados = armazenados.Select(y => y.CodigoTurma);
                 var novos = iteracao.Where(x => !idsArmazenados.Contains(x.CodigoTurma)).ToList();
 
+
                 foreach (var item in novos)
                 {
                     item.DataAtualizacao = DateTime.Today;
@@ -217,6 +222,8 @@ namespace SME.SGP.Dados.Repositorios
                                         c.QuantidadeDuracaoAula != l.QuantidadeDuracaoAula ||
                                         c.TipoTurno != l.TipoTurno ||
                                         c.EnsinoEspecial != l.EnsinoEspecial ||
+                                        c.DataInicio != l.DataInicio ||
+                                        c.Situacao != l.Situacao ||
                                         c.EtapaEJA != l.EtapaEJA)
                                   select new Turma()
                                   {
@@ -233,6 +240,8 @@ namespace SME.SGP.Dados.Repositorios
                                       Ue = l.Ue,
                                       UeId = l.UeId,
                                       EnsinoEspecial = c.EnsinoEspecial,
+                                      DataInicio = c.DataInicio,
+                                      Situacao = c.Situacao,
                                       EtapaEJA = c.EtapaEJA
                                   };
 
@@ -250,6 +259,8 @@ namespace SME.SGP.Dados.Repositorios
                         dataAtualizacao = item.DataAtualizacao,
                         id = item.Id,
                         ensinoEspecial = item.EnsinoEspecial,
+                        dataInicio = item.DataInicio,
+                        situacao = item.Situacao,
                         etapaEja = item.EtapaEJA
                     });
 
@@ -260,6 +271,41 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return resultado;
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo)
+        {
+            var modalidade = Modalidade.Infantil;
+            var turmas = new List<Turma>();
+            var query = @"select
+	                            t.*,
+	                            u.*,
+                                d.*
+                            from
+	                            turma t
+                            inner join ue u on
+	                            u.id = t.ue_id
+                            inner join dre d on
+	                            u.dre_id = d.id
+                            where
+	                            t.modalidade_codigo = :modalidade
+	                            and t.historica = false
+	                            and t.ano_letivo = :anoLetivo
+	                            and ano ~ E'^[0-9\.]+$'";
+
+            await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+             {
+                 ue.AdicionarDre(dre);
+                 turma.AdicionarUe(ue);
+
+                 var turmaExistente = turmas.FirstOrDefault(c => c.Id == turma.Id);
+                 if (turmaExistente == null)
+                     turmas.Add(turma);
+
+                 return turma;
+             }, new { anoLetivo, modalidade });
+
+            return turmas;
         }
     }
 }

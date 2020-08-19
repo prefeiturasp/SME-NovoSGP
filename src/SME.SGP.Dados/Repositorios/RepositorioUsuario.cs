@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Text;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -29,6 +30,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.Query<Usuario>(query.ToString(), new { codigoRf, login })
                 .FirstOrDefault();
+        }
+
+        public async Task<Usuario> ObterUsuarioPorCodigoRfAsync(string codigoRf)
+        {
+            var query = new StringBuilder();
+            query.AppendLine("select * from usuario");
+            query.AppendLine("where rf_codigo = @codigoRf");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<Usuario>(query.ToString(), new { codigoRf });
         }
 
         public Usuario ObterPorTokenRecuperacaoSenha(Guid token)

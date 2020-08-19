@@ -398,5 +398,27 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("O tipo de evento não foi encontrado.");
             }
         }
+
+        public bool DataEstaNoRangeDoEvento(DateTime data)
+        {
+            return data >= DataInicio && data <= DataFim;
+        }
+
+        public bool EhEventoLetivo()
+        {
+            return Letivo == EventoLetivo.Sim;
+        }
+        public bool NaoEhEventoLetivo()
+        {
+            return Letivo == EventoLetivo.Nao;
+        }
+
+        public IEnumerable<DateTime> ObterIntervaloDatas()
+        {
+            var datas = new List<DateTime>();
+            for (var dia = DataInicio.Date; dia <= DataFim.Date; dia = dia.AddDays(1))
+                datas.Add(dia);
+            return datas;
+        }
     }
 }
