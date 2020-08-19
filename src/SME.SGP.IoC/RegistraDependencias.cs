@@ -53,7 +53,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosEventoTipo, ComandosEventoTipo>();
             services.TryAddScoped<IComandosEvento, ComandosEvento>();
             services.TryAddScoped<IComandosDiasLetivos, ComandosDiasLetivos>();
-            services.TryAddScoped<IComandosAula, ComandosAula>();
             services.TryAddScoped<IComandosGrade, ComandosGrade>();
             services.TryAddScoped<IComandoFrequencia, ComandoFrequencia>();
             services.TryAddScoped<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
@@ -270,6 +269,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioHistoricoReinicioSenha, RepositorioHistoricoReinicioSenha>();
             services.TryAddScoped<IRepositorioComunicadoAluno, RepositorioComunicadoAluno>();
             services.TryAddScoped<IRepositorioComunicadoTurma, RepositorioComunicadoTurma>();
+            services.TryAddScoped<IRepositorioDiarioBordo, RepositorioDiarioBordo>();
+            services.TryAddScoped<IRepositorioDevolutivaDiarioBordo, RepositorioDevolutivaDiarioBordo>();
+            services.TryAddScoped<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
+            services.TryAddScoped<IRepositorioCartaIntencoes, RepositorioCartaIntencoes>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -289,7 +292,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoDiaLetivo, ServicoDiaLetivo>();
             services.TryAddScoped<IServicoLog, ServicoLog>();
             services.TryAddScoped<IServicoFrequencia, ServicoFrequencia>();
-            services.TryAddScoped<IServicoAula, ServicoAula>();
             services.TryAddScoped<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
             services.TryAddScoped<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
             services.TryAddScoped<IServicoDeNotasConceitos, ServicoDeNotasConceitos>();
@@ -340,12 +342,29 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterFiltroRelatoriosDresPorAbrangenciaUseCase, ObterFiltroRelatoriosDresPorAbrangenciaUseCase>();
             services.TryAddScoped<IObterFiltroRelatoriosUesPorAbrangenciaUseCase, ObterFiltroRelatoriosUesPorAbrangenciaUseCase>();
             services.TryAddScoped<IObterFiltroRelatoriosModalidadesPorUeUseCase, ObterFiltroRelatoriosModalidadesPorUeUseCase>();
+            services.TryAddScoped<IObterPareceresConclusivosUseCase, ObterPareceresConclusivosUseCase>();
             services.TryAddScoped<IRelatorioPendenciasFechamentoUseCase, RelatorioPendenciasFechamentoUseCase>();
             services.TryAddScoped<IObterComponentesCurricularesPorTurmaECodigoUeUseCase, ObterComponentesCurricularesPorTurmaECodigoUeUseCase>();
             
             services.TryAddScoped<IObterComponentesCurricularesPorAnoEscolarUseCase, ObterComponentesCurricularesPorAnoEscolarUseCase>();
             services.TryAddScoped<IObterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase, ObterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase>();
             services.TryAddScoped<ICopiarCodigoCorrelacaoUseCase, CopiarCodigoCorrelacaoUseCase>();
+            services.TryAddScoped<IObterDiarioBordoUseCase, ObterDiarioBordoUseCase>();
+            services.TryAddScoped<IInserirDiarioBordoUseCase, InserirDiarioBordoUseCase>();
+            services.TryAddScoped<IAlterarDiarioBordoUseCase, AlterarDiarioBordoUseCase>();
+            services.TryAddScoped<IObterFrequenciaOuPlanoNaRecorrenciaUseCase, ObterFrequenciaOuPlanoNaRecorrenciaUseCase>();
+            services.TryAddScoped<IObterDatasAulasPorTurmaEComponenteUseCase, ObterDatasAulasPorTurmaEComponenteUseCase>();
+            services.TryAddScoped<IRelatorioRecuperacaoParalelaUseCase, RelatorioRecuperacaoParalelaUseCase>();
+            services.TryAddScoped<IRelatorioParecerConclusivoUseCase, RelatorioParecerConclusivoUseCase>();
+            services.TryAddScoped<IObterCiclosPorModalidadeECodigoUeUseCase, ObterCiclosPorModalidadeECodigoUeUseCase>();
+            services.TryAddScoped<IObterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase, ObterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase>();
+            services.TryAddScoped<IObterFiltroRelatoriosAnosPorCicloModalidadeUseCase, ObterFiltroRelatoriosAnosPorCicloModalidadeUseCase>();
+
+
+
+            services.TryAddScoped<ICartaIntencoesPersistenciaUseCase, CartaIntencoesPersistenciaUseCase>();
+            services.TryAddScoped<IObterCartasDeIntencoesPorTurmaEComponenteUseCase, ObterCartasDeIntencoesPorTurmaEComponenteUseCase>();
+
         }
     }
 }

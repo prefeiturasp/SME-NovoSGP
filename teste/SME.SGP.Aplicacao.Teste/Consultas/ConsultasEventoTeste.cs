@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Moq;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Contexto;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Consultas
@@ -51,17 +54,35 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         //}
 
         [Fact]
-        public void DeveObterEvento()
+        public async Task DeveObterEvento()
         {
-            repositorioEvento.Setup(c => c.ObterPorId(It.IsAny<long>()))
-                .Returns(new Evento
+            repositorioEvento.Setup(c => c.ObterPorIdAsync(It.IsAny<long>()))
+                .ReturnsAsync(new Evento
                 {
                     Id = 1
                 });
-            var eventoDto = consultaEventos.ObterPorId(1);
+
+            repositorioEventoTipo.Setup(c => c.ObterPorIdAsync(It.IsAny<long>()))
+                .ReturnsAsync(new EventoTipo
+                {
+                    Id = 1
+                });
+
+            var usuario = new Usuario()
+            {
+                CodigoRf = "123",
+            };
+            usuario.DefinirPerfis(new List<PrioridadePerfil>());
+
+            servicoUsuario.Setup(a => a.ObterUsuarioLogado())
+                .ReturnsAsync(usuario);
+
+
+            var eventoDto = await consultaEventos.ObterPorId(1);
+
             Assert.NotNull(eventoDto);
             Assert.Equal(1, eventoDto.Id);
-            repositorioEvento.Verify(c => c.ObterPorId(It.IsAny<long>()), Times.Once);
+            repositorioEvento.Verify(c => c.ObterPorIdAsync(It.IsAny<long>()), Times.Once);
         }
     }
 }

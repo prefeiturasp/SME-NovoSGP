@@ -14,7 +14,7 @@ import {
   setDentroPeriodo,
   setCodigoAlunoSelecionado,
 } from '~/redux/modulos/relatorioSemestralPAP/actions';
-import { erros } from '~/servicos/alertas';
+import { erros, sucesso } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
 import AlertaDentroPeriodoPAP from './DadosRelatorioSemestral/AlertaDentroPeriodoPAP/alertaDentroPeriodoPAP';
 import BotaoOrdenarListaAlunos from './DadosRelatorioSemestral/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
@@ -27,6 +27,7 @@ import servicoSalvarRelatorioSemestral from './servicoSalvarRelatorioSemestral';
 import ModalErrosRalSemestralPAP from './DadosRelatorioSemestral/ModalErros/ModalErrosRalSemestralPAP';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import { setGerandoParecerConclusivo } from '~/redux/modulos/conselhoClasse/actions';
 
 const RelatorioSemestral = () => {
   const dispatch = useDispatch();
@@ -42,6 +43,9 @@ const RelatorioSemestral = () => {
 
   const [listaSemestres, setListaSemestres] = useState([]);
   const [semestreSelecionado, setSemestreSelecionado] = useState(undefined);
+  const [podeImprimir, setPodeImprimir] = useState(false);
+
+  const [gerandoRelatorio, setGerandoRelatorio] = useState(false);
 
   const resetarInfomacoes = useCallback(() => {
     dispatch(limparDadosRelatorioSemestral());
@@ -152,6 +156,31 @@ const RelatorioSemestral = () => {
     dispatch(setDentroPeriodo(dentroPeriodo));
   };
 
+  const relatorioSemestralId = useSelector(
+    store =>
+      store.relatorioSemestralPAP.dadosRelatorioSemestral.relatorioSemestralId
+  );
+
+  useEffect(() => {
+    setPodeImprimir(relatorioSemestralId);
+  }, [relatorioSemestralId]);
+
+  const gerar = async () => {
+    setGerandoRelatorio(true);
+    const params = {
+      turmaCodigo: turmaSelecionada.turma,
+      semestre: semestreSelecionado,
+    };
+    await ServicoRelatorioSemestral.gerar(params)
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado'
+        );
+      })
+      .catch(e => erros(e))
+      .finally(setGerandoRelatorio(false));
+  };
+
   return (
     <Container>
       <ModalErrosRalSemestralPAP />
@@ -207,16 +236,17 @@ const RelatorioSemestral = () => {
                 <>
                   <div className="col-md-12 mb-2 d-flex">
                     <BotaoOrdenarListaAlunos />
-
-                    <Button
-                      className="btn-imprimir"
-                      icon="print"
-                      color={Colors.Azul}
-                      border
-                      onClick={() => {}}
-                      disabled
-                      id="btn-imprimir-relatorio-semestral"
-                    />
+                    <Loader loading={gerandoRelatorio}>
+                      <Button
+                        className="btn-imprimir"
+                        icon="print"
+                        color={Colors.Azul}
+                        border
+                        onClick={gerar}
+                        disabled={!podeImprimir}
+                        id="btn-imprimir-relatorio-semestral"
+                      />
+                    </Loader>
                   </div>
                   <div className="col-md-12 mb-2">
                     <TabelaRetratilRelatorioSemestral
@@ -224,7 +254,9 @@ const RelatorioSemestral = () => {
                       permiteOnChangeAluno={permiteOnChangeAluno}
                     >
                       <>
-                        <ObjectCardRelatorioSemestral />
+                        <ObjectCardRelatorioSemestral
+                          semestre={semestreSelecionado}
+                        />
                         <DadosRelatorioSemestral
                           codigoTurma={turmaSelecionada.turma}
                           modalidade={turmaSelecionada.modalidade}

@@ -134,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
         {
-            var query = new StringBuilder(@"select *
+            var query = new StringBuilder(@"select fa.*
                         from frequencia_aluno fa
                         inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
                         where

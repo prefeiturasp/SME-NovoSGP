@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.Background.Core;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -55,10 +56,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
-        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_C, Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turmaId, string disciplinaId, [FromServices] IConsultasAula consultasAula)
         {
             return Ok(await consultasAula.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(anoLetivo, turmaId, disciplinaId));
+        }
+
+        [HttpGet("frequencias/aulas/datas/turmas/{turmaCodigo}/componente/{componenteCurricularCodigo}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [Permissao(Permissao.PDA_C, Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDatasDeAulasPorCalendarioTurmaEComponenteCurricular(string turmaCodigo, string componenteCurricularCodigo, [FromServices] IObterDatasAulasPorTurmaEComponenteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new ConsultaDatasAulasDto(turmaCodigo, componenteCurricularCodigo)));
         }
 
         [HttpPost("frequencias")]

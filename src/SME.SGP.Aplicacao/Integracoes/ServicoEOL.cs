@@ -1010,5 +1010,21 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             throw new NegocioException(mensagem);
         }
+
+        public async Task<bool> PodePersistirTurmaNoPeriodo(string professorRf, string codigoTurma, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var dataInicioString = dataInicio.ToString("s");
+            var dataFimString = dataFim.ToString("s");
+
+            var resposta = await httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/componentes/{componenteCurricularId}/atribuicao/periodo/inicio/{dataInicioString}/fim/{dataFimString}", new StringContent(""));
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+            return JsonConvert.DeserializeObject<bool>(json);
+        }
     }
 }
