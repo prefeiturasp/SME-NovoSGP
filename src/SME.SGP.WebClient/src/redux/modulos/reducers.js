@@ -18,6 +18,7 @@ import relatorioSemestralPAP from './relatorioSemestralPAP/reducers';
 import sistema from './sistema/reducers';
 import localizadorEstudante from './localizadorEstudante/reducers';
 import observacoesChat from './observacoesChat/reducers';
+import cartaIntencoes from './cartaIntencoes/reducers';
 
 const reducers = combineReducers({
   navegacao,
@@ -38,6 +39,7 @@ const reducers = combineReducers({
   sistema,
   localizadorEstudante,
   observacoesChat,
+  cartaIntencoes,
 });
 
 const rootReducer = (state, action) => {

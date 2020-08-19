@@ -60,6 +60,8 @@ import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 import FaltasFrequencia from '~/paginas/Relatorios/Frequencia/faltasFrequencia';
 import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
+import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
+import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
 
 const rotas = new Map();
 
@@ -841,8 +843,8 @@ rotas.set(RotasDto.DIARIO_BORDO, {
   component: DiarioBordo,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.DIARIO_BORDO,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DIARIO_BORDO,
 });
 
 rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
@@ -854,6 +856,28 @@ rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_PENDENCIAS,
+});
+
+rotas.set(RotasDto.RELATORIO_PARECER_CONCLUSIVO, {
+  breadcrumbName: 'Parecer conclusivo',
+  menu: ['Relatórios', 'Fechamento'],
+  parent: '/',
+  component: RelatorioParecerConclusivo,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_PARECER_CONCLUSIVO,
+});
+
+rotas.set(RotasDto.CARTA_INTENCOES, {
+  breadcrumbName: 'Carta de intenções',
+  menu: ['Planejamento '],
+  parent: '/',
+  component: CartaIntencoes,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.CARTA_INTENCOES,
 });
 
 const rotasArray = [];

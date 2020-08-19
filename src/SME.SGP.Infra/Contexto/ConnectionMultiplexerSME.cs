@@ -12,7 +12,8 @@ namespace SME.SGP.Infra.Contexto
         {
             try
             {
-                this.connectionMultiplexer = ConnectionMultiplexer.Connect(host);
+                this.connectionMultiplexer = ConnectionMultiplexer
+                    .Connect(string.Concat(host, $",ConnectTimeout={TimeSpan.FromSeconds(1).TotalMilliseconds}"));
             }
             catch (RedisConnectionException rcex)
             {

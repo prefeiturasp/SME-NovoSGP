@@ -29,7 +29,7 @@ const ObservacoesChat = props => {
   };
 
   return (
-    <div className="col-sm-12 mb-2 mt-2">
+    <div className="col-sm-12 mb-2 mt-4">
       <Label text="Observações" />
       <ContainerObservacoesChat>
         <div style={{ margin: '15px' }}>

@@ -35,6 +35,11 @@ class ServicoRelatorioSemestral {
     const url = `${urlPadrao}/turmas/${turmaCodigo}/semestres/${semestreConsulta}/alunos/${alunoCodigo}`;
     return api.get(url);
   };
+
+  gerar = params => {
+    const url = `v1/relatorios/recuperacao-paralela`;
+    return api.post(url, params);
+  };
 }
 
 export default new ServicoRelatorioSemestral();
