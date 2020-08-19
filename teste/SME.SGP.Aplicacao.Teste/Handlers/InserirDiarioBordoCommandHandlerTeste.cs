@@ -8,24 +8,31 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation.TestHelper;
 using Xunit;
+using MediatR;
+using System.Threading;
 
 namespace SME.SGP.Aplicacao.Teste.Handlers
 {
     public class InserirDiarioBordoCommandHandlerTeste
     {
+        private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioDiarioBordo> repositorioDiarioBordo;
         private readonly InserirDiarioBordoCommandHandler inserirDiarioBordoCommandHandler;
 
         public InserirDiarioBordoCommandHandlerTeste()
         {
+            mediator = new Mock<IMediator>();
             repositorioDiarioBordo = new Mock<IRepositorioDiarioBordo>();
-            inserirDiarioBordoCommandHandler = new InserirDiarioBordoCommandHandler(repositorioDiarioBordo.Object);
+            inserirDiarioBordoCommandHandler = new InserirDiarioBordoCommandHandler(mediator.Object, repositorioDiarioBordo.Object);
         }
 
         [Fact]
         public async Task Deve_Inserir_Diario_De_Bordo()
         {
             // Arrange
+            mediator.Setup(a => a.Send(It.IsAny<AulaExisteQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
             repositorioDiarioBordo.Setup(a => a.SalvarAsync(It.IsAny<DiarioBordo>()))
                 .ReturnsAsync(1);
 
@@ -34,7 +41,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
 
             // Assert
             repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<DiarioBordo>()), Times.Once);
-            Assert.True(auditoriaDto.Id == 1);
+            Assert.True(auditoriaDto.Id > 0);
         }
 
         [Fact]

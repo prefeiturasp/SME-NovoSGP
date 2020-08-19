@@ -26,7 +26,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    qt_duracao_aula,
 	                    tipo_turno,
 	                    data_atualizacao,
-                        ensino_especial
+                        ensino_especial,
+                        etapa_eja
                     from
 	                    public.turma
                     where turma_id in (#ids);";
@@ -43,7 +44,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    qt_duracao_aula = @qtDuracaoAula,
 	                    tipo_turno = @tipoTurno,
 	                    data_atualizacao = @dataAtualizacao,
-                        ensino_especial = @ensinoEspecial
+                        ensino_especial = @ensinoEspecial,
+                        etapa_eja = @etapaEja
                     where
 	                    id = @id;";
 
@@ -77,6 +79,11 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<Turma> ObterPorCodigo(string turmaCodigo)
         {
             return await contexto.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+        }
+
+        public async Task<long> ObterTurmaIdPorCodigo(string turmaCodigo)
+        {
+            return await contexto.QueryFirstOrDefaultAsync<long>("select id from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
         public async Task<Turma> ObterPorId(long id)
@@ -209,7 +216,8 @@ namespace SME.SGP.Dados.Repositorios
                                         c.Semestre != l.Semestre ||
                                         c.QuantidadeDuracaoAula != l.QuantidadeDuracaoAula ||
                                         c.TipoTurno != l.TipoTurno ||
-                                        c.EnsinoEspecial != l.EnsinoEspecial)
+                                        c.EnsinoEspecial != l.EnsinoEspecial ||
+                                        c.EtapaEJA != l.EtapaEJA)
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -224,7 +232,8 @@ namespace SME.SGP.Dados.Repositorios
                                       TipoTurno = c.TipoTurno,
                                       Ue = l.Ue,
                                       UeId = l.UeId,
-                                      EnsinoEspecial = c.EnsinoEspecial
+                                      EnsinoEspecial = c.EnsinoEspecial,
+                                      EtapaEJA = c.EtapaEJA
                                   };
 
                 foreach (var item in modificados)
@@ -240,7 +249,8 @@ namespace SME.SGP.Dados.Repositorios
                         tipoTurno = item.TipoTurno,
                         dataAtualizacao = item.DataAtualizacao,
                         id = item.Id,
-                        ensinoEspecial = item.EnsinoEspecial
+                        ensinoEspecial = item.EnsinoEspecial,
+                        etapaEja = item.EtapaEJA
                     });
 
                     resultado.Add(item);
