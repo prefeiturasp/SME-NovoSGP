@@ -55,7 +55,10 @@ namespace SME.SGP.Api.Controllers
         //[Permissao(Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPorDevolutiva([FromServices] IObterDiarioBordoUseCase useCase, long devolutivaId, int numeroPagina, int numeroRegistros)
         {
-            var text = @"
+            var text = "";
+            if (numeroPagina == 1)
+            {
+            text = @"
                         {
                         totalPaginas: 5,
                         totalRegistros: 20,
@@ -63,12 +66,12 @@ namespace SME.SGP.Api.Controllers
                           {
                             cj: false,
                             data: ""2020-08-05T00:00:00.000000"",
-                            planejamento: ""planejamento do diario de bordo"",
+                            planejamento: ""planejamento do diario de bordo PAGINA 11111"",
                           },
                           {
                             cj: false,
                             data: ""2020-08-06T00:00:00.000000"",
-                            planejamento: ""planejamento do diario de bordo"",
+                            planejamento: ""planejamento do diario de bordo PAGINA 11111"",
                           },
                           {
                             cj: true,
@@ -76,6 +79,32 @@ namespace SME.SGP.Api.Controllers
                             planejamento: ""planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordo"",
                           },
                         ]}";
+            }
+
+            if ( numeroPagina == 2)
+            {
+                text = @"
+                        {
+                        totalPaginas: 5,
+                        totalRegistros: 20,
+                        itens : [
+                          {
+                            cj: false,
+                            data: ""2020-03-05T00:00:00.000000"",
+                            planejamento: ""planejamento do diario de bordo PAGINA 222222"",
+                          },
+                          {
+                            cj: false,
+                            data: ""2020-03-06T00:00:00.000000"",
+                            planejamento: ""planejamento do diario de bordo PAGINA 222222"",
+                          },
+                          {
+                            cj: true,
+                            data: ""2020-03-07T00:00:00.000000"",
+                            planejamento: ""planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordo planejamento do diario de bordo planejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordoplanejamento do diario de bordo"",
+                          },
+                        ]}";
+            }
 
             var json = JObject.Parse(text);
 

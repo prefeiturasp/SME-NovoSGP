@@ -1,23 +1,28 @@
 import * as moment from 'moment';
-import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import Editor from '~/componentes/editor/editor';
 import {
+  EditorPlanejamento,
   ListaPlanejamentos,
   Tabela,
-  EditorPlanejamento,
 } from './cardPlanejamento.css';
 
-const CardPlanejamento = props => {
-  const { dados } = props;
+const CardPlanejamento = React.memo(() => {
+  const dadosPlanejamentos = useSelector(
+    store => store.devolutivas.dadosPlanejamentos
+  );
 
   return (
-    <ListaPlanejamentos className="row">
-      {dados && dados.length
-        ? dados.map(item => {
+    <div style={{ border: '1px solid #DADADA' }}>
+      {dadosPlanejamentos &&
+      dadosPlanejamentos.itens &&
+      dadosPlanejamentos.itens.length ? (
+        <ListaPlanejamentos className="row mt-3 p-3">
+          {dadosPlanejamentos.itens.map(item => {
             return (
-              <div className="col-md-6">
+              <div className="col-md-6" key={shortid.generate()}>
                 <Tabela
                   className="table-responsive mb-3"
                   key={`planejamento-diario-bordo-${shortid.generate()}`}
@@ -29,7 +34,7 @@ const CardPlanejamento = props => {
                           <span className="titulo">Planejamento</span> (somente
                           leitura)
                         </th>
-                        {item.cj ? <th className="cj">CJ</th> : ''}
+                        {item.cj ? <th className="cj">CJ</th> : null}
                         <th className="data">
                           {item.data ? moment(item.data).format('L') : ''}
                         </th>
@@ -53,18 +58,13 @@ const CardPlanejamento = props => {
                 </Tabela>
               </div>
             );
-          })
-        : 'Sem dados'}
-    </ListaPlanejamentos>
+          })}
+        </ListaPlanejamentos>
+      ) : (
+        <div className="text-center p-2"> Sem dados</div>
+      )}
+    </div>
   );
-};
-
-CardPlanejamento.propTypes = {
-  dados: PropTypes.oneOfType([PropTypes.array]),
-};
-
-CardPlanejamento.defaultProps = {
-  dados: [],
-};
+});
 
 export default CardPlanejamento;
