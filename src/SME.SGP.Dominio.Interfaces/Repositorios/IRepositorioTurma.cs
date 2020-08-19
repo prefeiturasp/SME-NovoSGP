@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -13,7 +14,6 @@ namespace SME.SGP.Dominio.Interfaces
         Turma ObterTurmaComUeEDrePorCodigo(string turmaCodigo);
 
         Turma ObterTurmaComUeEDrePorId(long turmaId);
-
-        IEnumerable<Turma> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
+        Task<IEnumerable<Turma>> SincronizarAsync(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
     }
 }
