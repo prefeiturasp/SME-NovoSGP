@@ -213,7 +213,9 @@ const RelatorioNotasConceitosFinais = () => {
       });
 
       if (respota && respota.data && respota.data.length) {
-        setListaAnosEscolares(respota.data);
+        setListaAnosEscolares(
+          [{ descricao: 'Todos', valor: '-99' }].concat(respota.data)
+        );
 
         if (respota.data && respota.data.length && respota.data.length === 1) {
           setAnosEscolares(respota.data[0].valor);
