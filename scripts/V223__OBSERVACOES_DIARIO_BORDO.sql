@@ -28,4 +28,4 @@ select
 		'FOREIGN KEY (usuario_id) REFERENCES usuario (id)'
 	);
 
-CREATE INDEX IF NOT EXISTS diario_bordo_observacoes_idx ON public.diario_bordo USING btree (diario_bordo_id);
+CREATE INDEX IF NOT EXISTS diario_bordo_observacoes_idx ON public.diario_bordo_observacao USING btree (diario_bordo_id);
