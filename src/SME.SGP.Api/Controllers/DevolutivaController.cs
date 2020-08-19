@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -52,32 +53,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(json);
         }
 
-
-
         [HttpGet("{devolutivaId}")]
-        //[ProducesResponseType(typeof(DiarioBordoDto), 200)]
+        [ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPorId(long devolutivaId)
+        [Permissao(Permissao.DE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPorId(long devolutivaId, [FromServices] IObterDevolutivaPorIdUseCase useCase)
         {
-            var text = @"{
-                            id: 1,
-                            devolutiva: ""<p>devolutiva mockada</p>"",
-                            diariosIds: [1, 2, 3, 4],
-                            auditoria: {
-                                id: 1,
-                                alteradoEm: ""2020-08-05T00:00:00.000000"",
-                                alteradoPor: ""DIONE LEMOS DE SOUZA OLIVEIRA"",
-                                alteradoRF: ""5793785"",
-                                criadoEm: ""2020-08-05T18:20:34.13358"",
-                                criadoPor: ""DIONE LEMOS DE SOUZA OLIVEIRA"",
-                                criadoRF: ""5793785""
-                            }
-                        }";
-
-            var json = JObject.Parse(text);
-
-            return Ok(json);
+            return Ok(await useCase.Executar(devolutivaId));
         }
 
         [HttpPost]
@@ -111,7 +93,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(DateTime), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        [Permissao(Permissao.DE_C, Policy = "Bearer")]
         public async Task<IActionResult> SugestaoDataInicio(string turmaCodigo, long componenteCurricularId, [FromServices] IObterUltimaDataDevolutivaPorTurmaComponenteUseCase useCase)
         {
             var data = await useCase.Executar(new FiltroTurmaComponenteDto(turmaCodigo, componenteCurricularId));
