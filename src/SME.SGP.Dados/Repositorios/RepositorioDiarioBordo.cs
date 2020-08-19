@@ -73,5 +73,11 @@ namespace SME.SGP.Dados.Repositorios
             };
         }
 
+        public async Task<IEnumerable<long>> ObterIdsPorDevolutiva(long devolutivaId)
+        {
+            var query = "select id from diario_bordo where devolutiva_id = @devolutivaId";
+
+            return await database.Conexao.QueryAsync<long>(query, new { devolutivaId });
+        }
     }
 }
