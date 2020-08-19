@@ -23,11 +23,23 @@ namespace SME.SGP.Integracao.Teste
         public async void Deve_Obter_Sugestao_DataInicio()
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();
-            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { })); // TODO Ajustar quando permissionamento estiver ok
+            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DE_C }));
 
             string turmaCodigo = "1";
             long componenteCurricularId = 1105;
             HttpResponseMessage result = await fixture._clientApi.GetAsync($"api/v1/devolutivas/turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularId}/sugestao");
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(result));
+        }
+
+        [Fact]
+        public async void Deve_Obter_Devolutiva_Por_Id()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DE_C }));
+
+            long devolutivaId = 1;
+            HttpResponseMessage result = await fixture._clientApi.GetAsync($"api/v1/devolutivas/{devolutivaId}");
 
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));
         }
