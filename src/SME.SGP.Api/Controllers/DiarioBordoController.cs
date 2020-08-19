@@ -55,5 +55,23 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await adicionarObservacaoDiarioBordoUseCase.Executar(dto.Observacao, diarioBordoId));
         }
+
+        [HttpPut("observacoes/{observacaoId}")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> AdicionarObservacao(long observacaoId, [FromBody] ObservacaoDiarioBordoDto dto, [FromServices] IAlterarObservacaoDiarioBordoUseCase alterarObservacaoDiarioBordoUseCase)
+        {
+            return Ok(await alterarObservacaoDiarioBordoUseCase.Executar(dto.Observacao, observacaoId));
+        }
+
+        [HttpDelete("observacoes/{observacaoId}")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirObservacao(long observacaoId, [FromServices] IExcluirObservacaoDiarioBordoUseCase excluirObservacaoDiarioBordoUseCase)
+        {
+            return Ok(await excluirObservacaoDiarioBordoUseCase.Executar(observacaoId));
+        }
     }
 }

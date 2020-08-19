@@ -4,7 +4,6 @@ namespace SME.SGP.Infra
 {
     public class ObservacaoDiarioBordoDto
     {
-        public long ObservacaoId { get; set; }
         public string Observacao { get; set; }
     }
 
