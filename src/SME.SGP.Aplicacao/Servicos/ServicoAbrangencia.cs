@@ -320,9 +320,9 @@ namespace SME.SGP.Aplicacao.Servicos
                  EtapaEJA = z.EtapaEJA
              })));
 
-            dres = repositorioDre.Sincronizar(dres);
-            ues = repositorioUe.Sincronizar(ues, dres);
-            await repositorioTurma.Sincronizar(turmas, ues);
+            dres = await repositorioDre.SincronizarAsync(dres);
+            ues = await repositorioUe.SincronizarAsync(ues, dres);
+            await repositorioTurma.SincronizarAsync(turmas, ues);
         }
 
         private void SincronizarTiposEscola(IEnumerable<TipoEscolaRetornoDto> tiposEscolasDto)
