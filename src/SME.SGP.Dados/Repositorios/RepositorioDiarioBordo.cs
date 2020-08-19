@@ -38,5 +38,40 @@ namespace SME.SGP.Dados.Repositorios
             var command = "update diario_bordo set excluido = true where not excluido and aula_id = @aulaId";
             await database.ExecuteAsync(command, new { aulaId });
         }
+
+        public async Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> ObterDiariosBordoPorPeriodoPaginado(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao)
+        {
+            var condicao = @"from diario_bordo db 
+                         inner join aula a on a.id = db.aula_id
+                         where a.turma_id = @turmaCodigo
+                           and a.disciplina_id = @componenteCurricularCodigo
+                           and a.data_aula between @periodoInicio and @periodoFim ";
+
+            var query = $"select count(0) {condicao}";
+
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
+                new { turmaCodigo, componenteCurricularCodigo = componenteCurricularCodigo.ToString(), periodoInicio, periodoFim });
+
+            var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
+
+            query = $"select db.planejamento, a.aula_cj as AulaCj, a.data_aula as Data {condicao} {offSet}";
+
+            return new PaginacaoResultadoDto<DiarioBordoDevolutivaDto>()
+            {
+                Items = await database.Conexao.QueryAsync<DiarioBordoDevolutivaDto>(query,
+                                                    new
+                                                    {
+                                                        turmaCodigo,
+                                                        componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
+                                                        periodoInicio,
+                                                        periodoFim,
+                                                        qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
+                                                        qtdeRegistros = paginacao.QuantidadeRegistros
+                                                    }),
+                TotalRegistros = totalRegistrosDaQuery,
+                TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
+            };
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,5 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<DiarioBordo> ObterPorAulaId(long aulaId);
         Task<bool> ExisteDiarioParaAula(long aulaId);
         Task ExcluirDiarioBordoDaAula(long aulaId);
+        Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> ObterDiariosBordoPorPeriodoPaginado(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao);
     }
 }
