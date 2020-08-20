@@ -68,7 +68,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterConceitos([FromQuery] DateTime data, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
         {
-            var listaConceitos = consultasNotasConceitos.ObterConceitos(data);
+            var listaConceitos = await consultasNotasConceitos.ObterConceitos(data);
 
             if (listaConceitos == null || !listaConceitos.Any())
                 return NoContent();

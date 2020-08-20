@@ -130,6 +130,10 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 new PrioridadePerfil() { CodigoPerfil = PERFIL_CJ }
             });
 
+            repositorioPeriodoEscolar
+                .Setup(pe => pe.ObterPorTipoCalendarioData(It.IsAny<long>(), It.IsAny<DateTime>()))
+                .Returns(new PeriodoEscolar());
+
             usuario.DefinirPerfilAtual(PERFIL_CJ);
 
             // ACT

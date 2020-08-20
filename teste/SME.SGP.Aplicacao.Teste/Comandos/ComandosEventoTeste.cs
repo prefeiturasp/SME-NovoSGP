@@ -1,5 +1,8 @@
 ﻿using Moq;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Comandos
@@ -20,6 +23,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
             servicoEvento = new Mock<IServicoEvento>();
             servicoWorkflowAprovacao = new Mock<IServicoWorkflowAprovacao>();
+            servicoUsuario = new Mock<IServicoUsuario>();
+            servicoAbrangencia = new Mock<IServicoAbrangencia>();
             comandosEvento = new ComandosEvento(repositorioEvento.Object, repositorioEventoTipo.Object, servicoEvento.Object, servicoWorkflowAprovacao.Object, servicoUsuario.Object, servicoAbrangencia.Object);
         }
 
@@ -27,8 +32,11 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         public void Deve_Excluir_Eventos()
         {
             //ARRANGE
-            var evento1 = new Dominio.Evento() { Id = 1 };
+            var evento1 = new Evento() { Id = 1 };
             repositorioEvento.Setup(a => a.ObterPorId(1)).Returns(evento1);
+            var usuario = new Usuario();
+            usuario.DefinirPerfis(new List<PrioridadePerfil>() { new PrioridadePerfil() { Tipo = TipoPerfil.SME } });
+            servicoUsuario.Setup(u => u.ObterUsuarioLogado()).Returns(Task.FromResult(usuario));
 
             //ACT
             comandosEvento.Excluir(new long[] { 1 });

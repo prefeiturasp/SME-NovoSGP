@@ -16,6 +16,6 @@ namespace SME.SGP.Aplicacao
         double ObterValorArredondado(long atividadeAvaliativaId, double nota);
         double ObterValorArredondado(DateTime data, double nota);
 
-        IEnumerable<ConceitoDto> ObterConceitos(DateTime data);
+        Task<IEnumerable<ConceitoDto>> ObterConceitos(DateTime data);
     }
 }

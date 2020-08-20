@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
             PeriodoFechamentoBimestre periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestreFechamento, fechamentoTurma.PeriodoEscolarId);
 
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
-            var mediaAprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            var mediaAprovacao = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
             return new ConselhoClasseAlunoResumoDto()
             {
@@ -63,7 +63,8 @@ namespace SME.SGP.Aplicacao
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
                 TipoNota = tipoNota,
-                Media = mediaAprovacao
+                Media = mediaAprovacao,
+                AnoLetivo = turma.AnoLetivo
             };
         }
 

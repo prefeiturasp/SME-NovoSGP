@@ -99,7 +99,7 @@ namespace SME.SGP.Dominio.Servicos
         }
         private async Task<bool> ValidarFrequenciaBaseNacionalAluno(string alunoCodigo, string turmaCodigo)
         {
-            var parametroFrequenciaBaseNacional = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional));
+            var parametroFrequenciaBaseNacional = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional));
             var componentesCurriculares = await servicoEOL.ObterDisciplinasPorCodigoTurma(turmaCodigo);
             // Filtra componentes da Base Nacional
             var componentesCurricularesBaseNacional = componentesCurriculares.Where(c => c.BaseNacional);
@@ -117,7 +117,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo);
 
-            var parametroFrequenciaGeral = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCritico));
+            var parametroFrequenciaGeral = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCritico));
             return !(frequenciaAluno < parametroFrequenciaGeral);
         }
         #endregion
@@ -137,7 +137,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private bool ValidarParecerPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
         {
-            var notaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            var notaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre).Result);
             foreach (var notaFechamentoAluno in notasFechamentoAluno)
                 if (notaFechamentoAluno.Nota < notaMedia)
                     return false;
@@ -147,7 +147,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private bool ValidarParecerPorConceito(IEnumerable<NotaConceitoBimestreComponenteDto> conceitosFechamentoAluno)
         {
-            var conceitosVigentes = repositorioConceito.ObterPorData(DateTime.Today);
+            var conceitosVigentes = repositorioConceito.ObterPorData(DateTime.Today).Result;
             foreach (var conceitoFechamentoAluno in conceitosFechamentoAluno)
             {
                 var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoFechamentoAluno.ConceitoId);
@@ -174,7 +174,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private bool ValidarParecerConselhoPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasse)
         {
-            var notaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            var notaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre).Result);
             foreach (var notaConcelhoClasse in notasConselhoClasse)
                 if (notaConcelhoClasse.Nota < notaMedia)
                     return false;
@@ -184,7 +184,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private bool ValidarParecerConselhoPorConceito(IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasse)
         {
-            var conceitosVigentes = repositorioConceito.ObterPorData(DateTime.Today);
+            var conceitosVigentes = repositorioConceito.ObterPorData(DateTime.Today).Result;
             foreach (var conceitoConselhoClasseAluno in notasConselhoClasse)
             {
                 var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoConselhoClasseAluno.ConceitoId);

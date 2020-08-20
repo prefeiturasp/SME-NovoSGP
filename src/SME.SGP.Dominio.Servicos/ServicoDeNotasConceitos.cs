@@ -153,12 +153,12 @@ namespace SME.SGP.Dominio
             var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
 
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
-            var percentualAlunosInsuficientes = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
+            var percentualAlunosInsuficientes = double.Parse (await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                var valoresConceito = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
+                var valoresConceito = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
                 var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, dataAtual.Year != atividadeAvaliativa.DataAvaliacao.Year);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
@@ -326,7 +326,7 @@ namespace SME.SGP.Dominio
                 }
                 else
                 {
-                    var conceitos = repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
+                    var conceitos = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
                     var conceito = conceitos.FirstOrDefault(c => c.Id.Equals(nota.ConceitoId));
 
                     if (conceitos == null)

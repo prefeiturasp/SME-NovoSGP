@@ -97,8 +97,8 @@ const DadosConselhoClasse = props => {
         usuario.turmaSelecionada.consideraHistorico && bimestreConsulta === 0
           ? '1'
           : ehFinal
-          ? '0'
-          : bimestreConsulta,
+            ? '0'
+            : bimestreConsulta,
         codigoEOL,
         ehFinal,
         usuario.turmaSelecionada.consideraHistorico
@@ -118,6 +118,7 @@ const DadosConselhoClasse = props => {
           periodoFechamentoFim,
           tipoNota,
           media,
+          anoLetivo
         } = retorno.data;
 
         const novoRegistro = !conselhoClasseId;
@@ -161,7 +162,7 @@ const DadosConselhoClasse = props => {
             periodoFechamentoFim
           );
         } else {
-          ServicoConselhoClasse.carregarListaTiposConceito();
+          ServicoConselhoClasse.carregarListaTiposConceito(anoLetivo + '/12/31');
         }
 
         if (ehFinal) {
@@ -221,8 +222,8 @@ const DadosConselhoClasse = props => {
     dispatch(
       setConselhoClasseEmEdicao(
         !carregando &&
-          !semDados &&
-          !Object.entries(dadosPrincipaisConselhoClasse).length
+        !semDados &&
+        !Object.entries(dadosPrincipaisConselhoClasse).length
       )
     );
   }, [dispatch, carregando, semDados, dadosPrincipaisConselhoClasse]);
@@ -277,22 +278,22 @@ const DadosConselhoClasse = props => {
               {bimestreAtual.valor === '3' ? montarDados() : ''}
             </TabPane>
           ) : (
-            ''
-          )}
+              ''
+            )}
           {modalidade.toString() !== modalidadeDto.EJA.toString() ? (
             <TabPane tab="4º Bimestre" key="4">
               {bimestreAtual.valor === '4' ? montarDados() : ''}
             </TabPane>
           ) : (
-            ''
-          )}
+              ''
+            )}
           <TabPane tab="Final" key="final">
             {bimestreAtual.valor === 'final' ? montarDados() : ''}
           </TabPane>
         </ContainerTabsCard>
       ) : (
-        ''
-      )}
+          ''
+        )}
     </>
   );
 };
