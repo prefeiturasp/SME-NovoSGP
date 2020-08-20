@@ -21,7 +21,7 @@ export const ContainerObservacoesChat = styled.div`
   }
 `;
 
-export const CampoObservacao = styled(TextArea)`
+export const ContainerCampoObservacao = styled(TextArea)`
   font-family: Roboto;
   font-size: 14px !important;
   font-weight: normal !important;
