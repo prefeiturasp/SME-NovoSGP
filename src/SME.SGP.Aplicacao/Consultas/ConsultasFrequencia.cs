@@ -75,9 +75,9 @@ namespace SME.SGP.Aplicacao
             if (_mediaFrequencia == 0)
             {
                 if (disciplina.Regencia || !disciplina.LancaNota)
-                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
+                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse).Result);
                 else
-                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2).Result);
             }
 
             return _mediaFrequencia;
@@ -100,8 +100,8 @@ namespace SME.SGP.Aplicacao
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 throw new NegocioException("Disciplina informada não localizada no EOL.");
 
-            var quantidadeMaximaCompensacoes = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia));
-            var percentualFrequenciaAlerta = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+            var quantidadeMaximaCompensacoes = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia));
+            var percentualFrequenciaAlerta = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
 
             foreach (var alunoEOL in alunosEOL)
             {
@@ -152,14 +152,14 @@ namespace SME.SGP.Aplicacao
 
             registroFrequenciaDto.TemPeriodoAberto = await consultasTurma.TurmaEmPeriodoAberto(aula.TurmaId, DateTime.Today, bimestre.Bimestre);
 
-            var parametroPercentualCritico = repositorioParametrosSistema.ObterValorPorTipoEAno(
+            var parametroPercentualCritico = await repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.PercentualFrequenciaCritico,
                                                     bimestre.PeriodoInicio.Year);
             if (parametroPercentualCritico == null)
                 throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
 
             var percentualCritico = int.Parse(parametroPercentualCritico);
-            var percentualAlerta = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
+            var percentualAlerta = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.PercentualFrequenciaAlerta,
                                                     bimestre.PeriodoInicio.Year));
 
