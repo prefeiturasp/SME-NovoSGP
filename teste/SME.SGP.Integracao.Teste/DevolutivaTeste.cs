@@ -42,7 +42,8 @@ namespace SME.SGP.Integracao.Teste
             InserirDevolutivaDto DevolutivaDto = new InserirDevolutivaDto()
             {
                 CodigoComponenteCurricular = 1,
-                DiariosBordoIds = new List<long> { 1, 2, 3, 4},
+                PeriodoInicio = DateTime.Today.AddDays(-15),
+                PeriodoFim = DateTime.Today.AddDays(15),
                 Descricao = "Teste de Inclusão de Devolutivas... Teste de Inclusão de Devolutivas... Teste de Inclusão de Devolutivas... Teste de Inclusão de Devolutivas... Teste de Inclusão de Devolutivas... "
             };
 
