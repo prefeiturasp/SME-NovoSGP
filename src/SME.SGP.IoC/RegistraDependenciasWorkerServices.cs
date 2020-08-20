@@ -358,6 +358,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterMotivosAusenciaUseCase, ObterMotivosAusenciaUseCase>();
 
             services.TryAddScopedWorkerService<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
+            services.TryAddScopedWorkerService<IAlterarDevolutivaUseCase, AlterarDevolutivaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

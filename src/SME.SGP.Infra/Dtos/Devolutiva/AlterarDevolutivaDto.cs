@@ -5,9 +5,13 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class InserirDevolutivaDto
+    public class AlterarDevolutivaDto
     {
+        public long Id { get; set; }
+
         public long CodigoComponenteCurricular { get; set; }
+
+        public List<long> DiariosBordoIds { get; set; }
 
         public DateTime PeriodoInicio { get; set; }
 
@@ -16,10 +20,14 @@ namespace SME.SGP.Infra
         public string Descricao { get; set; }
     }
 
-    public class InserirDevolutivaDtoValidator: AbstractValidator<InserirDevolutivaDto>
+    public class AlterarDevolutivaDtoValidator : AbstractValidator<AlterarDevolutivaDto>
     {
-        public InserirDevolutivaDtoValidator()
+        public AlterarDevolutivaDtoValidator()
         {
+            RuleFor(a => a.Id)
+                   .NotEmpty()
+                   .WithMessage("O componente curricular deve ser informado!");
+
             RuleFor(a => a.CodigoComponenteCurricular)
                    .NotEmpty()
                    .WithMessage("O componente curricular deve ser informado!");

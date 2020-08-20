@@ -387,6 +387,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterMotivosAusenciaUseCase, ObterMotivosAusenciaUseCase> ();
 
             services.TryAddScoped<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
+            services.TryAddScoped<IAlterarDevolutivaUseCase, AlterarDevolutivaUseCase>();
         }
     }
 }

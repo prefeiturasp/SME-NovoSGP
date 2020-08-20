@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                     if (quantidadeAulasRestantes < request.Quantidade)
                         return (false, "Quantidade de aulas superior ao limíte de aulas da grade.");
                     if (!gradeAulas.PodeEditar && (request.Quantidade != gradeAulas.QuantidadeAulasRestante))
-                        return (false, "Quantidade de aulas não pode ser diferente do valor da grade curricular."); ;
+                        return (false, "Quantidade de aulas não pode ser diferente do valor da grade curricular.");
                 }
             }
 
