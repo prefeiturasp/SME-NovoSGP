@@ -85,8 +85,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             var dataReferencia = DateTime.Today.AddDays(-1);
 
-            var quantidadeDiasCP = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
-            var quantidadeDiasDiretor = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes));
+            var quantidadeDiasCP = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes).Result);
+            var quantidadeDiasDiretor = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes).Result);
 
            await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);
            await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, quantidadeDiasCP, quantidadeDiasDiretor);
@@ -198,7 +198,7 @@ namespace SME.SGP.Dominio.Servicos
             // Parametro do sistema de dias para notificacao
             var qtdDiasParametroString = repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.QuantidadeDiasNotificarAlteracaoChamadaEfetivada,
-                                                   anoAtual);
+                                                   anoAtual).Result;
 
             var parseado = int.TryParse(qtdDiasParametroString, out int qtdDiasParametro);
 
@@ -240,7 +240,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             // Notifica apenas no dia seguinte ao fim do bimestre
             var dataReferencia = DateTime.Today.AddDays(-1);
-            var percentualCritico = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCritico, dataReferencia.Year));
+            var percentualCritico = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCritico, dataReferencia.Year).Result);
 
             await NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, percentualCritico);
             await NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, percentualCritico, dataReferencia.Semestre());
@@ -722,7 +722,7 @@ namespace SME.SGP.Dominio.Servicos
             else
                 tipoParametroSistema = TipoParametroSistema.QuantidadeAulasNotificarSupervisorUE;
 
-            var qtdDias = repositorioParametrosSistema.ObterValorPorTipoEAno(tipoParametroSistema, DateTime.Now.Year);
+            var qtdDias = repositorioParametrosSistema.ObterValorPorTipoEAno(tipoParametroSistema, DateTime.Now.Year).Result;
 
             return !string.IsNullOrEmpty(qtdDias) ? int.Parse(qtdDias) : (int?)null;
         }
@@ -763,8 +763,8 @@ namespace SME.SGP.Dominio.Servicos
                             }
                         });
 
-                    var percentualFrequenciaFund = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
-                    var percentualFrequenciaRegencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
+                    var percentualFrequenciaFund = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2).Result);
+                    var percentualFrequenciaRegencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse).Result);
 
                     // Agrupa por DRE / UE / Turma / Disciplina
                     foreach (var turmasDRE in turmas.GroupBy(t => t.Ue.Dre))
