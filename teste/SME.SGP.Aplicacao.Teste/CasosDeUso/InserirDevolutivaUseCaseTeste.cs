@@ -33,14 +33,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             mediator.Setup(a => a.Send(It.IsAny<AtualizarDiarioBordoComDevolutivaCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterDatasDiariosPorIdsQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<DateTime> {
-                    DateTime.Today.AddDays(-15),
-                    DateTime.Today.AddDays(-5),
-                    DateTime.Today.AddDays(-10),
-                    DateTime.Today.AddDays(5),
-                    DateTime.Today.AddDays(10),
-                    DateTime.Today.AddDays(15)
+            mediator.Setup(a => a.Send(It.IsAny<ObterDatasEfetivasDiariosQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Tuple<long, DateTime>> {
+                    new Tuple<long, DateTime>(1, DateTime.Today.AddDays(-15)),
+                    new Tuple<long, DateTime>(2, DateTime.Today.AddDays(-5)),
+                    new Tuple<long, DateTime>(3, DateTime.Today.AddDays(-10)),
+                    new Tuple<long, DateTime>(4, DateTime.Today.AddDays(5)),
+                    new Tuple<long, DateTime>(5, DateTime.Today.AddDays(10)),
+                    new Tuple<long, DateTime>(6, DateTime.Today.AddDays(15))
                 });
 
             //Act
@@ -48,7 +48,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             {
                 CodigoComponenteCurricular = 1,
                 Descricao = "teste",
-                DiariosBordoIds = new List<long> { 1, 2, 3, 4 }
+                PeriodoInicio = DateTime.Today.AddDays(-15),
+                PeriodoFim = DateTime.Today.AddDays(15),
             }); ;
 
             //Asert

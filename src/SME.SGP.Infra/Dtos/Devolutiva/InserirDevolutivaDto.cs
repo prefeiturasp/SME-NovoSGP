@@ -10,6 +10,8 @@ namespace SME.SGP.Infra
         public long CodigoComponenteCurricular { get; set; }
 
         public List<long> DiariosBordoIds { get; set; }
+        public DateTime PeriodoInicio { get; set; }
+        public DateTime PeriodoFim { get; set; }
 
         public string Descricao { get; set; }
     }

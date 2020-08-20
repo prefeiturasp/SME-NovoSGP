@@ -73,6 +73,18 @@ namespace SME.SGP.Dados.Repositorios
             };
         }
 
+        public async Task<IEnumerable<Tuple<long, DateTime>>> ObterDatasPorIds(DateTime periodoInicio, DateTime periodoFim)
+        {
+            var query = "select id as item1, criado_em as item2 from diario_bordo db where criado_em between @dataInicio and @dataFim";
+
+            var dataInicio = periodoInicio.AddSeconds(-1);
+            var dataFim = periodoFim.AddSeconds(1);
+
+            var resultado = await database.Conexao.QueryAsync<Tuple<long, DateTime>>(query, new { dataInicio, dataFim });
+
+            return resultado;
+        }
+
         public async Task<IEnumerable<DateTime>> ObterDatasPorIds(IEnumerable<long> diariosBordoIds)
         {
             var query = "select criado_em from diario_bordo db where id in @diariosBordoIds";
