@@ -53,6 +53,28 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
 
+        [Fact]
+        public void Deve_Alterar_Devolutiva()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DE_I }));
+
+            AlterarDevolutivaDto DevolutivaDto = new AlterarDevolutivaDto()
+            {
+                Id = 1,
+                CodigoComponenteCurricular = 1,
+                PeriodoInicio = DateTime.Today.AddDays(-15),
+                PeriodoFim = DateTime.Today.AddDays(15),
+                Descricao = "Teste de Alteração de Devolutivas... Teste de Alteração de Devolutivas... Teste de Alteração de Devolutivas... Teste de Alteração de Devolutivas... Teste de Alteração de Devolutivas... "
+            };
+
+            StringContent jsonParaPost = new StringContent(TransformarEmJson(DevolutivaDto), UnicodeEncoding.UTF8, "application/json");
+            var postResult = fixture._clientApi.PutAsync("api/v1/devolutivas/", jsonParaPost).Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
+        }
+
         private string TransformarEmJson(object model)
         {
             return JsonConvert.SerializeObject(model);
