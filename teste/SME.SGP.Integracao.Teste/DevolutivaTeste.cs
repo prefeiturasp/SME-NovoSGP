@@ -80,7 +80,7 @@ namespace SME.SGP.Integracao.Teste
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();
             fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DE_A }));
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DE_E }));
 
             var postResult = fixture._clientApi.DeleteAsync("api/v1/devolutivas/1").Result;
 
