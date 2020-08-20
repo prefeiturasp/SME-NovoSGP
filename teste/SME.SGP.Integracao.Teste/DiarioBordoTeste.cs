@@ -118,6 +118,18 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
 
+        [Fact]
+        public void Deve_Listar_Observacao_Diario_De_Bordo()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_C }));
+
+            var postResult = fixture._clientApi.GetAsync("api/v1/diarios-bordo/1/observacoes").Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
+        }
+
         private string TransformarEmJson(object model)
         {
             return JsonConvert.SerializeObject(model);
