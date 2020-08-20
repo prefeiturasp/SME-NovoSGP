@@ -16,12 +16,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Executar(InserirDevolutivaDto param)
         {
-            IEnumerable<DateTime> datas = await mediator.Send(new ObterDatasDiariosPorIdsQuery(param.DiariosBordoIds));
+            IEnumerable<Tuple<long, DateTime>> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.PeriodoInicio, param.PeriodoFim));
 
-            DateTime periodoInicio = datas.Min();
-            DateTime periodoFim = datas.Max();
+            DateTime inicioEfetivo = dados.Select(x => x.Item2).Min();
+            DateTime fimEfetivo = dados.Select(x => x.Item2).Max();
 
-            AuditoriaDto auditoria = await mediator.Send(new InserirDevolutivaCommand(param.CodigoComponenteCurricular, param.DiariosBordoIds, periodoInicio, periodoFim, param.Descricao));
+            IEnumerable<long> idsDiarios = dados.Select(x => x.Item1);
+
+            AuditoriaDto auditoria = await mediator.Send(new InserirDevolutivaCommand(param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao));
 
             bool diariosAtualizados = await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(param.DiariosBordoIds, auditoria.Id));
 
