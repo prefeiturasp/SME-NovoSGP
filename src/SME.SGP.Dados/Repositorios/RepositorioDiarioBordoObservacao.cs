@@ -27,11 +27,6 @@ namespace SME.SGP.Dados.Repositorios
 						where
 							diario_bordo_id = @diarioBordoId
                         order by criado_em desc";
-            //return await database.Conexao.QueryAsync<ListarObservacaoDiarioBordoDto, AuditoriaDto, ListarObservacaoDiarioBordoDto>(sql, (observacao, auditoria) =>
-            //{
-            //    observacao.AdicionarAuditoria(auditoria);
-            //    return observacao;
-            //}, new { diarioBordoId, usuarioLogadoId }, splitOn:"proprietario");
 
             return await database.Conexao.QueryAsync<ListarObservacaoDiarioBordoDto>(sql, new { diarioBordoId, usuarioLogadoId });
         }
