@@ -58,7 +58,7 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete("{devolutivaId}")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.DE_A, Policy = "Bearer")]
+        [Permissao(Permissao.DE_E, Policy = "Bearer")]
         public async Task<IActionResult> Excluir(long devolutivaId, [FromServices] IExcluirDevolutivaUseCase useCase)
         {
             return Ok(await useCase.Executar(devolutivaId));
