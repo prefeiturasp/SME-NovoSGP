@@ -22,7 +22,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularCodigo}")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<DevolutivaResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        [Permissao(Permissao.DE_C, Policy = "Bearer")]
         public async Task<IActionResult> Listar(string turmaCodigo, long componenteCurricularCodigo, [FromQuery] DateTime? dataReferencia, [FromServices] IObterListaDevolutivasPorTurmaComponenteUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroListagemDevolutivaDto(turmaCodigo, componenteCurricularCodigo, dataReferencia)));
