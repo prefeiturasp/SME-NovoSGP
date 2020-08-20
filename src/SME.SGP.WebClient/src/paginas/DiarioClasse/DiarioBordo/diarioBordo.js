@@ -221,17 +221,27 @@ const DiarioBordo = () => {
     );
   };
 
-  const obterDadosObservacoes = useCallback(async () => {
-    dispatch(limparDadosObservacoesChat());
-    setCarregandoGeral(true);
-    const dados = await ServicoDiarioBordo.obterDadosObservacoes().catch(e => {
-      erros(e);
-      setCarregandoGeral(false);
-    });
+  const obterDadosObservacoes = useCallback(
+    async diarioBordoId => {
+      dispatch(limparDadosObservacoesChat());
+      setCarregandoGeral(true);
+      const retorno = await ServicoDiarioBordo.obterDadosObservacoes(
+        diarioBordoId
+      ).catch(e => {
+        erros(e);
+        setCarregandoGeral(false);
+      });
 
-    dispatch(setDadosObservacoesChat([...dados]));
-    setCarregandoGeral(false);
-  }, [dispatch]);
+      if (retorno && retorno.data) {
+        dispatch(setDadosObservacoesChat([...retorno.data]));
+      } else {
+        dispatch(setDadosObservacoesChat([]));
+      }
+
+      setCarregandoGeral(false);
+    },
+    [dispatch]
+  );
 
   const obterDiarioBordo = async aulaId => {
     setCarregandoGeral(true);
@@ -249,10 +259,9 @@ const DiarioBordo = () => {
       };
       setTemPeriodoAberto(retorno.data.temPeriodoAberto);
       setValoresIniciais(valInicial);
-      if (retorno.data.auditoria) {
+      if (retorno.data.auditoria && retorno.data.auditoria.id) {
         setAuditoria(retorno.data.auditoria);
-        // TODO Remover mock!
-        obterDadosObservacoes();
+        obterDadosObservacoes(retorno.data.auditoria.id);
       }
     }
   };
@@ -266,7 +275,7 @@ const DiarioBordo = () => {
     };
     const retorno = await ServicoDiarioBordo.salvarDiarioBordo(
       params,
-      auditoria.id
+      auditoria ? auditoria.id : 0
     ).catch(e => erros(e));
     setCarregandoGeral(false);
     let salvouComSucesso = false;
@@ -424,9 +433,10 @@ const DiarioBordo = () => {
     }
   };
 
-  const onClickSalvarObservacao = async obs => {
+  const salvarEditarObservacao = async obs => {
     setCarregandoGeral(true);
-    return ServicoDiarioBordo.editarEditarObservacao(obs)
+    const diarioBordoId = auditoria.id;
+    return ServicoDiarioBordo.salvarEditarObservacao(diarioBordoId, obs)
       .then(resultado => {
         if (resultado && resultado.status === 200) {
           const msg = `Observação ${
@@ -435,6 +445,7 @@ const DiarioBordo = () => {
           sucesso(msg);
         }
         setCarregandoGeral(false);
+        obterDadosObservacoes(diarioBordoId);
         return resultado;
       })
       .catch(e => {
@@ -444,19 +455,28 @@ const DiarioBordo = () => {
       });
   };
 
-  const onClickExcluirObservacao = async obs => {
-    setCarregandoGeral(true);
-    const resultado = await ServicoDiarioBordo.excluirObservacao(obs).catch(
-      e => {
-        erros(e);
-        setCarregandoGeral(false);
-      }
+  const excluirObservacao = async obs => {
+    const confirmado = await confirmar(
+      'Excluir',
+      '',
+      'Você tem certeza que deseja excluir este registro?'
     );
-    if (resultado && resultado.status === 200) {
-      const msg = `Observação excluída com sucesso.`;
-      sucesso(msg);
+
+    if (confirmado) {
+      setCarregandoGeral(true);
+      const resultado = await ServicoDiarioBordo.excluirObservacao(obs).catch(
+        e => {
+          erros(e);
+          setCarregandoGeral(false);
+        }
+      );
+      if (resultado && resultado.status === 200) {
+        sucesso('Registro excluído com sucesso');
+        const diarioBordoId = auditoria.id;
+        obterDadosObservacoes(diarioBordoId);
+      }
+      setCarregandoGeral(false);
     }
-    setCarregandoGeral(false);
   };
 
   return (
@@ -491,7 +511,7 @@ const DiarioBordo = () => {
       />
       <Cabecalho pagina="Diário de bordo" />
       <Card>
-        <div className="col-md-12">
+        <div className="col-md-12 mb-3">
           <Formik
             enableReinitialize
             onSubmit={(v, form) => {
@@ -623,7 +643,7 @@ const DiarioBordo = () => {
                           </PainelCollapse.Painel>
                         </PainelCollapse>
                       </div>
-                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                         <PainelCollapse>
                           <PainelCollapse.Painel temBorda header="Devolutivas">
                             <CampoTexto
@@ -648,6 +668,7 @@ const DiarioBordo = () => {
                       alteradoPor={auditoria.alteradoPor}
                       alteradoEm={auditoria.alteradoEm}
                       alteradoRf={auditoria.alteradoRf}
+                      ignorarMarginTop
                     />
                   ) : (
                     ''
@@ -659,9 +680,9 @@ const DiarioBordo = () => {
         </div>
         {auditoria && auditoria.id ? (
           <ObservacoesChat
-            onClickSalvarNovo={obs => onClickSalvarObservacao(obs)}
-            onClickSalvarEdicao={obs => onClickSalvarObservacao(obs)}
-            onClickExcluir={obs => onClickExcluirObservacao(obs)}
+            salvarObservacao={obs => salvarEditarObservacao(obs)}
+            editarObservacao={obs => salvarEditarObservacao(obs)}
+            excluirObservacao={obs => excluirObservacao(obs)}
           />
         ) : (
           ''
