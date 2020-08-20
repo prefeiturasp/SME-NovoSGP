@@ -135,5 +135,10 @@ namespace SME.SGP.Dados.Repositorios
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
             };
         }
+
+        public async Task ExcluirReferenciaDevolutiva(long devolutivaId)
+        {
+            await database.Conexao.ExecuteAsync("update diario_bordo set devolutiva_id = null where devolutiva_id = 1", new { devolutivaId });
+        }
     }
 }
