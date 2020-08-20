@@ -186,7 +186,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (!string.IsNullOrEmpty(fechamentoTurma.Justificativa))
             {
-                var percentualReprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
+                var percentualReprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes).Result);
                 var mensagem = new StringBuilder($"O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes<br>");
 
                 GerarPendencia(fechamentoTurma.Id, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem.ToString());
