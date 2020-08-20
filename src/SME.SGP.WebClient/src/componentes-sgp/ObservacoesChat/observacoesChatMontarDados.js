@@ -1,12 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import shortid from 'shortid';
 import Auditoria from '~/componentes/auditoria';
 import LinhaObservacaoProprietario from './linhaObservacaoProprietario';
 import { LinhaObservacao } from './observacoesChat.css';
 
 const ObservacoesChatMontarDados = props => {
-  const { onClickSalvarEdicao, onClickExcluir } = props;
+  const {
+    onClickSalvarEdicao,
+    onClickExcluir,
+    inserindoNovaObservacao,
+  } = props;
 
   const dadosObservacoes = useSelector(
     store => store.observacoesChat.dadosObservacoes
@@ -30,9 +35,9 @@ const ObservacoesChatMontarDados = props => {
 
   const montaLinhaObservacao = obs => {
     return (
-      <div className="mb-5">
+      <div className="mb-5" key={shortid.generate()}>
         <LinhaObservacao className="col-md-12">
-          <div>{obs.texto}</div>
+          <div>{obs.observacao}</div>
         </LinhaObservacao>
         {obs.auditoria ? <>{auditoria(obs)}</> : ''}
       </div>
@@ -42,14 +47,15 @@ const ObservacoesChatMontarDados = props => {
   const montarValores = (obs, index) => {
     if (obs && obs.proprietario) {
       return (
-        <div className="mb-5">
+        <div className="mb-5" key={shortid.generate()}>
           <LinhaObservacaoProprietario
-            observacao={obs}
+            dados={obs}
             onClickSalvarEdicao={onClickSalvarEdicao}
             onClickExcluir={onClickExcluir}
             index={index}
+            inserindoNovaObservacao={inserindoNovaObservacao}
           >
-            {obs.auditoria ? <>{auditoria(obs)}</> : ''}
+            {obs.auditoria ? auditoria(obs) : ''}
           </LinhaObservacaoProprietario>
         </div>
       );
@@ -61,7 +67,7 @@ const ObservacoesChatMontarDados = props => {
     <div className="col-md-12 mb-2 mt-2">
       {dadosObservacoes && dadosObservacoes.length
         ? dadosObservacoes.map((obs, index) => {
-            return <> {montarValores(obs, index)} </>;
+            return montarValores(obs, index);
           })
         : ''}
     </div>
@@ -71,11 +77,13 @@ const ObservacoesChatMontarDados = props => {
 ObservacoesChatMontarDados.propTypes = {
   onClickSalvarEdicao: PropTypes.func,
   onClickExcluir: PropTypes.func,
+  inserindoNovaObservacao: PropTypes.bool,
 };
 
 ObservacoesChatMontarDados.defaultProps = {
   onClickSalvarEdicao: () => {},
   onClickExcluir: () => {},
+  inserindoNovaObservacao: false,
 };
 
 export default ObservacoesChatMontarDados;

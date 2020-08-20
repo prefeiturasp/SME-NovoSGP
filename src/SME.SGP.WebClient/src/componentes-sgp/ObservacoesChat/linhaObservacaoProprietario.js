@@ -1,19 +1,18 @@
+import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { setObservacaoEmEdicao } from '~/redux/modulos/observacoesChat/actions';
-import { CampoObservacao, LinhaObservacao } from './observacoesChat.css';
+import { confirmar } from '~/servicos/alertas';
+import {
+  ContainerCampoObservacao,
+  LinhaObservacao,
+} from './observacoesChat.css';
 
 const LinhaObservacaoProprietario = props => {
-  const {
-    observacao,
-    onClickSalvarEdicao,
-    onClickExcluir,
-    index,
-    children,
-  } = props;
+  const { dados, onClickSalvarEdicao, onClickExcluir, index, children } = props;
 
   const dispatch = useDispatch();
 
@@ -21,9 +20,13 @@ const LinhaObservacaoProprietario = props => {
     store => store.observacoesChat.observacaoEmEdicao
   );
 
+  const novaObservacao = useSelector(
+    store => store.observacoesChat.novaObservacao
+  );
+
   const onClickEditar = () => {
     const obs = [...observacaoEmEdicao];
-    obs[index] = { ...observacao };
+    obs[index] = { ...dados };
     dispatch(setObservacaoEmEdicao([...obs]));
   };
   const onClickSalvar = () => {
@@ -34,13 +37,21 @@ const LinhaObservacaoProprietario = props => {
     });
   };
 
-  const onClickCancelar = () => {
-    dispatch(setObservacaoEmEdicao([]));
+  const onClickCancelar = async () => {
+    const confirmou = await confirmar(
+      'Atenção',
+      'Você não salvou as informações preenchidas.',
+      'Deseja realmente cancelar as alterações?'
+    );
+
+    if (confirmou) {
+      dispatch(setObservacaoEmEdicao([]));
+    }
   };
 
   const onChangeObs = ({ target: { value } }) => {
     const obs = [...observacaoEmEdicao];
-    obs[index].texto = value;
+    obs[index].observacao = value;
     dispatch(setObservacaoEmEdicao([...obs]));
   };
 
@@ -73,38 +84,50 @@ const LinhaObservacaoProprietario = props => {
   const btnEditarExcluir = () => {
     return (
       <div className="d-flex mt-2">
-        <Button
-          id="btn-editar"
-          icon="edit"
-          iconType="far"
-          color={Colors.Azul}
-          border
-          className="btn-acao mr-2"
-          onClick={onClickEditar}
-          height="30px"
-          width="30px"
-          disabled={
-            observacaoEmEdicao &&
-            observacaoEmEdicao.length &&
-            !observacaoEmEdicao[index]
-          }
-        />
-        <Button
-          id="btn-excluir"
-          icon="trash-alt"
-          iconType="far"
-          color={Colors.Azul}
-          border
-          className="btn-acao"
-          onClick={() => onClickExcluir(observacao)}
-          height="30px"
-          width="30px"
-          disabled={
-            observacaoEmEdicao &&
-            observacaoEmEdicao.length &&
-            !observacaoEmEdicao[index]
-          }
-        />
+        <Tooltip title="Editar">
+          <span>
+            <Button
+              id="btn-editar"
+              icon="edit"
+              iconType="far"
+              color={Colors.Azul}
+              border
+              className="btn-acao mr-2"
+              onClick={onClickEditar}
+              height="30px"
+              width="30px"
+              disabled={
+                !!(
+                  observacaoEmEdicao &&
+                  observacaoEmEdicao.length &&
+                  !observacaoEmEdicao[index]
+                ) || !!novaObservacao
+              }
+            />
+          </span>
+        </Tooltip>
+        <Tooltip title="Excluir">
+          <span>
+            <Button
+              id="btn-excluir"
+              icon="trash-alt"
+              iconType="far"
+              color={Colors.Azul}
+              border
+              className="btn-acao"
+              onClick={() => onClickExcluir(dados)}
+              height="30px"
+              width="30px"
+              disabled={
+                !!(
+                  observacaoEmEdicao &&
+                  observacaoEmEdicao.length &&
+                  !observacaoEmEdicao[index]
+                ) || !!novaObservacao
+              }
+            />
+          </span>
+        </Tooltip>
       </div>
     );
   };
@@ -115,10 +138,10 @@ const LinhaObservacaoProprietario = props => {
       observacaoEmEdicao[index] &&
       observacaoEmEdicao[index].id ? (
         <>
-          <CampoObservacao
+          <ContainerCampoObservacao
             id="editando-observacao"
             autoSize={{ minRows: 3 }}
-            value={observacaoEmEdicao[index].texto}
+            value={observacaoEmEdicao[index].observacao}
             onChange={onChangeObs}
           />
           <div className="d-flex justify-content-between">
@@ -129,7 +152,7 @@ const LinhaObservacaoProprietario = props => {
       ) : (
         <>
           <LinhaObservacao className="col-md-12">
-            <div>{observacao.texto}</div>
+            <div>{dados.observacao}</div>
           </LinhaObservacao>
           <div className="d-flex justify-content-between">
             {children}
@@ -142,19 +165,21 @@ const LinhaObservacaoProprietario = props => {
 };
 
 LinhaObservacaoProprietario.propTypes = {
-  observacao: PropTypes.oneOfType([PropTypes.object]),
+  dados: PropTypes.oneOfType([PropTypes.object]),
   onClickSalvarEdicao: PropTypes.func,
   onClickExcluir: PropTypes.func,
   index: PropTypes.number,
   children: PropTypes.node,
+  inserindoNovaObservacao: PropTypes.bool,
 };
 
 LinhaObservacaoProprietario.defaultProps = {
-  observacao: {},
+  dados: {},
   onClickSalvarEdicao: () => {},
   onClickExcluir: () => {},
   index: null,
   children: () => {},
+  inserindoNovaObservacao: false,
 };
 
 export default LinhaObservacaoProprietario;

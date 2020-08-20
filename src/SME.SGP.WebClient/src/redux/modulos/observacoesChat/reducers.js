@@ -3,6 +3,7 @@ import produce from 'immer';
 const inicial = {
   dadosObservacoes: [],
   observacaoEmEdicao: [],
+  novaObservacao: '',
 };
 
 export default function ObservacoesChat(state = inicial, action) {
@@ -20,11 +21,18 @@ export default function ObservacoesChat(state = inicial, action) {
           observacaoEmEdicao: action.payload,
         };
       }
+      case '@observacoesChat/setNovaObservacao': {
+        return {
+          ...draft,
+          novaObservacao: action.payload,
+        };
+      }
       case '@observacoesChat/limparDadosObservacoesChat': {
         return {
           ...draft,
           dadosObservacoes: [],
           observacaoEmEdicao: [],
+          novaObservacao: '',
         };
       }
 
