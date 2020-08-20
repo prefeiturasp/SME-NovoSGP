@@ -8,8 +8,11 @@ namespace SME.SGP.Infra
     public class InserirDevolutivaDto
     {
         public long CodigoComponenteCurricular { get; set; }
+
+        public List<long> DiariosBordoIds { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
+
         public string Descricao { get; set; }
     }
 
@@ -21,13 +24,9 @@ namespace SME.SGP.Infra
                    .NotEmpty()
                    .WithMessage("O componente curricular deve ser informado!");
 
-            RuleFor(a => a.PeriodoInicio)
-                   .NotEqual(DateTime.MinValue)
-                   .WithMessage("O início do período deve ser informado!");
-
-            RuleFor(a => a.PeriodoFim)
-                   .NotEqual(DateTime.MinValue)
-                   .WithMessage("O fim do período deve ser informado!");
+            RuleFor(a => a.DiariosBordoIds)
+                   .NotEmpty()
+                   .WithMessage("Os diários de bordo devem ser informados !");
 
             RuleFor(a => a.Descricao)
                    .NotEmpty()

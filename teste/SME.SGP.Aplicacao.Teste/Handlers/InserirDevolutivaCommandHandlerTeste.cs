@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 .ReturnsAsync(1);
 
             // Act
-            var auditoriaDto = inserirDevolutivaCommandHandler.Handle(new InserirDevolutivaCommand(1, DateTime.Today.AddDays(-15), DateTime.Today.AddDays(15), textoDescricao), new CancellationToken());
+            var auditoriaDto = inserirDevolutivaCommandHandler.Handle(new InserirDevolutivaCommand(1, new List<long> { 1, 2, 3, 4 }, DateTime.Today.AddDays(-15), DateTime.Today.AddDays(15), textoDescricao), new CancellationToken());
 
             // Assert
             repositorioDevolutiva.Verify(x => x.SalvarAsync(It.IsAny<Devolutiva>()), Times.Once);
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         [Fact]
         public async Task Deve_Obrigar_Descricao()
         {
-            var command = new InserirDevolutivaCommand(1, DateTime.Today.AddDays(-15), DateTime.Today.AddDays(15), "");
+            var command = new InserirDevolutivaCommand(1, new List<long> { 1, 2, 3, 4 }, DateTime.Today.AddDays(-15), DateTime.Today.AddDays(15), "");
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Descricao);
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         [Fact]
         public async Task Deve_Obrigar_PeriodoInicio()
         {
-            var command = new InserirDevolutivaCommand(1, DateTime.MinValue, DateTime.Today.AddDays(15), textoDescricao);
+            var command = new InserirDevolutivaCommand(1, new List<long> { 1, 2, 3, 4 }, DateTime.MinValue, DateTime.Today.AddDays(15), textoDescricao);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.PeriodoInicio);
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         [Fact]
         public async Task Deve_Obrigar_PeriodoFim()
         {
-            var command = new InserirDevolutivaCommand(1, DateTime.Today.AddDays(-15), DateTime.MinValue, textoDescricao);
+            var command = new InserirDevolutivaCommand(1, new List<long> { 1, 2, 3, 4 }, DateTime.Today.AddDays(-15), DateTime.MinValue, textoDescricao);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.PeriodoFim);

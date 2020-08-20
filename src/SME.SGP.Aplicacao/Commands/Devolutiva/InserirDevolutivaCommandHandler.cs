@@ -24,9 +24,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Handle(InserirDevolutivaCommand request, CancellationToken cancellationToken)
         {
-            //if (!await mediator.Send(new AulaExisteQuery(request.AulaId)))
-            //    throw new NegocioException("Aula informada não existe");
-
             Devolutiva devolutiva = MapearParaEntidade(request);
 
             await repositorioDevolutiva.SalvarAsync(devolutiva);
