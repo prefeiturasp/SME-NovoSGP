@@ -19,39 +19,13 @@ namespace SME.SGP.Api.Controllers
     public class DevolutivaController : ControllerBase
     {
 
-        [HttpGet("turmas/{turmaCodigo}/componentes-curriculares")]
-        //[ProducesResponseType(typeof(DiarioBordoDto), 200)]
+        [HttpGet("turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularCodigo}")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<DevolutivaResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> Obter(string turmaCodigo, [FromQuery] string componenteCurricularId, [FromQuery] DateTime data)
+        [Permissao(Permissao.DE_C, Policy = "Bearer")]
+        public async Task<IActionResult> Listar(string turmaCodigo, long componenteCurricularCodigo, [FromQuery] DateTime? dataReferencia, [FromServices] IObterListaDevolutivasPorTurmaComponenteUseCase useCase)
         {
-
-            var text = @"
-                          {
-                            'totalPaginas': 5,
-                            'totalRegistros': 20,
-                            'items': [
-                              {
-                                'id': 1,
-                                'periodoInicio': '2020-07-01T00:00:00.000000',
-                                'periodoFim': '2020-07-01T00:00:00.000000',
-                                'criadoEm': '2020-07-05T00:00:00.000000',
-                                'criadoPor': 'DIONE LEMOS DE SOUZA OLIVEIRA'
-                              },
-                              {
-                                'id': 2,
-                                'periodoInicio': '2020-08-14T00:00:00.000000',
-                                'periodoFim': '2020-08-14T00:00:00.000000',
-                                'criadoEm': '2020-08-05T00:00:00.000000',
-                                'criadoPor': 'DIONE LEMOS DE SOUZA OLIVEIRA'
-                              }
-                            ]
-                          }
-                        ";
-
-            var json = JObject.Parse(text);
-
-            return Ok(json);
+            return Ok(await useCase.Executar(new FiltroListagemDevolutivaDto(turmaCodigo, componenteCurricularCodigo, dataReferencia)));
         }
 
         [HttpGet("{devolutivaId}")]
