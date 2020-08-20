@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Moq;
+using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,22 +10,32 @@ using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 {
-    public class InserirDevolutivaUseCaseTeste
+    public class AlterarDevolutivaUseCaseTeste
     {
-        private readonly InserirDevolutivaUseCase inserirDevolutivaUseCase;
+        private readonly AlterarDevolutivaUseCase inserirDevolutivaUseCase;
         private readonly Mock<IMediator> mediator;
 
-        public InserirDevolutivaUseCaseTeste()
+        public AlterarDevolutivaUseCaseTeste()
         {
             mediator = new Mock<IMediator>();
-            inserirDevolutivaUseCase = new InserirDevolutivaUseCase(mediator.Object);
+            inserirDevolutivaUseCase = new AlterarDevolutivaUseCase(mediator.Object);
         }
 
         [Fact]
-        public async Task Deve_Inserir_Devolutiva()
+        public async Task Deve_Alterar_Devolutiva()
         {
             //Arrange
-            mediator.Setup(a => a.Send(It.IsAny<InserirDevolutivaCommand>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<ObterDevolutivaPorIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Devolutiva
+                {
+                    Id = 1,
+                    CodigoComponenteCurricular = 1,
+                    Descricao = "teste",
+                    PeriodoInicio = DateTime.Today.AddDays(-15),
+                    PeriodoFim = DateTime.Today.AddDays(15)
+                });
+
+            mediator.Setup(a => a.Send(It.IsAny<AlterarDevolutivaCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Infra.AuditoriaDto()
                 {
                     Id = 1
@@ -44,8 +55,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 });
 
             //Act
-            var auditoriaDto = await inserirDevolutivaUseCase.Executar(new Infra.InserirDevolutivaDto()
+            var auditoriaDto = await inserirDevolutivaUseCase.Executar(new Infra.AlterarDevolutivaDto()
             {
+                Id = 1,
                 CodigoComponenteCurricular = 1,
                 Descricao = "teste",
                 PeriodoInicio = DateTime.Today.AddDays(-15),
@@ -53,7 +65,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             });
 
             //Asert
-            mediator.Verify(x => x.Send(It.IsAny<InserirDevolutivaCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(x => x.Send(It.IsAny<AlterarDevolutivaCommand>(), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.True(auditoriaDto.Id == 1);
         }

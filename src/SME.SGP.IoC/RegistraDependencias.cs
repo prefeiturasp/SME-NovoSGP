@@ -369,6 +369,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterCartasDeIntencoesPorTurmaEComponenteUseCase, ObterCartasDeIntencoesPorTurmaEComponenteUseCase>();
 
             services.TryAddScoped<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
+            services.TryAddScoped<IAlterarDevolutivaUseCase, AlterarDevolutivaUseCase>();
         }
     }
 }
