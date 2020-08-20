@@ -35,7 +35,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var entidade = database.Conexao.Get<T>(id);
             database.Conexao.Delete(entidade);
-            Auditar(entidade.Id, "E");
+            if (entidade != null)
+                Auditar(entidade.Id, "E");
         }
 
         public virtual void Remover(T entidade)
