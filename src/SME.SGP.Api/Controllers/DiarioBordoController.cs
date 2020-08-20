@@ -6,6 +6,8 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -45,6 +47,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Alterar([FromServices] IAlterarDiarioBordoUseCase useCase, [FromBody] AlterarDiarioBordoDto diarioBordoDto)
         {
             return Ok(await useCase.Executar(diarioBordoDto));
+        }
+
+        [HttpGet("{diarioBordoId}/observacoes")]
+        [ProducesResponseType(typeof(IEnumerable<ListarObservacaoDiarioBordoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarObservacoes(long diarioBordoId,[FromServices] IListarObservacaoDiarioBordoUseCase listarObservacaoDiarioBordoUseCase)
+        {
+            return Ok(await listarObservacaoDiarioBordoUseCase.Executar(diarioBordoId));
         }
 
         [HttpPost("{diarioBordoId}/observacoes")]
