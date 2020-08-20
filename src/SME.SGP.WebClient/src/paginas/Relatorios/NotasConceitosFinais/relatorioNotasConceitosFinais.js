@@ -16,6 +16,7 @@ import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFi
 import ServicoRelatorioNotasConceitos from '~/servicos/Paginas/Relatorios/NotasConceitos/servicoRelatorioNotasConceitos';
 import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConceito';
 import tipoNota from '~/dtos/tipoNota';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 
 const RelatorioNotasConceitosFinais = () => {
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
@@ -537,6 +538,10 @@ const RelatorioNotasConceitosFinais = () => {
 
   return (
     <>
+      <AlertaModalidadeInfantil
+        exibir={String(modalidadeId) === String(modalidade.INFANTIL)}
+        validarModalidadeFiltroPrincipal={false}
+      />
       <Cabecalho pagina="Notas e conceitos" />
       <Loader loading={carregandoGeral}>
         <Card>
