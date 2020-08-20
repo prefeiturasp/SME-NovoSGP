@@ -77,6 +77,18 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
 
+        [Fact]
+        public void Deve_Excluir_Devolutiva()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DE_A }));
+
+            var postResult = fixture._clientApi.DeleteAsync("api/v1/devolutivas/1").Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
+        }
+
         private string TransformarEmJson(object model)
         {
             return JsonConvert.SerializeObject(model);

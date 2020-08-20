@@ -58,10 +58,10 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete("{devolutivaId}")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.DDB_A, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir(long devolutivaId)
+        [Permissao(Permissao.DE_A, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir(long devolutivaId, [FromServices] IExcluirDevolutivaUseCase useCase)
         {
-            return Ok(true);
+            return Ok(await useCase.Executar(devolutivaId));
         }
 
         [HttpGet("turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularId}/sugestao")]
