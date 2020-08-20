@@ -3,6 +3,7 @@ using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SME.SGP.Aplicacao
@@ -13,9 +14,9 @@ namespace SME.SGP.Aplicacao
 
         public long DevolutivaId { get; set; }
 
-        public AtualizarDiarioBordoComDevolutivaCommand(List<long> diariosBordoIds, long devolutivaId)
+        public AtualizarDiarioBordoComDevolutivaCommand(IEnumerable<long> diariosBordoIds, long devolutivaId)
         {
-            this.DiariosBordoIds = diariosBordoIds;
+            this.DiariosBordoIds = diariosBordoIds.ToList();
             this.DevolutivaId = devolutivaId;
         }
 
