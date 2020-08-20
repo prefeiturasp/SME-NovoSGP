@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Loader, SelectComponent, CampoTexto } from '~/componentes';
+import { Loader, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import CampoNumero from '~/componentes/campoNumero';
@@ -14,6 +14,8 @@ import history from '~/servicos/history';
 import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoRelatorioNotasConceitos from '~/servicos/Paginas/Relatorios/NotasConceitos/servicoRelatorioNotasConceitos';
+import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConceito';
+import tipoNota from '~/dtos/tipoNota';
 
 const RelatorioNotasConceitosFinais = () => {
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
@@ -38,6 +40,8 @@ const RelatorioNotasConceitosFinais = () => {
   );
   const [bimestres, setBimestres] = useState(undefined);
   const [valorCondicao, setValorCondicao] = useState(undefined);
+  const [tipoNotaSelecionada, setTipoNotaSelecionada] = useState(undefined);
+  const [listaConceitos, setListaConceitos] = useState([]);
 
   const [listaCondicao] = useState([
     { valor: '1', desc: 'Igual' },
@@ -49,6 +53,10 @@ const RelatorioNotasConceitosFinais = () => {
   const listaFormatos = [
     { valor: '1', desc: 'PDF' },
     { valor: '4', desc: 'EXCEL' },
+  ];
+  const listaTipoNota = [
+    { valor: tipoNota.nota, desc: 'Nota' },
+    { valor: tipoNota.conceito, desc: 'Conceito' },
   ];
   const [formato, setFormato] = useState('1');
 
@@ -321,6 +329,25 @@ const RelatorioNotasConceitosFinais = () => {
     }
   }, [modalidadeId, anoLetivo]);
 
+  const obterConceitos = async anoLetivoSelecionado => {
+    setCarregandoGeral(true);
+    const conceitos = await ServicoNotaConceito.obterTodosConceitos(
+      `01-01-${anoLetivoSelecionado}`
+    )
+      .catch(e => erros(e))
+      .finally(setCarregandoGeral(false));
+    setListaConceitos(conceitos?.data);
+  };
+
+  useEffect(() => {
+    if (
+      anoLetivo &&
+      tipoNotaSelecionada &&
+      tipoNotaSelecionada === tipoNota.conceito
+    )
+      obterConceitos(anoLetivo);
+  }, [tipoNotaSelecionada, anoLetivo]);
+
   useEffect(() => {
     const desabilitar =
       !anoLetivo ||
@@ -333,6 +360,7 @@ const RelatorioNotasConceitosFinais = () => {
       !condicao ||
       valorCondicao === undefined ||
       valorCondicao === '' ||
+      !tipoNota ||
       !formato;
 
     if (modalidadeId === modalidade.EJA) {
@@ -370,6 +398,7 @@ const RelatorioNotasConceitosFinais = () => {
     setValorCondicao(undefined);
     setListaAnosLetivo([]);
     setListaDres([]);
+    setTipoNotaSelecionada(undefined);
 
     obterAnosLetivos();
     obterDres();
@@ -393,6 +422,7 @@ const RelatorioNotasConceitosFinais = () => {
       bimestres: [bimestres],
       condicao,
       valorCondicao,
+      tipoNota: tipoNotaSelecionada,
       tipoFormatoRelatorio: formato,
     };
     setCarregandoGeral(true);
@@ -435,7 +465,6 @@ const RelatorioNotasConceitosFinais = () => {
   const onChangeAnoLetivo = ano => {
     setAnoLetivo(ano);
 
-    setListaModalidades([]);
     setModalidadeId(undefined);
 
     setListaSemestre([]);
@@ -457,7 +486,16 @@ const RelatorioNotasConceitosFinais = () => {
   const onChangeBimestre = valor => setBimestres(valor);
   const onChangeCondicao = valor => setCondicao(valor);
   const onChangeComparacao = valor => {
-    setValorCondicao(valor.toUpperCase());
+    setValorCondicao(valor);
+  };
+
+  const onChangeTipoNota = valor => {
+    setValorCondicao(undefined);
+    setCondicao(undefined);
+    setTipoNotaSelecionada(valor);
+    if (valor && valor === '2') {
+      setCondicao('1');
+    }
   };
   const onChangeFormato = valor => setFormato(valor);
 
@@ -656,25 +694,57 @@ const RelatorioNotasConceitosFinais = () => {
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
                 <SelectComponent
+                  lista={listaTipoNota}
+                  valueOption="valor"
+                  valueText="desc"
+                  label="Tipo de nota"
+                  disabled={!anoLetivo}
+                  valueSelect={tipoNotaSelecionada}
+                  onChange={onChangeTipoNota}
+                  placeholder="Selecione o tipo de nota"
+                />
+              </div>
+              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
+                <SelectComponent
                   lista={listaCondicao}
                   valueOption="valor"
                   valueText="desc"
                   label="Condição"
-                  disabled={listaCondicao && listaCondicao.length === 1}
+                  disabled={
+                    (listaCondicao && listaCondicao.length === 1) ||
+                    tipoNotaSelecionada === tipoNota.conceito
+                  }
                   valueSelect={condicao}
                   onChange={onChangeCondicao}
                   placeholder="Selecione a condição"
                 />
               </div>
-              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-4">
-                <CampoTexto
-                  onChange={e => onChangeComparacao(e.target.value)}
-                  value={valorCondicao}
-                  label="Valor"
-                  className="w-100"
-                  placeholder="Digite o valor"
-                  ehDecimal={false}
-                />
+
+              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+                {tipoNotaSelecionada === tipoNota.nota ? (
+                  <CampoNumero
+                    onChange={onChangeComparacao}
+                    value={valorCondicao}
+                    min={0}
+                    max={10}
+                    step={0.5}
+                    label="Valor"
+                    className="w-100"
+                    placeholder="Selecione o valor"
+                    disabled={!tipoNotaSelecionada}
+                  />
+                ) : (
+                  <SelectComponent
+                    label="Valor"
+                    lista={listaConceitos}
+                    valueOption="id"
+                    valueText="valor"
+                    valueSelect={valorCondicao}
+                    onChange={onChangeComparacao}
+                    placeholder="Selecione o valor"
+                    disabled={!tipoNotaSelecionada}
+                  />
+                )}
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
                 <SelectComponent
