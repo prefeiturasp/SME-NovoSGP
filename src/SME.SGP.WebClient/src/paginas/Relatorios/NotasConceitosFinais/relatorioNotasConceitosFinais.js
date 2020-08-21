@@ -354,39 +354,20 @@ const RelatorioNotasConceitosFinais = () => {
       obterConceitos(anoLetivo);
   }, [tipoNotaSelecionada, anoLetivo]);
 
-  useEffect(() => {
-    const desabilitar =
-      !anoLetivo ||
-      !codigoDre ||
-      !codigoUe ||
-      !modalidadeId ||
-      !anosEscolares ||
-      !componentesCurriculares ||
-      !bimestres ||
-      !condicao ||
-      valorCondicao === undefined ||
-      valorCondicao === '' ||
-      !tipoNota ||
-      !formato;
-
-    if (modalidadeId === modalidade.EJA) {
-      setDesabilitarBtnGerar(!semestre || desabilitar);
-    } else {
-      setDesabilitarBtnGerar(desabilitar);
-    }
-  }, [
-    anoLetivo,
-    codigoDre,
-    codigoUe,
-    modalidadeId,
-    semestre,
-    anosEscolares,
-    componentesCurriculares,
-    bimestres,
-    condicao,
-    valorCondicao,
-    formato,
-  ]);
+  const desabilitarGerar =
+    !anoLetivo ||
+    !codigoDre ||
+    !codigoUe ||
+    !modalidadeId ||
+    !anosEscolares ||
+    !componentesCurriculares ||
+    !bimestres ||
+    !condicao ||
+    valorCondicao === undefined ||
+    valorCondicao === '' ||
+    !tipoNota ||
+    (String(modalidadeId) === String(modalidade.EJA) ? !semestre : false) ||
+    !formato;
 
   useEffect(() => {
     obterAnosLetivos();
@@ -441,7 +422,6 @@ const RelatorioNotasConceitosFinais = () => {
       sucesso(
         'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
       );
-      setDesabilitarBtnGerar(true);
     }
   };
 
@@ -580,7 +560,7 @@ const RelatorioNotasConceitosFinais = () => {
                   bold
                   className="mr-2"
                   onClick={() => onClickGerar()}
-                  disabled={desabilitarBtnGerar}
+                  disabled={desabilitarGerar}
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
