@@ -9,19 +9,25 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirDevolutivaUseCase : AbstractUseCase, IInserirDevolutivaUseCase
+    public class AlterarDevolutivaUseCase : AbstractUseCase, IAlterarDevolutivaUseCase
     {
-        public InserirDevolutivaUseCase(IMediator mediator) : base(mediator)
+        public AlterarDevolutivaUseCase(IMediator mediator) : base(mediator)
         {
         }
 
-        public async Task<AuditoriaDto> Executar(InserirDevolutivaDto param)
+        public async Task<AuditoriaDto> Executar(AlterarDevolutivaDto param)
         {
+            Devolutiva devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(param.Id));
+            if (devolutiva == null)
+            {
+                throw new NegocioException("Devolutiva informada não existe");
+            }
+
             IEnumerable<Tuple<long, DateTime>> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.PeriodoInicio, param.PeriodoFim));
 
             if (!dados.Any())
             {
-                throw new NegocioException("Diários de bordo não encontrados para aplicar Devolutiva.");
+                throw new NegocioException("Diários de bordo não encontrados para atualizar Devolutiva.");
             }
 
             DateTime inicioEfetivo = dados.Select(x => x.Item2).Min();
@@ -29,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<long> idsDiarios = dados.Select(x => x.Item1);
 
-            AuditoriaDto auditoria = await mediator.Send(new InserirDevolutivaCommand(param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao));
+            AuditoriaDto auditoria = await mediator.Send(new AlterarDevolutivaCommand(devolutiva, param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao));
 
             bool diariosAtualizados = await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
 
