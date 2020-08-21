@@ -113,6 +113,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RelatorioCorrelacaoMap());
                config.AddMap(new RelatorioCorrelacaoJasperMap());
                config.AddMap(new HistoricoReinicioSenhaMap());
+               config.AddMap(new MotivoAusenciaMap());
                config.ForDommel();
            });
         }
