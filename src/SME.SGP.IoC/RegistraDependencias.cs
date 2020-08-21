@@ -271,6 +271,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioComunicadoAluno, RepositorioComunicadoAluno>();
             services.TryAddScoped<IRepositorioComunicadoTurma, RepositorioComunicadoTurma>();
             services.TryAddScoped<IRepositorioAnotacaoFrequenciaAluno, RepositorioAnotacaoFrequenciaAluno>();
+            services.TryAddScoped<IRepositorioMotivoAusencia, RepositorioMotivoAusencia>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
