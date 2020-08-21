@@ -203,44 +203,52 @@ const RelatorioNotasConceitosFinais = () => {
     }
   }, [codigoDre, obterUes]);
 
-  const obterAnosEscolares = useCallback(async (mod, ue) => {
-    if (String(mod) === String(modalidade.EJA)) {
-      setListaAnosEscolares([{ descricao: 'Todos', valor: '-99' }]);
-      setAnosEscolares(['-99']);
-    } else {
-      setCarregandoGeral(true);
-      const respota = await AbrangenciaServico.buscarAnosEscolares(
-        ue,
-        mod,
-        true
-      ).catch(e => {
-        erros(e);
-        setCarregandoGeral(false);
-      });
-
-      if (respota && respota.data && respota.data.length) {
-        setListaAnosEscolares(
-          [{ descricao: 'Todos', valor: '-99' }].concat(respota.data)
-        );
-
-        if (respota.data && respota.data.length && respota.data.length === 1) {
-          setAnosEscolares(respota.data[0].valor);
-        }
+  const obterAnosEscolares = useCallback(
+    async (mod, ue, anoLetivoSelecionado) => {
+      if (String(mod) === String(modalidade.EJA)) {
+        setListaAnosEscolares([{ descricao: 'Todos', valor: '-99' }]);
+        setAnosEscolares(['-99']);
       } else {
-        setListaAnosEscolares([]);
+        setCarregandoGeral(true);
+        const anoAtual = window.moment().format('YYYY');
+        const respota = await AbrangenciaServico.buscarAnosEscolares(
+          ue,
+          mod,
+          String(anoLetivoSelecionado) !== String(anoAtual)
+        ).catch(e => {
+          erros(e);
+          setCarregandoGeral(false);
+        });
+
+        if (respota && respota.data && respota.data.length) {
+          setListaAnosEscolares(
+            [{ descricao: 'Todos', valor: '-99' }].concat(respota.data)
+          );
+
+          if (
+            respota.data &&
+            respota.data.length &&
+            respota.data.length === 1
+          ) {
+            setAnosEscolares(respota.data[0].valor);
+          }
+        } else {
+          setListaAnosEscolares([]);
+        }
+        setCarregandoGeral(false);
       }
-      setCarregandoGeral(false);
-    }
-  }, []);
+    },
+    []
+  );
 
   useEffect(() => {
-    if (modalidadeId && codigoUe) {
-      obterAnosEscolares(modalidadeId, codigoUe);
+    if (modalidadeId && codigoUe && anoLetivo) {
+      obterAnosEscolares(modalidadeId, codigoUe, anoLetivo);
     } else {
       setAnosEscolares(undefined);
       setListaAnosEscolares([]);
     }
-  }, [modalidadeId, codigoUe, obterAnosEscolares]);
+  }, [modalidadeId, codigoUe, anoLetivo, obterAnosEscolares]);
 
   const obterCodigoTodosAnosEscolares = useCallback(() => {
     let todosAnosEscolares = anosEscolares;
