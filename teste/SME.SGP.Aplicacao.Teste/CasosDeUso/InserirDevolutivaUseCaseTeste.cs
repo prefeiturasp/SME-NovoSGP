@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Moq;
+using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,6 +33,15 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             mediator.Setup(a => a.Send(It.IsAny<AtualizarDiarioBordoComDevolutivaCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
+
+            mediator.Setup(a => a.Send(It.IsAny<TurmaEmPeriodoAbertoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterBimestreAtualQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Turma() { CodigoTurma = "123" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterDatasEfetivasDiariosQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Tuple<long, DateTime>> {

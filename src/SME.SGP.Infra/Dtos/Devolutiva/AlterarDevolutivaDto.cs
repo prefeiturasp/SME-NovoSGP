@@ -9,13 +9,7 @@ namespace SME.SGP.Infra
     {
         public long Id { get; set; }
 
-        public long CodigoComponenteCurricular { get; set; }
-
-        public List<long> DiariosBordoIds { get; set; }
-
-        public DateTime PeriodoInicio { get; set; }
-
-        public DateTime PeriodoFim { get; set; }
+        public string TurmaCodigo { get; set; }
 
         public string Descricao { get; set; }
     }
@@ -27,18 +21,6 @@ namespace SME.SGP.Infra
             RuleFor(a => a.Id)
                    .NotEmpty()
                    .WithMessage("O componente curricular deve ser informado!");
-
-            RuleFor(a => a.CodigoComponenteCurricular)
-                   .NotEmpty()
-                   .WithMessage("O componente curricular deve ser informado!");
-
-            RuleFor(a => a.PeriodoInicio)
-                   .NotEqual(DateTime.MinValue)
-                   .WithMessage("O início do período deve ser informado!");
-
-            RuleFor(a => a.PeriodoFim)
-                   .NotEqual(DateTime.MinValue)
-                   .WithMessage("O fim do período deve ser informado!");
 
             RuleFor(a => a.Descricao)
                    .NotEmpty()

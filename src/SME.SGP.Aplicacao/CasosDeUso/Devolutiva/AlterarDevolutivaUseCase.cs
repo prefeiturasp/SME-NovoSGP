@@ -19,27 +19,33 @@ namespace SME.SGP.Aplicacao
         {
             Devolutiva devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(param.Id));
             if (devolutiva == null)
-            {
                 throw new NegocioException("Devolutiva informada não existe");
-            }
 
-            IEnumerable<Tuple<long, DateTime>> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.PeriodoInicio, param.PeriodoFim));
+            var turma = await ObterTurma(param.TurmaCodigo);
+            var bimestre = await mediator.Send(new ObterBimestreAtualQuery(turma.CodigoTurma, DateTime.Today, turma));
+            await ValidarBimestreEmAberto(turma, bimestre);
 
-            if (!dados.Any())
-            {
-                throw new NegocioException("Diários de bordo não encontrados para atualizar Devolutiva.");
-            }
-
-            DateTime inicioEfetivo = dados.Select(x => x.Item2).Min();
-            DateTime fimEfetivo = dados.Select(x => x.Item2).Max();
-
-            IEnumerable<long> idsDiarios = dados.Select(x => x.Item1);
-
-            AuditoriaDto auditoria = await mediator.Send(new AlterarDevolutivaCommand(devolutiva, param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao));
-
-            bool diariosAtualizados = await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
-
-            return auditoria;
+            devolutiva.Descricao = param.Descricao;
+            return await mediator.Send(new AlterarDevolutivaCommand(devolutiva));
         }
+
+        private async Task<Turma> ObterTurma(string turmaCodigo)
+        {
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+
+            if (turma == null)
+                throw new NegocioException("Turma informada não localizada!");
+
+            return turma;
+        }
+
+        private async Task ValidarBimestreEmAberto(Turma turma, int bimestre)
+        {
+            var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, turma.AnoLetivo == DateTime.Today.Year));
+
+            if (!periodoAberto)
+                throw new NegocioException("Período dos diários de bordo não esta aberto");
+        }
+
     }
 }
