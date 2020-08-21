@@ -72,6 +72,33 @@ class ServicoNotificacao {
         }
       });
   };
+
+  buscaNotificacoesNaoLidas = async (ano, rf) => {
+    await api
+      .get(`v1/notificacoes/resumo?anoLetivo=${ano}&usuarioRf=${rf}`)
+      .then(res => {
+        if (res.data) {
+          // store.dispatch(naoLidas(res.data.quantidadeNaoLidas));
+          store.dispatch(notificacoesLista(res.data.notificacoes));
+        }
+      });
+  };
+
+  obterQuantidadeNotificacoesNaoLidas = async () => {
+    await api.get(`v1/notificacoes/nao-lidas/quantidade`).then(res => {
+      if (res.data) {
+        store.dispatch(naoLidas(res.data));
+      }
+    });
+  };
+
+  obterUltimasNotificacoesNaoLidas = async () => {
+    await api.get(`v1/notificacoes/nao-lidas`).then(res => {
+      if (res.data) {
+        store.dispatch(notificacoesLista(res.data));
+      }
+    });
+  };
 }
 
 export default new ServicoNotificacao();
