@@ -12,36 +12,18 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarDevolutivaCommandHandler : IRequestHandler<AlterarDevolutivaCommand, AuditoriaDto>
     {
-        private readonly IMediator mediator;
         private readonly IRepositorioDevolutiva repositorioDevolutiva;
 
-        public AlterarDevolutivaCommandHandler(IMediator mediator,
-                                                IRepositorioDevolutiva repositorioDevolutiva)
+        public AlterarDevolutivaCommandHandler(IRepositorioDevolutiva repositorioDevolutiva)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioDevolutiva = repositorioDevolutiva ?? throw new ArgumentNullException(nameof(repositorioDevolutiva));
         }
 
         public async Task<AuditoriaDto> Handle(AlterarDevolutivaCommand request, CancellationToken cancellationToken)
         {
+            await repositorioDevolutiva.SalvarAsync(request.Devolutiva);
 
-            Devolutiva devolutiva = MapearParaEntidade(request);
-
-            await repositorioDevolutiva.SalvarAsync(devolutiva);
-
-            return (AuditoriaDto)devolutiva;
-        }
-
-        private Devolutiva MapearParaEntidade(AlterarDevolutivaCommand request)
-        {
-            var devolutiva = request.Devolutiva;
-
-            devolutiva.CodigoComponenteCurricular = request.CodigoComponenteCurricular;
-            devolutiva.PeriodoInicio = request.PeriodoInicio;
-            devolutiva.PeriodoFim = request.PeriodoFim;
-            devolutiva.Descricao = request.Descricao;
-
-            return devolutiva;
+            return (AuditoriaDto)request.Devolutiva;
         }
     }
 }

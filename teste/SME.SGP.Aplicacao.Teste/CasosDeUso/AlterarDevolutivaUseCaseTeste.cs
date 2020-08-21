@@ -41,27 +41,19 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                     Id = 1
                 });
 
-            mediator.Setup(a => a.Send(It.IsAny<AtualizarDiarioBordoComDevolutivaCommand>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Turma() { CodigoTurma = "123" });
+
+            mediator.Setup(a => a.Send(It.IsAny<TurmaEmPeriodoAbertoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterDatasEfetivasDiariosQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Tuple<long, DateTime>> {
-                    new Tuple<long, DateTime>(1, DateTime.Today.AddDays(-15)),
-                    new Tuple<long, DateTime>(2, DateTime.Today.AddDays(-5)),
-                    new Tuple<long, DateTime>(3, DateTime.Today.AddDays(-10)),
-                    new Tuple<long, DateTime>(4, DateTime.Today.AddDays(5)),
-                    new Tuple<long, DateTime>(5, DateTime.Today.AddDays(10)),
-                    new Tuple<long, DateTime>(6, DateTime.Today.AddDays(15))
-                });
 
             //Act
             var auditoriaDto = await inserirDevolutivaUseCase.Executar(new Infra.AlterarDevolutivaDto()
             {
                 Id = 1,
-                CodigoComponenteCurricular = 1,
                 Descricao = "teste",
-                PeriodoInicio = DateTime.Today.AddDays(-15),
-                PeriodoFim = DateTime.Today.AddDays(15),
+                TurmaCodigo = "123",
             });
 
             //Asert

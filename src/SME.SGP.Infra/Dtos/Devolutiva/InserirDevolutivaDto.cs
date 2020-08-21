@@ -7,6 +7,7 @@ namespace SME.SGP.Infra
 {
     public class InserirDevolutivaDto
     {
+        public string TurmaCodigo { get; set; }
         public long CodigoComponenteCurricular { get; set; }
 
         public DateTime PeriodoInicio { get; set; }
@@ -20,6 +21,10 @@ namespace SME.SGP.Infra
     {
         public InserirDevolutivaDtoValidator()
         {
+            RuleFor(a => a.TurmaCodigo)
+                   .NotEmpty()
+                   .WithMessage("O código da turma deve ser informado para geração da devolutiva");
+
             RuleFor(a => a.CodigoComponenteCurricular)
                    .NotEmpty()
                    .WithMessage("O componente curricular deve ser informado!");
