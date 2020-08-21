@@ -30,6 +30,10 @@ namespace SME.SGP.IoC
             RegistrarConsultas(services);
             RegistrarServicos(services);
             RegistararQueries(services);
+            
+            //TODO: APOS MERGE COM DEV/RELEASE REGISTRAR NA REGIAO CORRETA
+            services.TryAddScoped<IObterQuantidadeNotificacoesNaoLidasPorUsuarioUseCase, ObterQuantidadeNotificacoesNaoLidasPorUsuarioUseCase>();
+            services.TryAddScoped<IObterUltimasNotificacoesNaoLidasPorUsuarioUseCase, ObterUltimasNotificacoesNaoLidasPorUsuarioUseCase>();
         }
 
         private static void RegistrarComandos(IServiceCollection services)
