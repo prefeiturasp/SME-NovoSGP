@@ -855,7 +855,7 @@ rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
   component: RelatorioPendencias,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_PENDENCIAS,
 });
 
@@ -866,7 +866,7 @@ rotas.set(RotasDto.RELATORIO_PARECER_CONCLUSIVO, {
   component: RelatorioParecerConclusivo,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_PARECER_CONCLUSIVO,
 });
 
