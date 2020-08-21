@@ -50,9 +50,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.DDB_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar([FromBody] TempSalvarDto model)
+        public async Task<IActionResult> Alterar([FromServices] IAlterarDevolutivaUseCase useCase, [FromBody] AlterarDevolutivaDto devolutivaDto)
         {
-            return Ok(true);
+            return Ok(await useCase.Executar(devolutivaDto));
         }
 
         [HttpDelete("{devolutivaId}")]
