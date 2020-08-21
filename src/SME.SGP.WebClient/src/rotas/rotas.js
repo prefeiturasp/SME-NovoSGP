@@ -877,7 +877,7 @@ rotas.set(RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS, {
   component: RelatorioNotasConceitosFinais,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS,
 });
 

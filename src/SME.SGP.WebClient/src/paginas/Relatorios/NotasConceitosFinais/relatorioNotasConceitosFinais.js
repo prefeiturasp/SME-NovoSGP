@@ -204,7 +204,7 @@ const RelatorioNotasConceitosFinais = () => {
   }, [codigoDre, obterUes]);
 
   const obterAnosEscolares = useCallback(async (mod, ue) => {
-    if (mod === modalidade.EJA || mod === modalidade.INFANTIL) {
+    if (String(mod) === String(modalidade.EJA)) {
       setListaAnosEscolares([{ descricao: 'Todos', valor: '-99' }]);
       setAnosEscolares(['-99']);
     } else {
