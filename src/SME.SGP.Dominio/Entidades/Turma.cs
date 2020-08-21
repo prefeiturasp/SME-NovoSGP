@@ -65,6 +65,8 @@ namespace SME.SGP.Dominio
 
         public bool EnsinoEspecial { get; set; }
 
+        public int EtapaEJA { get; set; }
+
         public bool AulasReposicaoPrecisamAprovacao(int quantidadeAulasExistentesNoDia)
         {
             int.TryParse(Ano, out int anoTurma);
