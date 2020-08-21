@@ -20,12 +20,14 @@ namespace SME.SGP.Aplicacao
             IEnumerable<Tuple<long, DateTime>> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.PeriodoInicio, param.PeriodoFim));
 
             if (!dados.Any())
-            {
                 throw new NegocioException("Diários de bordo não encontrados para aplicar Devolutiva.");
-            }
 
             DateTime inicioEfetivo = dados.Select(x => x.Item2).Min();
             DateTime fimEfetivo = dados.Select(x => x.Item2).Max();
+
+            var turma = await ObterTurma(param.TurmaCodigo);
+            var bimestre = await ValidarBimestreDiarios(turma, inicioEfetivo, fimEfetivo);
+            await ValidarBimestreEmAberto(turma, bimestre);
 
             IEnumerable<long> idsDiarios = dados.Select(x => x.Item1);
 
@@ -34,6 +36,35 @@ namespace SME.SGP.Aplicacao
             bool diariosAtualizados = await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
 
             return auditoria;
+        }
+
+        private async Task ValidarBimestreEmAberto(Turma turma, int bimestre)
+        {
+            var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, turma.AnoLetivo == DateTime.Today.Year));
+
+            if (!periodoAberto)
+                throw new NegocioException("Período dos diários de bordo não esta aberto");
+        }
+
+        private async Task<int> ValidarBimestreDiarios(Turma turma, DateTime inicioEfetivo, DateTime fimEfetivo)
+        {
+            var bimestreInicio = await mediator.Send(new ObterBimestreAtualQuery(turma.CodigoTurma, inicioEfetivo, turma));
+            var bimestreFim = await mediator.Send(new ObterBimestreAtualQuery(turma.CodigoTurma, fimEfetivo, turma));
+
+            if (bimestreInicio != bimestreFim)
+                throw new NegocioException("Não é possível incluir diários de bordo de bimestres diferentes");
+
+            return bimestreInicio;
+        }
+
+        private async Task<Turma> ObterTurma(string turmaCodigo)
+        {
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+
+            if (turma == null)
+                throw new NegocioException("Turma informada não localizada!");
+
+            return turma;
         }
     }
 }

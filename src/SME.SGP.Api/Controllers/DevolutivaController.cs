@@ -15,7 +15,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/devolutivas")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class DevolutivaController : ControllerBase
     {
 
@@ -40,7 +40,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.DE_I, Policy = "Bearer")]
+        [Permissao(Permissao.DE_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromServices] IInserirDevolutivaUseCase useCase, [FromBody] InserirDevolutivaDto devolutivaDto)
         {
             return Ok(await useCase.Executar(devolutivaDto));
@@ -49,9 +49,10 @@ namespace SME.SGP.Api.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.DDB_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar([FromServices] IAlterarDevolutivaUseCase useCase, [FromBody] AlterarDevolutivaDto devolutivaDto)
+        [Permissao(Permissao.DE_A, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar(long id, [FromServices] IAlterarDevolutivaUseCase useCase, [FromBody] AlterarDevolutivaDto devolutivaDto)
         {
+            devolutivaDto.Id = id;
             return Ok(await useCase.Executar(devolutivaDto));
         }
 
@@ -78,12 +79,6 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(data.AddDays(1));
         }
-    }
-
-    public class TempSalvarDto {
-        public string Devolutiva { get; set; }
-
-        public List<long> DiariosIds { get; set; }
     }
 
 }

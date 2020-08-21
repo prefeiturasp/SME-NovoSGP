@@ -22,9 +22,8 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
 
         public AlterarDevolutivaCommandHandlerTeste()
         {
-            mediator = new Mock<IMediator>();
             repositorioDevolutiva = new Mock<IRepositorioDevolutiva>();
-            inserirDevolutivaCommandHandler = new AlterarDevolutivaCommandHandler(mediator.Object, repositorioDevolutiva.Object);
+            inserirDevolutivaCommandHandler = new AlterarDevolutivaCommandHandler(repositorioDevolutiva.Object);
         }
 
         [Fact]
@@ -40,7 +39,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             var devolutiva = GerarDevolutiva();
 
             // Act
-            var auditoriaDto = inserirDevolutivaCommandHandler.Handle(new AlterarDevolutivaCommand(devolutiva, 1, new List<long> { 1, 2, 3, 4 }, DateTime.Today.AddDays(-15), DateTime.Today.AddDays(15), textoDescricao), new CancellationToken());
+            var auditoriaDto = inserirDevolutivaCommandHandler.Handle(new AlterarDevolutivaCommand(devolutiva), new CancellationToken());
 
             // Assert
             repositorioDevolutiva.Verify(x => x.SalvarAsync(It.IsAny<Devolutiva>()), Times.Once);
@@ -52,7 +51,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         {
             var devolutiva = GerarDevolutiva();
 
-            var command = new AlterarDevolutivaCommand(devolutiva, 1, new List<long> { 1, 2, 3, 4 }, DateTime.Today.AddDays(-15), DateTime.Today.AddDays(15), "");
+            var command = new AlterarDevolutivaCommand(devolutiva);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Descricao);
@@ -63,7 +62,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         {
             var devolutiva = GerarDevolutiva();
 
-            var command = new AlterarDevolutivaCommand(devolutiva, 1, new List<long> { 1, 2, 3, 4 }, DateTime.MinValue, DateTime.Today.AddDays(15), textoDescricao);
+            var command = new AlterarDevolutivaCommand(devolutiva);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.PeriodoInicio);
@@ -74,7 +73,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         {
             var devolutiva = GerarDevolutiva();
 
-            var command = new AlterarDevolutivaCommand(devolutiva, 1, new List<long> { 1, 2, 3, 4 }, DateTime.Today.AddDays(-15), DateTime.MinValue, textoDescricao);
+            var command = new AlterarDevolutivaCommand(devolutiva);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.PeriodoFim);
