@@ -68,5 +68,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterFiltroRelatoriosAnosPorCicloModalidadeUseCase.Executar(cicloId, modalidade));
         }
+        [HttpGet("componentes-curriculares/anos-letivos/{anoLetivo}/ues/{codigoUe}/modalidades/{modalideId}")]
+        [ProducesResponseType(typeof(IEnumerable<RetornoCicloDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterComponentesCurricularesPorAnoUeModalidade([FromQuery]string[] anos, string codigoUe, Modalidade modalidadeId, [FromServices] IObterFiltroRelatoriosAnosPorCicloModalidadeUseCase obterFiltroRelatoriosAnosPorCicloModalidadeUseCase)
+        {
+            return Ok(await obterFiltroRelatoriosAnosPorCicloModalidadeUseCase.Executar(cicloId, modalidade));
+        }
     }
 }
