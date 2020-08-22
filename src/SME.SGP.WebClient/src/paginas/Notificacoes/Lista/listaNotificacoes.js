@@ -7,7 +7,7 @@ import CampoTexto from '~/componentes/campoTexto';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
-import { confirmar, erro, sucesso } from '~/servicos/alertas';
+import { confirmar, erro, sucesso, erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
@@ -283,6 +283,12 @@ export default function NotificacoesLista() {
           data.forEach(resultado => {
             if (resultado.sucesso) {
               sucesso(resultado.mensagem);
+              servicoNotificacao
+                .obterUltimasNotificacoesNaoLidas()
+                .catch(e => erros(e));
+              servicoNotificacao
+                .obterQuantidadeNotificacoesNaoLidas()
+                .catch(e => erros(e));
             } else {
               erro(resultado.mensagem);
             }
