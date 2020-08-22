@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/relatorios/frequencia/compensacoes-ausencias")]
+    [Route("api/v1/relatorios/frequencias/compensacoes-ausencias")]
     public class RelatorioCompensacaoAusenciaController : ControllerBase
     {
         [HttpPost]
