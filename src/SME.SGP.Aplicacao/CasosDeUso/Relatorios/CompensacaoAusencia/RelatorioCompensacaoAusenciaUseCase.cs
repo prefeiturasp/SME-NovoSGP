@@ -1,12 +1,11 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
-using SME.SGP.Infra.Dtos.Relatorios;
+using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso
+namespace SME.SGP.Aplicacao
 {
     public class RelatorioCompensacaoAusenciaUseCase : IRelatorioCompensacaoAusenciaUseCase
     {
