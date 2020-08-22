@@ -14,6 +14,7 @@ import ServicoComponentesCurriculares from '~/servicos/ServicoComponentesCurricu
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import ServicoRelatorioCompensacaoAusencia from '~/servicos/Paginas/Relatorios/CompensacaoAusencia/ServicoRelatorioCompensacaoAusencia';
 
 const RelatorioCompensacaoAusencia = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -418,7 +419,14 @@ const RelatorioCompensacaoAusencia = () => {
           : componentesCurricularesId,
       semestre,
     };
-    //consumir endpoint de gerar
+    const retorno = await ServicoRelatorioCompensacaoAusencia.gerar(params)
+      .catch(e => erros(e))
+      .finally(setCarregandoGerar(false));
+    if (retorno && retorno.status === 200) {
+      sucesso(
+        'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+      );
+    }
   };
 
   return (
