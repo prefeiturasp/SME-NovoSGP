@@ -21,10 +21,6 @@ const NavbarNotificacoes = props => {
   const notificacoes = useSelector(state => state.notificacoes);
   const { loaderGeral } = useSelector(state => state.loader);
 
-  const [quantidadeAtual, setQuantidadeAtual] = useState(
-    notificacoes.quantidade
-  );
-
   useEffect(() => {
     const interval = setInterval(() => {
       if (!loaderGeral) {
@@ -48,14 +44,11 @@ const NavbarNotificacoes = props => {
 
   useEffect(() => {
     if (mostraNotificacoes) {
-      if (quantidadeAtual !== notificacoes.quantidade) {
-        servicoNotificacao
-          .obterUltimasNotificacoesNaoLidas()
-          .then(() => setQuantidadeAtual(notificacoes.quantidade))
-          .catch(e => erros(e));
-      }
+      servicoNotificacao
+        .obterUltimasNotificacoesNaoLidas()
+        .catch(e => erros(e));
     }
-  }, [mostraNotificacoes, quantidadeAtual, notificacoes.quantidade]);
+  }, [mostraNotificacoes]);
 
   const onClickBotao = () => {
     setMostraNotificacoes(antigo => !antigo);
