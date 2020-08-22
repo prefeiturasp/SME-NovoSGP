@@ -79,6 +79,9 @@ namespace SME.SGP.Aplicacao
             if (aula == null || aula.Excluido)
                 throw new NegocioException($"Aula de id {id} não encontrada");
 
+            if (aula.AulaPaiId.HasValue)
+                aula.AulaPai = repositorio.ObterCompletoPorId(aula.AulaPaiId.Value);
+
             var aberto = await AulaDentroPeriodo(aula);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
@@ -184,6 +187,7 @@ namespace SME.SGP.Aplicacao
                 ProfessorRf = aula.ProfessorRf,
                 DataAula = aula.DataAula.Local(),
                 RecorrenciaAula = aula.RecorrenciaAula,
+                RecorrenciaAulaPai = aula.AulaPai?.RecorrenciaAula,
                 AlteradoEm = aula.AlteradoEm,
                 AlteradoPor = aula.AlteradoPor,
                 AlteradoRF = aula.AlteradoRF,
