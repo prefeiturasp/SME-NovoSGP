@@ -32,6 +32,7 @@ import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import RotasDto from '~/dtos/rotasDto';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import AlterarAula from './alterarAula';
 
 function CadastroDeAula({ match, location }) {
   const { id, tipoCalendarioId } = match.params;
@@ -62,6 +63,7 @@ function CadastroDeAula({ match, location }) {
   const [somenteLeitura, setSomenteLeitura] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [exibirModalExclusao, setExibirModalExclusao] = useState(false);
+  const [exibirModalAlteracao, setExibirModalAlteracao] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
   const [controlaGrade, setControlaGrade] = useState(true);
   const [gradeAtingida, setGradeAtingida] = useState(false);
@@ -95,6 +97,8 @@ function CadastroDeAula({ match, location }) {
     { label: 'Normal', value: 1 },
     { label: 'Reposição', value: 2 },
   ];
+
+  const [recorrenciaInicial, setRecorrenciaInicial] = useState(1);
 
   const recorrencia = {
     AULA_UNICA: 1,
@@ -169,7 +173,7 @@ function CadastroDeAula({ match, location }) {
           setRegistroMigrado(respostaAula.migrado);
           setEmManutencao(respostaAula.emManutencao);
           servicoCadastroAula
-            .obterRecorrenciaPorIdAula(id)
+            .obterRecorrenciaPorIdAula(id, respostaAula.recorrenciaAula)
             .then(resposta => {
               setRecorrenciaAulaEmEdicao(resposta.data);
             })
@@ -474,6 +478,14 @@ function CadastroDeAula({ match, location }) {
         recorrenciaAula: e.target.value,
       };
     });
+    if (id) {
+      servicoCadastroAula
+        .obterRecorrenciaPorIdAula(id, e.target.value)
+        .then(resposta => {
+          setRecorrenciaAulaEmEdicao(resposta.data);
+        })
+        .catch(e => erros(e));
+    }
   };
 
   const onClickVoltar = async () => {
@@ -564,6 +576,26 @@ function CadastroDeAula({ match, location }) {
           modalidadesFiltroPrincipal={modalidadesFiltroPrincipal}
           turmaSelecionada={turmaSelecionada}
         />
+        <AlterarAula
+          visivel={exibirModalAlteracao}
+          dataAula={obterDataFormatada()}
+          nomeComponente={() => {
+            const componente = obterComponenteSelecionadoPorId(
+              aula.disciplinaId
+            );
+            return componente?.nome;
+          }}
+          recorrencia={recorrenciaAulaEmEdicao}
+          recorrenciaSelecionada={aula.recorrenciaAula}
+          onFecharModal={(salvar) => {
+            setExibirModalAlteracao(false);
+            if (salvar) {
+              refForm.current.handleSubmit();
+            }
+          }}
+          onCancelar={() => setExibirModalAlteracao(false)}
+        />
+
         <div className="col-md-12">
           {controlaGrade && gradeAtingida && !id && (
             <Alert
@@ -672,7 +704,14 @@ function CadastroDeAula({ match, location }) {
                         border
                         bold
                         className="mr-2"
-                        onClick={() => form.handleSubmit()}
+                        onClick={() => {
+                          if (!id || (aula.recorrenciaAula == recorrencia.AULA_UNICA && !recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula)) {
+                            form.handleSubmit();
+                          }
+                          else {
+                            setExibirModalAlteracao(true);
+                          }
+                        }}
                         disabled={
                           somenteConsulta ||
                           (controlaGrade && gradeAtingida && !id) ||

@@ -133,25 +133,22 @@ namespace SME.SGP.Aplicacao
 
             var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId, aula.DataAula.Year);
             if (alunosDaTurma == null || !alunosDaTurma.Any())
-            {
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
             }
             var turma = await repositorioTurma.ObterPorCodigo(aula.TurmaId);
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
+
             FrequenciaDto registroFrequenciaDto = ObterRegistroFrequencia(aulaId, aula, turma);
 
             var ausencias = servicoFrequencia.ObterListaAusenciasPorAula(aulaId);
             if (ausencias == null)
-            {
                 ausencias = new List<RegistroAusenciaAluno>();
-            }
 
             var bimestre = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(aula.TipoCalendarioId, aula.DataAula);
             if (bimestre == null)
-            {
                 throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
-            }
+
 
             registroFrequenciaDto.TemPeriodoAberto = await consultasTurma.TurmaEmPeriodoAberto(aula.TurmaId, DateTime.Today, bimestre.Bimestre);
 
@@ -159,9 +156,8 @@ namespace SME.SGP.Aplicacao
                                                     TipoParametroSistema.PercentualFrequenciaCritico,
                                                     bimestre.PeriodoInicio.Year);
             if (parametroPercentualCritico == null)
-            {
                 throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
-            }
+
             var percentualCritico = int.Parse(parametroPercentualCritico);
             var percentualAlerta = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.PercentualFrequenciaAlerta,
