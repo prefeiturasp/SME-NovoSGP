@@ -63,6 +63,7 @@ import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPenden
 import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
+import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
 
 const rotas = new Map();
 
@@ -890,6 +891,17 @@ rotas.set(RotasDto.CARTA_INTENCOES, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.CARTA_INTENCOES,
+});
+
+rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
+  breadcrumbName: 'Compensação de ausência',
+  menu: ['Relatórios', 'Frequência'],
+  parent: '/',
+  component: RelatorioCompensacaoAusencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
 });
 
 const rotasArray = [];
