@@ -15,6 +15,7 @@ export const aulaDto = {
   professorRf: '',
   quantidade: 1,
   recorrenciaAula: '',
+  recorrenciaAulaPai: undefined,
   somenteLeitura: false,
   tipoAula: 1,
   tipoCalendarioId: 0,
