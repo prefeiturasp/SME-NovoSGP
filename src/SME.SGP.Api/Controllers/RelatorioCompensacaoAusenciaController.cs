@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Threading.Tasks;
 
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/relatorios/frequencia/compensacao-ausencia")]
+    [Route("api/v1/relatorios/frequencia/compensacoes-ausencias")]
     public class RelatorioCompensacaoAusenciaController : ControllerBase
     {
         [HttpPost]
