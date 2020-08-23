@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Aula de id {id} não encontrada");
 
             if (aula.AulaPaiId.HasValue)
-                aula.AulaPai = repositorio.ObterCompletoPorId(aula.AulaPaiId.Value);
+                aula.AulaPai = await repositorio.ObterCompletoPorIdAsync(aula.AulaPaiId.Value);
 
             var aberto = await AulaDentroPeriodo(aula);
 
