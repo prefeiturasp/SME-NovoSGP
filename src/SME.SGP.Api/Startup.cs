@@ -13,14 +13,10 @@ using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
 using SME.SGP.Dados;
+using SME.SGP.Infra;
 using SME.SGP.IoC;
 using System.Collections.Generic;
 using System.Globalization;
-using SME.SGP.IoC.Extensions;
-using System;
-using System.Diagnostics;
-using SME.SGP.Infra;
-using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
 
 namespace SME.SGP.Api
@@ -96,7 +92,6 @@ namespace SME.SGP.Api
 
             services.AddSingleton(Configuration);
             services.AddHttpContextAccessor();
-            services.AdicionarRedis(Configuration);
 
             RegistraDependencias.Registrar(services);
             RegistraClientesHttp.Registrar(services, Configuration);
@@ -108,9 +103,11 @@ namespace SME.SGP.Api
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            Orquestrador.Inicializar(services.BuildServiceProvider());
+            var serviceProvider = services.BuildServiceProvider();
 
-            services.AdicionarRedis(Configuration, Orquestrador.Provider.GetService<IServicoLog>());
+            Orquestrador.Inicializar(serviceProvider);
+
+            services.AdicionarRedis(Configuration, serviceProvider.GetService<IServicoLog>());
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {
@@ -145,7 +142,7 @@ namespace SME.SGP.Api
 
             // Teste para injeção do client de telemetria em classe estática 
 
-            var serviceProvider = services.BuildServiceProvider();
+
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
             DapperExtensionMethods.Init(clientTelemetry);
 
