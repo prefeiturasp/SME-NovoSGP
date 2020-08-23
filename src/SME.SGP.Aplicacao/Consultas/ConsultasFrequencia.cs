@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
             var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId, aula.DataAula.Year);
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
-            }
+            
             var turma = await repositorioTurma.ObterPorCodigo(aula.TurmaId);
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");

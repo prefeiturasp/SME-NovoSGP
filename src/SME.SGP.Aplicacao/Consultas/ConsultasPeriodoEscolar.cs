@@ -155,19 +155,19 @@ namespace SME.SGP.Aplicacao.Consultas
         {
             var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(turma.UeId);
 
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre)
+            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre)
                 ?? throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
 
             if (periodosAberto != null && periodosAberto.Any())
                 return FiltraEObtemUltimoPeriodoEmAberto(periodosAberto, tipoCalendario);
 
-            return BuscaUltimoPeriodoEscolar(tipoCalendario);
+            return await BuscaUltimoPeriodoEscolar(tipoCalendario);
         }
 
-        private PeriodoEscolar BuscaUltimoPeriodoEscolar(TipoCalendarioCompletoDto tipoCalendario)
+        private async Task<PeriodoEscolar> BuscaUltimoPeriodoEscolar(TipoCalendarioCompletoDto tipoCalendario)
         {
             // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
-            var periodosEscolares = ObterPeriodosEscolares(tipoCalendario.Id)
+            var periodosEscolares = await ObterPeriodosEscolares(tipoCalendario.Id)
                 ?? throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
 
             return ObterPeriodoPorData(periodosEscolares, DateTime.Today)
