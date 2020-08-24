@@ -72,7 +72,7 @@ namespace SME.SGP.Infra
         }
         public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar)
         {
-            if(!PodeEditarNotaConceito())
+            if (!PodeEditarNotaConceito())
             {
                 return DataSituacao >= periodoEscolar.PeriodoFim;
             }

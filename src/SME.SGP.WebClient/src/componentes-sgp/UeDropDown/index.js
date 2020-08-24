@@ -20,6 +20,7 @@ function UeDropDown({
   desabilitado,
   opcaoTodas,
   temParametros,
+  modalidade,
 }) {
   const [carregando, setCarregando] = useState(false);
   const [listaUes, setListaUes] = useState([]);
@@ -31,7 +32,8 @@ function UeDropDown({
       const { data } = await AbrangenciaServico.buscarUes(
         dreId,
         url,
-        temParametros
+        temParametros,
+        modalidade
       );
       let lista = [];
       if (data) {
@@ -108,17 +110,19 @@ UeDropDown.propTypes = {
   desabilitado: PropTypes.bool,
   opcaoTodas: PropTypes.bool,
   temParametros: PropTypes.bool,
+  modalidade: PropTypes.number,
 };
 
 UeDropDown.defaultProps = {
   form: {},
-  onChange: () => {},
+  onChange: () => { },
   dreId: '',
   label: null,
   url: '',
   desabilitado: false,
   opcaoTodas: false,
   temParametros: false,
+  modalidade: '',
 };
 
 export default UeDropDown;

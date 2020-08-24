@@ -32,6 +32,7 @@ import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import RotasDto from '~/dtos/rotasDto';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import AlterarAula from './alterarAula';
 
 function CadastroDeAula({ match, location }) {
   const { id, tipoCalendarioId } = match.params;
@@ -62,6 +63,7 @@ function CadastroDeAula({ match, location }) {
   const [somenteLeitura, setSomenteLeitura] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [exibirModalExclusao, setExibirModalExclusao] = useState(false);
+  const [exibirModalAlteracao, setExibirModalAlteracao] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
   const [controlaGrade, setControlaGrade] = useState(true);
   const [gradeAtingida, setGradeAtingida] = useState(false);
@@ -95,6 +97,8 @@ function CadastroDeAula({ match, location }) {
     { label: 'Normal', value: 1 },
     { label: 'Reposição', value: 2 },
   ];
+
+  const [recorrenciaInicial, setRecorrenciaInicial] = useState(1);
 
   const recorrencia = {
     AULA_UNICA: 1,
@@ -169,7 +173,7 @@ function CadastroDeAula({ match, location }) {
           setRegistroMigrado(respostaAula.migrado);
           setEmManutencao(respostaAula.emManutencao);
           servicoCadastroAula
-            .obterRecorrenciaPorIdAula(id)
+            .obterRecorrenciaPorIdAula(id, respostaAula.recorrenciaAula)
             .then(resposta => {
               setRecorrenciaAulaEmEdicao(resposta.data);
             })
@@ -338,40 +342,20 @@ function CadastroDeAula({ match, location }) {
     [turmaSelecionada.turma, defineGrade, id]
   );
 
-  const validaPerguntaAntesSalvar = async () => {
-    const quantidade = recorrenciaAulaEmEdicao.quantidadeAulasRecorrentes;
-    return confirmar(
-      'Atenção',
-      '',
-      `Você tem certeza que deseja alterar ${quantidade} ocorrências desta aula a partir desta data?`
-    );
-  };
-
   const salvar = async valoresForm => {
-    let salvarRegistro = true;
-    if (
-      id &&
-      aula.tipoAula === 1 &&
-      (aula.recorrenciaAula === 2 || aula.recorrenciaAula === 3)
-    ) {
-      salvarRegistro = await validaPerguntaAntesSalvar();
-    }
-
-    if (salvarRegistro) {
-      const componente = obterComponenteSelecionadoPorId(
-        valoresForm.disciplinaId
-      );
-      if (componente) valoresForm.disciplinaNome = componente.nome;
-      setCarregandoDados(true);
-      servicoCadastroAula
-        .salvar(id, valoresForm, componente.regencia || false)
-        .then(resposta => {
-          resposta.data.mensagens.forEach(mensagem => sucesso(mensagem));
-          navegarParaCalendarioProfessor();
-        })
-        .catch(e => erros(e))
-        .finally(() => setCarregandoDados(false));
-    }
+    const componente = obterComponenteSelecionadoPorId(
+      valoresForm.disciplinaId
+    );
+    if (componente) valoresForm.disciplinaNome = componente.nome;
+    setCarregandoDados(true);
+    servicoCadastroAula
+      .salvar(id, valoresForm, componente.regencia || false)
+      .then(resposta => {
+        resposta.data.mensagens.forEach(mensagem => sucesso(mensagem));
+        navegarParaCalendarioProfessor();
+      })
+      .catch(e => erros(e))
+      .finally(() => setCarregandoDados(false));
   };
 
   const obterDataFormatada = () => {
@@ -395,7 +379,7 @@ function CadastroDeAula({ match, location }) {
         disciplinaId: componenteSelecionado
           ? String(componenteSelecionado.codigoComponenteCurricular)
           : null,
-        disciplinaCompartilhadaId: componenteSelecionado ?.compartilhada
+        disciplinaCompartilhadaId: componenteSelecionado?.compartilhada
           ? componenteSelecionado.componenteCurricularId
           : 0,
       };
@@ -474,6 +458,14 @@ function CadastroDeAula({ match, location }) {
         recorrenciaAula: e.target.value,
       };
     });
+    if (id) {
+      servicoCadastroAula
+        .obterRecorrenciaPorIdAula(id, e.target.value)
+        .then(resposta => {
+          setRecorrenciaAulaEmEdicao(resposta.data);
+        })
+        .catch(e => erros(e));
+    }
   };
 
   const onClickVoltar = async () => {
@@ -553,7 +545,7 @@ function CadastroDeAula({ match, location }) {
             const componente = obterComponenteSelecionadoPorId(
               aula.disciplinaId
             );
-            return componente ?.nome;
+            return componente?.nome;
           }}
           recorrencia={recorrenciaAulaEmEdicao}
           onFecharModal={() => {
@@ -564,6 +556,26 @@ function CadastroDeAula({ match, location }) {
           modalidadesFiltroPrincipal={modalidadesFiltroPrincipal}
           turmaSelecionada={turmaSelecionada}
         />
+        <AlterarAula
+          visivel={exibirModalAlteracao}
+          dataAula={obterDataFormatada()}
+          nomeComponente={() => {
+            const componente = obterComponenteSelecionadoPorId(
+              aula.disciplinaId
+            );
+            return componente?.nome;
+          }}
+          recorrencia={recorrenciaAulaEmEdicao}
+          recorrenciaSelecionada={aula.recorrenciaAula}
+          onFecharModal={(salvar) => {
+            setExibirModalAlteracao(false);
+            if (salvar) {
+              refForm.current.handleSubmit();
+            }
+          }}
+          onCancelar={() => setExibirModalAlteracao(false)}
+        />
+
         <div className="col-md-12">
           {controlaGrade && gradeAtingida && !id && (
             <Alert
@@ -672,7 +684,14 @@ function CadastroDeAula({ match, location }) {
                         border
                         bold
                         className="mr-2"
-                        onClick={() => form.handleSubmit()}
+                        onClick={() => {
+                          if (!id || (aula.recorrenciaAula == recorrencia.AULA_UNICA && !recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula)) {
+                            form.handleSubmit();
+                          }
+                          else {
+                            setExibirModalAlteracao(true);
+                          }
+                        }}
                         disabled={
                           somenteConsulta ||
                           (controlaGrade && gradeAtingida && !id) ||
