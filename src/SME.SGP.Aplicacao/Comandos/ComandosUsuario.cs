@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(login, senha);
 
             if (!retornoAutenticacaoEol.Item1.Autenticado)
-                return retornoAutenticacaoEol.Item1;            
+                return retornoAutenticacaoEol.Item1;
 
             var dadosUsuario = await servicoEOL.ObterMeusDados(login);
 
@@ -217,7 +217,7 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new UsuarioReinicioSenhaDto();
 
-            if (String.IsNullOrEmpty(usuario.Email))
+            if (usuario != null && String.IsNullOrEmpty(usuario.Email))
                 retorno.DeveAtualizarEmail = true;
             else
             {
