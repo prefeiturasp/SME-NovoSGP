@@ -347,7 +347,7 @@ const RelatorioNotasConceitosFinais = () => {
   const obterSinteses = async anoLetivoSelecionado => {
     setCarregandoGeral(true);
     const conceitos = await ServicoNotaConceito.obterTodasSinteses(
-      `01-01-${anoLetivoSelecionado}`
+      anoLetivoSelecionado
     )
       .catch(e => erros(e))
       .finally(setCarregandoGeral(false));

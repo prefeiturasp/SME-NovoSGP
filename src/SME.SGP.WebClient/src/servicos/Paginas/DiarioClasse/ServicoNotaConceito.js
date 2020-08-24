@@ -6,7 +6,7 @@ class ServicoNotaConceito {
   };
 
   obterTodasSinteses = data => {
-    return api.get(`v1/avaliacoes/notas/conceitos?data=${data}`);
+    return api.get(`v1/sinteses/${data}`);
   };
 
   obterArredondamento = (nota, data) => {
