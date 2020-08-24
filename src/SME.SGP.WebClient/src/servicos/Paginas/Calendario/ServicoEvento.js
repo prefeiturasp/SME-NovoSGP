@@ -1,4 +1,5 @@
 import api from '~/servicos/api';
+import AbrangenciaServico from '~/servicos/Abrangencia';
 
 const urlPadrao = `v1/calendarios/eventos`;
 
@@ -35,9 +36,8 @@ class ServicoEvento {
       });
   };
 
-  listarUes = async dre => {
-    return api
-      .get(`v1/abrangencias/false/dres/${dre}/ues`)
+  listarUes = async (dre, modalidade) => {
+    return AbrangenciaServico.buscarUes(dre, '', false, modalidade)
       .then(res => {
         return { sucesso: true, conteudo: res.data };
       })
