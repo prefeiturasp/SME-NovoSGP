@@ -445,7 +445,11 @@ const DiarioBordo = () => {
           sucesso(msg);
         }
         setCarregandoGeral(false);
-        obterDadosObservacoes(diarioBordoId);
+
+        ServicoDiarioBordo.atualizarSalvarEditarDadosObservacao(
+          obs,
+          resultado.data
+        );
         return resultado;
       })
       .catch(e => {
@@ -472,8 +476,7 @@ const DiarioBordo = () => {
       );
       if (resultado && resultado.status === 200) {
         sucesso('Registro excluído com sucesso');
-        const diarioBordoId = auditoria.id;
-        obterDadosObservacoes(diarioBordoId);
+        ServicoDiarioBordo.atualizarExcluirDadosObservacao(obs, resultado.data);
       }
       setCarregandoGeral(false);
     }
