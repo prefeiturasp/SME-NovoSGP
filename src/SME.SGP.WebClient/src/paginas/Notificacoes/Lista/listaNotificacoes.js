@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import * as moment from 'moment';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -7,7 +7,7 @@ import CampoTexto from '~/componentes/campoTexto';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
-import { confirmar, erro, sucesso } from '~/servicos/alertas';
+import { confirmar, erro, sucesso, erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
@@ -26,6 +26,24 @@ export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
     []
   );
+
+  const statusLista = ['', 'Não lida', 'Lida', 'Aceita', 'Recusada'];
+
+  function montarLinhasTabela(text, row, colunaSituacao) {
+    return colunaSituacao ? (
+      <span
+        className={
+          row.status === notificacaoStatus.Pendente
+            ? 'cor-vermelho font-weight-bold text-uppercase'
+            : 'cor-novo-registro-lista'
+        }
+      >
+        {statusLista[row.status]}
+      </span>
+    ) : (
+      text
+    );
+  }
 
   const colunas = [
     {
@@ -135,23 +153,6 @@ export default function NotificacoesLista() {
     { id: 2, descricao: 'Turma selecionada' },
   ];
 
-  const statusLista = ['', 'Não lida', 'Lida', 'Aceita', 'Recusada'];
-
-  function montarLinhasTabela(text, row, colunaSituacao) {
-    return colunaSituacao ? (
-      <span
-        className={
-          row.status === notificacaoStatus.Pendente
-            ? 'cor-vermelho font-weight-bold text-uppercase'
-            : 'cor-novo-registro-lista'
-        }
-      >
-        {statusLista[row.status]}
-      </span>
-    ) : (
-      text
-    );
-  }
   const onSelecionarItems = items => {
     if (items && items.length > 0) {
       const naoPodeRemover = items.find(item => !item.podeRemover);
@@ -191,25 +192,7 @@ export default function NotificacoesLista() {
     setTituloSelecionado(titulo.target.value);
   }
 
-  function onSearchCodigo() {
-    onClickFiltrar();
-  }
-
-  function onChangeCodigo(codigo) {
-    setCodigoSelecionado(codigo.target.value);
-  }
-
-  function onChangeTipo(tipo) {
-    setTipoSelecionado(tipo);
-  }
-
-  function onClickEditar(notificacao) {
-    if (!permissoesTela.podeAlterar) return;
-
-    history.push(`/notificacoes/${notificacao.id}`);
-  }
-
-  const filtrarNotificacoes = async () => {
+  const filtrarNotificacoes = useCallback(() => {
     const paramsQuery = {
       categoria: categoriaSelecionada,
       codigo: codigoSelecionado || null,
@@ -230,10 +213,28 @@ export default function NotificacoesLista() {
       }
     }
     setFiltro(paramsQuery);
-  };
+  }, []);
 
-  async function onClickFiltrar() {
+  const onClickFiltrar = useCallback(() => {
     filtrarNotificacoes();
+  }, []);
+
+  function onSearchCodigo() {
+    onClickFiltrar();
+  }
+
+  function onChangeCodigo(codigo) {
+    setCodigoSelecionado(codigo.target.value);
+  }
+
+  function onChangeTipo(tipo) {
+    setTipoSelecionado(tipo);
+  }
+
+  function onClickEditar(notificacao) {
+    if (!permissoesTela.podeAlterar) return;
+
+    history.push(`/notificacoes/${notificacao.id}`);
   }
 
   const validarFiltro = () => {
@@ -282,6 +283,12 @@ export default function NotificacoesLista() {
           data.forEach(resultado => {
             if (resultado.sucesso) {
               sucesso(resultado.mensagem);
+              servicoNotificacao
+                .obterUltimasNotificacoesNaoLidas()
+                .catch(e => erros(e));
+              servicoNotificacao
+                .obterQuantidadeNotificacoesNaoLidas()
+                .catch(e => erros(e));
             } else {
               erro(resultado.mensagem);
             }
@@ -416,16 +423,18 @@ export default function NotificacoesLista() {
             />
           </div>
           <div className="col-md-12 pt-2">
-            <ListaPaginada
-              url="v1/notificacoes/"
-              id="lista-notificacoes"
-              colunas={colunasTabela}
-              filtro={filtro}
-              onClick={permissoesTela.podeAlterar && onClickEditar}
-              multiSelecao
-              selecionarItems={onSelecionarItems}
-              filtroEhValido={validarFiltro()}
-            />
+            {colunasTabela && colunasTabela.length && (
+              <ListaPaginada
+                url="v1/notificacoes/"
+                id="lista-notificacoes"
+                colunas={colunasTabela}
+                filtro={filtro}
+                onClick={permissoesTela.podeAlterar && onClickEditar}
+                multiSelecao
+                selecionarItems={onSelecionarItems}
+                filtroEhValido={validarFiltro()}
+              />
+            )}
           </div>
         </EstiloLista>
       </Loader>

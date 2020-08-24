@@ -38,5 +38,14 @@ namespace SME.SGP.Infra
 
         public static string ShortName(this Enum enumValue)
             => enumValue.GetAttribute<DisplayAttribute>().ShortName;
+
+
+        public static Dictionary<Enum,string> ToDictionary<TEnum>()
+            where TEnum : struct
+        {
+            if (!typeof(TEnum).IsEnum) throw new InvalidOperationException();
+
+            return ((TEnum[])Enum.GetValues(typeof(TEnum))).Cast<Enum>().ToDictionary(key => key, value => value.Name());
+        }
     }
 }
