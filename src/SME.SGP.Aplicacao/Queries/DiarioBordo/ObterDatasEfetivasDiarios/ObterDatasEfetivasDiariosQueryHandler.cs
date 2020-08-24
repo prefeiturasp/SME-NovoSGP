@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<Tuple<long, DateTime>>> Handle(ObterDatasEfetivasDiariosQuery request, CancellationToken cancellationToken)
         {
-            var datas = await repositorioDiarioBordo.ObterDatasPorIds(request.PeriodoInicio, request.PeriodoFim);
+            var datas = await repositorioDiarioBordo.ObterDatasPorIds(request.TurmaCodigo, request.ComponenteCurricularCodigo, request.PeriodoInicio, request.PeriodoFim);
 
             return datas;
         }
