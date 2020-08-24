@@ -32,8 +32,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<AbrangenciaCompactaVigenteRetornoEOLDTO> ObterAbrangenciaCompactaVigente(string login, Guid perfil);
 
-        Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds);
-        Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorPorUeAnosModalidade(string[] turmasCodigo, int modalidade, string[] anos);
+        Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds);        
         Task<string[]> ObterAdministradoresSGP(string codigoDreOuUe);
 
         Task<string[]> ObterAdministradoresSGPParaNotificar(string codigoDreOuUe);

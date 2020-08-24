@@ -19,5 +19,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo);
 
         Task<long> ObterTurmaIdPorCodigo(string turmaCodigo);
+
+        Task<IEnumerable<long>> ObterTurmasPorUeAnos(string ueCodigo, int anoLetivo, string[] anos, int modalidadeId);
     }
 }

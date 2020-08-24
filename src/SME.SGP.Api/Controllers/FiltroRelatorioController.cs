@@ -72,9 +72,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<RetornoCicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterComponentesCurricularesPorAnoUeModalidade([FromQuery]string[] anos, string codigoUe, Modalidade modalidadeId, [FromServices] IObterFiltroRelatoriosAnosPorCicloModalidadeUseCase obterFiltroRelatoriosAnosPorCicloModalidadeUseCase)
+        public async Task<IActionResult> ObterComponentesCurricularesPorAnoUeModalidade([FromQuery]string[] anos, int anoLetivo,  string codigoUe, Modalidade modalideId, [FromServices] IObterComponentesCurricularesPorUeAnosModalidadeUseCase obterComponentesCurricularesPorUeAnosModalidadeUseCase)
         {
-            return Ok(await obterFiltroRelatoriosAnosPorCicloModalidadeUseCase.Executar(cicloId, modalidade));
+            return Ok(await obterComponentesCurricularesPorUeAnosModalidadeUseCase.Executar(anos, anoLetivo, codigoUe, modalideId));
         }
     }
 }
