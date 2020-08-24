@@ -55,10 +55,10 @@ namespace SME.SGP.Aplicacao
                     var periodoEscolarAtual = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, hoje);
                     if (periodoEscolarAtual == null || periodoEscolar.Id != periodoEscolarAtual.Id)
                     {
-                        var periodoFechamento = await repositorioPeriodoFechamento.ObterPeriodoPorUeDataBimestreAsync(request.Turma.UeId, request.DataAula, request.Bimestre);
+                        var periodoFechamento = await repositorioPeriodoFechamento.ObterPeriodoPorUeDataBimestreAsync(request.Turma.UeId, hoje, periodoEscolar.Bimestre);
                         if (periodoFechamento != null)
                         {
-                            if ( periodoFechamento.ExisteFechamentoEmAberto(hoje))
+                            if (periodoFechamento.ExisteFechamentoEmAberto(hoje))
                                 return new PodeCadastrarAulaPorDataRetornoDto(true);
                         }
                         else

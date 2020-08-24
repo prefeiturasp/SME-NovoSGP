@@ -27,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    tipo_turno,
 	                    data_atualizacao,
                         ensino_especial,
-                        situacao,
+                        etapa_eja,
                         data_inicio
                     from
 	                    public.turma
@@ -46,8 +46,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    tipo_turno = @tipoTurno,
 	                    data_atualizacao = @dataAtualizacao,
                         ensino_especial = @ensinoEspecial,
-                        data_inicio = @dataInicio,
-                        situacao = @situacao
+                        etapa_eja = @etapaEja,
+                        data_inicio = @dataInicio
                     where
 	                    id = @id;";
 
@@ -222,8 +222,8 @@ namespace SME.SGP.Dados.Repositorios
                                         c.QuantidadeDuracaoAula != l.QuantidadeDuracaoAula ||
                                         c.TipoTurno != l.TipoTurno ||
                                         c.EnsinoEspecial != l.EnsinoEspecial ||
-                                        c.DataInicio != l.DataInicio ||
-                                        c.Situacao != l.Situacao)
+                                        c.EtapaEJA != l.EtapaEJA ||
+                                        c.DataInicio != l.DataInicio)
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -239,8 +239,8 @@ namespace SME.SGP.Dados.Repositorios
                                       Ue = l.Ue,
                                       UeId = l.UeId,
                                       EnsinoEspecial = c.EnsinoEspecial,
-                                      DataInicio = c.DataInicio,
-                                      Situacao = c.Situacao
+                                      EtapaEJA = c.EtapaEJA
+                                      DataInicio = c.DataInicio
                                   };
 
                 foreach (var item in modificados)
@@ -257,8 +257,8 @@ namespace SME.SGP.Dados.Repositorios
                         dataAtualizacao = item.DataAtualizacao,
                         id = item.Id,
                         ensinoEspecial = item.EnsinoEspecial,
-                        dataInicio = item.DataInicio,
-                        situacao = item.Situacao
+                        etapaEja = item.EtapaEJA
+                        dataInicio = item.DataInicio
                     });
 
                     resultado.Add(item);

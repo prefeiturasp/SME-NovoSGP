@@ -46,6 +46,8 @@
         
         DataUltimaAtualizacaoObjetivosJurema = 22,
 
+        MunicipioAtendimentoHistoricoEscolar = 25,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
