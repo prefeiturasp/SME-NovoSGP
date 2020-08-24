@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         {
             // arrange
             mediator.Setup(a => a.Send(It.IsAny<ObterAnotacaoFrequenciaAlunoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new AnotacaoFrequenciaAluno()
+                .ReturnsAsync(new AnotacaoFrequenciaAluno
                 {
                     Id = 1,
                     Anotacao = "Teste",

@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                 Id = anotacao.Id,
                 CodigoAluno = anotacao.CodigoAluno,
                 AulaId = anotacao.AulaId,
-                MotivoAusenciaId = anotacao.MotivoAusenciaId,
+                MotivoAusenciaId = anotacao.MotivoAusenciaId ?? 0,
                 Anotacao = anotacao.Anotacao,
                 Auditoria = (AuditoriaDto)anotacao
             };

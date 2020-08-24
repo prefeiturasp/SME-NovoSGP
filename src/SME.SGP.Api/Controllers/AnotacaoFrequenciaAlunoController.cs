@@ -20,7 +20,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AnotacaoFrequenciaAlunoDto), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CP_C, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_I, Permissao.PDA_A, Permissao.PDA_E, Policy = "Bearer")]
         public async Task<IActionResult> BuscarPorId(string codigoAluno, long aulaId, [FromServices] IObterAnotacaoFrequenciaAlunoUseCase useCase)
         {
             var anotacao = await useCase.Executar(new FiltroAnotacaoFrequenciaAlunoDto(codigoAluno, aulaId));
@@ -31,5 +31,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(anotacao);
         }
 
+        [HttpPost]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PDA_I, Permissao.PDA_A, Permissao.PDA_E, Policy = "Bearer")]
+        public async Task<IActionResult> Salvar([FromBody] SalvarAnotacaoFrequenciaAlunoDto dto, [FromServices] ISalvarAnotacaoFrequenciaAlunoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(dto));
+        }
     }
 }
