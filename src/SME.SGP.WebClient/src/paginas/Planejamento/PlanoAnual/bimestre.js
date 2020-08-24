@@ -184,15 +184,19 @@ const Bimestre = ({
               Objetivos de Aprendizagem e Desenvolvimento
             </h6>
           )}
-          <div className="mt-3">
-            <Disciplinas
-              disciplinas={disciplinas}
-              preSelecionadas={disciplinasPreSelecionadas}
-              onChange={onChangeDisciplinasSelecionadas}
-              layoutEspecial={layoutEspecial}
-              carregando={carregandoDados}
-            />
-          </div>
+          {disciplinas && disciplinas.length ? (
+            <div className="mt-3">
+              <Disciplinas
+                disciplinas={disciplinas}
+                preSelecionadas={disciplinasPreSelecionadas}
+                onChange={onChangeDisciplinasSelecionadas}
+                layoutEspecial={layoutEspecial}
+                carregando={carregandoDados}
+              />
+            </div>
+          ) : (
+            ''
+          )}
 
           {!layoutEspecial && (
             <ListaObjetivos
@@ -360,7 +364,8 @@ Bimestre.propTypes = {
   selecionarObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
   onChangeDescricaoObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
   exibirSwitchObjAprOpcionais: PropTypes.oneOfType([PropTypes.any]).isRequired,
-  objetivosAprendizagemOpcionais: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  objetivosAprendizagemOpcionais: PropTypes.oneOfType([PropTypes.any])
+    .isRequired,
 };
 
 export default Bimestre;
