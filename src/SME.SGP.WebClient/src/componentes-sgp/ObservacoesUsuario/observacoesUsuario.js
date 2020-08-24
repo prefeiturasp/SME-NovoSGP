@@ -2,38 +2,38 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Label } from '~/componentes';
 import CampoObservacao from './campoObservacao';
-import { ContainerObservacoesChat } from './observacoesChat.css';
-import ObservacoesChatMontarDados from './observacoesChatMontarDados';
+import { ContainerObservacoesUsuario } from './observacoesUsuario.css';
+import ObservacoesUsuarioMontarDados from './observacoesUsuarioMontarDados';
 
-const ObservacoesChat = props => {
+const ObservacoesUsuario = props => {
   const { salvarObservacao, editarObservacao, excluirObservacao } = props;
 
   return (
     <div className="col-sm-12 mb-2 mt-4">
       <Label text="Observações" />
-      <ContainerObservacoesChat>
+      <ContainerObservacoesUsuario>
         <div style={{ margin: '15px' }}>
           <CampoObservacao salvarObservacao={salvarObservacao} />
-          <ObservacoesChatMontarDados
+          <ObservacoesUsuarioMontarDados
             onClickSalvarEdicao={editarObservacao}
             onClickExcluir={excluirObservacao}
           />
         </div>
-      </ContainerObservacoesChat>
+      </ContainerObservacoesUsuario>
     </div>
   );
 };
 
-ObservacoesChat.propTypes = {
+ObservacoesUsuario.propTypes = {
   editarObservacao: PropTypes.func,
   salvarObservacao: PropTypes.func,
   excluirObservacao: PropTypes.func,
 };
 
-ObservacoesChat.defaultProps = {
+ObservacoesUsuario.defaultProps = {
   editarObservacao: () => {},
   salvarObservacao: () => {},
   excluirObservacao: () => {},
 };
 
-export default ObservacoesChat;
+export default ObservacoesUsuario;

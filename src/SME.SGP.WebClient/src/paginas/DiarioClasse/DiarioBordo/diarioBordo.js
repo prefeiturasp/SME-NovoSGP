@@ -24,11 +24,11 @@ import ModalSelecionarAula from './modalSelecionarAula';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
-import ObservacoesChat from '~/componentes-sgp/ObservacoesChat/observacoesChat';
+import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
 import {
-  limparDadosObservacoesChat,
-  setDadosObservacoesChat,
-} from '~/redux/modulos/observacoesChat/actions';
+  limparDadosObservacoesUsuario,
+  setDadosObservacoesUsuario,
+} from '~/redux/modulos/observacoesUsuario/actions';
 
 const DiarioBordo = () => {
   const usuario = useSelector(state => state.usuario);
@@ -223,7 +223,7 @@ const DiarioBordo = () => {
 
   const obterDadosObservacoes = useCallback(
     async diarioBordoId => {
-      dispatch(limparDadosObservacoesChat());
+      dispatch(limparDadosObservacoesUsuario());
       setCarregandoGeral(true);
       const retorno = await ServicoDiarioBordo.obterDadosObservacoes(
         diarioBordoId
@@ -233,9 +233,9 @@ const DiarioBordo = () => {
       });
 
       if (retorno && retorno.data) {
-        dispatch(setDadosObservacoesChat([...retorno.data]));
+        dispatch(setDadosObservacoesUsuario([...retorno.data]));
       } else {
-        dispatch(setDadosObservacoesChat([]));
+        dispatch(setDadosObservacoesUsuario([]));
       }
 
       setCarregandoGeral(false);
@@ -682,7 +682,7 @@ const DiarioBordo = () => {
           </Formik>
         </div>
         {auditoria && auditoria.id ? (
-          <ObservacoesChat
+          <ObservacoesUsuario
             salvarObservacao={obs => salvarEditarObservacao(obs)}
             editarObservacao={obs => salvarEditarObservacao(obs)}
             excluirObservacao={obs => excluirObservacao(obs)}
