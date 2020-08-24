@@ -22,6 +22,8 @@ namespace SME.SGP.Infra
         public string NomeAluno { get; set; }
         public int NumeroAlunoChamada { get; set; }
         public string SituacaoMatricula { get; set; }
+        public bool PermiteAnotacao { get; set; }
+        public bool PossuiAnotacao { get; set; }
         public MarcadorFrequenciaDto Marcador { get; set; }
         public IndicativoFrequenciaDto IndicativoFrequencia { get; set; }
     }

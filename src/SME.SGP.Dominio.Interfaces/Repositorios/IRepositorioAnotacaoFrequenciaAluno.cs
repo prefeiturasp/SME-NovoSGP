@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -7,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<AnotacaoFrequenciaAluno> ObterPorAlunoAula(string codigoAluno, long aulaId);
         Task<bool> ExcluirAnotacoesDaAula(long aulaId);
+        Task<IEnumerable<string>> ListarAlunosComAnotacaoFrequenciaNaAula(long aulaId);
     }
 }
