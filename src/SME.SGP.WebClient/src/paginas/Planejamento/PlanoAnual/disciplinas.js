@@ -32,17 +32,19 @@ const Disciplinas = ({
 
   return (
     <Loader loading={carregando}>
-      {listaDisciplinas.map(disciplina => (
-        <Disciplina
-          disciplina={disciplina}
-          onClick={selecionarDisciplina}
-          preSelecionada={preSelecionadas.find(
-            c => String(c) === String(disciplina.codigoComponenteCurricular)
-          )}
-          key={disciplina.codigoComponenteCurricular}
-          layoutEspecial={layoutEspecial}
-        />
-      ))}
+      {listaDisciplinas &&
+        listaDisciplinas.length &&
+        listaDisciplinas.map(disciplina => (
+          <Disciplina
+            disciplina={disciplina}
+            onClick={selecionarDisciplina}
+            preSelecionada={preSelecionadas.find(
+              c => String(c) === String(disciplina.codigoComponenteCurricular)
+            )}
+            key={disciplina.codigoComponenteCurricular}
+            layoutEspecial={layoutEspecial}
+          />
+        ))}
     </Loader>
   );
 };
