@@ -1,5 +1,7 @@
-import api from '~/servicos/api';
 import moment from 'moment';
+import modalidadeDto from '~/dtos/modalidade';
+import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
+import api from '~/servicos/api';
 
 class ServicoCalendarios {
   obterTiposCalendario = async anoLetivo => {
@@ -9,6 +11,16 @@ class ServicoCalendarios {
       .get(`v1/calendarios/tipos/anos/letivos/${anoLetivo}`)
       .then(resposta => resposta)
       .catch(() => []);
+  };
+
+  converterModalidade = modalidadeCalendario => {
+    let modalidade = modalidadeDto.FUNDAMENTAL;
+    if (modalidadeCalendario === modalidadeTipoCalendario.EJA) {
+      modalidade = modalidadeDto.EJA;
+    } else if (modalidadeCalendario === modalidadeTipoCalendario.Infantil) {
+      modalidade = modalidadeDto.INFANTIL;
+    }
+    return modalidade;
   };
 }
 

@@ -173,8 +173,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopia(int turmaId, long componenteCurricular)
         {
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            var turmasEOL = await servicoEOL.ObterTurmasParaCopiaPlanoAnual(usuarioLogado.CodigoRf, componenteCurricular, turmaId);
+            var codigoRfUsuarioLogado = servicoUsuario.ObterRf();
+            var turmasEOL = await servicoEOL.ObterTurmasParaCopiaPlanoAnual(codigoRfUsuarioLogado, componenteCurricular, turmaId);
             if (turmasEOL != null && turmasEOL.Any())
             {
                 var idsTurmas = turmasEOL.Select(c => c.TurmaId.ToString());
