@@ -190,7 +190,7 @@ namespace SME.SGP.Dados.Repositorios
                                                 inner join ue u on u.id  = t.ue_id 
                                             where  t.ano_letivo = @anoLetivo and t.modalidade_codigo = @modalidadeId ");
 
-            if (string.IsNullOrEmpty(ueCodigo))
+            if (!string.IsNullOrEmpty(ueCodigo))
                 query.AppendLine("and u.ue_id  = @ueCodigo");
 
             if (anos != null && anos.Length > 0)

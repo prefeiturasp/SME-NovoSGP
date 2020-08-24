@@ -17,6 +17,13 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<ComponenteCurricularEol>> Executar(string[] anos, int anoLetivo, string ueCodigo, Modalidade modalidade)
         {
+
+            if (anos.Contains("-99"))
+                anos = new string[0];
+
+            if (ueCodigo == "-99")
+                ueCodigo = "";
+
             var turmaCodigos = await  mediator.Send(new ObterTurmasPorUeAnosModalidadeQuery(ueCodigo, anoLetivo, anos, (int)modalidade));
 
             if (turmaCodigos == null || !turmaCodigos.Any())
