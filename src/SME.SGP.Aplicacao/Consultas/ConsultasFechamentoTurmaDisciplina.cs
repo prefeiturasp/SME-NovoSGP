@@ -221,8 +221,8 @@ namespace SME.SGP.Aplicacao
                         {
                             var sinteseDto = consultasFrequencia.ObterSinteseAluno(alunoDto.PercentualFrequencia, disciplinaEOL);
 
-                            alunoDto.SinteseId = sinteseDto.SinteseId;
-                            alunoDto.Sintese = sinteseDto.SinteseNome;
+                            alunoDto.SinteseId = sinteseDto.Id;
+                            alunoDto.Sintese = sinteseDto.Valor;
                         }
                         else
                         {
