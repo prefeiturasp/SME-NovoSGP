@@ -5,8 +5,8 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -182,6 +182,24 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select ensino_especial from turma where turma_id = @turmaCodigo";
 
             return await contexto.Conexao.QueryFirstAsync<bool>(query, new { turmaCodigo });
+        }
+
+        public async Task<IEnumerable<long>> ObterTurmasPorUeAnos(string ueCodigo, int anoLetivo, string[] anos, int modalidadeId)
+        {
+            var query = new StringBuilder(@"select x.turma_Id from (select distinct on (2) t.turma_id , t.ano from turma t
+                                                inner join ue u on u.id  = t.ue_id 
+                                            where  t.ano_letivo = @anoLetivo and t.modalidade_codigo = @modalidadeId ");
+
+            if (string.IsNullOrEmpty(ueCodigo))
+                query.AppendLine("and u.ue_id  = @ueCodigo");
+
+            if (anos != null && anos.Length > 0)
+                query.AppendLine("and t.ano = any(@anos) ");
+
+            query.AppendLine(") x");
+
+            return await contexto.Conexao.QueryAsync<long>(query.ToString(), new { ueCodigo, anos, anoLetivo, modalidadeId });
+
         }
 
         public async Task<IEnumerable<Turma>> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
