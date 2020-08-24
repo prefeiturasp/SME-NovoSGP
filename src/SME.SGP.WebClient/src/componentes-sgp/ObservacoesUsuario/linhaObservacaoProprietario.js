@@ -4,12 +4,12 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
-import { setObservacaoEmEdicao } from '~/redux/modulos/observacoesChat/actions';
+import { setObservacaoEmEdicao } from '~/redux/modulos/observacoesUsuario/actions';
 import { confirmar } from '~/servicos/alertas';
 import {
   ContainerCampoObservacao,
   LinhaObservacao,
-} from './observacoesChat.css';
+} from './observacoesUsuario.css';
 
 const LinhaObservacaoProprietario = props => {
   const { dados, onClickSalvarEdicao, onClickExcluir, index, children } = props;
@@ -17,11 +17,11 @@ const LinhaObservacaoProprietario = props => {
   const dispatch = useDispatch();
 
   const observacaoEmEdicao = useSelector(
-    store => store.observacoesChat.observacaoEmEdicao
+    store => store.observacoesUsuario.observacaoEmEdicao
   );
 
   const novaObservacao = useSelector(
-    store => store.observacoesChat.novaObservacao
+    store => store.observacoesUsuario.novaObservacao
   );
 
   const onClickEditar = () => {

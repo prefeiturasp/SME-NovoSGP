@@ -1,5 +1,5 @@
 import { store } from '~/redux';
-import { setDadosObservacoesChat } from '~/redux/modulos/observacoesChat/actions';
+import { setDadosObservacoesUsuario } from '~/redux/modulos/observacoesUsuario/actions';
 import api from '~/servicos/api';
 
 const urlPadrao = `/v1/diarios-bordo`;
@@ -24,8 +24,8 @@ class ServicoDiarioBordo {
     const { dispatch } = store;
     const state = store.getState();
 
-    const { observacoesChat } = state;
-    const { dadosObservacoes } = observacoesChat;
+    const { observacoesUsuario } = state;
+    const { dadosObservacoes } = observacoesUsuario;
 
     const observacaoId = dados.id;
 
@@ -34,7 +34,7 @@ class ServicoDiarioBordo {
       const index = dadosObservacoes.indexOf(item);
       dados.auditoria = dadosAposSalvar;
       dadosObservacoes[index] = { ...dados };
-      dispatch(setDadosObservacoesChat([...dadosObservacoes]));
+      dispatch(setDadosObservacoesUsuario([...dadosObservacoes]));
     } else {
       const dadosObs = dadosObservacoes;
       const params = {
@@ -44,7 +44,7 @@ class ServicoDiarioBordo {
         auditoria: dadosAposSalvar,
       };
       dadosObs.unshift(params);
-      dispatch(setDadosObservacoesChat([...dadosObs]));
+      dispatch(setDadosObservacoesUsuario([...dadosObs]));
     }
   };
 
@@ -57,14 +57,14 @@ class ServicoDiarioBordo {
     const { dispatch } = store;
     const state = store.getState();
 
-    const { observacoesChat } = state;
-    const { dadosObservacoes } = observacoesChat;
+    const { observacoesUsuario } = state;
+    const { dadosObservacoes } = observacoesUsuario;
 
     const item = dadosObservacoes.find(e => e.id === dados.id);
     const index = dadosObservacoes.indexOf(item);
     dadosObservacoes.splice(index, 1);
 
-    dispatch(setDadosObservacoesChat([...dadosObservacoes]));
+    dispatch(setDadosObservacoesUsuario([...dadosObservacoes]));
   };
 
   obterDiarioBordo = aulaId => {

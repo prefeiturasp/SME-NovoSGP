@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import Auditoria from '~/componentes/auditoria';
 import LinhaObservacaoProprietario from './linhaObservacaoProprietario';
-import { LinhaObservacao } from './observacoesChat.css';
+import { LinhaObservacao } from './observacoesUsuario.css';
 
-const ObservacoesChatMontarDados = props => {
+const ObservacoesUsuarioMontarDados = props => {
   const {
     onClickSalvarEdicao,
     onClickExcluir,
@@ -14,7 +14,7 @@ const ObservacoesChatMontarDados = props => {
   } = props;
 
   const dadosObservacoes = useSelector(
-    store => store.observacoesChat.dadosObservacoes
+    store => store.observacoesUsuario.dadosObservacoes
   );
 
   const auditoria = observacao => {
@@ -74,16 +74,16 @@ const ObservacoesChatMontarDados = props => {
   );
 };
 
-ObservacoesChatMontarDados.propTypes = {
+ObservacoesUsuarioMontarDados.propTypes = {
   onClickSalvarEdicao: PropTypes.func,
   onClickExcluir: PropTypes.func,
   inserindoNovaObservacao: PropTypes.bool,
 };
 
-ObservacoesChatMontarDados.defaultProps = {
+ObservacoesUsuarioMontarDados.defaultProps = {
   onClickSalvarEdicao: () => {},
   onClickExcluir: () => {},
   inserindoNovaObservacao: false,
 };
 
-export default ObservacoesChatMontarDados;
+export default ObservacoesUsuarioMontarDados;

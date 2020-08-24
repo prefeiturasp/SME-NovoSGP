@@ -17,7 +17,7 @@ import conselhoClasse from './conselhoClasse/reducers';
 import relatorioSemestralPAP from './relatorioSemestralPAP/reducers';
 import sistema from './sistema/reducers';
 import localizadorEstudante from './localizadorEstudante/reducers';
-import observacoesChat from './observacoesChat/reducers';
+import observacoesUsuario from './observacoesUsuario/reducers';
 import cartaIntencoes from './cartaIntencoes/reducers';
 
 const reducers = combineReducers({
@@ -38,7 +38,7 @@ const reducers = combineReducers({
   relatorioSemestralPAP,
   sistema,
   localizadorEstudante,
-  observacoesChat,
+  observacoesUsuario,
   cartaIntencoes,
 });
 
