@@ -317,7 +317,7 @@ namespace SME.SGP.Aplicacao.Servicos
                  TipoTurno = z.TipoTurno,
                  Ue = new Ue() { CodigoUe = y.Codigo },
                  EnsinoEspecial = z.EnsinoEspecial,
-                 EtapaEJA = z.EtapaEJA
+                 EtapaEJA = z.EtapaEJA,
                  DataInicio = z.DataInicioTurma
              })));
 
