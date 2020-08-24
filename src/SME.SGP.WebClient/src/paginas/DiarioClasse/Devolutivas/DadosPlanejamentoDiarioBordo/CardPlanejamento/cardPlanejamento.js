@@ -17,10 +17,10 @@ const CardPlanejamento = React.memo(() => {
   return (
     <div style={{ border: '1px solid #DADADA' }}>
       {dadosPlanejamentos &&
-      dadosPlanejamentos.itens &&
-      dadosPlanejamentos.itens.length ? (
+      dadosPlanejamentos.items &&
+      dadosPlanejamentos.items.length ? (
         <ListaPlanejamentos className="row mt-3 p-3">
-          {dadosPlanejamentos.itens.map(item => {
+          {dadosPlanejamentos.items.map(item => {
             return (
               <div className="col-md-6" key={shortid.generate()}>
                 <Tabela
