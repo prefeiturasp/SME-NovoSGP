@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
 
                 foreach (var regencia in componentes.Where(componentes => componentes.Regencia))
                 {
-                    var turmaNoAno = turmasNosAnos.FirstOrDefault(t => t.Ano == "0");
+                    var turmaNoAno = turmasNosAnos.FirstOrDefault(t => t.Ano == regencia.AnoTurma);
 
                     var componentesRegencia = await consultasDisciplina.ObterComponentesRegencia(ConverterParaTurma(turmaNoAno, request.CodigoUe), regencia.Codigo);
 

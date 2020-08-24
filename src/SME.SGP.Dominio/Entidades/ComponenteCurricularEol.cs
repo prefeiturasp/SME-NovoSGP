@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio
         public long? CodigoComponenteCurricularPai { get; set; }
         public bool Compartilhada { get; set; }
         public string Descricao { get; set; }
+        public string AnoTurma { get; set; }
         public bool LancaNota { get; set; }
         public bool PossuiObjetivos { get; set; }
         public bool Regencia { get; set; }
