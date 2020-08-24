@@ -5,6 +5,10 @@ class ServicoNotaConceito {
     return api.get(`v1/avaliacoes/notas/conceitos?data=${data}`);
   };
 
+  obterTodasSinteses = data => {
+    return api.get(`v1/avaliacoes/notas/conceitos?data=${data}`);
+  };
+
   obterArredondamento = (nota, data) => {
     return api.get(
       `v1/avaliacoes/notas/${nota}/arredondamento?data=${data ||

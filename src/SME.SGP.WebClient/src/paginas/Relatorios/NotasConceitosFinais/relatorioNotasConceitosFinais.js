@@ -54,11 +54,11 @@ const RelatorioNotasConceitosFinais = () => {
   const listaTipoNota = [
     { valor: tipoNota.nota, desc: 'Nota' },
     { valor: tipoNota.conceito, desc: 'Conceito' },
+    { valor: tipoNota.sintese, desc: 'Síntese' },
   ];
   const [formato, setFormato] = useState('1');
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
-  const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoGeral(true);
@@ -344,13 +344,21 @@ const RelatorioNotasConceitosFinais = () => {
     setListaConceitos(conceitos?.data);
   };
 
-  useEffect(() => {
-    if (
-      anoLetivo &&
-      tipoNotaSelecionada &&
-      tipoNotaSelecionada === tipoNota.conceito
+  const obterSinteses = async anoLetivoSelecionado => {
+    setCarregandoGeral(true);
+    const conceitos = await ServicoNotaConceito.obterTodasSinteses(
+      `01-01-${anoLetivoSelecionado}`
     )
-      obterConceitos(anoLetivo);
+      .catch(e => erros(e))
+      .finally(setCarregandoGeral(false));
+    setListaConceitos(conceitos?.data);
+  };
+
+  useEffect(() => {
+    if (anoLetivo && tipoNotaSelecionada) {
+      if (tipoNotaSelecionada === tipoNota.conceito) obterConceitos(anoLetivo);
+      else obterSinteses(anoLetivo);
+    }
   }, [tipoNotaSelecionada, anoLetivo]);
 
   const desabilitarGerar =
@@ -478,7 +486,7 @@ const RelatorioNotasConceitosFinais = () => {
     setValorCondicao(undefined);
     setCondicao(undefined);
     setTipoNotaSelecionada(valor);
-    if (valor && valor === '2') {
+    if (valor && (valor === '2' || valor === '3')) {
       setCondicao('1');
     }
   };
@@ -701,7 +709,8 @@ const RelatorioNotasConceitosFinais = () => {
                   label="Condição"
                   disabled={
                     (listaCondicao && listaCondicao.length === 1) ||
-                    tipoNotaSelecionada === tipoNota.conceito
+                    tipoNotaSelecionada === tipoNota.conceito ||
+                    tipoNotaSelecionada === tipoNota.sintese
                   }
                   valueSelect={condicao}
                   onChange={onChangeCondicao}
