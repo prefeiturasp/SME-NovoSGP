@@ -4,7 +4,7 @@ import { Base } from '~/componentes/colors';
 
 const { TextArea } = Input;
 
-export const ContainerObservacoesChat = styled.div`
+export const ContainerObservacoesUsuario = styled.div`
   background: #ffffff;
   border: 1px solid #dadada;
   box-sizing: border-box;

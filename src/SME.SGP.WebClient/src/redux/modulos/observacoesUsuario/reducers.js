@@ -6,28 +6,28 @@ const inicial = {
   novaObservacao: '',
 };
 
-export default function ObservacoesChat(state = inicial, action) {
+export default function ObservacoesUsuario(state = inicial, action) {
   return produce(state, draft => {
     switch (action.type) {
-      case '@observacoesChat/setDadosObservacoesChat': {
+      case '@observacoesUsuario/setDadosObservacoesUsuario': {
         return {
           ...draft,
           dadosObservacoes: action.payload,
         };
       }
-      case '@observacoesChat/setObservacaoEmEdicao': {
+      case '@observacoesUsuario/setObservacaoEmEdicao': {
         return {
           ...draft,
           observacaoEmEdicao: action.payload,
         };
       }
-      case '@observacoesChat/setNovaObservacao': {
+      case '@observacoesUsuario/setNovaObservacao': {
         return {
           ...draft,
           novaObservacao: action.payload,
         };
       }
-      case '@observacoesChat/limparDadosObservacoesChat': {
+      case '@observacoesUsuario/limparDadosObservacoesUsuario': {
         return {
           ...draft,
           dadosObservacoes: [],

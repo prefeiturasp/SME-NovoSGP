@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Label } from '~/componentes';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
-import { setNovaObservacao } from '~/redux/modulos/observacoesChat/actions';
+import { setNovaObservacao } from '~/redux/modulos/observacoesUsuario/actions';
 import { confirmar } from '~/servicos/alertas';
-import { ContainerCampoObservacao } from './observacoesChat.css';
+import { ContainerCampoObservacao } from './observacoesUsuario.css';
 
 const CampoObservacao = props => {
   const { salvarObservacao } = props;
@@ -14,11 +14,11 @@ const CampoObservacao = props => {
   const dispatch = useDispatch();
 
   const observacaoEmEdicao = useSelector(
-    store => store.observacoesChat.observacaoEmEdicao
+    store => store.observacoesUsuario.observacaoEmEdicao
   );
 
   const novaObservacao = useSelector(
-    store => store.observacoesChat.novaObservacao
+    store => store.observacoesUsuario.novaObservacao
   );
 
   const onChangeNovaObservacao = ({ target: { value } }) => {
