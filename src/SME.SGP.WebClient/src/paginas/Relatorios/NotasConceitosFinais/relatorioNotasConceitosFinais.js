@@ -11,7 +11,6 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
-import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoRelatorioNotasConceitos from '~/servicos/Paginas/Relatorios/NotasConceitos/servicoRelatorioNotasConceitos';
 import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConceito';
@@ -263,7 +262,7 @@ const RelatorioNotasConceitosFinais = () => {
     const codigoTodosAnosEscolares = obterCodigoTodosAnosEscolares();
     if (anoLetivo) {
       setCarregandoGeral(true);
-      const retorno = await ServicoComponentesCurriculares.obterComponetensCuriculares(
+      const retorno = await ServicoFiltroRelatorio.obterComponetensCuriculares(
         codigoUe,
         modalidadeId,
         anoLetivo,
