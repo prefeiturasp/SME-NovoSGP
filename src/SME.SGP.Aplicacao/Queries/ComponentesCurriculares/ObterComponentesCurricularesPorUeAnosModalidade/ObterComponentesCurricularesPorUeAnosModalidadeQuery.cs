@@ -8,15 +8,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesPorUeAnosModalidadeQuery : IRequest<IEnumerable<ComponenteCurricularEol>>
     {
-        public ObterComponentesCurricularesPorUeAnosModalidadeQuery(string turmaCodigo, int anoLetivo, Modalidade modalidade, string[] anos)
+        public ObterComponentesCurricularesPorUeAnosModalidadeQuery(long[] turmaCodigos, int anoLetivo, Modalidade modalidade, string[] anos)
         {
-            TurmaCodigo = turmaCodigo;
+            TurmaCodigos = turmaCodigos;
             AnoLetivo = anoLetivo;
             Modalidade = modalidade;
             Anos = anos;
         }
 
-        public string TurmaCodigo { get; set; }
+        public long[] TurmaCodigos { get; set; }
         public int AnoLetivo { get; set; }
         public Modalidade Modalidade { get; set; }
         public string[] Anos { get; set; }
