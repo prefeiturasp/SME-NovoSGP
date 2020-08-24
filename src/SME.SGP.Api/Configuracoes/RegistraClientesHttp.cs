@@ -38,6 +38,7 @@ namespace SME.SGP.Api
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
             });
 
             var cookieContainer = new CookieContainer();
