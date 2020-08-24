@@ -2,9 +2,9 @@ import { Form, Formik } from 'formik';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import { CampoData, Loader, momentSchema, Auditoria } from '~/componentes';
+import { Auditoria, CampoData, Loader, momentSchema } from '~/componentes';
 import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
@@ -13,19 +13,19 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import Editor from '~/componentes/editor/editor';
 import SelectComponent from '~/componentes/select';
-import { erros, sucesso, confirmar } from '~/servicos/alertas';
+import RotasDto from '~/dtos/rotasDto';
+import {
+  limparDadosPlanejamento,
+  setDadosPlanejamentos,
+} from '~/redux/modulos/devolutivas/actions';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
+import history from '~/servicos/history';
 import ServicoDevolutivas from '~/servicos/Paginas/DiarioClasse/ServicoDevolutivas';
+import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
-import RotasDto from '~/dtos/rotasDto';
-import history from '~/servicos/history';
-import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import DadosPlanejamentoDiarioBordo from './DadosPlanejamentoDiarioBordo/dadosPlanejamentoDiarioBordo';
-import {
-  setDadosPlanejamentos,
-  limparDadosPlanejamento,
-} from '~/redux/modulos/devolutivas/actions';
-import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
 
 const DevolutivasForm = ({ match }) => {
   const dispatch = useDispatch();
@@ -172,7 +172,6 @@ const DevolutivasForm = ({ match }) => {
       dataFim: '',
       devolutiva: dados.devolutiva,
       auditoria: dados.auditoria,
-      diariosIds: dados.diariosIds,
     };
     setValoresIniciais({ ...valores });
   };
@@ -321,12 +320,19 @@ const DevolutivasForm = ({ match }) => {
   };
   const salvarDevolutivas = async (valores, clicouBtnSalvar) => {
     setCarregandoGeral(true);
+
     const params = {
-      devolutiva: valores.devolutiva,
+      turmaCodigo,
+      descricao: valores.devolutiva,
     };
 
     if (!idDevolutiva) {
-      params.diariosIds = valores.diariosIds;
+      params.codigoComponenteCurricular = valores.codigoComponenteCurricular;
+      params.periodoInicio = valores.dataInicio;
+      params.periodoFim = valores.dataFim;
+    }
+    if (idDevolutiva) {
+      params.id = idDevolutiva;
     }
     const retorno = await ServicoDevolutivas.salvarAlterarDevolutiva(
       params,
@@ -354,7 +360,7 @@ const DevolutivasForm = ({ match }) => {
     });
     return form.validateForm().then(() => {
       if (form.isValid || Object.keys(form.errors).length === 0) {
-        return salvarDevolutivas(form.values, form, clicouBtnSalvar);
+        return salvarDevolutivas(form.values, clicouBtnSalvar);
       }
       return false;
     });

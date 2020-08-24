@@ -23,7 +23,7 @@ class ServicoDiarioBordo {
     numeroPagina
   ) => {
     const url = `${urlPadrao}/turmas/${turmaCodigo}/componentes-curriculares/${componenteCurricularId}/inicio/${dataInicio}/fim/${dataFim}?numeroPagina=${numeroPagina ||
-      1}`;
+      1}&NumeroRegistros=4`;
     return api.get(url);
   };
 
