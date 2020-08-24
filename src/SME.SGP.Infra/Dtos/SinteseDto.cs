@@ -7,7 +7,7 @@ namespace SME.SGP.Infra
 {
     public class SinteseDto
     {
-        public SinteseEnum SinteseId { get; set; }
-        public string SinteseNome { get; set; }
+        public SinteseEnum Id { get; set; }
+        public string Valor { get; set; }
     }
 }

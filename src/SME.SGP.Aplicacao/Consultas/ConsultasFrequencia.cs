@@ -227,8 +227,8 @@ namespace SME.SGP.Aplicacao
 
             return new SinteseDto()
             {
-                SinteseId = sintese,
-                SinteseNome = sintese.Name()
+                Id = sintese,
+                Valor = sintese.Name()
             };
         }
 
