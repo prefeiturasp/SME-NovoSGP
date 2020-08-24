@@ -35,8 +35,8 @@ namespace SME.SGP.Aplicacao
             {
                 yield return new SinteseDto()
                 {
-                    SinteseId = (SinteseEnum)sintese.Id,
-                    SinteseNome = sintese.Descricao
+                    Id = (SinteseEnum)sintese.Id,
+                    Valor = sintese.Descricao
                 };
             }
         }
