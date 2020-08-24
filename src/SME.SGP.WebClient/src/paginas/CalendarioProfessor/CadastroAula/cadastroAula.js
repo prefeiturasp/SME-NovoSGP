@@ -342,40 +342,20 @@ function CadastroDeAula({ match, location }) {
     [turmaSelecionada.turma, defineGrade, id]
   );
 
-  const validaPerguntaAntesSalvar = async () => {
-    const quantidade = recorrenciaAulaEmEdicao.quantidadeAulasRecorrentes;
-    return confirmar(
-      'Atenção',
-      '',
-      `Você tem certeza que deseja alterar ${quantidade} ocorrências desta aula a partir desta data?`
-    );
-  };
-
   const salvar = async valoresForm => {
-    let salvarRegistro = true;
-    if (
-      id &&
-      aula.tipoAula === 1 &&
-      (aula.recorrenciaAula === 2 || aula.recorrenciaAula === 3)
-    ) {
-      salvarRegistro = await validaPerguntaAntesSalvar();
-    }
-
-    if (salvarRegistro) {
-      const componente = obterComponenteSelecionadoPorId(
-        valoresForm.disciplinaId
-      );
-      if (componente) valoresForm.disciplinaNome = componente.nome;
-      setCarregandoDados(true);
-      servicoCadastroAula
-        .salvar(id, valoresForm, componente.regencia || false)
-        .then(resposta => {
-          resposta.data.mensagens.forEach(mensagem => sucesso(mensagem));
-          navegarParaCalendarioProfessor();
-        })
-        .catch(e => erros(e))
-        .finally(() => setCarregandoDados(false));
-    }
+    const componente = obterComponenteSelecionadoPorId(
+      valoresForm.disciplinaId
+    );
+    if (componente) valoresForm.disciplinaNome = componente.nome;
+    setCarregandoDados(true);
+    servicoCadastroAula
+      .salvar(id, valoresForm, componente.regencia || false)
+      .then(resposta => {
+        resposta.data.mensagens.forEach(mensagem => sucesso(mensagem));
+        navegarParaCalendarioProfessor();
+      })
+      .catch(e => erros(e))
+      .finally(() => setCarregandoDados(false));
   };
 
   const obterDataFormatada = () => {
@@ -399,7 +379,7 @@ function CadastroDeAula({ match, location }) {
         disciplinaId: componenteSelecionado
           ? String(componenteSelecionado.codigoComponenteCurricular)
           : null,
-        disciplinaCompartilhadaId: componenteSelecionado ?.compartilhada
+        disciplinaCompartilhadaId: componenteSelecionado?.compartilhada
           ? componenteSelecionado.componenteCurricularId
           : 0,
       };
@@ -565,7 +545,7 @@ function CadastroDeAula({ match, location }) {
             const componente = obterComponenteSelecionadoPorId(
               aula.disciplinaId
             );
-            return componente ?.nome;
+            return componente?.nome;
           }}
           recorrencia={recorrenciaAulaEmEdicao}
           onFecharModal={() => {
