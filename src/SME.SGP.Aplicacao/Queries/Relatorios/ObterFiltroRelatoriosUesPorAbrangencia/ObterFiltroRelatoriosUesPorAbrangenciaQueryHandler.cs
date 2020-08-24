@@ -26,7 +26,8 @@ namespace SME.SGP.Aplicacao
 
             var possuiAbrangenciaEmTodasAsUes = await mediator.Send(new ObterUsuarioPossuiAbrangenciaEmTodasAsUesQuery(request.UsuarioLogado.PerfilAtual));
 
-            ues.OrderBy(c => c.Nome);
+            if (ues != null && ues.Any())
+                ues = ues.OrderBy(c => c.Nome).ToList();
 
             if (possuiAbrangenciaEmTodasAsUes)
                 ues?.Insert(0, new AbrangenciaUeRetorno { Codigo = "-99", NomeSimples = "Todas" });

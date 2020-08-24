@@ -24,6 +24,7 @@ import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import periodo from '~/dtos/periodo';
 import shortid from 'shortid';
+import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 
 const PeriodoFechamentoAbertura = () => {
   const usuarioLogado = useSelector(store => store.usuario);
@@ -50,6 +51,7 @@ const PeriodoFechamentoAbertura = () => {
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [idFechamentoAbertura, setIdFechamentoAbertura] = useState(0);
   const [ehRegistroExistente, setEhRegistroExistente] = useState(false);
+  const [modalidadeTurma, setModalidadeTurma] = useState('');
 
   const obtemPeriodosIniciais = () => {
     return {
@@ -446,11 +448,22 @@ const PeriodoFechamentoAbertura = () => {
       </span>
     );
 
-  const onChangeDre = dreId => {
+  const onChangeDre = (dreId, form) => {
     if (dreId !== dreSelecionada) {
       setDreSelecionada(dreId);
       const ue = undefined;
       setUeSelecionada(ue);
+      const tipoSelecionado = listaTipoCalendarioEscolar.find(
+        item => item.id == form.values.tipoCalendarioId
+      );
+      if (tipoSelecionado && tipoSelecionado.modalidade) {
+        const modalidadeT = ServicoCalendarios.converterModalidade(
+          tipoSelecionado.modalidade
+        );
+        setModalidadeTurma(modalidadeT);
+      } else {
+        setModalidadeTurma('');
+      }
     }
   };
 
@@ -587,7 +600,7 @@ const PeriodoFechamentoAbertura = () => {
                         <DreDropDown
                           label="Diretoria Regional de Educação (DRE)"
                           form={form}
-                          onChange={dreId => onChangeDre(dreId)}
+                          onChange={dreId => onChangeDre(dreId, form)}
                           desabilitado={desabilitarCampos}
                         />
                       )}
@@ -601,9 +614,10 @@ const PeriodoFechamentoAbertura = () => {
                           dreId={form.values.dreId}
                           label="Unidade Escolar (UE)"
                           form={form}
-                          url="v1/dres"
+                          url=""
                           onChange={ueId => setUeSelecionada(ueId)}
                           desabilitado={desabilitarCampos}
+                          modalidade={modalidadeTurma}
                         />
                       )}
                   </div>

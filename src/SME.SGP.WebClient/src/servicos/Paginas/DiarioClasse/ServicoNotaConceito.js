@@ -11,5 +11,11 @@ class ServicoNotaConceito {
         window.moment().format('YYYY-MM-DD')}`
     );
   };
+
+  obterTipoNota = (turma, anoLetivo, consideraHistorico) => {
+    return api.get(
+      `v1/avaliacoes/notas/turmas/${turma}/anos-letivos/${anoLetivo}/tipos?consideraHistorico=${consideraHistorico}`
+    );
+  };
 }
 export default new ServicoNotaConceito();
