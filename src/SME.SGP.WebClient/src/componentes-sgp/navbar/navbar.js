@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { store } from '~/redux';
 import Filtro from '../filtro';
 import LogoDoSgp from '~/recursos/LogoDoSgp.svg';
-import NavbarNotificacoes from '../navbar-notificacoes';
+import NavbarNotificacoes from '../IconeNotificacoes/navbar-notificacoes';
 import { Nav, Botao, Botoes, Logo, Icone, Texto, Div } from './navbar.css';
 
 import Perfil from '../perfil';
@@ -13,6 +13,8 @@ import history from '~/servicos/history';
 import { URL_LOGIN, URL_HOME } from '~/constantes/url';
 import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
 import { LimparSessao } from '~/redux/modulos/sessao/actions';
+import ServicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
+import { erros } from '~/servicos/alertas';
 
 const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
@@ -23,6 +25,13 @@ const Navbar = () => {
     store.dispatch(LimparSessao());
     history.push(URL_LOGIN);
   };
+
+  useEffect(() => {
+    ServicoNotificacao.obterQuantidadeNotificacoesNaoLidas().catch(e =>
+      erros(e)
+    );
+    ServicoNotificacao.obterUltimasNotificacoesNaoLidas().catch(e => erros(e));
+  }, []);
 
   return (
     <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top py-0">
