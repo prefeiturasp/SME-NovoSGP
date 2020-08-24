@@ -32,6 +32,7 @@ import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPerio
 import moment from 'moment';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConceito';
 
 const { TabPane } = Tabs;
 
@@ -333,8 +334,11 @@ const Notas = ({ match }) => {
 
   const obterTituloTela = useCallback(async () => {
     if (usuario && usuario.turmaSelecionada && usuario.turmaSelecionada.turma) {
-      const url = `v1/avaliacoes/notas/turmas/${usuario.turmaSelecionada.turma}/anos-letivos/${usuario.turmaSelecionada.anoLetivo}/tipos?consideraHistorico=${usuario.turmaSelecionada.consideraHistorico}`;
-      const tipoNotaTurmaSelecionada = await api.get(url);
+      const tipoNotaTurmaSelecionada = await ServicoNotaConceito.obterTipoNota(
+        usuario.turmaSelecionada.turma,
+        usuario.turmaSelecionada.anoLetivo,
+        usuario.turmaSelecionada.consideraHistorico
+      );
       if (
         Number(notasConceitos.Conceitos) ===
         Number(tipoNotaTurmaSelecionada.data)
