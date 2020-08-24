@@ -72,15 +72,25 @@ namespace SME.SGP.Dados.Repositorios
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
             };
         }
-
-        public async Task<IEnumerable<Tuple<long, DateTime>>> ObterDatasPorIds(DateTime periodoInicio, DateTime periodoFim)
+        
+        public async Task<IEnumerable<Tuple<long, DateTime>>> ObterDatasPorIds(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim)
         {
-            var query = "select id as item1, criado_em as item2 from diario_bordo db where criado_em between @dataInicio and @dataFim";
+            var query = @"select db.id as item1
+                               , a.data_aula as item2 
+                          from diario_bordo db
+                         inner join aula a on a.id = db.aula_id
+                         where not db.excluido
+                           and a.turma_id = @turmaCodigo
+                           and a.disciplina_id = @componenteCurricularCodigo
+                           and a.data_aula in between @periodoInicio and @periodoFim ";
 
-            var dataInicio = periodoInicio.AddSeconds(-1);
-            var dataFim = periodoFim.AddSeconds(1);
-
-            var resultado = await database.Conexao.QueryAsync<Tuple<long, DateTime>>(query, new { dataInicio, dataFim });
+            var resultado = await database.Conexao.QueryAsync<Tuple<long, DateTime>>(query, new 
+            { 
+                turmaCodigo, 
+                componenteCurricularCodigo = componenteCurricularCodigo.ToString(), 
+                periodoInicio, 
+                periodoFim 
+            });
 
             return resultado;
         }

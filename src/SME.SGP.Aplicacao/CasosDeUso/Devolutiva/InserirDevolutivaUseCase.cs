@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Executar(InserirDevolutivaDto param)
         {
-            IEnumerable<Tuple<long, DateTime>> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.PeriodoInicio, param.PeriodoFim));
+            IEnumerable<Tuple<long, DateTime>> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio, param.PeriodoFim));
 
             if (!dados.Any())
                 throw new NegocioException("Diários de bordo não encontrados para aplicar Devolutiva.");
