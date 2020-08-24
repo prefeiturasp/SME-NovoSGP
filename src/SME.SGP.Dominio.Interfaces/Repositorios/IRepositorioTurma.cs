@@ -13,10 +13,11 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo);
 
-        Task<Turma> ObterTurmaComUeEDrePorId(long turmaId);
+        Task<Turma> ObterTurmaComUeEDrePorId(long turmaId);       
 
-        Task<IEnumerable<Turma>> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
         Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo);
+
+        Task<IEnumerable<Turma>> SincronizarAsync(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
 
         Task<long> ObterTurmaIdPorCodigo(string turmaCodigo);
 
