@@ -37,5 +37,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(dto));
         }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PDA_I, Permissao.PDA_A, Permissao.PDA_E, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar(long id, [FromBody] AlterarAnotacaoFrequenciaAlunoDto dto, [FromServices] IAlterarAnotacaoFrequenciaAlunoUseCase useCase)
+        {
+            dto.Id = id;
+            return Ok(await useCase.Executar(dto));
+        }
     }
 }
