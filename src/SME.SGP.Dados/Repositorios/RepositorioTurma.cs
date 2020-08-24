@@ -198,9 +198,6 @@ namespace SME.SGP.Dados.Repositorios
 
                 var idsArmazenados = armazenados.Select(y => y.CodigoTurma);
                 var novos = iteracao.Where(x => !idsArmazenados.Contains(x.CodigoTurma)).ToList();
-                var excluir = idsArmazenados.Where(a => iteracao.Any(t => t.CodigoTurma == a)).ToList();
-                //TODO update turma set excluido where id in(@exluir)
-
 
                 foreach (var item in novos)
                 {
@@ -239,7 +236,7 @@ namespace SME.SGP.Dados.Repositorios
                                       Ue = l.Ue,
                                       UeId = l.UeId,
                                       EnsinoEspecial = c.EnsinoEspecial,
-                                      EtapaEJA = c.EtapaEJA
+                                      EtapaEJA = c.EtapaEJA,
                                       DataInicio = c.DataInicio
                                   };
 
@@ -257,7 +254,7 @@ namespace SME.SGP.Dados.Repositorios
                         dataAtualizacao = item.DataAtualizacao,
                         id = item.Id,
                         ensinoEspecial = item.EnsinoEspecial,
-                        etapaEja = item.EtapaEJA
+                        etapaEja = item.EtapaEJA,
                         dataInicio = item.DataInicio
                     });
 
