@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("motivo_ausencia");
             Map(e => e.Id).ToColumn("id");
-            Map(e => e.descricao).ToColumn("descricao");
+            Map(e => e.Descricao).ToColumn("descricao");
         }  
     }
 }
