@@ -18,14 +18,13 @@ namespace SME.SGP.Aplicacao.Servicos
         private readonly IRepositorioCicloEnsino repositorioCicloEnsino;
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioTipoEscola repositorioTipoEscola;
-        private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
         public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEol servicoEOL, IConsultasSupervisor consultasSupervisor,
-            IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma, IRepositorioCicloEnsino repositorioCicloEnsino, IRepositorioTipoEscola repositorioTipoEscola, IRepositorioCache repositorioCache)
+            IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma, IRepositorioCicloEnsino repositorioCicloEnsino, IRepositorioTipoEscola repositorioTipoEscola)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -35,7 +34,6 @@ namespace SME.SGP.Aplicacao.Servicos
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoEscola = repositorioTipoEscola ?? throw new ArgumentNullException(nameof(repositorioTipoEscola));
-            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.repositorioCicloEnsino = repositorioCicloEnsino ?? throw new ArgumentNullException(nameof(repositorioCicloEnsino));
         }
 
@@ -70,7 +68,7 @@ namespace SME.SGP.Aplicacao.Servicos
         public async Task SincronizarEstruturaInstitucionalVigenteCompleta()
         {
 
-            var estruturaInstitucionalVigente = repositorioCache.Obter("EstruturaVigente", () => servicoEOL.ObterEstruturaInstuticionalVigentePorDre());
+            var estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
 
             if (estruturaInstitucionalVigente != null && estruturaInstitucionalVigente.Dres != null && estruturaInstitucionalVigente.Dres.Count > 0)
                 await SincronizarEstruturaInstitucional(estruturaInstitucionalVigente);
