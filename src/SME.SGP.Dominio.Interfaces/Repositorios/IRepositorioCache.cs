@@ -22,6 +22,5 @@ namespace SME.SGP.Dominio.Interfaces
         Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false);
 
         Task SalvarAsync(string nomeChave, object valor, int minutosParaExpirar = 720, bool utilizarGZip = false);
-        T Obter<T>(string nomeChave, Func<T> buscarDados, int minutosParaExpirar = 720, bool utilizarGZip = false);
     }
 }
