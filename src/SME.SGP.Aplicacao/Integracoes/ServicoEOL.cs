@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task AlterarEmail(string login, string email)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var valoresParaEnvio = new List<KeyValuePair<string, string>> {
                 { new KeyValuePair<string, string>("usuario", login) },
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var valoresParaEnvio = new List<KeyValuePair<string, string>> {
                 { new KeyValuePair<string, string>("usuario", login) },
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<bool> TurmaPossuiComponenteCurricularPAP(string codigoTurma, string login, Guid idPerfil)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{idPerfil}/validar/pap";
 
@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var parametros = JsonConvert.SerializeObject(new { login, senha });
             var resposta = await httpClient.PostAsync($"v1/autenticacao", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
@@ -118,7 +118,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public IEnumerable<CicloRetornoDto> BuscarCiclos()
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var resposta = httpClient.GetAsync("abrangencia/ciclo-ensino").Result;
 
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public IEnumerable<TipoEscolaRetornoDto> BuscarTiposEscola()
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var resposta = httpClient.GetAsync("escolas/tiposEscolas").Result;
 
@@ -356,7 +356,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             if (ids == null || !ids.Any())
                 return default;
@@ -375,7 +375,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAsync(long[] ids)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var parametros = JsonConvert.SerializeObject(ids);
             var resposta = await httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
@@ -393,7 +393,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var parametros = JsonConvert.SerializeObject(ids);
             var resposta = await httpClient.PostAsync("disciplinas/SemAgrupamento", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
@@ -424,7 +424,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public IEnumerable<EscolasRetornoDto> ObterEscolasPorCodigo(string[] codigoUes)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var resposta = httpClient.PostAsync("escolas", new StringContent(JsonConvert.SerializeObject(codigoUes), Encoding.UTF8, "application/json-patch+json")).Result;
             if (resposta.IsSuccessStatusCode)
@@ -437,7 +437,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var resposta = httpClient.GetAsync($"DREs/{dreId}/escolas").Result;
             if (resposta.IsSuccessStatusCode)
@@ -459,7 +459,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 resultado = new EstruturaInstitucionalRetornoEolDTO();
                 foreach (var item in codigosDres)
                 {
-                    httpClient.DefaultRequestHeaders.Clear();
+                    
 
                     var resposta = httpClient.GetAsync($"{url}/{item}").Result;
 
@@ -485,7 +485,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             string url = $"abrangencia/estrutura-vigente";
 
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var resposta = httpClient.PostAsync(url, filtroTurmas).Result;
 
@@ -727,7 +727,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanoAnual(string codigoRf, long componenteCurricularId, int codigoTurma)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var parametros = JsonConvert.SerializeObject(new
             {
@@ -748,7 +748,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var resposta = await httpClient.GetAsync($"escolas/{ueId}/turmas/anos_letivos/{anoLetivo}");
             var turmas = new List<TurmaPorUEResposta>();
@@ -762,7 +762,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<bool> PodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var dataString = data.ToString("s");
 
@@ -777,7 +777,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var dataString = data.ToString("s");
 
@@ -792,7 +792,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, string[] datas, long codigoDisciplina)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var datasParaEnvio = JsonConvert.SerializeObject(datas);
 
@@ -809,7 +809,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var dataString = data.ToString("s");
 
@@ -824,7 +824,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task ReiniciarSenha(string login)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
                 { new KeyValuePair<string, string>("login", login) }};
@@ -837,7 +837,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<UsuarioEolAutenticacaoRetornoDto> RelecionarUsuarioPerfis(string login)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
                 { new KeyValuePair<string, string>("login", login) }};
@@ -898,7 +898,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             string url = $"abrangencia/codigos-dres";
 
-            httpClient.DefaultRequestHeaders.Clear();
+            
 
             var resposta = httpClient.GetAsync(url).Result;
 
@@ -985,7 +985,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, string[] anosEscolares, int anoLetivo)
         {
-            httpClient.DefaultRequestHeaders.Clear();
+            
             var url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{modalidade}/anos/{anoLetivo}/anos-escolares?anosEscolares={string.Join("&anosEscolares=", anosEscolares)}";
 
             var resposta = await httpClient.GetAsync(url);
@@ -1009,6 +1009,22 @@ namespace SME.SGP.Aplicacao.Integracoes
             var mensagem = await resposta.Content.ReadAsStringAsync();
 
             throw new NegocioException(mensagem);
+        }
+
+        public async Task<bool> PodePersistirTurmaNoPeriodo(string professorRf, string codigoTurma, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
+        {
+            
+
+            var dataInicioString = dataInicio.ToString("s");
+            var dataFimString = dataFim.ToString("s");
+
+            var resposta = await httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/componentes/{componenteCurricularId}/atribuicao/periodo/inicio/{dataInicioString}/fim/{dataFimString}", new StringContent(""));
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+            return JsonConvert.DeserializeObject<bool>(json);
         }
     }
 }

@@ -17,5 +17,6 @@ namespace SME.SGP.Aplicacao
         {
             return await mediator.Send(new ObterFiltroRelatoriosModalidadesPorUeQuery(codigoUe));
         }
+
     }
 }

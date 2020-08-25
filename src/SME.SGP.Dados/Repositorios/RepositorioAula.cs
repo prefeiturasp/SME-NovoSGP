@@ -1,9 +1,14 @@
 ﻿using Dapper;
+using Dommel;
+using Npgsql;
+using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -534,7 +539,7 @@ namespace SME.SGP.Dados.Repositorios
                         }, param: new { id })).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, string professorRf, long? aulaPaiId = null)
+        public async Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, bool aulaCJ, long? aulaPaiId = null)
         {
             var query = @"select DATE(data_aula)
                  from aula
@@ -542,7 +547,7 @@ namespace SME.SGP.Dados.Repositorios
                   and DATE(data_aula) = ANY(@datas)
                   and turma_id = @turmaId
                   and disciplina_id = @disciplinaId
-                  and professor_rf = @professorRf";
+                  and aula_cj = @aulaCJ";
 
             if (aulaPaiId.HasValue)
                 query += " and ((aula_pai_id is null and id <> @aulaPaiId) or (aula_pai_id is not null and aula_pai_id <> @aulaPaiId))";
@@ -552,12 +557,12 @@ namespace SME.SGP.Dados.Repositorios
                 datas,
                 turmaId,
                 disciplinaId,
-                professorRf,
+                aulaCJ,
                 aulaPaiId
             }));
         }
 
-        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehDiretorOuSupervisor = false)
+        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehProfessor = false)
         {
             var query = new StringBuilder("select distinct a.* ");
             query.AppendLine("from aula a ");
@@ -577,7 +582,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.professor_rf = @usuarioRF ");
             }
 
-            if (!ehDiretorOuSupervisor)
+            if (ehProfessor)
             {
                 var filtroAulaCJ = aulaCJ ? "" : "not";
                 query.AppendLine($"and {filtroAulaCJ} a.aula_cj ");
@@ -759,6 +764,88 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select data_aula from aula where id = @aulaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DateTime>(query, new { aulaId });
+        }
+
+        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricular(DateTime dataAula, string codigoTurma, string componenteCurricularCodigo, bool aulaCJ)
+        {
+            var query = @"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = @data
+                  and turma_id = @codigoTurma
+                  and disciplina_id = @componenteCurricularCodigo
+                  and aula_cj = @aulaCJ";
+
+            return await database.Conexao.QueryAsync<AulaConsultaDto>(query, new
+            {
+                data = dataAula.Date,
+                codigoTurma,
+                componenteCurricularCodigo,
+                aulaCJ
+            });
+        }
+
+        public async Task<bool> ObterTurmaInfantilPorAula(long aulaId)
+        {
+            var query = @"select t.modalidade_codigo
+                            from aula a
+                           inner join turma t on t.turma_id = a.turma_id
+                           where a.id = @aulaId";
+
+            var modalidade = await database.Conexao.QueryFirstAsync<int>(query, new { aulaId });
+
+            return modalidade == (int)Modalidade.Infantil;
+        }
+
+        public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId)
+        {
+            var query = @"select * from aula where tipo_calendario_id = @tipoCalendarioId and turma_id = @turmaId and not excluido";
+            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId });
+        }
+
+        public void SalvarVarias(IEnumerable<Aula> aulas)
+        {
+            var sql = @"copy aula ( 
+                                        data_aula, 
+                                        disciplina_id, 
+                                        quantidade, 
+                                        recorrencia_aula, 
+                                        tipo_aula, 
+                                        tipo_calendario_id, 
+                                        turma_id, 
+                                        ue_id, 
+                                        professor_rf,
+                                        criado_em,
+                                        criado_por,
+                                        criado_rf)
+                            from
+                            stdin (FORMAT binary)";
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            {
+                foreach (var aula in aulas)
+                {
+                    writer.StartRow();
+                    writer.Write(aula.DataAula);
+                    writer.Write(aula.DisciplinaId);
+                    writer.Write(aula.Quantidade);
+                    writer.Write((int)aula.RecorrenciaAula, NpgsqlDbType.Integer);
+                    writer.Write((int)aula.TipoAula, NpgsqlDbType.Integer);
+                    writer.Write(aula.TipoCalendarioId);
+                    writer.Write(aula.TurmaId);
+                    writer.Write(aula.UeId);
+                    writer.Write(aula.ProfessorRf);
+                    writer.Write(aula.CriadoEm);
+                    writer.Write("Sistema");
+                    writer.Write("Sistema");
+                }
+                writer.Complete();
+            }
+        }
+
+        public async Task ExcluirPeloSistemaAsync(long[] idsAulas)
+        {
+            var sql = "update aula set excluido = true, alterado_por = @alteradoPor, alterado_em = @alteradoEm, alterado_rf = @alteradoRf where id = any(@idsAulas)";
+            await database.Conexao.ExecuteAsync(sql, new { idsAulas, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
         }
     }
 }
