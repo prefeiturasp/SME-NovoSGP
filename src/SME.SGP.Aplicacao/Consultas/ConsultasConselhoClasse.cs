@@ -44,16 +44,21 @@ namespace SME.SGP.Aplicacao
                 bimestre = await ObterBimestreAtual(turma);
 
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turmaCodigo, bimestre);
+
             if (fechamentoTurma == null)
                 throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal ? $"para o bimestre {bimestre}" : ""));
 
             var conselhoClasse = await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id);
 
             var bimestreFechamento = !ehFinal ? bimestre : (await ObterPeriodoUltimoBimestre(turma)).Bimestre;
-            PeriodoFechamentoBimestre periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, bimestreFechamento, fechamentoTurma.PeriodoEscolarId);
+
+            PeriodoFechamentoBimestre periodoFechamentoBimestre = await consultasPeriodoFechamento
+                .ObterPeriodoFechamentoTurmaAsync(turma, bimestreFechamento, fechamentoTurma.PeriodoEscolarId);
 
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
-            var mediaAprovacao = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+
+            var mediaAprovacao = double.Parse(repositorioParametrosSistema
+                .ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
             return new ConselhoClasseAlunoResumoDto()
             {
@@ -101,7 +106,7 @@ namespace SME.SGP.Aplicacao
         private async Task<int> ObterBimestreAtual(Turma turma)
         {
             var periodoEscolar = await consultasPeriodoEscolar.ObterUltimoPeriodoAbertoAsync(turma);
-            return periodoEscolar.Bimestre;
+            return periodoEscolar != null ? periodoEscolar.Bimestre : 0;
         }
 
         public ConselhoClasse ObterPorId(long conselhoClasseId)
