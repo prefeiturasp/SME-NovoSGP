@@ -13,7 +13,7 @@ const DadosPlanejamentoDiarioBordo = React.memo(props => {
 
   return (
     <>
-      {dadosPlanejamentos && dadosPlanejamentos.totalPaginas ? (
+      {dadosPlanejamentos ? (
         <>
           <BarraNavegacaoPlanejamento onChangePage={onChangePage} />
           <CardPlanejamento />
