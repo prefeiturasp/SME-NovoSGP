@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Api.Controllers
@@ -29,6 +30,19 @@ namespace SME.SGP.Api.Controllers
                 return NoContent();
 
             return Ok(anotacao);
+        }
+
+
+        [HttpGet("motivos-ausencia")]
+        [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+
+        public async Task<IActionResult> ListarMotivos([FromServices] IObterMotivosAusenciaUseCase useCase)
+        {
+            var motivsoAusencia = await useCase.Executar();            
+
+            return Ok(motivsoAusencia);
         }
 
     }
