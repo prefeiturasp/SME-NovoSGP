@@ -67,5 +67,28 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DateTime>(query, new { turmaCodigo, componenteCurricularCodigo });
         }
+
+        public async Task<IEnumerable<long>> ObterDevolutivasPorTurmaComponenteNoPeriodo(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim)
+        {
+            var query = @"select d.id 
+                          from devolutiva d 
+                         inner join diario_bordo db on db.devolutiva_id = d.id
+                         inner join aula a on a.id = db.id
+                         where not d.excluido
+                           and a.turma_id = @turmaCodigo
+                           and a.disciplina_id = @componenteCurricularCodigo
+                           and ((d.periodo_inicio <= TO_DATE(@periodoInicio, 'yyyy/mm/dd') and d.periodo_fim >= TO_DATE(@periodoInicio, 'yyyy/mm/dd'))
+                             or (d.periodo_inicio <= TO_DATE(@periodoFim, 'yyyy/mm/dd') and d.periodo_fim >= TO_DATE(@periodoFim, 'yyyy/mm/dd'))
+                             or (d.periodo_inicio >= TO_DATE(@periodoInicio, 'yyyy/mm/dd') and d.periodo_fim <= TO_DATE(@periodoFim, 'yyyy/mm/dd'))
+                            ) ";
+
+            return await database.Conexao.QueryAsync<long>(query, new
+            {
+                turmaCodigo,
+                componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
+                periodoInicio,
+                periodoFim
+            });
+        }
     }
 }
