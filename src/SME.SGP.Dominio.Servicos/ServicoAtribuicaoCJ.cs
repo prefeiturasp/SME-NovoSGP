@@ -68,7 +68,9 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais)
         {
-            var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, Perfis.PERFIL_CJ, atribuicaoCJ.TurmaId);
+            var perfil = atribuicaoCJ.Modalidade == Modalidade.Infantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
+
+            var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, perfil, atribuicaoCJ.TurmaId);
 
             if (atribuicaoCJ.Substituir)
             {
@@ -77,8 +79,6 @@ namespace SME.SGP.Dominio.Servicos
                     var turma = await repositorioTurma.ObterPorCodigo(atribuicaoCJ.TurmaId);
                     if (turma == null)
                         throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
-
-                    var perfil = atribuicaoCJ.Modalidade == Modalidade.Infantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
                     var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id } };
 

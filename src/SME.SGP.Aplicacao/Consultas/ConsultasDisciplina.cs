@@ -230,7 +230,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                if (perfilAtual == Perfis.PERFIL_CJ)
+                if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
                 {
                     // Carrega Disciplinas da Atribuição do CJ
                     var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
@@ -305,7 +305,7 @@ namespace SME.SGP.Aplicacao
 
             var login = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
-            var ehPefilCJ = perfilAtual == Perfis.PERFIL_CJ;
+            var ehPefilCJ = perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
 
             var chaveCache = $"Disciplinas-{codigoTurma}-{login}--{perfilAtual}";
 
@@ -345,7 +345,7 @@ namespace SME.SGP.Aplicacao
             {
                 IEnumerable<DisciplinaResposta> disciplinas;
 
-                if (perfilAtual == Perfis.PERFIL_CJ)
+                if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
                 {
                     var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
                     if (atribuicoes != null && atribuicoes.Any())

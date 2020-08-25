@@ -673,16 +673,15 @@ namespace SME.SGP.Dados.Repositorios
 								 total_registros ");
 
                 ObterParametrosDaFuncaoEventosListarSemPaginacao(tipoCalendarioId, tipoEventoId, nomeEvento, dataInicio, dataFim, dreId, ueId, ehTodasDres, ehTodasUes, usuario, usuarioPerfil, usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLocalOcorrenciaDre, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, consideraHistorico, queryEventos);
-
-                if (paginacao.QuantidadeRegistrosIgnorados > 0 && paginacao.QuantidadeRegistros > 0)
-                    queryEventos.AppendLine("offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;");
+                queryEventos.AppendLine("offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;");
 
                 retornoPaginado.Items = await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(queryEventos.ToString(), (evento, tipoEvento) =>
                 {
                     evento.AdicionarTipoEvento(tipoEvento);
                     return evento;
                 },
-                splitOn: "EventoId, TipoEventoId, total_registros");
+               param: new { qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados, qtde_registros = paginacao.QuantidadeRegistros },
+               splitOn: "EventoId, TipoEventoId");
 
                 retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
                 retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
@@ -705,13 +704,13 @@ namespace SME.SGP.Dados.Repositorios
             queryNova.AppendLine($"{tipoCalendarioId}, ");
             queryNova.AppendLine($"{usuarioTemPerfilSupervisorOuDiretor}, ");
             queryNova.AppendLine($"{!podeVisualizarEventosLocalOcorrenciaDre},");
-            queryNova.AppendLine($"{ (ehTodasDres ? "null" : $"'{dreId}'" ?? "null")}, ");
-            queryNova.AppendLine($"{(ehTodasUes ? "null" : $"'{ueId}'" ?? "null")},");
+            queryNova.AppendLine($"{ (ehTodasDres ? "null" : string.IsNullOrWhiteSpace(dreId) ? "null" : $"'{dreId}'")}, ");
+            queryNova.AppendLine($"{(ehTodasUes ? "null" : string.IsNullOrWhiteSpace(ueId) ? "null" : $"'{ueId}'")},");
             queryNova.AppendLine($"{!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme}, ");
             queryNova.AppendLine($"{(dataInicio.HasValue ? dataInicio.Value.Date.ToString() : "null")}, ");
             queryNova.AppendLine($"{(dataFim.HasValue ? dataFim.Value.Date.ToString() : "null")}, ");
             queryNova.AppendLine($"{(tipoEventoId.HasValue ? tipoEventoId.ToString() : "null")}, ");
-            queryNova.AppendLine($"{(string.IsNullOrEmpty(nomeEvento) ? "null" : nomeEvento)})");
+            queryNova.AppendLine($"{(string.IsNullOrWhiteSpace(nomeEvento) ? "null" : $"'{nomeEvento}'")})");
         }
 
         #endregion Listar
@@ -1071,6 +1070,22 @@ namespace SME.SGP.Dados.Repositorios
                 codigoLiberacaoExcepcional = TipoEvento.LiberacaoExcepcional,
                 eventoLetivo = EventoLetivo.Sim
             });
+        }
+
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioAsync(long tipoCalendarioId)
+        {
+            var query = @"select
+	                        data_inicio,
+	                        data_fim,
+	                        letivo,
+                            e.ue_id,
+                            e.dre_id
+                        from
+	                        evento e
+                        where
+                        e.tipo_calendario_id = @tipoCalendarioId
+                        and not e.excluido";
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId });
         }
     }
 }

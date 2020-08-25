@@ -112,5 +112,25 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("and data_inicio >= @inicioAno and data_inicio <= @fimAno");
             sql.AppendLine("and data_fim >= @inicioAno and data_fim <= @fimAno");
         }
+
+        public AtribuicaoEsporadica ObterUltimaPorRF(string codigoRF, bool somenteInfantil)
+        {
+            var sql = $@"select
+	                        ae.*
+                        from
+	                        atribuicao_esporadica ae
+                        inner join ue u on
+	                        u.ue_id = ae.ue_id
+                        inner join turma t on
+	                        t.ue_id = u.id
+                        where
+	                        ae.professor_rf = @codigoRF
+	                        {(somenteInfantil ? "and t.modalidade_codigo = @infantil " : string.Empty)}
+                        order by
+	                        ae.data_fim desc";
+
+            var infantil = Modalidade.Infantil;
+            return database.Conexao.QueryFirstOrDefault<AtribuicaoEsporadica>(sql, new { codigoRF, infantil });
+        }
     }
 }

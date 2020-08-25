@@ -35,7 +35,7 @@ namespace SME.SGP.Dados.Repositorios
                         relatorioAluno.Secoes.Add(relatorioSemestralAlunoSecao);
 
                         return relatorioSemestralAluno;
-                    }, new { relatorioSemestralAlunoId });
+                    }, new { relatorioSemestralAlunoId }, splitOn: "id, id");
 
             return relatorioAluno;
         }
@@ -90,7 +90,7 @@ namespace SME.SGP.Dados.Repositorios
                 },
                 new { alunoCodigo, turmaCodigo, semestre })).FirstOrDefault();
         }
-        
+
         public async Task<IEnumerable<RelatorioSemestralPAPAluno>> ObterRelatoriosAlunosPorTurmaAsync(long turmaId, int semestre)
         {
             var query = @"select rsa.* 

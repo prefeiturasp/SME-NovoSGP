@@ -10,15 +10,11 @@ namespace SME.SGP.Aplicacao
     {
         Task<AulaConsultaDto> BuscarPorId(long id);
 
-        Task<bool> ChecarFrequenciaPlanoAula(long aulaId);
-
-        Task<bool> ChecarFrequenciaPlanoNaRecorrencia(long aulaId);
-
         Task<bool> AulaDentroPeriodo(Aula aula);
 
         Task<bool> AulaDentroPeriodo(string turmaId, DateTime dataAula);
 
-        Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turma, string disciplina);
+        Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turmaCodigo, string disciplinaCodigo);
 
         Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia);
 
