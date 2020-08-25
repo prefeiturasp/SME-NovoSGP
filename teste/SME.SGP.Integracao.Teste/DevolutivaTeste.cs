@@ -66,6 +66,7 @@ namespace SME.SGP.Integracao.Teste
 
             InserirDevolutivaDto DevolutivaDto = new InserirDevolutivaDto()
             {
+                TurmaCodigo = "123",
                 CodigoComponenteCurricular = 1,
                 PeriodoInicio = DateTime.Today.AddDays(-15),
                 PeriodoFim = DateTime.Today.AddDays(15),
@@ -83,7 +84,7 @@ namespace SME.SGP.Integracao.Teste
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();
             fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DE_I }));
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DE_A }));
 
             AlterarDevolutivaDto DevolutivaDto = new AlterarDevolutivaDto()
             {
@@ -93,7 +94,7 @@ namespace SME.SGP.Integracao.Teste
             };
 
             StringContent jsonParaPost = new StringContent(TransformarEmJson(DevolutivaDto), UnicodeEncoding.UTF8, "application/json");
-            var postResult = fixture._clientApi.PutAsync("api/v1/devolutivas/", jsonParaPost).Result;
+            var postResult = fixture._clientApi.PutAsync("api/v1/devolutivas/1", jsonParaPost).Result;
 
             Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
