@@ -93,7 +93,7 @@ class ServicoDiarioBordo {
 
   obterPlanejamentosPorDevolutiva = (idDevolutiva, numeroPagina) => {
     const url = `${urlPadrao}/devolutivas/${idDevolutiva}?numeroPagina=${numeroPagina ||
-      1}`;
+      1}&NumeroRegistros=4`;
     return api.get(url);
   };
 }
