@@ -56,6 +56,20 @@ namespace SME.SGP.Api.Controllers
             else return StatusCode(204);
         }
 
+        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/turmas/anos")]
+        [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterAnosLetivos(string codigoUe, int modalidade)
+        {
+            var retorno = (await consultasAbrangencia.ObterAnosTurmasPorUeModalidade(codigoUe, (Modalidade)modalidade, ConsideraHistorico));
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
         [HttpGet("anos-letivos")]
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]

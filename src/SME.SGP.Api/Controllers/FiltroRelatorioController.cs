@@ -31,7 +31,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe));
         }
-
+        [HttpGet("ues/{codigoUe}/modalidades/abrangencias")]
+        public async Task<IActionResult> ObterModalidadesPorUeAbrangencia(string codigoUe, [FromServices] IObterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase obterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase)
+        {
+            return Ok(await obterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase.Executar(codigoUe));
+        }
         [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/anos-escolares")]
         public async Task<IActionResult> ObterAnosEscolaresPorModalidadeUe(string codigoUe, Modalidade modalidade, [FromServices] IObterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase obterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase)
         {
@@ -45,6 +49,32 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterTurmasEscolaresPorUEAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, [FromQuery]int semestre, [FromQuery]Modalidade modalidade, [FromServices]IObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase)
         {
             return Ok(await obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase.Executar(codigoUe, anoLetivo, modalidade, semestre));
+        }
+
+        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/ciclos")]
+        [ProducesResponseType(typeof(IEnumerable<RetornoCicloDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterCiclosPorModalidadeECodigoUe(int modalidade, string codigoUe, [FromServices] IObterCiclosPorModalidadeECodigoUeUseCase obterCiclosPorModalidadeECodigoUeUseCase, [FromQuery]bool consideraAbrangencia = false)
+        {
+            return Ok(await obterCiclosPorModalidadeECodigoUeUseCase.Executar(new FiltroCicloPorModalidadeECodigoUeDto(modalidade, codigoUe, consideraAbrangencia)));
+        }
+
+        [HttpGet("modalidades/{modalidade}/ciclos/{cicloId}/anos-escolares")]
+        [ProducesResponseType(typeof(IEnumerable<RetornoCicloDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterAnosPorCicloId(long cicloId, Modalidade modalidade, [FromServices] IObterFiltroRelatoriosAnosPorCicloModalidadeUseCase obterFiltroRelatoriosAnosPorCicloModalidadeUseCase)
+        {
+            return Ok(await obterFiltroRelatoriosAnosPorCicloModalidadeUseCase.Executar(cicloId, modalidade));
+        }
+        [HttpGet("componentes-curriculares/anos-letivos/{anoLetivo}/ues/{codigoUe}/modalidades/{modalideId}")]
+        [ProducesResponseType(typeof(IEnumerable<RetornoCicloDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterComponentesCurricularesPorAnoUeModalidade([FromQuery]string[] anos, int anoLetivo,  string codigoUe, Modalidade modalideId, [FromServices] IObterComponentesCurricularesPorUeAnosModalidadeUseCase obterComponentesCurricularesPorUeAnosModalidadeUseCase)
+        {
+            return Ok(await obterComponentesCurricularesPorUeAnosModalidadeUseCase.Executar(anos, anoLetivo, codigoUe, modalideId));
         }
     }
 }

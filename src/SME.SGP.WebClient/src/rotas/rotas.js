@@ -58,7 +58,11 @@ import AtaFinalResultados from '~/paginas/Relatorios/Atas/AtaFinalResultados/ata
 
 import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 import FaltasFrequencia from '~/paginas/Relatorios/Frequencia/faltasFrequencia';
+import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
+import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
+import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
+import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 
 const rotas = new Map();
 
@@ -833,6 +837,17 @@ rotas.set(RotasDto.FALTAS_FREQUENCIA, {
   chavePermissao: RotasDto.FALTAS_FREQUENCIA,
 });
 
+rotas.set(RotasDto.DIARIO_BORDO, {
+  breadcrumbName: 'Diário de Bordo',
+  menu: ['Diário de Classe'],
+  parent: '/',
+  component: DiarioBordo,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DIARIO_BORDO,
+});
+
 rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
   breadcrumbName: 'Relatório de pendências',
   menu: ['Relatórios'],
@@ -840,8 +855,41 @@ rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
   component: RelatorioPendencias,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_PENDENCIAS,
+});
+
+rotas.set(RotasDto.RELATORIO_PARECER_CONCLUSIVO, {
+  breadcrumbName: 'Parecer conclusivo',
+  menu: ['Relatórios', 'Fechamento'],
+  parent: '/',
+  component: RelatorioParecerConclusivo,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_PARECER_CONCLUSIVO,
+});
+
+rotas.set(RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS, {
+  breadcrumbName: 'Notas e conceitos finais',
+  menu: ['Relatórios', 'Fechamento'],
+  parent: '/',
+  component: RelatorioNotasConceitosFinais,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS,
+});
+
+rotas.set(RotasDto.CARTA_INTENCOES, {
+  breadcrumbName: 'Carta de intenções',
+  menu: ['Planejamento '],
+  parent: '/',
+  component: CartaIntencoes,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.CARTA_INTENCOES,
 });
 
 const rotasArray = [];
