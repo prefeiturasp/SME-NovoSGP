@@ -43,7 +43,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             var condicao = @"from diario_bordo db 
                          inner join aula a on a.id = db.aula_id
-                         where a.turma_id = @turmaCodigo
+                         where not db.excluido
+                           and db.devolutiva_id is null
+                           and a.turma_id = @turmaCodigo
                            and a.disciplina_id = @componenteCurricularCodigo
                            and a.data_aula between @periodoInicio and @periodoFim ";
 
