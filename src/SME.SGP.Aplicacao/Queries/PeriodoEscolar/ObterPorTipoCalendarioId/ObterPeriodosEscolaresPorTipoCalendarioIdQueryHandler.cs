@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.PeriodoEscolar.ObterPorTipoCalendarioIdEAnoLetivo
+namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodosEscolaresPorTipoCalendarioIdQueryHandler : IRequestHandler<ObterPeriodosEscolaresPorTipoCalendarioIdQuery, IEnumerable<Dominio.PeriodoEscolar>>
     {

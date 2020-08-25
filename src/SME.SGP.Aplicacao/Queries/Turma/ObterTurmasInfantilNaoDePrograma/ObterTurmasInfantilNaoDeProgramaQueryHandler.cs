@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Turma.ObterTurmasInfantilNaoDePrograma
+namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasInfantilNaoDeProgramaQueryHandler : IRequestHandler<ObterTurmasInfantilNaoDeProgramaQuery, IEnumerable<Dominio.Turma>>
     {
