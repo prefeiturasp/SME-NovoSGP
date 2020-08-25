@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
                 if (retorno.EhSintese)
                 {
                     var sinteseDto = consultasFrequencia.ObterSinteseAluno(fechamentoFinalAluno.Frequencia, disciplinaEOL);
-                    fechamentoFinalAluno.Sintese = sinteseDto.SinteseNome;
+                    fechamentoFinalAluno.Sintese = sinteseDto.Valor;
                 }
                 else
                 {

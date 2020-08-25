@@ -1083,7 +1083,6 @@ const FrequenciaPlanoAula = () => {
                             ? disciplinaSelecionada.regencia
                             : false
                         }
-                        possuiPlanoAnual={possuiPlanoAnual}
                       />
                     </div>
                   ) : (

@@ -350,6 +350,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IObterUltimaDataDevolutivaPorTurmaComponenteUseCase, ObterUltimaDataDevolutivaPorTurmaComponenteUseCase>();
             services.TryAddScopedWorkerService<ICartaIntencoesPersistenciaUseCase, CartaIntencoesPersistenciaUseCase>();
             services.TryAddScopedWorkerService<IObterCartasDeIntencoesPorTurmaEComponenteUseCase, ObterCartasDeIntencoesPorTurmaEComponenteUseCase>();
+            services.TryAddScoped<ICriarAulasInfantilAutomaticamenteUseCase, CriarAulasInfantilAutomaticamenteUseCase>();
+            services.TryAddScoped<ICriarAulasInfantilUseCase, CriarAulasInfantilUseCase>();
+            services.TryAddScoped<ISincronizarAulasInfantilUseCase, SincronizarAulasInfantilUseCase>();
 
             services.TryAddScopedWorkerService<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
             services.TryAddScopedWorkerService<IAlterarDevolutivaUseCase, AlterarDevolutivaUseCase>();

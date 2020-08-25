@@ -62,6 +62,7 @@ import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
 import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
+import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 
@@ -856,7 +857,7 @@ rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
   component: RelatorioPendencias,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_PENDENCIAS,
 });
 
@@ -867,8 +868,19 @@ rotas.set(RotasDto.RELATORIO_PARECER_CONCLUSIVO, {
   component: RelatorioParecerConclusivo,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_PARECER_CONCLUSIVO,
+});
+
+rotas.set(RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS, {
+  breadcrumbName: 'Notas e conceitos finais',
+  menu: ['Relatórios', 'Fechamento'],
+  parent: '/',
+  component: RelatorioNotasConceitosFinais,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS,
 });
 
 rotas.set(RotasDto.CARTA_INTENCOES, {
