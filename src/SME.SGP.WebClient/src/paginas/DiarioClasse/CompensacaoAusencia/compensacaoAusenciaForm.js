@@ -488,7 +488,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
     if (
       turmaSelecionadaFiltroPrincipal &&
       turmaSelecionada.turma &&
-        String(turmaSelecionadaFiltroPrincipal) ===
+      String(turmaSelecionadaFiltroPrincipal) ===
         String(turmaSelecionada.turma) &&
       listaDisciplinas.length < 1 &&
       !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)

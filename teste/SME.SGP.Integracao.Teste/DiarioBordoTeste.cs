@@ -26,7 +26,7 @@ namespace SME.SGP.Integracao.Teste
             fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_C }));
 
             string id = "1";
-            HttpResponseMessage result = await fixture._clientApi.GetAsync($"api/v1/diario-bordo/{id}");
+            HttpResponseMessage result = await fixture._clientApi.GetAsync($"api/v1/diarios-bordo/{id}");
 
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));
         }
@@ -45,7 +45,7 @@ namespace SME.SGP.Integracao.Teste
             };
 
             StringContent jsonParaPost = new StringContent(TransformarEmJson(diarioBordoDto), UnicodeEncoding.UTF8, "application/json");
-            var postResult = fixture._clientApi.PostAsync("api/v1/diario-bordo/", jsonParaPost).Result;
+            var postResult = fixture._clientApi.PostAsync("api/v1/diarios-bordo/", jsonParaPost).Result;
 
             Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
@@ -65,9 +65,69 @@ namespace SME.SGP.Integracao.Teste
             };
 
             StringContent jsonParaPut = new StringContent(TransformarEmJson(diarioBordoDto), UnicodeEncoding.UTF8, "application/json");
-            var putResult = fixture._clientApi.PutAsync($"api/v1/diario-bordo/", jsonParaPut).Result;
+            var putResult = fixture._clientApi.PutAsync($"api/v1/diarios-bordo/", jsonParaPut).Result;
 
             Assert.True(fixture.ValidarStatusCodeComSucesso(putResult));
+        }
+
+        [Fact]
+        public void Deve_Adicionar_Observacao_Diario_De_Bordo()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_C }));
+
+            var dto = new ObservacaoDiarioBordoDto()
+            {
+                Observacao="Teste de Observação"
+            };
+
+            StringContent jsonParaPost = new StringContent(TransformarEmJson(dto), UnicodeEncoding.UTF8, "application/json");
+            var postResult = fixture._clientApi.PostAsync("api/v1/diarios-bordo/1/observacoes", jsonParaPost).Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
+        }
+
+        [Fact]
+        public void Deve_Alterar_Observacao_Diario_De_Bordo()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_C }));
+
+            var dto = new ObservacaoDiarioBordoDto()
+            {
+                Observacao = "Teste de Observação"
+            };
+
+            StringContent jsonParaPost = new StringContent(TransformarEmJson(dto), UnicodeEncoding.UTF8, "application/json");
+            var postResult = fixture._clientApi.PutAsync("api/v1/diarios-bordo/observacoes/1", jsonParaPost).Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
+        }
+
+        [Fact]
+        public void Deve_Excluir_Observacao_Diario_De_Bordo()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_C }));
+
+            var postResult = fixture._clientApi.DeleteAsync("api/v1/diarios-bordo/observacoes/1").Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
+        }
+
+        [Fact]
+        public void Deve_Listar_Observacao_Diario_De_Bordo()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_C }));
+
+            var postResult = fixture._clientApi.GetAsync("api/v1/diarios-bordo/1/observacoes").Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
 
         private string TransformarEmJson(object model)

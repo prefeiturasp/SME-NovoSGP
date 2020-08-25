@@ -27,6 +27,7 @@ const Button = React.forwardRef((props, ref) => {
     hidden,
     id,
     customRadius,
+    iconType,
   } = props;
 
   const Icon = styled.i``;
@@ -83,7 +84,9 @@ const Button = React.forwardRef((props, ref) => {
       id={id}
       ref={ref}
     >
-      {icon ? <Icon className={`fa fa-${icon} mr-2 py-1`} /> : null}
+      {icon ? (
+        <Icon className={`${iconType || 'fa'} fa-${icon} mr-2 py-1`} />
+      ) : null}
       {label}
       {remove ? (
         <Remove
@@ -116,6 +119,7 @@ Button.propTypes = {
   hidden: PropTypes.bool,
   id: PropTypes.string,
   customRadius: PropTypes.string,
+  iconType: PropTypes.string,
 };
 
 Button.defaultProps = {
@@ -139,6 +143,7 @@ Button.defaultProps = {
   hidden: false,
   id: shortid.generate(),
   customRadius: '',
+  iconType: '',
 };
 
 export default Button;
