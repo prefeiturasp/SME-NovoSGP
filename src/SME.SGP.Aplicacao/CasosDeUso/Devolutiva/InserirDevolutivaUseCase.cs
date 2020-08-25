@@ -17,15 +17,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Executar(InserirDevolutivaDto param)
         {
-            IEnumerable<Tuple<long, DateTime>> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio, param.PeriodoFim));
+            IEnumerable<Tuple<long, DateTime>> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio.Date, param.PeriodoFim.Date));
 
             if (!dados.Any())
                 throw new NegocioException("Diários de bordo não encontrados para aplicar Devolutiva.");
 
-            DateTime inicioEfetivo = dados.Select(x => x.Item2).Min();
-            DateTime fimEfetivo = dados.Select(x => x.Item2).Max();
+            DateTime inicioEfetivo = dados.Select(x => x.Item2.Date).Min();
+            DateTime fimEfetivo = dados.Select(x => x.Item2.Date).Max();
 
-            await ValidarDevolutivaNoPeriodo(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio, param.PeriodoFim);
+            await ValidarDevolutivaNoPeriodo(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio.Date, param.PeriodoFim.Date);
 
             var turma = await ObterTurma(param.TurmaCodigo);
             var bimestre = await ValidarBimestreDiarios(turma, inicioEfetivo, fimEfetivo);
