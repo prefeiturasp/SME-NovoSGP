@@ -254,5 +254,35 @@ namespace SME.SGP.Dados.Repositorios
         {
             await SalvarAsync(nomeChave, JsonConvert.SerializeObject(valor), minutosParaExpirar, utilizarGZip);
         }
+
+
+
+        public T Obter<T>(string nomeChave, Func<T> buscarDados, int minutosParaExpirar = 720, bool utilizarGZip = false)
+        {
+            try
+            {
+                var stringCache = connectionMultiplexerSME.GetDatabase()?.StringGet(nomeChave).ToString();
+                if (!string.IsNullOrWhiteSpace(stringCache))
+                {
+                    if (utilizarGZip)
+                    {
+                        stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
+                    }
+                    return JsonConvert.DeserializeObject<T>(stringCache);
+                }
+
+                var dados = buscarDados();
+
+                Salvar(nomeChave, JsonConvert.SerializeObject(dados), minutosParaExpirar, utilizarGZip);
+
+                return dados;
+            }
+            catch (Exception ex)
+            {
+                //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
+                servicoLog.Registrar(ex);
+                return buscarDados();
+            }
+        }
     }
 }
