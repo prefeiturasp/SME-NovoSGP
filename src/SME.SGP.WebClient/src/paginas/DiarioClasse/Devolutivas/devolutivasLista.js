@@ -15,6 +15,7 @@ import history from '~/servicos/history';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const DevolutivasLista = () => {
   const usuario = useSelector(state => state.usuario);
@@ -37,6 +38,18 @@ const DevolutivasLista = () => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [turmaInfantil, setTurmaInfantil] = useState(false);
   const [filtro, setFiltro] = useState({});
+  const permissoesTela = usuario.permissoes[RotasDto.DEVOLUTIVAS];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
+  useEffect(() => {
+    const naoSetarSomenteConsultaNoStore = !ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
+    );
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   const colunas = [
     {
@@ -120,10 +133,17 @@ const DevolutivasLista = () => {
     }
   }, [turmaCodigo, obterComponentesCurriculares, turmaInfantil, resetarTela]);
 
-  const filtrar = (data, componenteCurricularId) => {
+  useEffect(() => {
     const paramsFiltrar = {
-      data: data ? data.format('YYYY-MM-DD') : '',
-      componenteCurricularId,
+      componenteCurricularCodigo: componenteCurricularSelecionado,
+    };
+    setFiltro({ ...paramsFiltrar });
+  }, [componenteCurricularSelecionado]);
+
+  const filtrar = (data, componenteCurricularCodigo) => {
+    const paramsFiltrar = {
+      dataReferencia: data ? data.format('YYYY-MM-DD') : '',
+      componenteCurricularCodigo,
     };
     setFiltro({ ...paramsFiltrar });
   };
@@ -147,7 +167,9 @@ const DevolutivasLista = () => {
     history.push(`${RotasDto.DEVOLUTIVAS}/novo`);
   };
   const onClickEditar = item => {
-    history.push(`${RotasDto.DEVOLUTIVAS}/editar/${item.id}`);
+    if (permissoesTela.podeAlterar) {
+      history.push(`${RotasDto.DEVOLUTIVAS}/editar/${item.id}`);
+    }
   };
 
   return (
@@ -186,7 +208,12 @@ const DevolutivasLista = () => {
                 border
                 bold
                 onClick={onClickNovo}
-                disabled={!turmaInfantil}
+                disabled={
+                  !turmaInfantil ||
+                  somenteConsulta ||
+                  !permissoesTela.podeIncluir ||
+                  !turmaSelecionada.turma
+                }
               />
             </div>
             <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
@@ -221,10 +248,12 @@ const DevolutivasLista = () => {
             </div>
           </div>
         </div>
-        {componenteCurricularSelecionado ? (
+        {componenteCurricularSelecionado &&
+        filtro &&
+        filtro.componenteCurricularCodigo ? (
           <div className="col-md-12 pt-2">
             <ListaPaginada
-              url={`v1/devolutivas/turmas/${turmaCodigo}/componentes-curriculares`}
+              url={`v1/devolutivas/turmas/${turmaCodigo}`}
               id="lista-devolutivas"
               colunas={colunas}
               filtro={filtro}
