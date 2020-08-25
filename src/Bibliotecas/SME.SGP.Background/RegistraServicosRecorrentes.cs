@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using SME.Background.Core;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
@@ -24,6 +25,8 @@ namespace SME.SGP.Background
             Cliente.ExecutarPeriodicamente<IServicoNotificacaoFrequencia>(c => c.NotificarAlunosFaltosos(), Cron.Daily(2));
 
             Cliente.ExecutarPeriodicamente<IServicoNotificacaoFrequencia>(c => c.NotificarAlunosFaltososBimestre(), Cron.Daily(3));
+            
+            Cliente.ExecutarPeriodicamente<ISincronizarAulasInfantilUseCase>(c => c.Executar(), Cron.Daily(6));
         }
     }
 }

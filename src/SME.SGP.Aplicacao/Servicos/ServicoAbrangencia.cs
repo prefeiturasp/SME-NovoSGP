@@ -67,6 +67,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         public async Task SincronizarEstruturaInstitucionalVigenteCompleta()
         {
+
             var estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
 
             if (estruturaInstitucionalVigente != null && estruturaInstitucionalVigente.Dres != null && estruturaInstitucionalVigente.Dres.Count > 0)
@@ -316,12 +317,14 @@ namespace SME.SGP.Aplicacao.Servicos
                  Semestre = z.Semestre,
                  TipoTurno = z.TipoTurno,
                  Ue = new Ue() { CodigoUe = y.Codigo },
-                 EnsinoEspecial = z.EnsinoEspecial
+                 EnsinoEspecial = z.EnsinoEspecial,
+                 EtapaEJA = z.EtapaEJA,
+                 DataInicio = z.DataInicioTurma
              })));
 
-            dres = repositorioDre.Sincronizar(dres);
-            ues = repositorioUe.Sincronizar(ues, dres);
-            await repositorioTurma.Sincronizar(turmas, ues);
+            dres = await repositorioDre.SincronizarAsync(dres);
+            ues = await repositorioUe.SincronizarAsync(ues, dres);
+            await repositorioTurma.SincronizarAsync(turmas, ues);
         }
 
         private void SincronizarTiposEscola(IEnumerable<TipoEscolaRetornoDto> tiposEscolasDto)
@@ -344,10 +347,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task TrataAbrangenciaModificaoPerfil(string login, Guid perfil)
         {
-            if (!(await repositorioAbrangencia.JaExisteAbrangencia(login, perfil)))
-            {
-                await BuscaAbrangenciaEPersiste(login, perfil);
-            }
+            await BuscaAbrangenciaEPersiste(login, perfil);
         }
     }
 }

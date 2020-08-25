@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -45,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioRelatorioSemestralAluno.ObterCompletoPorIdAsync(relatorioSemestralAlunoDto.RelatorioSemestralAlunoId) :
                 await NovoRelatorioSemestralAluno(relatorioSemestralAlunoDto.RelatorioSemestralId, alunoCodigo, turma, semestre, relatorioSemestralAlunoDto);
 
-            using(var transacao = unitOfWork.IniciarTransacao())
+            using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
                 {
@@ -59,7 +57,7 @@ namespace SME.SGP.Aplicacao
                     // Relatorio Semestral Aluno
                     await repositorioRelatorioSemestralAluno.SalvarAsync(relatorioSemestralAluno);
 
-                    foreach(var secaoRelatorio in relatorioSemestralAlunoDto.Secoes)
+                    foreach (var secaoRelatorio in relatorioSemestralAlunoDto.Secoes)
                     {
                         var secaoRelatorioAluno = relatorioSemestralAluno.Secoes.FirstOrDefault(c => c.SecaoRelatorioSemestralPAPId == secaoRelatorio.Id);
                         if (secaoRelatorioAluno != null)
@@ -67,7 +65,21 @@ namespace SME.SGP.Aplicacao
                             secaoRelatorioAluno.RelatorioSemestralPAPAlunoId = relatorioSemestralAluno.Id;
                             secaoRelatorioAluno.Valor = secaoRelatorio.Valor;
 
-                            // Relatorio Semestral Aluno x Secao
+                            if (!string.IsNullOrEmpty(secaoRelatorioAluno.Valor))
+                                // Relatorio Semestral Aluno x Secao
+                                await comandosRelatorioSemestralAlunoSecao.SalvarAsync(secaoRelatorioAluno);
+                            else
+                                await comandosRelatorioSemestralAlunoSecao.RemoverAsync(secaoRelatorioAluno);
+                        }
+                        else if (!string.IsNullOrEmpty(secaoRelatorio.Valor))
+                        {
+                            secaoRelatorioAluno = new RelatorioSemestralPAPAlunoSecao()
+                            {
+                                RelatorioSemestralPAPAlunoId = relatorioSemestralAlunoDto.RelatorioSemestralAlunoId,
+                                SecaoRelatorioSemestralPAPId = secaoRelatorio.Id,
+                                Valor = secaoRelatorio.Valor
+                            };
+
                             await comandosRelatorioSemestralAlunoSecao.SalvarAsync(secaoRelatorioAluno);
                         }
                     }
@@ -78,7 +90,7 @@ namespace SME.SGP.Aplicacao
                 {
                     unitOfWork.Rollback();
                     throw;
-                }            
+                }
             }
 
             return MapearParaAuditorio(relatorioSemestralAluno);
