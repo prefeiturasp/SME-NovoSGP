@@ -82,7 +82,7 @@ namespace SME.SGP.Dados.Repositorios
                          where not db.excluido
                            and a.turma_id = @turmaCodigo
                            and a.disciplina_id = @componenteCurricularCodigo
-                           and a.data_aula in between @periodoInicio and @periodoFim ";
+                           and a.data_aula between @periodoInicio and @periodoFim ";
 
             var resultado = await database.Conexao.QueryAsync<Tuple<long, DateTime>>(query, new 
             { 
@@ -106,7 +106,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task AtualizaDiariosComDevolutivaId(long devolutivaId, IEnumerable<long> diariosBordoIds)
         {
-            var query = "update diario_bordo set devolutiva_id = @devolutivaId where id in @ids";
+            var query = "update diario_bordo set devolutiva_id = @devolutivaId where id = ANY(@ids)";
 
             var ids = diariosBordoIds.ToArray();
 
@@ -148,7 +148,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task ExcluirReferenciaDevolutiva(long devolutivaId)
         {
-            await database.Conexao.ExecuteAsync("update diario_bordo set devolutiva_id = null where devolutiva_id = 1", new { devolutivaId });
+            await database.Conexao.ExecuteAsync("update diario_bordo set devolutiva_id = null where devolutiva_id = @devolutivaId", new { devolutivaId });
         }
     }
 }
