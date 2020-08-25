@@ -46,5 +46,13 @@ namespace SME.SGP.Api.Controllers
             dto.Id = id;
             return Ok(await useCase.Executar(dto));
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PDA_E, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir(long id, [FromServices] IExcluirAnotacaoFrequenciaAlunoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(id));
+        }
     }
 }
