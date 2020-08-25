@@ -232,8 +232,8 @@ namespace SME.SGP.Aplicacao
                 Nome = componenteCurricular.Nome,
                 TotalFaltas = frequenciaDisciplina.Sum(x => x.TotalAusencias),
                 PercentualFrequencia = percentualFrequencia,
-                ParecerFinal = parecerFinal?.SinteseNome ?? string.Empty,
-                ParecerFinalId = (int)(parecerFinal?.SinteseId ?? default)
+                ParecerFinal = parecerFinal?.Valor ?? string.Empty,
+                ParecerFinalId = (int)(parecerFinal?.Id ?? default)
             };
         }
 

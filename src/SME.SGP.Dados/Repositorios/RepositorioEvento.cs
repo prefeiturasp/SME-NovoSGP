@@ -1071,5 +1071,21 @@ namespace SME.SGP.Dados.Repositorios
                 eventoLetivo = EventoLetivo.Sim
             });
         }
+
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioAsync(long tipoCalendarioId)
+        {
+            var query = @"select
+	                        data_inicio,
+	                        data_fim,
+	                        letivo,
+                            e.ue_id,
+                            e.dre_id
+                        from
+	                        evento e
+                        where
+                        e.tipo_calendario_id = @tipoCalendarioId
+                        and not e.excluido";
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId });
+        }
     }
 }
