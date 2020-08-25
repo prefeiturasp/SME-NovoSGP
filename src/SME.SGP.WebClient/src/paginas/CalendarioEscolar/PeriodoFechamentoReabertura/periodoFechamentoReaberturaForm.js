@@ -60,6 +60,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     bimestres: [],
   });
   const [salvandoInformacoes, setSalvandoInformacoes] = useState(false);
+  const [modalidadeTurma, setModalidadeTurma] = useState('');
 
   const montarListaBimestres = tipoModalidade => {
     const listaNova = [
@@ -529,6 +530,17 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                         if (novoRegistro) {
                           onChangeCampos();
                         }
+                        const tipoSelecionado = listaTipoCalendarioEscolar.find(
+                          item => item.id == form.values.tipoCalendarioId
+                        );
+                        if (tipoSelecionado && tipoSelecionado.modalidade) {
+                          const modalidadeT = ServicoCalendarios.converterModalidade(
+                            tipoSelecionado.modalidade
+                          );
+                          setModalidadeTurma(modalidadeT);
+                        } else {
+                          setModalidadeTurma('');
+                        }
                       }}
                     />
                   </div>
@@ -538,13 +550,14 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                       dreId={form.values.dreId}
                       label="Unidade Escolar (UE)"
                       form={form}
-                      url="v1/dres"
+                      url=""
                       desabilitado={desabilitarCampos || !novoRegistro}
                       onChange={() => {
                         if (novoRegistro) {
                           onChangeCampos();
                         }
                       }}
+                      modalidade={modalidadeTurma}
                     />
                   </div>
                   <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">

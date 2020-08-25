@@ -15,14 +15,14 @@ namespace SME.SGP.Infra
             PerfilUsuario = perfilUsuario;
         }
 
-        public MensagemRabbit(object mensagem, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid perfil, bool notificarErroUsuario = false)
+        public MensagemRabbit(object mensagem, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid? perfil, bool notificarErroUsuario = false)
         {
             Mensagem = mensagem;
             CodigoCorrelacao = codigoCorrelacao;
             UsuarioLogadoNomeCompleto = usuarioLogadoNomeCompleto;
             UsuarioLogadoRF = usuarioLogadoRF;
             NotificarErroUsuario = notificarErroUsuario;
-            PerfilUsuario = perfil.ToString();
+            PerfilUsuario = perfil?.ToString();
         }
 
         protected MensagemRabbit()

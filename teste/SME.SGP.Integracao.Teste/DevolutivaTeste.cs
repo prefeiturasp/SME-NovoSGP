@@ -88,9 +88,7 @@ namespace SME.SGP.Integracao.Teste
             AlterarDevolutivaDto DevolutivaDto = new AlterarDevolutivaDto()
             {
                 Id = 1,
-                CodigoComponenteCurricular = 1,
-                PeriodoInicio = DateTime.Today.AddDays(-15),
-                PeriodoFim = DateTime.Today.AddDays(15),
+                TurmaCodigo = "123",
                 Descricao = "Teste de Alteração de Devolutivas... Teste de Alteração de Devolutivas... Teste de Alteração de Devolutivas... Teste de Alteração de Devolutivas... Teste de Alteração de Devolutivas... "
             };
 

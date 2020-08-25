@@ -211,29 +211,30 @@ namespace SME.SGP.Dominio.Servicos
             var qtdDiasAlteracao = (alteradoEm.Date - criadoEm.Date).TotalDays;
 
             // Verifica se ultrapassou o limite de dias para alteração
-            if (qtdDiasAlteracao >= qtdDiasParametro)
+            if (qtdDiasAlteracao < qtdDiasParametro)
+                return;
+
+            var usuariosNotificacao = new List<(Cargo?, Usuario)>();
+
+            // Dados da Aula
+            var registroFrequencia = repositorioFrequencia.ObterAulaDaFrequencia(registroFrequenciaId);
+            MeusDadosDto professor = servicoEOL.ObterMeusDados(registroFrequencia.ProfessorRf).Result;
+
+            // Gestores
+            var usuarios = BuscaGestoresUe(registroFrequencia.CodigoUe);
+            if (usuarios != null)
+                usuariosNotificacao.AddRange(usuarios);
+
+            // Supervisores
+            usuarios = BuscaSupervisoresUe(registroFrequencia.CodigoUe, usuariosNotificacao.Select(u => u.Item1));
+            if (usuarios != null)
+                usuariosNotificacao.AddRange(usuarios);
+
+            foreach (var usuario in usuariosNotificacao)
             {
-                var usuariosNotificacao = new List<(Cargo?, Usuario)>();
-
-                // Dados da Aula
-                var registroFrequencia = repositorioFrequencia.ObterAulaDaFrequencia(registroFrequenciaId);
-                MeusDadosDto professor = servicoEOL.ObterMeusDados(registroFrequencia.ProfessorRf).Result;
-
-                // Gestores
-                var usuarios = BuscaGestoresUe(registroFrequencia.CodigoUe);
-                if (usuarios != null)
-                    usuariosNotificacao.AddRange(usuarios);
-
-                // Supervisores
-                usuarios = BuscaSupervisoresUe(registroFrequencia.CodigoUe, usuariosNotificacao.Select(u => u.Item1));
-                if (usuarios != null)
-                    usuariosNotificacao.AddRange(usuarios);
-
-                foreach (var usuario in usuariosNotificacao)
-                {
-                    NotificaAlteracaoFrequencia(usuario.Item2, registroFrequencia, professor.Nome);
-                }
+                NotificaAlteracaoFrequencia(usuario.Item2, registroFrequencia, professor.Nome);
             }
+
         }
 
         public async Task NotificarAlunosFaltososBimestre()
