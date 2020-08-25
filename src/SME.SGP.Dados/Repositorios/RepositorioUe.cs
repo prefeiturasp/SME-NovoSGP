@@ -126,7 +126,7 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Ue>(query, new { turmaId });
         }
 
-        public IEnumerable<Ue> Sincronizar(IEnumerable<Ue> entidades, IEnumerable<Dre> dres)
+        public async Task<IEnumerable<Ue>> SincronizarAsync(IEnumerable<Ue> entidades, IEnumerable<Dre> dres)
         {
             List<Ue> resultado = new List<Ue>();
 
@@ -134,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var iteracao = entidades.Skip(i).Take(900);
 
-                var armazenados = contexto.Conexao.Query<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoUe}'"))));
+                var armazenados = await contexto.Conexao.QueryAsync<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoUe}'"))));
 
                 var novos = iteracao.Where(x => !armazenados.Select(y => y.CodigoUe).Contains(x.CodigoUe));
 
@@ -143,7 +143,7 @@ namespace SME.SGP.Dados.Repositorios
                     item.DataAtualizacao = DateTime.Today;
                     item.Dre = dres.First(x => x.CodigoDre == item.Dre.CodigoDre);
                     item.DreId = item.Dre.Id;
-                    item.Id = (long)contexto.Conexao.Insert(item);
+                    item.Id = (long)await contexto.Conexao.InsertAsync(item);
                     resultado.Add(item);
                 }
 
@@ -165,7 +165,7 @@ namespace SME.SGP.Dados.Repositorios
 
                 foreach (var item in modificados)
                 {
-                    contexto.Conexao.Execute(Update, new { nome = item.Nome, tipoEscola = item.TipoEscola, dataAtualizacao = item.DataAtualizacao, id = item.Id });
+                    await contexto.Conexao.ExecuteAsync(Update, new { nome = item.Nome, tipoEscola = item.TipoEscola, dataAtualizacao = item.DataAtualizacao, id = item.Id });
 
                     resultado.Add(item);
                 }

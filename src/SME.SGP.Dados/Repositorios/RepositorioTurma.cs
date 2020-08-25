@@ -6,7 +6,9 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -265,15 +267,36 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryFirstAsync<bool>(query, new { turmaCodigo });
         }
 
-        public async Task<IEnumerable<Turma>> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
+        public async Task<IEnumerable<long>> ObterTurmasPorUeAnos(string ueCodigo, int anoLetivo, string[] anos, int modalidadeId)
+        {
+            var query = new StringBuilder(@"select x.turma_Id from (select distinct on (2) t.turma_id , t.ano from turma t
+                                                inner join ue u on u.id  = t.ue_id 
+                                            where  t.ano_letivo = @anoLetivo and t.modalidade_codigo = @modalidadeId ");
+
+            if (!string.IsNullOrEmpty(ueCodigo))
+                query.AppendLine("and u.ue_id  = @ueCodigo");
+
+            if (anos != null && anos.Length > 0)
+                query.AppendLine("and t.ano = any(@anos) ");
+
+            query.AppendLine(") x");
+
+            return await contexto.Conexao.QueryAsync<long>(query.ToString(), new { ueCodigo, anos, anoLetivo, modalidadeId });
+
+        }
+
+        public async Task<IEnumerable<Turma>> SincronizarAsync(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
         {
             List<Turma> resultado = new List<Turma>();
+
+            await RemoverTurmasExtintasAsync(entidades);
 
             for (int i = 0; i < entidades.Count(); i = i + 900)
             {
                 var iteracao = entidades.Skip(i).Take(900);
 
-                var armazenados = (await contexto.Conexao.QueryAsync<Turma>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoTurma}'"))))).ToList();
+                var armazenados = (await contexto.Conexao.QueryAsync<Turma>(
+                    QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoTurma}'"))))).ToList();
 
                 var idsArmazenados = armazenados.Select(y => y.CodigoTurma);
                 var novos = iteracao.Where(x => !idsArmazenados.Contains(x.CodigoTurma)).ToList();
@@ -283,7 +306,7 @@ namespace SME.SGP.Dados.Repositorios
                     item.DataAtualizacao = DateTime.Today;
                     item.Ue = ues.First(x => x.CodigoUe == item.Ue.CodigoUe);
                     item.UeId = item.Ue.Id;
-                    item.Id = (long)contexto.Conexao.Insert(item);
+                    item.Id = (long)await contexto.Conexao.InsertAsync(item);
                     resultado.Add(item);
                 }
 

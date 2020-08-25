@@ -59,6 +59,19 @@ class ServicoFiltroRelatorio {
       return [];
     }
   };
+
+  obterComponetensCuriculares = (
+    codigoUe,
+    modalidade,
+    anoLetivo,
+    anosEscolares
+  ) => {
+    const url = `${urlPadrao}/componentes-curriculares/anos-letivos/${anoLetivo}/ues/${codigoUe}/modalidades/${modalidade}/?anos=${anosEscolares.join(
+      '&anos=',
+      anosEscolares
+    )}`;
+    return api.get(url);
+  };
 }
 
 export default new ServicoFiltroRelatorio();

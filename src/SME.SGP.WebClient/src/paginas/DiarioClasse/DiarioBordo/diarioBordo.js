@@ -1,6 +1,6 @@
 import { Form, Formik } from 'formik';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import { Auditoria, CampoData, Loader, PainelCollapse } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -24,6 +24,11 @@ import ModalSelecionarAula from './modalSelecionarAula';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
+import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
+import {
+  limparDadosObservacoesUsuario,
+  setDadosObservacoesUsuario,
+} from '~/redux/modulos/observacoesUsuario/actions';
 
 const DiarioBordo = () => {
   const usuario = useSelector(state => state.usuario);
@@ -61,6 +66,7 @@ const DiarioBordo = () => {
   );
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const dispatch = useDispatch();
 
   const inicial = {
     aulaId: 0,
@@ -215,6 +221,28 @@ const DiarioBordo = () => {
     );
   };
 
+  const obterDadosObservacoes = useCallback(
+    async diarioBordoId => {
+      dispatch(limparDadosObservacoesUsuario());
+      setCarregandoGeral(true);
+      const retorno = await ServicoDiarioBordo.obterDadosObservacoes(
+        diarioBordoId
+      ).catch(e => {
+        erros(e);
+        setCarregandoGeral(false);
+      });
+
+      if (retorno && retorno.data) {
+        dispatch(setDadosObservacoesUsuario([...retorno.data]));
+      } else {
+        dispatch(setDadosObservacoesUsuario([]));
+      }
+
+      setCarregandoGeral(false);
+    },
+    [dispatch]
+  );
+
   const obterDiarioBordo = async aulaId => {
     setCarregandoGeral(true);
     const retorno = await ServicoDiarioBordo.obterDiarioBordo(aulaId).catch(e =>
@@ -231,8 +259,9 @@ const DiarioBordo = () => {
       };
       setTemPeriodoAberto(retorno.data.temPeriodoAberto);
       setValoresIniciais(valInicial);
-      if (retorno.data.auditoria) {
+      if (retorno.data.auditoria && retorno.data.auditoria.id) {
         setAuditoria(retorno.data.auditoria);
+        obterDadosObservacoes(retorno.data.auditoria.id);
       }
     }
   };
@@ -246,7 +275,7 @@ const DiarioBordo = () => {
     };
     const retorno = await ServicoDiarioBordo.salvarDiarioBordo(
       params,
-      auditoria.id
+      auditoria ? auditoria.id : 0
     ).catch(e => erros(e));
     setCarregandoGeral(false);
     let salvouComSucesso = false;
@@ -404,6 +433,55 @@ const DiarioBordo = () => {
     }
   };
 
+  const salvarEditarObservacao = async obs => {
+    setCarregandoGeral(true);
+    const diarioBordoId = auditoria.id;
+    return ServicoDiarioBordo.salvarEditarObservacao(diarioBordoId, obs)
+      .then(resultado => {
+        if (resultado && resultado.status === 200) {
+          const msg = `Observação ${
+            obs.id ? 'alterada' : 'inserida'
+          } com sucesso.`;
+          sucesso(msg);
+        }
+        setCarregandoGeral(false);
+
+        ServicoDiarioBordo.atualizarSalvarEditarDadosObservacao(
+          obs,
+          resultado.data
+        );
+        return resultado;
+      })
+      .catch(e => {
+        erros(e);
+        setCarregandoGeral(false);
+        return e;
+      });
+  };
+
+  const excluirObservacao = async obs => {
+    const confirmado = await confirmar(
+      'Excluir',
+      '',
+      'Você tem certeza que deseja excluir este registro?'
+    );
+
+    if (confirmado) {
+      setCarregandoGeral(true);
+      const resultado = await ServicoDiarioBordo.excluirObservacao(obs).catch(
+        e => {
+          erros(e);
+          setCarregandoGeral(false);
+        }
+      );
+      if (resultado && resultado.status === 200) {
+        sucesso('Registro excluído com sucesso');
+        ServicoDiarioBordo.atualizarExcluirDadosObservacao(obs, resultado.data);
+      }
+      setCarregandoGeral(false);
+    }
+  };
+
   return (
     <Loader loading={carregandoGeral} className="w-100 my-2">
       {!turmaSelecionada.turma ? (
@@ -436,7 +514,7 @@ const DiarioBordo = () => {
       />
       <Cabecalho pagina="Diário de bordo" />
       <Card>
-        <div className="col-md-12">
+        <div className="col-md-12 mb-3">
           <Formik
             enableReinitialize
             onSubmit={(v, form) => {
@@ -568,7 +646,7 @@ const DiarioBordo = () => {
                           </PainelCollapse.Painel>
                         </PainelCollapse>
                       </div>
-                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                         <PainelCollapse>
                           <PainelCollapse.Painel temBorda header="Devolutivas">
                             <CampoTexto
@@ -593,6 +671,7 @@ const DiarioBordo = () => {
                       alteradoPor={auditoria.alteradoPor}
                       alteradoEm={auditoria.alteradoEm}
                       alteradoRf={auditoria.alteradoRf}
+                      ignorarMarginTop
                     />
                   ) : (
                     ''
@@ -602,6 +681,15 @@ const DiarioBordo = () => {
             )}
           </Formik>
         </div>
+        {auditoria && auditoria.id ? (
+          <ObservacoesUsuario
+            salvarObservacao={obs => salvarEditarObservacao(obs)}
+            editarObservacao={obs => salvarEditarObservacao(obs)}
+            excluirObservacao={obs => excluirObservacao(obs)}
+          />
+        ) : (
+          ''
+        )}
       </Card>
     </Loader>
   );
