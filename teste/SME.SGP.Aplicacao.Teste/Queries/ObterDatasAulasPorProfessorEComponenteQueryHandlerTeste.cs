@@ -41,11 +41,11 @@ namespace SME.SGP.Aplicacao.Teste.Queries
                 });
 
             repositorio.Setup(x => x.ObterDatasDeAulasPorAnoTurmaEDisciplina(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
-                .Returns(new List<AulaConsultaDto>()
+                .Returns(new List<Aula>()
                 {
-                    new AulaConsultaDto() { DataAula = new DateTime(2020, 08, 05), Id = 1 },
-                    new AulaConsultaDto() { DataAula = new DateTime(2020, 08, 05), Id = 2 },
-                    new AulaConsultaDto() { DataAula = new DateTime(2020, 08, 06), Id = 3 },
+                    new Aula() { DataAula = new DateTime(2020, 08, 05), Id = 1 },
+                    new Aula() { DataAula = new DateTime(2020, 08, 05), Id = 2 },
+                    new Aula() { DataAula = new DateTime(2020, 08, 06), Id = 3 },
                 });
 
             mediator.Setup(x => x.Send(It.IsAny<ObterTipoCalendarioIdPorTurmaQuery>(), It.IsAny<CancellationToken>()))
