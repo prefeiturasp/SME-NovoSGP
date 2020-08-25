@@ -59,7 +59,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await inserirAulaUseCase.Executar(inserirAulaDto));
         }
 
-        [HttpGet("{aulaId}/recorrencias/serie")]
+        [HttpGet("{aulaId}/recorrencias/serie/{recorrenciaSelecionada}")]
         [ProducesResponseType(typeof(AulaRecorrenciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]

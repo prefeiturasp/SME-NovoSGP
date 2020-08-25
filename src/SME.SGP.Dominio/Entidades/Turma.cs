@@ -75,7 +75,5 @@ namespace SME.SGP.Dominio
                    (EhTurmaFund2 || (EhEJA() && (anoTurma == 3 || anoTurma == 4))) ||
                    (EhTurmaEnsinoMedio && quantidadeAulasExistentesNoDia > 2);
         }
-        public string Situacao { get; set; }
-        public bool Ativa => !string.IsNullOrWhiteSpace(Situacao) && (Situacao.Equals("A") || Situacao.Equals("O"));
     }
 }
