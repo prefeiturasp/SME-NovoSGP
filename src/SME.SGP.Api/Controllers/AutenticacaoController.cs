@@ -166,13 +166,5 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
         }
-
-        [HttpGet("teste")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Teste([FromServices] ICriarAulasInfantilAutomaticamenteUseCase criarAulasInfantilAutomaticamenteUseCase)
-        {
-            await criarAulasInfantilAutomaticamenteUseCase.Executar(new MensagemRabbit(string.Empty,Guid.NewGuid(),string.Empty, string.Empty,null));
-            return Ok();
-        }
     }
 }

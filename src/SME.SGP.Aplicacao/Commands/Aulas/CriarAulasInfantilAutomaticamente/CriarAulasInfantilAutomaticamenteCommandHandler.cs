@@ -14,7 +14,6 @@ namespace SME.SGP.Aplicacao
 {
     public class CriarAulasInfantilAutomaticamenteCommandHandler : IRequestHandler<CriarAulasInfantilAutomaticamenteCommand, bool>
     {
-        private Stopwatch timerGlobal;
         private readonly IRepositorioAula repositorioAula;
         private readonly IMediator mediator;
 
@@ -43,7 +42,6 @@ namespace SME.SGP.Aplicacao
             var idsAulasAExcluir = new List<long>();
             var inicioOperacao = DateTime.UtcNow;
             var timerGeral = Stopwatch.StartNew();
-            timerGlobal = Stopwatch.StartNew();
 
             for (int i = 0; i < turmas.Count(); i++)
             {
