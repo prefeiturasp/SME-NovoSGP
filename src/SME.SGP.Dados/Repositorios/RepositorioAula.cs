@@ -562,9 +562,9 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
-        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehProfessor = false)
+        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehProfessor = false)
         {
-            var query = new StringBuilder("select distinct a.* ");
+            var query = new StringBuilder("select distinct a.*, t.* ");
             query.AppendLine("from aula a ");
             query.AppendLine("inner join turma t on ");
             query.AppendLine("a.turma_id = t.turma_id ");
@@ -588,7 +588,11 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine($"and {filtroAulaCJ} a.aula_cj ");
             }
 
-            return database.Conexao.Query<AulaConsultaDto>(query.ToString(), new
+            return database.Conexao.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
+            {
+                aula.Turma = turma;
+                return aula;
+            }, new
             {
                 periodoEscolarId,
                 usuarioRF,
