@@ -120,10 +120,17 @@ const DevolutivasLista = () => {
     }
   }, [turmaCodigo, obterComponentesCurriculares, turmaInfantil, resetarTela]);
 
-  const filtrar = (data, componenteCurricularId) => {
+  useEffect(() => {
     const paramsFiltrar = {
-      data: data ? data.format('YYYY-MM-DD') : '',
-      componenteCurricularId,
+      componenteCurricularCodigo: componenteCurricularSelecionado,
+    };
+    setFiltro({ ...paramsFiltrar });
+  }, [componenteCurricularSelecionado]);
+
+  const filtrar = (data, componenteCurricularCodigo) => {
+    const paramsFiltrar = {
+      dataReferencia: data ? data.format('YYYY-MM-DD') : '',
+      componenteCurricularCodigo,
     };
     setFiltro({ ...paramsFiltrar });
   };
