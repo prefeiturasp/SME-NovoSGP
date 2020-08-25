@@ -40,7 +40,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.DE_I, Policy = "Bearer")]
+        //[Permissao(Permissao.DE_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromServices] IInserirDevolutivaUseCase useCase, [FromBody] InserirDevolutivaDto devolutivaDto)
         {
             return Ok(await useCase.Executar(devolutivaDto));
