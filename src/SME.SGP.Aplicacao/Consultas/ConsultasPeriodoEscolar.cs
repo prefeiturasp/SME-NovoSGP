@@ -187,10 +187,13 @@ namespace SME.SGP.Aplicacao.Consultas
         private PeriodoEscolar FiltraEObtemUltimoPeriodoEmAberto(IEnumerable<PeriodoEscolar> periodosAberto, TipoCalendarioCompletoDto tipoCalendario)
         {
             // Filtra apenas a modalidade desejada
-            periodosAberto = periodosAberto.Where(x => tipoCalendario.Id == x.TipoCalendarioId);
+            periodosAberto = periodosAberto
+                .Where(x => tipoCalendario.Id == x.TipoCalendarioId);
 
             // caso tenha mais de um periodo em aberto (abertura e reabertura) usa o ultimo bimestre
-            return periodosAberto.OrderBy(c => c.Bimestre).Last();
+            return periodosAberto
+                .OrderBy(c => c.Bimestre)
+                .LastOrDefault();
         }
     }
 }
