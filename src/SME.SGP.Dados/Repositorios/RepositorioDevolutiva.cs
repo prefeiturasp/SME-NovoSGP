@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -86,8 +87,8 @@ namespace SME.SGP.Dados.Repositorios
             {
                 turmaCodigo,
                 componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
-                periodoInicio,
-                periodoFim
+                periodoInicio = periodoInicio.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
+                periodoFim = periodoFim.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
             });
         }
     }

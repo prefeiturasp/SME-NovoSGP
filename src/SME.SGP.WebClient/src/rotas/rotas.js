@@ -901,8 +901,8 @@ rotas.set(RotasDto.DEVOLUTIVAS, {
   component: DevolutivasLista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.DEVOLUTIVAS,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
 });
 
 rotas.set(`${RotasDto.DEVOLUTIVAS}/novo`, {
@@ -911,8 +911,8 @@ rotas.set(`${RotasDto.DEVOLUTIVAS}/novo`, {
   component: DevolutivasForm,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.DEVOLUTIVAS,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
 });
 
 rotas.set(`${RotasDto.DEVOLUTIVAS}/editar/:id`, {
@@ -921,8 +921,8 @@ rotas.set(`${RotasDto.DEVOLUTIVAS}/editar/:id`, {
   component: DevolutivasForm,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.DEVOLUTIVAS,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
 });
 
 const rotasArray = [];

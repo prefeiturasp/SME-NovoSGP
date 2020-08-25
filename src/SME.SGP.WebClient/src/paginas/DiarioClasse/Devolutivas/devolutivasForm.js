@@ -2,9 +2,9 @@ import { Form, Formik } from 'formik';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import { CampoData, Loader, momentSchema, Auditoria } from '~/componentes';
+import { Auditoria, CampoData, Loader, momentSchema } from '~/componentes';
 import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
@@ -13,19 +13,20 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import Editor from '~/componentes/editor/editor';
 import SelectComponent from '~/componentes/select';
-import { erros, sucesso, confirmar } from '~/servicos/alertas';
-import ServicoDevolutivas from '~/servicos/Paginas/DiarioClasse/ServicoDevolutivas';
-import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
-import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import RotasDto from '~/dtos/rotasDto';
-import history from '~/servicos/history';
-import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
-import DadosPlanejamentoDiarioBordo from './DadosPlanejamentoDiarioBordo/dadosPlanejamentoDiarioBordo';
 import {
-  setDadosPlanejamentos,
   limparDadosPlanejamento,
+  setDadosPlanejamentos,
 } from '~/redux/modulos/devolutivas/actions';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
+import history from '~/servicos/history';
+import ServicoDevolutivas from '~/servicos/Paginas/DiarioClasse/ServicoDevolutivas';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
+import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import DadosPlanejamentoDiarioBordo from './DadosPlanejamentoDiarioBordo/dadosPlanejamentoDiarioBordo';
 
 const DevolutivasForm = ({ match }) => {
   const dispatch = useDispatch();
@@ -49,29 +50,53 @@ const DevolutivasForm = ({ match }) => {
   const [datasParaHabilitar, setDatasParaHabilitar] = useState();
   const [idDevolutiva, setIdDevolutiva] = useState(0);
   const [refForm, setRefForm] = useState({});
+  const permissoesTela = usuario.permissoes[RotasDto.DEVOLUTIVAS];
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
 
   const inicial = {
     codigoComponenteCurricular: 0,
-    dataInicio: '',
-    dataFim: '',
-    devolutiva: '',
+    periodoInicio: '',
+    periodoFim: '',
+    descricao: '',
     auditoria: null,
   };
   const [valoresIniciais, setValoresIniciais] = useState(inicial);
 
   const validacoesRegistroNovo = Yup.object({
-    dataInicio: momentSchema.required('Data início obrigatória'),
-    dataFim: momentSchema.required('Data fim obrigatória'),
-    devolutiva: Yup.string()
+    periodoInicio: momentSchema.required('Data início obrigatória'),
+    periodoFim: momentSchema.required('Data fim obrigatória'),
+    descricao: Yup.string()
       .required('Campo devolutiva obrigatório')
       .min(200, 'Você precisa preencher com no mínimo 200 caracteres'),
   });
 
   const validacoesRegistroEdicao = Yup.object({
-    devolutiva: Yup.string()
+    descricao: Yup.string()
       .required('Campo devolutiva obrigatório')
       .min(200, 'Você precisa preencher com no mínimo 200 caracteres'),
   });
+
+  useEffect(() => {
+    const naoSetarSomenteConsultaNoStore = !ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+
+    const soConsulta = verificaSomenteConsulta(
+      permissoesTela,
+      naoSetarSomenteConsultaNoStore
+    );
+    const desabilitar =
+      idDevolutiva && idDevolutiva > 0
+        ? soConsulta || !permissoesTela.podeAlterar
+        : soConsulta || !permissoesTela.podeIncluir;
+    setDesabilitarCampos(desabilitar);
+  }, [
+    idDevolutiva,
+    permissoesTela,
+    modalidadesFiltroPrincipal,
+    turmaSelecionada,
+  ]);
 
   useEffect(() => {
     if (match && match.params && match.params.id) {
@@ -127,8 +152,8 @@ const DevolutivasForm = ({ match }) => {
     [turmaCodigo]
   );
 
-  const obterDatasFimParaHabilitar = dataInicio => {
-    const dataInicial = moment({ ...dataInicio });
+  const obterDatasFimParaHabilitar = periodoInicio => {
+    const dataInicial = moment({ ...periodoInicio });
     const datas = [dataInicial.format('YYYY-MM-DD')];
     const qtdMaxDias = 30;
     for (let index = 0; index < qtdMaxDias; index += 1) {
@@ -142,18 +167,18 @@ const DevolutivasForm = ({ match }) => {
     async codigoComponenteCurricular => {
       const valores = {
         codigoComponenteCurricular: 0,
-        dataInicio: '',
-        dataFim: '',
-        devolutiva: '',
+        periodoInicio: '',
+        periodoFim: '',
+        descricao: '',
         auditoria: null,
       };
       valores.codigoComponenteCurricular = codigoComponenteCurricular;
-      valores.dataInicio = await obterSugestaoDataInicio(
+      valores.periodoInicio = await obterSugestaoDataInicio(
         codigoComponenteCurricular
       );
-      if (valores.dataInicio) {
+      if (valores.periodoInicio) {
         const paraHabilitar = await obterDatasFimParaHabilitar(
-          moment(valores.dataInicio)
+          moment(valores.periodoInicio)
         );
         setDatasParaHabilitar(paraHabilitar);
       }
@@ -168,11 +193,10 @@ const DevolutivasForm = ({ match }) => {
   ) => {
     const valores = {
       codigoComponenteCurricular,
-      dataInicio: '',
-      dataFim: '',
-      devolutiva: dados.devolutiva,
+      periodoInicio: moment(dados.periodoInicio),
+      periodoFim: moment(dados.periodoFim),
+      descricao: dados.descricao,
       auditoria: dados.auditoria,
-      diariosIds: dados.diariosIds,
     };
     setValoresIniciais({ ...valores });
   };
@@ -258,24 +282,24 @@ const DevolutivasForm = ({ match }) => {
     }
   }, [turmaCodigo, obterComponentesCurriculares, turmaInfantil]);
 
-  const onChangeDataInicio = async (dataInicio, form) => {
-    if (dataInicio) {
-      const paraHabilitar = await obterDatasFimParaHabilitar(dataInicio);
+  const onChangeDataInicio = async (periodoInicio, form) => {
+    if (periodoInicio) {
+      const paraHabilitar = await obterDatasFimParaHabilitar(periodoInicio);
       setDatasParaHabilitar(paraHabilitar);
     }
-    form.setFieldValue('dataFim', '');
+    form.setFieldValue('periodoFim', '');
     dispatch(limparDadosPlanejamento());
     setModoEdicao(true);
   };
 
-  const obterDadosPlanejamento = async (dataFim, form, pagina) => {
-    const { dataInicio, codigoComponenteCurricular } = form.values;
+  const obterDadosPlanejamento = async (periodoFim, form, pagina) => {
+    const { periodoInicio, codigoComponenteCurricular } = form.values;
     setCarregandoGeral(true);
     const retorno = await ServicoDiarioBordo.obterPlanejamentosPorIntervalo(
       turmaCodigo,
       codigoComponenteCurricular,
-      dataInicio.format('YYYY-MM-DD'),
-      dataFim.format('YYYY-MM-DD'),
+      periodoInicio.format('YYYY-MM-DD'),
+      periodoFim.format('YYYY-MM-DD'),
       pagina || 1
     ).catch(e => erros(e));
     setCarregandoGeral(false);
@@ -288,7 +312,7 @@ const DevolutivasForm = ({ match }) => {
 
   const onChangeDataFim = (data, form) => {
     if (!data) {
-      form.setFieldValue('devolutiva', '');
+      form.setFieldValue('descricao', '');
     }
     if (data) {
       obterDadosPlanejamento(data, form);
@@ -321,12 +345,19 @@ const DevolutivasForm = ({ match }) => {
   };
   const salvarDevolutivas = async (valores, clicouBtnSalvar) => {
     setCarregandoGeral(true);
+
     const params = {
-      devolutiva: valores.devolutiva,
+      turmaCodigo,
+      descricao: valores.descricao,
     };
 
     if (!idDevolutiva) {
-      params.diariosIds = valores.diariosIds;
+      params.codigoComponenteCurricular = valores.codigoComponenteCurricular;
+      params.periodoInicio = valores.periodoInicio;
+      params.periodoFim = valores.periodoFim;
+    }
+    if (idDevolutiva) {
+      params.id = idDevolutiva;
     }
     const retorno = await ServicoDevolutivas.salvarAlterarDevolutiva(
       params,
@@ -354,14 +385,14 @@ const DevolutivasForm = ({ match }) => {
     });
     return form.validateForm().then(() => {
       if (form.isValid || Object.keys(form.errors).length === 0) {
-        return salvarDevolutivas(form.values, form, clicouBtnSalvar);
+        return salvarDevolutivas(form.values, clicouBtnSalvar);
       }
       return false;
     });
   };
 
   const onClickVoltar = async form => {
-    if (modoEdicao && turmaInfantil) {
+    if (modoEdicao && turmaInfantil && !desabilitarCampos) {
       const confirmado = await pergutarParaSalvar();
       if (confirmado) {
         const salvou = await validaAntesDoSubmit(form);
@@ -400,7 +431,7 @@ const DevolutivasForm = ({ match }) => {
     if (idDevolutiva) {
       obterPlanejamentosPorDevolutiva(pagina);
     } else {
-      obterDadosPlanejamento(form.values.dataFim, form, pagina);
+      obterDadosPlanejamento(form.values.periodoFim, form, pagina);
     }
   };
 
@@ -453,14 +484,16 @@ const DevolutivasForm = ({ match }) => {
                       border
                       bold
                       className="mr-3"
-                      disabled={!turmaInfantil || !modoEdicao}
+                      disabled={
+                        !turmaInfantil || !modoEdicao || desabilitarCampos
+                      }
                     />
                     <Button
                       label="Excluir"
                       color={Colors.Vermelho}
                       border
                       className="mr-3"
-                      disabled={!idDevolutiva}
+                      disabled={!idDevolutiva || !permissoesTela.podeExcluir}
                       onClick={onClickExcluir}
                     />
                     <Button
@@ -475,7 +508,9 @@ const DevolutivasForm = ({ match }) => {
                           history.push(RotasDto.DEVOLUTIVAS);
                         }
                       }}
-                      disabled={!turmaInfantil || !modoEdicao}
+                      disabled={
+                        !turmaInfantil || !modoEdicao || desabilitarCampos
+                      }
                     />
                   </div>
                   <div className="col-sm-12 col-md-12 col-lg-6 col-xl-4 mb-2">
@@ -490,7 +525,8 @@ const DevolutivasForm = ({ match }) => {
                         !turmaInfantil ||
                         !turmaSelecionada.turma ||
                         (listaComponenteCurriculare &&
-                          listaComponenteCurriculare.length === 1)
+                          listaComponenteCurriculare.length === 1) ||
+                        desabilitarCampos
                       }
                       form={form}
                       name="codigoComponenteCurricular"
@@ -500,7 +536,7 @@ const DevolutivasForm = ({ match }) => {
                     <CampoData
                       label="Data início"
                       form={form}
-                      name="dataInicio"
+                      name="periodoInicio"
                       onChange={data => {
                         onChangeDataInicio(data, form);
                       }}
@@ -510,7 +546,8 @@ const DevolutivasForm = ({ match }) => {
                         idDevolutiva ||
                         !turmaInfantil ||
                         !listaComponenteCurriculare ||
-                        !form.values.codigoComponenteCurricular
+                        !form.values.codigoComponenteCurricular ||
+                        desabilitarCampos
                       }
                     />
                   </div>
@@ -518,7 +555,7 @@ const DevolutivasForm = ({ match }) => {
                     <CampoData
                       label="Data fim"
                       form={form}
-                      name="dataFim"
+                      name="periodoFim"
                       onChange={data => onChangeDataFim(data, form)}
                       placeholder="DD/MM/AAAA"
                       formatoData="DD/MM/YYYY"
@@ -526,13 +563,14 @@ const DevolutivasForm = ({ match }) => {
                         idDevolutiva ||
                         !turmaInfantil ||
                         !listaComponenteCurriculare ||
-                        !form.values.dataInicio
+                        !form.values.periodoInicio ||
+                        desabilitarCampos
                       }
                       diasParaHabilitar={datasParaHabilitar}
                     />
                   </div>
 
-                  {(form.values.dataInicio && form.values.dataFim) ||
+                  {(form.values.periodoInicio && form.values.periodoFim) ||
                   idDevolutiva ? (
                     <>
                       <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
@@ -544,13 +582,14 @@ const DevolutivasForm = ({ match }) => {
                         <Editor
                           label="Registre a sua devolutiva para este intervalo de datas"
                           form={form}
-                          name="devolutiva"
+                          name="descricao"
                           id="editor-devolutiva"
                           onChange={v => {
-                            if (valoresIniciais.devolutiva !== v) {
+                            if (valoresIniciais.descricao !== v) {
                               setModoEdicao(true);
                             }
                           }}
+                          desabilitar={desabilitarCampos}
                         />
                       </div>
                       {form.values.auditoria ? (
