@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -20,6 +21,14 @@ namespace SME.SGP.Dominio
         public bool DataDentroPeriodo(DateTime data)
         {
             return PeriodoInicio.Date <= data.Date && PeriodoFim.Date >= data.Date;
+        }
+
+        public IEnumerable<DateTime> ObterIntervaloDatas()
+        {
+            var datas = new List<DateTime>();
+            for (var dia = PeriodoInicio.Date; dia <= PeriodoFim.Date; dia = dia.AddDays(1))
+                datas.Add(dia);
+            return datas;
         }
 
         public void Validar(int anoBase, bool eja)
@@ -72,6 +81,12 @@ namespace SME.SGP.Dominio
 
             if (PeriodoFim == DateTime.MinValue)
                 throw new NegocioException("Deve ser informado o fim do período");
+        }
+
+        public IEnumerable<DateTime> DatasDoPeriodo()
+        {
+            for (var data = PeriodoInicio; data <= PeriodoFim; data = data.AddDays(1))
+                yield return data;
         }
     }
 }

@@ -187,7 +187,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("        (a.turma_id is null and a.dre_id is null and a.ue_id = t.ue_id) --admin ue");
             query.AppendLine("  inner join ue");
             query.AppendLine("      on ue.id = t.ue_id");
-            query.AppendLine($"where { (!consideraHistorico ? " not " : string.Empty) } a.historico");
+            query.AppendLine($"where { (!consideraHistorico ? "not " : string.Empty) }a.historico");
             query.AppendLine("  and u.login = @login");
             query.AppendLine("  and a.perfil = @perfil");
             query.AppendLine("  and t.turma_codigo = @turma;");
@@ -201,6 +201,53 @@ namespace SME.SGP.Dados.Repositorios
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_anos_letivos(@login, @perfil, @consideraHistorico)
                                                              order by 1", new { login, perfil, consideraHistorico }));
+        }
+
+        public async Task<IEnumerable<string>> ObterAnosTurmasPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico)
+        {
+            var query = @"select distinct act.turma_ano
+	                            from v_abrangencia_nivel_dre a
+		                            inner join v_abrangencia_cadeia_turmas act
+			                            on a.dre_id = act.dre_id
+                            where a.login = @login and 
+	                              a.perfil_id = @perfil and	  
+	                              act.turma_historica = @consideraHistorico and
+	                              act.modalidade_codigo = @modalidade and
+                                  (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe))
+	 
+                            union
+
+                            select distinct act.turma_ano
+	                            from v_abrangencia_nivel_ue a
+		                            inner join v_abrangencia_cadeia_turmas act
+			                            on a.ue_id = act.ue_id
+                            where a.login = @login and 
+	                              a.perfil_id = @perfil and	  
+	                              act.turma_historica = @consideraHistorico and
+	                              act.modalidade_codigo = @modalidade and
+                                  (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe)) and
+	                              ((@perfil <> '4ee1e074-37d6-e911-abd6-f81654fe895d') or
+	                               (@consideraHistorico = true and 
+	                                @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' and 
+	                                act.dre_id in (select dre_id from v_abrangencia_nivel_dre where login = @login and historico = false) and 
+	   	                            act.ue_id in (select ue_id from v_abrangencia_nivel_ue where login = @login and historico = false)) or
+	                               (@consideraHistorico = false and @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' and a.historico = false))
+
+                            union
+
+                            select distinct act.turma_ano
+	                            from v_abrangencia_nivel_turma a
+		                            inner join v_abrangencia_cadeia_turmas act
+			                            on a.turma_id = act.turma_id
+                            where a.login = @login and 
+	                              a.perfil_id = @perfil and
+	                              act.modalidade_codigo = @modalidade and
+                                  (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe)) and
+	                              ((@consideraHistorico = true and a.historico = true) or
+	                               (@consideraHistorico = false and a.historico  = false and act.turma_historica = false));	  	";
+
+            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
+            return (await database.Conexao.QueryAsync<string>(query, new { login, perfil, codigoUe, modalidade = (int)modalidade, consideraHistorico }));
         }
 
         public async Task<AbrangenciaDreRetorno> ObterDre(string dreCodigo, string ueCodigo, string login, Guid perfil)
@@ -406,6 +453,16 @@ namespace SME.SGP.Dados.Repositorios
             var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre });
 
             return dados.OrderBy(x => x.Descricao);
+        }
+
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual)
+        {
+            var query = @"select distinct vau.modalidade_codigo from v_abrangencia_usuario vau 
+                            where vau.login = @login
+                            and usuario_perfil  = @perfilAtual
+                            and vau.ue_codigo = @codigoUe";
+
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual });
         }
     }
 }

@@ -168,6 +168,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where t.excluido = false");
             query.AppendLine("and t.ano_letivo = @anoLetivo");
             query.AppendLine("and t.modalidade = @modalidade");
+            query.AppendLine("and t.situacao ");
 
             DateTime dataReferencia = DateTime.MinValue;
             if (modalidade == ModalidadeTipoCalendario.EJA)
