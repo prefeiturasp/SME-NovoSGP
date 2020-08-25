@@ -248,10 +248,12 @@ const DevolutivasLista = () => {
             </div>
           </div>
         </div>
-        {componenteCurricularSelecionado ? (
+        {componenteCurricularSelecionado &&
+        filtro &&
+        filtro.componenteCurricularCodigo ? (
           <div className="col-md-12 pt-2">
             <ListaPaginada
-              url={`v1/devolutivas/turmas/${turmaCodigo}/componentes-curriculares`}
+              url={`v1/devolutivas/turmas/${turmaCodigo}`}
               id="lista-devolutivas"
               colunas={colunas}
               filtro={filtro}
