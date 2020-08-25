@@ -8,6 +8,7 @@ import Sucesso from './sucesso';
 import Erro from './erro';
 import Orientacoes from './orientacoes';
 import api from '~/servicos/api';
+import { Loader } from '~/componentes';
 
 const Nav = styled.nav`
   height: 70px;
@@ -57,6 +58,7 @@ const RecuperarSenha = props => {
   const [retorno, setRetorno] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [email, setEmail] = useState('');
+  const [carregando, setCarregando] = useState(false);
   const refInput = useRef();
 
   useLayoutEffect(() => {
@@ -72,6 +74,7 @@ const RecuperarSenha = props => {
   }, [rf]);
 
   const consultaAPI = async () => {
+    setCarregando(true);
     api
       .post(`/v1/autenticacao/solicitar-recuperacao-senha/?login=${rf}`)
       .then(resposta => {
@@ -81,6 +84,9 @@ const RecuperarSenha = props => {
       .catch(erro => {
         setMensagem(erro.response.data.mensagens[0]);
         setRetorno({ status: false });
+      })
+      .finally(() => {
+        //setCarregando(false);
       });
   };
 
@@ -136,14 +142,18 @@ const RecuperarSenha = props => {
           onClick={onClickCancelar}
           bold
         />
-        <Button
-          label="Continuar"
-          color={Colors.Roxo}
-          disabled={!rf}
-          border
-          onClick={onClickContinuar}
-          bold
-        />
+        <>
+          <Loader loading={carregando} ignorarTip>
+            <Button
+              label="Continuar"
+              color={Colors.Roxo}
+              disabled={!rf}
+              border
+              onClick={onClickContinuar}
+              bold
+            />
+          </Loader>
+        </>
       </>
     );
   };

@@ -5,11 +5,13 @@ const AbrangenciaServico = {
     if (url) return api.get(url);
     return api.get(`/v1/abrangencias/false/dres`);
   },
-  buscarUes(dreId, url = '', temParametros = false) {
+  buscarUes(dreId, url = '', temParametros = false, modalidade) {
     if (url && !temParametros)
       return api.get(`${url}/${dreId}/ues/atribuicoes`);
     if (temParametros) return api.get(url);
-    return api.get(`/v1/abrangencias/false/dres/${dreId}/ues`);
+    return api.get(
+      `/v1/abrangencias/false/dres/${dreId}/ues?modalidade=${modalidade || ''}`
+    );
   },
   buscarModalidades() {
     return api.get(`v1/abrangencias/modalidades`);
@@ -52,6 +54,11 @@ const AbrangenciaServico = {
   },
   usuarioTemAbrangenciaTodasTurmas() {
     return api.get(`v1/abrangencias/false/adm`);
+  },
+  buscarAnosEscolares(codigoUe, modalidade, consideraHistorico = false) {
+    return api.get(
+      `v1/abrangencias/${consideraHistorico}/ues/${codigoUe}/modalidades/${modalidade}/turmas/anos`
+    );
   },
 };
 

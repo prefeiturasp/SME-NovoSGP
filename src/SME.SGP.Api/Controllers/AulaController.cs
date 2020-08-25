@@ -59,17 +59,17 @@ namespace SME.SGP.Api.Controllers
             return Ok(await inserirAulaUseCase.Executar(inserirAulaDto));
         }
 
-        [HttpGet("{aulaId}/recorrencias/serie")]
+        [HttpGet("{aulaId}/recorrencias/serie/{recorrenciaSelecionada}")]
         [ProducesResponseType(typeof(AulaRecorrenciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices] IConsultasAula consultas)
+        public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices] IConsultasAula consultas, [FromServices] IObterFrequenciaOuPlanoNaRecorrenciaUseCase obterFrequenciaOuPlanoNaRecorrenciaUseCase)
         {
             var recorrencia = consultas.ObterRecorrenciaDaSerie(aulaId);
             var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1
                 : await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
-            var existeFrequenciaPlanoAula = await consultas.ChecarFrequenciaPlanoNaRecorrencia(aulaId);
+            var existeFrequenciaPlanoAula = await obterFrequenciaOuPlanoNaRecorrenciaUseCase.Executar(aulaId);
 
             var retorno = new AulaRecorrenciaDto()
             {

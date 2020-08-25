@@ -25,6 +25,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico);
 
+        Task<IEnumerable<string>> ObterAnosTurmasPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico);
+
         Task<AbrangenciaDreRetorno> ObterDre(string dreCodigo, string ueCodigo, string login, Guid perfil);
 
         Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0);
@@ -34,7 +36,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0);
 
         Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0);
-
+        Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual);        
         Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil);
 
         Task<bool> UsuarioPossuiAbrangenciaAdm(long usuarioId);

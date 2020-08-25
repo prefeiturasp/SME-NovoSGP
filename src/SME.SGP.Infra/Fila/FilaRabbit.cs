@@ -13,12 +13,10 @@ namespace SME.SGP.Infra
     {
 
         private readonly IModel rabbitChannel;
-        private readonly IConfiguration configuration;
 
-        public FilaRabbit(IModel rabbitChannel, IConfiguration configuration)
+        public FilaRabbit(IModel rabbitChannel)
         {
             this.rabbitChannel = rabbitChannel ?? throw new ArgumentNullException(nameof(rabbitChannel));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public void PublicaFilaWorkerServidorRelatorios(PublicaFilaRelatoriosDto adicionaFilaDto)

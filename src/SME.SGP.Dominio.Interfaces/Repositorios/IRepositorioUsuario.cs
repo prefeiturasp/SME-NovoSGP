@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -7,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
         Usuario ObterPorCodigoRfLogin(string codigoRf, string login);
 
         Usuario ObterPorTokenRecuperacaoSenha(Guid token);
+        Task<Usuario> ObterUsuarioPorCodigoRfAsync(string codigoRf);
     }
 }
