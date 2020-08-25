@@ -787,23 +787,25 @@ const FrequenciaPlanoAula = () => {
       setAula();
       resetarPlanoAula();
 
-      servicoPlanoAnual
-        .obter(
-          turmaSelecionada.anoLetivo,
-          disciplinaIdSelecionada,
-          turmaSelecionada.unidadeEscolar,
-          turmaSelecionada.turma
-        )
-        .then(resposta => {
-          const planoAnualCadastrado =
-            resposta?.data &&
-            !!resposta.data.filter(
-              plano => plano.id && plano.criadoEm && plano.descricao.length
-            ).length;
+      if (!ehInfantil) {
+        servicoPlanoAnual
+          .obter(
+            turmaSelecionada.anoLetivo,
+            disciplinaIdSelecionada,
+            turmaSelecionada.unidadeEscolar,
+            turmaSelecionada.turma
+          )
+          .then(resposta => {
+            const planoAnualCadastrado =
+              resposta?.data &&
+              !!resposta.data.filter(
+                plano => plano.id && plano.criadoEm && plano.descricao.length
+              ).length;
 
-          setPossuiPlanoAnual(planoAnualCadastrado);
-        })
-        .catch(e => erros(e));
+            setPossuiPlanoAnual(planoAnualCadastrado);
+          })
+          .catch(e => erros(e));
+      }
 
       if (planoAulaExpandido) onClickPlanoAula();
 
@@ -1081,7 +1083,6 @@ const FrequenciaPlanoAula = () => {
                             ? disciplinaSelecionada.regencia
                             : false
                         }
-                        possuiPlanoAnual={possuiPlanoAnual}
                       />
                     </div>
                   ) : (

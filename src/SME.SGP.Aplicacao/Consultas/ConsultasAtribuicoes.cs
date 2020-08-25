@@ -36,13 +36,18 @@ namespace SME.SGP.Aplicacao
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            if (perfilAtual == Perfis.PERFIL_CJ)
+            if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
+                var somenteInfantil = perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
                 var codigosDres = new List<string>();
 
-                ObterAtribuicoesCjDre(loginAtual, codigosDres);
-                ObterAtribuicoesEsporadicasDre(loginAtual, codigosDres);
-                await ObterAtribuicoesEolDre(loginAtual, codigosDres);
+                if (somenteInfantil)
+                    ObterAtribuicoesCjDre(loginAtual, codigosDres, Modalidade.Infantil);
+                else
+                    ObterAtribuicoesCjDre(loginAtual, codigosDres);
+
+                ObterAtribuicoesEsporadicasDre(loginAtual, codigosDres, somenteInfantil);
+                await ObterAtribuicoesEolDre(loginAtual, perfilAtual, codigosDres);
 
                 var dres = repositorioDre.ListarPorCodigos(codigosDres.Distinct().ToArray());
 
@@ -59,12 +64,18 @@ namespace SME.SGP.Aplicacao
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            if (perfilAtual == Perfis.PERFIL_CJ)
+            if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
                 var codigosUes = new List<string>();
-                await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
-                ObterAtribuicoesEsporadicasUe(loginAtual, codigosUes, codigoDre);
-                await ObterAtribuicoesEolUe(loginAtual, codigosUes, codigoDre);
+                await ObterAtribuicoesEolUe(loginAtual, perfilAtual, codigosUes, codigoDre);
+
+                var somenteInfantil = perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
+                if (somenteInfantil)
+                    await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre, Modalidade.Infantil);
+                else
+                    await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
+
+                ObterAtribuicoesEsporadicasUe(loginAtual, codigosUes, codigoDre, somenteInfantil);
 
                 IEnumerable<Ue> ues = repositorioUe.ListarPorCodigos(codigosUes.Distinct().ToArray());
 
@@ -75,19 +86,19 @@ namespace SME.SGP.Aplicacao
             else return await consultasAbrangencia.ObterUes(codigoDre, null, 0);
         }
 
-        private void ObterAtribuicoesCjDre(string professorRf, List<string> codigosDres)
+        private void ObterAtribuicoesCjDre(string professorRf, List<string> codigosDres, Modalidade? modalidade = null)
         {
             var atribuicoesCjAtivas = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(professorRf);
 
             if (atribuicoesCjAtivas != null && atribuicoesCjAtivas.Any())
             {
-                codigosDres.AddRange(atribuicoesCjAtivas.Select(a => a.DreId).Distinct());
+                codigosDres.AddRange(atribuicoesCjAtivas.Where(c => modalidade.HasValue ? c.Modalidade == modalidade : true).Select(a => a.DreId).Distinct());
             }
         }
 
-        private async Task ObterAtribuicoesCjUe(string professorRf, List<string> codigosUes, string codigoDre)
+        private async Task ObterAtribuicoesCjUe(string professorRf, List<string> codigosUes, string codigoDre, Modalidade? modalidade = null)
         {
-            var atribuicoesCjAtivas = await repositorioAtribuicaoCJ.ObterPorFiltros(null, string.Empty, string.Empty, 0, professorRf, string.Empty, true, codigoDre);
+            var atribuicoesCjAtivas = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidade, string.Empty, string.Empty, 0, professorRf, string.Empty, true, codigoDre);
 
             if (atribuicoesCjAtivas != null && atribuicoesCjAtivas.Any())
             {
@@ -95,9 +106,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task ObterAtribuicoesEolDre(string professorRf, List<string> codigosDres)
+        private async Task ObterAtribuicoesEolDre(string professorRf, Guid perfil, List<string> codigosDres)
         {
-            var abrangencia = await servicoEOL.ObterAbrangencia(professorRf, Perfis.PERFIL_CJ);
+            var abrangencia = await servicoEOL.ObterAbrangencia(professorRf, perfil);
 
             if (abrangencia != null && abrangencia.Dres != null && abrangencia.Dres.Any())
             {
@@ -105,9 +116,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task ObterAtribuicoesEolUe(string professorRf, List<string> codigosUes, string codigoDre)
+        private async Task ObterAtribuicoesEolUe(string professorRf, Guid perfil, List<string> codigosUes, string codigoDre)
         {
-            var abrangencia = await servicoEOL.ObterAbrangencia(professorRf, Perfis.PERFIL_CJ);
+            var abrangencia = await servicoEOL.ObterAbrangencia(professorRf, perfil);
 
             if (abrangencia != null && abrangencia.Dres != null && abrangencia.Dres.Any(a => a.Codigo == codigoDre))
             {
@@ -115,24 +126,21 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void ObterAtribuicoesEsporadicasDre(string professorRf, List<string> codigosDres)
+        private void ObterAtribuicoesEsporadicasDre(string professorRf, List<string> codigosDres, bool somenteInfantil)
         {
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf);
+            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf, somenteInfantil);
             if (atribuicaoEsporadica != null && !codigosDres.Any(a => a == atribuicaoEsporadica.DreId))
             {
                 codigosDres.Add(atribuicaoEsporadica.DreId);
             }
         }
 
-        private void ObterAtribuicoesEsporadicasUe(string professorRf, List<string> codigosUes, string codigoDre)
+        private void ObterAtribuicoesEsporadicasUe(string professorRf, List<string> codigosUes, string codigoDre, bool somenteInfantil)
         {
-            if (codigosUes == null || !codigosUes.Any())
-                return;
-            else
+            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf, somenteInfantil);
+            if (atribuicaoEsporadica != null)
             {
-                var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf);
-                if (atribuicaoEsporadica != null && atribuicaoEsporadica.DreId == codigoDre
-                    && (codigosUes.Any(a => a != atribuicaoEsporadica.UeId)))
+                if (atribuicaoEsporadica.DreId == codigoDre && (!codigosUes.Any(a => a == atribuicaoEsporadica.UeId)))
                 {
                     codigosUes.Add(atribuicaoEsporadica.UeId);
                 }
