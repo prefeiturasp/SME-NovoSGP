@@ -25,6 +25,8 @@ namespace SME.SGP.Aplicacao
             DateTime inicioEfetivo = dados.Select(x => x.Item2).Min();
             DateTime fimEfetivo = dados.Select(x => x.Item2).Max();
 
+            await ValidarDevolutivaNoPeriodo(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio, param.PeriodoFim);
+
             var turma = await ObterTurma(param.TurmaCodigo);
             var bimestre = await ValidarBimestreDiarios(turma, inicioEfetivo, fimEfetivo);
             await ValidarBimestreEmAberto(turma, bimestre);
@@ -36,6 +38,13 @@ namespace SME.SGP.Aplicacao
             bool diariosAtualizados = await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
 
             return auditoria;
+        }
+
+        private async Task ValidarDevolutivaNoPeriodo(string turmaCodigo, long codigoComponenteCurricular, DateTime periodoInicio, DateTime periodoFim)
+        {
+            var devolutivasIds = await mediator.Send(new ObterDevolutivaPorTurmaComponenteNoPeriodoQuery(turmaCodigo, codigoComponenteCurricular, periodoInicio, periodoFim));
+            if (devolutivasIds != null && devolutivasIds.Any())
+                throw new NegocioException("Já existe devolutiva criada para o período informado");
         }
 
         private async Task ValidarBimestreEmAberto(Turma turma, int bimestre)
