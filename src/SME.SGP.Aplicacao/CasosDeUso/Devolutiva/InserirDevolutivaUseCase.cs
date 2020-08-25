@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarDevolutivaNoPeriodo(string turmaCodigo, long codigoComponenteCurricular, DateTime periodoInicio, DateTime periodoFim)
         {
-            var devolutivasIds = await mediator.Send(new ObterDevolutivaPorTurmaComponenteNoPeriodoQuery(turmaCodigo, codigoComponenteCurricular, periodoInicio, periodoFim));
+            var devolutivasIds = await mediator.Send(new ObterDevolutivaPorTurmaComponenteNoPeriodoQuery(turmaCodigo, codigoComponenteCurricular, periodoInicio.Date, periodoFim.Date));
             if (devolutivasIds != null && devolutivasIds.Any())
                 throw new NegocioException("Já existe devolutiva criada para o período informado");
         }

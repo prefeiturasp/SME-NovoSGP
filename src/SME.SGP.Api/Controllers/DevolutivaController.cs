@@ -19,7 +19,7 @@ namespace SME.SGP.Api.Controllers
     public class DevolutivaController : ControllerBase
     {
 
-        [HttpGet("turmas/{turmaCodigo}/componentes-curriculares")]
+        [HttpGet("turmas/{turmaCodigo}")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<DevolutivaResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DE_C, Policy = "Bearer")]

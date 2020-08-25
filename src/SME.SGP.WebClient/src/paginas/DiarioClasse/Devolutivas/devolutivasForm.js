@@ -7,7 +7,6 @@ import * as Yup from 'yup';
 import { Auditoria, CampoData, Loader, momentSchema } from '~/componentes';
 import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
 import Cabecalho from '~/componentes-sgp/cabecalho';
-import AlertaPeriodoEncerrado from '~/componentes-sgp/Calendario/componentes/MesCompleto/componentes/Dias/componentes/DiaCompleto/componentes/AlertaPeriodoEncerrado';
 import Alert from '~/componentes/alert';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
@@ -52,9 +51,7 @@ const DevolutivasForm = ({ match }) => {
   const [idDevolutiva, setIdDevolutiva] = useState(0);
   const [refForm, setRefForm] = useState({});
   const permissoesTela = usuario.permissoes[RotasDto.DEVOLUTIVAS];
-  const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
-  const [temPeriodoAberto, setTemPeriodoAberto] = useState(true);
 
   const inicial = {
     codigoComponenteCurricular: 0,
@@ -89,20 +86,14 @@ const DevolutivasForm = ({ match }) => {
       permissoesTela,
       naoSetarSomenteConsultaNoStore
     );
-    setSomenteConsulta(soConsulta);
     const desabilitar =
       idDevolutiva && idDevolutiva > 0
         ? soConsulta || !permissoesTela.podeAlterar
         : soConsulta || !permissoesTela.podeIncluir;
     setDesabilitarCampos(desabilitar);
-
-    if (!temPeriodoAberto) {
-      setDesabilitarCampos(true);
-    }
   }, [
     idDevolutiva,
     permissoesTela,
-    temPeriodoAberto,
     modalidadesFiltroPrincipal,
     turmaSelecionada,
   ]);
@@ -125,7 +116,6 @@ const DevolutivasForm = ({ match }) => {
     if (refForm && refForm.resetForm) {
       refForm.resetForm();
     }
-    setTemPeriodoAberto(true);
   }, [dispatch, refForm]);
 
   useEffect(() => {
@@ -209,7 +199,6 @@ const DevolutivasForm = ({ match }) => {
       auditoria: dados.auditoria,
     };
     setValoresIniciais({ ...valores });
-    setTemPeriodoAberto(dados.temPeriodoAberto);
   };
 
   const obterDevolutiva = useCallback(
@@ -461,7 +450,6 @@ const DevolutivasForm = ({ match }) => {
         ''
       )}
       {turmaSelecionada.turma ? <AlertaPermiteSomenteTurmaInfantil /> : ''}
-      <AlertaPeriodoEncerrado exibir={!temPeriodoAberto && !somenteConsulta} />
       <Cabecalho pagina="Devolutivas" />
       <Card>
         <div className="col-md-12">
@@ -505,11 +493,7 @@ const DevolutivasForm = ({ match }) => {
                       color={Colors.Vermelho}
                       border
                       className="mr-3"
-                      disabled={
-                        !idDevolutiva ||
-                        !permissoesTela.podeExcluir ||
-                        !temPeriodoAberto
-                      }
+                      disabled={!idDevolutiva || !permissoesTela.podeExcluir}
                       onClick={onClickExcluir}
                     />
                     <Button
