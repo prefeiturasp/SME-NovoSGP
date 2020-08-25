@@ -225,13 +225,10 @@ namespace SME.SGP.Aplicacao
                     var rfsOrnedadosPorDataCriacaoAula = aulas.OrderBy(a => a.CriadoEm)
                         .Select(a => a.ProfessorRf).Distinct();
 
-                    var rfAtualRegente = rfsOrnedadosPorDataCriacaoAula.Last();
-                    var rfUltimoTitular = rfsOrnedadosPorDataCriacaoAula.Count() > 1 ?
-                        rfsOrnedadosPorDataCriacaoAula.Last(rf => !rf.Equals(rfAtualRegente, StringComparison.InvariantCultureIgnoreCase)) : rfAtualRegente;
+                    var ultimoRegente = rfsOrnedadosPorDataCriacaoAula.Last();                   
 
                     // se regente atual, titular anterior ou professor anterior visualiza a aula
-                    if (rfAtualRegente.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
-                        rfUltimoTitular.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
+                    if (ultimoRegente.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||                        
                         aula.ProfessorRf.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase))
                         aulasRetorno.Add(MapearParaDto(aula, p.Bimestre));
                 });

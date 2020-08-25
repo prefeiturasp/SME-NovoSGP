@@ -23,6 +23,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Ue ObterUEPorTurma(string turmaId);
 
-        IEnumerable<Ue> Sincronizar(IEnumerable<Ue> entidades, IEnumerable<Dre> dres);
+        Task<IEnumerable<Ue>> SincronizarAsync(IEnumerable<Ue> entidades, IEnumerable<Dre> dres);
     }
 }

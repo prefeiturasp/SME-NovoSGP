@@ -47,5 +47,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Evento>> ObterEventosCalendarioProfessorPorMesDia(long tipoCalendarioId, string dreCodigo, string ueCodigo, DateTime dataEvento, bool VisualizarEventosSME = false, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false);
 
         Task<bool> DataPossuiEventoLiberacaoExcepcionalAsync(long tipoCalendarioId, DateTime dataAula, string ueId);
+        Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioAsync(long tipoCalendarioId);
     }
 }
