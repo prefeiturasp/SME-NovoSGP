@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Aula.ObterAulasDaTurma
+namespace SME.SGP.Aplicacao
 {
     public class ObterAulasDaTurmaPorTipoCalendarioQueryHandler : IRequestHandler<ObterAulasDaTurmaPorTipoCalendarioQuery, IEnumerable<Dominio.Aula>>
     {
