@@ -19,11 +19,11 @@ namespace SME.SGP.Api.Controllers
     public class DevolutivaController : ControllerBase
     {
 
-        [HttpGet("turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularCodigo}")]
+        [HttpGet("turmas/{turmaCodigo}/componentes-curriculares")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<DevolutivaResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DE_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar(string turmaCodigo, long componenteCurricularCodigo, [FromQuery] DateTime? dataReferencia, [FromServices] IObterListaDevolutivasPorTurmaComponenteUseCase useCase)
+        public async Task<IActionResult> Listar(string turmaCodigo, [FromQuery] long componenteCurricularCodigo, [FromQuery] DateTime? dataReferencia, [FromServices] IObterListaDevolutivasPorTurmaComponenteUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroListagemDevolutivaDto(turmaCodigo, componenteCurricularCodigo, dataReferencia)));
         }
