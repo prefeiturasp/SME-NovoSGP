@@ -229,7 +229,8 @@ namespace SME.SGP.Aplicacao
 
                     // se regente atual, titular anterior ou professor anterior visualiza a aula
                     if (ultimoRegente.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||                        
-                        aula.ProfessorRf.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase))
+                        aula.ProfessorRf.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
+                        aula.Turma.EhTurmaInfantil)
                         aulasRetorno.Add(MapearParaDto(aula, p.Bimestre));
                 });
             });
@@ -254,7 +255,7 @@ namespace SME.SGP.Aplicacao
             return disciplinaId;
         }
 
-        private DataAulasProfessorDto MapearParaDto(AulaConsultaDto aula, int bimestre)
+        private DataAulasProfessorDto MapearParaDto(Aula aula, int bimestre)
         {
             return new DataAulasProfessorDto
             {
