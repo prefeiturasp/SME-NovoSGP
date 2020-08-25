@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
             this.contexto = contexto;
         }
       
-        public async Task<IEnumerable<MotivoAusencia>> Listar()
+        public async Task<IEnumerable<MotivoAusencia>> ListarAsync()
         {
             return await contexto.Conexao.QueryAsync<MotivoAusencia>("select id, descricao from motivo_ausencia");
         }
