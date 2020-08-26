@@ -16,6 +16,8 @@ const ListaFrequencia = props => {
     frequenciaId,
     temPeriodoAberto,
     ehInfantil,
+    aulaId,
+    componenteCurricularId,
   } = props;
 
   const [dataSource, setDataSource] = useState(dados);
@@ -103,10 +105,13 @@ const ListaFrequencia = props => {
   };
 
   const btnAnotacao = item => {
+    const podeAbrirModal =
+      (item.permiteAnotacao && !desabilitarCampos) ||
+      (item.possuiAnotacao && desabilitarCampos);
     return (
       <Tooltip
         title={
-          item.temAnotacao
+          item.possuiAnotacao
             ? `${ehInfantil ? 'Criança' : 'Estudante'} com anotações`
             : ''
         }
@@ -114,8 +119,12 @@ const ListaFrequencia = props => {
       >
         <div className=" d-flex justify-content-end">
           <BtbAnotacao
-            className={item.temAnotacao ? 'btn-com-anotacao' : ''}
-            onClick={() => onClickAnotacao(item)}
+            className={item.possuiAnotacao ? 'btn-com-anotacao' : ''}
+            onClick={() => {
+              if (podeAbrirModal) {
+                onClickAnotacao(item);
+              }
+            }}
           >
             <i className="fas fa-pen" />
           </BtbAnotacao>
@@ -133,6 +142,9 @@ const ListaFrequencia = props => {
           dadosModalAnotacao={dadosModalAnotacao}
           dadosListaFrequencia={dados}
           ehInfantil={ehInfantil}
+          aulaId={aulaId}
+          componenteCurricularId={componenteCurricularId}
+          desabilitarCampos={desabilitarCampos}
         />
       ) : (
         ''
@@ -221,7 +233,7 @@ const ListaFrequencia = props => {
                             <div className=" d-flex justify-content-start">
                               {aluno.nomeAluno}
                             </div>
-                            {!aluno.ativo ? btnAnotacao(aluno) : ''}
+                            {btnAnotacao(aluno)}
                           </div>
                         </td>
                         {dataSource[0].aulas.length > 1 ? (
@@ -324,6 +336,8 @@ ListaFrequencia.propTypes = {
   frequenciaId: PropTypes.oneOfType([PropTypes.any]),
   temPeriodoAberto: PropTypes.oneOfType([PropTypes.bool]),
   ehInfantil: PropTypes.oneOfType([PropTypes.bool]),
+  aulaId: PropTypes.oneOfType([PropTypes.any]),
+  componenteCurricularId: PropTypes.oneOfType([PropTypes.any]),
 };
 
 ListaFrequencia.defaultProps = {
@@ -333,6 +347,8 @@ ListaFrequencia.defaultProps = {
   frequenciaId: 0,
   temPeriodoAberto: false,
   ehInfantil: false,
+  aulaId: '',
+  componenteCurricularId: '',
 };
 
 export default ListaFrequencia;

@@ -1,7 +1,6 @@
 import { Form, Formik } from 'formik';
-import * as moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import shortid from 'shortid';
 import * as Yup from 'yup';
 import { Auditoria, Colors, Loader, ModalConteudoHtml } from '~/componentes';
@@ -9,7 +8,8 @@ import DetalhesAluno from '~/componentes/Alunos/Detalhes';
 import Button from '~/componentes/button';
 import Editor from '~/componentes/editor/editor';
 import SelectComponent from '~/componentes/select';
-import { confirmar, sucesso } from '~/servicos/alertas';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import ServicoAnotacaoFrequenciaAluno from '~/servicos/Paginas/DiarioClasse/ServicoAnotacaoFrequenciaAluno';
 import { EditorAnotacao } from './modalAnotacoes.css';
 
 const ModalAnotacoesFrequencia = props => {
@@ -19,6 +19,9 @@ const ModalAnotacoesFrequencia = props => {
     dadosModalAnotacao,
     dadosListaFrequencia,
     ehInfantil,
+    aulaId,
+    componenteCurricularId,
+    desabilitarCampos,
   } = props;
 
   const [showModal, setShowModal] = useState(exibirModal);
@@ -29,63 +32,82 @@ const ModalAnotacoesFrequencia = props => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [refForm, setRefForm] = useState({});
   const [valoresIniciais, setValoresIniciais] = useState({
+    id: 0,
     anotacao: '',
-    motivoAusecia: undefined,
+    motivoAusenciaId: undefined,
+    auditoria: {},
   });
+
   const [validacoes] = useState(
-    Yup.object({
-      anotacao: Yup.string()
-        .nullable()
-        .required('Anotação obrigatória'),
-      motivoAusecia: Yup.string()
-        .nullable()
-        .required('Motivo ausência obrigatório'),
-    })
+    Yup.object().shape(
+      {
+        anotacao: Yup.string()
+          .nullable()
+          .when('motivoAusenciaId', (motivoAusenciaId, schema) => {
+            return motivoAusenciaId
+              ? schema.notRequired()
+              : schema.required('Anotação obrigatória');
+          }),
+        motivoAusenciaId: Yup.string()
+          .nullable()
+          .when('anotacao', (anotacao, schema) => {
+            return anotacao
+              ? schema.notRequired()
+              : schema.required('Motivo ausência obrigatório');
+          }),
+      },
+      ['motivoAusenciaId', 'anotacao']
+    )
   );
-  // TODO MOCK REMOVER!
-  const [dadosEstudanteOuCrianca, setDadosEstudanteOuCrianca] = useState({
-    aluno: {
-      nome: 'Marcos',
-      numeroChamada: 20,
-      dataNascimento: moment(),
-      codigoEOL: 789987,
-      frequencia: 89,
-      situacao: 'Matriculado',
-      dataSituacao: moment(),
-    },
-  });
 
-  const obterAnotacao = async dados => {
-    // TODO - Chamar endpoint para consultar anotação!
-    // const resultado = await api.get(`v1/consultadados`).catch(e => erros(e));
-    console.log(dados);
-    const resultado = {};
+  const [dadosEstudanteOuCrianca, setDadosEstudanteOuCrianca] = useState({});
+
+  const obterAnotacao = useCallback(async () => {
+    const resultado = await ServicoAnotacaoFrequenciaAluno.obterAnotacao(
+      dadosModalAnotacao.codigoAluno,
+      aulaId
+    ).catch(e => erros(e));
+
     if (resultado && resultado.data) {
-      const { anotacao } = resultado.data;
-      setValoresIniciais({ anotacao });
-      setDadosEstudanteOuCrianca(resultado.data);
+      resultado.data.motivoAusenciaId = resultado.data.motivoAusenciaId
+        ? String(resultado.data.motivoAusenciaId)
+        : undefined;
+      setValoresIniciais(resultado.data);
     }
+  }, [aulaId, dadosModalAnotacao]);
+
+  const obterListaMotivosAusencia = async () => {
+    const retorno = await ServicoAnotacaoFrequenciaAluno.obterMotivosAusencia().catch(
+      e => erros(e)
+    );
+    if (retorno && retorno.data) {
+      setListaMotivoAusencia(retorno.data);
+    } else {
+      setListaMotivoAusencia([]);
+    }
+    setCarregandoMotivosAusencia(false);
   };
 
-  const obterListaMotivosAusencia = () => {
-    // TODO - Chamar endpoint com a lista de ausências!
-    setTimeout(() => {
-      const listaMock = [
-        { descricao: 'Atestado Médico do Aluno', valor: 1 },
-        { descricao: 'Atestado Médico de pessoa da Família', valor: 2 },
-        { descricao: 'Doença na Família, sem atestado', valor: 3 },
-      ];
-      setListaMotivoAusencia(listaMock);
-      setCarregandoMotivosAusencia(false);
-    }, 2000);
-  };
+  const montarDadosAluno = useCallback(() => {
+    const aluno = {
+      nome: dadosModalAnotacao.nomeAluno,
+      numeroChamada: dadosModalAnotacao.numeroAlunoChamada,
+      dataNascimento: dadosModalAnotacao.dataNascimento,
+      codigoEOL: dadosModalAnotacao.codigoAluno,
+      frequencia: 89,
+      situacao: dadosModalAnotacao.situacaoMatricula,
+      dataSituacao: dadosModalAnotacao.dataSituacao,
+    };
+    setDadosEstudanteOuCrianca(aluno);
+  }, [dadosModalAnotacao]);
 
   useEffect(() => {
     if (dadosModalAnotacao) {
-      obterAnotacao(dadosModalAnotacao);
+      obterAnotacao();
+      montarDadosAluno();
       obterListaMotivosAusencia();
     }
-  }, [dadosModalAnotacao]);
+  }, [dadosModalAnotacao, obterAnotacao, montarDadosAluno]);
 
   const fecharAposSalvarExcluir = (salvou, excluiu) => {
     const linhaEditada = dadosListaFrequencia.find(
@@ -93,59 +115,91 @@ const ModalAnotacoesFrequencia = props => {
     );
     const index = dadosListaFrequencia.indexOf(linhaEditada);
     if (salvou) {
-      dadosListaFrequencia[index].temAnotacao = true;
+      dadosListaFrequencia[index].possuiAnotacao = true;
     } else if (excluiu) {
-      dadosListaFrequencia[index].temAnotacao = false;
+      dadosListaFrequencia[index].possuiAnotacao = false;
     }
     onCloseModal();
   };
 
-  const onClickSalvarExcluir = async (excluir = false, form = {}) => {
+  const onClickExcluir = async id => {
+    const retorno = await ServicoAnotacaoFrequenciaAluno.deletarAnotacao(
+      id
+    ).catch(e => erros(e));
+    if (retorno && retorno.status === 200) {
+      sucesso('Anotação excluída com sucesso');
+      fecharAposSalvarExcluir(false, true);
+    }
+  };
+
+  const onClickEditar = async valores => {
+    const { anotacao, motivoAusenciaId, id } = valores;
+    const params = {
+      motivoAusenciaId,
+      id,
+      anotacao,
+    };
+    const retorno = await ServicoAnotacaoFrequenciaAluno.alterarAnotacao(
+      params
+    ).catch(e => erros(e));
+    if (retorno && retorno.status === 200) {
+      sucesso('Anotação alterada com sucesso');
+      fecharAposSalvarExcluir(true, false);
+    }
+  };
+
+  const onClickSalvar = async valores => {
     const { codigoAluno } = dadosModalAnotacao;
-    const { anotacao } = form;
-
-    console.log('Código: ' + codigoAluno);
-    console.log('Anotação:');
-    console.log(anotacao);
-
-    // TODO Chamar endpoint para salvar anotação!
-    // const resultado = await api.post('/v1/salvaranotacao').catch(e => erros(e));
-    const resultado = { status: 200 };
-
-    if (resultado && resultado.status === 200) {
-      sucesso(`Anotação ${excluir ? 'excluída' : 'salva'} com sucesso`);
-      fecharAposSalvarExcluir(!excluir, excluir);
+    const { anotacao, motivoAusenciaId } = valores;
+    const params = {
+      motivoAusenciaId,
+      aulaId,
+      componenteCurricularId,
+      anotacao,
+      codigoAluno,
+      ehInfantil,
+    };
+    const retorno = await ServicoAnotacaoFrequenciaAluno.salvarAnotacao(
+      params
+    ).catch(e => erros(e));
+    if (retorno && retorno.status === 200) {
+      sucesso('Anotação salva com sucesso');
+      fecharAposSalvarExcluir(true, false);
     }
   };
 
   const validaAntesDoSubmit = form => {
-    const arrayCampos = Object.keys(valoresIniciais);
-    arrayCampos.forEach(campo => {
-      form.setFieldTouched(campo, true, true);
-    });
-    form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length === 0) {
-        form.handleSubmit(e => e);
-      }
-    });
+    if (!desabilitarCampos) {
+      const arrayCampos = Object.keys(valoresIniciais);
+      arrayCampos.forEach(campo => {
+        form.setFieldTouched(campo, true, true);
+      });
+      form.validateForm().then(() => {
+        if (form.isValid || Object.keys(form.errors).length === 0) {
+          form.handleSubmit(e => e);
+        }
+      });
+    }
   };
 
-  const validaAntesDeExcluir = async () => {
-    setShowModal(false);
-    const confirmado = await confirmar(
-      'Atenção',
-      '',
-      'Você tem certeza que deseja excluir este registro?'
-    );
-    if (confirmado) {
-      onClickSalvarExcluir(true);
-    } else {
-      setShowModal(true);
+  const validaAntesDeExcluir = async id => {
+    if (!desabilitarCampos) {
+      setShowModal(false);
+      const confirmado = await confirmar(
+        'Atenção',
+        '',
+        'Você tem certeza que deseja excluir este registro?'
+      );
+      if (confirmado) {
+        onClickExcluir(id);
+      } else {
+        setShowModal(true);
+      }
     }
   };
 
   const validaAntesDeFechar = async () => {
-    if (modoEdicao) {
+    if (modoEdicao && !desabilitarCampos) {
       setShowModal(false);
       const confirmado = await confirmar(
         'Atenção',
@@ -187,32 +241,52 @@ const ModalAnotacoesFrequencia = props => {
         enableReinitialize
         initialValues={valoresIniciais}
         validationSchema={validacoes}
-        onSubmit={texto => onClickSalvarExcluir(false, texto)}
+        onSubmit={valores => {
+          if (valores.id) {
+            onClickEditar(valores);
+          } else {
+            onClickSalvar(valores);
+          }
+        }}
         validateOnChange
         validateOnBlur
       >
         {form => (
           <Form>
             <div className="col-md-12">
-              <DetalhesAluno dados={dadosEstudanteOuCrianca.aluno} />
+              <DetalhesAluno
+                dados={dadosEstudanteOuCrianca}
+                exibirBotaoImprimir={false}
+                exibirFrequencia={false}
+              />
             </div>
             <div className="col-md-12 mt-2">
               <Loader loading={carregandoMotivosAusencia} tip="">
                 <SelectComponent
                   form={form}
                   id="motivo-ausencia"
-                  name="motivoAusecia"
+                  name="motivoAusenciaId"
                   lista={listaMotivoAusencia}
                   valueOption="valor"
                   valueText="descricao"
                   onChange={onChangeCampos}
                   placeholder="Selecione um motivo"
+                  disabled={desabilitarCampos}
                 />
               </Loader>
             </div>
             <div className="col-md-12 mt-2">
               <EditorAnotacao>
-                <Editor form={form} name="anotacao" onChange={onChangeCampos} />
+                <Editor
+                  form={form}
+                  name="anotacao"
+                  onChange={v => {
+                    if (valoresIniciais.anotacao !== v) {
+                      onChangeCampos();
+                    }
+                  }}
+                  desabilitar={desabilitarCampos}
+                />
               </EditorAnotacao>
             </div>
             <div className="row">
@@ -220,14 +294,20 @@ const ModalAnotacoesFrequencia = props => {
                 className="col-md-8 d-flex justify-content-start"
                 style={{ marginTop: '-15px' }}
               >
-                <Auditoria
-                  criadoPor={dadosEstudanteOuCrianca.criadoPor}
-                  criadoEm={dadosEstudanteOuCrianca.criadoEm}
-                  alteradoPor={dadosEstudanteOuCrianca.alteradoPor}
-                  alteradoEm={dadosEstudanteOuCrianca.alteradoEm}
-                  alteradoRf={dadosEstudanteOuCrianca.alteradoRF}
-                  criadoRf={dadosEstudanteOuCrianca.criadoRF}
-                />
+                {valoresIniciais &&
+                valoresIniciais.auditoria &&
+                valoresIniciais.auditoria.criadoPor ? (
+                  <Auditoria
+                    criadoPor={valoresIniciais.auditoria.criadoPor}
+                    criadoEm={valoresIniciais.auditoria.criadoEm}
+                    alteradoPor={valoresIniciais.auditoria.alteradoPor}
+                    alteradoEm={valoresIniciais.auditoria.alteradoEm}
+                    alteradoRf={valoresIniciais.auditoria.alteradoRF}
+                    criadoRf={valoresIniciais.auditoria.criadoRF}
+                  />
+                ) : (
+                  ''
+                )}
               </div>
               <div className="col-md-4 d-flex justify-content-end">
                 <Button
@@ -244,24 +324,28 @@ const ModalAnotacoesFrequencia = props => {
                   key="btn-excluir-anotacao"
                   id="btn-excluir-anotacao"
                   label="Excluir"
-                  color={Colors.Roxo}
+                  color={Colors.Vermelho}
                   bold
                   border
                   className="mr-3 mt-2 padding-btn-confirmacao"
-                  onClick={validaAntesDeExcluir}
+                  onClick={() => validaAntesDeExcluir(form.values.id)}
                   disabled={
-                    dadosModalAnotacao && !dadosModalAnotacao.temAnotacao
+                    desabilitarCampos ||
+                    (dadosModalAnotacao && !dadosModalAnotacao.possuiAnotacao)
                   }
                 />
                 <Button
                   id="btn-salvar-anotacao"
                   key="btn-salvar-anotacao"
-                  label="Salvar"
+                  label={
+                    valoresIniciais && valoresIniciais.id ? 'Alterar' : 'Salvar'
+                  }
                   color={Colors.Roxo}
                   bold
                   border
                   className="mr-3 mt-2 padding-btn-confirmacao"
                   onClick={() => validaAntesDoSubmit(form)}
+                  disabled={!modoEdicao || desabilitarCampos}
                 />
               </div>
             </div>
@@ -280,6 +364,9 @@ ModalAnotacoesFrequencia.propTypes = {
   dadosModalAnotacao: PropTypes.oneOfType([PropTypes.object]),
   dadosListaFrequencia: PropTypes.oneOfType([PropTypes.array]),
   ehInfantil: PropTypes.bool,
+  aulaId: PropTypes.oneOfType([PropTypes.any]),
+  componenteCurricularId: PropTypes.oneOfType([PropTypes.any]),
+  desabilitarCampos: PropTypes.bool,
 };
 
 ModalAnotacoesFrequencia.defaultProps = {
@@ -288,6 +375,9 @@ ModalAnotacoesFrequencia.defaultProps = {
   dadosModalAnotacao: {},
   dadosListaFrequencia: [],
   ehInfantil: false,
+  aulaId: '',
+  componenteCurricularId: '',
+  desabilitarCampos: false,
 };
 
 export default ModalAnotacoesFrequencia;
