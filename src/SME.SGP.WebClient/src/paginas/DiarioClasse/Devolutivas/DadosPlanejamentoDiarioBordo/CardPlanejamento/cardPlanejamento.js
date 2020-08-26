@@ -40,21 +40,15 @@ const CardPlanejamento = React.memo(() => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <td colSpan="4">
-                          <EditorPlanejamento>
-                            <Editor
-                              id="planejamento-diario-bordo"
-                              inicial={item.planejamento}
-                              removerToolbar
-                              desabilitar
-                            />
-                          </EditorPlanejamento>
-                        </td>
-                      </tr>
-                    </tbody>
                   </table>
+                  <EditorPlanejamento>
+                    <Editor
+                      id="planejamento-diario-bordo"
+                      inicial={item.planejamento}
+                      removerToolbar
+                      desabilitar
+                    />
+                  </EditorPlanejamento>
                 </Tabela>
               </div>
             );
