@@ -6,10 +6,7 @@ import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { setObservacaoEmEdicao } from '~/redux/modulos/observacoesUsuario/actions';
 import { confirmar } from '~/servicos/alertas';
-import {
-  ContainerCampoObservacao,
-  LinhaObservacao,
-} from './observacoesUsuario.css';
+import { ContainerCampoObservacao } from './observacoesUsuario.css';
 
 const LinhaObservacaoProprietario = props => {
   const { dados, onClickSalvarEdicao, onClickExcluir, index, children } = props;
@@ -151,9 +148,13 @@ const LinhaObservacaoProprietario = props => {
         </>
       ) : (
         <>
-          <LinhaObservacao className="col-md-12">
-            <div>{dados.observacao}</div>
-          </LinhaObservacao>
+          <ContainerCampoObservacao
+            style={{ cursor: 'not-allowed' }}
+            className="col-md-12"
+            readOnly
+            autoSize={{ minRows: 3 }}
+            value={dados.observacao}
+          />
           <div className="d-flex justify-content-between">
             {children}
             {btnEditarExcluir()}
@@ -170,7 +171,6 @@ LinhaObservacaoProprietario.propTypes = {
   onClickExcluir: PropTypes.func,
   index: PropTypes.number,
   children: PropTypes.node,
-  inserindoNovaObservacao: PropTypes.bool,
 };
 
 LinhaObservacaoProprietario.defaultProps = {
@@ -179,7 +179,6 @@ LinhaObservacaoProprietario.defaultProps = {
   onClickExcluir: () => {},
   index: null,
   children: () => {},
-  inserindoNovaObservacao: false,
 };
 
 export default LinhaObservacaoProprietario;
