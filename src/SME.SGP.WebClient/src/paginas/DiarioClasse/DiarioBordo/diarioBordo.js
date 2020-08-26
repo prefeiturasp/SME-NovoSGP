@@ -667,10 +667,10 @@ const DiarioBordo = () => {
                     <Auditoria
                       criadoEm={auditoria.criadoEm}
                       criadoPor={auditoria.criadoPor}
-                      criadoRf={auditoria.criadoRf}
+                      criadoRf={auditoria.criadoRF}
                       alteradoPor={auditoria.alteradoPor}
                       alteradoEm={auditoria.alteradoEm}
-                      alteradoRf={auditoria.alteradoRf}
+                      alteradoRf={auditoria.alteradoRF}
                       ignorarMarginTop
                     />
                   ) : (
