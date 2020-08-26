@@ -16,7 +16,6 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
     public class AlterarDevolutivaCommandHandlerTeste
     {
         private const string textoDescricao = "teste de alteração de devolutiva... teste de alteração de devolutiva... teste de alteração de devolutiva... teste de alteração de devolutiva... teste de alteração de devolutiva.....";
-        private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioDevolutiva> repositorioDevolutiva;
         private readonly AlterarDevolutivaCommandHandler inserirDevolutivaCommandHandler;
 
@@ -30,9 +29,6 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         public async Task Deve_Alterar_Devolutiva()
         {
             // Arrange
-            mediator.Setup(a => a.Send(It.IsAny<AulaExisteQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-
             repositorioDevolutiva.Setup(a => a.SalvarAsync(It.IsAny<Devolutiva>()))
                 .ReturnsAsync(1);
 
@@ -47,36 +43,12 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         }
 
         [Fact]
-        public async Task Deve_Obrigar_Descricao()
+        public async Task Deve_Obrigar_Devolutiva()
         {
-            var devolutiva = GerarDevolutiva();
-
-            var command = new AlterarDevolutivaCommand(devolutiva);
+            var command = new AlterarDevolutivaCommand(null);
             var result = ValidarCommand(command);
 
-            result.ShouldHaveValidationErrorFor(a => a.Descricao);
-        }
-
-        [Fact]
-        public async Task Deve_Obrigar_PeriodoInicio()
-        {
-            var devolutiva = GerarDevolutiva();
-
-            var command = new AlterarDevolutivaCommand(devolutiva);
-            var result = ValidarCommand(command);
-
-            result.ShouldHaveValidationErrorFor(a => a.PeriodoInicio);
-        }
-
-        [Fact]
-        public async Task Deve_Obrigar_PeriodoFim()
-        {
-            var devolutiva = GerarDevolutiva();
-
-            var command = new AlterarDevolutivaCommand(devolutiva);
-            var result = ValidarCommand(command);
-
-            result.ShouldHaveValidationErrorFor(a => a.PeriodoFim);
+            result.ShouldHaveValidationErrorFor(a => a.Devolutiva);
         }
 
         private TestValidationResult<AlterarDevolutivaCommand, AlterarDevolutivaCommand> ValidarCommand(AlterarDevolutivaCommand command)
