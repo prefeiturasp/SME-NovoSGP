@@ -65,8 +65,6 @@ import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/r
 import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
-import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
-import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 
 const rotas = new Map();
 
