@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
       
         public async Task<IEnumerable<MotivoAusencia>> ListarAsync()
         {
-            return await contexto.Conexao.QueryAsync<MotivoAusencia>("select id, descricao from motivo_ausencia where not excluido");
+            return await contexto.Conexao.QueryAsync<MotivoAusencia>("select id, descricao from motivo_ausencia");
         }
 
         public async Task<MotivoAusencia> ObterPorIdAsync(long id)
