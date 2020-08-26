@@ -31,17 +31,3 @@ export const ContainerCampoObservacao = styled(TextArea)`
   letter-spacing: normal !important;
   color: #42474a;
 `;
-
-export const LinhaObservacao = styled.div`
-  font-family: Roboto;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 14px;
-  color: #000000;
-
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  padding: 4px 11px;
-  min-height: 64px;
-  line-height: 1.3 !important;
-`;
