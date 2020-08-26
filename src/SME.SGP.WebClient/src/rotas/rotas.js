@@ -62,6 +62,8 @@ import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
 import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
+import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
+import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';

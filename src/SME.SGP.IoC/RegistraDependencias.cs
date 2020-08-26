@@ -274,6 +274,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
             services.TryAddScoped<IRepositorioCartaIntencoes, RepositorioCartaIntencoes>();
             services.TryAddScoped<IRepositorioDiarioBordoObservacao, RepositorioDiarioBordoObservacao>();
+            services.TryAddScoped<IRepositorioAnotacaoFrequenciaAluno, RepositorioAnotacaoFrequenciaAluno>();
+            services.TryAddScoped<IRepositorioMotivoAusencia, RepositorioMotivoAusencia>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -346,7 +348,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterPareceresConclusivosUseCase, ObterPareceresConclusivosUseCase>();
             services.TryAddScoped<IRelatorioPendenciasFechamentoUseCase, RelatorioPendenciasFechamentoUseCase>();
             services.TryAddScoped<IObterComponentesCurricularesPorTurmaECodigoUeUseCase, ObterComponentesCurricularesPorTurmaECodigoUeUseCase>();
-
+            services.TryAddScoped<IObterAnotacaoFrequenciaAlunoUseCase, ObterAnotacaoFrequenciaAlunoUseCase>();
             services.TryAddScoped<IObterComponentesCurricularesPorAnoEscolarUseCase, ObterComponentesCurricularesPorAnoEscolarUseCase>();
             services.TryAddScoped<IObterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase, ObterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase>();
             services.TryAddScoped<ICopiarCodigoCorrelacaoUseCase, CopiarCodigoCorrelacaoUseCase>();
@@ -380,6 +382,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ICriarAulasInfantilUseCase, CriarAulasInfantilUseCase>();
             services.TryAddScoped<ISincronizarAulasInfantilUseCase, SincronizarAulasInfantilUseCase>();
             services.TryAddScoped<INotificarExclusaoAulaComFrequenciaUseCase, NotificarExclusaoAulaComFrequenciaUseCase>();
+            services.TryAddScoped<ISalvarAnotacaoFrequenciaAlunoUseCase, SalvarAnotacaoFrequenciaAlunoUseCase>();
+            services.TryAddScoped<IAlterarAnotacaoFrequenciaAlunoUseCase, AlterarAnotacaoFrequenciaAlunoUseCase>();
+            services.TryAddScoped<IExcluirAnotacaoFrequenciaAlunoUseCase, ExcluirAnotacaoFrequenciaAlunoUseCase>();
+            services.TryAddScoped<IObterMotivosAusenciaUseCase, ObterMotivosAusenciaUseCase> ();
 
             services.TryAddScoped<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
             services.TryAddScoped<IAlterarDevolutivaUseCase, AlterarDevolutivaUseCase>();
