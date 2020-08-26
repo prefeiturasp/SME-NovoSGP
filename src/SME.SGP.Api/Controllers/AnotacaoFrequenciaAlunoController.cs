@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -60,5 +61,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(motivsoAusencia);
         }
 
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PDA_E, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir(long id, [FromServices] IExcluirAnotacaoFrequenciaAlunoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(id));
+        }
     }
 }
