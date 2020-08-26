@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -24,6 +25,8 @@ namespace SME.SGP.Infra
         public string SituacaoMatricula { get; set; }
         public bool PermiteAnotacao { get; set; }
         public bool PossuiAnotacao { get; set; }
+        public DateTime DataSituacao { get; set; }
+        public DateTime DataNascimento { get; set; }
         public MarcadorFrequenciaDto Marcador { get; set; }
         public IndicativoFrequenciaDto IndicativoFrequencia { get; set; }
     }

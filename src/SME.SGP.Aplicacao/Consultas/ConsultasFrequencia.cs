@@ -189,6 +189,8 @@ namespace SME.SGP.Aplicacao
                     NumeroAlunoChamada = aluno.NumeroAlunoChamada,
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,
+                    DataSituacao = aluno.DataSituacao,
+                    DataNascimento = aluno.DataNascimento,
                     Desabilitado = aluno.EstaInativo(aula.DataAula) || aula.EhDataSelecionadaFutura,
                     PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
                     PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno)
