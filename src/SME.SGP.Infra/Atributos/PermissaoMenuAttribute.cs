@@ -26,6 +26,7 @@ namespace SME.SGP.Infra
         public int OrdemAgrupamento { get; set; }
         public int OrdemMenu { get; set; }
         public string SubMenu { get; set; }
+        public int OrdemSubMenu { get; set; }
         public string Url { get; set; }
     }
 }

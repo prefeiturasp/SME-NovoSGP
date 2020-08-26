@@ -18,14 +18,14 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
         public ServicoFechamentoReabertura(IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IUnitOfWork unitOfWork,
-            IComandosWorkflowAprovacao comandosWorkflowAprovacao, IServicoUsuario servicoUsuario, IServicoEOL servicoEOL, IServicoNotificacao servicoNotificacao,
+            IComandosWorkflowAprovacao comandosWorkflowAprovacao, IServicoUsuario servicoUsuario, IServicoEol servicoEOL, IServicoNotificacao servicoNotificacao,
             IRepositorioEventoTipo repositorioEventoTipo, IServicoEvento servicoEvento, IRepositorioEvento repositorioEvento, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
         {
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
@@ -61,7 +61,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (fechamentoReabertura.Status == EntidadeStatus.AguardandoAprovacao)
             {
-                fechamentoReabertura.WorkflowAprovacaoId = PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
+                fechamentoReabertura.WorkflowAprovacaoId = await PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
                 mensagemRetorno = "Reabertura de Fechamento alterado e será válido após aprovação.";
             }
@@ -165,7 +165,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (fechamentoReabertura.Status == EntidadeStatus.AguardandoAprovacao)
             {
-                fechamentoReabertura.WorkflowAprovacaoId = PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
+                fechamentoReabertura.WorkflowAprovacaoId = await PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
                 mensagemRetorno = "Reabertura de Fechamento cadastrado e será válido após aprovação.";
             }
@@ -219,7 +219,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (eventosParaExcluir != null && eventosParaExcluir.Any())
                 {
                     var eventoParaExcluir = eventosParaExcluir.FirstOrDefault();
-                    await servicoEvento.Excluir(eventoParaExcluir);
+                    servicoEvento.Excluir(eventoParaExcluir);
                 }
             }
         }
@@ -252,7 +252,7 @@ namespace SME.SGP.Dominio.Servicos
             if (fechamentoReabertura.EhParaDre())
             {
                 var adminsSgpDre = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Dre.CodigoDre).Result;
-                if (adminsSgpDre != null || adminsSgpDre.Any())
+                if (adminsSgpDre != null && adminsSgpDre.Any())
                 {
                     foreach (var adminSgpUe in adminsSgpDre)
                     {
@@ -374,7 +374,7 @@ namespace SME.SGP.Dominio.Servicos
             return tipoEvento;
         }
 
-        private long PersistirWorkflowFechamentoReabertura(FechamentoReabertura fechamentoReabertura)
+        private async Task<long> PersistirWorkflowFechamentoReabertura(FechamentoReabertura fechamentoReabertura)
         {
             var wfAprovacaoEvento = new WorkflowAprovacaoDto()
             {
@@ -399,7 +399,7 @@ namespace SME.SGP.Dominio.Servicos
                 Nivel = 1
             });
 
-            return comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
+            return await comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
         }
 
         private async Task VerificaEAtualizaFechamentosReaberturasParaAlterar(FechamentoReabertura fechamentoReabertura, IEnumerable<FechamentoReabertura> fechamentoReaberturas, bool confirmacacaoAlteracaoHierarquica)

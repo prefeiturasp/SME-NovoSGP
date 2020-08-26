@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Api.Filtros;
@@ -20,7 +21,9 @@ namespace SME.SGP.Api
                 options.EnableEndpointRouting = true;
                 options.Filters.Add(new ValidaDtoAttribute());
                 options.Filters.Add(new FiltroExcecoesAttribute(configuration));
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            })
+                .AddFluentValidation()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
     }
 }

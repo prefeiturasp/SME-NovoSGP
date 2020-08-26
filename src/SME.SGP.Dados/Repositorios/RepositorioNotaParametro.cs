@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
@@ -14,7 +15,7 @@ namespace SME.SGP.Dados
         {
         }
 
-        public NotaParametro ObterPorDataAvaliacao(DateTime dataAvaliacao)
+        public async Task<NotaParametro> ObterPorDataAvaliacao(DateTime dataAvaliacao)
         {
             var sql = @"select id, valor_maximo, valor_medio, valor_minimo, incremento, ativo, inicio_vigencia,
                         fim_vigencia, criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
@@ -23,7 +24,7 @@ namespace SME.SGP.Dados
 
             var parametros = new { dataAvaliacao };
 
-            return database.QueryFirstOrDefault<NotaParametro>(sql, parametros);
+            return await database.QueryFirstOrDefaultAsync<NotaParametro>(sql, parametros);
         }
     }
 }

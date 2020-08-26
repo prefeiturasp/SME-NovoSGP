@@ -9,5 +9,6 @@
         public string EscolaId { get; set; }
         public bool Migrado { get; set; }
         public long TurmaId { get; set; }
+        public bool ObjetivosAprendizagemOpcionais { get; set; }
     }
 }

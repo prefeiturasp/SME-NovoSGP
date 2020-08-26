@@ -14,13 +14,13 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IContextoAplicacao> contextoAplicacao;
         private readonly Mock<IRepositorioAtribuicaoEsporadica> repositorioAtribuicaoEsporadica;
         private readonly Mock<IServicoAtribuicaoEsporadica> servicoAtribuicaoEsporadica;
-        private readonly Mock<IServicoEOL> servicoEol;
+        private readonly Mock<IServicoEol> servicoEol;
 
         public ConsultasAtribuicaoEsporadicaTeste()
         {
             repositorioAtribuicaoEsporadica = new Mock<IRepositorioAtribuicaoEsporadica>();
             servicoAtribuicaoEsporadica = new Mock<IServicoAtribuicaoEsporadica>();
-            servicoEol = new Mock<IServicoEOL>();
+            servicoEol = new Mock<IServicoEol>();
             contextoAplicacao = new Mock<IContextoAplicacao>();
             consultasAtribuicaoEsporadica = new ConsultasAtribuicaoEsporadica(repositorioAtribuicaoEsporadica.Object, servicoEol.Object, contextoAplicacao.Object);
         }

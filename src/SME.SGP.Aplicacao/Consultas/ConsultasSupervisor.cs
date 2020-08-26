@@ -13,16 +13,21 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioUe repositorioUe;
 
-        public ConsultasSupervisor(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IServicoEOL servicoEOL,
-            IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario)
+        public ConsultasSupervisor(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
+                                   IServicoEol servicoEOL,
+                                   IRepositorioAbrangencia repositorioAbrangencia,
+                                   IServicoUsuario servicoUsuario,
+                                   IRepositorioUe repositorioUe)
         {
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new System.ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioUe = repositorioUe ?? throw new System.ArgumentNullException(nameof(repositorioUe));
         }
 
         public async Task<IEnumerable<SupervisorEscolasDto>> ObterPorDre(string dreId)
@@ -74,8 +79,8 @@ namespace SME.SGP.Aplicacao
         {
             var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisores(dreId, supervisoresId);
 
-            if (supervisoresEscolasDres == null || supervisoresEscolasDres.Count() == 0)
-                return null;
+            if (supervisoresEscolasDres == null || supervisoresEscolasDres.Any())
+                return Enumerable.Empty<SupervisorEscolasDto>();
             else return MapearSupervisorEscolaDre(supervisoresEscolasDres).ToList();
         }
 
@@ -102,7 +107,7 @@ namespace SME.SGP.Aplicacao
                 var escolaSupervisorRetorno = new SupervisorEscolasDto() { SupervisorId = string.Empty, SupervisorNome = "NÃO ATRIBUÍDO" };
 
                 var escolas = from t in escolasSemSupervisor
-                              select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.Nome };
+                              select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.NomeSimples };
 
                 escolaSupervisorRetorno.Escolas = escolas.ToList();
 
@@ -112,7 +117,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<SupervisorEscolasDto> MapearSupervisorEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
         {
-            var listaEscolas = servicoEOL.ObterEscolasPorCodigo(supervisoresEscolasDres.Select(a => a.EscolaId.ToString()).ToArray());
+            var listaEscolas = repositorioUe.ListarPorCodigos(supervisoresEscolasDres.Select(a => a.EscolaId).ToArray());
 
             IEnumerable<SupervisoresRetornoDto> listaSupervisores;
 
@@ -129,7 +134,7 @@ namespace SME.SGP.Aplicacao
                     RemoverSupervisorSemAtribuicao(supervisoresEscolasDres, supervisores);
 
                     if (supervisores != null)
-                        supervisoresEscolasDres = supervisoresEscolasDres.ToList().Where(s => supervisores.Select(e => e.CodigoRF).Contains(s.SupervisorId));
+                        supervisoresEscolasDres = supervisoresEscolasDres.Where(s => supervisores.Select(e => e.CodigoRF).Contains(s.SupervisorId));
                     else
                         supervisoresEscolasDres = Enumerable.Empty<SupervisorEscolasDreDto>();
                 }
@@ -150,8 +155,8 @@ namespace SME.SGP.Aplicacao
                 if (idsEscolas.Count > 0)
                 {
                     escolas = from t in listaEscolas
-                              where idsEscolas.Contains(t.CodigoEscola)
-                              select new UnidadeEscolarDto() { Codigo = t.CodigoEscola, Nome = t.NomeEscola };
+                              where idsEscolas.Contains(t.CodigoUe)
+                              select new UnidadeEscolarDto() { Codigo = t.CodigoUe, Nome = $"{t.TipoEscola.ShortName()} {t.Nome}" };
                 }
 
                 var auditoria = supervisoresEscolasDres.FirstOrDefault(c => c.SupervisorId == supervisorId);
@@ -214,7 +219,7 @@ namespace SME.SGP.Aplicacao
 
                         var escolas = from t in escolasPorDre
                                       where idsEscolasDoSupervisor.Contains(t.Codigo)
-                                      select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.Nome };
+                                      select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.NomeSimples };
 
                         supervisorEscolasDto.Escolas = escolas.ToList();
 

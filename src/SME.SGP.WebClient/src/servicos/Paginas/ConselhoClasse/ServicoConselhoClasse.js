@@ -133,6 +133,22 @@ class ServicoConselhoClasse {
     }
     dispatch(setMarcadorParecerConclusivo(parecerAtual));
   };
+
+  gerarConselhoClasseTurma = (conselhoClasseId, fechamentoTurmaId) => {
+    return api.get(
+      `v1/conselhos-classe/${conselhoClasseId}/fechamentos/${fechamentoTurmaId}/imprimir`
+    );
+  };
+
+  gerarConselhoClasseAluno = (
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo
+  ) => {
+    return api.get(
+      `/v1/conselhos-classe/${conselhoClasseId}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/imprimir`
+    );
+  };
 }
 
 export default new ServicoConselhoClasse();

@@ -17,8 +17,6 @@ namespace SME.SGP.Aplicacao
 
         Guid ObterPerfil();
 
-        Task RevogarToken(string login);
-
         bool TemPerfilNoToken(string guid);
 
         bool TokenAtivo();

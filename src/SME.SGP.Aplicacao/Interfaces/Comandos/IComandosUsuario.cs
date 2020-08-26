@@ -12,13 +12,13 @@ namespace SME.SGP.Aplicacao
 
         Task AlterarSenha(AlterarSenhaDto alterarSenhaDto);
 
-        Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto);
+        Task<UsuarioAutenticacaoRetornoDto> AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto);
 
         Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto);
 
         Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
-        Task<TrocaPerfilDto> ModificarPerfil(Guid guid);
+        Task<TrocaPerfilDto> ModificarPerfil(Guid perfil);
 
         Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf);
 

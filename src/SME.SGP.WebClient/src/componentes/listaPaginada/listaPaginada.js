@@ -22,6 +22,8 @@ const ListaPaginada = props => {
     filtroEhValido,
     onErro,
     paramArrayFormat,
+    temPaginacao,
+    setLista,
   } = props;
 
   const [carregando, setCarregando] = useState(false);
@@ -106,6 +108,7 @@ const ListaPaginada = props => {
       .then(resposta => {
         setTotal(resposta.data.totalRegistros);
         setLinhas(resposta.data.items);
+        if (setLista) setLista(resposta.data.items);
       })
       .catch(err => {
         if (
@@ -157,15 +160,19 @@ const ListaPaginada = props => {
             }
           },
         })}
-        pagination={{
-          defaultPageSize: paginaAtual.defaultPageSize,
-          pageSize: paginaAtual.pageSize,
-          total,
-          showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50', '100'],
-          locale: { items_per_page: '' },
-          current: paginaAtual.current,
-        }}
+        pagination={
+          temPaginacao
+            ? {
+                defaultPageSize: paginaAtual.defaultPageSize,
+                pageSize: paginaAtual.pageSize,
+                total,
+                showSizeChanger: true,
+                pageSizeOptions: ['10', '20', '50', '100'],
+                locale: { items_per_page: '' },
+                current: paginaAtual.current,
+              }
+            : false
+        }
         bordered
         size="middle"
         locale={{ emptyText: 'Sem dados' }}
@@ -207,6 +214,8 @@ ListaPaginada.propTypes = {
   filtroEhValido: PropTypes.bool,
   onErro: PropTypes.oneOfType([PropTypes.func]),
   paramArrayFormat: PropTypes.oneOfType([PropTypes.string]),
+  temPaginacao: PropTypes.oneOfType([PropTypes.bool]),
+  setLista: PropTypes.oneOfType([PropTypes.func]),
 };
 
 ListaPaginada.defaultProps = {
@@ -221,6 +230,8 @@ ListaPaginada.defaultProps = {
   filtroEhValido: true,
   onErro: () => {},
   paramArrayFormat: 'brackets',
+  temPaginacao: true,
+  setLista: () => {},
 };
 
 export default ListaPaginada;

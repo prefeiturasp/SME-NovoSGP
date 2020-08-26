@@ -10,11 +10,13 @@ namespace SME.SGP.Dominio
         public DateTime DataAtualizacao { get; set; }
         public long Id { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
-        public ModalidadeTipoCalendario ModalidadeTipoCalendario 
-        { 
-            get => ModalidadeCodigo == Modalidade.EJA ? 
-                ModalidadeTipoCalendario.EJA : 
-                ModalidadeTipoCalendario.FundamentalMedio; 
+        public ModalidadeTipoCalendario ModalidadeTipoCalendario
+        {
+            get => ModalidadeCodigo == Modalidade.EJA ?
+                ModalidadeTipoCalendario.EJA :
+                ModalidadeCodigo == Modalidade.Infantil ?
+                    ModalidadeTipoCalendario.Infantil :
+                    ModalidadeTipoCalendario.FundamentalMedio;
         }
         public string Nome { get; set; }
         public int QuantidadeDuracaoAula { get; set; }
@@ -46,6 +48,32 @@ namespace SME.SGP.Dominio
                 return ModalidadeCodigo == Modalidade.EJA;
             else
                 return ModalidadeCodigo != Modalidade.EJA;
+        }
+
+        public bool EhEJA()
+            => ModalidadeCodigo == Modalidade.EJA;
+
+        public int ObterHorasGradeRegencia()
+            => EhEJA() ? 5 : 1;
+
+        public int AnoTurmaInteiro => int.Parse(Ano);
+
+        public bool EhTurmaFund1 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 1 && AnoTurmaInteiro <= 5);
+        public bool EhTurmaFund2 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 6 && AnoTurmaInteiro <= 9);
+        public bool EhTurmaEnsinoMedio => ModalidadeCodigo == Modalidade.Medio;
+        public bool EhTurmaInfantil => ModalidadeCodigo == Modalidade.Infantil;
+
+        public bool EnsinoEspecial { get; set; }
+        public DateTime? DataInicio { get; set; }
+
+        public int EtapaEJA { get; set; }
+
+        public bool AulasReposicaoPrecisamAprovacao(int quantidadeAulasExistentesNoDia)
+        {
+            int.TryParse(Ano, out int anoTurma);
+            return (EhTurmaFund1 || (EhEJA() && (anoTurma == 1 || anoTurma == 2)) && quantidadeAulasExistentesNoDia > 1) ||
+                   (EhTurmaFund2 || (EhEJA() && (anoTurma == 3 || anoTurma == 4))) ||
+                   (EhTurmaEnsinoMedio && quantidadeAulasExistentesNoDia > 2);
         }
     }
 }

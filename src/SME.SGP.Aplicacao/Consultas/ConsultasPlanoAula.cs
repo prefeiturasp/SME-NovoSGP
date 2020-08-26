@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao.Consultas
             var aulaDto = await consultasAula.BuscarPorId(aulaId);
             var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterAtividadeAvaliativa(aulaDto.DataAula.Date, aulaDto.DisciplinaId, aulaDto.TurmaId, aulaDto.UeId);
             
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(aulaDto.TipoCalendarioId, aulaDto.DataAula.Date);
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(aulaDto.TipoCalendarioId, aulaDto.DataAula.Date);
             if (periodoEscolar == null)
                 throw new NegocioException("Período escolar não localizado.");
            
@@ -82,11 +82,12 @@ namespace SME.SGP.Aplicacao.Consultas
                         throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
                 }
             }
-            var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
+            var planoAnualDto = await consultasPlanoAnual.ObterPlanoAnualPorAnoEscolaBimestreETurma(
                         aulaDto.DataAula.Year, aulaDto.UeId, long.Parse(aulaDto.TurmaId), periodoEscolar.Bimestre, long.Parse(aulaDto.DisciplinaId));
 
             // Carrega informações da aula para o retorno
-            planoAulaDto.PossuiPlanoAnual = planoAnualId > 0;
+            planoAulaDto.PossuiPlanoAnual = planoAnualDto.Id > 0;
+            planoAulaDto.ObjetivosAprendizagemOpcionais = planoAnualDto.ObjetivosAprendizagemOpcionais;
             planoAulaDto.AulaId = aulaDto.Id;
             planoAulaDto.QtdAulas = aulaDto.Quantidade;
             planoAulaDto.IdAtividadeAvaliativa = atividadeAvaliativa?.Id;
@@ -95,7 +96,7 @@ namespace SME.SGP.Aplicacao.Consultas
         }
 
         public async Task<bool> PlanoAulaRegistrado(long aulaId)
-            => await repositorio.PlanoAulaRegistrado(aulaId);
+            => await repositorio.PlanoAulaRegistradoAsync(aulaId);
 
         public IEnumerable<PlanoAulaExistenteRetornoDto> ValidarPlanoAulaExistente(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto)
         {

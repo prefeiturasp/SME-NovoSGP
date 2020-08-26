@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.servicoPeriodoEscolar = servicoPeriodoEscolar ?? throw new ArgumentNullException(nameof(servicoPeriodoEscolar));
         }
 
-        public void Salvar(PeriodoEscolarListaDto periodosDto)
+        public async Task Salvar(PeriodoEscolarListaDto periodosDto)
         {
             var periodosOrdenados = periodosDto.Periodos.OrderBy(p => p.Bimestre);
             periodosDto.Periodos = periodosOrdenados.ToList();
@@ -26,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             var listaPeriodoEscolar = MapearListaPeriodos(periodosDto);
 
-            servicoPeriodoEscolar.SalvarPeriodoEscolar(listaPeriodoEscolar, periodosDto.TipoCalendario);
+            await servicoPeriodoEscolar.SalvarPeriodoEscolar(listaPeriodoEscolar, periodosDto.TipoCalendario);
         }
 
         private IEnumerable<PeriodoEscolar> MapearListaPeriodos(PeriodoEscolarListaDto periodosDto)

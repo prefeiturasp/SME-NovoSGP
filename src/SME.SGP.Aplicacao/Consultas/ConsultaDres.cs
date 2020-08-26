@@ -12,10 +12,10 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultaDres(IServicoEOL servicoEOL,
+        public ConsultaDres(IServicoEol servicoEOL,
             IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
             IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario)
 
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                         select new UnidadeEscolarDto()
                         {
                             Codigo = a.Codigo,
-                            Nome = a.Nome
+                            Nome = a.NomeSimples
                         };
 
             return lista;
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
                     .ToList();
             }
 
-            return escolasSemSupervisor?.Select(t => new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.Nome });
+            return escolasSemSupervisor?.OrderBy(c=>c.Nome).Select(t => new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.Nome });
         }
     }
 }

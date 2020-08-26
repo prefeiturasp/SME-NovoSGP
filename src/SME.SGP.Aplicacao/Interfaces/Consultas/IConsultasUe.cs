@@ -11,8 +11,8 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<TurmaRetornoDto>> ObterTurmas(string ueCodigo, int modalidadeId, int ano);
 
-        Task<Ue> ObterPorId(long id);
+        Ue ObterPorId(long id);
 
-        Task<Ue> ObterPorCodigo(string codigoUe);
+        Ue ObterPorCodigo(string codigoUe);
     }
 }

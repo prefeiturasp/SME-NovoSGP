@@ -42,7 +42,8 @@ const CardHeader = props => {
     const header = event.target.parentElement.parentElement.classList;
     if (!header.contains('expanded')) header.add('expanded');
     else header.remove('expanded');
-    onClick && onClick();
+
+    if (onClick) onClick();
   };
 
   return (
@@ -81,10 +82,10 @@ CardHeader.propTypes = {
 CardHeader.defaultProps = {
   indice: shortid.generate(),
   children: () => {},
+  onClick: () => {},
   border: false,
   icon: false,
   show: false,
-  onClick: () => {},
   configuracao: {
     altura: 'auto',
     corBorda: Base.AzulBordaCard,

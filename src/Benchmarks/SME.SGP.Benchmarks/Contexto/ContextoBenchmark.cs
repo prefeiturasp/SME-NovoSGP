@@ -7,6 +7,10 @@ namespace SME.SGP.Benchmarks
 {
     public class ContextoBenchmark : ContextoBase
     {
+        public override void AdicionarVariaveis(IDictionary<string, object> variaveis)
+        {
+            throw new System.NotImplementedException();
+        }
 
         public override IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto)
         {

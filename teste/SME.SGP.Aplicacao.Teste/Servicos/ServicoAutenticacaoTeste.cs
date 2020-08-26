@@ -11,11 +11,11 @@ namespace SME.SGP.Aplicacao.Teste.Servicos
     public class ServicoAutenticacaoTeste
     {
         private readonly ServicoAutenticacao servicoAutenticacao;
-        private readonly Mock<IServicoEOL> servicoEol;
+        private readonly Mock<IServicoEol> servicoEol;
 
         public ServicoAutenticacaoTeste()
         {
-            servicoEol = new Mock<IServicoEOL>();
+            servicoEol = new Mock<IServicoEol>();
             servicoAutenticacao = new ServicoAutenticacao(servicoEol.Object);
         }
 

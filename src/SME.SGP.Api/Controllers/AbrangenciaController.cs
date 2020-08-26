@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -54,13 +56,41 @@ namespace SME.SGP.Api.Controllers
             else return StatusCode(204);
         }
 
+        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/turmas/anos")]
+        [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterAnosLetivos(string codigoUe, int modalidade)
+        {
+            var retorno = (await consultasAbrangencia.ObterAnosTurmasPorUeModalidade(codigoUe, (Modalidade)modalidade, ConsideraHistorico));
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
         [HttpGet("anos-letivos")]
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterAnosLetivos()
+        public async Task<IActionResult> ObterAnosLetivos()
         {
-            int[] retorno = consultasAbrangencia.ObterAnosLetivos(ConsideraHistorico).Result.ToArray();
+            int[] retorno = (await consultasAbrangencia.ObterAnosLetivos(ConsideraHistorico)).ToArray();
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
+        [HttpGet("anos-letivos-todos")]
+        [ProducesResponseType(typeof(int[]), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterAnosLetivosTodos()
+        {
+            int[] retorno = (await consultasAbrangencia.ObterAnosLetivosTodos()).ToArray();
 
             if (!retorno.Any())
                 return NoContent();
@@ -74,7 +104,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterDres([FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, ConsideraHistorico, anoLetivo);
+            var consideraHistorico = ((anoLetivo != 0) && (anoLetivo < DateTime.Now.Year))
+                                    || ConsideraHistorico;
+
+            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, consideraHistorico, anoLetivo);
 
             if (dres.Any())
                 return Ok(dres);
@@ -117,7 +150,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery]Modalidade modalidade, int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            var consideraHistorico = ((anoLetivo != 0) && (anoLetivo < DateTime.Now.Year))
+                                    || ConsideraHistorico;
+
+            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, consideraHistorico, anoLetivo);
 
             if (!turmas.Any())
                 return NoContent();
@@ -132,12 +168,26 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            var consideraHistorico = ((anoLetivo != 0) && (anoLetivo < DateTime.Now.Year))
+                                    || ConsideraHistorico;
+
+            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, consideraHistorico, anoLetivo);
 
             if (!ues.Any())
                 return NoContent();
 
             return Ok(ues);
         }
+
+        [HttpGet("adm")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> UsuarioAdm([FromServices] IUsuarioPossuiAbrangenciaAdmUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
+        }
+
     }
 }

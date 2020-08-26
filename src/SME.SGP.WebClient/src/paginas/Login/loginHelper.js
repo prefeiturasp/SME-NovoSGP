@@ -1,5 +1,5 @@
 import LoginService from '~/servicos/Paginas/LoginServices';
-import { salvarDadosLogin, meusDados } from '~/redux/modulos/usuario/actions';
+import { salvarDadosLogin } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
 import { URL_HOME, URL_REDEFINIRSENHA } from '~/constantes/url';
 import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
@@ -22,7 +22,7 @@ class LoginHelper {
       salvarDadosLogin({
         token: autenticacao.dados.token,
         rf,
-        usuario: login.usuario,
+        usuario: login.UsuarioLogin,
         modificarSenha: autenticacao.dados.modificarSenha,
         perfisUsuario: autenticacao.dados.perfisUsuario,
         possuiPerfilSmeOuDre:
@@ -31,13 +31,22 @@ class LoginHelper {
         possuiPerfilSme: autenticacao.dados.perfisUsuario.possuiPerfilSme,
         ehProfessor: autenticacao.dados.perfisUsuario.ehProfessor,
         ehProfessorCj: autenticacao.dados.perfisUsuario.ehProfessorCj,
+        ehProfessorInfantil:
+          autenticacao.dados.perfisUsuario.ehProfessorInfantil,
+        ehProfessorCjInfantil:
+          autenticacao.dados.perfisUsuario.ehProfessorCjInfantil,
         ehProfessorPoa: autenticacao.dados.perfisUsuario.ehProfessorPoa,
         dataHoraExpiracao: autenticacao.dados.dataHoraExpiracao,
       })
     );
 
     if (autenticacao.dados.modificarSenha) {
-      history.push(URL_REDEFINIRSENHA);
+      history.push({
+        pathname: URL_REDEFINIRSENHA,
+        state: {
+          rf,
+        },
+      });
       return { sucesso: false, erroGeral: '' };
     }
     obterMeusDados();

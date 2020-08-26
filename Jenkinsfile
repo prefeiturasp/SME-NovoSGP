@@ -1,7 +1,7 @@
 pipeline {
     agent {
       node { 
-        label 'dockerdotnet'
+        label 'dockerdotnet2'
       }
     }
     
@@ -15,59 +15,59 @@ pipeline {
     stages {
       stage('CheckOut') {
         steps {
-          
           checkout scm  
         }
-      }
-      
- 
+       }
+       
+      stage('Início Análise Código') {
+          when {
+            branch 'development'
+          }
+            steps {
+                sh 'echo Analise SonarQube API'
+                sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.host.url="http://sonar.sme.prefeitura.sp.gov.br" /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Integracao.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs"'
+
+            //anlise codigo frontend
+                sh 'echo Analise SonarQube FRONTEND'
+                sh 'sonar-scanner \
+                -Dsonar.projectKey=SME-NovoSGP-WebClient \
+                -Dsonar.sources=src/SME.SGP.WebClient \
+                -Dsonar.host.url=http://sonar.sme.prefeitura.sp.gov.br \
+                -Dsonar.login=1ab3b0eb51a0f51c846c13f2f5a0255fd5d7583e'
+            }
+       } 
          
       stage('Build projeto') {
-        steps {
-          sh "echo executando build de projeto"
-          sh 'dotnet build'
-        }
-      }
-        
-             
-      stage('Analise Codigo') {
-          when {
-                branch 'release'
-            }
-         steps {
-             sh 'echo Analise SonarQube API'
-             sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.host.url="http://automation.educacao.intranet:9000" /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b"'
-             sh 'dotnet build'
-             sh 'dotnet-sonarscanner end /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b"'
-           // anlise de frontend
-             sh 'echo Analise SonarQube FRONTEND'
-             sh 'sonar-scanner \
-               -Dsonar.projectKey=SME-NovoSGP-WebClient \
-               -Dsonar.sources=src/SME.SGP.WebClient \
-               -Dsonar.host.url=http://sonar.sme.prefeitura.sp.gov.br \
-               -Dsonar.login=1ab3b0eb51a0f51c846c13f2f5a0255fd5d7583e'
-         }
-       }
-      
-         stage('Testes de integração') {
-        steps {
-          
-          //Execuita os testes gerando um relatorio formato trx
-            //sh 'dotnet test --logger "trx;LogFileName=TestResults.trx"'
-            sh 'echo executando testes'
-          //Publica o relatorio de testes
-           // mstest()
-          
-        }
-     }
-        
-      stage('Deploy DEV') {
-            when {
-                branch 'development'
-            }
             steps {
-                 
-                 sh 'echo Deploying desenvolvimento'
+            sh "echo executando build de projeto"
+            sh 'dotnet build'
+            }
+        }
+        
+            
+      stage('Testes') {
+            steps {
+            //Executa os testes
+             sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+            }
+        }
+        
+              stage('Fim Análise Código') {
+          when {
+            branch 'development'
+          }
+            steps {
+                sh 'echo Fim SonarQube API'
+                sh 'dotnet-sonarscanner end /d:sonar.login="346fd763d9581684b9271a03d8ef5a16fe92622b"'
+            }
+       }
+
+      stage('Deploy DEV') {
+        when {
+          branch 'development'
+        }
+          steps {
+            sh 'echo Deploying desenvolvimento'
                 
         // Start JOB Rundeck para build das imagens Docker e push SME Registry
       
@@ -112,8 +112,8 @@ pipeline {
        
             }
         }
-		
-		stage('Deploy DEV-rc2') {
+        
+          stage('Deploy DEV-rc2') {
             when {
                 branch 'development-r2'
             }
@@ -165,14 +165,7 @@ pipeline {
             }
         }
         
-        stage('Deploy QA') {
-            when {
-                branch 'development'
-            }
-            steps {
-                sh 'echo Deploying QA'
-            }
-        }
+       
       
       stage('Deploy HOM') {
             when {
@@ -230,8 +223,8 @@ pipeline {
        
             }
         }
-	    
-	stage('Deploy HOM-R2') {
+        
+        stage('Deploy HOM-R2') {
             when {
                 branch 'release-r2'
             }
@@ -341,7 +334,7 @@ pipeline {
               shouldWaitForRundeckJob: true,
               tags: "",
               tailLog: true])
-           }
+         }
       
        
             }
@@ -352,31 +345,22 @@ pipeline {
     
 post {
         always {
-            
-            echo 'One way or another, I have finished'
-            
-            
+          echo 'One way or another, I have finished'
         }
         success {
-           
-            telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Esta ok !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n\n Uma nova versão da aplicação esta disponivel!!!")
+          telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Esta ok !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n\n Uma nova versão da aplicação esta disponivel!!!")
         }
         unstable {
-           
-            telegramSend("O Build ${BUILD_DISPLAY_NAME} <${env.BUILD_URL}> - Esta instavel ...\nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
+          telegramSend("O Build ${BUILD_DISPLAY_NAME} <${env.BUILD_URL}> - Esta instavel ...\nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
         }
         failure {
-           
-             telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME}  - Quebrou. \nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
+          telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME}  - Quebrou. \nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
         }
         changed {
-             
-               echo 'Things were different before...'
-            
+          echo 'Things were different before...'
         }
-       aborted {
-            
-             telegramSend("O Build ${BUILD_DISPLAY_NAME} - Foi abortado.\nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
+        aborted {
+          telegramSend("O Build ${BUILD_DISPLAY_NAME} - Foi abortado.\nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
         }
     }
 }

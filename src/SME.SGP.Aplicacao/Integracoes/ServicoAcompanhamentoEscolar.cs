@@ -83,11 +83,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         private async Task RegistrarLogSentryAsync(HttpResponseMessage resposta, string rotina, string parametros)
         {
-            if (resposta.StatusCode != HttpStatusCode.NotFound)
-            {
-                var mensagem = await resposta.Content.ReadAsStringAsync();
-                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no Acompanhamento Escolar, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
-            }
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+            servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no Acompanhamento Escolar, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
         }
     }
 }

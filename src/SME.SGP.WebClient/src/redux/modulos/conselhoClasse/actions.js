@@ -112,3 +112,8 @@ export const setDesabilitarCampos = payload => ({
   type: '@conselhoClasse/setDesabilitarCampos',
   payload,
 });
+
+export const setSalvouJustificativa = payload => ({
+  type: '@conselhoClasse/setSalvouJustificativa',
+  payload,
+});

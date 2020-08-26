@@ -9,5 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task Inserir(long notificacaoId, long aulaId);
         Task Excluir(long aulaId);
+
+        Task<IEnumerable<NotificacaoAula>> ObterPorAulaAsync(long aulaId);
     }
 }

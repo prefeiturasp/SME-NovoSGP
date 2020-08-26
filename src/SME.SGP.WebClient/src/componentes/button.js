@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import shortid from 'shortid';
 import { Base, Active, Hover } from './colors';
 import Remover from '../recursos/Remover.svg';
 
@@ -26,6 +27,7 @@ const Button = React.forwardRef((props, ref) => {
     hidden,
     id,
     customRadius,
+    iconType,
   } = props;
 
   const Icon = styled.i``;
@@ -50,7 +52,7 @@ const Button = React.forwardRef((props, ref) => {
         ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
         : `border: 0 none !important;`
     };
-    ${customRadius && customRadius};
+    ${customRadius || ''};
     font-weight: bold !important;
     ${width ? `width: ${width};` : ''}
     ${fontSize && `font-size: ${fontSize} !important;`}
@@ -80,9 +82,11 @@ const Button = React.forwardRef((props, ref) => {
       disabled={disabled}
       data-indice={indice}
       id={id}
-      ref={ref && ref}
+      ref={ref}
     >
-      {icon ? <Icon className={`fa fa-${icon} mr-2 py-1`} /> : null}
+      {icon ? (
+        <Icon className={`${iconType || 'fa'} fa-${icon} mr-2 py-1`} />
+      ) : null}
       {label}
       {remove ? (
         <Remove
@@ -113,8 +117,9 @@ Button.propTypes = {
   indice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   label: PropTypes.string,
   hidden: PropTypes.bool,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.string,
   customRadius: PropTypes.string,
+  iconType: PropTypes.string,
 };
 
 Button.defaultProps = {
@@ -136,7 +141,9 @@ Button.defaultProps = {
   indice: '',
   label: '',
   hidden: false,
+  id: shortid.generate(),
   customRadius: '',
+  iconType: '',
 };
 
 export default Button;

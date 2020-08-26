@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorio = repositorio ?? throw new ArgumentException(nameof(repositorio));
         }
-        public async Task<EventoMatriculaDto> ObterUltimoEventoAluno(string codigoAluno, DateTime dataLimite)
+        public EventoMatriculaDto ObterUltimoEventoAluno(string codigoAluno, DateTime dataLimite)
         {
-            return MapearParaDto(await repositorio.ObterUltimoEventoAluno(codigoAluno, dataLimite));
+            return MapearParaDto(repositorio.ObterUltimoEventoAluno(codigoAluno, dataLimite));
         }
 
         private EventoMatriculaDto MapearParaDto(EventoMatricula eventoMatricula)

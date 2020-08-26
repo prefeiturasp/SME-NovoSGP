@@ -132,5 +132,14 @@ export const ErroGeral = styled.h2`
   text-align: center;
 `;
 
+export const MensagemMobile = styled.div`
+  font-size: 18px;
+  color: ${Base.Vermelho};
+  border: 2px solid ${Base.Vermelho};
+  border-radius: 4px;
+  padding: 10px;
+  margin: 50px 0 50px 0;
+`;
+
 export const TextoAjuda =
   'Digite seu RF. Para usuários externos, insira seus dados de usuário. Caso não possua, procure a SME.';

@@ -6,6 +6,9 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -23,7 +26,10 @@ namespace SME.SGP.Dados.Repositorios
 	                    semestre,
 	                    qt_duracao_aula,
 	                    tipo_turno,
-	                    data_atualizacao
+	                    data_atualizacao,
+                        ensino_especial,
+                        etapa_eja,
+                        data_inicio
                     from
 	                    public.turma
                     where turma_id in (#ids);";
@@ -39,9 +45,92 @@ namespace SME.SGP.Dados.Repositorios
 	                    semestre = @semestre,
 	                    qt_duracao_aula = @qtDuracaoAula,
 	                    tipo_turno = @tipoTurno,
-	                    data_atualizacao = @dataAtualizacao
+	                    data_atualizacao = @dataAtualizacao,
+                        ensino_especial = @ensinoEspecial,
+                        etapa_eja = @etapaEja,
+                        data_inicio = @dataInicio
                     where
 	                    id = @id;";
+
+        private const string Delete = @"
+                    delete from public.compensacao_ausencia_aluno
+                    where compensacao_ausencia_id in (select id
+                                                      from public.compensacao_ausencia
+                                                      where turma_id in (#queryIdsTurmasForaListaCodigos));
+
+                    delete from public.compensacao_ausencia
+                    where turma_id in (#queryIdsTurmasForaListaCodigos);
+
+                    delete from public.pendencia_fechamento
+                    where fechamento_turma_disciplina_id in (#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos);
+
+                    delete from public.wf_aprovacao_nota_fechamento
+                    where fechamento_nota_id in (select id
+                                                 from public.fechamento_nota
+                                                 where fechamento_aluno_id in (#queryFechamentoAlunoTurmasForaListaCodigos));
+
+                    delete from public.fechamento_nota
+                    where fechamento_aluno_id in (#queryFechamentoAlunoTurmasForaListaCodigos);
+
+                    delete from public.fechamento_aluno
+                    where fechamento_turma_disciplina_id in (#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos);
+
+                    delete from public.fechamento_turma_disciplina
+                    where fechamento_turma_id in (#queryIdsFechamentoTurmaTurmasForaListaCodigos);
+
+                    delete from public.conselho_classe_nota
+                    where conselho_classe_aluno_id in (select id
+                                                       from public.conselho_classe_aluno
+                                                       where conselho_classe_id in (#queryIdsConselhoClasseTurmasForaListaCodigos));
+
+                    delete from public.conselho_classe_aluno
+                    where conselho_classe_id in (#queryIdsConselhoClasseTurmasForaListaCodigos);        
+
+                    delete from public.conselho_classe
+                    where fechamento_turma_id in (select id
+                                                  from public.fechamento_turma
+                                                  where turma_id in (#queryIdsTurmasForaListaCodigos));
+
+                    delete from public.fechamento_turma
+                    where turma_id in (#queryIdsTurmasForaListaCodigos);
+
+                  
+                    delete from public.frequencia_aluno
+                    where turma_id in (#codigosTurmasARemover);
+
+                    delete from public.diario_bordo
+                    where aula_id in (#queryIdsAulasTurmasForaListaCodigos);
+
+                    delete from public.aula
+                    where id in (#queryIdsAulasTurmasForaListaCodigos);
+                    
+                    delete from public.turma
+                    where not historica 
+                        and turma_id not in (#ids);";
+
+        private const string QueryIdsTurmasForaListaCodigos = "select id from public.turma where not historica and turma_id not in (#ids)";
+
+        private const string QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos = @"select id
+                                                                                         from public.fechamento_turma_disciplina
+                                                                                         where fechamento_turma_id in (select id
+                                                                                                                       from public.fechamento_turma
+                                                                                                                       where turma_id in (#queryIdsTurmasForaListaCodigos))";
+
+        private const string QueryIdsFechamentoTurmaTurmasForaListaCodigos = @"select id
+                                                                               from public.fechamento_turma
+                                                                               where turma_id in (#queryIdsTurmasForaListaCodigos)";
+
+        private const string QueryIdsConselhoClasseTurmasForaListaCodigos = @"select id
+                                                                              from public.conselho_classe
+                                                                              where fechamento_turma_id in (#queryIdsFechamentoTurmaTurmasForaListaCodigos)";
+
+        private const string QueryFechamentoAlunoTurmasForaListaCodigos = @"select id
+                                                                            from public.fechamento_aluno
+                                                                            where fechamento_turma_disciplina_id in (#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)";
+
+        private const string QueryAulasTurmasForaListaCodigos = @"select id from public.aula where turma_id in (#codigosTurmasARemover)";
+
+        private const string QueryCodigosTurmasForaListaCodigos = "select turma_id from public.turma where not historica and turma_id not in (#ids)";
 
         private readonly ISgpContext contexto;
 
@@ -70,17 +159,22 @@ namespace SME.SGP.Dados.Repositorios
             return resultado;
         }
 
-        public Turma ObterPorCodigo(string turmaCodigo)
+        public async Task<Turma> ObterPorCodigo(string turmaCodigo)
         {
-            return contexto.QueryFirstOrDefault<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+            return await contexto.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
-        public Turma ObterPorId(long id)
+        public async Task<long> ObterTurmaIdPorCodigo(string turmaCodigo)
         {
-            return contexto.QueryFirstOrDefault<Turma>("select * from turma where id = @id", new { id });
+            return await contexto.QueryFirstOrDefaultAsync<long>("select id from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
-        public Turma ObterTurmaComUeEDrePorCodigo(string turmaCodigo)
+        public async Task<Turma> ObterPorId(long id)
+        {
+            return await contexto.QueryFirstOrDefaultAsync<Turma>("select * from turma where id = @id", new { id });
+        }
+
+        public async Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo)
         {
             var query = @"select
 	                        t.id,
@@ -115,15 +209,15 @@ namespace SME.SGP.Dados.Repositorios
 	                        u.dre_id = d.id
                         where
 	                        turma_id = @turmaCodigo";
-            return contexto.Query<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
              {
                  ue.AdicionarDre(dre);
                  turma.AdicionarUe(ue);
                  return turma;
-             }, new { turmaCodigo }, splitOn: "TurmaId, UeId, DreId").FirstOrDefault();
+             }, new { turmaCodigo }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
         }
 
-        public Turma ObterTurmaComUeEDrePorId(long turmaId)
+        public async Task<Turma> ObterTurmaComUeEDrePorId(long turmaId)
         {
             var query = @"select
 	                        t.id,
@@ -158,23 +252,51 @@ namespace SME.SGP.Dados.Repositorios
 	                        u.dre_id = d.id
                         where
 	                        t.id = @turmaId";
-            return contexto.Query<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 return turma;
-            }, new { turmaId }, splitOn: "TurmaId, UeId, DreId").FirstOrDefault();
+            }, new { turmaId }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
         }
 
-        public IEnumerable<Turma> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
+        public async Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo)
+        {
+            var query = "select ensino_especial from turma where turma_id = @turmaCodigo";
+
+            return await contexto.Conexao.QueryFirstAsync<bool>(query, new { turmaCodigo });
+        }
+
+        public async Task<IEnumerable<long>> ObterTurmasPorUeAnos(string ueCodigo, int anoLetivo, string[] anos, int modalidadeId)
+        {
+            var query = new StringBuilder(@"select x.turma_Id from (select distinct on (2) t.turma_id , t.ano from turma t
+                                                inner join ue u on u.id  = t.ue_id 
+                                            where  t.ano_letivo = @anoLetivo and t.modalidade_codigo = @modalidadeId ");
+
+            if (!string.IsNullOrEmpty(ueCodigo))
+                query.AppendLine("and u.ue_id  = @ueCodigo");
+
+            if (anos != null && anos.Length > 0)
+                query.AppendLine("and t.ano = any(@anos) ");
+
+            query.AppendLine(") x");
+
+            return await contexto.Conexao.QueryAsync<long>(query.ToString(), new { ueCodigo, anos, anoLetivo, modalidadeId });
+
+        }
+
+        public async Task<IEnumerable<Turma>> SincronizarAsync(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
         {
             List<Turma> resultado = new List<Turma>();
+
+            await RemoverTurmasExtintasAsync(entidades);
 
             for (int i = 0; i < entidades.Count(); i = i + 900)
             {
                 var iteracao = entidades.Skip(i).Take(900);
 
-                var armazenados = contexto.Conexao.Query<Turma>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoTurma}'")))).ToList();
+                var armazenados = (await contexto.Conexao.QueryAsync<Turma>(
+                    QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoTurma}'"))))).ToList();
 
                 var idsArmazenados = armazenados.Select(y => y.CodigoTurma);
                 var novos = iteracao.Where(x => !idsArmazenados.Contains(x.CodigoTurma)).ToList();
@@ -184,7 +306,7 @@ namespace SME.SGP.Dados.Repositorios
                     item.DataAtualizacao = DateTime.Today;
                     item.Ue = ues.First(x => x.CodigoUe == item.Ue.CodigoUe);
                     item.UeId = item.Ue.Id;
-                    item.Id = (long)contexto.Conexao.Insert(item);
+                    item.Id = (long)await contexto.Conexao.InsertAsync(item);
                     resultado.Add(item);
                 }
 
@@ -197,7 +319,10 @@ namespace SME.SGP.Dados.Repositorios
                                         c.ModalidadeCodigo != l.ModalidadeCodigo ||
                                         c.Semestre != l.Semestre ||
                                         c.QuantidadeDuracaoAula != l.QuantidadeDuracaoAula ||
-                                        c.TipoTurno != l.TipoTurno)
+                                        c.TipoTurno != l.TipoTurno ||
+                                        c.EnsinoEspecial != l.EnsinoEspecial ||
+                                        c.EtapaEJA != l.EtapaEJA ||
+                                        c.DataInicio != l.DataInicio)
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -211,12 +336,15 @@ namespace SME.SGP.Dados.Repositorios
                                       Semestre = c.Semestre,
                                       TipoTurno = c.TipoTurno,
                                       Ue = l.Ue,
-                                      UeId = l.UeId
+                                      UeId = l.UeId,
+                                      EnsinoEspecial = c.EnsinoEspecial,
+                                      EtapaEJA = c.EtapaEJA,
+                                      DataInicio = c.DataInicio
                                   };
 
                 foreach (var item in modificados)
                 {
-                    contexto.Conexao.Execute(Update, new
+                    await contexto.Conexao.ExecuteAsync(Update, new
                     {
                         nome = item.Nome,
                         ano = item.Ano,
@@ -226,7 +354,10 @@ namespace SME.SGP.Dados.Repositorios
                         qtDuracaoAula = item.QuantidadeDuracaoAula,
                         tipoTurno = item.TipoTurno,
                         dataAtualizacao = item.DataAtualizacao,
-                        id = item.Id
+                        id = item.Id,
+                        ensinoEspecial = item.EnsinoEspecial,
+                        etapaEja = item.EtapaEJA,
+                        dataInicio = item.DataInicio
                     });
 
                     resultado.Add(item);
@@ -236,6 +367,59 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return resultado;
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo)
+        {
+            var modalidade = Modalidade.Infantil;
+            var turmas = new List<Turma>();
+            var query = @"select
+	                            t.*,
+	                            u.*,
+                                d.*
+                            from
+	                            turma t
+                            inner join ue u on
+	                            u.id = t.ue_id
+                            inner join dre d on
+	                            u.dre_id = d.id
+                            where
+	                            t.modalidade_codigo = :modalidade
+	                            and t.historica = false
+	                            and t.ano_letivo = :anoLetivo
+	                            and ano ~ E'^[0-9\.]+$'";
+
+            await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+             {
+                 ue.AdicionarDre(dre);
+                 turma.AdicionarUe(ue);
+
+                 var turmaExistente = turmas.FirstOrDefault(c => c.Id == turma.Id);
+                 if (turmaExistente == null)
+                     turmas.Add(turma);
+
+                 return turma;
+             }, new { anoLetivo, modalidade });
+
+            return turmas;
+        }
+
+        private async Task RemoverTurmasExtintasAsync(IEnumerable<Turma> entidades)
+        {
+            var codigosTurmas = entidades.Select(e => $"'{e.CodigoTurma}'")?.ToArray();
+            var listaTurmas = string.Join(",", codigosTurmas);
+
+            var sql = Delete.Replace("#queryIdsConselhoClasseTurmasForaListaCodigos", QueryIdsConselhoClasseTurmasForaListaCodigos)
+                                .Replace("#queryFechamentoAlunoTurmasForaListaCodigos", QueryFechamentoAlunoTurmasForaListaCodigos)
+                                .Replace("#queryIdsFechamentoTurmaTurmasForaListaCodigos", QueryIdsFechamentoTurmaTurmasForaListaCodigos)
+                                .Replace("#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos", QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)
+                                .Replace("#queryIdsTurmasForaListaCodigos", QueryIdsTurmasForaListaCodigos)
+                                .Replace("#queryIdsAulasTurmasForaListaCodigos", QueryAulasTurmasForaListaCodigos)
+                                .Replace("#queryCodigosTurmasForaListaCodigos", QueryCodigosTurmasForaListaCodigos)
+                                .Replace("#codigosTurmasARemover", QueryCodigosTurmasForaListaCodigos)
+                                .Replace("#ids", listaTurmas);
+            await contexto.Conexao
+                .ExecuteAsync(sql);
         }
     }
 }

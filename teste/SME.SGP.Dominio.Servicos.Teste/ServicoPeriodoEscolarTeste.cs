@@ -188,7 +188,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
                 PeriodoInicio = DateTime.Now.AddMinutes(4)
             });
 
-            Assert.Throws<NegocioException>(() => servicoPeriodoEscolar.SalvarPeriodoEscolar(periodos, tipoCalendario));
+            Assert.ThrowsAsync<NegocioException>(() => servicoPeriodoEscolar.SalvarPeriodoEscolar(periodos, tipoCalendario));
         }
 
         //[Fact]

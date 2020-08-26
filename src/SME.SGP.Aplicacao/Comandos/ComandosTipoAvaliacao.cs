@@ -19,11 +19,11 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
         }
 
-        public async Task Alterar(TipoAvaliacaoDto dto, long idTipoAtividadeAvaliativa)
+        public async Task Alterar(TipoAvaliacaoDto dto, long id)
         {
-            if (await VerificarSeExisteTipoAvaliacaoPorNome(dto.Nome, dto.Descricao, dto.Situacao, idTipoAtividadeAvaliativa))
+            if (await VerificarSeExisteTipoAvaliacaoPorNome(dto.Nome, dto.Descricao, dto.Situacao, id))
                 throw new NegocioException("Já existe tipo de avaliação com esse nome");
-            var atividadeAvaliativa = MapearDtoParaEntidade(dto, idTipoAtividadeAvaliativa);
+            var atividadeAvaliativa = MapearDtoParaEntidade(dto, id);
             await repositorioTipoAvaliacao.SalvarAsync(atividadeAvaliativa);
         }
 

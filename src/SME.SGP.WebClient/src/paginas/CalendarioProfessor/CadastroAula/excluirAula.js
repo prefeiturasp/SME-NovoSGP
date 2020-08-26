@@ -3,6 +3,7 @@ import { Formik, Form } from 'formik';
 import { ModalConteudoHtml, RadioGroupButton, Loader } from '~/componentes';
 import ServicoCadastroAula from '~/servicos/Paginas/CalendarioProfessor/CadastroAula/ServicoCadastroAula';
 import { erros, sucesso } from '~/servicos/alertas';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 function ExcluirAula({
   visivel,
@@ -12,6 +13,8 @@ function ExcluirAula({
   recorrencia,
   onFecharModal,
   onCancelar,
+  modalidadesFiltroPrincipal,
+  turmaSelecionada,
 }) {
   const listRecorrenciaInicial = [{ label: 'Somente o dia', value: 1 }];
 
@@ -21,6 +24,7 @@ function ExcluirAula({
 
   const [carregando, setCarregando] = useState(false);
   const [recorrenciaSelecionada, setRRecorrenciaSelecionada] = useState(1);
+  const [infantil, setInfantil] = useState(false);
 
   const excluirAula = () => {
     const nome = nomeComponente();
@@ -35,6 +39,7 @@ function ExcluirAula({
   };
 
   useEffect(() => {
+    setInfantil(ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada));
     if (visivel) {
       let opcaoAIncluir = { label: 'Bimestre atual', value: 2 };
 
@@ -65,7 +70,7 @@ function ExcluirAula({
         <Formik
           enableReinitialize
           initialValues={{ tipoRecorrenciaExclusao: 1 }}
-          onSubmit={() => {}}
+          onSubmit={() => { }}
           validateOnChange
           validateOnBlur
         >
@@ -76,17 +81,16 @@ function ExcluirAula({
                   className="col-sm-12 col-md-12"
                   style={{ paddingTop: '10px' }}
                 >
-                  <p>{`Essa aula se repete por ${
-                    recorrencia.quantidadeAulasRecorrentes
-                  }${
-                    recorrencia.quantidadeAulasRecorrentes > 1
-                      ? ' vezes'
-                      : ' vez'
-                  } em seu planejamento.${
-                    recorrencia.existeFrequenciaOuPlanoAula
-                      ? ' Obs: Esta aula ou sua recorrência possui frequência ou plano de aula registrado, ao excluí-la estará excluindo esse registro também'
-                      : ''
-                  }`}</p>
+                  <p>{`Existem ${recorrencia.quantidadeAulasRecorrentes} ocorrências desta aula a partir desta data.`}</p>
+                  <p>
+                    {recorrencia.existeFrequenciaOuPlanoAula
+                      ? ` Esta aula ou sua recorrência possui frequência ou ${infantil ? 'diário de bordo' : 'plano de aula'} registrado, ao excluí-la estará excluindo ${
+                      recorrencia.quantidadeAulasRecorrentes == 1
+                        ? 'esse registro'
+                        : 'estes registros'
+                      } também.`
+                      : ''}
+                  </p>
                   <p>Qual opção de exclusão você deseja realizar?</p>
                 </div>
                 <div className="col-sm-12 col-md-12 d-block">

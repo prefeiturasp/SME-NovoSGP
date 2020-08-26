@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Infra;
 using System;
-using System.Net.Http.Headers;
-using System.Text;
+using System.Net;
 
 namespace SME.SGP.Api
 {
@@ -16,10 +17,11 @@ namespace SME.SGP.Api
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiJurema").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
-            services.AddHttpClient<IServicoEOL, ServicoEOL>(c =>
+            services.AddHttpClient<IServicoEol, ServicoEOL>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
             });
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
             {
@@ -30,6 +32,38 @@ namespace SME.SGP.Api
             services.AddHttpClient<IServicoGithub, SevicoGithub>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiGithub").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            services.AddHttpClient(name: "servicoEOL", c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
+            });
+
+            var cookieContainer = new CookieContainer();
+            var jasperCookieHandler = new JasperCookieHandler() { CookieContainer = cookieContainer };
+
+            services.AddSingleton(jasperCookieHandler);
+
+            var basicAuth = $"{configuration.GetValue<string>("ConfiguracaoJasper:Username")}:{configuration.GetValue<string>("ConfiguracaoJasper:Password")}".EncodeTo64();            
+            var jasperUrl = configuration.GetValue<string>("ConfiguracaoJasper:Hostname");
+
+            services.AddHttpClient<ISevicoJasper, SevicoJasper>(c =>
+            {
+                c.BaseAddress = new Uri(jasperUrl);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("Authorization", $"Basic {basicAuth}");
+            }).ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new JasperCookieHandler() { CookieContainer = cookieContainer };
+            });
+
+
+            services.AddHttpClient<IServicoServidorRelatorios, ServicoServidorRelatorios>(c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
         }

@@ -1,5 +1,6 @@
-import { Form, Formik } from 'formik';
 import React, { useCallback, useEffect, useState } from 'react';
+import { Form, Formik } from 'formik';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import * as Yup from 'yup';
@@ -29,6 +30,8 @@ import {
   ColunaBotaoListaAlunos,
   ListaCopiarCompensacoes,
 } from './styles';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const CompensacaoAusenciaForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -38,6 +41,10 @@ const CompensacaoAusenciaForm = ({ match }) => {
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
 
   const { turmaSelecionada } = usuario;
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const [refForm, setRefForm] = useState({});
   const [auditoria, setAuditoria] = useState([]);
@@ -101,22 +108,26 @@ const CompensacaoAusenciaForm = ({ match }) => {
     })
   );
 
-  let listaBi = [];
-  if (turmaSelecionada.modalidade === modalidade.EJA) {
-    listaBi = [
-      { valor: 1, descricao: '1°' },
-      { valor: 2, descricao: '2°' },
-    ];
-  } else {
-    listaBi = [
-      { valor: 1, descricao: '1°' },
-      { valor: 2, descricao: '2°' },
-      { valor: 3, descricao: '3°' },
-      { valor: 4, descricao: '4°' },
-    ];
-  }
+  const [listaBimestres, setListaBimestres] = useState([]);
 
-  const [listaBimestres] = useState(listaBi);
+  useEffect(() => {
+    let listaBi = [];
+    if (String(turmaSelecionada.modalidade) === String(modalidade.EJA)) {
+      listaBi = [
+        { valor: 1, descricao: '1°' },
+        { valor: 2, descricao: '2°' },
+      ];
+    } else {
+      listaBi = [
+        { valor: 1, descricao: '1°' },
+        { valor: 2, descricao: '2°' },
+        { valor: 3, descricao: '3°' },
+        { valor: 4, descricao: '4°' },
+      ];
+    }
+
+    setListaBimestres(listaBi);
+  }, [turmaSelecionada.modalidade]);
 
   const ForaPerido = () => {
     return (
@@ -162,8 +173,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
   }, [match.url, novoRegistro]);
 
   useEffect(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, [permissoesTela]);
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
+    );
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
     const desabilitar = novoRegistro
@@ -174,7 +191,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
 
   const removerAlunosDuplicadosEdicao = (alunosTurma, alunosEdicao) => {
     const novaLista = alunosTurma.filter(
-      aluno => !alunosEdicao.find(al => al.id == aluno.id)
+      aluno => !alunosEdicao.find(al => String(al.id) === String(aluno.id))
     );
     return novaLista;
   };
@@ -219,7 +236,9 @@ const CompensacaoAusenciaForm = ({ match }) => {
       const disciplinas = [...disciplinasRegencia];
       disciplinasRegenciaEdicao.forEach(item => {
         disciplinas.forEach((disci, indice) => {
-          if (item.codigo == disci.codigoComponenteCurricular) {
+          if (
+            String(item.codigo) === String(disci.codigoComponenteCurricular)
+          ) {
             disciplinas[indice].selecionada = !disciplinas[indice].selecionada;
             disciplinas[indice].codigo =
               disciplinas[indice].codigoComponenteCurricular;
@@ -238,7 +257,9 @@ const CompensacaoAusenciaForm = ({ match }) => {
       disciplinasRegenciaEdicao
     ) => {
       const disciplina = disciplinasLista.find(
-        c => c.codigoComponenteCurricular == codigoDisciplinaSelecionada
+        c =>
+          String(c.codigoComponenteCurricular) ===
+          String(codigoDisciplinaSelecionada)
       );
       if (disciplina && disciplina.regencia) {
         const disciplinasRegencia = await ServicoDisciplina.obterDisciplinasPlanejamento(
@@ -459,26 +480,28 @@ const CompensacaoAusenciaForm = ({ match }) => {
 
     if (
       turmaSelecionadaFiltroPrincipal &&
-      turmaSelecionadaFiltroPrincipal != turmaSelecionada.turma
+      turmaSelecionadaFiltroPrincipal !== turmaSelecionada.turma
     ) {
-      // Somente quando troca a turma para outra turma no filtro principal!
       resetarForm();
     }
     setTurmaSelecionadaFiltroPrincipal(turmaSelecionada.turma);
     if (
       turmaSelecionadaFiltroPrincipal &&
       turmaSelecionada.turma &&
-      turmaSelecionadaFiltroPrincipal == turmaSelecionada.turma &&
-      listaDisciplinas.length < 1
+      String(turmaSelecionadaFiltroPrincipal) ===
+        String(turmaSelecionada.turma) &&
+      listaDisciplinas.length < 1 &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
     ) {
       obterDisciplinas(turmaSelecionada.turma);
     }
   }, [
     obterDisciplinas,
-    turmaSelecionada.turma,
     resetarForm,
     turmaSelecionadaFiltroPrincipal,
     listaDisciplinas,
+    turmaSelecionada,
+    modalidadesFiltroPrincipal,
   ]);
 
   const limparListas = () => {
@@ -493,7 +516,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
     limparListas();
     const dentroPeriodo = await podeAlterarNoPeriodo(String(bimestre));
     setForaDoPeriodo(!dentroPeriodo);
-    
+
     if (dentroPeriodo) {
       let podeEditar = false;
       const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
@@ -542,7 +565,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
       form.setFieldTouched(campo, true, true);
     });
     form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length == 0) {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
         form.handleSubmit(e => e);
       }
     });
@@ -562,7 +585,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
           idCompensacaoAusencia,
         ]).catch(e => erros(e));
 
-        if (excluir && excluir.status == 200) {
+        if (excluir && excluir.status === 200) {
           sucesso('Compensação excluída com sucesso.');
           history.push('/diario-classe/compensacao-ausencia');
         }
@@ -576,7 +599,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
     ).catch(e => {
       erros(e);
     });
-    if (dadosEdicao && dadosEdicao.status == 200) {
+    if (dadosEdicao && dadosEdicao.status === 200) {
       setIdsAlunos([]);
       setIdsAlunosAusenciaCompensadas([]);
       if (dadosEdicao.data.alunos && dadosEdicao.data.alunos.length) {
@@ -677,7 +700,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
       paramas
     ).catch(e => erros(e));
 
-    if (cadastrado && cadastrado.status == 200) {
+    if (cadastrado && cadastrado.status === 200) {
       if (
         compensacoesParaCopiar &&
         compensacoesParaCopiar.compensacaoOrigemId &&
@@ -704,11 +727,11 @@ const CompensacaoAusenciaForm = ({ match }) => {
   };
 
   const obterListaAlunosComIdsSelecionados = (list, ids) => {
-    return list.filter(item => ids.find(id => id == item.id));
+    return list.filter(item => ids.find(id => String(id) === String(item.id)));
   };
 
   const obterListaAlunosSemIdsSelecionados = (list, ids) => {
-    return list.filter(item => !ids.find(id => id == item.id));
+    return list.filter(item => !ids.find(id => String(id) === String(item.id)));
   };
 
   const onClickAdicionarAlunos = () => {
@@ -746,7 +769,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
       idsAlunosAusenciaCompensadas.length
     ) {
       const listaAlunosRemover = alunosAusenciaCompensada.filter(item =>
-        idsAlunosAusenciaCompensadas.find(id => id == item.id)
+        idsAlunosAusenciaCompensadas.find(id => String(id) === String(item.id))
       );
       const confirmado = await confirmar(
         'Excluir aluno',
@@ -876,7 +899,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
       ) : (
         ''
       )}
-      {foraDoPeriodo ? <ForaPerido /> : ''}
+      {foraDoPeriodo &&
+      turmaSelecionada &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
+        <ForaPerido />
+      ) : (
+        ''
+      )}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Cadastrar Compensação de Ausência" />
       <Card>
         <Loader
@@ -937,7 +967,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     bold
                     className="mr-2"
                     onClick={() => validaAntesDoSubmit(form)}
-                    disabled={desabilitarCampos || !modoEdicao}
+                    disabled={
+                      ehTurmaInfantil(
+                        modalidadesFiltroPrincipal,
+                        turmaSelecionada
+                      ) ||
+                      desabilitarCampos ||
+                      !modoEdicao
+                    }
                   />
                 </div>
 
@@ -1118,6 +1155,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
       </Card>
     </>
   );
+};
+
+CompensacaoAusenciaForm.propTypes = {
+  match: PropTypes.oneOfType([PropTypes.any]),
+};
+
+CompensacaoAusenciaForm.defaultProps = {
+  match: {},
 };
 
 export default CompensacaoAusenciaForm;

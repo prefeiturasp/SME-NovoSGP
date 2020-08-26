@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using HealthChecks.UI.Client;
-using MediatR;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -14,9 +13,8 @@ using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
 using SME.SGP.Dados;
-using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Infra;
 using SME.SGP.IoC;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO.Compression;
@@ -25,12 +23,15 @@ namespace SME.SGP.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
+
         }
 
         public IConfiguration Configuration { get; }
+        private IHostingEnvironment _env;
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -91,26 +92,22 @@ namespace SME.SGP.Api
 
             services.AddSingleton(Configuration);
             services.AddHttpContextAccessor();
-            services.AdicionarRedis(Configuration);
 
             RegistraDependencias.Registrar(services);
-            RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
 
-
             DefaultTypeMap.MatchNamesWithUnderscores = true;
-
-            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
-            services.AddMediatR(assembly);
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
+            var serviceProvider = services.BuildServiceProvider();
 
+            Orquestrador.Inicializar(serviceProvider);
 
-            Orquestrador.Inicializar(services.BuildServiceProvider());
+            services.AdicionarRedis(Configuration, serviceProvider.GetService<IServicoLog>());
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {
@@ -121,7 +118,7 @@ namespace SME.SGP.Api
                 Orquestrador.Desativar();
 
             services.AddHealthChecks()
-                    .AddRedis(
+                   .AddRedis(
                         Configuration.GetConnectionString("SGP-Redis"),
                         "Redis Cache",
                         null,
@@ -138,9 +135,14 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
+            if (_env.EnvironmentName != "teste-integrado")
+            {
+                services.AddRabbit();
+            }
+
             // Teste para injeção do client de telemetria em classe estática 
 
-            var serviceProvider = services.BuildServiceProvider();
+
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
             DapperExtensionMethods.Init(clientTelemetry);
 

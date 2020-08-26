@@ -13,11 +13,14 @@ const Bimestre = ({
   bimestre,
   disciplinas,
   ano,
+  ensinoEspecial,
   ehEja,
   ehMedio,
   disciplinaSemObjetivo,
   selecionarObjetivo,
   onChangeDescricaoObjetivo,
+  exibirSwitchObjAprOpcionais,
+  objetivosAprendizagemOpcionais,
 }) => {
   const [objetivosAprendizagem, setObjetivosAprendizagem] = useState([]);
   const [objetivosCarregados, setObjetivosCarregados] = useState(false);
@@ -60,7 +63,11 @@ const Bimestre = ({
     if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
       setCarregandoDados(true);
       servicoPlanoAnual
-        .obterObjetivosPorAnoEComponenteCurricular(ano, disciplinasSelecionadas)
+        .obterObjetivosPorAnoEComponenteCurricular(
+          ano,
+          ensinoEspecial,
+          disciplinasSelecionadas
+        )
         .then(resposta => {
           if (objetivosSelecionados && objetivosSelecionados.length > 0) {
             resposta.data.forEach(c => {
@@ -177,14 +184,19 @@ const Bimestre = ({
               Objetivos de Aprendizagem e Desenvolvimento
             </h6>
           )}
-          <div className="mt-3">
-            <Disciplinas
-              disciplinas={disciplinas}
-              preSelecionadas={disciplinasPreSelecionadas}
-              onChange={onChangeDisciplinasSelecionadas}
-              layoutEspecial={layoutEspecial}
-            />
-          </div>
+          {disciplinas && disciplinas.length ? (
+            <div className="mt-3">
+              <Disciplinas
+                disciplinas={disciplinas}
+                preSelecionadas={disciplinasPreSelecionadas}
+                onChange={onChangeDisciplinasSelecionadas}
+                layoutEspecial={layoutEspecial}
+                carregando={carregandoDados}
+              />
+            </div>
+          ) : (
+            ''
+          )}
 
           {!layoutEspecial && (
             <ListaObjetivos
@@ -301,9 +313,13 @@ const Bimestre = ({
               </li>
             </ul>
             <fieldset className="mt-3">
-              {!layoutEspecial &&
-              objetivosSelecionados &&
-              !objetivosSelecionados.length ? (
+              {(!layoutEspecial &&
+                objetivosSelecionados &&
+                !objetivosSelecionados.length &&
+                !exibirSwitchObjAprOpcionais) ||
+              (!objetivosAprendizagemOpcionais &&
+                objetivosSelecionados &&
+                !objetivosSelecionados.length) ? (
                 <Erro>
                   Você precisa selecionar objetivos na lista ao lado para poder
                   inserir a descrição do plano!
@@ -313,6 +329,7 @@ const Bimestre = ({
                 onChange={onChangeDescricaoObjetivos}
                 inicial={descricaoObjetivo}
                 desabilitar={
+                  !exibirSwitchObjAprOpcionais &&
                   !layoutEspecial &&
                   objetivosSelecionados &&
                   !objetivosSelecionados.length
@@ -340,11 +357,15 @@ Bimestre.propTypes = {
   bimestre: PropTypes.oneOfType([PropTypes.any]).isRequired,
   disciplinas: PropTypes.oneOfType([PropTypes.any]).isRequired,
   ano: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  ensinoEspecial: PropTypes.oneOfType([PropTypes.any]).isRequired,
   ehEja: PropTypes.oneOfType([PropTypes.any]).isRequired,
   ehMedio: PropTypes.oneOfType([PropTypes.any]).isRequired,
   disciplinaSemObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
   selecionarObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
   onChangeDescricaoObjetivo: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  exibirSwitchObjAprOpcionais: PropTypes.oneOfType([PropTypes.any]).isRequired,
+  objetivosAprendizagemOpcionais: PropTypes.oneOfType([PropTypes.any])
+    .isRequired,
 };
 
 export default Bimestre;

@@ -9,13 +9,13 @@ namespace SME.Background.Core
     {
         public static string Executar(Expression<Action> metodo, TipoProcessamento tipoProcessamento = TipoProcessamento.ExecucaoLonga)
         {
-            GravarLog($"Novo processamento background solicitado {metodo.Body.ToString()}");
+            GravarLog($"Novo processamento background solicitado {metodo.Body}");
             return Orquestrador.ObterProcessador(tipoProcessamento).Executar(metodo);
         }
 
         public static string Executar<T>(Expression<Action<T>> metodo, TipoProcessamento tipoProcessamento = TipoProcessamento.ExecucaoLonga)
         {
-            GravarLog($"Novo processamento background solicitado {metodo.Body.ToString()}");
+            GravarLog($"Novo processamento background solicitado {metodo.Body}");
             return Orquestrador.ObterProcessador(tipoProcessamento).Executar<T>(metodo);
         }
 
@@ -26,8 +26,8 @@ namespace SME.Background.Core
 
         private static void GravarLog(string mensagem)
         {
-            SentrySdk.AddBreadcrumb($"{mensagem} - {DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt")}", "Background Processing");
-            Console.WriteLine($"{mensagem} - {DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt")}");
+            SentrySdk.AddBreadcrumb($"{mensagem} - {DateTime.Now:MM/dd/yyyy hh:mm:ss.fff tt}", "Background Processing");
+            Console.WriteLine($"{mensagem} - {DateTime.Now:MM/dd/yyyy hh:mm:ss.fff tt}");
         }
     }
 }

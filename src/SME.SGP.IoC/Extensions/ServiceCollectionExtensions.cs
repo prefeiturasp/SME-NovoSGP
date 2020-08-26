@@ -2,8 +2,6 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Infra.Escopo;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.IoC.Extensions
 {

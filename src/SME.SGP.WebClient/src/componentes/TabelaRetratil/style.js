@@ -68,7 +68,9 @@ export const LinhaTabela = styled.tr`
 		cursor: not-allowed !important;
 
 		&:hover {
-			background: ${Base.CinzaDesabilitado} !important;
+			background: ${
+        props.processoConcluido ? Base.Verde : Base.CinzaBarras
+      }!important;
 		}
 	`}
 
@@ -80,6 +82,13 @@ export const LinhaTabela = styled.tr`
     .iconeSituacao {
       background: white !important;
     }
+
+    .icone-concluido {
+      color: ${props =>
+        props.processoConcluido ? Base.Verde : Base.CinzaBarras} !important;
+      font-size: 16px;
+      margin-right: 2px;
+    }
   }
 
   &.selecionado {
@@ -89,6 +98,21 @@ export const LinhaTabela = styled.tr`
     .iconeSituacao {
       background: white !important;
     }
+
+    .icone-concluido {
+      color: ${props =>
+        props.processoConcluido ? Base.Verde : Base.CinzaBarras} !important;
+      font-size: 16px;
+      margin-right: 2px;
+    }
+  }
+
+  .icone-concluido {
+    color: ${props =>
+      props.processoConcluido ? Base.Verde : Base.CinzaBarras} !important;
+    font-size: 16px;
+    margin-right: 2px;
+    border-radius: 10px;
   }
 `;
 

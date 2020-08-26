@@ -58,8 +58,8 @@ CardCollapse.defaultProps = {
   titulo: '',
   indice: shortid.generate(),
   children: () => {},
-  show: false,
   onClick: () => {},
+  show: false,
   configCabecalho: {
     altura: 'auto',
     corBorda: Base.AzulBordaCard,

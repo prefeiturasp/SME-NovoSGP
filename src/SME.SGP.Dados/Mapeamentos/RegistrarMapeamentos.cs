@@ -96,13 +96,27 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new WfAprovacaoNotaFechamentoMap());
                config.AddMap(new GrupoComunicacaoMap());
                config.AddMap(new ComunicadoMap());
+               config.AddMap(new ComunicadoAlunoMap());
+               config.AddMap(new ComunicadoTurmaMap());
                config.AddMap(new ComunicadoGrupoMap());
                config.AddMap(new ConselhoClasseRecomendacaoMap());
                config.AddMap(new TipoEscolaMap());
                config.AddMap(new CicloEnsinoMap());
+               config.AddMap(new RelatorioSemestralTurmaPAPMap());
+               config.AddMap(new RelatorioSemestralPAPAlunoMap());
+               config.AddMap(new RelatorioSemestralAlunoSecaoMap());
+               config.AddMap(new SecaoRelatorioSemestralPAPMap());
                config.AddMap(new ConselhoClasseParecerAnoMap());
                config.AddMap(new ConselhoClasseParecerConclusivoMap());
                config.AddMap(new ObjetivoAprendizagemMap());
+               config.AddMap(new PlanoAnualTerritorioSaberMap());
+               config.AddMap(new RelatorioCorrelacaoMap());
+               config.AddMap(new RelatorioCorrelacaoJasperMap());
+               config.AddMap(new HistoricoReinicioSenhaMap());
+               config.AddMap(new CartaIntencoesMap());
+               config.AddMap(new DiarioBordoMap());
+               config.AddMap(new DevolutivaDiarioBordoMap());
+               config.AddMap(new DiarioBordoObservacaoMap());
                config.ForDommel();
            });
         }

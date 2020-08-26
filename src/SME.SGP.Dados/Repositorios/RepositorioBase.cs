@@ -1,5 +1,4 @@
-﻿using Dommel;
-using SME.SGP.Dados.Contexto;
+﻿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -50,8 +49,6 @@ namespace SME.SGP.Dados.Repositorios
             if (entidade.Id > 0)
             {
                 entidade.AlteradoEm = DateTime.Now;
-                if (string.IsNullOrWhiteSpace(database.UsuarioLogadoNomeCompleto))
-                    throw new ArgumentNullException("Contexto não pegou usuário logado.");
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 database.Conexao.Update(entidade);
@@ -89,6 +86,12 @@ namespace SME.SGP.Dados.Repositorios
             return entidade.Id;
         }
 
+        public virtual async Task<bool> Exists(long id)
+        {
+            var tableName = Dommel.DommelMapper.Resolvers.Table(typeof(T));
+            return await database.Conexao.ExecuteScalarAsync<bool>($"select count(1) from {tableName} where Id=@id", new { id });
+        }
+
         private void Auditar(long identificador, string acao)
         {
             database.Conexao.Insert<Auditoria>(new Auditoria()
@@ -114,5 +117,5 @@ namespace SME.SGP.Dados.Repositorios
                 Acao = acao
             });
         }
-    }
+   }
 }

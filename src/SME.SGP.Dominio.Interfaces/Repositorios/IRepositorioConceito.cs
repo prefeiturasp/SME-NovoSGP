@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioConceito : IRepositorioBase<Conceito>
     {
-        IEnumerable<Conceito> ObterPorData(DateTime dataAvaliacao);
+       Task<IEnumerable<Conceito>> ObterPorData(DateTime dataAvaliacao);
     }
 }

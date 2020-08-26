@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Runtime.Serialization;
 
 namespace SME.Background.Core.Exceptions
 {
-    public class ExcecaoServicoDesativado : Exception
+    [Serializable]
+    public class ExcecaoServicoDesativadoException : Exception
     {
-        public ExcecaoServicoDesativado(string mensagem)
-            : base(mensagem) { }
+        public ExcecaoServicoDesativadoException(string mensagem)
+          : base(mensagem) { }
+
+        protected ExcecaoServicoDesativadoException(SerializationInfo info, StreamingContext context)
+            : base(info, context) { }
     }
 }

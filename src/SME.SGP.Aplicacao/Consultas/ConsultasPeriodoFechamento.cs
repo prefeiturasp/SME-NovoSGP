@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> TurmaEmPeriodoDeFechamento(string turmaCodigo, DateTime dataReferencia, int bimestre = 0)
         {
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
+            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
 
             return await TurmaEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, bimestre);
@@ -73,7 +73,6 @@ namespace SME.SGP.Aplicacao
             var ueEmFechamento = await UeEmFechamento(turma, tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
             return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestreAlteracao, dataReferencia);
         }
-
 
         public async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0)
         {

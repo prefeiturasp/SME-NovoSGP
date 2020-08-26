@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -14,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<Conceito> ObterPorData(DateTime dataAvaliacao)
+        public async Task<IEnumerable<Conceito>> ObterPorData(DateTime dataAvaliacao)
         {
             var sql = @"select id, valor, descricao, aprovado, ativo, inicio_vigencia, fim_vigencia,
                     criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
@@ -23,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var parametros = new { dataAvaliacao = dataAvaliacao.Date };
 
-            return database.Query<Conceito>(sql, parametros);
+            return await database.QueryAsync<Conceito>(sql, parametros);
         }
     }
 }

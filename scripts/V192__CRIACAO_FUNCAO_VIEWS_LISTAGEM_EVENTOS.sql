@@ -1,4 +1,4 @@
-drop function if exists public.f_abrangencia_anos_letivos;
+ï»¿drop function if exists public.f_abrangencia_anos_letivos;
 drop function if exists public.f_abrangencia_dres;
 drop function if exists public.f_abrangencia_modalidades;
 drop function if exists public.f_abrangencia_semestres;
@@ -642,26 +642,26 @@ AS $function$
 				on e.tipo_calendario_id = tc.id
 			left join f_abrangencia_dres(p_login, p_perfil_id, p_historico) ad
 				on e.dre_id = ad.codigo 
-				-- modalidade 1 (fundamental/médio) do tipo de calendario, considera as modalidades 5 (Fundamental) e 6 (médio)
-				-- modalidade 2 (EJA) do tipo de calendário, considera modalidade 3 (EJA)
+				-- modalidade 1 (fundamental/mdio) do tipo de calendario, considera as modalidades 5 (Fundamental) e 6 (mdio)
+				-- modalidade 2 (EJA) do tipo de calendrio, considera modalidade 3 (EJA)
 				and ((tc.modalidade = 1 and ad.modalidade_codigo in (5, 6)) or (tc.modalidade = 2 and ad.modalidade_codigo = 3))
-				-- para DREs considera local da ocorrência 2 (DRE) e 5 (Todos)
+				-- para DREs considera local da ocorrncia 2 (DRE) e 5 (Todos)
 				and et.local_ocorrencia in (2, 5)
 			left join f_abrangencia_ues(p_login, p_perfil_id, p_historico) au
 				on e.ue_id = au.codigo
 				and ((tc.modalidade = 1 and au.modalidade_codigo in (5, 6)) or (tc.modalidade = 2 and au.modalidade_codigo = 3))
-				-- para UEs considera local da ocorrência 1 (UE) e 4 (SME/UE) e 5 (Todos)
+				-- para UEs considera local da ocorrncia 1 (UE) e 4 (SME/UE) e 5 (Todos)
 				and et.local_ocorrencia in (1, 4, 5)
 	where not e.excluido 
 		and not et.excluido 
 		and (extract(year from e.data_inicio) = tc.ano_letivo or extract(year from e.data_fim) = tc.ano_letivo) 
 		and e.tipo_calendario_id = p_tipo_calendario_id		
-		-- caso considere 1 (aprovado) e 2 (pendente de aprovação), senão considera só aprovados
+		-- caso considere 1 (aprovado) e 2 (pendente de aprovao), seno considera s aprovados
 		and ((p_considera_pendente_aprovacao = true and e.status in (1,2)) or (p_considera_pendente_aprovacao = false and e.status = 1)) 
 		and (p_desconsidera_local_dre = false or (p_desconsidera_local_dre = true and et.local_ocorrencia != 2))
 		and (p_dre_id is null or (p_dre_id is not null and e.dre_id = p_dre_id))
 		and (p_ue_id is null or (p_ue_id is not null and e.ue_id = p_ue_id))
-		-- caso desconsidere 6 (liberação excepcional) e 15 (reposição de recesso)
+		-- caso desconsidere 6 (liberao excepcional) e 15 (reposio de recesso)
 		and (p_desconsidera_liberacao_excep_reposicao_recesso = true or (p_desconsidera_liberacao_excep_reposicao_recesso = false and et.codigo not in (6, 15)))
 		and (p_data_inicio is null or (p_data_inicio is not null and date(e.data_inicio) >= date(p_data_inicio)))
 		and (p_data_fim is null or (p_data_fim is not null and date(e.data_fim) <= date(p_data_fim)));
@@ -702,7 +702,7 @@ AS $function$
 				on e.tipo_calendario_id = tc.id
 	where not et.excluido
 		and not e.excluido
-		-- considera somente pendente de aprovação
+		-- considera somente pendente de aprovao
 		and e.status = 2
 		and e.criado_rf = p_login		
 		and (extract(year from e.data_inicio) = tc.ano_letivo or extract(year from e.data_fim) = tc.ano_letivo)
@@ -713,153 +713,5 @@ AS $function$
 		and (p_data_fim is null or (p_data_fim is not null and date(e.data_fim) <= date(p_data_fim)));
 $function$;
 
-CREATE OR REPLACE FUNCTION public.f_eventos_listar_sem_paginacao(p_login character varying, p_perfil_id uuid, p_historico boolean, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_desconsidera_local_dre boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_liberacao_excep_reposicao_recesso boolean DEFAULT false, p_data_inicio date DEFAULT NULL::date, p_data_fim date DEFAULT NULL::date, p_tipo_evento_id bigint DEFAULT NULL::bigint, p_nome_evento character varying DEFAULT NULL::character varying)
- RETURNS SETOF v_estrutura_eventos_listar
- LANGUAGE sql
-AS $function$
-	select eventoid,
-		   nome,
-		   descricaoevento,
-		   data_inicio,
-		   data_fim,
-		   dre_id,
-		   letivo,
-		   feriado_id,
-		   tipo_calendario_id,
-		   tipo_evento_id,
-		   ue_id,
-		   criado_em,
-		   criado_por,
-	       alterado_em,
-	       alterado_por,
-	       criado_rf,
-		   alterado_rf,
-		   status,	
-		   tipoeventoid,
-		   ativo,
-		   tipo_data,
-		   descricaotipoevento,
-		   excluido,
-		   int4(0) total_registros
-		from (
-			select eventoid,
-				   nome,
-				   descricaoevento,
-				   data_inicio,
-				   data_fim,
-				   dre_id,
-				   letivo,
-				   feriado_id,
-				   tipo_calendario_id,
-				   tipo_evento_id,
-				   ue_id,
-				   criado_em,
-				   criado_por,
-			       alterado_em,
-			       alterado_por,
-			       criado_rf,
-				   alterado_rf,
-				   status,	
-				   tipoeventoid,
-				   ativo,
-				   tipo_data,
-				   descricaotipoevento,
-				   excluido				   				   
-				from f_eventos(p_login, p_perfil_id, p_historico, p_tipo_calendario_id, p_considera_pendente_aprovacao, p_desconsidera_local_dre, p_dre_id, p_ue_id, p_desconsidera_liberacao_excep_reposicao_recesso, p_data_inicio, p_data_fim)
-			
-			union
-			
-			select eventoid,
-				   nome,
-				   descricaoevento,
-				   data_inicio,
-				   data_fim,
-				   dre_id,
-				   letivo,
-				   feriado_id,
-				   tipo_calendario_id,
-				   tipo_evento_id,
-				   ue_id,
-				   criado_em,
-				   criado_por,
-			       alterado_em,
-			       alterado_por,
-			       criado_rf,
-				   alterado_rf,
-				   status,	
-				   tipoeventoid,
-				   ativo,
-				   tipo_data,
-				   descricaotipoevento,
-				   excluido
-				from f_eventos_por_rf_criador(p_login, p_tipo_calendario_id, p_dre_id, p_ue_id, p_data_inicio, p_data_fim)) lista
-	where (p_tipo_evento_id is null or (p_tipo_evento_id is not null and tipo_evento_id = p_tipo_evento_id)) and
-  		  (p_nome_evento is null or (p_nome_evento is not null and upper(nome) like upper('%' || p_nome_evento || '%')));
-$function$;
 
-CREATE OR REPLACE FUNCTION public.f_eventos_listar(p_login character varying, p_perfil_id uuid, p_historico boolean, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_desconsidera_local_dre boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_liberacao_excep_reposicao_recesso boolean DEFAULT false, p_data_inicio date DEFAULT NULL::date, p_data_fim date DEFAULT NULL::date, p_qtde_registros_ignorados integer DEFAULT 0, p_qtde_registros integer DEFAULT 0, p_tipo_evento_id bigint DEFAULT NULL::bigint, p_nome_evento character varying DEFAULT NULL::character varying)
- RETURNS SETOF v_estrutura_eventos_listar
- LANGUAGE plpgsql
-AS $function$
-	declare 
-		total_registros_obtido int4;
-	begin
-		total_registros_obtido := int4((select count(0) from f_eventos_listar_sem_paginacao(p_login, p_perfil_id, p_historico, p_tipo_calendario_id, p_considera_pendente_aprovacao, p_desconsidera_local_dre, p_dre_id, p_ue_id, p_desconsidera_liberacao_excep_reposicao_recesso, p_data_inicio, p_data_fim, p_tipo_evento_id, p_nome_evento)));
-		
-		if (p_qtde_registros_ignorados > 0 and p_qtde_registros > 0) then
-			return query select eventoid,
-								nome,
-								descricaoevento,
-								data_inicio,
-								data_fim,
-								dre_id,
-								letivo,
-								feriado_id,
-								tipo_calendario_id,
-								tipo_evento_id,
-								ue_id,
-								criado_em,
-								criado_por,
-							    alterado_em,
-							    alterado_por,
-							    criado_rf,
-								alterado_rf,
-								status,	
-								tipoeventoid,
-								ativo,
-								tipo_data,
-								descricaotipoevento,
-								excluido,
-								total_registros_obtido
-							from f_eventos_listar_sem_paginacao(p_login, p_perfil_id, p_historico, p_tipo_calendario_id, p_considera_pendente_aprovacao, p_desconsidera_local_dre, p_dre_id, p_ue_id, p_desconsidera_liberacao_excep_reposicao_recesso, p_data_inicio, p_data_fim, p_tipo_evento_id, p_nome_evento)
-							offset p_qtde_registros_ignorados rows fetch next p_qtde_registros rows only;
-		else
-			return query select eventoid,
-								nome,
-								descricaoevento,
-								data_inicio,
-								data_fim,
-								dre_id,
-								letivo,
-								feriado_id,
-								tipo_calendario_id,
-								tipo_evento_id,
-								ue_id,
-								criado_em,
-								criado_por,
-							    alterado_em,
-							    alterado_por,
-							    criado_rf,
-								alterado_rf,
-								status,	
-								tipoeventoid,
-								ativo,
-								tipo_data,
-								descricaotipoevento,
-								excluido,
-								total_registros_obtido
-							from f_eventos_listar_sem_paginacao(p_login, p_perfil_id, p_historico, p_tipo_calendario_id, p_considera_pendente_aprovacao, p_desconsidera_local_dre, p_dre_id, p_ue_id, p_desconsidera_liberacao_excep_reposicao_recesso, p_data_inicio, p_data_fim, p_tipo_evento_id, p_nome_evento);
-		end if;
-	END;
-$function$;  
  

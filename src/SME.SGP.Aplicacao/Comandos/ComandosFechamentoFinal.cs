@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string[]> SalvarAsync(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
-            var turma = ObterTurma(fechamentoFinalSalvarDto.TurmaCodigo);
+            var turma = await ObterTurma(fechamentoFinalSalvarDto.TurmaCodigo);
             await servicoFechamentoFinal.VerificaPersistenciaGeral(turma);
 
             var fechamentoTurmaDisciplina = await TransformarDtoSalvarEmEntidade(fechamentoFinalSalvarDto, turma);
@@ -48,9 +48,9 @@ namespace SME.SGP.Aplicacao
             return mensagensDeErro.ToArray();
         }
 
-        private Turma ObterTurma(string turmaCodigo)
+        private async Task<Turma> ObterTurma(string turmaCodigo)
         {
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
+            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma.");
             return turma;

@@ -107,7 +107,7 @@ const CopiarConteudo = ({
         bimestres: [],
       }}
       validationSchema={validacoes}
-      onSubmit={values => copiar(values)}
+      onSubmit={() => copiar()}
       validateOnChange
       validateOnBlur
       ref={refForm}

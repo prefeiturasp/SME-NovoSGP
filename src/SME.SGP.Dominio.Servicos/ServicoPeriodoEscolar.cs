@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio
 {
@@ -18,13 +19,13 @@ namespace SME.SGP.Dominio
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
-        public void SalvarPeriodoEscolar(IEnumerable<PeriodoEscolar> periodos, long tipoCalendario)
+        public async Task SalvarPeriodoEscolar(IEnumerable<PeriodoEscolar> periodos, long tipoCalendario)
         {
             ValidarPeriodoRepetido(periodos);
 
-            TipoCalendario tipo = ValidarEObterTipoCalendarioExistente(tipoCalendario);
+            TipoCalendario tipo = await ValidarEObterTipoCalendarioExistente(tipoCalendario);
 
-            ValidarSeTipoCalendarioPossuiPeriodoCadastrado(periodos, tipo);
+            await ValidarSeTipoCalendarioPossuiPeriodoCadastrado(periodos, tipo);
 
             bool eja = tipo.Modalidade == ModalidadeTipoCalendario.EJA;
 
@@ -36,7 +37,7 @@ namespace SME.SGP.Dominio
             {
                 foreach (var periodo in periodos)
                 {
-                    repositorioPeriodoEscolar.Salvar(periodo);
+                    await repositorioPeriodoEscolar.SalvarAsync(periodo);
                 }
 
                 unitOfWork.PersistirTransacao();
@@ -70,9 +71,9 @@ namespace SME.SGP.Dominio
             ValidarInicioPeriodoAntesFimPeriodoAnterior(periodos);
         }
 
-        private TipoCalendario ValidarEObterTipoCalendarioExistente(long tipoCalendario)
+        private async Task<TipoCalendario> ValidarEObterTipoCalendarioExistente(long tipoCalendario)
         {
-            var tipo = repositorioTipoCalendario.ObterPorId(tipoCalendario);
+            var tipo = await repositorioTipoCalendario.ObterPorIdAsync(tipoCalendario);
 
             if (tipo == null || tipo.Id == 0) throw new NegocioException("O tipo de calendário informado não foi encontrado.");
             return tipo;
@@ -103,11 +104,11 @@ namespace SME.SGP.Dominio
                 throw new NegocioException($"Para período {(eja ? "semestral" : "anual")} devem ser informados {quantidadeBimestres} bimestres");
         }
 
-        private void ValidarSeTipoCalendarioPossuiPeriodoCadastrado(IEnumerable<PeriodoEscolar> periodos, TipoCalendario tipo)
+        private async Task ValidarSeTipoCalendarioPossuiPeriodoCadastrado(IEnumerable<PeriodoEscolar> periodos, TipoCalendario tipo)
         {
             if (periodos.Any(x => x.Id == 0))
             {
-                var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipo.Id).ToList();
+                var periodoEscolar = (await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipo.Id)).ToList();
 
                 if (periodoEscolar != null && periodoEscolar.Any())
                     throw new NegocioException("Não é possível inserir mais de um período escolar para o tipo de calendário informado");

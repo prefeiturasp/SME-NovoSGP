@@ -5,8 +5,7 @@ namespace SME.SGP.Infra
 {
     public class DadosAulaDto
     {
-        public bool podeCadastrarAvaliacao;
-
+        public bool PodeCadastrarAvaliacao { get; set; }
         public List<AtividadeAvaliativa> Atividade { get; set; }
         public string Disciplina { get; set; }
         public string DisciplinaCompartilhada { get; set; }

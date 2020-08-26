@@ -91,7 +91,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Notificar([FromServices] IServicoNotificacaoFrequencia servicoNotificacao)
         {
-            servicoNotificacao.VerificaNotificacaoBimestral();
+            await servicoNotificacao.VerificaNotificacaoBimestral();
             return Ok();
         }
 

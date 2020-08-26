@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ObterAulasEventosProfessorCalendarioPorMesDiaUseCase
     {
         public static async Task<EventosAulasNoDiaCalendarioDto> Executar(IMediator mediator, FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId, int mes, int dia, int anoLetivo,
-            IServicoUsuario servicoUsuario, IServicoEOL servicoEOL)
+            IServicoUsuario servicoUsuario, IServicoEol servicoEOL)
         {
 
             var dataConsulta = new DateTime(anoLetivo, mes, dia);

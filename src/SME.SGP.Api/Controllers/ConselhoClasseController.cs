@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -98,5 +101,29 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterNotasAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices]IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
             => Ok(await consultasConselhoClasseAluno.ObterNotasFrequencia(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
+
+        [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/imprimir")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(bool), 200)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ImprimirConselhoTurma(long conselhoClasseId, long fechamentoTurmaId, [FromServices] IImpressaoConselhoClasseTurmaUseCase impressaoConselhoClasseTurmaUseCase)
+          => Ok(await impressaoConselhoClasseTurmaUseCase.Executar(new FiltroRelatorioConselhoClasseAlunoDto() { ConselhoClasseId = conselhoClasseId, FechamentoTurmaId = fechamentoTurmaId }));
+
+        [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/imprimir")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(bool), 200)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ImprimirConselhoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices] IImpressaoConselhoClasseAlunoUseCase impressaoConselhoClasseAlunoUseCase)
+          => Ok(await impressaoConselhoClasseAlunoUseCase.Executar(new FiltroRelatorioConselhoClasseAlunoDto() { ConselhoClasseId = conselhoClasseId, CodigoAluno = alunoCodigo, FechamentoTurmaId = fechamentoTurmaId }));
+
+        [HttpGet("pareceres-conclusivos")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(IEnumerable<ConselhoClasseParecerConclusivoDto>), 200)]
+        [Permissao(Permissao.RPC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarPareceresConclusivos([FromServices] IObterPareceresConclusivosUseCase obterPareceresConclusivosUseCase)
+         => Ok(await obterPareceresConclusivosUseCase.Executar());
     }
 }

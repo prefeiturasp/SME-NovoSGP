@@ -5,9 +5,13 @@ const AbrangenciaServico = {
     if (url) return api.get(url);
     return api.get(`/v1/abrangencias/false/dres`);
   },
-  buscarUes(dreId, url = '') {
-    if (url) return api.get(`${url}/${dreId}/ues/atribuicoes`);
-    return api.get(`/v1/abrangencias/false/dres/${dreId}/ues`);
+  buscarUes(dreId, url = '', temParametros = false, modalidade) {
+    if (url && !temParametros)
+      return api.get(`${url}/${dreId}/ues/atribuicoes`);
+    if (temParametros) return api.get(url);
+    return api.get(
+      `/v1/abrangencias/false/dres/${dreId}/ues?modalidade=${modalidade || ''}`
+    );
   },
   buscarModalidades() {
     return api.get(`v1/abrangencias/modalidades`);
@@ -17,15 +21,44 @@ const AbrangenciaServico = {
    * @param {String} modalidade Modalidade Selecionada
    * @param {String} periodo Periodo (opcional)
    */
-  buscarTurmas(ue, modalidade = 0, periodo = '') {
+  buscarTurmas(ue, modalidade = 0, periodo = '', anoLetivo = '') {
     let params = { modalidade };
     if (periodo) {
       params = { ...params, periodo };
     }
 
-    return api.get(`v1/abrangencias/false/dres/ues/${ue}/turmas`, {
+    return api.get(
+      `v1/abrangencias/false/dres/ues/${ue}/turmas${
+        anoLetivo ? `?anoLetivo=${anoLetivo}` : ''
+      }`,
+      {
+        params,
+      }
+    );
+  },
+  buscarDisciplinas(codigoTurma, params) {
+    return api.get(`v1/professores/turmas/${codigoTurma}/disciplinas`, {
       params,
     });
+  },
+  buscarDisciplinasPlanejamento(codigoTurma, params) {
+    return api.get(
+      `v1/professores/turmas/${codigoTurma}/disciplinas/planejamento`,
+      {
+        params,
+      }
+    );
+  },
+  buscarTodosAnosLetivos() {
+    return api.get(`v1/abrangencias/false/anos-letivos-todos`);
+  },
+  usuarioTemAbrangenciaTodasTurmas() {
+    return api.get(`v1/abrangencias/false/adm`);
+  },
+  buscarAnosEscolares(codigoUe, modalidade, consideraHistorico = false) {
+    return api.get(
+      `v1/abrangencias/${consideraHistorico}/ues/${codigoUe}/modalidades/${modalidade}/turmas/anos`
+    );
   },
 };
 

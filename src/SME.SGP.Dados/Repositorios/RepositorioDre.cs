@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -30,8 +31,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<Dre> MaterializarCodigosDre(string[] idDres, out string[] naoEncontradas)
         {
-            List<Dre> resultado = new List<Dre>();
-
             var armazenados = contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", idDres.Select(x => $"'{x}'"))));
 
             naoEncontradas = idDres.Where(x => !armazenados.Select(y => y.CodigoDre).Contains(x)).ToArray();
@@ -54,18 +53,18 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.Query<Dre>("select id, dre_id, abreviacao, nome from dre");
         }
 
-        public IEnumerable<Dre> Sincronizar(IEnumerable<Dre> entidades)
+        public async Task<IEnumerable<Dre>> SincronizarAsync(IEnumerable<Dre> entidades)
         {
             List<Dre> resultado = new List<Dre>();
 
-            var armazenados = contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", entidades.Select(x => $"'{x.CodigoDre}'"))));
+            var armazenados = await contexto.Conexao.QueryAsync<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", entidades.Select(x => $"'{x.CodigoDre}'"))));
 
             var novos = entidades.Where(x => !armazenados.Select(y => y.CodigoDre).Contains(x.CodigoDre));
 
             foreach (var item in novos)
             {
                 item.DataAtualizacao = DateTime.Today;
-                item.Id = (long)contexto.Conexao.Insert(item);
+                item.Id = (long) await contexto.Conexao.InsertAsync(item);
 
                 resultado.Add(item);
             }
@@ -86,8 +85,7 @@ namespace SME.SGP.Dados.Repositorios
 
             foreach (var item in modificados)
             {
-                contexto.Conexao.Execute(Update, new { abreviacao = item.Abreviacao, nome = item.Nome, dataAtualizacao = item.DataAtualizacao, id = item.Id });
-
+                await contexto.Conexao.ExecuteAsync(Update, new { abreviacao = item.Abreviacao, nome = item.Nome, dataAtualizacao = item.DataAtualizacao, id = item.Id });
                 resultado.Add(item);
             }
 

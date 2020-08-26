@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -27,9 +28,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("dias-letivos")]
         [Permissao(Permissao.C_C, Permissao.CP_C, Policy = "Bearer")]
-        public IActionResult CalcularDiasLetivos(FiltroDiasLetivosDTO filtro)
+        public async Task<IActionResult> CalcularDiasLetivos(FiltroDiasLetivosDTO filtro)
         {
-            return Ok(comandosDiasLetivos.CalcularDiasLetivos(filtro));
+            return Ok(await comandosDiasLetivos.CalcularDiasLetivos(filtro));
         }
     }
 }

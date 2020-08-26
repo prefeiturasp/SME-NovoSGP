@@ -12,7 +12,11 @@ namespace SME.SGP.Aplicacao
 
         Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, bool consideraHistorico = false);
 
+        Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico);
+
         Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico);
+
+        Task<IEnumerable<int>> ObterAnosLetivosTodos();
 
         Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0);
 

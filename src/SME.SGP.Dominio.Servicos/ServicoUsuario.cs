@@ -21,11 +21,11 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
         public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
-                                      IServicoEOL servicoEOL,
+                              IServicoEol servicoEOL,
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
                               IUnitOfWork unitOfWork,
                               IContextoAplicacao contextoAplicacao,
@@ -48,6 +48,10 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Usuário não encontrado.");
 
             await AlterarEmail(usuario, novoEmail);
+        }
+        public async Task<Usuario> ObterPorIdAsync(long id)
+        {
+            return await repositorioUsuario.ObterPorIdAsync(id);
         }
 
         public async Task AlterarEmailUsuarioPorRfOuInclui(string codigoRf, string novoEmail)
@@ -137,14 +141,7 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Usuário não encontrado.");
             }
 
-            var chaveRedis = $"perfis-usuario-{login}";
-            var perfisUsuarioString = repositorioCache.Obter(chaveRedis);
-
-            IEnumerable<PrioridadePerfil> perfisDoUsuario = null;
-
-            perfisDoUsuario = string.IsNullOrWhiteSpace(perfisUsuarioString)
-                ? await ObterPerfisUsuario(login)
-                : JsonConvert.DeserializeObject<IEnumerable<PrioridadePerfil>>(perfisUsuarioString);
+            var perfisDoUsuario = await repositorioCache.Obter($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
 
             usuario.DefinirPerfis(perfisDoUsuario);
             usuario.DefinirPerfilAtual(ObterPerfilAtual());

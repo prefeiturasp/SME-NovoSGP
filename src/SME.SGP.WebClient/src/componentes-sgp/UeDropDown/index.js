@@ -19,6 +19,8 @@ function UeDropDown({
   url,
   desabilitado,
   opcaoTodas,
+  temParametros,
+  modalidade,
 }) {
   const [carregando, setCarregando] = useState(false);
   const [listaUes, setListaUes] = useState([]);
@@ -27,15 +29,18 @@ function UeDropDown({
   useEffect(() => {
     async function buscarUes() {
       setCarregando(true);
-      const { data } = await AbrangenciaServico.buscarUes(dreId, url);
+      const { data } = await AbrangenciaServico.buscarUes(
+        dreId,
+        url,
+        temParametros,
+        modalidade
+      );
       let lista = [];
       if (data) {
-        lista = data
-          .map(item => ({
-            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
-            valor: item.codigo,
-          }))
-          .sort(FiltroHelper.ordenarLista('desc'));
+        lista = data.map(item => ({
+          desc: item.nome,
+          valor: item.codigo,
+        }));
       }
       if (lista.length > 1) {
         if (opcaoTodas) {
@@ -104,6 +109,8 @@ UeDropDown.propTypes = {
   url: PropTypes.string,
   desabilitado: PropTypes.bool,
   opcaoTodas: PropTypes.bool,
+  temParametros: PropTypes.bool,
+  modalidade: PropTypes.number,
 };
 
 UeDropDown.defaultProps = {
@@ -114,6 +121,8 @@ UeDropDown.defaultProps = {
   url: '',
   desabilitado: false,
   opcaoTodas: false,
+  temParametros: false,
+  modalidade: '',
 };
 
 export default UeDropDown;

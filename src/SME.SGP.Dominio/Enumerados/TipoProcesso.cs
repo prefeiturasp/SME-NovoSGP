@@ -6,6 +6,7 @@ namespace SME.SGP.Dominio
 {
     public enum TipoProcesso
     {
-        CalculoFrequencia = 1
+        CalculoFrequencia = 1,
+        ManutencaoAula = 2,
     }
 }
