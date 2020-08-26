@@ -63,6 +63,8 @@ import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPenden
 import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
+import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
+import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 
 const rotas = new Map();
 
@@ -890,6 +892,37 @@ rotas.set(RotasDto.CARTA_INTENCOES, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.CARTA_INTENCOES,
+});
+
+rotas.set(RotasDto.DEVOLUTIVAS, {
+  breadcrumbName: 'Devolutivas',
+  menu: ['Diário de Classe '],
+  parent: '/',
+  component: DevolutivasLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
+});
+
+rotas.set(`${RotasDto.DEVOLUTIVAS}/novo`, {
+  breadcrumbName: 'Cadastrar Devolutiva',
+  parent: RotasDto.DEVOLUTIVAS,
+  component: DevolutivasForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
+});
+
+rotas.set(`${RotasDto.DEVOLUTIVAS}/editar/:id`, {
+  breadcrumbName: 'Alterar Devolutiva',
+  parent: RotasDto.DEVOLUTIVAS,
+  component: DevolutivasForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
 });
 
 const rotasArray = [];

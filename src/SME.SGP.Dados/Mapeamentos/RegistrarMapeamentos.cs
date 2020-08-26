@@ -115,8 +115,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new HistoricoReinicioSenhaMap());
                config.AddMap(new CartaIntencoesMap());
                config.AddMap(new DiarioBordoMap());
-               config.AddMap(new DevolutivaDiarioBordoMap());
                config.AddMap(new DiarioBordoObservacaoMap());
+               config.AddMap(new DevolutivaMap());
                config.ForDommel();
            });
         }
