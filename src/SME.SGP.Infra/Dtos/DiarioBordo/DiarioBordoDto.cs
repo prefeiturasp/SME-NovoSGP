@@ -10,7 +10,7 @@ namespace SME.SGP.Infra.Dtos
         public long AulaId { get; set; }
         public AulaDto Aula { get; set; }
         public long? DevolutivaId { get; set; }
-        public DevolutivaDiarioBordoDto Devolutiva { get; set; }
+        public DevolutivaDto Devolutiva { get; set; }
 
         public string Planejamento { get; set; }
         public string ReflexoesReplanejamento { get; set; }

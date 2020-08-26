@@ -270,7 +270,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioComunicadoAluno, RepositorioComunicadoAluno>();
             services.TryAddScoped<IRepositorioComunicadoTurma, RepositorioComunicadoTurma>();
             services.TryAddScoped<IRepositorioDiarioBordo, RepositorioDiarioBordo>();
-            services.TryAddScoped<IRepositorioDevolutivaDiarioBordo, RepositorioDevolutivaDiarioBordo>();
+            services.TryAddScoped<IRepositorioDevolutiva, RepositorioDevolutiva>();
             services.TryAddScoped<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
             services.TryAddScoped<IRepositorioCartaIntencoes, RepositorioCartaIntencoes>();
             services.TryAddScoped<IRepositorioDiarioBordoObservacao, RepositorioDiarioBordoObservacao>();
@@ -362,6 +362,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterFiltroRelatoriosAnosPorCicloModalidadeUseCase, ObterFiltroRelatoriosAnosPorCicloModalidadeUseCase>();
             services.TryAddScoped<IRelatorioNotasEConceitosFinaisUseCase, RelatorioNotasEConceitosFinaisUseCase>();
 
+            services.TryAddScoped<IExcluirDevolutivaUseCase, ExcluirDevolutivaUseCase>();
+            services.TryAddScoped<IObterListaDevolutivasPorTurmaComponenteUseCase, ObterListaDevolutivasPorTurmaComponenteUseCase>();
+            services.TryAddScoped<IObterDiariosBordoPorDevolutiva, ObterDiariosBordoPorDevolutiva>();
+            services.TryAddScoped<IObterDevolutivaPorIdUseCase, ObterDevolutivaPorIdUseCase>();
+            services.TryAddScoped<IObterDiariosDeBordoPorPeriodoUseCase, ObterDiariosDeBordoPorPeriodoUseCase>();
+            services.TryAddScoped<IObterUltimaDataDevolutivaPorTurmaComponenteUseCase, ObterUltimaDataDevolutivaPorTurmaComponenteUseCase>();
             services.TryAddScoped<IObterComponentesCurricularesPorUeAnosModalidadeUseCase, ObterComponentesCurricularesPorUeAnosModalidadeUseCase>();
             services.TryAddScoped<ICartaIntencoesPersistenciaUseCase, CartaIntencoesPersistenciaUseCase>();
             services.TryAddScoped<IObterCartasDeIntencoesPorTurmaEComponenteUseCase, ObterCartasDeIntencoesPorTurmaEComponenteUseCase>();
@@ -374,6 +380,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ICriarAulasInfantilUseCase, CriarAulasInfantilUseCase>();
             services.TryAddScoped<ISincronizarAulasInfantilUseCase, SincronizarAulasInfantilUseCase>();
             services.TryAddScoped<INotificarExclusaoAulaComFrequenciaUseCase, NotificarExclusaoAulaComFrequenciaUseCase>();
+
+            services.TryAddScoped<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
+            services.TryAddScoped<IAlterarDevolutivaUseCase, AlterarDevolutivaUseCase>();
         }
     }
 }
