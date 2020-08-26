@@ -44,9 +44,9 @@ namespace SME.SGP.Integracao.Teste
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.N_I, Permissao.N_C }));
 
-            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes/quantidade/naolidas?anoLetivo={2019}&usuarioRf={1}").Result;
+            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes/nao-lidas").Result;
 
-            Assert.True(getResult.IsSuccessStatusCode);
+            Assert.True(_fixture.ValidarStatusCodeComSucesso(getResult));
         }
 
         [Fact, Order(2)]
