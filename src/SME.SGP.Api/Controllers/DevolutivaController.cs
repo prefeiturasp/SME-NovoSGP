@@ -69,7 +69,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(DateTime), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.DE_C, Policy = "Bearer")]
+        [Permissao(Permissao.DE_C, Policy = "Bearer")]
         public async Task<IActionResult> SugestaoDataInicio(string turmaCodigo, long componenteCurricularId, [FromServices] IObterDataDiarioBordoSemDevolutivaPorTurmaComponenteUseCase useCase)
         {
            var data = await useCase.Executar(new FiltroTurmaComponenteDto(turmaCodigo, componenteCurricularId));
