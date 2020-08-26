@@ -154,5 +154,18 @@ namespace SME.SGP.Dados.Repositorios
         {
             await database.Conexao.ExecuteAsync("update diario_bordo set devolutiva_id = null where devolutiva_id = @devolutivaId", new { devolutivaId });
         }
+
+        public async Task<DateTime?> ObterDataDiarioSemDevolutivaPorTurmaComponente(string turmaCodigo, long componenteCurricularCodigo)
+        {
+            var query = @"select min(a.data_aula)
+                          from diario_bordo db 
+                         inner join aula a on a.id = db.aula_id
+                         where not db.excluido
+                           and db.devolutiva_id is null
+                           and a.turma_id = @turmaCodigo
+                           and a.disciplina_id = @disciplinaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<DateTime?>(query, new { turmaCodigo, disciplinaId = componenteCurricularCodigo.ToString() });
+        }
     }
 }
