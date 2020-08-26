@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
 	                         , d.periodo_inicio as PeriodoInicio
 	                         , d.periodo_fim as PeriodoFim
 	                         , d.criado_em as CriadoEm
-	                         , d.criado_por as CriadoPor
+	                         , CONCAT(d.criado_por, ' (', d.criado_rf, ')') as CriadoPor
                        {ObterQuery(dataReferencia)}
                     offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only ";
 
