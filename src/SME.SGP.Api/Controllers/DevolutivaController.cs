@@ -70,14 +70,14 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DE_C, Policy = "Bearer")]
-        public async Task<IActionResult> SugestaoDataInicio(string turmaCodigo, long componenteCurricularId, [FromServices] IObterUltimaDataDevolutivaPorTurmaComponenteUseCase useCase)
+        public async Task<IActionResult> SugestaoDataInicio(string turmaCodigo, long componenteCurricularId, [FromServices] IObterDataDiarioBordoSemDevolutivaPorTurmaComponenteUseCase useCase)
         {
-            var data = await useCase.Executar(new FiltroTurmaComponenteDto(turmaCodigo, componenteCurricularId));
+           var data = await useCase.Executar(new FiltroTurmaComponenteDto(turmaCodigo, componenteCurricularId));
 
-            if (data == DateTime.MinValue)
+            if (!data.HasValue)
                 return NoContent();
 
-            return Ok(data.AddDays(1));
+            return Ok(data.Value);
         }
     }
 
