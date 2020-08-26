@@ -49,6 +49,7 @@ const RotasDto = {
   RELATORIO_PARECER_CONCLUSIVO: '/relatorios/parecer-conclusivo',
   RELATORIO_NOTAS_CONCEITOS_FINAIS: '/relatorios/notas-conceitos-finais',
   RELATORIO_COMPENSACAO_AUSENCIA: '/relatorios/compensacao-ausencia',
+  DEVOLUTIVAS: '/diario-classe/devolutiva',
 };
 
 export default RotasDto;

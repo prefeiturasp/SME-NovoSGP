@@ -39,23 +39,24 @@ namespace SME.SGP.Integracao.Teste
         //    Assert.True(disciplinas != null);
         //}
 
-        [Theory, Order(6)]
-        [InlineData("6082840", "095346", "2019")]
-        [InlineData("5512557", "095346", "2019")]
-        public void DeveObterTurmasAtribuidasAoProfessorPorEscolaEAno(string rf, string escola, string ano)
-        {
+            //TODO: CHAVE INTEGRAÇÃO API EOL
+        //[Theory, Order(6)]
+        //[InlineData("6082840", "095346", "2019")]
+        //[InlineData("5512557", "095346", "2019")]
+        //public void DeveObterTurmasAtribuidasAoProfessorPorEscolaEAno(string rf, string escola, string ano)
+        //{
 
-         _fixture._clientApi.DefaultRequestHeaders.Clear();
+        // _fixture._clientApi.DefaultRequestHeaders.Clear();
 
-            _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_A, Permissao.PA_C }));
+        //    _fixture._clientApi.DefaultRequestHeaders.Authorization =
+        //        new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_A, Permissao.PA_C }));
 
-            var getResult = _fixture._clientApi.GetAsync($"api/v1/professores/{rf}/escolas/{escola}/turmas/anos-letivos/{ano}").Result;
+        //    var getResult = _fixture._clientApi.GetAsync($"api/v1/professores/{rf}/escolas/{escola}/turmas/anos-letivos/{ano}").Result;
 
-            Assert.True(getResult.IsSuccessStatusCode);
-            var turmas = JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(getResult.Content.ReadAsStringAsync().Result);
-            Assert.True(turmas != null);
-        }
+        //    Assert.True(getResult.IsSuccessStatusCode);
+        //    var turmas = JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(getResult.Content.ReadAsStringAsync().Result);
+        //    Assert.True(turmas != null);
+        //}
 
         [Theory, Order(7)]
         [InlineData("8029474", "095346", "2019")]

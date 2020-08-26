@@ -10,9 +10,9 @@ namespace SME.SGP.Infra
             Filtros = filtros;
             CodigoCorrelacao = codigoCorrelacao;
             NotificarErroUsuario = notificarErroUsuario;
-            UsuarioLogadoNomeCompleto = usuarioLogado.Nome;
-            UsuarioLogadoRF = usuarioLogado.CodigoRf;
-            PerfilUsuario = usuarioLogado.PerfilAtual;
+            UsuarioLogadoNomeCompleto = usuarioLogado?.Nome;
+            UsuarioLogadoRF = usuarioLogado?.CodigoRf;
+            PerfilUsuario = usuarioLogado == null ? Guid.Empty : usuarioLogado.PerfilAtual;
             NomeFila = nomeFila;
         }
 

@@ -11,7 +11,6 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
-import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoRelatorioNotasConceitos from '~/servicos/Paginas/Relatorios/NotasConceitos/servicoRelatorioNotasConceitos';
 import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConceito';
@@ -55,11 +54,11 @@ const RelatorioNotasConceitosFinais = () => {
   const listaTipoNota = [
     { valor: tipoNota.nota, desc: 'Nota' },
     { valor: tipoNota.conceito, desc: 'Conceito' },
+    { valor: tipoNota.sintese, desc: 'Síntese' },
   ];
   const [formato, setFormato] = useState('1');
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
-  const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoGeral(true);
@@ -263,7 +262,7 @@ const RelatorioNotasConceitosFinais = () => {
     const codigoTodosAnosEscolares = obterCodigoTodosAnosEscolares();
     if (anoLetivo) {
       setCarregandoGeral(true);
-      const retorno = await ServicoComponentesCurriculares.obterComponetensCuriculares(
+      const retorno = await ServicoFiltroRelatorio.obterComponetensCuriculares(
         codigoUe,
         modalidadeId,
         anoLetivo,
@@ -345,48 +344,37 @@ const RelatorioNotasConceitosFinais = () => {
     setListaConceitos(conceitos?.data);
   };
 
-  useEffect(() => {
-    if (
-      anoLetivo &&
-      tipoNotaSelecionada &&
-      tipoNotaSelecionada === tipoNota.conceito
+  const obterSinteses = async anoLetivoSelecionado => {
+    setCarregandoGeral(true);
+    const conceitos = await ServicoNotaConceito.obterTodasSinteses(
+      anoLetivoSelecionado
     )
-      obterConceitos(anoLetivo);
+      .catch(e => erros(e))
+      .finally(setCarregandoGeral(false));
+    setListaConceitos(conceitos?.data);
+  };
+
+  useEffect(() => {
+    if (anoLetivo && tipoNotaSelecionada) {
+      if (tipoNotaSelecionada === tipoNota.conceito) obterConceitos(anoLetivo);
+      else obterSinteses(anoLetivo);
+    }
   }, [tipoNotaSelecionada, anoLetivo]);
 
-  useEffect(() => {
-    const desabilitar =
-      !anoLetivo ||
-      !codigoDre ||
-      !codigoUe ||
-      !modalidadeId ||
-      !anosEscolares ||
-      !componentesCurriculares ||
-      !bimestres ||
-      !condicao ||
-      valorCondicao === undefined ||
-      valorCondicao === '' ||
-      !tipoNota ||
-      !formato;
-
-    if (modalidadeId === modalidade.EJA) {
-      setDesabilitarBtnGerar(!semestre || desabilitar);
-    } else {
-      setDesabilitarBtnGerar(desabilitar);
-    }
-  }, [
-    anoLetivo,
-    codigoDre,
-    codigoUe,
-    modalidadeId,
-    semestre,
-    anosEscolares,
-    componentesCurriculares,
-    bimestres,
-    condicao,
-    valorCondicao,
-    formato,
-  ]);
+  const desabilitarGerar =
+    !anoLetivo ||
+    !codigoDre ||
+    !codigoUe ||
+    !modalidadeId ||
+    !anosEscolares ||
+    !componentesCurriculares ||
+    !bimestres ||
+    !condicao ||
+    valorCondicao === undefined ||
+    valorCondicao === '' ||
+    !tipoNota ||
+    (String(modalidadeId) === String(modalidade.EJA) ? !semestre : false) ||
+    !formato;
 
   useEffect(() => {
     obterAnosLetivos();
@@ -441,7 +429,6 @@ const RelatorioNotasConceitosFinais = () => {
       sucesso(
         'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
       );
-      setDesabilitarBtnGerar(true);
     }
   };
 
@@ -499,7 +486,7 @@ const RelatorioNotasConceitosFinais = () => {
     setValorCondicao(undefined);
     setCondicao(undefined);
     setTipoNotaSelecionada(valor);
-    if (valor && valor === '2') {
+    if (valor && (valor === '2' || valor === '3')) {
       setCondicao('1');
     }
   };
@@ -580,7 +567,7 @@ const RelatorioNotasConceitosFinais = () => {
                   bold
                   className="mr-2"
                   onClick={() => onClickGerar()}
-                  disabled={desabilitarBtnGerar}
+                  disabled={desabilitarGerar}
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
@@ -722,7 +709,8 @@ const RelatorioNotasConceitosFinais = () => {
                   label="Condição"
                   disabled={
                     (listaCondicao && listaCondicao.length === 1) ||
-                    tipoNotaSelecionada === tipoNota.conceito
+                    tipoNotaSelecionada === tipoNota.conceito ||
+                    tipoNotaSelecionada === tipoNota.sintese
                   }
                   valueSelect={condicao}
                   onChange={onChangeCondicao}

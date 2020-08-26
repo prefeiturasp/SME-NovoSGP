@@ -67,6 +67,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         public async Task SincronizarEstruturaInstitucionalVigenteCompleta()
         {
+
             var estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
 
             if (estruturaInstitucionalVigente != null && estruturaInstitucionalVigente.Dres != null && estruturaInstitucionalVigente.Dres.Count > 0)
@@ -317,12 +318,13 @@ namespace SME.SGP.Aplicacao.Servicos
                  TipoTurno = z.TipoTurno,
                  Ue = new Ue() { CodigoUe = y.Codigo },
                  EnsinoEspecial = z.EnsinoEspecial,
-                 EtapaEJA = z.EtapaEJA
+                 EtapaEJA = z.EtapaEJA,
+                 DataInicio = z.DataInicioTurma
              })));
 
-            dres = repositorioDre.Sincronizar(dres);
-            ues = repositorioUe.Sincronizar(ues, dres);
-            await repositorioTurma.Sincronizar(turmas, ues);
+            dres = await repositorioDre.SincronizarAsync(dres);
+            ues = await repositorioUe.SincronizarAsync(ues, dres);
+            await repositorioTurma.SincronizarAsync(turmas, ues);
         }
 
         private void SincronizarTiposEscola(IEnumerable<TipoEscolaRetornoDto> tiposEscolasDto)
