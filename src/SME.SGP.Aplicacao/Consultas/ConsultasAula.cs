@@ -79,6 +79,9 @@ namespace SME.SGP.Aplicacao
             if (aula == null || aula.Excluido)
                 throw new NegocioException($"Aula de id {id} não encontrada");
 
+            if (aula.AulaPaiId.HasValue)
+                aula.AulaPai = await repositorio.ObterCompletoPorIdAsync(aula.AulaPaiId.Value);
+
             var aberto = await AulaDentroPeriodo(aula);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
@@ -184,6 +187,7 @@ namespace SME.SGP.Aplicacao
                 ProfessorRf = aula.ProfessorRf,
                 DataAula = aula.DataAula.Local(),
                 RecorrenciaAula = aula.RecorrenciaAula,
+                RecorrenciaAulaPai = aula.AulaPai?.RecorrenciaAula,
                 AlteradoEm = aula.AlteradoEm,
                 AlteradoPor = aula.AlteradoPor,
                 AlteradoRF = aula.AlteradoRF,
@@ -221,14 +225,12 @@ namespace SME.SGP.Aplicacao
                     var rfsOrnedadosPorDataCriacaoAula = aulas.OrderBy(a => a.CriadoEm)
                         .Select(a => a.ProfessorRf).Distinct();
 
-                    var rfAtualRegente = rfsOrnedadosPorDataCriacaoAula.Last();
-                    var rfUltimoTitular = rfsOrnedadosPorDataCriacaoAula.Count() > 1 ?
-                        rfsOrnedadosPorDataCriacaoAula.Last(rf => !rf.Equals(rfAtualRegente, StringComparison.InvariantCultureIgnoreCase)) : rfAtualRegente;
+                    var ultimoRegente = rfsOrnedadosPorDataCriacaoAula.Last();                   
 
                     // se regente atual, titular anterior ou professor anterior visualiza a aula
-                    if (rfAtualRegente.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
-                        rfUltimoTitular.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
-                        aula.ProfessorRf.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase))
+                    if (ultimoRegente.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||                        
+                        aula.ProfessorRf.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
+                        aula.Turma.EhTurmaInfantil)
                         aulasRetorno.Add(MapearParaDto(aula, p.Bimestre));
                 });
             });
@@ -253,7 +255,7 @@ namespace SME.SGP.Aplicacao
             return disciplinaId;
         }
 
-        private DataAulasProfessorDto MapearParaDto(AulaConsultaDto aula, int bimestre)
+        private DataAulasProfessorDto MapearParaDto(Aula aula, int bimestre)
         {
             return new DataAulasProfessorDto
             {

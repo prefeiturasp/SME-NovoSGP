@@ -16,5 +16,6 @@ namespace SME.SGP.Dto
         public DateTime? DataFIm { get; set; }
         public bool EHistorico { get; set; }
         public bool EnsinoEspecial { get; set; }
+        public DateTime? DataInicioTurma { get; set; }
     }
 }
