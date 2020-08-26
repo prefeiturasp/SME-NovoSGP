@@ -161,7 +161,10 @@ const ModalAnotacoesFrequencia = props => {
     };
     const retorno = await ServicoAnotacaoFrequenciaAluno.salvarAnotacao(
       params
-    ).catch(e => erros(e));
+    ).catch(e => {
+      erros(e);
+      onCloseModal();
+    });
     if (retorno && retorno.status === 200) {
       sucesso('Anotação salva com sucesso');
       fecharAposSalvarExcluir(true, false);

@@ -119,6 +119,7 @@ const ListaFrequencia = props => {
       >
         <div className=" d-flex justify-content-end">
           <BtbAnotacao
+            podeAbrirModal={podeAbrirModal}
             className={item.possuiAnotacao ? 'btn-com-anotacao' : ''}
             onClick={() => {
               if (podeAbrirModal) {
