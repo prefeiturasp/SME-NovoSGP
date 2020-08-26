@@ -1,32 +1,27 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Servicos
 {
     public class ServicoTokenJwt : IServicoTokenJwt
     {
-        private readonly IRepositorioCache cache;
         private readonly IConfiguration configuration;
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IContextoAplicacao contextoAplicacao;
         private string tokenGerado;
 
         public ServicoTokenJwt(IConfiguration configuration,
-                               IHttpContextAccessor httpContextAccessor,
-                               IRepositorioCache cache)
+                               IContextoAplicacao  contextoAplicacao)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-            this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }
 
         public string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos)
@@ -60,7 +55,7 @@ namespace SME.SGP.Aplicacao.Servicos
             tokenGerado = new JwtSecurityTokenHandler()
                       .WriteToken(token);
 
-            SalvarToken(usuarioLogin);
+            //SalvarToken(usuarioLogin);
 
             return tokenGerado;
         }
@@ -85,16 +80,6 @@ namespace SME.SGP.Aplicacao.Servicos
         public Guid ObterPerfil()
             => ObterPerfilDoToken(ObterTokenAtual());
 
-        public async Task RevogarToken(string login)
-        {
-            var chaveLogin = ObterChaveLogin(login);
-            var token = cache.Obter(chaveLogin);
-            if (!string.IsNullOrWhiteSpace(token))
-            {
-                await cache.RemoverAsync(chaveLogin);
-            }
-        }
-
         public bool TemPerfilNoToken(string guid)
         {
             throw new NotImplementedException();
@@ -105,11 +90,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         public bool TokenPresente()
         {
-            var authorizationHeader = httpContextAccessor.HttpContext.Request.Headers["authorization"];
-
-            return authorizationHeader == StringValues.Empty
-                ? false
-                : true;
+            return contextoAplicacao.ObterVarivel<bool>("TemAuthorizationHeader");
         }
 
         private string ObterTokenAtual()
@@ -118,11 +99,7 @@ namespace SME.SGP.Aplicacao.Servicos
             if (!string.IsNullOrEmpty(tokenGerado))
                 return tokenGerado;
 
-            var authorizationHeader = httpContextAccessor.HttpContext.Request.Headers["authorization"];
-
-            return authorizationHeader == StringValues.Empty
-                ? string.Empty
-                : authorizationHeader.Single().Split(' ').Last();
+            return contextoAplicacao.ObterVarivel<string>("TokenAtual");
         }
 
         #region Private Methods
@@ -166,29 +143,29 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private void SalvarToken(string usuarioLogin)
         {
-            cache.Salvar(ObterChaveLogin(usuarioLogin), tokenGerado);
+           // cache.Salvar(ObterChaveLogin(usuarioLogin), tokenGerado);
         }
 
         private bool TokenAtivo(string token)
         {
-            var tokenCache = cache.Obter(ObterChaveToken(token));
+            //var tokenCache = cache.Obter(ObterChaveToken(token));
 
-            // Quando não conseguir obter o token do cache assume que o atual é valido
-            if (tokenCache == null)
-                return true;
+            //// Quando não conseguir obter o token do cache assume que o atual é valido
+            //if (tokenCache == null)
+            //    return true;
 
-            var tokenAtual = ObterTokenAtual();
-            if (tokenAtual == tokenCache)
-                return true;
+            //var tokenAtual = ObterTokenAtual();
+            //if (tokenAtual == tokenCache)
+            //    return true;
 
-            // Verifica se o token atual é mais recente que o cache
-            if ((tokenCache != token) && (ObterDataHoraCriacao(tokenAtual) > ObterDataHoraCriacao(tokenCache)))
-            {
-                tokenGerado = tokenAtual;
+            //// Verifica se o token atual é mais recente que o cache
+            //if ((tokenCache != token) && (ObterDataHoraCriacao(tokenAtual) > ObterDataHoraCriacao(tokenCache)))
+            //{
+            //    tokenGerado = tokenAtual;
 
-                SalvarToken(ObterLogin());
-                return true;
-            }
+            //    SalvarToken(ObterLogin());
+            //    return true;
+            //}
 
             return false;
         }

@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Comandos
@@ -31,11 +32,11 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         }
 
         [Fact(DisplayName = "Deve_Salvar_Periodo_Escolar")]
-        public void Deve_Salvar_Periodo_Escolar()
+        public async Task Deve_Salvar_Periodo_Escolar()
         {
             servicoPeriodoEscolar.Setup(x => x.SalvarPeriodoEscolar(It.IsAny<IEnumerable<PeriodoEscolar>>(), It.IsAny<long>()));
 
-            comandosPeriodoEscolar.Salvar(new PeriodoEscolarListaDto
+            await comandosPeriodoEscolar.Salvar(new PeriodoEscolarListaDto
             {
                 TipoCalendario = 1,
                 Periodos = new List<PeriodoEscolarDto>
@@ -69,16 +70,16 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         }
 
         [Fact(DisplayName = "Nao_Deve_Salvar_Sem_Tipo_Calendario")]
-        public void Nao_Deve_Salvar_Sem_Tipo_Calendario()
+        public async Task Nao_Deve_Salvar_Sem_Tipo_Calendario()
         {
             servicoPeriodoEscolar.Setup(x => x.SalvarPeriodoEscolar(It.IsAny<IEnumerable<PeriodoEscolar>>(), It.IsAny<long>()));
 
-            Assert.Throws<NegocioException>(() =>
-            comandosPeriodoEscolar.Salvar(new PeriodoEscolarListaDto
-            {
-                TipoCalendario = 0,
-                Periodos = new List<PeriodoEscolarDto>
-                {
+            await Assert.ThrowsAsync<NegocioException>(() =>
+             comandosPeriodoEscolar.Salvar(new PeriodoEscolarListaDto
+             {
+                 TipoCalendario = 0,
+                 Periodos = new List<PeriodoEscolarDto>
+                 {
                     new PeriodoEscolarDto
                     {
                         Bimestre = 1,
@@ -103,8 +104,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                         PeriodoInicio = DateTime.Now.AddMinutes(6),
                         PeriodoFim = DateTime.Now.AddMinutes(7),
                     }
-                }
-            }));
+                 }
+             }));
         }
     }
 }

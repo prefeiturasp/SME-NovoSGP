@@ -36,7 +36,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterEscolasSemAtribuicao(string dreId)
         {
             var retorno = await consultaDres.ObterEscolasSemAtribuicao(dreId);
-            if (retorno.Count() > 0)
+            if (retorno.Any())
                 return Ok(retorno);
             else return StatusCode(204);
         }
@@ -48,7 +48,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterUesPorDre(string dreId)
         {
             var retorno = await consultaDres.ObterEscolasPorDre(dreId);
-            if (retorno.Count() > 0)
+            if (retorno.Any())
                 return Ok(retorno);
             else return StatusCode(204);
         }

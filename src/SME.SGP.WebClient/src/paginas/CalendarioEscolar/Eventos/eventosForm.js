@@ -49,6 +49,8 @@ import { parseScreenObject } from '~/utils/parsers/eventRecurrence';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import entidadeStatusDto from '~/dtos/entidadeStatusDto';
+import AbrangenciaServico from '~/servicos/Abrangencia';
+import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 
 const EventosForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -128,17 +130,24 @@ const EventosForm = ({ match }) => {
 
   const [aguardandoAprovacao, setAguardandoAprovacao] = useState(false);
 
-  const obterUesPorDre = dre => {
-    return api.get(`/v1/abrangencias/false/dres/${dre}/ues`);
+  const obterUesPorDre = (dre, modalidade) => {
+    return AbrangenciaServico.buscarUes(dre, '', false, modalidade);
   };
 
   const carregarUes = async dre => {
-    const ues = await obterUesPorDre(dre);
+    const { tipoCalendarioId } = refFormulario.current.state.values;
+    const calendarioSelecionado = calendarioEscolarAtual.find(
+      item => item.id === tipoCalendarioId
+    );
+    const modalidade =
+      calendarioSelecionado && calendarioSelecionado.modalidade
+        ? ServicoCalendarios.converterModalidade(
+            calendarioSelecionado.modalidade
+          )
+        : '';
+    const ues = await obterUesPorDre(dre, modalidade);
     if (ues.data) {
-      ues.data.forEach(
-        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
-      );
-      setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+      setListaUes(ues.data);
     } else {
       setListaUes([]);
     }
@@ -309,10 +318,7 @@ const EventosForm = ({ match }) => {
         inicial.dreId = String(listaDres[0].codigo);
         const ues = await obterUesPorDre(inicial.dreId);
         if (ues.data) {
-          ues.data.forEach(
-            ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
-          );
-          setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+          setListaUes(ues.data);
           setUeDesabilitada(ues.data.length === 1);
         } else {
           setListaUes([]);
@@ -519,8 +525,10 @@ const EventosForm = ({ match }) => {
 
   const [carregandoSalvar, setCarregandoSalvar] = useState(false);
 
-  const onClickCadastrar = async valoresForm => {
+  const onClickCadastrar = async valores => {
     setCarregandoSalvar(true);
+
+    const valoresForm = { ...valores };
 
     valoresForm.dataInicio = new Date(
       valoresForm.dataInicio.year(),

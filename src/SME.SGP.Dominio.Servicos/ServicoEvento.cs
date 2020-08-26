@@ -80,8 +80,6 @@ namespace SME.SGP.Dominio.Servicos
         {
             ObterTipoEvento(evento);
 
-            TipoCalendario tipoCalendario = ObterTipoCalendario(evento);
-
             evento.ValidaPeriodoEvento();
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
@@ -102,7 +100,7 @@ namespace SME.SGP.Dominio.Servicos
 
             usuario.PodeCriarEvento(evento);
 
-            var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
+            var periodos = await repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
 
             if (evento.DeveSerEmDiaLetivo())
                 evento.EstaNoPeriodoLetivo(periodos);
@@ -162,7 +160,7 @@ namespace SME.SGP.Dominio.Servicos
                 TratarErros(feriadosErro);
         }
 
-        public void SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
+        public async Task SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
         {
             if (evento.DataInicio.Date != evento.DataFim.Date)
             {
@@ -175,7 +173,7 @@ namespace SME.SGP.Dominio.Servicos
             }
             if (!dataFinal.HasValue)
             {
-                var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
+                var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
                 if (periodoEscolar == null || !periodoEscolar.Any())
                 {
                     throw new NegocioException("Não é possível cadastrar o evento pois não existe período escolar cadastrado para este calendário.");
@@ -190,7 +188,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 try
                 {
-                    if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(novoEvento.DataInicio, novoEvento.DataInicio, novoEvento.TipoCalendarioId, novoEvento.Letivo == EventoLetivo.Sim, novoEvento.TipoEventoId))
+                    if (!await servicoDiaLetivo.ValidarSeEhDiaLetivo(novoEvento.DataInicio, novoEvento.DataInicio, novoEvento.TipoCalendarioId, novoEvento.Letivo == EventoLetivo.Sim, novoEvento.TipoEventoId))
                     {
                         notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - Não é possível cadastrar esse evento pois a data informada está fora do período letivo.");
                     }
@@ -236,32 +234,10 @@ namespace SME.SGP.Dominio.Servicos
             return eventoASerAlterado;
         }
 
-        private long CriarWorkflowParaDataPassada(Evento evento, AbrangenciaUeRetorno escola, string linkParaEvento)
+        private async Task<long> CriarWorkflowParaEventoExcepcionais(Evento evento, Dto.AbrangenciaUeRetorno escola, string linkParaEvento)
         {
-            var wfAprovacaoEvento = new WorkflowAprovacaoDto()
-            {
-                Ano = evento.DataInicio.Year,
-                NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
-                EntidadeParaAprovarId = evento.Id,
-                Tipo = WorkflowAprovacaoTipo.Evento_Data_Passada,
-                UeId = evento.UeId,
-                DreId = evento.DreId,
-                NotificacaoTitulo = "Criação de evento com data passada",
-                NotificacaoTipo = NotificacaoTipo.Calendario,
-                NotificacaoMensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} foi criado no calendário {evento.TipoCalendario.Nome} da {escola.Nome}. Para que este evento seja considerado válido, você precisa aceitar esta notificação. Para visualizar o evento clique <a href='{linkParaEvento}'>aqui</a>."
-            };
+            var tipoCalendario = evento.TipoCalendario ?? ObterTipoCalendario(evento);
 
-            wfAprovacaoEvento.Niveis.Add(new WorkflowAprovacaoNivelDto()
-            {
-                Cargo = Cargo.Supervisor,
-                Nivel = 1
-            });
-
-            return comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
-        }
-
-        private long CriarWorkflowParaEventoExcepcionais(Evento evento, Dto.AbrangenciaUeRetorno escola, string linkParaEvento)
-        {
             var wfAprovacaoEvento = new WorkflowAprovacaoDto()
             {
                 Ano = evento.DataInicio.Year,
@@ -272,7 +248,7 @@ namespace SME.SGP.Dominio.Servicos
                 DreId = evento.DreId,
                 NotificacaoTitulo = "Criação de Eventos Excepcionais",
                 NotificacaoTipo = NotificacaoTipo.Calendario,
-                NotificacaoMensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} foi criado no calendário {evento.TipoCalendario.Nome} da {escola.Nome}. Para que este evento seja considerado válido, você precisa aceitar esta notificação. Para visualizar o evento clique <a href='{linkParaEvento}'>aqui</a>."
+                NotificacaoMensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} foi criado no calendário {tipoCalendario.Nome} da {escola.NomeSimples}. Para que este evento seja considerado válido, você precisa aceitar esta notificação. Para visualizar o evento clique <a href='{linkParaEvento}'>aqui</a>."
             };
 
             wfAprovacaoEvento.Niveis.Add(new WorkflowAprovacaoNivelDto()
@@ -286,7 +262,7 @@ namespace SME.SGP.Dominio.Servicos
                 Nivel = 2
             });
 
-            return comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
+            return await comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
         }
 
         private void EnviarNotificacaoRegistroDeRecorrencia(Evento evento, List<DateTime> notificacoesSucesso, List<string> notificacoesFalha, long usuarioId)
@@ -391,7 +367,7 @@ namespace SME.SGP.Dominio.Servicos
             long idWorkflow = 0;
 
             if (workflowDeLiberacaoExcepcional)
-                idWorkflow = CriarWorkflowParaEventoExcepcionais(evento, escola, linkParaEvento);
+                idWorkflow = await CriarWorkflowParaEventoExcepcionais(evento, escola, linkParaEvento);
 
             evento.EnviarParaWorkflowDeAprovacao(idWorkflow);
 
@@ -510,13 +486,7 @@ namespace SME.SGP.Dominio.Servicos
             return devePassarPorWorkflow;
         }
 
-        private async Task VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(Evento evento, Usuario usuario)
-        {
-            var eventos = await repositorioEvento.ObterEventosPorTipoETipoCalendario((long)TipoEvento.OrganizacaoEscolar, evento.TipoCalendarioId);
-            evento.VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(eventos, usuario);
-        }
-
-        public async Task Excluir(Evento evento)
+        public void Excluir(Evento evento)
         {
             evento.Excluir();
             repositorioEvento.Salvar(evento);

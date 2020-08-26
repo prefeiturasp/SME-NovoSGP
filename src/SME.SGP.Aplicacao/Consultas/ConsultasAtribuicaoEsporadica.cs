@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao.Consultas
     public class ConsultasAtribuicaoEsporadica : ConsultasBase, IConsultasAtribuicaoEsporadica
     {
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
 
-        public ConsultasAtribuicaoEsporadica(IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoEOL servicoEOL, IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
+        public ConsultasAtribuicaoEsporadica(IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoEol servicoEOL, IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
         {
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
         private AtribuicaoEsporadicaCompletaDto EntidadeParaDtoCompleto(AtribuicaoEsporadica entidade)
         {
-            var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year, true).Result;
+            var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year).Result;
 
             return new AtribuicaoEsporadicaCompletaDto
             {

@@ -51,6 +51,7 @@ const PeriodoFechamentoReaberturaLista = () => {
   const [dreSelecionada, setDreSelecionada] = useState('');
   const [filtroValido, setFiltroValido] = useState(false);
   const [filtro, setFiltro] = useState({});
+  const [modalidadeTurma, setModalidadeTurma] = useState('');
 
   const criarCampoBimestre = (index, data) => {
     const bimestre = data[index];
@@ -169,16 +170,13 @@ const PeriodoFechamentoReaberturaLista = () => {
         anoLetivo
       );
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
-        const listaTipoPorAnoLetivo = obterListaTiposCalAnoLetivo(
-          listaTipo.data
-        );
-        listaTipoPorAnoLetivo.map(item => {
+        listaTipo.data.map(item => {
           item.id = String(item.id);
           item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
         });
-        setListaTipoCalendarioEscolar(listaTipoPorAnoLetivo);
-        if (listaTipoPorAnoLetivo.length === 1) {
-          setTipoCalendarioSelecionado(String(listaTipoPorAnoLetivo[0].id));
+        setListaTipoCalendarioEscolar(listaTipo.data);
+        if (listaTipo.data.length === 1) {
+          setTipoCalendarioSelecionado(String(listaTipo.data[0].id));
           setDesabilitarTipoCalendario(true);
         } else {
           setDesabilitarTipoCalendario(false);
@@ -352,7 +350,20 @@ const PeriodoFechamentoReaberturaLista = () => {
                     <DreDropDown
                       label="Diretoria Regional de Educação (DRE)"
                       form={form}
-                      onChange={dreId => setDreSelecionada(dreId)}
+                      onChange={dreId => {
+                        setDreSelecionada(dreId);
+                        const tipoSelecionado = listaTipoCalendarioEscolar.find(
+                          item => item.id == tipoCalendarioSelecionado
+                        );
+                        if (tipoSelecionado && tipoSelecionado.modalidade) {
+                          const modalidadeT = ServicoCalendarios.converterModalidade(
+                            tipoSelecionado.modalidade
+                          );
+                          setModalidadeTurma(modalidadeT);
+                        } else {
+                          setModalidadeTurma('');
+                        }
+                      }}
                       desabilitado={false}
                     />
                   )}
@@ -363,9 +374,10 @@ const PeriodoFechamentoReaberturaLista = () => {
                       dreId={form.values.dreId}
                       label="Unidade Escolar (UE)"
                       form={form}
-                      url="v1/dres"
+                      url=""
                       onChange={ueId => setUeSelecionada(ueId)}
                       desabilitado={false}
+                      modalidade={modalidadeTurma}
                     />
                   )}
                 </div>

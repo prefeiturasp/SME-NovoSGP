@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -23,12 +24,10 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioAula repositorioAula;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
 
@@ -36,7 +35,6 @@ namespace SME.SGP.Dominio.Servicos
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IRepositorioFrequencia repositorioFrequencia,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
-                                            IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
                                             IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                             IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
                                             IRepositorioTurma repositorioTurma,
@@ -45,10 +43,9 @@ namespace SME.SGP.Dominio.Servicos
                                             IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
                                             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                             IRepositorioTipoCalendario repositorioTipoCalendario,
-                                            IRepositorioAula repositorioAula,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
-                                            IServicoEOL servicoEOL,
+                                            IServicoEol servicoEOL,
                                             IConfiguration configuration)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
@@ -57,7 +54,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.repositorioFrequenciaAluno = repositorioFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAluno));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -66,7 +62,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
@@ -86,26 +81,26 @@ namespace SME.SGP.Dominio.Servicos
             Console.WriteLine($"Rotina finalizada.");
         }
 
-        public void NotificarAlunosFaltosos()
+        public async Task NotificarAlunosFaltosos()
         {
             var dataReferencia = DateTime.Today.AddDays(-1);
 
             var quantidadeDiasCP = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
             var quantidadeDiasDiretor = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes));
 
-            NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);
-            NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, quantidadeDiasCP, quantidadeDiasDiretor);
+           await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);
+           await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, quantidadeDiasCP, quantidadeDiasDiretor);
         }
 
-        private void NotificarAlunosFaltososModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidade, int quantidadeDiasCP, int quantidadeDiasDiretor)
+        private async Task NotificarAlunosFaltososModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidade, int quantidadeDiasCP, int quantidadeDiasDiretor)
         {
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidade, dataReferencia.Semestre());
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidade, dataReferencia.Semestre());
 
-            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario?.Id ?? 0);
-            NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
+            await NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario?.Id ?? 0);
+            await NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
         }
 
-        public void NotificarCompensacaoAusencia(long compensacaoId)
+        public async Task NotificarCompensacaoAusencia(long compensacaoId)
         {
             // Verifica se compensação possui alunos vinculados
             var alunos = repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId).Result;
@@ -119,7 +114,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // Carrega dados da compensacao a notificar
             var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
-            var turma = repositorioTurma.ObterPorId(compensacao.TurmaId);
+            var turma = await repositorioTurma.ObterPorId(compensacao.TurmaId);
             var ue = repositorioUe.ObterUEPorTurma(turma.CodigoTurma);
             var dre = repositorioDre.ObterPorId(ue.DreId);
             var disciplinaEOL = ObterNomeDisciplina(compensacao.DisciplinaId);
@@ -176,22 +171,22 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public void VerificaNotificacaoBimestral()
+        public async Task VerificaNotificacaoBimestral()
         {
             var dataAtual = DateTime.Now.Date;
 
             // Verifica Notificação Fund e Medio
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.FundamentalMedio);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.FundamentalMedio);
             if (tipoCalendario != null)
-                VerificaNotificacaoBimestralCalendario(tipoCalendario, dataAtual, ModalidadeTipoCalendario.FundamentalMedio);
+                await VerificaNotificacaoBimestralCalendario(tipoCalendario, dataAtual, ModalidadeTipoCalendario.FundamentalMedio);
 
             // Verifica Notificação EJA
-            var tiposCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.EJA, dataAtual);
+            var tiposCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.EJA, dataAtual);
             if (tiposCalendario != null)
             {
                 foreach (var tipo in tiposCalendario)
                 {
-                    VerificaNotificacaoBimestralCalendario(tipo, dataAtual, ModalidadeTipoCalendario.EJA);
+                   await VerificaNotificacaoBimestralCalendario(tipo, dataAtual, ModalidadeTipoCalendario.EJA);
                 }
             }
         }
@@ -201,7 +196,7 @@ namespace SME.SGP.Dominio.Servicos
             int anoAtual = DateTime.Now.Year;
 
             // Parametro do sistema de dias para notificacao
-            string qtdDiasParametroString = repositorioParametrosSistema.ObterValorPorTipoEAno(
+            var qtdDiasParametroString = repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.QuantidadeDiasNotificarAlteracaoChamadaEfetivada,
                                                    anoAtual);
 
@@ -242,27 +237,27 @@ namespace SME.SGP.Dominio.Servicos
 
         }
 
-        public void NotificarAlunosFaltososBimestre()
+        public async Task NotificarAlunosFaltososBimestre()
         {
             // Notifica apenas no dia seguinte ao fim do bimestre
             var dataReferencia = DateTime.Today.AddDays(-1);
             var percentualCritico = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCritico, dataReferencia.Year));
 
-            NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, percentualCritico);
-            NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, percentualCritico, dataReferencia.Semestre());
+            await NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, percentualCritico);
+            await NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, percentualCritico, dataReferencia.Semestre());
         }
         #endregion Metodos Publicos
 
         #region Metodos Privados
-        private void NotificaAlunosFaltososBimestreModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario, double percentualCritico, int semestre = 0)
+        private async Task NotificaAlunosFaltososBimestreModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario, double percentualCritico, int semestre = 0)
         {
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidadeTipoCalendario, semestre);
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendario?.Id ?? 0, dataReferencia);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidadeTipoCalendario, semestre);
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendario?.Id ?? 0, dataReferencia);
 
             // Notifica apenas no dia seguinte ao fim do bimestre
             if (dataReferencia == periodoEscolar?.PeriodoFim)
             {
-                var alunosFaltososBimestre = repositorioFrequenciaAluno.ObterAlunosFaltososBimestre(modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA, percentualCritico, periodoEscolar.Bimestre, tipoCalendario.AnoLetivo);
+                var alunosFaltososBimestre = repositorioFrequenciaAluno.ObterAlunosFaltososBimestre(modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA, percentualCritico, periodoEscolar.Bimestre, tipoCalendario?.AnoLetivo);
 
                 foreach (var uesAgrupadas in alunosFaltososBimestre.GroupBy(a => new { a.DreCodigo, a.DreNome, a.DreAbreviacao, a.TipoEscola, a.UeCodigo, a.UeNome }))
                 {
@@ -337,7 +332,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void NotificaAlunosFaltososCargo(DateTime dataReferencia, int quantidadeDias, Cargo cargo, long tipoCalendarioId)
+        private async Task NotificaAlunosFaltososCargo(DateTime dataReferencia, int quantidadeDias, Cargo cargo, long tipoCalendarioId)
         {
             var alunosFaltosos = repositorioFrequencia.ObterAlunosFaltosos(dataReferencia, tipoCalendarioId);
 
@@ -357,8 +352,8 @@ namespace SME.SGP.Dominio.Servicos
                 if (!alunosFaltososNaTurma.Any())
                     continue;
 
-                var alunosTurmaEOL = servicoEOL.ObterAlunosPorTurma(turmaAgrupamento.Key).Result;
-                var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaAgrupamento.Key);
+                var alunosTurmaEOL = await servicoEOL.ObterAlunosPorTurma(turmaAgrupamento.Key);
+                var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaAgrupamento.Key);
 
                 var alunosFaltososEOL = alunosTurmaEOL.Where(c => alunosFaltososNaTurma.Any(a => a.CodigoAluno == c.CodigoAluno));
                 var funcionariosEol = servicoNotificacao.ObterFuncionariosPorNivel(turma.Ue.CodigoUe, cargo);
@@ -417,7 +412,7 @@ namespace SME.SGP.Dominio.Servicos
             var funcionariosRetornoEol = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, cargo);
 
             if (funcionariosRetornoEol == null)
-                return null;
+                return Enumerable.Empty<(Cargo?, Usuario)>();
 
             var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var usuarioEol in funcionariosRetornoEol)
@@ -458,7 +453,7 @@ namespace SME.SGP.Dominio.Servicos
             var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.Supervisor);
 
             if (funcionariosRetorno == null || cargosNotificados.Any(c => funcionariosRetorno.Any(f => f.Cargo == c)))
-                return null;
+                return Enumerable.Empty<(Cargo?, Usuario)>();
 
             var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var funcionario in funcionariosRetorno)
@@ -719,19 +714,24 @@ namespace SME.SGP.Dominio.Servicos
 
         private int? QuantidadeAulasParaNotificacao(TipoNotificacaoFrequencia tipo)
         {
-            var qtdDias = repositorioParametrosSistema.ObterValorPorTipoEAno(
-                                        tipo == TipoNotificacaoFrequencia.Professor ? TipoParametroSistema.QuantidadeAulasNotificarProfessor
-                                            : tipo == TipoNotificacaoFrequencia.GestorUe ? TipoParametroSistema.QuantidadeAulasNotificarGestorUE
-                                            : TipoParametroSistema.QuantidadeAulasNotificarSupervisorUE,
-                                        DateTime.Now.Year);
+            TipoParametroSistema tipoParametroSistema;
+
+            if (tipo == TipoNotificacaoFrequencia.Professor)
+                tipoParametroSistema = TipoParametroSistema.QuantidadeAulasNotificarProfessor;
+            else if (tipo == TipoNotificacaoFrequencia.GestorUe)
+                tipoParametroSistema = TipoParametroSistema.QuantidadeAulasNotificarGestorUE;
+            else
+                tipoParametroSistema = TipoParametroSistema.QuantidadeAulasNotificarSupervisorUE;
+
+            var qtdDias = repositorioParametrosSistema.ObterValorPorTipoEAno(tipoParametroSistema, DateTime.Now.Year);
 
             return !string.IsNullOrEmpty(qtdDias) ? int.Parse(qtdDias) : (int?)null;
         }
 
 
-        private void VerificaNotificacaoBimestralCalendario(TipoCalendario tipoCalendario, DateTime dataAtual, ModalidadeTipoCalendario modalidade)
+        private async Task VerificaNotificacaoBimestralCalendario(TipoCalendario tipoCalendario, DateTime dataAtual, ModalidadeTipoCalendario modalidade)
         {
-            var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+            var periodos = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
             var periodoAtual = periodos.FirstOrDefault(p => p.PeriodoInicio.AddDays(1) <= dataAtual && p.PeriodoFim.AddDays(1) >= dataAtual);
 
             if (periodoAtual == null)
@@ -756,10 +756,12 @@ namespace SME.SGP.Dominio.Servicos
                     // Carrega dados das turmas (ue e dre)
                     var turmas = new List<Turma>();
                     alunosAusentes.Select(a => a.TurmaId).Distinct().ToList()
-                        .ForEach(turmaId =>
+                        .ForEach(async turmaId =>
                         {
                             if (turmaId != null)
-                                turmas.Add(repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId));
+                            {
+                                turmas.Add(await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId));
+                            }
                         });
 
                     var percentualFrequenciaFund = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));

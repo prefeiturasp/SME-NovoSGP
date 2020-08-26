@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Integracoes
 {
-    public interface IServicoEOL
+    public interface IServicoEol
     {
         Task AlterarEmail(string login, string email);
 
@@ -17,6 +17,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task AtribuirCJSeNecessario(Guid usuarioId);
 
         Task AtribuirCJSeNecessario(string codigoRf);
+
+        Task AtribuirPerfil(string codigoRf, Guid perfil);
 
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
@@ -30,8 +32,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<AbrangenciaCompactaVigenteRetornoEOLDTO> ObterAbrangenciaCompactaVigente(string login, Guid perfil);
 
-        Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds);
-
+        Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds);        
         Task<string[]> ObterAdministradoresSGP(string codigoDreOuUe);
 
         Task<string[]> ObterAdministradoresSGPParaNotificar(string codigoDreOuUe);
@@ -41,6 +42,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo);
+
+        Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, string nome, string codigoEol);
 
         Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil);
 
@@ -70,9 +73,11 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null);
 
-        IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string UeId, long cargoId);
+        IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string ueId, long cargoId);
 
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto);
+
+        Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorDre(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto);
 
         Task<IEnumerable<ProfessorResumoDto>> ObterListaNomePorListaRF(IEnumerable<string> codigosRF);
 
@@ -96,8 +101,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo);
 
-        Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool incluirEmei);
-
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores);
 
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorDre(string dreId);
@@ -112,6 +115,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data);
 
+        Task<bool> PodePersistirTurmaNoPeriodo(string professorRf, string codigoTurma, long componenteCurricularId, DateTime dataInicio, DateTime dataFim);
+
         Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, string[] datas, long codigoDisciplina);
 
         Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data);
@@ -125,5 +130,6 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<bool> ValidarProfessor(string professorRf);
 
         Task<bool> TurmaPossuiComponenteCurricularPAP(string codigoTurma, string login, Guid idPerfil);
+        Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, string[] anosEscolares, int anoLetivo);
     }
 }

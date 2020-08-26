@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -8,9 +7,9 @@ namespace SME.SGP.Dominio.Interfaces
     {
         void ExecutaNotificacaoRegistroFrequencia();
         void VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId);
-        void NotificarCompensacaoAusencia(long compensacaoId);
-        void VerificaNotificacaoBimestral();
-        void NotificarAlunosFaltosos();
-        void NotificarAlunosFaltososBimestre();
+        Task NotificarCompensacaoAusencia(long compensacaoId);
+        Task VerificaNotificacaoBimestral();
+        Task NotificarAlunosFaltosos();
+        Task NotificarAlunosFaltososBimestre();
     }
 }

@@ -63,7 +63,7 @@ const TextEditor = React.forwardRef((props, ref) => {
       modules={modules}
       onBlur={onBlurQuill}
       alt={alt}
-      defaultValue={value && value}
+      defaultValue={value || ''}
       onFocus={onClickQuill}
       readOnly={disabled}
       disabled={disabled}

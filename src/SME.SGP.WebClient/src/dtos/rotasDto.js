@@ -29,14 +29,25 @@ const RotasDto = {
   FECHAMENTO_BIMESTRE: '/fechamento/fechamento-bimestre',
   PERIODO_FECHAMENTO_ABERTURA:
     '/calendario-escolar/periodo-fechamento-abertura',
-  PAP: '/relatorios/pap/resumos-e-graficos',
+  PAP: '/relatorios/pap/relatorio-graficos',
   PERIODO_FECHAMENTO_REABERTURA:
     '/calendario-escolar/periodo-fechamento-reabertura',
-  RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/acompanhamento',
+  RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/relatorio-preenchimento',
   PENDENCIAS_FECHAMENTO: '/fechamento/pendencias-fechamento',
   ACOMPANHAMENTO_COMUNICADOS: '/gestao/acompanhamento-escolar/comunicados',
   CONSELHO_CLASSE: '/fechamento/conselho-classe',
+  RELATORIO_SEMESTRAL: '/relatorios/pap/relatorio-semestral',
   SEM_PERMISSAO: '/sem-permissao',
+  TERRITORIO_SABER: '/planejamento/plano-anual-territorio-saber',
+  HISTORICO_ESCOLAR: '/relatorios/historico-escolar',
+  RELATORIO_BOLETIM_SIMPLES: '/relatorios/diario-classe/boletim-simples',
+  ATA_FINAL_RESULTADOS: '/relatorios/atas/ata-final-resultados',
+  FALTAS_FREQUENCIA: '/relatorios/frequencia/faltas-frequencia',
+  DIARIO_BORDO: '/diario-classe/diario-bordo',
+  RELATORIO_PENDENCIAS: '/relatorios/pendencias-fechamento',
+  CARTA_INTENCOES: '/planejamento/carta-intencoes',
+  RELATORIO_PARECER_CONCLUSIVO: '/relatorios/parecer-conclusivo',
+  RELATORIO_NOTAS_CONCEITOS_FINAIS: '/relatorios/notas-conceitos-finais',
 };
 
 export default RotasDto;

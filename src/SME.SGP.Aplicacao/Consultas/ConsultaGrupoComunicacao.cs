@@ -30,11 +30,26 @@ namespace SME.SGP.Aplicacao
 
         public async Task<GrupoComunicacaoCompletoDto> ObterPorIdAsync(long id)
         {
-            var grupo = await repositorioGrupoComunicacao.ObterPorIdAsync(id);
+            var grupo = await repositorioGrupoComunicacao.ObterCompletoPorIdAsync(id);
 
             if (grupo is null || !grupo.Any())
                 throw new NegocioException("Grupo de comunicação não encontrado");
             return MapearPorIdParaDto(grupo);
+        }
+
+        public async Task<IEnumerable<long>> ObterIdsGrupoComunicadoPorModalidade(Modalidade modalidade)
+        {
+            return await repositorioGrupoComunicacao.ObterIdsGrupoComunicadoPorModalidade(modalidade);
+        }
+
+        public async Task<IEnumerable<GrupoComunicacaoDto>> Listar(IEnumerable<long> ids)
+        {
+            var grupos = await repositorioGrupoComunicacao.ObterCompletoPorListaId(ids);
+
+            if (grupos is null || !grupos.Any())
+                throw new NegocioException("Não encontrado grupos de comunicação");
+
+            return MapearParaDto(grupos);
         }
 
         private static IEnumerable<GrupoComunicacaoCompletoDto> ConverterParaDto(IEnumerable<GrupoComunicacaoCompletoRespostaDto> grupos)

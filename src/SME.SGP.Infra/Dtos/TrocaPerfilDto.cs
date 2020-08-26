@@ -9,5 +9,7 @@ namespace SME.SGP.Infra
         public bool EhProfessorPoa { get; set; }
         public DateTime DataHoraExpiracao { get; set; }
         public string Token { get; set; }
+        public bool EhProfessorCjInfantil { get; set; }
+        public bool EhProfessorInfantil { get; set; }
     }
 }

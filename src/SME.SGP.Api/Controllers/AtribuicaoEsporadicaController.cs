@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AE_E, Permissao.AE_I, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir([FromServices]IComandosAtribuicaoEsporadica comandosAtribuicaoEsporadica, long id)
+        public async Task<IActionResult> Excluir([FromServices] IComandosAtribuicaoEsporadica comandosAtribuicaoEsporadica, long id)
         {
             await comandosAtribuicaoEsporadica.Excluir(id);
             return Ok();
@@ -26,7 +26,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<AtribuicaoEsporadicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AE_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar([FromQuery]FiltroAtribuicaoEsporadicaDto filtro, [FromServices]IConsultasAtribuicaoEsporadica consultasAtribuicaoEsporadica)
+        public async Task<IActionResult> Listar([FromQuery] FiltroAtribuicaoEsporadicaDto filtro, [FromServices] IConsultasAtribuicaoEsporadica consultasAtribuicaoEsporadica)
         {
             return Ok(await consultasAtribuicaoEsporadica.Listar(filtro));
         }
@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AtribuicaoEsporadicaCompletaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AE_C, Policy = "Bearer")]
-        public IActionResult Obter(long id, [FromServices]IConsultasAtribuicaoEsporadica consultasAtribuicaoEsporadica)
+        public IActionResult Obter(long id, [FromServices] IConsultasAtribuicaoEsporadica consultasAtribuicaoEsporadica)
         {
             var atribuicaoEsporadica = consultasAtribuicaoEsporadica.ObterPorId(id);
 
@@ -49,9 +49,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AE_A, Permissao.AE_I, Policy = "Bearer")]
-        public IActionResult Post([FromBody]AtribuicaoEsporadicaDto atribuicaoEsporadicaDto, [FromServices]IComandosAtribuicaoEsporadica comandosAtribuicaoEsporadica)
+        public async Task<IActionResult> Post([FromBody] AtribuicaoEsporadicaDto atribuicaoEsporadicaDto, [FromServices] IComandosAtribuicaoEsporadica comandosAtribuicaoEsporadica)
         {
-            comandosAtribuicaoEsporadica.Salvar(atribuicaoEsporadicaDto);
+            await comandosAtribuicaoEsporadica.Salvar(atribuicaoEsporadicaDto);
 
             return Ok();
         }

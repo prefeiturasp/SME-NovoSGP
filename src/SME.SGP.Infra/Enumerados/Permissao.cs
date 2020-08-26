@@ -1,4 +1,5 @@
-﻿namespace SME.SGP.Infra
+﻿
+namespace SME.SGP.Infra
 {
     public enum Permissao
     {
@@ -27,7 +28,7 @@
         //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8)]
         //SR_A = 8,
 
-        [PermissaoMenu(Menu = "Boletim", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 3, EhConsulta = true)]
+        [PermissaoMenu(Menu = "Boletim", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 4, Url = "/relatorios/diario-classe/boletim-simples", EhConsulta = true)]
         B_C = 9,
 
         [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhConsulta = true)]
@@ -41,15 +42,6 @@
 
         [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhAlteracao = true)]
         C_A = 13,
-
-        //[PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", EhMenu = false, EhConsulta = true)]
-        //F_C = 14,
-
-        //[PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", EhMenu = false, EhInclusao = true)]
-        //F_I = 15,
-
-        //[PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", EhMenu = false, EhExclusao = true)]
-        //F_E = 16,
 
         [PermissaoMenu(Menu = "Plano de aula/Frequência", Icone = "fas fa-book-reader", EhMenu = false, EhAlteracao = true)]
         F_A = 17,
@@ -150,9 +142,6 @@
         [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Atribuição Professor", Agrupamento = "Atribuição Professor")]
         AP_A = 45,
 
-        //[PermissaoMenu(Menu = "Relatório Consulta", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 2)]
-        //R_C = 46,
-
         [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 8, OrdemMenu = 1, Url = "/usuarios/reiniciar-senha", EhAlteracao = true,
            EhSubMenu = true, EhConsulta = true, SubMenu = "Reiniciar Senha")]
         AS_C = 47,
@@ -240,8 +229,6 @@
 
         [PermissaoMenu(Menu = "Períodos de fechamento (Abertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 5, EhAlteracao = true, Url = "/calendario-escolar/periodo-fechamento-abertura")]
         PFA_A = 75,
-
-        /*Retirar comentário após a implementação dos menus*/
 
         [PermissaoMenu(Menu = "Períodos de fechamento (Reabertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 6, EhConsulta = true, Url = "/calendario-escolar/periodo-fechamento-reabertura")]
         PFR_C = 76,
@@ -363,46 +350,160 @@
         [PermissaoMenu(Menu = "Compensação de Ausência", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 6, EhAlteracao = true, Url = "/diario-classe/compensacao-ausencia")]
         CA_A = 115,
 
-        [PermissaoMenu(Menu = "Resumos e gráficos PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pap/resumos-e-graficos")]
-        RGP_C = 120,
-
-        [PermissaoMenu(Menu = "Preenchimento PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 1, EhConsulta = true, Url = "/relatorios/pap/acompanhamento")]
-        RAP_C = 116,
-
-        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhConsulta = true, Url = "/fechamento/fechamento-bimestre")]
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 1, EhConsulta = true, Url = "/fechamento/fechamento-bimestre")]
         FB_C = 124,
 
-        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhInclusao = true, Url = "/fechamento/fechamento-bimestre")]
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 1, EhInclusao = true, Url = "/fechamento/fechamento-bimestre")]
         FB_I = 125,
 
-        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhExclusao = true, Url = "/fechamento/fechamento-bimestre")]
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 1, EhExclusao = true, Url = "/fechamento/fechamento-bimestre")]
         FB_E = 126,
 
-        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 1, EhAlteracao = true, Url = "/fechamento/fechamento-bimestre")]
+        [PermissaoMenu(Menu = "Fechamento de Bimestre", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 1, EhAlteracao = true, Url = "/fechamento/fechamento-bimestre")]
         FB_A = 127,
 
-        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhConsulta = true, Url = "/fechamento/pendencias-fechamento")]
+        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 2, EhConsulta = true, Url = "/fechamento/pendencias-fechamento")]
         PF_C = 128,
 
-        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhInclusao = true, Url = "/fechamento/pendencias-fechamento")]
+        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 2, EhInclusao = true, Url = "/fechamento/pendencias-fechamento")]
         PF_I = 129,
 
-        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhExclusao = true, Url = "/fechamento/pendencias-fechamento")]
+        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 2, EhExclusao = true, Url = "/fechamento/pendencias-fechamento")]
         PF_E = 130,
 
-        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhAlteracao = true, Url = "/fechamento/pendencias-fechamento")]
+        [PermissaoMenu(Menu = "Pendências do Fechamento", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 2, EhAlteracao = true, Url = "/fechamento/pendencias-fechamento")]
         PF_A = 131,
-        
-        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhConsulta = true, Url = "/fechamento/conselho-classe")]
+
+        [PermissaoMenu(Menu = "Territórios do Saber", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhConsulta = true, Url = "/planejamento/plano-anual-territorio-saber")]
+        PT_C = 132,
+
+        [PermissaoMenu(Menu = "Territórios do Saber", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhInclusao = true, Url = "/planejamento/plano-anual-territorio-saber")]
+        PT_I = 133,
+
+        [PermissaoMenu(Menu = "Territórios do Saber", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhExclusao = true, Url = "/planejamento/plano-anual-territorio-saber")]
+        PT_E = 134,
+
+        [PermissaoMenu(Menu = "Territórios do Saber", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, EhAlteracao = true, Url = "/planejamento/plano-anual-territorio-saber")]
+        PT_A = 135,
+
+        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 3, EhConsulta = true, Url = "/fechamento/conselho-classe")]
         CC_C = 136,
 
-        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhInclusao = true, Url = "/fechamento/conselho-classe")]
+        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 3, EhInclusao = true, Url = "/fechamento/conselho-classe")]
         CC_I = 137,
 
-        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhExclusao = true, Url = "/fechamento/conselho-classe")]
+        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 3, EhExclusao = true, Url = "/fechamento/conselho-classe")]
         CC_E = 138,
 
-        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhAlteracao = true, Url = "/fechamento/conselho-classe")]
+        [PermissaoMenu(Menu = "Conselho de Classe", Icone = "", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 3, EhAlteracao = true, Url = "/fechamento/conselho-classe")]
         CC_A = 139,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true,
+            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
+        RPS_C = 144,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true,
+            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
+        RPS_I = 145,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true,
+            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
+        RPS_E = 146,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true,
+            Url = "/relatorios/pap/relatorio-semestral", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Relatório Semestral")]
+        RPS_A = 147,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true,
+            Url = "/relatorios/pap/relatorio-graficos", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Resumos e gráfico")]
+        RPG_C = 120,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true,
+            Url = "/relatorios/pap/relatorio-graficos", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Resumos e gráfico")]
+        RPG_I = 121,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true,
+            Url = "/relatorios/pap/relatorio-graficos", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Resumos e gráfico")]
+        RPG_E = 122,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true,
+            Url = "/relatorios/pap/relatorio-graficos", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Resumos e gráfico")]
+        RPG_A = 123,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true,
+            Url = "/relatorios/pap/relatorio-preenchimento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Preenchimento")]
+        RGP_C = 116,
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true,
+           Url = "/relatorios/pap/relatorio-preenchimento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Preenchimento")]
+        RGP_I = 117,
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true,
+       Url = "/relatorios/pap/relatorio-preenchimento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Preenchimento")]
+        RGP_E = 118,
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true,
+       Url = "/relatorios/pap/relatorio-preenchimento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Preenchimento")]
+        RGP_A = 119,
+
+        //[PermissaoMenu(Menu = "Relatório Semestral PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/pap/relatorio-semestral")]
+        //RSP_A = 147,
+
+        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/atas/ata-final-resultados", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Ata Final de Resultados")]
+        AFR_C = 148,
+
+        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhInclusao = true, Url = "/relatorios/atas/ata-final-resultados", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Ata Final de Resultados")]
+        AFR_I = 149,
+
+        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhExclusao = true, Url = "/relatorios/atas/ata-final-resultados", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Ata Final de Resultados")]
+        AFR_E = 150,
+
+        [PermissaoMenu(Menu = "Ata Final de Resultados", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhAlteracao = true, Url = "/relatorios/atas/ata-final-resultados")]
+        AFR_A = 151,
+
+        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 5, EhConsulta = true, Url = "/relatorios/historico-escolar")]
+        HE_C = 152,
+
+        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 5, EhInclusao = true, Url = "/relatorios/historico-escolar")]
+        HE_I = 153,
+
+        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 5, EhExclusao = true, Url = "/relatorios/historico-escolar")]
+        HE_E = 154,
+
+        [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 5, EhAlteracao = true, Url = "/relatorios/historico-escolar")]
+        HE_A = 155,
+
+        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/faltas-frequencia", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Faltas e frequência")]
+        FF_C = 156,
+
+        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pendencias-fechamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Pendências do Fechamento")]
+        RPF_C = 157,
+
+        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/parecer-conclusivo", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Parecer Conclusivo")]
+        RPC_C = 158,
+
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhConsulta = true, Url = "/diario-classe/diario-bordo")]
+        DDB_C = 159,
+
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhInclusao = true, Url = "/diario-classe/diario-bordo")]
+        DDB_I = 160,
+
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhExclusao = true, Url = "/diario-classe/diario-bordo")]
+        DDB_E = 161,
+
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhAlteracao = true, Url = "/diario-classe/diario-bordo")]
+        DDB_A = 162,
+
+        [PermissaoMenu(Menu = "Carta de Intenções", Icone = "fas fa-file-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhConsulta = true, Url = "/planejamento/carta-intencoes")]
+        CI_C = 163,
+
+        [PermissaoMenu(Menu = "Carta de Intenções", Icone = "fas fa-file-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhInclusao = true, Url = "/planejamento/carta-intencoes")]
+        CI_I = 164,
+
+        [PermissaoMenu(Menu = "Carta de Intenções", Icone = "fas fa-file-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhExclusao = true, Url = "/planejamento/carta-intencoes")]
+        CI_E = 165,
+
+        [PermissaoMenu(Menu = "Carta de Intenções", Icone = "fas fa-file-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhAlteracao = true, Url = "/planejamento/carta-intencoes")]
+        CI_A = 166,
+
+        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/notas-conceitos-finais", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Notas e Conceitos Finais")]
+        RNC_F = 167
     }
 }

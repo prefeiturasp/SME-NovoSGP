@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao.Servicos
 {
     public class ServicoAutenticacao : IServicoAutenticacao
     {
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
 
-        public ServicoAutenticacao(IServicoEOL servicoEOL)
+        public ServicoAutenticacao(IServicoEol servicoEOL)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }

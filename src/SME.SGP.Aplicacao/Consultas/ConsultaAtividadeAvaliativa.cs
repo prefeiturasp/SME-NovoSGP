@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioAula repositorioAula,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IServicoUsuario servicoUsuario,
-            IServicoEOL servicoEOL,
+            IServicoEol servicoEOL,
             IContextoAplicacao contextoAplicacao,
             IConsultasTurma consultasTurma,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
             => await repositorioAtividadeAvaliativa.ListarPorTurmaDisciplinaPeriodo(turmaCodigo, disciplinaId, periodoInicio, periodoFim);
 
         public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
-        {            
+        {
             var atividade = await repositorioAtividadeAvaliativa.ObterPorIdAsync(id);
 
             if (atividade is null)
@@ -104,8 +104,8 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException($"Não foi possivel obter a turma da aula");
 
-            var bimestreAtual = consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo, turma.Semestre);
-            var bimestreAvaliacao = consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo, turma.Semestre);
+            var bimestreAtual = await consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo, turma.Semestre);
+            var bimestreAvaliacao = await consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo, turma.Semestre);
 
             if (bimestreAtual == 0 || bimestreAvaliacao == 0)
                 return false;
@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<TurmaRetornoDto>();
 
-            var turma = repositorioTurma.ObterPorCodigo(turmaId.ToString());
+            var turma = await repositorioTurma.ObterPorCodigo(turmaId.ToString());
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(usuario.CodigoRf);
 
@@ -178,46 +178,40 @@ namespace SME.SGP.Aplicacao
                             Mensagem = "Não existe aula cadastrada para esse data.",
                             TurmaId = filtro.TurmaId
                         });
-                        continue;
-                    }
-
-                    var tipoCalendarioId = aula.FirstOrDefault().TipoCalendarioId;
-                    var perioEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);
-                    if (perioEscolar == null)
-                    {
-                        retorno.Add(new AtividadeAvaliativaExistenteRetornoDto()
-                        {
-                            Erro = true,
-                            Mensagem = "Não existe aula cadastrada para esse data.",
-                            TurmaId = filtro.TurmaId
-                        });
-                        continue;
-                    }
-
-                    if (disciplina.Regencia)
-                    {
-                        if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoRegencia(dataAvaliacao, null, null, filtro.TurmaId.ToString(), filtro.DisciplinasId, null, usuario.CodigoRf, null))
-                        {
-                            retorno.Add(new AtividadeAvaliativaExistenteRetornoDto()
-                            {
-                                Erro = true,
-                                Mensagem = "Já existe atividade avaliativa cadastrada para essa data e disciplina.",
-                                TurmaId = filtro.TurmaId
-                            });
-                            continue;
-                        }
                     }
                     else
                     {
-                        if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoNaoRegencia(dataAvaliacao, null, null, filtro.TurmaId.ToString(), filtro.DisciplinasId, usuario.CodigoRf, null))
+                        var tipoCalendarioId = aula.FirstOrDefault().TipoCalendarioId;
+                        var perioEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);
+                        if (perioEscolar == null)
                         {
                             retorno.Add(new AtividadeAvaliativaExistenteRetornoDto()
                             {
                                 Erro = true,
-                                Mensagem = "Já existe atividade avaliativa cadastrada para essa data e disciplina.",
+                                Mensagem = "Não existe aula cadastrada para esse data.",
                                 TurmaId = filtro.TurmaId
                             });
-                            continue;
+                        }
+                        else
+                        {
+                            if (disciplina.Regencia && await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoRegencia(dataAvaliacao, null, null, filtro.TurmaId.ToString(), filtro.DisciplinasId, null, usuario.CodigoRf, null))
+                            {
+                                retorno.Add(new AtividadeAvaliativaExistenteRetornoDto()
+                                {
+                                    Erro = true,
+                                    Mensagem = "Já existe atividade avaliativa cadastrada para essa data e disciplina.",
+                                    TurmaId = filtro.TurmaId
+                                });
+                            }
+                            else if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoNaoRegencia(dataAvaliacao, null, null, filtro.TurmaId.ToString(), filtro.DisciplinasId, usuario.CodigoRf, null))
+                            {
+                                retorno.Add(new AtividadeAvaliativaExistenteRetornoDto()
+                                {
+                                    Erro = true,
+                                    Mensagem = "Já existe atividade avaliativa cadastrada para essa data e disciplina.",
+                                    TurmaId = filtro.TurmaId
+                                });
+                            }
                         }
                     }
                 }
@@ -236,7 +230,7 @@ namespace SME.SGP.Aplicacao
             return atividadeAvaliativa == null ? null : new AtividadeAvaliativaCompletaDto
             {
                 Id = atividadeAvaliativa.Id,
-                CategoriaId = (CategoriaAtividadeAvaliativa)atividadeAvaliativa.Categoria,
+                CategoriaId = atividadeAvaliativa.Categoria,
                 DataAvaliacao = atividadeAvaliativa.DataAvaliacao,
                 Descricao = atividadeAvaliativa.DescricaoAvaliacao,
                 DreId = atividadeAvaliativa.DreId,

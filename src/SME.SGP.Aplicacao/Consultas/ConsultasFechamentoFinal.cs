@@ -26,12 +26,12 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAluno servicoAluno;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasFechamentoFinal(IConsultasAulaPrevista consultasAulaPrevista, IRepositorioTurma repositorioTurma, IRepositorioTipoCalendario repositorioTipoCalendario,
                             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
-                            IServicoEOL servicoEOL, IRepositorioFechamentoNota repositorioFechamentoNota,
+                            IServicoEol servicoEOL, IRepositorioFechamentoNota repositorioFechamentoNota,
                             IServicoAluno servicoAluno,
                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioNotaTipoValor repositorioNotaTipoValor,
                             IServicoUsuario servicoUsuario, IRepositorioParametrosSistema repositorioParametrosSistema,
@@ -59,16 +59,16 @@ namespace SME.SGP.Aplicacao
         public async Task<FechamentoFinalConsultaRetornoDto> ObterFechamentos(FechamentoFinalConsultaFiltroDto filtros)
         {
             var retorno = new FechamentoFinalConsultaRetornoDto();
-            var turma = repositorioTurma.ObterTurmaComUeEDrePorCodigo(filtros.TurmaCodigo);
+            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(filtros.TurmaCodigo);
 
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma.");
 
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario());
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario());
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
-            var periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+            var periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
                 if (retorno.EhSintese)
                 {
                     var sinteseDto = consultasFrequencia.ObterSinteseAluno(fechamentoFinalAluno.Frequencia, disciplinaEOL);
-                    fechamentoFinalAluno.Sintese = sinteseDto.SinteseNome;
+                    fechamentoFinalAluno.Sintese = sinteseDto.Valor;
                 }
                 else
                 {

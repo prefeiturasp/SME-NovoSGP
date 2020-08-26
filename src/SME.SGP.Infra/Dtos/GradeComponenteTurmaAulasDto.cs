@@ -8,6 +8,6 @@ namespace SME.SGP.Infra
     {
         public int QuantidadeAulasGrade { get; set; }
         public int QuantidadeAulasRestante { get; set; }
-
+        public bool PodeEditar { get; set; }
     }
 }

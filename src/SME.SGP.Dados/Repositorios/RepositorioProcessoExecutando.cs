@@ -20,6 +20,16 @@ namespace SME.SGP.Dados
             this.database = database;
         }
 
+        public async Task<bool> ObterAulaEmManutencaoAsync(long aulaId)
+        {
+            var query = @"select 1
+                            from processo_executando
+                           where tipo_processo = 2
+                             and aula_id = @aulaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new { aulaId }) != null;
+        }
+
         public async Task<ProcessoExecutando> ObterProcessoCalculoFrequencia(string turmaId, string disciplinaId, int bimestre)
         {
             var query = @"select * 
@@ -34,6 +44,19 @@ namespace SME.SGP.Dados
 
         public void Remover(ProcessoExecutando processo)
             => database.Conexao.Delete(processo);
+
+        public async Task RemoverAsync(ProcessoExecutando processo)
+            => await database.Conexao.DeleteAsync(processo);
+
+        public async Task RemoverIdsAsync(long[] ids)
+        {
+
+            var query = @"delete
+                            from processo_executando
+                           where id IN (#ids)";
+
+            await database.Conexao.ExecuteAsync(query.Replace("#ids", string.Join(",", ids)));
+        }
 
         public async Task<long> SalvarAsync(ProcessoExecutando entidade)
         {

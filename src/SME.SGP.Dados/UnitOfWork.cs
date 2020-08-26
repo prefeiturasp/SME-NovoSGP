@@ -1,7 +1,6 @@
-﻿using SME.SGP.Dados.Contexto;
-using SME.SGP.Dominio;
-using System.Data;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Data;
 
 namespace SME.SGP.Dados
 {
@@ -13,6 +12,11 @@ namespace SME.SGP.Dados
         public UnitOfWork(ISgpContext sgpContext)
         {
             this.sgpContext = sgpContext ?? throw new System.ArgumentNullException(nameof(sgpContext));
+        }
+
+        public void Dispose()
+        {
+            Rollback();
         }
 
         public IDbTransaction IniciarTransacao()
@@ -33,7 +37,7 @@ namespace SME.SGP.Dados
 
         public void Rollback()
         {
-            if (transacao != null)
+            if (transacao != null && transacao.Connection != null)
             {
                 transacao.Rollback();
             }

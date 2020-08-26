@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio
         public string TurmaId { get; set; }
         public string DisciplinaId { get; set; }
         public int Bimestre { get; set; }
+        public long? AulaId { get; set; }
     }
 }

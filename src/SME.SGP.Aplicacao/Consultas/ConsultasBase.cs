@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IContextoAplicacao contextoAplicacao;
 
-        public ConsultasBase(IContextoAplicacao contextoAplicacao)
+        protected ConsultasBase(IContextoAplicacao contextoAplicacao)
         {
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }

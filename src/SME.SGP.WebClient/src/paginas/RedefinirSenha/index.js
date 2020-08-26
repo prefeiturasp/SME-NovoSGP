@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Form } from 'formik';
 import LogoDoSgp from '~/recursos/LogoDoSgp.svg';
@@ -28,6 +28,7 @@ import { store } from '~/redux';
 import Erro from '../RecuperarSenha/erro';
 import { setMenusPermissoes } from '~/servicos/servico-navegacao';
 import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
+import { Loader } from '~/componentes';
 
 const Item = styled.li`
   ${props => props.status === true && `color: ${Base.Verde}`};
@@ -36,6 +37,7 @@ const Item = styled.li`
 `;
 
 const RedefinirSenha = props => {
+  const dispatch = useDispatch();
   const [senhas, setSenhas] = useState({
     senha: '',
     confirmarSenha: '',
@@ -80,9 +82,20 @@ const RedefinirSenha = props => {
     }
   };
 
+  const validarToken = async () => {
+    let tokenValido = true;
+    if (!token) history.push(URL_LOGIN);
+    if (token) tokenValido = await RedefinirSenhaServico.validarToken(token);
+
+    if (!tokenValido) {
+      setErroGeral(
+        'Esse link expirou. Clique em continuar para solicitar um link novo.'
+      );
+    } else setTokenValidado(true);
+  };
+
   useLayoutEffect(() => {
     if (!tokenValidado && !logado) validarToken();
-
     document.addEventListener('keydown', trataAcaoTeclado);
     return () => {
       document.removeEventListener('keydown', trataAcaoTeclado);
@@ -96,32 +109,6 @@ const RedefinirSenha = props => {
   useEffect(() => {
     if (inputConfSenhaRef.current) inputConfSenhaRef.current.focus();
   }, [confirmarSenha]);
-
-  const aoMudarSenha = e => {
-    setErroGeral('');
-    setSenhas({ ...senhas, senha: e.target.value });
-    realizarValidacoes(e.target.value);
-  };
-
-  const validarToken = async () => {
-    let tokenValido = true;
-    if (!token) history.push(URL_LOGIN);
-    if (token) tokenValido = await RedefinirSenhaServico.validarToken(token);
-
-    if (!tokenValido) {
-      setErroGeral(
-        'Esse link expirou. Clique em continuar para solicitar um link novo.'
-      );
-    } else setTokenValidado(true);
-  };
-
-  const aoMudarConfSenha = e => {
-    setSenhas({ ...senhas, confirmarSenha: e.target.value });
-    setErroGeral('');
-
-    const iguais = e.target.value === inputSenhaRef.current.value;
-    setValidacoes({ ...validacoes, iguais });
-  };
 
   const realizarValidacoes = valor => {
     const temMaiuscula = valor.match(/([A-Z])/);
@@ -148,6 +135,20 @@ const RedefinirSenha = props => {
     });
   };
 
+  const aoMudarSenha = e => {
+    setErroGeral('');
+    setSenhas({ ...senhas, senha: e.target.value });
+    realizarValidacoes(e.target.value);
+  };
+
+  const aoMudarConfSenha = e => {
+    setSenhas({ ...senhas, confirmarSenha: e.target.value });
+    setErroGeral('');
+
+    const iguais = e.target.value === inputSenhaRef.current.value;
+    setValidacoes({ ...validacoes, iguais });
+  };
+
   const validarSeFormularioTemErro = () =>
     Object.entries(validacoes).filter(validacao => !validacao[1]).length > 0;
 
@@ -158,18 +159,27 @@ const RedefinirSenha = props => {
 
   const alterarSenha = async () => {
     if (!logado) {
-      const requisicao = await RedefinirSenhaServico.redefinirSenha({
-        token,
-        novaSenha: senha,
-      });
+      const requisicao = await RedefinirSenhaServico.redefinirSenha(
+        {
+          token,
+          novaSenha: senha,
+        },
+        dispatch
+      );
 
       if (requisicao.sucesso) history.push(URL_LOGIN);
       if (requisicao.tokenExpirado) setTokenExpirado(requisicao.tokenExpirado);
 
       setErroGeral(requisicao.erro);
     } else {
+      const rf = Number.isInteger(usuario * 1)
+        ? usuario
+        : Number.isInteger(props?.location?.state?.rf * 1)
+        ? props?.location?.state?.rf
+        : '';
+
       const requisicao = await ServicoPrimeiroAcesso.alterarSenha({
-        usuario,
+        usuario: rf,
         novaSenha: senha,
         confirmarSenha: senha,
       });
@@ -177,7 +187,6 @@ const RedefinirSenha = props => {
         obterMeusDados();
         setMenusPermissoes();
 
-        const rf = Number.isInteger(usuario * 1) ? usuario : '';
         store.dispatch(
           salvarDadosLogin({
             token: requisicao.resposta.data.token,
@@ -192,6 +201,10 @@ const RedefinirSenha = props => {
             possuiPerfilSme:
               requisicao.resposta.data.perfisUsuario.possuiPerfilSme,
             ehProfessorCj: requisicao.resposta.data.perfisUsuario.ehProfessorCj,
+            ehProfessorInfantil:
+              requisicao.resposta.data.perfisUsuario.ehProfessorInfantil,
+            ehProfessorCjInfantil:
+              requisicao.resposta.data.perfisUsuario.ehProfessorCjInfantil,
             dataHoraExpiracao: requisicao.resposta.data.dataHoraExpiracao,
           })
         );
@@ -202,7 +215,10 @@ const RedefinirSenha = props => {
     }
   };
 
+  const [carregandoContinuar, setCarregandoContinuar] = useState(false);
+
   const aoClicarContinuar = () => {
+    setCarregandoContinuar(true);
     realizarValidacoes(inputSenhaRef.current.value);
     setErroGeral('');
 
@@ -212,6 +228,7 @@ const RedefinirSenha = props => {
     }
 
     if (!validarSeFormularioTemErro()) alterarSenha();
+    setCarregandoContinuar(false);
   };
 
   const aoClicarContinuarExpirado = () => {
@@ -358,12 +375,14 @@ const RedefinirSenha = props => {
                           onClick={onClickSair}
                           id="btnSair"
                         />
-                        <Button
-                          label="Continuar"
-                          color={Colors.Roxo}
-                          onClick={aoClicarContinuar}
-                          id="btnContinuar"
-                        />
+                        <Loader loading={carregandoContinuar} tip="">
+                          <Button
+                            label="Continuar"
+                            color={Colors.Roxo}
+                            onClick={aoClicarContinuar}
+                            id="btnContinuar"
+                          />
+                        </Loader>
                       </Div>
                     </Form>
                   </Div>

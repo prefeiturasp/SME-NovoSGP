@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
     {
         Task Excluir(long idAtribuicaoEsporadica);
 
-        void Salvar(AtribuicaoEsporadicaDto atruibuicaoEsporadicaDto);
+        Task Salvar(AtribuicaoEsporadicaDto atruibuicaoEsporadicaDto);
     }
 }

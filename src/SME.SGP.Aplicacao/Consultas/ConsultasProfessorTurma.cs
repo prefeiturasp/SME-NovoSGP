@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
     public class ConsultasProfessor : IConsultasProfessor
     {
         private readonly IRepositorioCache repositorioCache;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
 
-        public ConsultasProfessor(IServicoEOL servicoEOL, IRepositorioCache repositorioCache)
+        public ConsultasProfessor(IServicoEol servicoEOL, IRepositorioCache repositorioCache)
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
@@ -39,11 +39,6 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             return await servicoEOL.ObterProfessoresAutoComplete(anoLetivo, dreId, nomeProfessor, incluirEmei);
-        }
-
-        public async Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo, bool incluirEmei)
-        {
-            return await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo, incluirEmei);
         }
 
         public async Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo)

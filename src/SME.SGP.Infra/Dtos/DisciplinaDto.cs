@@ -14,5 +14,6 @@ namespace SME.SGP.Infra
         public bool RegistraFrequencia { get; set; }
         public bool TerritorioSaber { get; set; }
         public bool LancaNota { get; set; }
+        public bool ObjetivosAprendizagemOpcionais { get; set; }
     }
 }

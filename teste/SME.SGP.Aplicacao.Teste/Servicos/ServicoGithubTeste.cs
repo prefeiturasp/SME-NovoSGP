@@ -24,6 +24,5 @@ namespace SME.SGP.Aplicacao.Teste.Servicos
     //        // Assert
     //        Assert.Equal("v1.2", result);
     //    }
-
     //}
 }

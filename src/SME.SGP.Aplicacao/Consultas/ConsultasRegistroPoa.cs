@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao.Consultas
     public class ConsultasRegistroPoa : ConsultasBase, IConsultasRegistroPoa
     {
         private readonly IRepositorioRegistroPoa repositorioRegistroPoa;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
 
-        public ConsultasRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa, IContextoAplicacao contextoAplicacao, IServicoEOL servicoEOL) : base(contextoAplicacao)
+        public ConsultasRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa, IContextoAplicacao contextoAplicacao, IServicoEol servicoEOL) : base(contextoAplicacao)
         {
             this.repositorioRegistroPoa = repositorioRegistroPoa ?? throw new System.ArgumentNullException(nameof(repositorioRegistroPoa));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -67,7 +67,9 @@ namespace SME.SGP.Aplicacao.Consultas
             {
                 var professor = nomes.FirstOrDefault(resumo => resumo.CodigoRF.Equals(registro.CodigoRf));
 
-                return MapearParaDto(registro, professor == null ? "Professor não encontrado" : professor.Nome);
+                string nome = professor == null ? "Professor não encontrado" : professor.Nome;
+
+                return MapearParaDto(registro, nome);
             });
 
             return retornoPaginado;

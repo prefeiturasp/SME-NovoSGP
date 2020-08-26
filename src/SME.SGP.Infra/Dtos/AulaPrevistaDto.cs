@@ -17,6 +17,6 @@ namespace SME.SGP.Infra
 
         public long Id { get; set; }
 
-        public IEnumerable<AulaPrevistaBimestreQuantidadeDto> BimestresQuantidade;
+        public IEnumerable<AulaPrevistaBimestreQuantidadeDto> BimestresQuantidade { get; set; }
     }
 }

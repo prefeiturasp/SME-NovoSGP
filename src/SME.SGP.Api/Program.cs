@@ -12,7 +12,6 @@ namespace SME.SGP.Api
                   {
                       config.AddEnvironmentVariables();
                   })
-                .UseSentry()
                 .UseStartup<Startup>();
 
         public static void Main(string[] args)

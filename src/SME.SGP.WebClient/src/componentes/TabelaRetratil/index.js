@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import t from 'prop-types';
 import shortid from 'shortid';
 
@@ -16,9 +16,27 @@ function TabelaRetratil({
   children,
   onChangeAlunoSelecionado,
   permiteOnChangeAluno,
+  codigoAlunoSelecionado,
+  exibirProcessoConcluido,
 }) {
   const [retraido, setRetraido] = useState(false);
   const [alunoSelecionado, setAlunoSelecionado] = useState(null);
+
+  useEffect(() => {
+    if (codigoAlunoSelecionado) {
+      const alunoSelecionar = alunos.find(
+        item => item.codigoEOL == codigoAlunoSelecionado
+      );
+
+      if (alunoSelecionar) {
+        setAlunoSelecionado(alunoSelecionar);
+      }
+    }
+
+    if (!(alunos && alunos.length)) {
+      setAlunoSelecionado(null);
+    }
+  }, [alunos, codigoAlunoSelecionado]);
 
   const permiteSelecionarAluno = useCallback(async () => {
     if (permiteOnChangeAluno) {
@@ -27,7 +45,6 @@ function TabelaRetratil({
     }
     return true;
   }, [permiteOnChangeAluno]);
-
 
   const isAlunoSelecionado = aluno => {
     return alunoSelecionado && aluno.codigoEOL === alunoSelecionado.codigoEOL;
@@ -104,6 +121,7 @@ function TabelaRetratil({
                 key={shortid.generate()}
                 ativo={!item.desabilitado}
                 onClick={() => onClickLinhaAluno(item)}
+                processoConcluido={item.processoConcluido}
               >
                 <td>
                   {item.numeroChamada}
@@ -115,7 +133,20 @@ function TabelaRetratil({
                     ''
                   )}
                 </td>
-                <td>{item.nome}</td>
+                <td>
+                  <div
+                    style={{
+                      marginLeft: '-9px',
+                    }}
+                  >
+                    {exibirProcessoConcluido ? (
+                      <i className="icone-concluido fa fa-check-circle" />
+                    ) : (
+                      ''
+                    )}
+                    {item.nome}
+                  </div>
+                </td>
               </LinhaTabela>
             ))}
           </tbody>
@@ -142,6 +173,8 @@ TabelaRetratil.propTypes = {
   children: t.oneOfType([t.element, t.func]),
   onChangeAlunoSelecionado: t.func,
   permiteOnChangeAluno: t.func,
+  codigoAlunoSelecionado: t.oneOfType([t.any]),
+  exibirProcessoConcluido: t.bool,
 };
 
 TabelaRetratil.defaultProps = {
@@ -149,6 +182,8 @@ TabelaRetratil.defaultProps = {
   children: () => {},
   onChangeAlunoSelecionado: () => {},
   permiteOnChangeAluno: () => true,
+  codigoAlunoSelecionado: null,
+  exibirProcessoConcluido: false,
 };
 
 export default TabelaRetratil;

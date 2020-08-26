@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorio;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IServicoEOL servicoEol;
+        private readonly IServicoEol servicoEol;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasAula(IRepositorioAula repositorio,
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                              IRepositorioPlanoAula repositorioPlanoAula,
                              IRepositorioTurma repositorioTurma,
                              IServicoUsuario servicoUsuario,
-                             IServicoEOL servicoEol,
+                             IServicoEol servicoEol,
                              IConsultasDisciplina consultasDisciplina,
                              IConsultasTurma consultasTurma,
                              IConsultasPeriodoFechamento consultasPeriodoFechamento)
@@ -61,8 +61,8 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException($"Não foi possivel obter a turma da aula");
 
-            var bimestreAtual = consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo, turma.Semestre);
-            var bimestreAula = consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo, turma.Semestre);
+            var bimestreAtual = await consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo, turma.Semestre);
+            var bimestreAula = await consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo, turma.Semestre);
 
             var bimestreForaPeriodo = bimestreAtual == 0 || bimestreAula == 0;
 
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Aula de id {id} não encontrada");
 
             if (aula.AulaPaiId.HasValue)
-                aula.AulaPai = repositorio.ObterCompletoPorId(aula.AulaPaiId.Value);
+                aula.AulaPai = await repositorio.ObterCompletoPorIdAsync(aula.AulaPaiId.Value);
 
             var aberto = await AulaDentroPeriodo(aula);
 
@@ -91,67 +91,33 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(aula, disciplinaId, aberto);
         }
 
-        public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
-        {
-            var existeRegistro = await consultasFrequencia.FrequenciaAulaRegistrada(aulaId);
-            if (!existeRegistro)
-                existeRegistro = await repositorioPlanoAula.PlanoAulaRegistrado(aulaId);
-
-            return existeRegistro;
-        }
-
-        public async Task<bool> ChecarFrequenciaPlanoNaRecorrencia(long aulaId)
-        {
-            var existeRegistro = await ChecarFrequenciaPlanoAula(aulaId);
-
-            if (!existeRegistro)
-            {
-                var aulaAtual = repositorio.ObterPorId(aulaId);
-
-                var aulasRecorrentes = await repositorio.ObterAulasRecorrencia(aulaAtual.AulaPaiId ?? aulaAtual.Id, aulaId);
-
-                if (aulasRecorrentes != null)
-                {
-                    foreach (var aula in aulasRecorrentes)
-                    {
-                        existeRegistro = await ChecarFrequenciaPlanoAula(aula.Id);
-
-                        if (existeRegistro)
-                            break;
-                    }
-                }
-            }
-
-            return existeRegistro;
-        }
-
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             return await repositorio.ObterAulaDataTurmaDisciplina(data, turmaId, disciplinaId);
         }
 
-        public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turmaCodigo, string disciplina)
+        public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turmaCodigo, string disciplinaCodigo)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            var usuarioRF = usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : string.Empty;
+            var usuarioRF = usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorInfantil() ? usuarioLogado.CodigoRf : string.Empty;
 
-            var turma = repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Tipo de calendário não existe para turma selecionada");
 
-            var periodosEscolares = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+            var periodosEscolares = await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
-            return ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplina, usuarioLogado, usuarioRF);
+            return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplinaCodigo, usuarioLogado, usuarioRF);
         }
 
         public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)
         {
             var aulaInicioRecorrencia = repositorio.ObterPorId(aulaInicialId);
-            var fimRecorrencia =await  consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aulaInicioRecorrencia.TipoCalendarioId, aulaInicioRecorrencia.DataAula, recorrencia);
+            var fimRecorrencia = await consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aulaInicioRecorrencia.TipoCalendarioId, aulaInicioRecorrencia.DataAula, recorrencia);
 
             var aulaIdOrigemRecorrencia = aulaInicioRecorrencia.AulaPaiId != null ? aulaInicioRecorrencia.AulaPaiId.Value
                                             : aulaInicialId;
@@ -183,7 +149,7 @@ namespace SME.SGP.Aplicacao
             return aulas.Sum(a => a.Quantidade);
         }
 
-        public async Task<int> ObterRecorrenciaDaSerie(long aulaId)
+        public int ObterRecorrenciaDaSerie(long aulaId)
         {
             var aula = repositorio.ObterPorId(aulaId);
 
@@ -235,21 +201,41 @@ namespace SME.SGP.Aplicacao
             return dto;
         }
 
-        private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplina, Usuario usuarioLogado, string usuarioRF)
+        private async Task<IEnumerable<DataAulasProfessorDto>> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplinaCodigo, Usuario usuarioLogado, string usuarioRF)
         {
-            foreach (var periodoEscolar in periodosEscolares.Periodos)
+            if (disciplinaCodigo.ToCharArray().Any(a => !char.IsDigit(a)))
+                throw new NegocioException("Código da disciplina inválido");
+
+            var disciplina = await consultasDisciplina.ObterDisciplina(Convert.ToInt64(disciplinaCodigo));
+            if (disciplina == null)
+                throw new NegocioException("Disciplina não encontrada");
+
+            var aulasRetorno = new List<DataAulasProfessorDto>();
+
+            periodosEscolares.Periodos.ForEach(p =>
             {
-                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, disciplina, usuarioRF, usuarioLogado.EhProfessorCj(), usuarioLogado.TemPerfilSupervisorOuDiretor()))
+                var aulas = repositorio
+                    .ObterDatasDeAulasPorAnoTurmaEDisciplina(p.Id, anoLetivo, turmaCodigo, disciplinaCodigo, disciplina.Regencia ? string.Empty : usuarioRF, usuarioLogado.EhProfessorCj(), usuarioLogado.TemPerfilSupervisorOuDiretor());
+
+                aulas.ToList().ForEach(aula =>
                 {
-                    yield return new DataAulasProfessorDto
-                    {
-                        Data = aula.DataAula,
-                        IdAula = aula.Id,
-                        AulaCJ = aula.AulaCJ,
-                        Bimestre = periodoEscolar.Bimestre
-                    };
-                }
-            }
+                    if (!disciplina.Regencia)
+                        aulasRetorno.Add(MapearParaDto(aula, p.Bimestre));
+
+                    var rfsOrnedadosPorDataCriacaoAula = aulas.OrderBy(a => a.CriadoEm)
+                        .Select(a => a.ProfessorRf).Distinct();
+
+                    var ultimoRegente = rfsOrnedadosPorDataCriacaoAula.Last();                   
+
+                    // se regente atual, titular anterior ou professor anterior visualiza a aula
+                    if (ultimoRegente.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||                        
+                        aula.ProfessorRf.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
+                        aula.Turma.EhTurmaInfantil)
+                        aulasRetorno.Add(MapearParaDto(aula, p.Bimestre));
+                });
+            });
+
+            return aulasRetorno.OrderBy(a => a.Data);
         }
 
         private async Task<string> ObterDisciplinaIdAulaEOL(Usuario usuarioLogado, Aula aula, bool ehCJ)
@@ -267,6 +253,17 @@ namespace SME.SGP.Aplicacao
             var disciplina = disciplinasUsuario?.FirstOrDefault(x => x.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
             var disciplinaId = disciplina == null ? null : disciplina.CodigoComponenteCurricular.ToString();
             return disciplinaId;
+        }
+
+        private DataAulasProfessorDto MapearParaDto(Aula aula, int bimestre)
+        {
+            return new DataAulasProfessorDto
+            {
+                Data = aula.DataAula,
+                IdAula = aula.Id,
+                AulaCJ = aula.AulaCJ,
+                Bimestre = bimestre
+            };
         }
     }
 }

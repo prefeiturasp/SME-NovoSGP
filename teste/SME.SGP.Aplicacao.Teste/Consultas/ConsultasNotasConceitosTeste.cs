@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Consultas
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioConceito> repositorioConceito;
         private readonly Mock<IServicoAluno> servicoAluno;
         private readonly Mock<IServicoDeNotasConceitos> servicoDeNotasConceitos;
-        private readonly Mock<IServicoEOL> servicoEOL;
+        private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IRepositorioAtividadeAvaliativaDisciplina> repositorioAtividadeAvaliativaDisciplina;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
@@ -36,7 +37,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
         public ConsultasNotasConceitosTeste()
         {
-            servicoEOL = new Mock<IServicoEOL>();
+            servicoEOL = new Mock<IServicoEol>();
             consultaAtividadeAvaliativa = new Mock<IConsultaAtividadeAvaliativa>();
             consultasFechamentoTurmaDisciplina = new Mock<IConsultasFechamentoTurmaDisciplina>();
             consultasDisciplina = new Mock<IConsultasDisciplina>();
@@ -94,12 +95,12 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [InlineData(3.5, 0.5, 3.5)]
         [InlineData(7.15, 0.6, 7.6)]
         [InlineData(8.05, 0.04, 9)]
-        public void Deve_Arredondar_Nota(double nota, double arredondamento, double esperado)
+        public async Task Deve_Arredondar_Nota(double nota, double arredondamento, double esperado)
         {
-            repositorioAtividadeAvaliativa.Setup(a => a.ObterPorId(1)).Returns(new Dominio.AtividadeAvaliativa());
-            repositorioNotaParametro.Setup(a => a.ObterPorDataAvaliacao(It.IsAny<DateTime>())).Returns(new Dominio.NotaParametro() { Incremento = arredondamento });
+            repositorioAtividadeAvaliativa.Setup(a => a.ObterPorIdAsync(1)).ReturnsAsync(new Dominio.AtividadeAvaliativa());
+            repositorioNotaParametro.Setup(a => a.ObterPorDataAvaliacao(It.IsAny<DateTime>())).ReturnsAsync(new Dominio.NotaParametro() { Incremento = arredondamento });
 
-            var valorArredondado = consultasNotasConceito.ObterValorArredondado(1, nota);
+            var valorArredondado = await consultasNotasConceito.ObterValorArredondado(1, nota);
 
             Assert.True(esperado == valorArredondado);
         }

@@ -13,10 +13,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasPendenciaFechamento : ConsultasBase, IConsultasPendenciaFechamento
     {
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
         public ConsultasPendenciaFechamento(IContextoAplicacao contextoAplicacao
-                                , IServicoEOL servicoEOL
+                                , IServicoEol servicoEOL
                                 , IRepositorioPendenciaFechamento repositorioPendenciaFechamento) : base(contextoAplicacao)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));

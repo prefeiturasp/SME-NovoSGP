@@ -21,56 +21,56 @@ namespace SME.SGP.Integracao.Teste
             _fixture = fixture;
         }
 
-        [Fact]
-        public async Task Deve_Incluir_Calendario_E_Feriados_Moveis()
-        {
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
+        //[Fact]
+        //public async Task Deve_Incluir_Calendario_E_Feriados_Moveis()
+        //{
+        //    _fixture._clientApi.DefaultRequestHeaders.Clear();
 
-            _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.TCE_C, Permissao.TCE_I, Permissao.TCE_E, Permissao.TF_C }));
+        //    _fixture._clientApi.DefaultRequestHeaders.Authorization =
+        //        new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.TCE_C, Permissao.TCE_I, Permissao.TCE_E, Permissao.TF_C }));
 
-            var calendarioParaIncluir = new TipoCalendarioDto()
-            {
-                AnoLetivo = 2019,
-                DescricaoPeriodo = "Teste",
-                Modalidade = Dominio.ModalidadeTipoCalendario.EJA,
-                Nome = "Calendário de teste",
-                Periodo = Dominio.Periodo.Anual,
-                Situacao = true
-            };
+        //    var calendarioParaIncluir = new TipoCalendarioDto()
+        //    {
+        //        AnoLetivo = 2019,
+        //        DescricaoPeriodo = "Teste",
+        //        Modalidade = Dominio.ModalidadeTipoCalendario.EJA,
+        //        Nome = "Calendário de teste",
+        //        Periodo = Dominio.Periodo.Anual,
+        //        Situacao = true
+        //    };
 
-            var jsonParaPostCalendario = new StringContent(TransformarEmJson(calendarioParaIncluir), Encoding.UTF8, "application/json");
-            var postResultIncluiCalendario = await _fixture._clientApi.PostAsync("api/v1/calendarios/tipos/", jsonParaPostCalendario);
+        //    var jsonParaPostCalendario = new StringContent(TransformarEmJson(calendarioParaIncluir), Encoding.UTF8, "application/json");
+        //    var postResultIncluiCalendario = await _fixture._clientApi.PostAsync("api/v1/calendarios/tipos/", jsonParaPostCalendario);
 
-            Assert.True(postResultIncluiCalendario.IsSuccessStatusCode);
+        //    Assert.True(postResultIncluiCalendario.IsSuccessStatusCode);
 
-            if (postResultIncluiCalendario.IsSuccessStatusCode)
-            {
-                var buscarTodosCalendariosResultado = await _fixture._clientApi.GetAsync($"api/v1/calendarios/tipos");
+        //    if (postResultIncluiCalendario.IsSuccessStatusCode)
+        //    {
+        //        var buscarTodosCalendariosResultado = await _fixture._clientApi.GetAsync($"api/v1/calendarios/tipos");
 
-                Assert.True(buscarTodosCalendariosResultado.IsSuccessStatusCode);
-                if (buscarTodosCalendariosResultado.IsSuccessStatusCode)
-                {
-                    var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<TipoCalendarioDto>>(await buscarTodosCalendariosResultado.Content.ReadAsStringAsync());
-                    Assert.True(dtoTodos.Any());
+        //        Assert.True(buscarTodosCalendariosResultado.IsSuccessStatusCode);
+        //        if (buscarTodosCalendariosResultado.IsSuccessStatusCode)
+        //        {
+        //            var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<TipoCalendarioDto>>(await buscarTodosCalendariosResultado.Content.ReadAsStringAsync());
+        //            Assert.True(dtoTodos.Any());
 
-                    var filtroFeriadoCalendarioDto = new FiltroFeriadoCalendarioDto() { Tipo = Dominio.TipoFeriadoCalendario.Movel, Ano = 2019 };
+        //            var filtroFeriadoCalendarioDto = new FiltroFeriadoCalendarioDto() { Tipo = Dominio.TipoFeriadoCalendario.Movel, Ano = 2019 };
 
-                    var jsonParaPostFiltroFeriados = new StringContent(TransformarEmJson(filtroFeriadoCalendarioDto), Encoding.UTF8, "application/json");
+        //            var jsonParaPostFiltroFeriados = new StringContent(TransformarEmJson(filtroFeriadoCalendarioDto), Encoding.UTF8, "application/json");
 
-                    Thread.Sleep(2000);
+        //            Thread.Sleep(2000);
 
-                    var postResultBuscaFeriados = await _fixture._clientApi.PostAsync("api/v1/calendarios/feriados/listar", jsonParaPostFiltroFeriados);
+        //            var postResultBuscaFeriados = await _fixture._clientApi.PostAsync("api/v1/calendarios/feriados/listar", jsonParaPostFiltroFeriados);
 
-                    Assert.True(postResultBuscaFeriados.IsSuccessStatusCode);
-                    if (postResultBuscaFeriados.IsSuccessStatusCode)
-                    {
-                        var dtoFeriados = JsonConvert.DeserializeObject<IEnumerable<FeriadoCalendarioDto>>(await postResultBuscaFeriados.Content.ReadAsStringAsync());
-                        Assert.True(dtoFeriados.Count() == 4);
-                    }
-                }
-            }
-        }
+        //            Assert.True(postResultBuscaFeriados.IsSuccessStatusCode);
+        //            if (postResultBuscaFeriados.IsSuccessStatusCode)
+        //            {
+        //                var dtoFeriados = JsonConvert.DeserializeObject<IEnumerable<FeriadoCalendarioDto>>(await postResultBuscaFeriados.Content.ReadAsStringAsync());
+        //                Assert.True(dtoFeriados.Count() == 4);
+        //            }
+        //        }
+        //    }
+        //}
 
         private string TransformarEmJson(object model)
         {

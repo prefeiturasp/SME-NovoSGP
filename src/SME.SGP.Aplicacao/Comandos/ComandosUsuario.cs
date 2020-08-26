@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
         private readonly IServicoEmail servicoEmail;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoPerfil servicoPerfil;
         private readonly IServicoTokenJwt servicoTokenJwt;
         private readonly IServicoUsuario servicoUsuario;
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             IServicoAutenticacao servicoAutenticacao,
             IServicoUsuario servicoUsuario,
             IServicoPerfil servicoPerfil,
-            IServicoEOL servicoEOL,
+            IServicoEol servicoEOL,
             IServicoTokenJwt servicoTokenJwt,
             IServicoEmail servicoEmail,
             IConfiguration configuration,
@@ -82,31 +82,30 @@ namespace SME.SGP.Aplicacao
             await servicoAutenticacao.AlterarSenha(login, alterarSenhaDto.SenhaAtual, alterarSenhaDto.NovaSenha);
         }
 
-        public async Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
+        public async Task<UsuarioAutenticacaoRetornoDto> AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(recuperacaoSenhaDto.Token);
             if (usuario == null)
-            {
                 throw new NegocioException("Usuário não encontrado.");
-            }
+            
 
             if (!usuario.TokenRecuperacaoSenhaEstaValido())
-            {
                 throw new NegocioException("Este link expirou. Clique em continuar para solicitar um novo link de recuperação de senha.", 403);
-            }
+            
 
             usuario.ValidarSenha(recuperacaoSenhaDto.NovaSenha);
 
             var retornoApi = await servicoEOL.AlterarSenha(usuario.Login, recuperacaoSenhaDto.NovaSenha);
 
             if (!retornoApi.SenhaAlterada)
-            {
                 throw new NegocioException(retornoApi.Mensagem, retornoApi.StatusRetorno);
-            }
+            
 
             usuario.FinalizarRecuperacaoSenha();
             repositorioUsuario.Salvar(usuario);
-        }
+            
+            return await Autenticar(usuario.Login, recuperacaoSenhaDto.NovaSenha);
+        }     
 
         public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
         {
@@ -150,20 +149,22 @@ namespace SME.SGP.Aplicacao
                 .ToList();
 
             // Revoga token atual para geração de um novo
-            await servicoTokenJwt.RevogarToken(login);
+            //await servicoTokenJwt.RevogarToken(login);
 
             // Gera novo token e guarda em cache
             retornoAutenticacaoEol.Item1.Token =
                 servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
 
             retornoAutenticacaoEol.Item1.DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao();
-            //var fromDate = servicoTokenJwt.ObterDataHoraCriacao();
 
             usuario.AtualizaUltimoLogin();
 
             repositorioUsuario.Salvar(usuario);
 
             await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
+
+            retornoAutenticacaoEol.Item1.UsuarioLogin = usuario.Login;
+            retornoAutenticacaoEol.Item1.UsuarioRf = usuario.CodigoRf;
 
             return retornoAutenticacaoEol.Item1;
         }
@@ -194,7 +195,7 @@ namespace SME.SGP.Aplicacao
 
                 usuario.DefinirPerfilAtual(perfil);
 
-                await servicoTokenJwt.RevogarToken(loginAtual);
+                //await servicoTokenJwt.RevogarToken(loginAtual);
                 var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes);
 
                 return new TrocaPerfilDto
@@ -203,7 +204,9 @@ namespace SME.SGP.Aplicacao
                     DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao(),
                     EhProfessor = usuario.EhProfessor(),
                     EhProfessorCj = usuario.EhProfessorCj(),
-                    EhProfessorPoa = usuario.EhProfessorPoa()
+                    EhProfessorPoa = usuario.EhProfessorPoa(),
+                    EhProfessorInfantil = usuario.EhProfessorInfantil(),
+                    EhProfessorCjInfantil = usuario.EhProfessorCjInfantil()
                 };
             }
         }
@@ -245,7 +248,6 @@ namespace SME.SGP.Aplicacao
             string nomeLoginAtual = servicoUsuario.ObterNomeLoginAtual();
 
             var dadosUsuario = await servicoEOL.ObterMeusDados(login);
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRfAtual, login, nomeLoginAtual, dadosUsuario.Email);
 
             // Obter Perfil do token atual
             var guidPerfil = servicoTokenJwt.ObterPerfil();
@@ -260,7 +262,7 @@ namespace SME.SGP.Aplicacao
                 .Select(a => (Permissao)a)
                 .ToList();
 
-            await servicoTokenJwt.RevogarToken(login);
+            //await servicoTokenJwt.RevogarToken(login);
 
             return new RevalidacaoTokenDto()
             {
@@ -281,9 +283,6 @@ namespace SME.SGP.Aplicacao
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
             var usuarioCore = await servicoEOL.ObterMeusDados(login);
 
-            if (usuarioCore == null)
-                throw new NegocioException("Usuário não encontrado.");
-
             if (usuario == null)
                 usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, login, usuarioCore.Nome, usuarioCore.Email);
 
@@ -292,7 +291,7 @@ namespace SME.SGP.Aplicacao
                 await servicoEOL.RelecionarUsuarioPerfis(login);
             }
 
-            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));
+            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));            
             usuario.DefinirEmail(usuarioCore.Email);
             usuario.IniciarRecuperacaoDeSenha();
             repositorioUsuario.Salvar(usuario);

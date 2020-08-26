@@ -1,4 +1,5 @@
 ﻿using SME.Background.Core.Enumerados;
+using SME.Background.Core.Exceptions;
 using SME.Background.Core.Interfaces;
 using SME.Background.Core.Processors;
 using System;
@@ -8,12 +9,8 @@ namespace SME.Background.Core
 {
     public static class Orquestrador
     {
-        private static ConcurrentDictionary<TipoProcessamento, IProcessor> processadores;
-
-        static Orquestrador()
-        {
-            processadores = new ConcurrentDictionary<TipoProcessamento, IProcessor>();
-        }
+        private static ConcurrentDictionary<TipoProcessamento, IProcessor> processadores = 
+            new ConcurrentDictionary<TipoProcessamento, IProcessor>();
 
         public static IServiceProvider Provider { get; private set; }
 
@@ -36,7 +33,7 @@ namespace SME.Background.Core
             if (processadores.TryGetValue(tipoProcessamento, out processador))
                 return processador;
             else
-                throw new Exception($"Não foi possível obter um processador do tipo {tipoProcessamento.ToString()} pois não foi registrado");
+                throw new ErroInternoException($"Não foi possível obter um processador do tipo {tipoProcessamento.ToString()} pois não foi registrado");
         }
 
         public static void Registrar<T>(T processador)

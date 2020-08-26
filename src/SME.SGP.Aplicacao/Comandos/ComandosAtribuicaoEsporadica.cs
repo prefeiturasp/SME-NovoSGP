@@ -27,11 +27,11 @@ namespace SME.SGP.Aplicacao
             await repositorioAtribuicaoEsporadica.SalvarAsync(atribuicaoEsporadica);
         }
 
-        public void Salvar(AtribuicaoEsporadicaDto atruibuicaoEsporadicaDto)
+        public async Task Salvar(AtribuicaoEsporadicaDto atruibuicaoEsporadicaDto)
         {
             var entidade = ObterEntidade(atruibuicaoEsporadicaDto);
 
-            servicoAtribuicaoEsporadica.Salvar(entidade, atruibuicaoEsporadicaDto.AnoLetivo);
+            await servicoAtribuicaoEsporadica.Salvar(entidade, atruibuicaoEsporadicaDto.AnoLetivo, atruibuicaoEsporadicaDto.EhInfantil);
         }
 
         private AtribuicaoEsporadica DtoParaEntidade(AtribuicaoEsporadicaDto Dto)
@@ -39,8 +39,8 @@ namespace SME.SGP.Aplicacao
             return new AtribuicaoEsporadica
             {
                 UeId = Dto.UeId,
-                DataFim = Dto.DataFim.Local(),
-                DataInicio = Dto.DataInicio.Local(),
+                DataFim = Dto.DataFim.Local().Date,
+                DataInicio = Dto.DataInicio.Local().Date,
                 DreId = Dto.DreId,
                 Id = Dto.Id,
                 ProfessorRf = Dto.ProfessorRf

@@ -57,10 +57,6 @@ const Avaliacao = props => {
   const montarCabecalhoAvaliacoes = () => {
     return dados.avaliacoes && dados.avaliacoes.length > 0
       ? dados.avaliacoes.map(avaliacao => {
-          const descricaoSemHtml = avaliacao.descricao.replace(
-            /<[^>]*>?/gm,
-            ''
-          );
           return (
             <th key={shortid.generate()} className="width-150">
               <div className="texto-header-avaliacao">

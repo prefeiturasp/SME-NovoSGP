@@ -11,7 +11,7 @@ import {
   setDadosAlunoObjectCard,
   limparDadosConselhoClasse,
 } from '~/redux/modulos/conselhoClasse/actions';
-import { erros } from '~/servicos/alertas';
+import { erros, erro, sucesso } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import { Container } from './conselhoClasse.css';
 import BotaoOrdenarListaAlunos from './DadosConselhoClasse/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
@@ -20,6 +20,11 @@ import DadosConselhoClasse from './DadosConselhoClasse/dadosConselhoClasse';
 import ObjectCardConselhoClasse from './DadosConselhoClasse/ObjectCardConselhoClasse/objectCardConselhoClasse';
 import TabelaRetratilConselhoClasse from './DadosConselhoClasse/TabelaRetratilConselhoClasse/tabelaRetratilConselhoClasse';
 import servicoSalvarConselhoClasse from './servicoSalvarConselhoClasse';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
+import modalidade from '~/dtos/modalidade';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const ConselhoClasse = () => {
   const dispatch = useDispatch();
@@ -27,9 +32,29 @@ const ConselhoClasse = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const { turma, anoLetivo, periodo } = turmaSelecionada;
+  const permissoesTela = usuario.permissoes[RotasDto.CONSELHO_CLASSE];
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
+  const [imprimindo, setImprimindo] = useState(false);
   const [exibirListas, setExibirListas] = useState(false);
+  const [podeImprimir, setPodeImprimir] = useState(false);
+
+  const conselhoClasseId = useSelector(
+    store => store.conselhoClasse.dadosPrincipaisConselhoClasse.conselhoClasseId
+  );
+
+  const fechamentoTurmaId = useSelector(
+    store =>
+      store.conselhoClasse.dadosPrincipaisConselhoClasse.fechamentoTurmaId
+  );
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
+
+  useEffect(() => {
+    setPodeImprimir(conselhoClasseId);
+  }, [conselhoClasseId]);
 
   const obterListaAlunos = useCallback(async () => {
     setCarregandoGeral(true);
@@ -50,11 +75,29 @@ const ConselhoClasse = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore);
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
+
+  useEffect(() => {
     resetarInfomacoes();
-    if (turma) {
+    if (
+      turmaSelecionada &&
+      turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
+    ) {
       obterListaAlunos();
     }
-  }, [obterListaAlunos, turma, resetarInfomacoes]);
+  }, [
+    obterListaAlunos,
+    turma,
+    turmaSelecionada,
+    resetarInfomacoes,
+    modalidadesFiltroPrincipal,
+  ]);
 
   const obterFrequenciaAluno = async codigoAluno => {
     const retorno = await ServicoConselhoClasse.obterFrequenciaAluno(
@@ -86,9 +129,25 @@ const ConselhoClasse = () => {
     return false;
   };
 
+  const gerarConselhoClasseTurma = async () => {
+    setImprimindo(true);
+    await ServicoConselhoClasse.gerarConselhoClasseTurma(
+      conselhoClasseId,
+      fechamentoTurmaId
+    )
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
+      })
+      .finally(setImprimindo(false))
+      .catch(e => erro(e));
+  };
+
   return (
     <Container>
-      {!turmaSelecionada.turma ? (
+      {!turmaSelecionada.turma &&
+      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
         <div className="col-md-12">
           <Alert
             alerta={{
@@ -103,32 +162,37 @@ const ConselhoClasse = () => {
       ) : (
         ''
       )}
+      <AlertaModalidadeInfantil />
       <Cabecalho pagina="Conselho de classe" />
       <Loader loading={carregandoGeral}>
         <Card>
-          {turmaSelecionada.turma ? (
-            <>
-              <div className="col-md-12">
-                <div className="row">
-                  <div className="col-md-12 d-flex justify-content-end pb-4">
-                    <BotoesAcoesConselhoClasse />
-                  </div>
+          <>
+            <div className="col-md-12">
+              <div className="row">
+                <div className="col-md-12 d-flex justify-content-end pb-4">
+                  <BotoesAcoesConselhoClasse />
                 </div>
               </div>
+            </div>
+          </>
+          {turmaSelecionada.turma &&
+          !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
+            <>
               {exibirListas ? (
                 <>
                   <div className="col-md-12 mb-2 d-flex">
                     <BotaoOrdenarListaAlunos />
-
-                    <Button
-                      className="btn-imprimir"
-                      icon="print"
-                      color={Colors.Azul}
-                      border
-                      onClick={() => {}}
-                      disabled
-                      id="btn-imprimir-conselho-classe"
-                    />
+                    <Loader loading={imprimindo}>
+                      <Button
+                        className="btn-imprimir"
+                        icon="print"
+                        color={Colors.Azul}
+                        border
+                        onClick={() => gerarConselhoClasseTurma()}
+                        disabled={!podeImprimir}
+                        id="btn-imprimir-relatorio-pendencias"
+                      />
+                    </Loader>
                   </div>
                   <div className="col-md-12 mb-2">
                     <TabelaRetratilConselhoClasse
@@ -136,7 +200,10 @@ const ConselhoClasse = () => {
                       permiteOnChangeAluno={permiteOnChangeAluno}
                     >
                       <>
-                        <ObjectCardConselhoClasse />
+                        <ObjectCardConselhoClasse
+                          conselhoClasseId={conselhoClasseId}
+                          fechamentoTurmaId={fechamentoTurmaId}
+                        />
                         <DadosConselhoClasse
                           turmaCodigo={turmaSelecionada.turma}
                           modalidade={turmaSelecionada.modalidade}

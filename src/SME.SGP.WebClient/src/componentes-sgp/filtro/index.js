@@ -133,7 +133,7 @@ const Filtro = () => {
         item => item.valor.toString() === `${modalidadeSelecionada}`
       );
 
-      const turmaDesc = turmas.find(turma => turma.valor === turmaSelecionada);
+      const turmaAtual = turmas.find(turma => turma.valor === turmaSelecionada);
 
       const unidadeEscolarDesc = unidadesEscolares.find(
         unidade => unidade.valor === unidadeEscolarSelecionada
@@ -141,7 +141,7 @@ const Filtro = () => {
 
       setTextoAutocomplete(
         `${modalidadeDesc ? modalidadeDesc.desc : 'Modalidade'} - ${
-          turmaDesc ? turmaDesc.desc : 'Turma'
+          turmaAtual ? turmaAtual.desc : 'Turma'
         } - ${unidadeEscolarDesc ? unidadeEscolarDesc.desc : 'Unidade Escolar'}`
       );
 
@@ -160,13 +160,14 @@ const Filtro = () => {
         ano: turmaSelecionadaCompleta.ano,
         desc: `${
           modalidadeDesc && modalidadeDesc.desc ? modalidadeDesc.desc : ''
-        } - ${turmaDesc && turmaDesc.desc ? turmaDesc.desc : ''} - ${
+        } - ${turmaAtual && turmaAtual.desc ? turmaAtual.desc : ''} - ${
           unidadeEscolarDesc && unidadeEscolarDesc.desc
             ? unidadeEscolarDesc.desc
             : ''
         }`,
         periodo: periodoSelecionado || 0,
         consideraHistorico,
+        ensinoEspecial: turmaAtual.ensinoEspecial,
       };
 
       dispatch(turmasUsuario(turmas));
@@ -784,8 +785,8 @@ const Filtro = () => {
   useEffect(() => {
     const controlaClickFora = evento => {
       if (
-        !evento.target.nodeName === 'svg' &&
-        !evento.target.nodeName === 'path' &&
+        evento.target.nodeName !== 'svg' &&
+        evento.target.nodeName !== 'path' &&
         !evento.target.classList.contains('fa-caret-down') &&
         !evento.target.classList.contains('ant-select-dropdown-menu-item') &&
         !evento.target.classList.contains(

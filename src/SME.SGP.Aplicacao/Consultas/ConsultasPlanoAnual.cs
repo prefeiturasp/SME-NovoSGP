@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                                    IRepositorioTurma repositorioTurma,
                                    IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                    IServicoUsuario servicoUsuario,
-                                   IServicoEOL servicoEOL)
+                                   IServicoEol servicoEOL)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnual));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
                 planoAnualLista.Add(await ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
             }
 
-            var periodosEscolares = ObterPeriodoEscolar(filtro.TurmaId, filtro.AnoLetivo);
+            var periodosEscolares = await ObterPeriodoEscolar(filtro.TurmaId, filtro.AnoLetivo);
 
             if (periodosEscolares == null)
                 return null;
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        public async Task<long> ObterIdPlanoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
+        public long ObterIdPlanoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
         {
             var plano = repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, disciplinaId);
             return plano != null ? plano.Id : 0;
@@ -118,14 +118,14 @@ namespace SME.SGP.Aplicacao
                 }
             }
             else if (seNaoExistirRetornaNovo)
-                planoAnual = ObterNovoPlanoAnual(filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.AnoLetivo, filtroPlanoAnualDto.EscolaId);
+                planoAnual = await ObterNovoPlanoAnual(filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.AnoLetivo, filtroPlanoAnualDto.EscolaId);
 
             return planoAnual;
         }
 
         public async Task<IEnumerable<PlanoAnualCompletoDto>> ObterPorUETurmaAnoEComponenteCurricular(string ueId, string turmaId, int anoLetivo, long componenteCurricularEolId)
         {
-            var periodos = ObterPeriodoEscolar(turmaId, anoLetivo);
+            var periodos = await ObterPeriodoEscolar(turmaId, anoLetivo);
             var dataAtual = DateTime.Now.Date;
             var listaPlanoAnual = repositorioPlanoAnual.ObterPlanoAnualCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCurricularEolId);
             var componentesCurricularesEol = repositorioComponenteCurricular.Listar();
@@ -225,9 +225,9 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private PlanoAnualCompletoDto ObterNovoPlanoAnual(string turmaId, int anoLetivo, string ueId)
+        private async Task<PlanoAnualCompletoDto> ObterNovoPlanoAnual(string turmaId, int anoLetivo, string ueId)
         {
-            var periodos = ObterPeriodoEscolar(turmaId, anoLetivo);
+            var periodos = await ObterPeriodoEscolar(turmaId, anoLetivo);
 
             var periodo = periodos.FirstOrDefault(c => c.PeriodoFim >= DateTime.Now.Date && c.PeriodoInicio <= DateTime.Now.Date);
 
@@ -255,21 +255,21 @@ namespace SME.SGP.Aplicacao
             return listaPlanoAnual;
         }
 
-        private IEnumerable<PeriodoEscolar> ObterPeriodoEscolar(string turmaId, int anoLetivo)
+        private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodoEscolar(string turmaId, int anoLetivo)
         {
-            var turma = repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
             if (turma == null)
             {
                 throw new NegocioException("Turma não encontrada.");
             }
             var modalidade = turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
-            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, turma.Semestre);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, turma.Semestre);
             if (tipoCalendario == null)
             {
                 throw new NegocioException("Tipo de calendário não encontrado.");
             }
 
-            var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+            var periodos = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
             if (periodos == null)
             {
                 throw new NegocioException("Período escolar não encontrado.");
@@ -287,6 +287,16 @@ namespace SME.SGP.Aplicacao
             var dataAtual = DateTime.Now;
 
             return periodo.PeriodoInicio <= dataAtual && periodo.PeriodoFim >= dataAtual;
+        }
+
+        public async Task<PlanoAnualResumoDto> ObterPlanoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
+        {
+            var plano = repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, disciplinaId);
+            return plano == null ? null : new PlanoAnualResumoDto()
+            {
+                Id = plano.Id,
+                ObjetivosAprendizagemOpcionais = plano.ObjetivosAprendizagemOpcionais
+            };
         }
     }
 }

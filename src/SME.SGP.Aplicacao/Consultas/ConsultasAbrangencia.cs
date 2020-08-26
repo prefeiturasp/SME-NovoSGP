@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -44,6 +45,38 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterAnosLetivos(login, perfil, consideraHistorico);
         }
 
+        public async Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+
+            var retorno = await repositorioAbrangencia.ObterAnosTurmasPorCodigoUeModalidade(login, perfil, codigoUe, modalidade, consideraHistorico);
+
+            if (retorno != null && retorno.Any())
+                return TransformarAnosEmOpcoesDropdownDto(retorno.OrderBy(q => q), modalidade);
+            else
+                return Enumerable.Empty<OpcaoDropdownDto>();
+        }
+
+        private IEnumerable<OpcaoDropdownDto> TransformarAnosEmOpcoesDropdownDto(IEnumerable<string> anos, Modalidade modalidade)
+        {
+            string descModalidade = modalidade.GetAttribute<DisplayAttribute>().Name;
+            int anoInt;
+
+            foreach (var ano in anos)
+            {
+                if (int.TryParse(ano, out anoInt) && anoInt > 0)
+                    yield return new OpcaoDropdownDto(ano, $"{ano}º ano - {descModalidade}");
+            }
+        }
+
+        public Task<IEnumerable<int>> ObterAnosLetivosTodos()
+        {
+            var anos = Enumerable.Range(2014, 7).OrderByDescending(x => x).AsEnumerable();
+
+            return Task.FromResult(anos);
+        }
+
         public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
         {
             var login = servicoUsuario.ObterLoginAtual();
@@ -59,8 +92,10 @@ namespace SME.SGP.Aplicacao
 
             var lista = await repositorioAbrangencia.ObterModalidades(login, perfil, anoLetivo, consideraHistorico);
 
-            return from a in lista
-                   select new EnumeradoRetornoDto() { Id = a, Descricao = ((Modalidade)a).GetAttribute<DisplayAttribute>().Name };
+            var listaModalidades = from a in lista
+                                   select new EnumeradoRetornoDto() { Id = a, Descricao = ((Modalidade)a).GetAttribute<DisplayAttribute>().Name };
+
+            return listaModalidades.OrderBy(a => a.Descricao);
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)
@@ -79,7 +114,9 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            return await repositorioAbrangencia.ObterTurmas(codigoUe, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo);
+            var result = await repositorioAbrangencia.ObterTurmas(codigoUe, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo);
+
+            return result;
         }
 
         public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
@@ -87,7 +124,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            return await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo);
+            return (await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo)).OrderBy(c => c.Nome).ToList();
         }
     }
 }

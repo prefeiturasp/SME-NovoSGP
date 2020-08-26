@@ -20,7 +20,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula;
-        private readonly IServicoEOL servicoEol;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -36,7 +35,6 @@ namespace SME.SGP.Aplicacao
                         IConsultasProfessor consultasProfessor,
                         IServicoUsuario servicoUsuario,
                         IUnitOfWork unitOfWork,
-                        IServicoEOL servicoEol,
                         IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
         {
             this.repositorio = repositorioPlanoAula;
@@ -49,7 +47,6 @@ namespace SME.SGP.Aplicacao
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem;
             this.consultasPlanoAnual = consultasPlanoAnual;
             this.unitOfWork = unitOfWork;
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoUsuario = servicoUsuario;
         }
@@ -123,65 +120,46 @@ namespace SME.SGP.Aplicacao
             PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
             planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(aula.TipoCalendarioId, aula.DataAula.Date);
+            if (periodoEscolar == null)
+                throw new NegocioException("Não foi possível concluir o cadastro, pois não foi localizado o bimestre da aula.");
+
+            var planoAnual = await consultasPlanoAnual.ObterPlanoAnualPorAnoEscolaBimestreETurma(
+                        aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), periodoEscolar.Bimestre, long.Parse(aula.DisciplinaId));
+
+            if (planoAnual.Id <= 0 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
+                throw new NegocioException("Não foi possível concluir o cadastro, pois não existe plano anual cadastrado");
+
             if (planoAulaDto.ObjetivosAprendizagemJurema == null || !planoAulaDto.ObjetivosAprendizagemJurema.Any() && !planoAula.Migrado)
             {
                 var permitePlanoSemObjetivos = false;
 
                 // Os seguintes componentes curriculares (disciplinas) não tem seleção de objetivos de aprendizagem
                 // Libras, Sala de Leitura
-                permitePlanoSemObjetivos = new string[] { "218", "1061" }.Contains(aula.DisciplinaId);
-
-                // EJA e Médio não obrigam seleção
-                if (!permitePlanoSemObjetivos)
-                {
-                    permitePlanoSemObjetivos = new[] { Modalidade.EJA, Modalidade.Medio }.Contains(abrangenciaTurma.Modalidade);
-                }
-
-                // Para professores substitutos (CJ) a seleção dos objetivos deve ser opcional
-                if (!permitePlanoSemObjetivos)
-                {
-                    permitePlanoSemObjetivos = usuario.EhProfessorCj();
-                }
-
-                // Caso a disciplina não possui vinculo com Jurema, os objetivos não devem ser exigidos
-                if (!permitePlanoSemObjetivos)
-                {
-                    permitePlanoSemObjetivos = !(consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt64(aula.DisciplinaId)));
-                }
-
-                // Caso a turma for de  educação física multisseriadas, os objetivos não devem ser exigidos
-                if (!permitePlanoSemObjetivos)
-                {
-                    permitePlanoSemObjetivos = abrangenciaTurma.Ano.Equals("0");
-                }
+                permitePlanoSemObjetivos = new string[] { "218", "1061" }.Contains(aula.DisciplinaId) ||
+                                           new[] { Modalidade.EJA, Modalidade.Medio }.Contains(abrangenciaTurma.Modalidade) ||  // EJA e Médio não obrigam seleção
+                                           usuario.EhProfessorCj() ||  // Para professores substitutos (CJ) a seleção dos objetivos deve ser opcional
+                                           !(consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt64(aula.DisciplinaId))) || // Caso a disciplina não possui vinculo com Jurema, os objetivos não devem ser exigidos
+                                           planoAnual.ObjetivosAprendizagemOpcionais || // Turma Especial não obriga seleção de componentes
+                                           abrangenciaTurma.Ano.Equals("0"); // Caso a turma for de  educação física multisseriadas, os objetivos não devem ser exigidos;
 
                 if (!permitePlanoSemObjetivos)
                     throw new NegocioException("A seleção de objetivos de aprendizagem é obrigatória para criação do plano de aula");
             }
 
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(aula.TipoCalendarioId,aula.DataAula.Date);
-            if(periodoEscolar==null)
-                throw new NegocioException("Não foi possível concluir o cadastro, pois não foi localizado o bimestre da aula.");
-
-
-            var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
-                        aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), periodoEscolar.Bimestre, long.Parse(aula.DisciplinaId));
-
-            if (planoAnualId <= 0 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
-                throw new NegocioException("Não foi possível concluir o cadastro, pois não existe plano anual cadastrado");
 
             if (controlarTransacao)
             {
                 using (var transacao = unitOfWork.IniciarTransacao())
                 {
-                    await SalvarPlanoAula(planoAula, planoAulaDto, planoAnualId);
+                    await SalvarPlanoAula(planoAula, planoAulaDto, planoAnual.Id);
 
                     unitOfWork.PersistirTransacao();
                 }
             }
             else
             {
-                await SalvarPlanoAula(planoAula, planoAulaDto, planoAnualId);
+                await SalvarPlanoAula(planoAula, planoAulaDto, planoAnual.Id);
             }
         }
 
@@ -220,7 +198,7 @@ namespace SME.SGP.Aplicacao
             if (planoAulaDto.ObjetivosAprendizagemJurema != null)
                 foreach (var objetivoJuremaId in planoAulaDto.ObjetivosAprendizagemJurema)
                 {
-                    var objetivoPlanoAnualId = await consultasObjetivoAprendizagem
+                    var objetivoPlanoAnualId = consultasObjetivoAprendizagem
                         .ObterIdPorObjetivoAprendizagemJurema(planoAnualId, objetivoJuremaId);
 
                     if (objetivoPlanoAnualId <= 0)

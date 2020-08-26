@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using StackExchange.Redis;
 using System;
@@ -10,12 +11,12 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCache : IRepositorioCache
     {
-        private readonly IConnectionMultiplexer connectionMultiplexer;
+        private readonly IConnectionMultiplexerSME connectionMultiplexerSME;
         private readonly IServicoLog servicoLog;
 
-        public RepositorioCache(IConnectionMultiplexer connectionMultiplexer, IServicoLog servicoLog)
+        public RepositorioCache(IConnectionMultiplexerSME connectionMultiplexerSME, IServicoLog servicoLog)
         {
-            this.connectionMultiplexer = connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
+            this.connectionMultiplexerSME = connectionMultiplexerSME ?? throw new ArgumentNullException(nameof(connectionMultiplexerSME));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
         }
 
@@ -26,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
 
             try
             {
-                var cacheParaRetorno = connectionMultiplexer.GetDatabase().StringGet(nomeChave);
+                var cacheParaRetorno = connectionMultiplexerSME.GetDatabase()?.StringGet(nomeChave);
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Obtendo", inicioOperacao, timer.Elapsed, true);
 
@@ -52,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                var stringCache = connectionMultiplexer.GetDatabase().StringGet(nomeChave).ToString();
+                var stringCache = connectionMultiplexerSME.GetDatabase()?.StringGet(nomeChave).ToString();
                 if (!string.IsNullOrWhiteSpace(stringCache))
                 {
                     if (utilizarGZip)
@@ -74,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                var stringCache = connectionMultiplexer.GetDatabase().StringGet(nomeChave).ToString();
+                var stringCache = connectionMultiplexerSME.GetDatabase()?.StringGet(nomeChave).ToString();
                 if (!string.IsNullOrWhiteSpace(stringCache))
                 {
                     if (utilizarGZip)
@@ -105,12 +106,13 @@ namespace SME.SGP.Dados.Repositorios
 
             try
             {
-                var stringCache = await connectionMultiplexer.GetDatabase().StringGetAsync(nomeChave);
+                var dbCache = connectionMultiplexerSME.GetDatabase();
+                var stringCache = dbCache != null ? await connectionMultiplexerSME.GetDatabase()?.StringGetAsync(nomeChave) : RedisValue.Null;
 
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Obtendo Async", inicioOperacao, timer.Elapsed, true);
 
-                if (!string.IsNullOrWhiteSpace(stringCache.ToString()))
+                if (!stringCache.IsNullOrEmpty)
                 {
                     if (utilizarGZip)
                     {
@@ -142,14 +144,13 @@ namespace SME.SGP.Dados.Repositorios
             var timer = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                var cacheParaRetorno = await connectionMultiplexer.GetDatabase().StringGetAsync(nomeChave);
+                var dbCache = connectionMultiplexerSME.GetDatabase();
+                var cacheParaRetorno = dbCache != null ? await dbCache.StringGetAsync(nomeChave) : RedisValue.Null;
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Obtendo async", inicioOperacao, timer.Elapsed, true);
 
-                if (!string.IsNullOrEmpty(cacheParaRetorno.ToString()) && utilizarGZip)
-                {
+                if (!cacheParaRetorno.IsNullOrEmpty && utilizarGZip)
                     cacheParaRetorno = UtilGZip.Descomprimir(Convert.FromBase64String(cacheParaRetorno));
-                }
 
                 return cacheParaRetorno;
             }
@@ -170,7 +171,12 @@ namespace SME.SGP.Dados.Repositorios
 
             try
             {
-                await connectionMultiplexer.GetDatabase().KeyDeleteAsync(nomeChave);
+                var dbCache = connectionMultiplexerSME.GetDatabase();
+
+                if (dbCache == null)
+                    return;
+
+                await dbCache.KeyDeleteAsync(nomeChave);
                 timer.Stop();
                 servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
             }
@@ -187,6 +193,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
+                var dbCache = connectionMultiplexerSME.GetDatabase();
+
+                if (dbCache == null)
+                    return;
+
                 if (utilizarGZip)
                 {
                     var valorComprimido = UtilGZip.Comprimir(valor);
@@ -194,10 +205,9 @@ namespace SME.SGP.Dados.Repositorios
                 }
 
                 var redisKey = new RedisKey(nomeChave);
-                var rediValue = new RedisValue(valor);
+                var rediValue = new RedisValue(valor);                
 
-                connectionMultiplexer.GetDatabase()
-                    .StringSet(redisKey, rediValue, TimeSpan.FromMinutes(minutosParaExpirar));
+                dbCache.StringSet(redisKey, rediValue, TimeSpan.FromMinutes(minutosParaExpirar));
             }
             catch (Exception ex)
             {
@@ -212,6 +222,11 @@ namespace SME.SGP.Dados.Repositorios
             var timer = System.Diagnostics.Stopwatch.StartNew();
             try
             {
+                var dbCache = connectionMultiplexerSME.GetDatabase();
+
+                if (dbCache == null)
+                    return;
+
                 if (!string.IsNullOrWhiteSpace(valor) && valor != "[]")
                 {
                     if (utilizarGZip)
@@ -219,8 +234,8 @@ namespace SME.SGP.Dados.Repositorios
                         var valorComprimido = UtilGZip.Comprimir(valor);
                         valor = Convert.ToBase64String(valorComprimido);
                     }
-                    await connectionMultiplexer.GetDatabase()
-                        .StringSetAsync(nomeChave, valor, TimeSpan.FromMinutes(minutosParaExpirar));
+
+                    await dbCache.StringSetAsync(nomeChave, valor, TimeSpan.FromMinutes(minutosParaExpirar));
 
                     timer.Stop();
                     servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar async", inicioOperacao, timer.Elapsed, true);

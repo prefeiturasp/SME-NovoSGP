@@ -11,7 +11,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosAtividadeAvaliativa : IComandosAtividadeAvaliativa
     {
-        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasProfessor consultasProfessor;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
@@ -19,17 +18,16 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
         public ComandosAtividadeAvaliativa(
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IConsultasDisciplina consultasDisciplina,
             IConsultasProfessor consultasProfessor,
             IRepositorioAula repositorioAula,
             IServicoUsuario servicoUsuario,
-            IServicoEOL servicoEOL,
+            IServicoEol servicoEOL,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IUnitOfWork unitOfWork,
@@ -38,7 +36,6 @@ namespace SME.SGP.Aplicacao
 
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
-            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentException(nameof(consultasDisciplina));
             this.consultasProfessor = consultasProfessor ?? throw new ArgumentException(nameof(consultasProfessor));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentException(nameof(servicoEOL));
@@ -197,12 +194,12 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não existe aula cadastrada para esse data.");
 
             var tipoCalendarioId = aula.FirstOrDefault().TipoCalendarioId;
-            var perioEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);
-            if (perioEscolar == null)
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);
+            if (periodoEscolar == null)
                 throw new NegocioException("Não foi encontrado nenhum período escolar para essa data.");
 
             //verificar se já existe atividade com o mesmo nome no mesmo bimestre
-            if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoComMesmoNome(filtro.Nome, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinasId, usuario.CodigoRf, perioEscolar.PeriodoInicio, perioEscolar.PeriodoFim, filtro.Id))
+            if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoComMesmoNome(filtro.Nome, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinasId, usuario.CodigoRf, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim, filtro.Id))
             {
                 throw new NegocioException("Já existe atividade avaliativa cadastrada com esse nome para esse bimestre.");
             }

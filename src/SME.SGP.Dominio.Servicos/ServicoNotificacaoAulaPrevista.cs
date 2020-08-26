@@ -13,7 +13,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioNotificacaoAulaPrevista repositorioNotificacaoAulaPrevista;
         private readonly IRepositorioAulaPrevista repositorioAulaPrevista;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConfiguration configuration;
@@ -21,7 +20,6 @@ namespace SME.SGP.Dominio.Servicos
         public ServicoNotificacaoAulaPrevista(IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IRepositorioNotificacaoAulaPrevista repositorioNotificacaoAulaPrevista,
                                             IRepositorioAulaPrevista repositorioAulaPrevista,
-                                            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
                                             IConfiguration configuration)
@@ -29,7 +27,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioNotificacaoAulaPrevista = repositorioNotificacaoAulaPrevista ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAulaPrevista));
             this.repositorioAulaPrevista = repositorioAulaPrevista ?? throw new ArgumentNullException(nameof(repositorioAulaPrevista));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));

@@ -1,6 +1,5 @@
 ﻿
 using System.Data;
-using System.Data.Common;
 
 namespace SME.SGP.Infra
 {
@@ -10,5 +9,8 @@ namespace SME.SGP.Infra
         string UsuarioLogado { get; }
         string UsuarioLogadoNomeCompleto { get; }
         string UsuarioLogadoRF { get; }
+
+        void AbrirConexao();
+        void FecharConexao();
     }
 }

@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Contexto
     {
         private readonly NpgsqlConnection conexao;
         private readonly IContextoAplicacao contextoAplicacao;
-
+        
         public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao)
         {
             conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP-Postgres"));
@@ -48,12 +48,15 @@ namespace SME.SGP.Dados.Contexto
 
         public IDbTransaction BeginTransaction()
         {
-            return Conexao.BeginTransaction();
+            if (conexao.State == ConnectionState.Closed)
+                conexao.Open();
+
+            return conexao.BeginTransaction();
         }
 
         public IDbTransaction BeginTransaction(IsolationLevel il)
         {
-            return Conexao.BeginTransaction(il);
+            return conexao.BeginTransaction(il);
         }
 
         public void ChangeDatabase(string databaseName)
@@ -63,20 +66,43 @@ namespace SME.SGP.Dados.Contexto
 
         public void Close()
         {
-            Conexao.Close();
+            conexao.Close();
         }
 
         public IDbCommand CreateCommand()
         {
-            return Conexao.CreateCommand();
+            return conexao.CreateCommand();
         }
 
-        public void Dispose() => Conexao.Close();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (conexao.State == ConnectionState.Open)
+                conexao.Close();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         public void Open()
         {
             if (conexao.State != ConnectionState.Open)
                 conexao.Open();
+        }
+
+        public void AbrirConexao()
+        {
+            Open();
+        }
+
+        public void FecharConexao()
+        {
+            if (conexao.State != ConnectionState.Closed)
+            {
+                Close();
+            }
         }
     }
 }

@@ -8,7 +8,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 {
     public class ConsultasGradeTeste
     {
-        private readonly Mock<IConsultasAbrangencia> consultasAbrangencia;
         private readonly Mock<IConsultasAula> consultasAula;
         private readonly ConsultasGrade consultasGrade;
         private readonly Mock<IRepositorioGrade> repositorioGrade;
@@ -19,12 +18,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         public ConsultasGradeTeste()
         {
             repositorioGrade = new Mock<IRepositorioGrade>();
-            consultasAbrangencia = new Mock<IConsultasAbrangencia>();
             consultasAula = new Mock<IConsultasAula>();
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioUe = new Mock<IRepositorioUe>();
             repositorioTurma = new Mock<IRepositorioTurma>();
-            consultasGrade = new ConsultasGrade(repositorioGrade.Object, consultasAbrangencia.Object, consultasAula.Object, servicoUsuario.Object, repositorioUe.Object, repositorioTurma.Object);
+            consultasGrade = new ConsultasGrade(repositorioGrade.Object, consultasAula.Object, servicoUsuario.Object, repositorioUe.Object, repositorioTurma.Object);
 
             Setup();
         }
@@ -68,9 +66,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             repositorioGrade.Setup(c => c.ObterHorasComponente(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(5));
-
-            consultasAbrangencia.Setup(c => c.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns(Task.FromResult(new Dto.AbrangenciaFiltroRetorno()));
         }
     }
 }
