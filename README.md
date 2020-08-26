@@ -131,6 +131,6 @@ Acessar o readme do projeto de Front e seguir a configuração de variáveis de 
 
 **3 - Docker Compose**
 
-Executar o comando na raiz da solução 
+Executar o comando na raiz da solução
 
 `docker-compose up --build`
