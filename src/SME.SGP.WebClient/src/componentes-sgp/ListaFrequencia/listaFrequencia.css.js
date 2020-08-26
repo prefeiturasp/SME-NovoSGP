@@ -214,10 +214,10 @@ export const BtbAnotacao = styled.div`
   font-size: 10px;
   border-radius: 3px;
   padding: 5px;
-  cursor: pointer;
   color: #a4a4a4;
   border: solid 1px #f5f6f8;
   background-color: #f5f6f8;
+  cursor: ${props => (props.podeAbrirModal ? 'pointer' : 'not-allowed')};
 `;
 
 export const MarcadorSituacao = styled.i`
