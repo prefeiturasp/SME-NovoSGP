@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterUltimaDataDevolutivaPorTurmaComponenteUseCase: IUseCase<FiltroTurmaComponenteDto, DateTime>
+    public interface IObterDataDiarioBordoSemDevolutivaPorTurmaComponenteUseCase : IUseCase<FiltroTurmaComponenteDto, DateTime?>
     {
     }
 }
