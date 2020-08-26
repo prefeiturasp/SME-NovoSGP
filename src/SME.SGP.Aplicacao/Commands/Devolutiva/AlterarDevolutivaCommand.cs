@@ -11,11 +11,6 @@ namespace SME.SGP.Aplicacao
     public class AlterarDevolutivaCommand: IRequest<AuditoriaDto>
     {
         public Devolutiva Devolutiva { get; set; }
-        public long CodigoComponenteCurricular { get; set; }
-        public IEnumerable<long> DiariosBordoIds { get; set; }
-        public DateTime PeriodoInicio { get; set; }
-        public DateTime PeriodoFim { get; set; }
-        public string Descricao { get; set; }
 
         public AlterarDevolutivaCommand(Devolutiva devolutiva)
         {
