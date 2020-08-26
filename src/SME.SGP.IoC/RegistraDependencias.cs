@@ -37,8 +37,6 @@ namespace SME.SGP.IoC
             RegistrarServicos(services);
             RegistrarCasosDeUso(services);
             RegistrarMapeamentos.Registrar();
-            RegistararQueries(services);
-         
         }
 
         private static void RegistrarComandos(IServiceCollection services)

@@ -241,6 +241,13 @@ export default function NotificacoesLista() {
     return !validaSeObjetoEhNuloOuVazio(filtro);
   };
 
+  const carregarNotificacoes = () => {
+    servicoNotificacao.obterUltimasNotificacoesNaoLidas().catch(e => erros(e));
+    servicoNotificacao
+      .obterQuantidadeNotificacoesNaoLidas()
+      .catch(e => erros(e));
+  };
+
   async function marcarComoLida() {
     if (!permissoesTela.podeAlterar) return;
 
@@ -250,6 +257,8 @@ export default function NotificacoesLista() {
         idNotificacoesSelecionadas
       );
       if (data && status === 200) {
+        carregarNotificacoes();
+
         data.forEach(resultado => {
           if (resultado.sucesso) {
             sucesso(resultado.mensagem);
@@ -283,12 +292,7 @@ export default function NotificacoesLista() {
           data.forEach(resultado => {
             if (resultado.sucesso) {
               sucesso(resultado.mensagem);
-              servicoNotificacao
-                .obterUltimasNotificacoesNaoLidas()
-                .catch(e => erros(e));
-              servicoNotificacao
-                .obterQuantidadeNotificacoesNaoLidas()
-                .catch(e => erros(e));
+              carregarNotificacoes();
             } else {
               erro(resultado.mensagem);
             }
