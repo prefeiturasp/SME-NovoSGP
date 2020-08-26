@@ -117,8 +117,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new MotivoAusenciaMap());
                config.AddMap(new CartaIntencoesMap());
                config.AddMap(new DiarioBordoMap());
-               config.AddMap(new DevolutivaMap());
                config.AddMap(new DiarioBordoObservacaoMap());
+               config.AddMap(new DevolutivaMap());
                config.ForDommel();
            });
         }
