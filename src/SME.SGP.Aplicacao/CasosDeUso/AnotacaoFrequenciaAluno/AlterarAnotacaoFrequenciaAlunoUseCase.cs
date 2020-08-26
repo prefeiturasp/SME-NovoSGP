@@ -25,9 +25,8 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> AtualizarAnotacaoFrequenciaAluno(AnotacaoFrequenciaAluno anotacao, AlterarAnotacaoFrequenciaAlunoDto param)
-        {
-            if (param.MotivoAusenciaId.HasValue && param.MotivoAusenciaId > 0)
-                anotacao.MotivoAusenciaId = param.MotivoAusenciaId;
+        {           
+            anotacao.MotivoAusenciaId = param.MotivoAusenciaId;
             anotacao.Anotacao = param.Anotacao;
 
             return await mediator.Send(new AlterarAnotacaoFrequenciaAlunoCommand(anotacao));

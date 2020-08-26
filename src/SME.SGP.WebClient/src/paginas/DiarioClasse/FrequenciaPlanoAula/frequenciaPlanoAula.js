@@ -1042,6 +1042,8 @@ const FrequenciaPlanoAula = () => {
                               permissoesTela={permissoesTela}
                               temPeriodoAberto={temPeriodoAberto}
                               ehInfantil={ehInfantil}
+                              aulaId={aulaId}
+                              componenteCurricularId={disciplinaIdSelecionada}
                             />
                           </div>
                           {exibirAuditoria && (
