@@ -514,6 +514,9 @@ namespace SME.SGP.Infra
         DE_E = 169,
 
         [PermissaoMenu(Menu = "Devolutivas", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 3, EhAlteracao = true, Url = "/diario-classe/devolutiva")]
-        DE_A = 170
+        DE_A = 170,
+
+        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/compensacao-ausencia", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Compensação de ausência")]
+        RCA_C = 172,
     }
 }
