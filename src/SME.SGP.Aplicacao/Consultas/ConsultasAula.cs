@@ -201,7 +201,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var periodoEscolar in periodosEscolares.Periodos)
             {
-                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, disciplina, usuarioRF, usuarioLogado.EhProfessorCj(), usuarioLogado.EhProfessor()))
+                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, disciplina, usuarioRF, usuarioLogado.EhProfessorCj(), usuarioLogado.EhProfessor() || usuarioLogado.EhProfessorCj()))
                 {
                     yield return new DataAulasProfessorDto
                     {
