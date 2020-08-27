@@ -503,7 +503,17 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Menu = "Carta de Intenções", Icone = "fas fa-file-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhAlteracao = true, Url = "/planejamento/carta-intencoes")]
         CI_A = 166,
 
-        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/notas-conceitos-finais", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Notas e Conceitos Finais")]
-        RNC_F = 167
+
+        [PermissaoMenu(Menu = "Devolutivas", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 3, EhConsulta = true, Url = "/diario-classe/devolutiva")]
+        DE_C = 167,
+
+        [PermissaoMenu(Menu = "Devolutivas", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 3, EhInclusao = true, Url = "/diario-classe/devolutiva")]
+        DE_I = 168,
+
+        [PermissaoMenu(Menu = "Devolutivas", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 3, EhExclusao = true, Url = "/diario-classe/devolutiva")]
+        DE_E = 169,
+
+        [PermissaoMenu(Menu = "Devolutivas", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 3, EhAlteracao = true, Url = "/diario-classe/devolutiva")]
+        DE_A = 170
     }
 }
