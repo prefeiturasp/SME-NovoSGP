@@ -65,6 +65,7 @@ import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/r
 import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
+import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
 
 const rotas = new Map();
 
@@ -923,6 +924,17 @@ rotas.set(`${RotasDto.DEVOLUTIVAS}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.DEVOLUTIVAS,
+});
+
+rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
+  breadcrumbName: 'Compensação de ausência',
+  menu: ['Relatórios', 'Frequência'],
+  parent: '/',
+  component: RelatorioCompensacaoAusencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
 });
 
 const rotasArray = [];
