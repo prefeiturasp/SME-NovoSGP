@@ -72,19 +72,6 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(object), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Route("quantidade/naolidas")]
-        [Permissao(Permissao.N_C, Policy = "Bearer")]
-        public IActionResult ObtemQuantidadeNaoLida(int anoLetivo, string usuarioRf)
-        {
-            return Ok(new
-            {
-                quantidade = consultasNotificacao.QuantidadeNotificacoesNaoLidas(anoLetivo, usuarioRf)
-            });
-        }
-
-        [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("status")]
@@ -122,6 +109,27 @@ namespace SME.SGP.Api.Controllers
         {
             comandosNotificacao.Salvar(notificacaoDto);
             return Ok();
+        }
+
+
+        [HttpGet]
+        [ProducesResponseType(typeof(object), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("nao-lidas/quantidade")]
+        [Permissao(Permissao.N_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObtemQuantidadeNaoLida([FromServices] IObterQuantidadeNotificacoesNaoLidasPorUsuarioUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(object), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("nao-lidas")]
+        [Permissao(Permissao.N_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterUltimasNaoLidas([FromServices] IObterUltimasNotificacoesNaoLidasPorUsuarioUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
         }
     }
 }
