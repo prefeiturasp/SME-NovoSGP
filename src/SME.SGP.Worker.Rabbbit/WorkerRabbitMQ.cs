@@ -119,6 +119,8 @@ namespace SME.SGP.Worker.RabbitMQ
                     }
                 }
             }
+            else
+                canalRabbit.BasicReject(ea.DeliveryTag, false);
         }
 
         private void RegistrarSentry(BasicDeliverEventArgs ea, MensagemRabbit mensagemRabbit, Exception ex)
