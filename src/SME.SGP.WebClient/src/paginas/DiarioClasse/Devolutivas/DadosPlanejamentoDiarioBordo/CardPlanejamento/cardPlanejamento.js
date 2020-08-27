@@ -34,7 +34,7 @@ const CardPlanejamento = React.memo(() => {
                           <span className="titulo">Planejamento</span> (somente
                           leitura)
                         </th>
-                        {item.cj ? <th className="cj">CJ</th> : null}
+                        {item.aulaCj ? <th className="cj">CJ</th> : null}
                         <th className="data">
                           {item.data ? moment(item.data).format('L') : ''}
                         </th>
