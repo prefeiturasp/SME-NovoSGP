@@ -42,7 +42,11 @@ const ListaPaginada = props => {
     current: 1,
   });
 
-  const [urlBusca, setUrlBusca] = useState(url);
+  const obterUrlBusca = pagina => {
+    return `${url}?numeroPagina=${pagina.current}&numeroRegistros=${pagina.pageSize}`;
+  };
+
+  const [urlBusca, setUrlBusca] = useState(obterUrlBusca(paginaAtual));
 
   const selecionaItems = selecionadas => {
     if (selecionarItems && linhas) {
@@ -86,9 +90,7 @@ const ListaPaginada = props => {
   };
 
   const defineUrlBusca = pagina => {
-    setUrlBusca(
-      `${url}?numeroPagina=${pagina.current}&numeroRegistros=${pagina.pageSize}`
-    );
+    setUrlBusca(obterUrlBusca(pagina));
   };
 
   const filtrar = () => {

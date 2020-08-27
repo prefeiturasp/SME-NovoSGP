@@ -7,7 +7,6 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
@@ -15,22 +14,12 @@ import FiltroHelper from '~componentes-sgp/filtro/helper';
 import { sucesso } from '~/servicos/alertas';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import ServicoHistoricoEscolar from '~/servicos/Paginas/HistoricoEscolar/ServicoHistoricoEscolar';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import RotasDto from '~/dtos/rotasDto';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 
 const HistoricoEscolar = () => {
-  const [somenteConsulta, setSomenteConsulta] = useState(false);
-  const permissoesTela = useSelector(store => store.usuario.permissoes);
   const codigosAlunosSelecionados = useSelector(
     state => state.localizadorEstudante.codigosAluno
   );
-
-  useEffect(() => {
-    setSomenteConsulta(
-      verificaSomenteConsulta(permissoesTela[RotasDto.HISTORICO_ESCOLAR])
-    );
-  }, [permissoesTela]);
 
   const [anoAtual] = useState(window.moment().format('YYYY'));
 
@@ -521,7 +510,7 @@ const HistoricoEscolar = () => {
                   bold
                   className="mr-0"
                   onClick={() => onClickGerar()}
-                  disabled={desabilitarBtnGerar || somenteConsulta}
+                  disabled={desabilitarBtnGerar}
                 />
               </Loader>
             </div>
