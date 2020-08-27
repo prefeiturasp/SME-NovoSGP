@@ -213,5 +213,51 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<int>(query.ToString(), new { ano })
                 .FirstOrDefault();
         }
+
+        public async Task<int> ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoEUsuarioAsync(int anoLetivo, string codigoRf)
+        {
+            var sql = @"select
+	                        count(*)
+                        from
+	                        notificacao n
+                        left join usuario u on
+	                        n.usuario_id = u.id
+                        where
+	                        u.rf_codigo = @codigoRf
+	                        and not excluida
+	                        and n.status = @naoLida
+	                        and extract(year from n.criado_em) = @anoLetivo";
+
+            return await database.Conexao.QueryFirstAsync<int>(sql, new { anoLetivo, codigoRf, naoLida = (int)NotificacaoStatus.Pendente });
+        }
+
+
+        public async Task<IEnumerable<NotificacaoBasicaDto>> ObterNotificacoesPorAnoLetivoERfAsync(int anoLetivo, string usuarioRf, int limite = 5)
+        {
+            var sql = @"select
+	                        n.id,
+	                        n.categoria,
+	                        n.codigo ,
+	                        n.criado_em as Data,
+	                        n.mensagem as DescricaoStatus,
+	                        n.status,
+	                        n.tipo,
+	                        n.titulo
+                        from
+	                        notificacao n
+                        left join usuario u on
+	                        n.usuario_id = u.id
+                        where
+	                        u.rf_codigo = @usuarioRf
+	                        and extract(year
+                        from
+	                        n.criado_em) = @anoLetivo
+	                        and not excluida
+                        order by
+	                        n.status asc,
+	                        n.criado_em desc
+                        limit @limite";
+  return await database.Conexao.QueryAsync<NotificacaoBasicaDto>(sql, new { anoLetivo, usuarioRf, limite});
+        }
     }
 }
