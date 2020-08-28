@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var componenteCurricular in grupoDisiplinasMatriz)
                 {
-                    var componenteCurricularDto = MapearDto(frequenciaAluno, componenteCurricular, bimestre);
+                    var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre);
                     grupoMatriz.ComponenteSinteses.Add(componenteCurricularDto);
                 }
 
@@ -247,7 +247,7 @@ namespace SME.SGP.Aplicacao
             return frequenciaDisciplina.Any() ? frequenciaDisciplina.Sum(x => x.PercentualFrequencia) / frequenciaDisciplina.Count() : 100;
         }
 
-        private ConselhoDeClasseComponenteSinteseDto MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre)
+        private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre)
         {
             var frequenciaDisciplina = ObterFrequenciaPorDisciplina(frequenciaAluno, componenteCurricular);
 
@@ -255,7 +255,7 @@ namespace SME.SGP.Aplicacao
 
             var dto = MapeaderDisciplinasDto(componenteCurricular);
 
-            var parecerFinal = bimestre == 0 ? consultasFrequencia.ObterSinteseAluno(percentualFrequencia, dto) : null;
+            var parecerFinal = bimestre == 0 ? await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, dto) : null;
 
             var componenteSinteseAdicionar = MapearConselhoDeClasseComponenteSinteseDto(componenteCurricular, frequenciaDisciplina, percentualFrequencia, parecerFinal);
             return componenteSinteseAdicionar;
