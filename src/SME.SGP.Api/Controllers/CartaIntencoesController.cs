@@ -31,5 +31,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(new ObterCartaIntencoesDto(turmaCodigo, componenteCurricularId)));
         }
+
+        [HttpGet("{cartaIntencoesId}/observacoes")]
+        [ProducesResponseType(typeof(IEnumerable<ListarObservacaoCartaIntencoesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarObservacoes(long cartaIntencoesId, [FromServices] IListarObservacaoCartaIntencoesUseCase listarObservacaoCartaIntencoesUseCase)
+        {
+            return Ok(await listarObservacaoCartaIntencoesUseCase.Executar(cartaIntencoesId));
+        }
     }
 }
