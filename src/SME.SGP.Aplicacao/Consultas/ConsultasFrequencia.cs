@@ -74,14 +74,14 @@ namespace SME.SGP.Aplicacao
             return frequenciaAluno.PercentualFrequencia;
         }
 
-        public double ObterFrequenciaMedia(DisciplinaDto disciplina)
+        public async Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina)
         {
             if (_mediaFrequencia == 0)
             {
                 if (disciplina.Regencia || !disciplina.LancaNota)
-                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse).Result);
+                    _mediaFrequencia = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
                 else
-                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2).Result);
+                    _mediaFrequencia = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
             }
 
             return _mediaFrequencia;
@@ -230,9 +230,9 @@ namespace SME.SGP.Aplicacao
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
             => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual);
 
-        public SinteseDto ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina)
+        public async Task<SinteseDto> ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina)
         {
-            var sintese = percentualFrequencia >= ObterFrequenciaMedia(disciplina) ?
+            var sintese = percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
                         SinteseEnum.Frequente : SinteseEnum.NaoFrequente;
 
             return new SinteseDto()

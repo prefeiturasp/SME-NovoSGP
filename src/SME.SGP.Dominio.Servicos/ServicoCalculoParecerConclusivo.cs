@@ -4,9 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
@@ -131,13 +129,13 @@ namespace SME.SGP.Dominio.Servicos
 
             var tipoNota = notasFechamentoAluno.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
             return tipoNota == TipoNota.Nota ?
-                ValidarParecerPorNota(notasFechamentoAluno) :
+                await ValidarParecerPorNota(notasFechamentoAluno) :
                 await ValidarParecerPorConceito(notasFechamentoAluno);
         }
 
-        private bool ValidarParecerPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
+        private async Task<bool> ValidarParecerPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
         {
-            var notaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre).Result);
+            var notaMedia = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
             foreach (var notaFechamentoAluno in notasFechamentoAluno)
                 if (notaFechamentoAluno.Nota < notaMedia)
                     return false;
@@ -168,13 +166,13 @@ namespace SME.SGP.Dominio.Servicos
 
             var tipoNota = notasConselhoClasse.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
             return (true, tipoNota == TipoNota.Nota ?
-                ValidarParecerConselhoPorNota(notasConselhoClasse) :
+               await ValidarParecerConselhoPorNota(notasConselhoClasse) :
                await ValidarParecerConselhoPorConceito(notasConselhoClasse));
         }
 
-        private bool ValidarParecerConselhoPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasse)
+        private async Task<bool> ValidarParecerConselhoPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasse)
         {
-            var notaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre).Result);
+            var notaMedia = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
             foreach (var notaConcelhoClasse in notasConselhoClasse)
                 if (notaConcelhoClasse.Nota < notaMedia)
                     return false;
