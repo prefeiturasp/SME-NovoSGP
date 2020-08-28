@@ -7,7 +7,13 @@ import { Colors } from '~/componentes/colors';
 import { Container, DadosAluno, FrequenciaGlobal } from './styles';
 
 const DetalhesAluno = props => {
-  const { dados, desabilitarImprimir, onClickImprimir } = props;
+  const {
+    dados,
+    desabilitarImprimir,
+    onClickImprimir,
+    exibirBotaoImprimir,
+    exibirFrequencia,
+  } = props;
 
   const {
     avatar,
@@ -18,8 +24,6 @@ const DetalhesAluno = props => {
     situacao,
     dataSituacao,
     frequencia,
-    exibirBotaoImprimir,
-    exibirFrequencia,
   } = dados;
 
   return (
