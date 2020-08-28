@@ -399,6 +399,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterUltimasNotificacoesNaoLidasPorUsuarioUseCase, ObterUltimasNotificacoesNaoLidasPorUsuarioUseCase>();
 
             services.TryAddScoped<IListarObservacaoCartaIntencoesUseCase, ListarObservacaoCartaIntencoesUseCase>();
+            services.TryAddScoped<ISalvarObservacaoCartaIntencoesUseCase, SalvarObservacaoCartaIntencoesUseCase>();
         }
     }
 }
