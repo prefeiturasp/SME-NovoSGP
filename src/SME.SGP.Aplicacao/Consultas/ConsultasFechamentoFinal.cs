@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
 
                 if (retorno.EhSintese)
                 {
-                    var sinteseDto = consultasFrequencia.ObterSinteseAluno(fechamentoFinalAluno.Frequencia, disciplinaEOL);
+                    var sinteseDto = await consultasFrequencia.ObterSinteseAluno(fechamentoFinalAluno.Frequencia, disciplinaEOL);
                     fechamentoFinalAluno.Sintese = sinteseDto.Valor;
                 }
                 else
@@ -181,8 +181,8 @@ namespace SME.SGP.Aplicacao
             retorno.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentoTurmaDisciplina, retorno.EhNota);
             retorno.AuditoriaInclusao = MontaTextoAuditoriaInclusao(fechamentoTurmaDisciplina, retorno.EhNota);
 
-            retorno.NotaMedia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
-            retorno.FrequenciaMedia = consultasFrequencia.ObterFrequenciaMedia(disciplinaEOL);
+            retorno.NotaMedia = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            retorno.FrequenciaMedia = await consultasFrequencia.ObterFrequenciaMedia(disciplinaEOL);
 
             return retorno;
         }
