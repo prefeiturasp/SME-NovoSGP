@@ -4,9 +4,9 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class BuscaCartaIntencaoObservacaoDto
+    public class BuscaCartaIntencoesObservacaoDto
     {
-        public BuscaCartaIntencaoObservacaoDto(long turmaId, long componenteCurricularId)
+        public BuscaCartaIntencoesObservacaoDto(long turmaId, long componenteCurricularId)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;

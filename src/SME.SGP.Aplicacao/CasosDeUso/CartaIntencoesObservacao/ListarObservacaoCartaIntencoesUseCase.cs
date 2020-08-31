@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<CartaIntencoesObservacaoDto>> Executar(BuscaCartaIntencaoObservacaoDto param)
+        public async Task<IEnumerable<CartaIntencoesObservacaoDto>> Executar(BuscaCartaIntencoesObservacaoDto param)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
             return await mediator.Send(new ListarCartaIntencoesObservacaoQuery(param.TurmaId, param.ComponenteCurricularId, usuarioId));
