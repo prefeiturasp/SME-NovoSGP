@@ -20,7 +20,6 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogadoId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
             return await mediator.Send(new AlterarCartaIntencoesObservacaoCommand(dto.Observacao, cartaIntencoesObservacaoId, usuarioLogadoId));
-            throw new NotImplementedException();
         }
     }
 }
