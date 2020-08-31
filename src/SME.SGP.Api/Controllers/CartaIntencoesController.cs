@@ -40,5 +40,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await listarObservacaoCartaIntencoesUseCase.Executar(cartaIntencoesId));
         }
+
+
+        [HttpPost("{cartaIntencoesId}/observacoes")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CI_C, Policy = "Bearer")]
+        public async Task<IActionResult> SalvarObservacao(long cartaIntencoesId,[FromBody] SalvarObservacaoCartaIntencoesDto dto, [FromServices] ISalvarObservacaoCartaIntencoesUseCase useCase)
+        {
+            return Ok(await useCase.Executar(cartaIntencoesId,dto));
+        }
     }
 }

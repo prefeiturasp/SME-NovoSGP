@@ -363,6 +363,8 @@ namespace SME.SGP.IoC
 
             services.TryAddScopedWorkerService<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
             services.TryAddScopedWorkerService<IAlterarDevolutivaUseCase, AlterarDevolutivaUseCase>();
+            services.TryAddScopedWorkerService<ISalvarObservacaoCartaIntencoesUseCase, SalvarObservacaoCartaIntencoesUseCase>();
+
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
