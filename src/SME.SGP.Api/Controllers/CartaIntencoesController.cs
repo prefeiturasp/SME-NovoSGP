@@ -47,7 +47,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CI_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarObservacoes([FromServices] IListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase useCase, long turmaId, long componenteCurricularId)
         {
-            return Ok(await useCase.Executar(new BuscaCartaIntencaoObservacaoDto(turmaId, componenteCurricularId)));
+            return Ok(await useCase.Executar(new BuscaCartaIntencoesObservacaoDto(turmaId, componenteCurricularId)));
         }
 
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase : IUseCase<BuscaCartaIntencaoObservacaoDto, IEnumerable<CartaIntencoesObservacaoDto>>
+    public interface IListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase : IUseCase<BuscaCartaIntencoesObservacaoDto, IEnumerable<CartaIntencoesObservacaoDto>>
     {
     }
 }
