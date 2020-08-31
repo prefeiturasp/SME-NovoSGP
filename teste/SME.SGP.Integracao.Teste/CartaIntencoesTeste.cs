@@ -34,5 +34,22 @@ namespace SME.SGP.Integracao.Teste
             // Assert
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));
         }
+
+        [Fact]
+        public async Task Deve_Obter_Carta_Intencoes_Observacao()
+        {
+            // Arrange 
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.CI_C }));
+
+            var turmaId = 1;
+            var componenteCurricularId = 512;
+
+            // Act
+            var result = await fixture._clientApi.GetAsync($"api/v1/carta-intencoes/turmas/{turmaId}/componente-curricular/{componenteCurricularId}/observacoes");
+
+            // Assert
+            Assert.True(fixture.ValidarStatusCodeComSucesso(result));
+        }
     }
 }
