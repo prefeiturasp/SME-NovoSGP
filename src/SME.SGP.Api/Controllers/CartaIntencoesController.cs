@@ -50,5 +50,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(turmaId, componenteCurricularId, dto));
         }
+
+        [HttpPut("turmas/{turmaId}/componente-curricular/{componenteCurricularId}/observacoes/{observacaoId}")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CI_C, Policy = "Bearer")]
+        public async Task<IActionResult> AlterarObservacao([FromBody] AlterarCartaIntencoesObservacaoDto dto, [FromServices] IAlterarCartaIntencoesObservacaoUseCase useCase, long turmaId, long componenteCurricularId, long observacaoId)
+        {
+            return Ok(await useCase.Executar(observacaoId, dto));
+        }
     }
 }
