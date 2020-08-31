@@ -91,7 +91,7 @@ namespace SME.SGP.Integracao.Teste
             };
 
             StringContent jsonParaPost = new StringContent(TransformarEmJson(dto), UnicodeEncoding.UTF8, "application/json");
-            var postResult = fixture._clientApi.PostAsync($"api/v1/carta-intencoes/observacoes/{observacaoId}", jsonParaPost).Result;
+            var postResult = fixture._clientApi.PutAsync($"api/v1/carta-intencoes/observacoes/{observacaoId}", jsonParaPost).Result;
 
             Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
