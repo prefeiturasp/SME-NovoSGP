@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         void RemoverAbrangencias(long[] ids);
 
-        Task Salvar(string login, Guid perfil, bool ehLogin);
+        Task Salvar(string login, Guid perfil, bool ehLogin, long id);
 
         void SalvarAbrangencias(IEnumerable<Abrangencia> abrangencias, string login);
 

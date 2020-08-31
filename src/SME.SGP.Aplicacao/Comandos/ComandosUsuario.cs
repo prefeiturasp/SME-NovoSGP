@@ -87,11 +87,11 @@ namespace SME.SGP.Aplicacao
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(recuperacaoSenhaDto.Token);
             if (usuario == null)
                 throw new NegocioException("Usuário não encontrado.");
-            
+
 
             if (!usuario.TokenRecuperacaoSenhaEstaValido())
                 throw new NegocioException("Este link expirou. Clique em continuar para solicitar um novo link de recuperação de senha.", 403);
-            
+
 
             usuario.ValidarSenha(recuperacaoSenhaDto.NovaSenha);
 
@@ -99,13 +99,13 @@ namespace SME.SGP.Aplicacao
 
             if (!retornoApi.SenhaAlterada)
                 throw new NegocioException(retornoApi.Mensagem, retornoApi.StatusRetorno);
-            
+
 
             usuario.FinalizarRecuperacaoSenha();
             repositorioUsuario.Salvar(usuario);
-            
+
             return await Autenticar(usuario.Login, recuperacaoSenhaDto.NovaSenha);
-        }     
+        }
 
         public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
         {
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(login, senha);
 
             if (!retornoAutenticacaoEol.Item1.Autenticado)
-                return retornoAutenticacaoEol.Item1;            
+                return retornoAutenticacaoEol.Item1;
 
             var dadosUsuario = await servicoEOL.ObterMeusDados(login);
 
@@ -161,7 +161,7 @@ namespace SME.SGP.Aplicacao
 
             repositorioUsuario.Salvar(usuario);
 
-            await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
+            await servicoAbrangencia.Salvar(login, perfilSelecionado, true, usuario.Id);
 
             retornoAutenticacaoEol.Item1.UsuarioLogin = usuario.Login;
             retornoAutenticacaoEol.Item1.UsuarioRf = usuario.CodigoRf;
@@ -190,8 +190,8 @@ namespace SME.SGP.Aplicacao
                     .Select(a => (Permissao)a)
                     .ToList();
 
-                await servicoAbrangencia.Salvar(loginAtual, perfil, false);
                 var usuario = await servicoUsuario.ObterUsuarioLogado();
+                await servicoAbrangencia.Salvar(loginAtual, perfil, false, usuario.Id);
 
                 usuario.DefinirPerfilAtual(perfil);
 
@@ -291,7 +291,7 @@ namespace SME.SGP.Aplicacao
                 await servicoEOL.RelecionarUsuarioPerfis(login);
             }
 
-            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));            
+            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));
             usuario.DefinirEmail(usuarioCore.Email);
             usuario.IniciarRecuperacaoDeSenha();
             repositorioUsuario.Salvar(usuario);

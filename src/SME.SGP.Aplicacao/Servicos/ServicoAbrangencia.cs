@@ -53,11 +53,11 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioAbrangencia.ExcluirAbrangencias(ids);
         }
 
-        public async Task Salvar(string login, Guid perfil, bool ehLogin)
+        public async Task Salvar(string login, Guid perfil, bool ehLogin, long id)
         {
             if (ehLogin)
-                await TrataAbrangenciaLogin(login, perfil);
-            else await TrataAbrangenciaModificaoPerfil(login, perfil);
+                await TrataAbrangenciaLogin(login, perfil, id);
+            else await TrataAbrangenciaModificaoPerfil(login, perfil, id);
         }
 
         public void SalvarAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
@@ -114,7 +114,7 @@ namespace SME.SGP.Aplicacao.Servicos
             return ues.Any(dre => dre.Codigo.Equals(codigoUE, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
+        private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil, long id)
         {
             try
             {
@@ -167,8 +167,8 @@ namespace SME.SGP.Aplicacao.Servicos
 
                         // sincronizamos a abrangencia do login + perfil
                         unitOfWork.IniciarTransacao();
-
-                        SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
+                        abrangenciaSintetica = new List<AbrangenciaSinteticaDto>();
+                        SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil, id);
 
                         unitOfWork.PersistirTransacao();
                     }
@@ -227,18 +227,18 @@ namespace SME.SGP.Aplicacao.Servicos
             return Array.Empty<string>();
         }
 
-        private void SincronizarAbragenciaPorTurmas(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Turma> turmas, string login, Guid perfil)
+        private void SincronizarAbragenciaPorTurmas(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Turma> turmas, string login, Guid perfil, long id)
         {
             var novas = turmas.Where(x => !abrangenciaSintetica.Select(y => y.TurmaId).Contains(x.Id));
 
             var paraAtualizar = abrangenciaSintetica.Where(x => !turmas.Select(y => y.Id).Contains(x.TurmaId)).Select(x => x.Id);
 
-            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, TurmaId = x.Id }), login);
+            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, TurmaId = x.Id, UsuarioId = id }), login);
 
             repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar);
         }
 
-        private void SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil)
+        private void SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil, long id)
         {
             if (ehSupervisor)
                 SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
@@ -258,7 +258,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     case Infra.Enumerados.Abrangencia.UeTurmasDisciplinas:
                     case Infra.Enumerados.Abrangencia.Professor:
-                        SincronizarAbragenciaPorTurmas(abrangenciaSintetica, turmas, login, perfil);
+                        SincronizarAbragenciaPorTurmas(abrangenciaSintetica, turmas, login, perfil, id);
                         break;
                 }
             }
@@ -340,14 +340,14 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioTipoEscola.Sincronizar(tiposEscolas);
         }
 
-        private async Task TrataAbrangenciaLogin(string login, Guid perfil)
+        private async Task TrataAbrangenciaLogin(string login, Guid perfil, long id)
         {
-            await BuscaAbrangenciaEPersiste(login, perfil);
+            await BuscaAbrangenciaEPersiste(login, perfil, id);
         }
 
-        private async Task TrataAbrangenciaModificaoPerfil(string login, Guid perfil)
+        private async Task TrataAbrangenciaModificaoPerfil(string login, Guid perfil, long id)
         {
-            await BuscaAbrangenciaEPersiste(login, perfil);
+            await BuscaAbrangenciaEPersiste(login, perfil, id);
         }
     }
 }
