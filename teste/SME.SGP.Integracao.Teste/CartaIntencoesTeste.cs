@@ -1,6 +1,9 @@
-﻿using SME.SGP.Infra;
+﻿using Newtonsoft.Json;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,6 +53,29 @@ namespace SME.SGP.Integracao.Teste
 
             // Assert
             Assert.True(fixture.ValidarStatusCodeComSucesso(result));
+        }
+
+        [Fact]
+        public void Deve_Inserir_Carta_Intencoes_Observacao()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_I }));
+
+            SalvarCartaIntencoesObservacaoDto dto = new SalvarCartaIntencoesObservacaoDto()
+            {
+                Observacao = "Teste de Inclusão de observação na carta de intenção..."
+            };
+
+            StringContent jsonParaPost = new StringContent(TransformarEmJson(dto), UnicodeEncoding.UTF8, "application/json");
+            var postResult = fixture._clientApi.PostAsync("api/v1/carta-intencoes/turmas/{turmaId}/componente-curricular/{componenteCurricularId}/observacoes", jsonParaPost).Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
+        }
+
+        private string TransformarEmJson(object model)
+        {
+            return JsonConvert.SerializeObject(model);
         }
     }
 }

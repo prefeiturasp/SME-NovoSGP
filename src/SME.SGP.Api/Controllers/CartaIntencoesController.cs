@@ -32,15 +32,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(new ObterCartaIntencoesDto(turmaCodigo, componenteCurricularId)));
         }
 
-        //[HttpGet("{cartaIntencoesId}/observacoes")]
-        //[ProducesResponseType(typeof(IEnumerable<ListarObservacaoCartaIntencoesDto>), 200)]
-        //[ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CI_C, Policy = "Bearer")]
-        //public async Task<IActionResult> ListarObservacoes(long cartaIntencoesId, [FromServices] IListarObservacaoCartaIntencoesUseCase listarObservacaoCartaIntencoesUseCase)
-        //{
-        //    return Ok(await listarObservacaoCartaIntencoesUseCase.Executar(cartaIntencoesId));
-        //}
-
         [HttpGet("turmas/{turmaId}/componente-curricular/{componenteCurricularId}/observacoes")]
         [ProducesResponseType(typeof(IEnumerable<CartaIntencoesObservacaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -51,13 +42,13 @@ namespace SME.SGP.Api.Controllers
         }
 
 
-        [HttpPost("{cartaIntencoesId}/observacoes")]
+        [HttpPost("turmas/{turmaId}/componente-curricular/{componenteCurricularId}/observacoes")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CI_C, Policy = "Bearer")]
-        public async Task<IActionResult> SalvarObservacao(long cartaIntencoesId, [FromBody] SalvarObservacaoCartaIntencoesDto dto, [FromServices] ISalvarObservacaoCartaIntencoesUseCase useCase)
+        public async Task<IActionResult> SalvarObservacao([FromBody] SalvarCartaIntencoesObservacaoDto dto, [FromServices] ISalvarCartaIntencoesObservacaoUseCase useCase, long turmaId, long componenteCurricularId)
         {
-            return Ok(await useCase.Executar(cartaIntencoesId, dto));
+            return Ok(await useCase.Executar(turmaId, componenteCurricularId, dto));
         }
     }
 }
