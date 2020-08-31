@@ -4,10 +4,11 @@ namespace SME.SGP.Dominio
 {
     public class CartaIntencoesObservacao : EntidadeBase
     {
-        public CartaIntencoesObservacao(string observacao, long cartaIntencoesId, long usuarioId)
+        public CartaIntencoesObservacao(string observacao, long turmaId, long componenteCurricularId, long usuarioId )
         {
             Observacao = observacao;
-            CartaIntencoesId = cartaIntencoesId;
+            TurmaId = turmaId;
+            ComponenteCurricularId = componenteCurricularId;
             UsuarioId = usuarioId;
         }
         protected CartaIntencoesObservacao()
@@ -15,7 +16,11 @@ namespace SME.SGP.Dominio
         }
 
         public string Observacao { get; set; }
-        public long CartaIntencoesId { get; set; }
+        public long TurmaId { get; set; }
+        public Turma Turma { get; set; }
+
+        public long ComponenteCurricularId { get; set; }
+
         public long UsuarioId { get; set; }
         public bool Excluido { get; set; }
 
