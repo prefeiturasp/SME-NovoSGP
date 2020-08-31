@@ -15,11 +15,6 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        //public async Task<AuditoriaDto> Executar(long cartaIntencoesId, SalvarObservacaoCartaIntencoesDto salvarObservacaoCartaIntencoesDto)
-        //{
-        //    var usuarioLogadoId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
-        //    return await mediator.Send(new SalvarObservacaoCartaIntencoesCommand(salvarObservacaoCartaIntencoesDto.Descricao, cartaIntencoesId, usuarioLogadoId));
-        //}
 
         public async Task<AuditoriaDto> Executar(long turmaId, long componenteCurricularId, SalvarCartaIntencoesObservacaoDto dto)
         {
