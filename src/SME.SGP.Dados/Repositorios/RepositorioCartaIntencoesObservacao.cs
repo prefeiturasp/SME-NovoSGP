@@ -10,9 +10,9 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioCartaIntencoesObservacao(ISgpContext conexao) : base(conexao) { }
 
-        public async Task<IEnumerable<ListarObservacaoCartaIntencoesDto>> ListarPorCartaIntencoesAsync(long cartaIntencoesId, long usuarioLogadoId)
+        public async Task<IEnumerable<CartaIntencoesObservacaoDto>> ListarPorTurmaEComponenteCurricularAsync(long turmaId, long componenteCurricularId, long usuarioLogadoId)
         {
-			var sql = @"select
+            var sql = @"select
 							id,
 							observacao,
 							(usuario_id = @usuarioLogadoId) as Proprietario,
@@ -25,12 +25,12 @@ namespace SME.SGP.Dados.Repositorios
 						from
 							carta_intencoes_observacao
 						where
-							carta_intencoes_id = @cartaIntencoesId
-							and not excluido 
+							turma_id = @turmaId and
+							componente_curricular_id = @componenteCurricularId and					
+							not excluido 
                         order by criado_em desc";
 
-			return await database.Conexao.QueryAsync<ListarObservacaoCartaIntencoesDto>(sql, new { cartaIntencoesId, usuarioLogadoId });
-		}
-
-	}
+            return await database.Conexao.QueryAsync<CartaIntencoesObservacaoDto>(sql, new { turmaId, componenteCurricularId, usuarioLogadoId });
+        }
+    }
 }

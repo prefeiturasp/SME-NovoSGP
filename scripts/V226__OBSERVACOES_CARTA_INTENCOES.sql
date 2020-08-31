@@ -1,7 +1,8 @@
 CREATE table if not exists public.carta_intencoes_observacao (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	observacao varchar NOT NULL,
-	carta_intencoes_id int8 NULL,
+	turma_id int8 not null,
+	componente_curricular_id int8 not null,
 	usuario_id int8 NULL,
 	excluido bool NOT NULL DEFAULT false,
 	criado_em timestamp NOT NULL,
@@ -17,15 +18,6 @@ CREATE table if not exists public.carta_intencoes_observacao (
 select
 	f_cria_fk_se_nao_existir(
 		'carta_intencoes_observacao',
-		'carta_intencoes_observacao_carta_intencoes_fk',
-		'FOREIGN KEY (carta_intencoes_id) REFERENCES carta_intencoes (id)'
+		'carta_intencoes_observacao_turma_fk',
+		'FOREIGN KEY (turma_id) REFERENCES turma (id)'
 	);
-
-select
-	f_cria_fk_se_nao_existir(
-		'carta_intencoes_observacao',
-		'carta_intencoes_observacao_usuario_fk',
-		'FOREIGN KEY (usuario_id) REFERENCES usuario (id)'
-	);
-
-CREATE INDEX IF NOT EXISTS carta_intencoes_observacoes_idx ON public.carta_intencoes_observacao USING btree (carta_intencoes_id);

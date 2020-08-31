@@ -7,7 +7,8 @@ namespace SME.SGP.Dados.Mapeamentos
         public CartaIntencoesObservacaoMap()
         {
             ToTable("carta_intencoes_observacao");
-            Map(c => c.CartaIntencoesId).ToColumn("carta_intencoes_id");
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
             Map(c => c.UsuarioId).ToColumn("usuario_id");
         }
     }
