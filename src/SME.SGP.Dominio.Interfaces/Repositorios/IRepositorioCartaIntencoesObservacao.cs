@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioCartaIntencoesObservacao : IRepositorioBase<CartaIntencoesObservacao>
     {
-        Task<IEnumerable<ListarObservacaoCartaIntencoesDto>> ListarPorCartaIntencoesAsync(long cartaIntencoesId, long usuarioLogadoId);
+        Task<IEnumerable<CartaIntencoesObservacaoDto>> ListarPorTurmaEComponenteCurricularAsync(long turmaId, long componenteCurricularId, long usuarioLogadoId);
     }
 }

@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Handle(SalvarObservacaoCartaIntencoesCommand request, CancellationToken cancellationToken)
         {
-            var cartaIntencoesObservacao = new CartaIntencoesObservacao(request.Observacao, request.CartaIntencoesId, request.UsuarioId);
+            var cartaIntencoesObservacao = new CartaIntencoesObservacao(request.Observacao, request.CartaIntencoesId, 0, request.UsuarioId);
             await repositorioCartaIntencoesObservacao.SalvarAsync(cartaIntencoesObservacao);
             return (AuditoriaDto)cartaIntencoesObservacao;
         }
