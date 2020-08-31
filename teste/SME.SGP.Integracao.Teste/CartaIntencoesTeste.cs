@@ -62,13 +62,37 @@ namespace SME.SGP.Integracao.Teste
             fixture._clientApi.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_I }));
 
+            var turmaId = 605357;
+            var componenteCurricularId = 512;
+
             SalvarCartaIntencoesObservacaoDto dto = new SalvarCartaIntencoesObservacaoDto()
             {
                 Observacao = "Teste de Inclusão de observação na carta de intenção..."
             };
 
             StringContent jsonParaPost = new StringContent(TransformarEmJson(dto), UnicodeEncoding.UTF8, "application/json");
-            var postResult = fixture._clientApi.PostAsync("api/v1/carta-intencoes/turmas/{turmaId}/componente-curricular/{componenteCurricularId}/observacoes", jsonParaPost).Result;
+            var postResult = fixture._clientApi.PostAsync($"api/v1/carta-intencoes/turmas/{turmaId}/componente-curricular/{componenteCurricularId}/observacoes", jsonParaPost).Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
+        }
+
+        public void Deve_Alterar_Carta_Intencoes_Observacao()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_I }));
+
+            var turmaId = 605357;
+            var componenteCurricularId = 512;
+            var observacaoId = 1;
+
+            AlterarCartaIntencoesObservacaoDto dto = new AlterarCartaIntencoesObservacaoDto()
+            {
+                Observacao = "Teste de Alteração de observação na carta de intenção..."
+            };
+
+            StringContent jsonParaPost = new StringContent(TransformarEmJson(dto), UnicodeEncoding.UTF8, "application/json");
+            var postResult = fixture._clientApi.PostAsync($"api/v1/carta-intencoes/turmas/{turmaId}/componente-curricular/{componenteCurricularId}/observacoes/{observacaoId}", jsonParaPost).Result;
 
             Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
