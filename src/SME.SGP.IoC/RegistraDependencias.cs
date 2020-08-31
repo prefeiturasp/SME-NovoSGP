@@ -400,7 +400,7 @@ namespace SME.SGP.IoC
 
             //Carta Intenções Observacao
             services.TryAddScoped<IListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase, ListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase>();
-            services.TryAddScoped<ISalvarObservacaoCartaIntencoesUseCase, SalvarObservacaoCartaIntencoesUseCase>();
+            services.TryAddScoped<ISalvarCartaIntencoesObservacaoUseCase, SalvarCartaIntencoesObservacaoUseCase>();
         }
     }
 }

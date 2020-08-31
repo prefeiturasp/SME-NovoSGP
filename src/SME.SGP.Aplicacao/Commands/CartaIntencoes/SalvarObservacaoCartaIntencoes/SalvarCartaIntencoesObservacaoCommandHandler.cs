@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarObservacaoCartaIntencoesCommandHandler : IRequestHandler<SalvarObservacaoCartaIntencoesCommand, AuditoriaDto>
+    public class SalvarCartaIntencoesObservacaoCommandHandler : IRequestHandler<SalvarCartaIntencoesObservacaoCommand, AuditoriaDto>
     {
         private readonly IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao;
 
-        public SalvarObservacaoCartaIntencoesCommandHandler(IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao)
+        public SalvarCartaIntencoesObservacaoCommandHandler(IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao)
         {
             this.repositorioCartaIntencoesObservacao = repositorioCartaIntencoesObservacao ?? throw new System.ArgumentNullException(nameof(repositorioCartaIntencoesObservacao));
         }
 
-        public async Task<AuditoriaDto> Handle(SalvarObservacaoCartaIntencoesCommand request, CancellationToken cancellationToken)
+        public async Task<AuditoriaDto> Handle(SalvarCartaIntencoesObservacaoCommand request, CancellationToken cancellationToken)
         {
-            var cartaIntencoesObservacao = new CartaIntencoesObservacao(request.Observacao, request.CartaIntencoesId, 0, request.UsuarioId);
+            var cartaIntencoesObservacao = new CartaIntencoesObservacao(request.Observacao, request.TurmaId, request.ComponenteCurricularId, request.UsuarioId); ;
             await repositorioCartaIntencoesObservacao.SalvarAsync(cartaIntencoesObservacao);
             return (AuditoriaDto)cartaIntencoesObservacao;
         }
