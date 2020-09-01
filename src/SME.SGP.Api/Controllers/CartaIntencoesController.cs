@@ -32,23 +32,23 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(new ObterCartaIntencoesDto(turmaCodigo, componenteCurricularId)));
         }
 
-        [HttpGet("turmas/{turmaId}/componente-curricular/{componenteCurricularId}/observacoes")]
+        [HttpGet("turmas/{turmaCodigo}/componente-curricular/{componenteCurricularId}/observacoes")]
         [ProducesResponseType(typeof(IEnumerable<CartaIntencoesObservacaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CI_C, Policy = "Bearer")]
-        public async Task<IActionResult> ListarObservacoes([FromServices] IListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase useCase, long turmaId, long componenteCurricularId)
+        public async Task<IActionResult> ListarObservacoes([FromServices] IListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase useCase, string turmaCodigo, long componenteCurricularId)
         {
-            return Ok(await useCase.Executar(new BuscaCartaIntencoesObservacaoDto(turmaId, componenteCurricularId)));
+            return Ok(await useCase.Executar(new BuscaCartaIntencoesObservacaoDto(turmaCodigo, componenteCurricularId)));
         }
 
 
-        [HttpPost("turmas/{turmaId}/componente-curricular/{componenteCurricularId}/observacoes")]
+        [HttpPost("turmas/{turmaCodigo}/componente-curricular/{componenteCurricularId}/observacoes")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CI_C, Policy = "Bearer")]
-        public async Task<IActionResult> SalvarObservacao([FromBody] SalvarCartaIntencoesObservacaoDto dto, [FromServices] ISalvarCartaIntencoesObservacaoUseCase useCase, long turmaId, long componenteCurricularId)
+        public async Task<IActionResult> SalvarObservacao([FromBody] SalvarCartaIntencoesObservacaoDto dto, [FromServices] ISalvarCartaIntencoesObservacaoUseCase useCase, string turmaCodigo, long componenteCurricularId)
         {
-            return Ok(await useCase.Executar(turmaId, componenteCurricularId, dto));
+            return Ok(await useCase.Executar(turmaCodigo, componenteCurricularId, dto));
         }
 
         [HttpPut("observacoes/{observacaoId}")]
