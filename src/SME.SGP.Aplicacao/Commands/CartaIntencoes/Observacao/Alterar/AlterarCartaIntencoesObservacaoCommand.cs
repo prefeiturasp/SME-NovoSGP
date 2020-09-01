@@ -4,9 +4,9 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarCartaIntencaoObservacaoCommand : IRequest<AuditoriaDto>
+    public class AlterarCartaIntencoesObservacaoCommand : IRequest<AuditoriaDto>
     {
-        public AlterarCartaIntencaoObservacaoCommand(string observacao, long observacaoId, long usuarioId)
+        public AlterarCartaIntencoesObservacaoCommand(string observacao, long observacaoId, long usuarioId)
         {
             Observacao = observacao;
             ObservacaoId = observacaoId;
@@ -20,9 +20,9 @@ namespace SME.SGP.Aplicacao
     }
 
 
-    public class AlterarCartaIntencaoObservacaoCommandValidator : AbstractValidator<AlterarCartaIntencaoObservacaoCommand>
+    public class AlterarCartaIntencoesObservacaoCommandValidator : AbstractValidator<AlterarCartaIntencoesObservacaoCommand>
     {
-        public AlterarCartaIntencaoObservacaoCommandValidator()
+        public AlterarCartaIntencoesObservacaoCommandValidator()
         {
             RuleFor(c => c.ObservacaoId)
                 .NotEmpty()

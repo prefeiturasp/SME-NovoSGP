@@ -60,7 +60,7 @@ namespace SME.SGP.Integracao.Teste
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();
             fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_I }));
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.CI_C }));
 
             var turmaId = 605357;
             var componenteCurricularId = 512;
@@ -76,14 +76,13 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
 
+        [Fact]
         public void Deve_Alterar_Carta_Intencoes_Observacao()
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();
             fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.DDB_I }));
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.CI_C }));
 
-            var turmaId = 605357;
-            var componenteCurricularId = 512;
             var observacaoId = 1;
 
             AlterarCartaIntencoesObservacaoDto dto = new AlterarCartaIntencoesObservacaoDto()
@@ -92,7 +91,19 @@ namespace SME.SGP.Integracao.Teste
             };
 
             StringContent jsonParaPost = new StringContent(TransformarEmJson(dto), UnicodeEncoding.UTF8, "application/json");
-            var postResult = fixture._clientApi.PostAsync($"api/v1/carta-intencoes/turmas/{turmaId}/componente-curricular/{componenteCurricularId}/observacoes/{observacaoId}", jsonParaPost).Result;
+            var postResult = fixture._clientApi.PutAsync($"api/v1/carta-intencoes/observacoes/{observacaoId}", jsonParaPost).Result;
+
+            Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
+        }
+
+        [Fact]
+        public void Deve_Excluir_Carta_Intencoes_Observacao()
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+            fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.CI_C }));
+
+            var postResult = fixture._clientApi.DeleteAsync("api/v1/carta-intencoes/observacoes/1").Result;
 
             Assert.True(fixture.ValidarStatusCodeComSucesso(postResult));
         }
