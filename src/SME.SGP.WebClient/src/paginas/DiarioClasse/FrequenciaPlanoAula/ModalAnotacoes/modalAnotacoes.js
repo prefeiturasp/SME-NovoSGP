@@ -294,7 +294,7 @@ const ModalAnotacoesFrequencia = props => {
             </div>
             <div className="row">
               <div
-                className="col-md-8 d-flex justify-content-start"
+                className="col-md-12 d-flex justify-content-start"
                 style={{ marginTop: '-15px' }}
               >
                 {valoresIniciais &&
@@ -312,7 +312,7 @@ const ModalAnotacoesFrequencia = props => {
                   ''
                 )}
               </div>
-              <div className="col-md-4 d-flex justify-content-end">
+              <div className="col-md-12 d-flex justify-content-end">
                 <Button
                   key="btn-voltar-anotacao"
                   id="btn-voltar-anotacao"
