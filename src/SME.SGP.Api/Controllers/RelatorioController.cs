@@ -33,5 +33,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await gerarRelatorioFaltasFrequenciaUseCase.Executar(filtroRelatorioFaltasFrequenciaDto));
         }
+
+        [HttpPost("calendario")]
+        public async Task<IActionResult> Calendario([FromBody] FiltroRelatorioCalendarioDto filtroRelatorioCalendarioDto, [FromServices] IRelatorioCalendarioUseCase relatorioCalendarioUseCase)
+        {
+            return Ok(await relatorioCalendarioUseCase.Executar(filtroRelatorioCalendarioDto));
+        }
     }
 }
