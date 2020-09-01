@@ -6,13 +6,13 @@ namespace SME.SGP.Infra
 {
     public class BuscaCartaIntencoesObservacaoDto
     {
-        public BuscaCartaIntencoesObservacaoDto(long turmaId, long componenteCurricularId)
+        public BuscaCartaIntencoesObservacaoDto(string turmaCodigo, long componenteCurricularId)
         {
-            TurmaId = turmaId;
+            TurmaCodigo = turmaCodigo;
             ComponenteCurricularId = componenteCurricularId;
         }
 
-        public long TurmaId { get; set; }
+        public string TurmaCodigo { get; set; }
         public long ComponenteCurricularId { get; set; }
     }
 }
