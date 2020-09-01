@@ -36,8 +36,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             //Act
             var dto = new SalvarCartaIntencoesObservacaoDto();
             dto.Observacao = "observacao";
-            var auditoriaDto = await useCase.Executar(1,1, dto);
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaIdPorCodigoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
+            var auditoriaDto = await useCase.Executar("1",1, dto);
             //Asert
             mediator.Verify(x => x.Send(It.IsAny<SalvarCartaIntencoesObservacaoCommand>(), It.IsAny<CancellationToken>()), Times.Once);
 
