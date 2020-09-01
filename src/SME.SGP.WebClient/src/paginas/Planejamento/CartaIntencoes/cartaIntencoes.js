@@ -105,8 +105,10 @@ const CartaIntencoes = () => {
         componenteCurricular
       ).catch(e => erros(e));
 
-      if (retorno && retorno.data) {
-        const exibir = retorno.data.find(item => item.auditoria.id);
+      if (retorno && retorno.data && retorno.data.length) {
+        const exibir = retorno.data.find(
+          item => item.auditoria && item.auditoria.id
+        );
         if (exibir) {
           setExibirObservacoes(true);
           obterDadosObservacoes(turma, componenteCurricular);
@@ -145,6 +147,11 @@ const CartaIntencoes = () => {
       setComponenteCurricular(undefined);
     }
   }, [turma]);
+
+  useEffect(() => {
+    dispatch(setDadosObservacoesUsuario([]));
+    setExibirObservacoes(false);
+  }, [turma, dispatch]);
 
   useEffect(() => {
     resetarInfomacoes();
