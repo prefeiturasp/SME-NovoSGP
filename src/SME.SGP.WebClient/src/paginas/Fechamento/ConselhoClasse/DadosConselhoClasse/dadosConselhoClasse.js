@@ -110,8 +110,8 @@ const DadosConselhoClasse = props => {
         usuario.turmaSelecionada.consideraHistorico && bimestreConsulta === 0
           ? '1'
           : ehFinal
-          ? '0'
-          : bimestreConsulta,
+            ? '0'
+            : bimestreConsulta,
         codigoEOL,
         ehFinal,
         usuario.turmaSelecionada.consideraHistorico
@@ -237,8 +237,8 @@ const DadosConselhoClasse = props => {
     dispatch(
       setConselhoClasseEmEdicao(
         !carregando &&
-          !semDados &&
-          !Object.entries(dadosPrincipaisConselhoClasse).length
+        !semDados &&
+        !Object.entries(dadosPrincipaisConselhoClasse).length
       )
     );
   }, [dispatch, carregando, semDados, dadosPrincipaisConselhoClasse]);
@@ -267,8 +267,6 @@ const DadosConselhoClasse = props => {
     );
   };
 
-  console.log(modalidade);
-
   return (
     <>
       {codigoEOL && bimestreAtual.valor ? (
@@ -293,22 +291,22 @@ const DadosConselhoClasse = props => {
               {bimestreAtual.valor === '3' ? montarDados() : ''}
             </TabPane>
           ) : (
-            ''
-          )}
+              ''
+            )}
           {modalidade.toString() !== modalidadeDto.EJA.toString() ? (
             <TabPane tab="4º Bimestre" key="4">
               {bimestreAtual.valor === '4' ? montarDados() : ''}
             </TabPane>
           ) : (
-            ''
-          )}
+              ''
+            )}
           <TabPane tab="Final" key="final">
             {bimestreAtual.valor === 'final' ? montarDados() : ''}
           </TabPane>
         </ContainerTabsCard>
       ) : (
-        ''
-      )}
+          ''
+        )}
     </>
   );
 };
