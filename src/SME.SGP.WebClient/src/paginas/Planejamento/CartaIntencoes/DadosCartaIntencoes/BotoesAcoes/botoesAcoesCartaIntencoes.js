@@ -11,7 +11,7 @@ import {
 import { confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
-import servicoSalvarCartaIntencoes from '../../servicoSalvarCartaIntencoes';
+import ServicoSalvarCartaIntencoes from '../../servicoSalvarCartaIntencoes';
 
 const BotoesAcoesCartaIntencoes = props => {
   const dispatch = useDispatch();
@@ -40,7 +40,7 @@ const BotoesAcoesCartaIntencoes = props => {
   const onSalvar = async () => {
     if (cartaIntencoesEmEdicao && ehTurmaInfantil) {
       dispatch(setCarregandoCartaIntencoes(true));
-      const salvou = await servicoSalvarCartaIntencoes.validarSalvarCartaIntencoes(
+      const salvou = await ServicoSalvarCartaIntencoes.validarSalvarCartaIntencoes(
         componenteCurricularId,
         codigoTurma
       );
@@ -63,7 +63,7 @@ const BotoesAcoesCartaIntencoes = props => {
     const confirmado = await perguntaAoSalvar();
     if (confirmado) {
       dispatch(setCarregandoCartaIntencoes(true));
-      const salvou = await servicoSalvarCartaIntencoes.validarSalvarCartaIntencoes(
+      const salvou = await ServicoSalvarCartaIntencoes.validarSalvarCartaIntencoes(
         componenteCurricularId,
         codigoTurma
       );
@@ -104,7 +104,9 @@ const BotoesAcoesCartaIntencoes = props => {
 
     let validouSalvarObservacao = true;
     if (novaObservacao) {
-      validouSalvarObservacao = await salvarObservacao(novaObservacao);
+      validouSalvarObservacao = await salvarObservacao({
+        observacao: novaObservacao,
+      });
     } else if (observacaoEmEdicao) {
       validouSalvarObservacao = await salvarObservacao(observacaoEmEdicao);
     }
