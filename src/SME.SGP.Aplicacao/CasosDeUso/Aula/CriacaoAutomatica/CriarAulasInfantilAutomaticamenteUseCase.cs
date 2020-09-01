@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             if(!executarManutencao)
             {
-                SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", SentryLevel.Warning);
+                SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", SentryLevel.Info);
                 return false;
             }
                 
