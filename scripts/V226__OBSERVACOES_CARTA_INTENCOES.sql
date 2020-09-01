@@ -21,3 +21,7 @@ select
 		'carta_intencoes_observacao_turma_fk',
 		'FOREIGN KEY (turma_id) REFERENCES turma (id)'
 	);
+
+
+CREATE INDEX IF NOT EXISTS carta_intencoes_observacao_turma_idx ON public.carta_intencoes_observacao USING btree (turma_id);
+CREATE INDEX IF NOT EXISTS carta_intencoes_observacao_componente_curricular_idx ON public.carta_intencoes_observacao USING btree (componente_curricular_id);
