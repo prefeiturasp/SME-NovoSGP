@@ -48,6 +48,7 @@
 
         MunicipioAtendimentoHistoricoEscolar = 25,
 
+        ExecutarManutencaoAulasInfantil = 26,
         //Sistema
         HabilitarServicosEmBackground = 100
     }
