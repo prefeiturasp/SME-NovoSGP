@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface ISalvarCartaIntencoesObservacaoUseCase
     {
-        Task<AuditoriaDto> Executar(long turmaId,long componenteCurricularId, SalvarCartaIntencoesObservacaoDto salvarCartaIntencoesObservacaoDto);
+        Task<AuditoriaDto> Executar(string turmaCodigo,long componenteCurricularId, SalvarCartaIntencoesObservacaoDto salvarCartaIntencoesObservacaoDto);
     }
 }

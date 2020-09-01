@@ -5,8 +5,8 @@ import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
 import {
-  setCarregandoCartaIntencoes,
   limparDadosCartaIntencoes,
+  setCarregandoCartaIntencoes,
 } from '~/redux/modulos/cartaIntencoes/actions';
 import { confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
@@ -22,10 +22,19 @@ const BotoesAcoesCartaIntencoes = props => {
     componenteCurricularId,
     codigoTurma,
     somenteConsulta,
+    salvarEditarObservacao,
   } = props;
 
   const cartaIntencoesEmEdicao = useSelector(
     store => store.cartaIntencoes.cartaIntencoesEmEdicao
+  );
+
+  const observacaoEmEdicao = useSelector(
+    store => store.observacoesUsuario.observacaoEmEdicao
+  );
+
+  const novaObservacao = useSelector(
+    store => store.observacoesUsuario.novaObservacao
   );
 
   const onSalvar = async () => {
@@ -50,23 +59,57 @@ const BotoesAcoesCartaIntencoes = props => {
     );
   };
 
-  const onClickVoltar = async () => {
-    if (!somenteConsulta && cartaIntencoesEmEdicao && ehTurmaInfantil) {
-      const confirmado = await perguntaAoSalvar();
-      if (confirmado) {
-        dispatch(setCarregandoCartaIntencoes(true));
-        const salvou = await servicoSalvarCartaIntencoes.validarSalvarCartaIntencoes(
-          componenteCurricularId,
-          codigoTurma
-        );
-        dispatch(setCarregandoCartaIntencoes(false));
-        if (salvou) {
-          history.push(URL_HOME);
-        }
-      } else {
-        history.push(URL_HOME);
+  const salvarCarta = async () => {
+    const confirmado = await perguntaAoSalvar();
+    if (confirmado) {
+      dispatch(setCarregandoCartaIntencoes(true));
+      const salvou = await servicoSalvarCartaIntencoes.validarSalvarCartaIntencoes(
+        componenteCurricularId,
+        codigoTurma
+      );
+      dispatch(setCarregandoCartaIntencoes(false));
+      if (salvou) {
+        return true;
       }
-    } else {
+      return false;
+    }
+    return true;
+  };
+
+  const perguntaAoSalvarObservacao = async () => {
+    return confirmar(
+      'Atenção',
+      '',
+      'Você não salvou as observações, deseja salvar agora?'
+    );
+  };
+
+  const salvarObservacao = async dados => {
+    const confirmado = await perguntaAoSalvarObservacao();
+    if (confirmado) {
+      const salvou = await salvarEditarObservacao(dados);
+      if (salvou) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  };
+
+  const onClickVoltar = async () => {
+    let validouSalvarCarta = true;
+    if (!somenteConsulta && cartaIntencoesEmEdicao && ehTurmaInfantil) {
+      validouSalvarCarta = await salvarCarta();
+    }
+
+    let validouSalvarObservacao = true;
+    if (novaObservacao) {
+      validouSalvarObservacao = await salvarObservacao(novaObservacao);
+    } else if (observacaoEmEdicao) {
+      validouSalvarObservacao = await salvarObservacao(observacaoEmEdicao);
+    }
+
+    if (validouSalvarCarta && validouSalvarObservacao) {
       history.push(URL_HOME);
     }
   };
@@ -127,6 +170,7 @@ BotoesAcoesCartaIntencoes.propTypes = {
   componenteCurricularId: PropTypes.string,
   codigoTurma: PropTypes.oneOfType([PropTypes.any]),
   somenteConsulta: PropTypes.bool,
+  salvarEditarObservacao: PropTypes.func,
 };
 
 BotoesAcoesCartaIntencoes.defaultProps = {
@@ -135,6 +179,7 @@ BotoesAcoesCartaIntencoes.defaultProps = {
   componenteCurricularId: '',
   codigoTurma: '',
   somenteConsulta: false,
+  salvarEditarObservacao: () => {},
 };
 
 export default BotoesAcoesCartaIntencoes;

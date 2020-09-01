@@ -1,9 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -20,7 +19,12 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<CartaIntencoesObservacaoDto>> Executar(BuscaCartaIntencoesObservacaoDto param)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
-            return await mediator.Send(new ListarCartaIntencoesObservacaoQuery(param.TurmaId, param.ComponenteCurricularId, usuarioId));
+
+            var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(param.TurmaCodigo));
+            if (turmaId == 0)
+                throw new NegocioException("Turma não encontrada.");
+
+            return await mediator.Send(new ListarCartaIntencoesObservacaoQuery(turmaId, param.ComponenteCurricularId, usuarioId));
         }
     }
 }
