@@ -1,34 +1,34 @@
 import { Form, Formik } from 'formik';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Auditoria, CampoData, Loader, PainelCollapse } from '~/componentes';
+import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import AlertaPeriodoEncerrado from '~/componentes-sgp/Calendario/componentes/MesCompleto/componentes/Dias/componentes/DiaCompleto/componentes/AlertaPeriodoEncerrado';
+import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
+import ServicoObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/ServicoObservacoesUsuario';
 import Alert from '~/componentes/alert';
-import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
 import Editor from '~/componentes/editor/editor';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
+import RotasDto from '~/dtos/rotasDto';
+import {
+  limparDadosObservacoesUsuario,
+  setDadosObservacoesUsuario,
+} from '~/redux/modulos/observacoesUsuario/actions';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
 import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
-import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
-import ModalSelecionarAula from './modalSelecionarAula';
-import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
-import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
-import {
-  limparDadosObservacoesUsuario,
-  setDadosObservacoesUsuario,
-} from '~/redux/modulos/observacoesUsuario/actions';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import BotoesAcoesDiarioBordo from './botoesAcoesDiarioBordo';
+import ModalSelecionarAula from './modalSelecionarAula';
 
 const DiarioBordo = () => {
   const usuario = useSelector(state => state.usuario);
@@ -400,18 +400,80 @@ const DiarioBordo = () => {
     }
   };
 
-  const onClickVoltar = async form => {
-    if (modoEdicao && turmaInfantil && !desabilitarCampos) {
-      const confirmado = await pergutarParaSalvar();
-      if (confirmado) {
-        const salvou = await validaAntesDoSubmit(form);
-        if (salvou) {
-          history.push(URL_HOME);
-        }
-      } else {
-        history.push(URL_HOME);
+  const salvarDiario = async form => {
+    const confirmado = await pergutarParaSalvar();
+    if (confirmado) {
+      const salvou = await validaAntesDoSubmit(form);
+      if (salvou) {
+        return true;
       }
-    } else {
+      return false;
+    }
+    return true;
+  };
+
+  const perguntaAoSalvarObservacao = async () => {
+    return confirmar(
+      'Atenção',
+      '',
+      'Você não salvou as observações, deseja salvar agora?'
+    );
+  };
+
+  const salvarEditarObservacao = async obs => {
+    setCarregandoGeral(true);
+    const diarioBordoId = auditoria.id;
+    return ServicoDiarioBordo.salvarEditarObservacao(diarioBordoId, obs)
+      .then(resultado => {
+        if (resultado && resultado.status === 200) {
+          const msg = `Observação ${
+            obs.id ? 'alterada' : 'inserida'
+          } com sucesso.`;
+          sucesso(msg);
+        }
+        setCarregandoGeral(false);
+
+        ServicoObservacoesUsuario.atualizarSalvarEditarDadosObservacao(
+          obs,
+          resultado.data
+        );
+        return resultado;
+      })
+      .catch(e => {
+        erros(e);
+        setCarregandoGeral(false);
+        return e;
+      });
+  };
+
+  const salvarObservacao = async dados => {
+    const confirmado = await perguntaAoSalvarObservacao();
+    if (confirmado) {
+      const salvou = await salvarEditarObservacao(dados);
+      if (salvou) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  };
+
+  const onClickVoltar = async (form, observacaoEmEdicao, novaObservacao) => {
+    let validouSalvarDiario = true;
+    if (modoEdicao && turmaInfantil && !desabilitarCampos) {
+      validouSalvarDiario = await salvarDiario(form);
+    }
+
+    let validouSalvarObservacao = true;
+    if (novaObservacao) {
+      validouSalvarObservacao = await salvarObservacao({
+        observacao: novaObservacao,
+      });
+    } else if (observacaoEmEdicao) {
+      validouSalvarObservacao = await salvarObservacao(observacaoEmEdicao);
+    }
+
+    if (validouSalvarDiario && validouSalvarObservacao) {
       history.push(URL_HOME);
     }
   };
@@ -431,32 +493,6 @@ const DiarioBordo = () => {
       setAulaSelecionada(aula);
       obterDiarioBordo(aula.aulaId);
     }
-  };
-
-  const salvarEditarObservacao = async obs => {
-    setCarregandoGeral(true);
-    const diarioBordoId = auditoria.id;
-    return ServicoDiarioBordo.salvarEditarObservacao(diarioBordoId, obs)
-      .then(resultado => {
-        if (resultado && resultado.status === 200) {
-          const msg = `Observação ${
-            obs.id ? 'alterada' : 'inserida'
-          } com sucesso.`;
-          sucesso(msg);
-        }
-        setCarregandoGeral(false);
-
-        ServicoDiarioBordo.atualizarSalvarEditarDadosObservacao(
-          obs,
-          resultado.data
-        );
-        return resultado;
-      })
-      .catch(e => {
-        erros(e);
-        setCarregandoGeral(false);
-        return e;
-      });
   };
 
   const excluirObservacao = async obs => {
@@ -532,35 +568,17 @@ const DiarioBordo = () => {
               <Form>
                 <div className="row">
                   <div className="col-md-12 d-flex justify-content-end pb-4">
-                    <Button
-                      id="btn-voltar-ata-diario-bordo"
-                      label="Voltar"
-                      icon="arrow-left"
-                      color={Colors.Azul}
-                      border
-                      className="mr-3"
-                      onClick={() => onClickVoltar(form)}
-                    />
-                    <Button
-                      id="btn-cancelar-ata-diario-bordo"
-                      label="Cancelar"
-                      color={Colors.Roxo}
-                      border
-                      bold
-                      className="mr-3"
-                      onClick={() => onClickCancelar(form)}
-                      disabled={!modoEdicao || desabilitarCampos}
-                    />
-                    <Button
-                      id="btn-gerar-ata-diario-bordo"
-                      label="Salvar"
-                      color={Colors.Roxo}
-                      border
-                      bold
-                      onClick={() => validaAntesDoSubmit(form, true)}
-                      disabled={
-                        !modoEdicao || !turmaInfantil || desabilitarCampos
+                    <BotoesAcoesDiarioBordo
+                      onClickVoltar={(observacaoEmEdicao, novaObservacao) =>
+                        onClickVoltar(form, observacaoEmEdicao, novaObservacao)
                       }
+                      onClickCancelar={() => onClickCancelar(form)}
+                      validaAntesDoSubmit={() =>
+                        validaAntesDoSubmit(form, true)
+                      }
+                      modoEdicao={modoEdicao}
+                      desabilitarCampos={desabilitarCampos}
+                      turmaInfantil={turmaInfantil}
                     />
                   </div>
                   <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
