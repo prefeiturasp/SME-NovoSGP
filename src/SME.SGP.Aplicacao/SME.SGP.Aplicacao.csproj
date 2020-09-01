@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <Folder Include="Interfaces\CasosDeUso\Aluno\" />
-    <Folder Include="Queries\NewFolder\" />
     <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
 </Project>

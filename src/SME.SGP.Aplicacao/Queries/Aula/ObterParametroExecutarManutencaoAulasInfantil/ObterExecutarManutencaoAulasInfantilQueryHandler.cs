@@ -18,16 +18,9 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(ObterExecutarManutencaoAulasInfantilQuery request, CancellationToken cancellationToken)
         {
-            var valor = await this.repositorioParametrosSistema.ObterValorUnicoPorTipo(Dominio.TipoParametroSistema.ExecutarManutencaoAulasInfantil);
+            var valor = await this.repositorioParametrosSistema.ObterValorUnicoPorTipo<string>(Dominio.TipoParametroSistema.ExecutarManutencaoAulasInfantil);
 
-            if (valor.Equals("1"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return valor.Equals("1");
         }
     }
 }
