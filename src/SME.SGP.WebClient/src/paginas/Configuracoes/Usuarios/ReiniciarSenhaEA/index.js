@@ -2,6 +2,7 @@ import { Form, Formik } from 'formik';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import * as Yup from 'yup';
 import moment from 'moment';
+
 import { Loader } from '~/componentes';
 import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
@@ -9,24 +10,36 @@ import { Colors } from '~/componentes/colors';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import SelectComponent from '~/componentes/select';
 import DataTable from '~/componentes/table/dataTable';
-import { erros, confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import { store } from '~/redux';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import { erros, confirmar } from '~/servicos/alertas';
 
-export default function ReiniciarSenha() {
+const dataMock = [
+  {
+    nomeDoUsuario: 'DIEGO COLLARES',
+    cpfDoUsuario: '33344120832',
+  },
+  {
+    nomeDoUsuario: 'CARLOS SILVA JUNIOR',
+    cpfDoUsuario: '44455630932',
+  },
+  {
+    nomeDoUsuario: 'CAIO GOLDMAN MIZHX',
+    cpfDoUsuario: '098732423487',
+  },
+];
+
+export default function ReiniciarSenhaEA() {
   const [linhaSelecionada, setLinhaSelecionada] = useState({});
   const [listaUsuario, setListaUsuario] = useState([]);
-
   const [listaDres, setListaDres] = useState([]);
   const [dreSelecionada, setDreSelecionada] = useState('');
   const [listaUes, setListaUes] = useState([]);
   const [ueSelecionada, setUeSelecionada] = useState('');
   const [nomeUsuarioSelecionado, setNomeUsuarioSelecionado] = useState('');
-  const [rfSelecionado, setRfSelecionado] = useState('');
   const [emailUsuarioSelecionado, setEmailUsuarioSelecionado] = useState('');
   const [exibirModalReiniciarSenha, setExibirModalReiniciarSenha] = useState(
     false
@@ -71,21 +84,94 @@ export default function ReiniciarSenha() {
     })
   );
 
+  const onClickFiltrar = async () => {
+    if (!permissoesTela.podeConsultar) return;
+
+    if (dreSelecionada) {
+      const parametrosPost = {
+        codigoDRE: dreSelecionada,
+        codigoUE: ueSelecionada,
+        nomeDoUsuario: nomeUsuarioSelecionado,
+      };
+      const lista = await api
+        .post(`v1/unidades-escolares/funcionarios`, parametrosPost)
+        .catch(() => {
+          setListaUsuario([]);
+        });
+      if (lista && lista.data) {
+        setListaUsuario([]);
+        setListaUsuario(dataMock);
+      } else {
+        setListaUsuario([]);
+      }
+    } else {
+      setListaUsuario([]);
+    }
+  };
+
+  const reiniciarSenha = async linha => {
+    const parametros = {
+      dreCodigo: dreSelecionada,
+      ueCodigo: ueSelecionada,
+    };
+
+    let deveAtualizarEmail = false;
+    setCarregando(true);
+    await api
+      .put(`v1/autenticacao/${linha.codigoRf}/reiniciar-senha`, parametros)
+      .then(resposta => {
+        setExibirModalMensagemReiniciarSenha(true);
+        setMensagemSenhaAlterada(resposta.data.mensagem);
+      })
+      .catch(error => {
+        const { deveAtualizarEmai } = error.response.data;
+        if (error && error.response && error.response.data) {
+          deveAtualizarEmail = deveAtualizarEmai;
+        }
+        setCarregando(false);
+      });
+    if (deveAtualizarEmail) {
+      setEmailUsuarioSelecionado('');
+      setSemEmailCadastrado(true);
+      setExibirModalReiniciarSenha(true);
+    } else {
+      setSemEmailCadastrado(false);
+      onClickFiltrar();
+    }
+    setCarregando(false);
+  };
+
+  const onClickReiniciar = async linha => {
+    if (!permissoesTela.podeAlterar) return;
+
+    setLinhaSelecionada(linha);
+    const confirmou = await confirmar(
+      'Reiniciar Senha',
+      '',
+      'Deseja realmente reiniciar essa senha?',
+      'Reiniciar',
+      'Cancelar'
+    );
+    if (confirmou) {
+      reiniciarSenha(linha);
+    }
+  };
+
   const colunas = [
     {
       title: 'Nome do usuário',
-      dataIndex: 'nomeServidor',
+      dataIndex: 'nomeDoUsuario',
     },
     {
-      title: 'Registro Funcional (RF)',
-      dataIndex: 'codigoRf',
+      title: 'CPF',
+      dataIndex: 'cpfDoUsuario',
     },
     {
       title: 'Ação',
       dataIndex: 'acaoReiniciar',
       render: (texto, linha) => {
         return (
-          <div className="botao-reiniciar-tabela-acao">
+          <div className="botao-reiniciar-tabela-acao-escola-aqui">
             <Button
               label="Reiniciar"
               color={Colors.Roxo}
@@ -152,10 +238,6 @@ export default function ReiniciarSenha() {
     setNomeUsuarioSelecionado(nomeUsuario.target.value);
   };
 
-  const onChangeRf = rf => {
-    setRfSelecionado(rf.target.value);
-  };
-
   const carregarUes = useCallback(
     async dre => {
       const ues = await api.get(
@@ -175,79 +257,6 @@ export default function ReiniciarSenha() {
       carregarUes(dreSelecionada);
     }
   }, [carregarUes, dreSelecionada]);
-
-  const onClickFiltrar = async () => {
-    if (!permissoesTela.podeConsultar) return;
-
-    if (dreSelecionada) {
-      const parametrosPost = {
-        codigoDRE: dreSelecionada,
-        codigoUE: ueSelecionada,
-        nomeServidor: nomeUsuarioSelecionado,
-        codigoRF: rfSelecionado,
-      };
-      const lista = await api
-        .post(`v1/unidades-escolares/funcionarios`, parametrosPost)
-        .catch(() => {
-          setListaUsuario([]);
-        });
-      if (lista && lista.data) {
-        setListaUsuario([]);
-        setListaUsuario(lista.data);
-      } else {
-        setListaUsuario([]);
-      }
-    } else {
-      setListaUsuario([]);
-    }
-  };
-
-  const onClickReiniciar = async linha => {
-    if (!permissoesTela.podeAlterar) return;
-
-    setLinhaSelecionada(linha);
-    const confirmou = await confirmar(
-      'Reiniciar Senha',
-      '',
-      'Deseja realmente reiniciar essa senha?',
-      'Reiniciar',
-      'Cancelar'
-    );
-    if (confirmou) {
-      reiniciarSenha(linha);
-    }
-  };
-
-  const reiniciarSenha = async linha => {
-    const parametros = {
-      dreCodigo: dreSelecionada,
-      ueCodigo: ueSelecionada,
-    };
-
-    let deveAtualizarEmail = false;
-    setCarregando(true);
-    await api
-      .put(`v1/autenticacao/${linha.codigoRf}/reiniciar-senha`, parametros)
-      .then(resposta => {
-        setExibirModalMensagemReiniciarSenha(true);
-        setMensagemSenhaAlterada(resposta.data.mensagem);
-      })
-      .catch(error => {
-        if (error && error.response && error.response.data) {
-          deveAtualizarEmail = error.response.data.deveAtualizarEmail;
-        }
-        setCarregando(false);
-      });
-    if (deveAtualizarEmail) {
-      setEmailUsuarioSelecionado('');
-      setSemEmailCadastrado(true);
-      setExibirModalReiniciarSenha(true);
-    } else {
-      setSemEmailCadastrado(false);
-      onClickFiltrar();
-    }
-    setCarregando(false);
-  };
 
   const onCloseModalReiniciarSenha = () => {
     setExibirModalReiniciarSenha(false);
@@ -317,26 +326,18 @@ export default function ReiniciarSenha() {
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-3">
+      <div className="row mb-3">
+        <div className="col-sm-12 col-md-12 col-lg-10 col-xl-11">
           <CampoTexto
-            label="Nome do usuário"
-            placeholder="Nome do usuário"
+            label="Login"
+            placeholder="Digite o CPF"
             onChange={onChangeNomeUsuario}
             desabilitado={!permissoesTela.podeConsultar}
             value={nomeUsuarioSelecionado}
           />
         </div>
-        <div className="col-sm-12 col-md-6 col-lg-4 col-xl-5 pb-3">
-          <CampoTexto
-            label="Registro Funcional (RF)"
-            placeholder="Registro Funcional (RF)"
-            onChange={onChangeRf}
-            desabilitado={!permissoesTela.podeConsultar}
-            value={rfSelecionado}
-          />
-        </div>
-        <div className="col-sm-12 col-md-12 col-lg-2 col-xl-1 pb-3">
+
+        <div className="col-sm-12 col-md-12 col-lg-2 col-xl-1">
           <Button
             label="Filtrar"
             color={Colors.Azul}
