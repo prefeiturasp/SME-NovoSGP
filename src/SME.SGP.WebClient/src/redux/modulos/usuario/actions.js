@@ -1,7 +1,7 @@
 export function salvarRf(rf) {
   return {
     type: '@usuario/salvarRf',
-    payload: rf,
+    payload: rf.trim(),
   };
 }
 
@@ -99,4 +99,3 @@ export function setPermissoes(permissoes) {
     payload: permissoes,
   };
 }
-
