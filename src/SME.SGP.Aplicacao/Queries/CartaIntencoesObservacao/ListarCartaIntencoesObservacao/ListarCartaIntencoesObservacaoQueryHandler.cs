@@ -18,11 +18,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioCartaIntencoesObservacao = repositorioCartaIntencoesObservacao ?? throw new ArgumentNullException(nameof(repositorioCartaIntencoesObservacao));
         }
 
-        //public async Task<IEnumerable<ListarObservacaoCartaIntencoesDto>> Handle(ListarObservacaoCartaIntencoesQuery request, CancellationToken cancellationToken)
-        //{
-        //    return await repositorioCartaIntencoesObservacao.ListarPorCartaIntencoesAsync(request.CartaIntencoesId, request.UsuarioLogadoId);
-        //}
-
         public async Task<IEnumerable<CartaIntencoesObservacaoDto>> Handle(ListarCartaIntencoesObservacaoQuery request, CancellationToken cancellationToken)
         {
             return await repositorioCartaIntencoesObservacao.ListarPorTurmaEComponenteCurricularAsync(request.TurmaId, request.ComponenteCurricularId, request.UsuarioLogadoId);
