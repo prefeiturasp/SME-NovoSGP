@@ -29,13 +29,15 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var mockRetorno = new List<CartaIntencoesObservacaoDto> {
                     new CartaIntencoesObservacaoDto{
                         TurmaId = 1,
-                        ComponenteCurricularId = 1,
+                        ComponenteCurricularId = 512,
                         Proprietario = true,
                         Observacao = "Teste de Observação"
                     }
                 };
 
-            var param = new BuscaCartaIntencoesObservacaoDto(1, 1);
+            var param = new BuscaCartaIntencoesObservacaoDto("2172463", 512);
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaIdPorCodigoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
             mediator.Setup(a => a.Send(It.IsAny<ListarCartaIntencoesObservacaoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mockRetorno);
