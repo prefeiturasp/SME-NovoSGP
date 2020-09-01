@@ -9,7 +9,7 @@ import { confirmar } from '~/servicos/alertas';
 import { ContainerCampoObservacao } from './observacoesUsuario.css';
 
 const LinhaObservacaoProprietario = props => {
-  const { dados, onClickSalvarEdicao, onClickExcluir, index, children } = props;
+  const { dados, onClickSalvarEdicao, onClickExcluir, children } = props;
 
   const dispatch = useDispatch();
 
@@ -22,14 +22,12 @@ const LinhaObservacaoProprietario = props => {
   );
 
   const onClickEditar = () => {
-    const obs = [...observacaoEmEdicao];
-    obs[index] = { ...dados };
-    dispatch(setObservacaoEmEdicao([...obs]));
+    dispatch(setObservacaoEmEdicao({ ...dados }));
   };
   const onClickSalvar = () => {
-    onClickSalvarEdicao(observacaoEmEdicao[index]).then(resultado => {
+    onClickSalvarEdicao(observacaoEmEdicao).then(resultado => {
       if (resultado && resultado.status === 200) {
-        dispatch(setObservacaoEmEdicao([]));
+        dispatch(setObservacaoEmEdicao());
       }
     });
   };
@@ -42,14 +40,14 @@ const LinhaObservacaoProprietario = props => {
     );
 
     if (confirmou) {
-      dispatch(setObservacaoEmEdicao([]));
+      dispatch(setObservacaoEmEdicao());
     }
   };
 
   const onChangeObs = ({ target: { value } }) => {
-    const obs = [...observacaoEmEdicao];
-    obs[index].observacao = value;
-    dispatch(setObservacaoEmEdicao([...obs]));
+    const obs = { ...observacaoEmEdicao };
+    obs.observacao = value;
+    dispatch(setObservacaoEmEdicao({ ...obs }));
   };
 
   const btnSalvarCancelar = () => {
@@ -94,11 +92,8 @@ const LinhaObservacaoProprietario = props => {
               height="30px"
               width="30px"
               disabled={
-                !!(
-                  observacaoEmEdicao &&
-                  observacaoEmEdicao.length &&
-                  !observacaoEmEdicao[index]
-                ) || !!novaObservacao
+                !!(observacaoEmEdicao && observacaoEmEdicao.id !== dados.id) ||
+                !!novaObservacao
               }
             />
           </span>
@@ -116,11 +111,8 @@ const LinhaObservacaoProprietario = props => {
               height="30px"
               width="30px"
               disabled={
-                !!(
-                  observacaoEmEdicao &&
-                  observacaoEmEdicao.length &&
-                  !observacaoEmEdicao[index]
-                ) || !!novaObservacao
+                !!(observacaoEmEdicao && observacaoEmEdicao.id !== dados.id) ||
+                !!novaObservacao
               }
             />
           </span>
@@ -131,14 +123,12 @@ const LinhaObservacaoProprietario = props => {
 
   return (
     <>
-      {observacaoEmEdicao &&
-      observacaoEmEdicao[index] &&
-      observacaoEmEdicao[index].id ? (
+      {dados && observacaoEmEdicao && observacaoEmEdicao.id === dados.id ? (
         <>
           <ContainerCampoObservacao
             id="editando-observacao"
             autoSize={{ minRows: 3 }}
-            value={observacaoEmEdicao[index].observacao}
+            value={observacaoEmEdicao.observacao}
             onChange={onChangeObs}
           />
           <div className="d-flex justify-content-between">
@@ -169,7 +159,6 @@ LinhaObservacaoProprietario.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.object]),
   onClickSalvarEdicao: PropTypes.func,
   onClickExcluir: PropTypes.func,
-  index: PropTypes.number,
   children: PropTypes.node,
 };
 
@@ -177,7 +166,6 @@ LinhaObservacaoProprietario.defaultProps = {
   dados: {},
   onClickSalvarEdicao: () => {},
   onClickExcluir: () => {},
-  index: null,
   children: () => {},
 };
 
