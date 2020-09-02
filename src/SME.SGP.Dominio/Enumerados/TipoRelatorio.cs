@@ -35,5 +35,11 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/notasconceitosfinais", ShortName = "NotasEConceitosFinais", Description = "Relatório de Notas e Conceitos Finais")]
         NotasEConceitosFinais = 11,
+
+        [Display(Name = "relatorios/compensacaoausencia", ShortName = "CompensacaoAusencia", Description = "Relatório de Compensação de Ausência")]
+        CompensacaoAusencia = 12,
+
+        [Display(Name = "relatorios/impressaocalendario", ShortName = "Calendario", Description = "Relatório Impressão do Calendário")]
+        Calendario = 13
     }
 }

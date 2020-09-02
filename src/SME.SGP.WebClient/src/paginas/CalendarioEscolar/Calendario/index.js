@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Tooltip, Switch } from 'antd';
 import shortid from 'shortid';
@@ -21,16 +20,10 @@ import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 import { Loader } from '~/componentes';
-import { erro } from '~/servicos/alertas';
+import { erro, sucesso } from '~/servicos/alertas';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 
-const Div = styled.div``;
-const Titulo = styled(Div)`
-  color: ${Base.CinzaMako};
-  font-size: 24px;
-`;
-const Icone = styled.i``;
-const Label = styled.label``;
+import { Div, Titulo, Icone, Label, Corpo } from './index.css';
 
 const CalendarioEscolar = () => {
   const [tiposCalendario, setTiposCalendario] = useState([]);
@@ -49,6 +42,8 @@ const CalendarioEscolar = () => {
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoUes, setCarregandoUes] = useState(false);
+  const [imprimindo, setImprimindo] = useState(false);
+  const [podeImprimir, setPodeImprimir] = useState(false);
 
   const obterTiposCalendario = useCallback(
     async modalidades => {
@@ -111,8 +106,7 @@ const CalendarioEscolar = () => {
   }, [modalidadesAbrangencia]);
 
   const tiposDeCalendario = useMemo(() => {
-    if (tiposCalendario.length === 0)
-     return;
+    if (tiposCalendario.length === 0) return;
 
     let tipos = tiposCalendario;
 
@@ -126,7 +120,8 @@ const CalendarioEscolar = () => {
       const modalidadeSelecionada =
         turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
           ? 2
-          : turmaSelecionadaStore.modalidade === ModalidadeDTO.INFANTIL.toString()
+          : turmaSelecionadaStore.modalidade ===
+            ModalidadeDTO.INFANTIL.toString()
           ? 3
           : 1;
 
@@ -282,7 +277,7 @@ const CalendarioEscolar = () => {
     history.push('/');
   };
 
-  const aoTrocarEventoSme = (valor) => {
+  const aoTrocarEventoSme = valor => {
     setEventoSme(valor);
   };
 
@@ -345,6 +340,24 @@ const CalendarioEscolar = () => {
       });
   };
 
+  const gerarRelatorio = async () => {
+    setImprimindo(true);
+    const payload = {
+      DreCodigo: dreSelecionada,
+      UeCodigo: unidadeEscolarSelecionada,
+      TipoCalendarioId: tipoCalendarioSelecionado,
+      EhSME: eventoSme,
+    };
+    await ServicoCalendarios.gerarRelatorio(payload)
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
+      })
+      .finally(setImprimindo(false))
+      .catch(e => erro(e));
+  };
+
   useEffect(() => {
     if (carregandoMeses && dreSelecionada && !unidadeEscolarSelecionada) {
       setCarregandoUes(true);
@@ -388,6 +401,7 @@ const CalendarioEscolar = () => {
 
   useEffect(() => {
     if (unidadeEscolarSelecionada) consultarDiasLetivos();
+
     setFiltros({
       tipoCalendarioSelecionado,
       eventoSme,
@@ -397,8 +411,12 @@ const CalendarioEscolar = () => {
     store.dispatch(zeraCalendario());
   }, [unidadeEscolarSelecionada]);
 
+  useEffect(() => {
+    setPodeImprimir(tipoCalendarioSelecionado);
+  }, [tipoCalendarioSelecionado]);
+
   return (
-    <Div className="col-12">
+    <Corpo className="col-12">
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">Calendário escolar</Titulo>
       </Grid>
@@ -446,16 +464,30 @@ const CalendarioEscolar = () => {
                 </Div>
               )}
             </Grid>
-            <Grid cols={4}>
-              <Button
-                id={shortid.generate()}
-                label="Voltar"
-                icon="arrow-left"
-                color={Colors.Azul}
-                onClick={aoClicarBotaoVoltar}
-                border
-                className="ml-auto"
-              />
+            <Grid cols={4} className="d-flex justify-content-end">
+              <Div className="p-0 mr-4">
+                <Loader loading={imprimindo} ignorarTip>
+                  <Button
+                    className="btn-imprimir"
+                    icon="print"
+                    color={Colors.Azul}
+                    border
+                    onClick={() => gerarRelatorio()}
+                    disabled={!podeImprimir}
+                    id="btn-imprimir-relatorio-calendario"
+                  />
+                </Loader>
+              </Div>
+              <Div>
+                <Button
+                  id={shortid.generate()}
+                  label="Voltar"
+                  icon="arrow-left"
+                  color={Colors.Azul}
+                  onClick={aoClicarBotaoVoltar}
+                  border
+                />
+              </Div>
             </Grid>
           </Div>
         </Grid>
@@ -469,7 +501,7 @@ const CalendarioEscolar = () => {
                     eventoSme
                       ? 'Exibindo eventos da SME'
                       : 'Não exibindo eventos da SME'
-                    }`}
+                  }`}
                 >
                   <Switch
                     onChange={aoTrocarEventoSme}
@@ -518,7 +550,7 @@ const CalendarioEscolar = () => {
           </Loader>
         </Grid>
       </Card>
-    </Div>
+    </Corpo>
   );
 };
 
