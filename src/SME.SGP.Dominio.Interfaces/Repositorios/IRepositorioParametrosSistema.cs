@@ -10,6 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         IEnumerable<KeyValuePair<string, string>> ObterChaveEValorPorTipo(TipoParametroSistema tipo);
 
-        string ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null);
+        Task<string> ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null);
     }
 }
