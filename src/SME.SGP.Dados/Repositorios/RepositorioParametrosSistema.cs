@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
-        public string ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null)
+        public async Task<string> ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select valor");
@@ -46,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
             if (ano.HasValue)
                 query.AppendLine("and ano = @ano");
 
-            return database.Conexao.QueryFirstOrDefault<string>(query.ToString(), new { tipo, ano });
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query.ToString(), new { tipo, ano });
         }
     }
 }
