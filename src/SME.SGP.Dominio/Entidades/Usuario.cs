@@ -283,18 +283,22 @@ namespace SME.SGP.Dominio
 
         public bool PossuiPerfilCJPrioritario()
         {
-            return Perfis != null && PossuiPerfilCJ() && PossuiPerfilProfessor() &&
-                   !Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR ||
-                                                     c.CodigoPerfil == Dominio.Perfis.PERFIL_CP ||
-                                                     c.CodigoPerfil == Dominio.Perfis.PERFIL_AD);
+            if (Perfis != null && PossuiPerfilCJ() && PossuiPerfilProfessor())
+            {
+                var perfilCj = Perfis.FirstOrDefault(x => x.CodigoPerfil == Dominio.Perfis.PERFIL_CJ);
+                return !Perfis.Any(x => x.Ordem < perfilCj.Ordem);                
+            }
+            return false;
         }
 
         public bool PossuiPerfilCJInfantilPrioritario()
         {
-            return Perfis != null && PossuiPerfilCJInfantil() && PossuiPerfilProfessorInfantil() &&
-                   !Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR ||
-                                                     c.CodigoPerfil == Dominio.Perfis.PERFIL_CP ||
-                                                     c.CodigoPerfil == Dominio.Perfis.PERFIL_AD);
+            if (Perfis != null && PossuiPerfilCJInfantil() && PossuiPerfilProfessorInfantil())
+            {
+                var perfilCjInfantil = Perfis.FirstOrDefault(x => x.CodigoPerfil == Dominio.Perfis.PERFIL_CJ_INFANTIL);
+                return !Perfis.Any(x => x.Ordem < perfilCjInfantil.Ordem);                
+            }                
+            return false;            
         }
 
         public bool PossuiPerfilSme()
