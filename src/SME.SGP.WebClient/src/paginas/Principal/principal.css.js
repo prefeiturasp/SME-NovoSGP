@@ -9,12 +9,3 @@ export const Container = styled.div`
 export const Label = styled.h5`
   font-size: 16px !important;
 `;
-
-export const Dashboard = styled.div`
-  .alinhar-itens-topo {
-    align-items: initial !important;
-  }
-  .card {
-    height: 100% !important;
-  }
-`;

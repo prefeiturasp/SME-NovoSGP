@@ -17,6 +17,7 @@ import { Base } from '../componentes/colors';
 import { store } from '../redux';
 import { perfilSelecionado } from '../redux/modulos/perfil/actions';
 import history from '../servicos/history';
+import ServicoDashboard from '~/servicos/Paginas/Dashboard/ServicoDashboard';
 
 const Perfil = props => {
   const { Botao, Icone, Texto } = props;
@@ -148,6 +149,8 @@ const Perfil = props => {
                 ehProfessorCjInfantil,
               })
             );
+
+            ServicoDashboard.obterDadosDashboard(rf);
 
             setMenusPermissoes();
             limparFiltro();

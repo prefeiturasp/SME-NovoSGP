@@ -6,6 +6,8 @@ import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
 import { setMenusPermissoes } from '~/servicos/servico-navegacao';
 import { perfilSelecionado, setarPerfis } from '~/redux/modulos/perfil/actions';
 import { store } from '~/redux';
+import ServicoDashboard from './Dashboard/ServicoDashboard';
+
 class ServicoRedefinirSenha {
   redefinirSenha = async (redefinirSenhaDto, dispatch) => {
     let formData = new FormData();
@@ -33,6 +35,8 @@ class ServicoRedefinirSenha {
             dataHoraExpiracao: res.data.dataHoraExpiracao,
           })
         );
+
+        ServicoDashboard.obterDadosDashboard(res.data.usuarioRf);
 
         const { perfis } = res.data.perfisUsuario;
         const selecionado = perfis.find(
