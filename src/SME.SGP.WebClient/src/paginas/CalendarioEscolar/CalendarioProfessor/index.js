@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 // Componentes
-import { Loader, ButtonGroup, Card, Grid } from '~/componentes';
+import { Loader, Card, Grid, ButtonGroup } from '~/componentes';
 
 // Componentes Internos
 import DropDownTipoCalendario from './componentes/DropDownTipoCalendario';
@@ -29,7 +29,6 @@ import Reducer, { estadoInicial } from './reducer';
 import {
   setarEventosMes,
   setarEventosDia,
-  setarCarregandoCalendario,
   setarCarregandoMes,
   setarCarregandoDia,
 } from './reducer/actions';
@@ -117,8 +116,8 @@ function CalendarioProfessor() {
             const mes = {
               estaAberto: false,
               eventos: 0,
-              nome: "",
-              numeroMes: dia.getMonth() + 1
+              nome: '',
+              numeroMes: dia.getMonth() + 1,
             };
             disparar(
               setarEventosMes({

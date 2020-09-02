@@ -344,6 +344,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterFrequenciaOuPlanoNaRecorrenciaUseCase, ObterFrequenciaOuPlanoNaRecorrenciaUseCase>();
             services.TryAddScoped<IObterFiltroRelatoriosAnosPorCicloModalidadeUseCase, ObterFiltroRelatoriosAnosPorCicloModalidadeUseCase>();
             services.TryAddScoped<IRelatorioCompensacaoAusenciaUseCase, RelatorioCompensacaoAusenciaUseCase>();
+            services.TryAddScoped<IRelatorioCalendarioUseCase, RelatorioCalendarioUseCase>();
 
             services.TryAddScopedWorkerService<IExcluirDevolutivaUseCase, ExcluirDevolutivaUseCase>();
             services.TryAddScopedWorkerService<IObterListaDevolutivasPorTurmaComponenteUseCase, ObterListaDevolutivasPorTurmaComponenteUseCase>();
