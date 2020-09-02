@@ -400,10 +400,8 @@ const CalendarioEscolar = () => {
   };
 
   useEffect(() => {
-    if (unidadeEscolarSelecionada) {
-      consultarDiasLetivos();
-      setPodeImprimir(!!unidadeEscolarSelecionada);
-    }
+    if (unidadeEscolarSelecionada) consultarDiasLetivos();
+
     setFiltros({
       tipoCalendarioSelecionado,
       eventoSme,
@@ -412,6 +410,10 @@ const CalendarioEscolar = () => {
     });
     store.dispatch(zeraCalendario());
   }, [unidadeEscolarSelecionada]);
+
+  useEffect(() => {
+    setPodeImprimir(tipoCalendarioSelecionado);
+  }, [tipoCalendarioSelecionado]);
 
   return (
     <Corpo className="col-12">
