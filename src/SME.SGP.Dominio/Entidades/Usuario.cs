@@ -286,10 +286,7 @@ namespace SME.SGP.Dominio
             if (Perfis != null && PossuiPerfilCJ() && PossuiPerfilProfessor())
             {
                 var perfilCj = Perfis.FirstOrDefault(x => x.CodigoPerfil == Dominio.Perfis.PERFIL_CJ);
-                return !Perfis.Any(x => x.Ordem < perfilCj.Ordem);
-                //if (Perfis.Any(x => x.Ordem < perfilCj.Ordem))
-                //    return false;
-                //return true;
+                return !Perfis.Any(x => x.Ordem < perfilCj.Ordem);                
             }
             return false;
         }
@@ -299,10 +296,7 @@ namespace SME.SGP.Dominio
             if (Perfis != null && PossuiPerfilCJInfantil() && PossuiPerfilProfessorInfantil())
             {
                 var perfilCjInfantil = Perfis.FirstOrDefault(x => x.CodigoPerfil == Dominio.Perfis.PERFIL_CJ_INFANTIL);
-                return !Perfis.Any(x => x.Ordem < perfilCjInfantil.Ordem);
-                //if (Perfis.Any(x => x.Ordem < perfilCjInfantil.Ordem))
-                //    return false;
-                //return true;
+                return !Perfis.Any(x => x.Ordem < perfilCjInfantil.Ordem);                
             }                
             return false;            
         }
