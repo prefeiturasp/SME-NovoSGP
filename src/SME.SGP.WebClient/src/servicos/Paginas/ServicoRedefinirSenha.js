@@ -36,7 +36,7 @@ class ServicoRedefinirSenha {
           })
         );
 
-        ServicoDashboard.obterDadosDashboard(res.data.usuarioRf);
+        ServicoDashboard.obterDadosDashboard();
 
         const { perfis } = res.data.perfisUsuario;
         const selecionado = perfis.find(
