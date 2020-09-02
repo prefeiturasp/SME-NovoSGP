@@ -15,11 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DashBoard>> Executar()
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            usuarioLogado.ObterDashBoard();
-
-            return null;
+            return await mediator.Send(new ObterDashBoardPorPerfilQuery());
         }
     }
 }
