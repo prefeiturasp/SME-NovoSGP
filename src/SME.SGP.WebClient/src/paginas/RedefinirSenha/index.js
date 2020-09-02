@@ -29,6 +29,7 @@ import Erro from '../RecuperarSenha/erro';
 import { setMenusPermissoes } from '~/servicos/servico-navegacao';
 import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
 import { Loader } from '~/componentes';
+import ServicoDashboard from '~/servicos/Paginas/Dashboard/ServicoDashboard';
 
 const Item = styled.li`
   ${props => props.status === true && `color: ${Base.Verde}`};
@@ -208,6 +209,8 @@ const RedefinirSenha = props => {
             dataHoraExpiracao: requisicao.resposta.data.dataHoraExpiracao,
           })
         );
+        ServicoDashboard.obterDadosDashboard(rf);
+
         history.push(URL_HOME);
       } else {
         setErroGeral(requisicao.erro);

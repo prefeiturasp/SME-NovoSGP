@@ -4,6 +4,7 @@ import history from '~/servicos/history';
 import { URL_HOME, URL_REDEFINIRSENHA } from '~/constantes/url';
 import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
 import { setMenusPermissoes } from '~/servicos/servico-navegacao';
+import ServicoDashboard from '~/servicos/Paginas/Dashboard/ServicoDashboard';
 
 class LoginHelper {
   constructor(dispatch, redirect) {
@@ -39,6 +40,8 @@ class LoginHelper {
         dataHoraExpiracao: autenticacao.dados.dataHoraExpiracao,
       })
     );
+
+    ServicoDashboard.obterDadosDashboard(rf);
 
     if (autenticacao.dados.modificarSenha) {
       history.push({
