@@ -22,6 +22,10 @@ class ServicoCalendarios {
     }
     return modalidade;
   };
+
+  gerarRelatorio = payload => {
+    return api.post('v1/relatorios/calendarios/impressao', payload);
+  };
 }
 
 export default new ServicoCalendarios();
