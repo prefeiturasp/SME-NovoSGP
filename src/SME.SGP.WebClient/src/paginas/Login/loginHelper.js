@@ -41,7 +41,7 @@ class LoginHelper {
       })
     );
 
-    ServicoDashboard.obterDadosDashboard(rf);
+    ServicoDashboard.obterDadosDashboard();
 
     if (autenticacao.dados.modificarSenha) {
       history.push({
