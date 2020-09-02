@@ -41,7 +41,10 @@ const CardLink = props => {
   };
 
   return (
-    <DivCardLink className={`${getCols()} px-2 ${classHidden}`}>
+    <DivCardLink
+      className={`${getCols()} px-2 ${classHidden}`}
+      style={{ cursor: `${disabled ? 'not-allowed' : ''}` }}
+    >
       <LinkRouter
         className="altura-100"
         to={url}
