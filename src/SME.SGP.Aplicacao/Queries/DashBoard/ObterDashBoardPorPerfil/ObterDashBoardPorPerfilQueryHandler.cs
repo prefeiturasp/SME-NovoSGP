@@ -60,9 +60,8 @@ namespace SME.SGP.Aplicacao
                 Descricao = atributo.Menu,
                 UsuarioTemPermissao = roles.Contains(menu),
                 TurmaObrigatoria = exigeTurma,
-                Icone = atributo.Icone,
+                Icone = atributo.IconeDashBoard,
                 Rota = atributo.Url,
-                pack = "far"
 
             };
         }

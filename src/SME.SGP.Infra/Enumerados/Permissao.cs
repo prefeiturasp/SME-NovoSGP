@@ -1,5 +1,4 @@
-﻿
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public enum Permissao
     {
@@ -31,7 +30,7 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Menu = "Boletim", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 4, Url = "/relatorios/diario-classe/boletim-simples", EhConsulta = true)]
         B_C = 9,
 
-        [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhConsulta = true)]
+        [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", IconeDashBoard = "far fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhConsulta = true)]
         C_C = 10,
 
         [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhInclusao = true)]
@@ -82,7 +81,7 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Menu = "Notas", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhAlteracao = true, Url = "/diario-classe/notas")]
         NC_A = 25,
 
-        [PermissaoMenu(Menu = "Plano Anual", Icone = "fa-calendar-minus", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual", EhConsulta = true)]
+        [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", IconeDashBoard = "far fa-calendar-minus", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual", EhConsulta = true)]
         PA_C = 26,
 
         [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual", EhInclusao = true)]
@@ -94,7 +93,7 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual", EhAlteracao = true)]
         PA_A = 29,
 
-        [PermissaoMenu(Menu = "Frequência/Plano de aula", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1, EhConsulta = true, Url = "/diario-classe/frequencia-plano-aula")]
+        [PermissaoMenu(Menu = "Frequência/Plano de aula", Icone = "fas fa-book-reader", IconeDashBoard = "far fa-heck-square", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1, EhConsulta = true, Url = "/diario-classe/frequencia-plano-aula")]
         PDA_C = 30,
 
         [PermissaoMenu(Menu = "Frequência/Plano de aula", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1, EhInclusao = true, Url = "/diario-classe/frequencia-plano-aula")]
@@ -182,7 +181,7 @@ namespace SME.SGP.Infra
         [PermissaoMenu(EhMenu = false, Icone = "fas fa-book-reader", Agrupamento = "Registro POA", OrdemAgrupamento = 2, OrdemMenu = 3, EhAlteracao = true, Menu = "Registro POA")]
         RP_A = 59,
 
-        [PermissaoMenu(Menu = "Calendário Professor", Icone = "fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 2, EhConsulta = true, Url = "/calendario-escolar/calendario-professor")]
+        [PermissaoMenu(Menu = "Calendário Professor", Icone = "fas fa-calendar-alt", IconeDashBoard = "far fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 2, EhConsulta = true, Url = "/calendario-escolar/calendario-professor")]
         CP_C = 60,
 
         [PermissaoMenu(Menu = "Calendário Professor", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 2, EhInclusao = true, Url = "/calendario-escolar/calendario-professor")]
@@ -266,7 +265,7 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Menu = "Tipo de Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 8, EhAlteracao = true, Url = "/calendario-escolar/tipo-eventos")]
         TE_A = 87,
 
-        [PermissaoMenu(Menu = "Eventos", Icone = "fa-check-square", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhConsulta = true, Url = "/calendario-escolar/eventos")]
+        [PermissaoMenu(Menu = "Eventos", Icone = "fas fa-calendar-alt", IconeDashBoard = "far fa-check-square", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhConsulta = true, Url = "/calendario-escolar/eventos")]
         E_C = 88,
 
         [PermissaoMenu(Menu = "Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhInclusao = true, Url = "/calendario-escolar/eventos")]
@@ -470,7 +469,7 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 5, EhAlteracao = true, Url = "/relatorios/historico-escolar")]
         HE_A = 155,
 
-        [PermissaoMenu(Menu = "Frequência", Icone = "fa-check-square", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/faltas-frequencia", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Faltas e frequência")]
+        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", IconeDashBoard = "far fa-check-square", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/faltas-frequencia", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Faltas e frequência")]
         FF_C = 156,
 
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pendencias-fechamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Pendências do Fechamento")]
@@ -479,7 +478,7 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/parecer-conclusivo", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Parecer Conclusivo")]
         RPC_C = 158,
 
-        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhConsulta = true, Url = "/diario-classe/diario-bordo")]
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", IconeDashBoard = "far fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhConsulta = true, Url = "/diario-classe/diario-bordo")]
         DDB_C = 159,
 
         [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhInclusao = true, Url = "/diario-classe/diario-bordo")]
@@ -491,7 +490,7 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhAlteracao = true, Url = "/diario-classe/diario-bordo")]
         DDB_A = 162,
 
-        [PermissaoMenu(Menu = "Carta de Intenções", Icone = "fa-envelope-open", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhConsulta = true, Url = "/planejamento/carta-intencoes")]
+        [PermissaoMenu(Menu = "Carta de Intenções", Icone = "fas fa-file-alt", IconeDashBoard = "far fa-envelope-open", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhConsulta = true, Url = "/planejamento/carta-intencoes")]
         CI_C = 163,
 
         [PermissaoMenu(Menu = "Carta de Intenções", Icone = "fas fa-file-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 3, EhInclusao = true, Url = "/planejamento/carta-intencoes")]
@@ -516,7 +515,7 @@ namespace SME.SGP.Infra
         DE_A = 170,
 
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/notas-conceitos-finais", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Notas e Conceitos Finais")]
-        RNCF_C = 171,        
+        RNCF_C = 171,
 
         [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/compensacao-ausencia", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Compensação de ausência")]
         RCA_C = 172

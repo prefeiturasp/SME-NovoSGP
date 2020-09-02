@@ -4,17 +4,11 @@ namespace SME.SGP.Dominio
 {
     public class DashBoard
     {
-        public DashBoard()
-        {
-            this.pack = "far";
-        }
         public string Descricao { get; set; }
         public bool UsuarioTemPermissao { get; set; }
         public bool TurmaObrigatoria { get; set; }
         public string Rota { get; set; }
         public string Icone { get; set; }
-        public string pack { get; set; }
-        
     }
 
 }
