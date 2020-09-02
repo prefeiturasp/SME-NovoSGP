@@ -2,10 +2,9 @@ import React, { useEffect, useState, useCallback, useReducer } from 'react';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
-import shortid from 'shortid';
 
 // Componentes
-import { Loader, Card, Grid, Button, Colors } from '~/componentes';
+import { Loader, Card, Grid, ButtonGroup } from '~/componentes';
 
 // Componentes Internos
 import DropDownTipoCalendario from './componentes/DropDownTipoCalendario';
@@ -22,16 +21,14 @@ import {
 
 // Serviços
 import CalendarioProfessorServico from '~/servicos/Paginas/CalendarioProfessor';
-import { erro, sucesso } from '~/servicos/alertas';
+import { erro } from '~/servicos/alertas';
 import history from '~/servicos/history';
-import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 
 // Reducer
 import Reducer, { estadoInicial } from './reducer';
 import {
   setarEventosMes,
   setarEventosDia,
-  setarCarregandoCalendario,
   setarCarregandoMes,
   setarCarregandoDia,
 } from './reducer/actions';
@@ -48,11 +45,8 @@ function CalendarioProfessor() {
 
   const permissaoTela = permissoes[RotasDTO.CALENDARIO_PROFESSOR];
 
-  const usuarioStore = useSelector(state => state.usuario);
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
   const [tipoCalendarioId, setTipoCalendarioId] = useState(undefined);
-  const [podeImprimir, setPodeImprimir] = useState(false);
-  const [imprimindo, setImprimindo] = useState(false);
 
   const onClickMesHandler = useCallback(
     mes => {
@@ -161,33 +155,11 @@ function CalendarioProfessor() {
     setTipoCalendarioId(valor);
   }, []);
 
-  const gerarRelatorio = async () => {
-    setImprimindo(true);
-    const payload = {
-      DreCodigo: turmaSelecionada.dre,
-      UeCodigo: turmaSelecionada.unidadeEscolar,
-      TipoCalendarioId: tipoCalendarioId,
-      EhSME: usuarioStore.possuiPerfilSmeOuDre,
-    };
-    await ServicoCalendarios.gerarRelatorio(payload)
-      .then(() => {
-        sucesso(
-          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
-        );
-      })
-      .finally(setImprimindo(false))
-      .catch(e => erro(e));
-  };
-
   useEffect(() => {
     if (Object.keys(turmaSelecionada).length === 0) {
       setTipoCalendarioId(undefined);
     }
   }, [turmaSelecionada]);
-
-  useEffect(() => {
-    setPodeImprimir(tipoCalendarioId);
-  }, [tipoCalendarioId]);
 
   return (
     <>
@@ -195,28 +167,7 @@ function CalendarioProfessor() {
       <Cabecalho pagina="Calendário do professor" />
       <Loader loading={false}>
         <Card>
-          <div className="col-md-12 d-flex justify-content-between pb-5">
-            <Loader loading={imprimindo}>
-              <Button
-                className="btn-imprimir"
-                icon="print"
-                color={Colors.Azul}
-                border
-                onClick={() => gerarRelatorio()}
-                disabled={!podeImprimir}
-                id="btn-imprimir-relatorio-calendario"
-              />
-            </Loader>
-            <Button
-              id={shortid.generate()}
-              label="Voltar"
-              icon="arrow-left"
-              color={Colors.Azul}
-              border
-              className="btnGroupItem"
-              onClick={() => history.push('/')}
-            />
-          </div>
+          <ButtonGroup onClickVoltar={() => history.push('/')} />
           <Grid cols={4} className="p-0 m-0">
             <DropDownTipoCalendario
               turmaSelecionada={turmaSelecionada.turma}
