@@ -93,7 +93,7 @@
         [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual", EhAlteracao = true)]
         PA_A = 29,
 
-        [PermissaoMenu(Menu = "Frequência/Plano de aula", Icone = "fas fa-book-reader", IconeDashBoard = "far fa-heck-square", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1, EhConsulta = true, Url = "/diario-classe/frequencia-plano-aula")]
+        [PermissaoMenu(Menu = "Frequência/Plano de aula", Icone = "fas fa-book-reader", IconeDashBoard = "far fa-check-square", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1, EhConsulta = true, Url = "/diario-classe/frequencia-plano-aula")]
         PDA_C = 30,
 
         [PermissaoMenu(Menu = "Frequência/Plano de aula", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1, EhInclusao = true, Url = "/diario-classe/frequencia-plano-aula")]
