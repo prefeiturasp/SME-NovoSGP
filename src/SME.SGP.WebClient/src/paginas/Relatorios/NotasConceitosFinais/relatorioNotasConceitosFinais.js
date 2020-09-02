@@ -626,7 +626,7 @@ const RelatorioNotasConceitosFinais = () => {
                   label="Semestre"
                   disabled={
                     !modalidadeId ||
-                    modalidadeId !== modalidade.EJA ||
+                    String(modalidadeId) !== String(modalidade.EJA) ||
                     (listaSemestre && listaSemestre.length === 1)
                   }
                   valueSelect={semestre}
