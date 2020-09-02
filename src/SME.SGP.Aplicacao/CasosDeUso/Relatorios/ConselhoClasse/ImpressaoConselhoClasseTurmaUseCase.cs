@@ -21,11 +21,11 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            if(filtroRelatorioConselhoClasseDto.FechamentoTurmaId <= 0)
-                throw new NegocioException("O ID do fechamento da turma não pode ser nulo");
+            if (!await mediator.Send(new VerificaSeExisteConselhoClassePorIdQuery(filtroRelatorioConselhoClasseDto.ConselhoClasseId)))
+                throw new NegocioException("O conselho de classe não existe");
 
-            if (filtroRelatorioConselhoClasseDto.ConselhoClasseId <= 0)
-                throw new NegocioException("O ID do conselho de classe não pode ser nulo");
+            if (!await mediator.Send(new VerificaSeExisteFechamentoTurmaPorIdQuery(filtroRelatorioConselhoClasseDto.FechamentoTurmaId)))
+                throw new NegocioException("O fechamento de turma não existe");
 
             if (usuario == null)
                 throw new NegocioException("Não foi possível localizar o usuário.");

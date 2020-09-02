@@ -36,5 +36,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query.ToString(), new { turmaId, periodoEscolarId });
         }
+
+        public async Task<bool> VerificaSeExisteConselhoClassePorIdAsync(long conselhoClasseId)
+        {
+            var query = new StringBuilder(@"select 1 
+                            from conselho_classe c 
+                           where c.id = @conselhoClasseId ");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new { conselhoClasseId });
+        }
     }
 }

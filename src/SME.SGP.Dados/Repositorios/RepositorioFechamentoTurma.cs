@@ -1,18 +1,15 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioFechamentoTurma: RepositorioBase<FechamentoTurma>, IRepositorioFechamentoTurma
+    public class RepositorioFechamentoTurma : RepositorioBase<FechamentoTurma>, IRepositorioFechamentoTurma
     {
-        public RepositorioFechamentoTurma(ISgpContext database): base(database)
+        public RepositorioFechamentoTurma(ISgpContext database) : base(database)
         {
         }
 
@@ -50,7 +47,7 @@ namespace SME.SGP.Dados.Repositorios
                             and t.turma_id = @turmaCodigo ");
             if (bimestre > 0)
                 query.AppendLine(" and p.bimestre = @bimestre and not tp.excluido");
-            else 
+            else
                 query.AppendLine(" and f.periodo_escolar_id is null");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre });
@@ -68,6 +65,15 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(" and periodo_escolar_id is null");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, periodoId });
+        }
+
+        public async Task<bool> VerificaSeFechamentoTurmaExistePorId(long fechamentoTurmaId)
+        {
+            var query = new StringBuilder(@"select 1 
+                            from fechamento_turma 
+                           where id = @fechamentoTurmaId");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new { fechamentoTurmaId });
         }
     }
 }
