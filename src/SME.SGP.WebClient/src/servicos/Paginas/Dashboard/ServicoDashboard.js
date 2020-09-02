@@ -14,18 +14,16 @@ class ServicoDashboard {
         {
           descricao: 'Carta Intenções',
           rota: '/planejamento/carta-intencoes',
-          turmaObrigatoria: true,
+          turmaObrigatoria: false,
           usuarioTemPermissao: true,
-          icone: 'fa-check-square',
-          pack: 'far',
+          icone: 'far fa-check-square',
         },
         {
           descricao: 'Calendário do professor',
           rota: '/calendario-escolar/calendario-professor',
           turmaObrigatoria: true,
           usuarioTemPermissao: true,
-          icone: 'fa-calendar-alt',
-          pack: 'fas',
+          icone: 'far fa-calendar-alt',
         },
       ];
 

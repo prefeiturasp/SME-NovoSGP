@@ -43,7 +43,6 @@ const CardsDashboard = () => {
                         (item.turmaObrigatoria && !temTurma)
                       }
                       icone={item.icone}
-                      pack={item.pack}
                       label={item.descricao}
                       minHeight="177px"
                     />
