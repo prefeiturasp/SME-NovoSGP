@@ -50,5 +50,14 @@ namespace SME.SGP.Infra
 
             return ((TEnum[])Enum.GetValues(typeof(TEnum)));
         }
+
+
+        public static Dictionary<Enum,string> ToDictionary<TEnum>()
+            where TEnum : struct
+        {
+            if (!typeof(TEnum).IsEnum) throw new InvalidOperationException();
+
+            return ((TEnum[])Enum.GetValues(typeof(TEnum))).Cast<Enum>().ToDictionary(key => key, value => value.Name());
+        }
     }
 }

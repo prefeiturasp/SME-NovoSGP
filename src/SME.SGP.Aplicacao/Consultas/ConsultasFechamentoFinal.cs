@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
                 if (retorno.EhSintese)
                 {
                     var sinteseDto = consultasFrequencia.ObterSinteseAluno(fechamentoFinalAluno.Frequencia, disciplinaEOL);
-                    fechamentoFinalAluno.Sintese = sinteseDto.SinteseNome;
+                    fechamentoFinalAluno.Sintese = sinteseDto.Valor;
                 }
                 else
                 {
@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var disciplinaParaAdicionar in disciplinas)
                     {
-                        var nota = notasFechamentosFinais.FirstOrDefault(a => a.DisciplinaId == disciplinaParaAdicionar.CodigoComponenteCurricular && a.FechamentoAluno.AlunoCodigo == aluno.CodigoAluno); ;
+                        var nota = notasFechamentosFinais.FirstOrDefault(a => a.DisciplinaId == disciplinaParaAdicionar.CodigoComponenteCurricular && a.FechamentoAluno.AlunoCodigo == aluno.CodigoAluno);
                         string notaParaAdicionar = string.Empty;
                         if (nota != null)
                             notaParaAdicionar = (tipoNota.EhNota() ? nota.Nota.ToString() : nota.ConceitoId.ToString());

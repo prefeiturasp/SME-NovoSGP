@@ -279,7 +279,11 @@ const EventosLista = ({ match }) => {
 
       const ues = await ServicoEvento.listarUes(
         dreSelecionada,
-        ServicoCalendarios.converterModalidade(calendarioSelecionado.modalidade)
+        ServicoCalendarios.converterModalidade(
+          calendarioSelecionado && calendarioSelecionado.modalidade
+            ? calendarioSelecionado.modalidade
+            : ''
+        )
       );
 
       if (!sucesso) {

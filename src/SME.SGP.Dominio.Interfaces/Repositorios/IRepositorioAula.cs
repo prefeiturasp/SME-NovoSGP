@@ -69,7 +69,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, bool aulaCJ, long? aulaPaiId = null);
 
-        IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehProfessor = false);
+        IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehProfessor = false);
 
         Aula ObterPorWorkflowId(long workflowId);
 
@@ -78,5 +78,9 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<DateTime> ObterUltimosDiasLetivos(DateTime dataReferencia, int quantidadeDias, long tipoCalendarioId);
 
         bool UsuarioPodeCriarAulaNaUeTurmaEModalidade(Aula aula, ModalidadeTipoCalendario modalidade);
+
+        Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId);
+        void SalvarVarias(IEnumerable<Aula> aulas);
+        Task ExcluirPeloSistemaAsync(long[] idsAulas);
     }
 }

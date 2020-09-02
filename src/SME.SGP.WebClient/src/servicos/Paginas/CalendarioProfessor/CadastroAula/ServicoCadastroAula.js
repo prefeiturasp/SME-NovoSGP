@@ -39,8 +39,8 @@ class ServicoCadastroAula {
     return api.get(url);
   };
 
-  obterRecorrenciaPorIdAula = id => {
-    return api.get(`v1/calendarios/professores/aulas/${id}/recorrencias/serie`);
+  obterRecorrenciaPorIdAula = (id, tipoRecorrencia) => {
+    return api.get(`v1/calendarios/professores/aulas/${id}/recorrencias/serie/${tipoRecorrencia}`);
   };
 
   excluirAula = (id, tipoRecorrencia, nomeComponente) => {
