@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             {
                 listaDashBoard.Add(CarregaDashBoard(Permissao.CI_C, roles));
                 listaDashBoard.Add(CarregaDashBoard(Permissao.DDB_C, roles));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.FF_C, roles));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.PDA_C, roles));
             }
             else if (perfil_2.Contains(perfilAtual))
             {
