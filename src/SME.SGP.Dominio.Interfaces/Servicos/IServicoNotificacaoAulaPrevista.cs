@@ -1,7 +1,9 @@
-﻿namespace SME.SGP.Dominio
+﻿using System.Threading.Tasks;
+
+namespace SME.SGP.Dominio
 {
     public interface IServicoNotificacaoAulaPrevista
     {
-       void ExecutaNotificacaoAulaPrevista();
+       Task ExecutaNotificacaoAulaPrevista();
     }
 }
