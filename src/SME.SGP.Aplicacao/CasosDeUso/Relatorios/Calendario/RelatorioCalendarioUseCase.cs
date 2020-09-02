@@ -18,8 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(FiltroRelatorioCalendarioDto filtroRelatorioCalendarioDto)
         {
-            await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtroRelatorioCalendarioDto.DreCodigo));
-            await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioCalendarioDto.UeCodigo));
+
             await mediator.Send(new ValidaSeExisteTipoCalendarioPorIdQuery(filtroRelatorioCalendarioDto.TipoCalendarioId));
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtroRelatorioCalendarioDto.SetarDadosUsuario(usuario);
