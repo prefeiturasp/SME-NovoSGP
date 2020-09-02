@@ -1,11 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import CardsDashboard from '~/componentes-sgp/cardsDashboard/cardsDashboard';
-import {
-  setCarregandoDadosCardsDashboard,
-  setDadosCardsDashboard,
-} from '~/redux/modulos/dashboard/actions';
-import ServicoDashboard from '~/servicos/Paginas/Dashboard/ServicoDashboard';
 import Alert from '../../componentes/alert';
 import Card from '../../componentes/card';
 import Grid from '../../componentes/grid';
@@ -19,8 +14,6 @@ const Principal = () => {
   const usuario = useSelector(state => state.usuario);
   const perfil = useSelector(state => state.perfil.perfilSelecionado);
   const modalidades = useSelector(state => state.filtro.modalidades);
-
-  const dispatch = useDispatch();
 
   const validarFiltro = useCallback(() => {
     if (!usuario.turmaSelecionada) {
@@ -36,21 +29,6 @@ const Principal = () => {
   useEffect(() => {
     validarFiltro();
   }, [usuario, validarFiltro]);
-
-  const obterDadosDashboard = useCallback(async () => {
-    dispatch(setDadosCardsDashboard([]));
-    dispatch(setCarregandoDadosCardsDashboard(true));
-    const retorno = await ServicoDashboard.obterDadosDashboard();
-
-    if (retorno && retorno.data && retorno.data.length) {
-      dispatch(setDadosCardsDashboard(retorno.data));
-    }
-    dispatch(setCarregandoDadosCardsDashboard(false));
-  }, [dispatch]);
-
-  useEffect(() => {
-    obterDadosDashboard();
-  }, []);
 
   return (
     <div className="col-md-12">

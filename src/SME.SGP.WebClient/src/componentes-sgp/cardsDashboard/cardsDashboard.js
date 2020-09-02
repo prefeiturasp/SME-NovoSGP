@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import shortid from 'shortid';
 import styled from 'styled-components';
 import CardLink from '../../componentes/cardlink';
 import Grid from '../../componentes/grid';
@@ -33,6 +34,7 @@ const CardsDashboard = () => {
               ? dadosCardsDashboard.map(item => {
                   return (
                     <CardLink
+                      key={shortid.generate()}
                       cols={[4, 4, 4, 12]}
                       iconSize="90px"
                       url={item.rota}
