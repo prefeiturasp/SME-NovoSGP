@@ -171,26 +171,6 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task VerificaNotificacaoBimestral()
-        {
-            var dataAtual = DateTime.Now.Date;
-
-            // Verifica Notificação Fund e Medio
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.FundamentalMedio);
-            if (tipoCalendario != null)
-                await VerificaNotificacaoBimestralCalendario(tipoCalendario, dataAtual, ModalidadeTipoCalendario.FundamentalMedio);
-
-            // Verifica Notificação EJA
-            var tiposCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataAtual.Year, ModalidadeTipoCalendario.EJA, dataAtual);
-            if (tiposCalendario != null)
-            {
-                foreach (var tipo in tiposCalendario)
-                {
-                   await VerificaNotificacaoBimestralCalendario(tipo, dataAtual, ModalidadeTipoCalendario.EJA);
-                }
-            }
-        }
-
         public void VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId)
         {
             int anoAtual = DateTime.Now.Year;
@@ -665,42 +645,6 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void NotificarFrequenciaBimestre(string codigoTurma, string turma, int bimestre, string codigoUe, string ue, string codigoDre, string dre, string disciplina, long usuarioId, List<CompensacaoAusenciaAlunoQtdDto> alunos)
-        {
-            var tituloMensagem = $"Alunos com frequência irregular na turma {turma} ({bimestre}º Bimestre)";
-
-            StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.AppendLine($"<p>O(s) seguinte(s) aluno(s) da turma {turma} da {ue} ({dre}) estão com frequência irregular na disciplina {disciplina} no {bimestre}º Bimestre.</p>");
-
-            mensagemUsuario.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
-            mensagemUsuario.AppendLine("<tr>");
-            mensagemUsuario.AppendLine("<td>Nº</td><td>Nome do aluno</td><td>Percentual de Frequência</td>");
-            mensagemUsuario.AppendLine("</tr>");
-            foreach (var aluno in alunos)
-            {
-                int percentualFrequencia = (int)Math.Round(aluno.PercentualFrequencia, 0);
-
-                mensagemUsuario.AppendLine("<tr>");
-                mensagemUsuario.Append($"<td>{aluno.CodigoAluno} </td><td> {aluno.NomeAluno} </td><td style='text-align: center;'> {percentualFrequencia}</td>");
-                mensagemUsuario.AppendLine("</tr>");
-            }
-            mensagemUsuario.AppendLine("</table>");
-
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Alerta,
-                Tipo = NotificacaoTipo.Frequencia,
-                Titulo = tituloMensagem,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuarioId,
-                TurmaId = codigoTurma,
-                UeId = codigoUe,
-                DreId = codigoDre,
-            };
-            servicoNotificacao.Salvar(notificacao);
-        }
-
         private string ObterNomeDisciplina(string codigoDisciplina)
         {
             long[] disciplinaId = { long.Parse(codigoDisciplina) };
@@ -726,103 +670,6 @@ namespace SME.SGP.Dominio.Servicos
             var qtdDias = repositorioParametrosSistema.ObterValorPorTipoEAno(tipoParametroSistema, DateTime.Now.Year);
 
             return !string.IsNullOrEmpty(qtdDias) ? int.Parse(qtdDias) : (int?)null;
-        }
-
-
-        private async Task VerificaNotificacaoBimestralCalendario(TipoCalendario tipoCalendario, DateTime dataAtual, ModalidadeTipoCalendario modalidade)
-        {
-            var periodos = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
-            var periodoAtual = periodos.FirstOrDefault(p => p.PeriodoInicio.AddDays(1) <= dataAtual && p.PeriodoFim.AddDays(1) >= dataAtual);
-
-            if (periodoAtual == null)
-                return;
-
-            var ultimoBimestre = periodoAtual == periodos.OrderBy(x => x.PeriodoInicio).Last();
-            // Ultimo dia do bimestre e primeiro dia do ultimo mes quando ser tratar do ultimo bimestre
-            var dataReferencia = ultimoBimestre ?
-                                    new DateTime(periodoAtual.PeriodoFim.Year, periodoAtual.PeriodoFim.Month, 1) :
-                                    periodoAtual.PeriodoFim.AddDays(1);
-
-            if (dataAtual == dataReferencia)
-            {
-                var alunosAusentes = repositorioFrequenciaAluno.ObterAlunosComAusenciaPorDisciplinaNoPeriodo(periodoAtual.Id, tipoCalendario.Modalidade == ModalidadeTipoCalendario.EJA);
-
-                if (alunosAusentes != null && alunosAusentes.Any())
-                {
-                    // Carrega dados das disciplinas do EOL
-                    var disciplinasIds = alunosAusentes.Select(a => long.Parse(a.DisciplinaId)).ToArray();
-                    var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(disciplinasIds);
-
-                    // Carrega dados das turmas (ue e dre)
-                    var turmas = new List<Turma>();
-                    alunosAusentes.Select(a => a.TurmaId).Distinct().ToList()
-                        .ForEach(async turmaId =>
-                        {
-                            if (turmaId != null)
-                            {
-                                turmas.Add(await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId));
-                            }
-                        });
-
-                    var percentualFrequenciaFund = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
-                    var percentualFrequenciaRegencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
-
-                    // Agrupa por DRE / UE / Turma / Disciplina
-                    foreach (var turmasDRE in turmas.GroupBy(t => t.Ue.Dre))
-                    {
-                        foreach (var turmasUE in turmasDRE.GroupBy(x => x.Ue))
-                        {
-                            var gestores = BuscaGestoresUe(turmasUE.Key.CodigoUe);
-
-                            foreach (var turma in turmasUE)
-                            {
-                                var alunosEOL = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
-
-                                var alunosTurma = alunosAusentes.Where(c => c.TurmaId == turma.CodigoTurma);
-                                alunosTurma.Select(a => a.DisciplinaId).Distinct().ToList()
-                                    .ForEach(disciplinaId =>
-                                    {
-                                        var alunosDisciplina = alunosTurma.Where(c => c.DisciplinaId == disciplinaId);
-
-                                        var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
-                                        var disciplinaEOL = disciplinasEol.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString() == disciplinaId);
-
-                                        foreach (var alunoDisciplina in alunosDisciplina)
-                                        {
-                                            if (alunoDisciplina.PercentualFrequencia <
-                                                    (disciplinaEOL.Regencia ? percentualFrequenciaRegencia : percentualFrequenciaFund))
-                                            {
-                                                alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
-                                                {
-                                                    CodigoAluno = alunoDisciplina.CodigoAluno,
-                                                    NomeAluno = alunosEOL.FirstOrDefault(x => x.CodigoAluno == alunoDisciplina.CodigoAluno).NomeAluno,
-                                                    PercentualFrequencia = alunoDisciplina.PercentualFrequencia
-                                                });
-                                            }
-                                        };
-
-                                        if (alunosDto.Any())
-                                        {
-                                            foreach (var gestor in gestores)
-                                            {
-                                                NotificarFrequenciaBimestre(turma.CodigoTurma,
-                                                                    turma.Nome,
-                                                                    periodoAtual.Bimestre,
-                                                                    turmasUE.Key.CodigoUe,
-                                                                    turmasUE.Key.Nome,
-                                                                    turmasDRE.Key.CodigoDre,
-                                                                    turmasDRE.Key.Nome,
-                                                                    disciplinaEOL.Nome,
-                                                                    gestor.Usuario.Id,
-                                                                    alunosDto);
-                                            }
-                                        }
-                                    });
-                            }
-                        };
-                    };
-                }
-            }
         }
 
         #endregion Metodos Privados
