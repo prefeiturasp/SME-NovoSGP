@@ -23,7 +23,7 @@ namespace SME.SGP.Infra
         {
             UsuarioRF = usuario.CodigoRf;
             UsuarioPerfil = usuario.PerfilAtual;
-            ConsideraPendenteAprovacao = usuario.TemPerfilSupervisorOuDiretor() || usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(); ;
+            ConsideraPendenteAprovacao = usuario.TemPerfilSupervisorOuDiretor() || usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(); 
             PodeVisualizarEventosOcorrenciaDre = usuario.PodeVisualizarEventosOcorrenciaDre();
         }
 
