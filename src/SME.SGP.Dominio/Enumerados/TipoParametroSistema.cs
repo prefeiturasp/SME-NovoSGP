@@ -48,7 +48,12 @@
 
         MunicipioAtendimentoHistoricoEscolar = 25,
 
+        //Infantil
         ExecutarManutencaoAulasInfantil = 26,
+
+        //Frequencia Infantil
+        PercentualFrequenciaMinimaInfantil = 27,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
