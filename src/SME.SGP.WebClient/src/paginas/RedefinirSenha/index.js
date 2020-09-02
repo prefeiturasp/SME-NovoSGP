@@ -175,9 +175,9 @@ const RedefinirSenha = props => {
     } else {
       const rf = Number.isInteger(usuario * 1)
         ? usuario
-        : Number.isInteger(props ?.location ?.state ?.rf * 1)
-          ? props ?.location ?.state ?.rf
-            : '';
+        : Number.isInteger(props?.location?.state?.rf * 1)
+        ? props?.location?.state?.rf
+        : '';
 
       const requisicao = await ServicoPrimeiroAcesso.alterarSenha({
         usuario: rf,
@@ -210,7 +210,6 @@ const RedefinirSenha = props => {
           })
         );
         ServicoDashboard.obterDadosDashboard();
-
         history.push(URL_HOME);
       } else {
         setErroGeral(requisicao.erro);
