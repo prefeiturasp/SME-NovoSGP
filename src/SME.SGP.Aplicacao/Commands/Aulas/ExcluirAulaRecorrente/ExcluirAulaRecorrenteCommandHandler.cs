@@ -98,6 +98,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ExcluirNotificacoesDaAulaCommand(aula.Id));
                 await mediator.Send(new ExcluirFrequenciaDaAulaCommand(aula.Id));
                 await mediator.Send(new ExcluirPlanoAulaDaAulaCommand(aula.Id));
+                await mediator.Send(new ExcluirAnotacoesFrequencciaDaAulaCommand(aula.Id));
 
                 aula.Excluido = true;
                 await repositorioAula.SalvarAsync(aula);

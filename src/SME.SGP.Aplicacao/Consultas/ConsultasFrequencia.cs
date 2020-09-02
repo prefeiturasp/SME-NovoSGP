@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -22,10 +23,12 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
+        private readonly IMediator mediator;
 
         private double _mediaFrequencia;
 
-        public ConsultasFrequencia(IServicoFrequencia servicoFrequencia,
+        public ConsultasFrequencia(IMediator mediator,
+                                   IServicoFrequencia servicoFrequencia,
                                    IServicoEol servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                    IConsultasTipoCalendario consultasTipoCalendario,
@@ -37,6 +40,7 @@ namespace SME.SGP.Aplicacao
                                    IRepositorioParametrosSistema repositorioParametrosSistema,
                                    IServicoAluno servicoAluno)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
@@ -131,27 +135,24 @@ namespace SME.SGP.Aplicacao
             if (aula == null)
                 throw new NegocioException("Aula não encontrada.");
 
-            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId, aula.DataAula.Year);
+            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
             if (alunosDaTurma == null || !alunosDaTurma.Any())
-            {
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
-            }
+            
             var turma = await repositorioTurma.ObterPorCodigo(aula.TurmaId);
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
+
             FrequenciaDto registroFrequenciaDto = ObterRegistroFrequencia(aulaId, aula, turma);
 
             var ausencias = servicoFrequencia.ObterListaAusenciasPorAula(aulaId);
             if (ausencias == null)
-            {
                 ausencias = new List<RegistroAusenciaAluno>();
-            }
 
             var bimestre = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(aula.TipoCalendarioId, aula.DataAula);
             if (bimestre == null)
-            {
                 throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
-            }
+
 
             registroFrequenciaDto.TemPeriodoAberto = await consultasTurma.TurmaEmPeriodoAberto(aula.TurmaId, DateTime.Today, bimestre.Bimestre);
 
@@ -159,9 +160,8 @@ namespace SME.SGP.Aplicacao
                                                     TipoParametroSistema.PercentualFrequenciaCritico,
                                                     bimestre.PeriodoInicio.Year);
             if (parametroPercentualCritico == null)
-            {
                 throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
-            }
+
             var percentualCritico = int.Parse(parametroPercentualCritico);
             var percentualAlerta = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.PercentualFrequenciaAlerta,
@@ -172,10 +172,14 @@ namespace SME.SGP.Aplicacao
             if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
                 throw new NegocioException("Disciplina da aula não encontrada");
 
+            var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoNaAulaQuery(aulaId));
+
             foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
             {
-                // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia
-                if (aluno.EstaInativo(aula.DataAula) && (aluno.DataSituacao < bimestre.PeriodoInicio))
+                // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
+                // se a matrícula foi ativada após a data da aula
+                if ((aluno.EstaInativo(aula.DataAula) && aluno.DataSituacao < bimestre.PeriodoInicio) ||
+                    (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataSituacao > aula.DataAula))
                     continue;
 
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
@@ -185,7 +189,11 @@ namespace SME.SGP.Aplicacao
                     NumeroAlunoChamada = aluno.NumeroAlunoChamada,
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,
+                    DataSituacao = aluno.DataSituacao,
+                    DataNascimento = aluno.DataNascimento,
                     Desabilitado = aluno.EstaInativo(aula.DataAula) || aula.EhDataSelecionadaFutura,
+                    PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
+                    PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno)
                 };
 
                 // Marcador visual da situação
@@ -229,8 +237,8 @@ namespace SME.SGP.Aplicacao
 
             return new SinteseDto()
             {
-                SinteseId = sintese,
-                SinteseNome = sintese.Name()
+                Id = sintese,
+                Valor = sintese.Name()
             };
         }
 

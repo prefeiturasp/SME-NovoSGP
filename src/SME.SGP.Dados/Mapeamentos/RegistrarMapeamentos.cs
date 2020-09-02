@@ -113,9 +113,12 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RelatorioCorrelacaoMap());
                config.AddMap(new RelatorioCorrelacaoJasperMap());
                config.AddMap(new HistoricoReinicioSenhaMap());
+               config.AddMap(new AnotacaoFrequenciaAlunoMap());
+               config.AddMap(new MotivoAusenciaMap());
                config.AddMap(new CartaIntencoesMap());
                config.AddMap(new DiarioBordoMap());
-               config.AddMap(new DevolutivaDiarioBordoMap());
+               config.AddMap(new DiarioBordoObservacaoMap());
+               config.AddMap(new DevolutivaMap());
                config.ForDommel();
            });
         }

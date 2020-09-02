@@ -62,6 +62,10 @@ import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
 import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
+import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
+import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
+import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
+import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
 
 const rotas = new Map();
 
@@ -854,7 +858,7 @@ rotas.set(RotasDto.RELATORIO_PENDENCIAS, {
   component: RelatorioPendencias,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_PENDENCIAS,
 });
 
@@ -865,8 +869,19 @@ rotas.set(RotasDto.RELATORIO_PARECER_CONCLUSIVO, {
   component: RelatorioParecerConclusivo,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_PARECER_CONCLUSIVO,
+});
+
+rotas.set(RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS, {
+  breadcrumbName: 'Notas e conceitos finais',
+  menu: ['Relatórios', 'Fechamento'],
+  parent: '/',
+  component: RelatorioNotasConceitosFinais,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_NOTAS_CONCEITOS_FINAIS,
 });
 
 rotas.set(RotasDto.CARTA_INTENCOES, {
@@ -878,6 +893,48 @@ rotas.set(RotasDto.CARTA_INTENCOES, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.CARTA_INTENCOES,
+});
+
+rotas.set(RotasDto.DEVOLUTIVAS, {
+  breadcrumbName: 'Devolutivas',
+  menu: ['Diário de Classe '],
+  parent: '/',
+  component: DevolutivasLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
+});
+
+rotas.set(`${RotasDto.DEVOLUTIVAS}/novo`, {
+  breadcrumbName: 'Cadastrar Devolutiva',
+  parent: RotasDto.DEVOLUTIVAS,
+  component: DevolutivasForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
+});
+
+rotas.set(`${RotasDto.DEVOLUTIVAS}/editar/:id`, {
+  breadcrumbName: 'Alterar Devolutiva',
+  parent: RotasDto.DEVOLUTIVAS,
+  component: DevolutivasForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
+});
+
+rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
+  breadcrumbName: 'Compensação de ausência',
+  menu: ['Relatórios', 'Frequência'],
+  parent: '/',
+  component: RelatorioCompensacaoAusencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
 });
 
 const rotasArray = [];
