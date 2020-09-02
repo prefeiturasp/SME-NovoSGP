@@ -52,6 +52,7 @@ const DevolutivasForm = ({ match }) => {
   const [refForm, setRefForm] = useState({});
   const permissoesTela = usuario.permissoes[RotasDto.DEVOLUTIVAS];
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+  const [exibirCampoDescricao, setExibirCampoDescricao] = useState(false);
 
   const inicial = {
     codigoComponenteCurricular: 0,
@@ -224,9 +225,11 @@ const DevolutivasForm = ({ match }) => {
         pagina || 1
       ).catch(e => erros(e));
       setCarregandoGeral(false);
-      if (retorno && retorno.data) {
+      if (retorno && retorno.data && retorno.data.totalRegistros) {
+        setExibirCampoDescricao(true);
         dispatch(setDadosPlanejamentos(retorno.data));
       } else {
+        setExibirCampoDescricao(false);
         dispatch(limparDadosPlanejamento());
       }
     },
@@ -303,17 +306,17 @@ const DevolutivasForm = ({ match }) => {
       pagina || 1
     ).catch(e => erros(e));
     setCarregandoGeral(false);
-    if (retorno && retorno.data) {
+    if (retorno && retorno.data && retorno.data.totalRegistros) {
+      setExibirCampoDescricao(true);
       dispatch(setDadosPlanejamentos(retorno.data));
     } else {
+      setExibirCampoDescricao(false);
       dispatch(setDadosPlanejamentos({}));
     }
   };
 
   const onChangeDataFim = (data, form) => {
-    if (!data) {
-      form.setFieldValue('descricao', '');
-    }
+    form.setFieldValue('descricao', '');
     if (data) {
       obterDadosPlanejamento(data, form);
     }
@@ -578,20 +581,24 @@ const DevolutivasForm = ({ match }) => {
                           onChangePage={pagina => onChangePage(pagina, form)}
                         />
                       </div>
-                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-3">
-                        <Editor
-                          label="Registre a sua devolutiva para este intervalo de datas"
-                          form={form}
-                          name="descricao"
-                          id="editor-devolutiva"
-                          onChange={v => {
-                            if (valoresIniciais.descricao !== v) {
-                              setModoEdicao(true);
-                            }
-                          }}
-                          desabilitar={desabilitarCampos}
-                        />
-                      </div>
+                      {exibirCampoDescricao ? (
+                        <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-3">
+                          <Editor
+                            label="Registre a sua devolutiva para este intervalo de datas"
+                            form={form}
+                            name="descricao"
+                            id="editor-devolutiva"
+                            onChange={v => {
+                              if (valoresIniciais.descricao !== v) {
+                                setModoEdicao(true);
+                              }
+                            }}
+                            desabilitar={desabilitarCampos}
+                          />
+                        </div>
+                      ) : (
+                        ''
+                      )}
                       {form.values.auditoria ? (
                         <Auditoria
                           criadoEm={form.values.auditoria.criadoEm}

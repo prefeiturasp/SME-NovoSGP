@@ -52,7 +52,7 @@ const CampoObservacao = props => {
           autoSize={{ minRows: 4 }}
           value={novaObservacao}
           onChange={onChangeNovaObservacao}
-          disabled={!!(observacaoEmEdicao && observacaoEmEdicao.length)}
+          disabled={!!observacaoEmEdicao}
         />
       </div>
       <div className="col-md-12 d-flex justify-content-end pb-4">
