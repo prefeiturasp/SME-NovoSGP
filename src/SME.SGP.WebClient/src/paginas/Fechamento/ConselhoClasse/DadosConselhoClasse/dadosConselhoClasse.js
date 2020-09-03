@@ -268,8 +268,6 @@ const DadosConselhoClasse = props => {
     );
   };
 
-  console.log(modalidade);
-
   return (
     <>
       {codigoEOL && bimestreAtual.valor ? (

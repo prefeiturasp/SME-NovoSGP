@@ -1,33 +1,31 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
+import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
-import Button from '~/componentes/button';
 import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import {
   limparDadosRelatorioSemestral,
   setAlunosRelatorioSemestral,
+  setCodigoAlunoSelecionado,
   setDadosAlunoObjectCard,
   setDentroPeriodo,
-  setCodigoAlunoSelecionado,
 } from '~/redux/modulos/relatorioSemestralPAP/actions';
-import { erros, sucesso } from '~/servicos/alertas';
+import { erros } from '~/servicos/alertas';
 import ServicoRelatorioSemestral from '~/servicos/Paginas/Relatorios/PAP/RelatorioSemestral/ServicoRelatorioSemestral';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import AlertaDentroPeriodoPAP from './DadosRelatorioSemestral/AlertaDentroPeriodoPAP/alertaDentroPeriodoPAP';
+import BotaoGerarRelatorioSemestralTurma from './DadosRelatorioSemestral/BotaoGerarRelatorioSemestralTurma/botaoGerarRelatorioSemestralTurma';
 import BotaoOrdenarListaAlunos from './DadosRelatorioSemestral/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
 import BotoesAcoesRelatorioSemestral from './DadosRelatorioSemestral/BotoesAcoes/botoesAcoesRelatorioSemestral';
 import DadosRelatorioSemestral from './DadosRelatorioSemestral/dadosRelatorioSemestral';
+import ModalErrosRalSemestralPAP from './DadosRelatorioSemestral/ModalErros/ModalErrosRalSemestralPAP';
 import ObjectCardRelatorioSemestral from './DadosRelatorioSemestral/ObjectCardRelatorioSemestral/objectCardRelatorioSemestral';
 import TabelaRetratilRelatorioSemestral from './DadosRelatorioSemestral/TabelaRetratilRelatorioSemestral/tabelaRetratilRelatorioSemestral';
 import { Container } from './relatorioSemestral.css';
 import servicoSalvarRelatorioSemestral from './servicoSalvarRelatorioSemestral';
-import ModalErrosRalSemestralPAP from './DadosRelatorioSemestral/ModalErros/ModalErrosRalSemestralPAP';
-import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
-import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
-import { setGerandoParecerConclusivo } from '~/redux/modulos/conselhoClasse/actions';
 
 const RelatorioSemestral = () => {
   const dispatch = useDispatch();
@@ -43,9 +41,6 @@ const RelatorioSemestral = () => {
 
   const [listaSemestres, setListaSemestres] = useState([]);
   const [semestreSelecionado, setSemestreSelecionado] = useState(undefined);
-  const [podeImprimir, setPodeImprimir] = useState(false);
-
-  const [gerandoRelatorio, setGerandoRelatorio] = useState(false);
 
   const resetarInfomacoes = useCallback(() => {
     dispatch(limparDadosRelatorioSemestral());
@@ -156,31 +151,6 @@ const RelatorioSemestral = () => {
     dispatch(setDentroPeriodo(dentroPeriodo));
   };
 
-  const relatorioSemestralId = useSelector(
-    store =>
-      store.relatorioSemestralPAP.dadosRelatorioSemestral.relatorioSemestralId
-  );
-
-  useEffect(() => {
-    setPodeImprimir(relatorioSemestralId);
-  }, [relatorioSemestralId]);
-
-  const gerar = async () => {
-    setGerandoRelatorio(true);
-    const params = {
-      turmaCodigo: turmaSelecionada.turma,
-      semestre: semestreSelecionado,
-    };
-    await ServicoRelatorioSemestral.gerar(params)
-      .then(() => {
-        sucesso(
-          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado'
-        );
-      })
-      .catch(e => erros(e))
-      .finally(setGerandoRelatorio(false));
-  };
-
   return (
     <Container>
       <ModalErrosRalSemestralPAP />
@@ -236,17 +206,9 @@ const RelatorioSemestral = () => {
                 <>
                   <div className="col-md-12 mb-2 d-flex">
                     <BotaoOrdenarListaAlunos />
-                    <Loader loading={gerandoRelatorio}>
-                      <Button
-                        className="btn-imprimir"
-                        icon="print"
-                        color={Colors.Azul}
-                        border
-                        onClick={gerar}
-                        disabled={!podeImprimir}
-                        id="btn-imprimir-relatorio-semestral"
-                      />
-                    </Loader>
+                    <BotaoGerarRelatorioSemestralTurma
+                      semestreSelecionado={semestreSelecionado}
+                    />
                   </div>
                   <div className="col-md-12 mb-2">
                     <TabelaRetratilRelatorioSemestral
