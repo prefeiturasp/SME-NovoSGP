@@ -5,8 +5,7 @@ import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoCons
 import { erro, sucesso } from '~/servicos/alertas';
 import { Loader } from '~/componentes';
 
-const ObjectCardConselhoClasse = props => {
-  const { conselhoClasseId, fechamentoTurmaId } = props;
+const ObjectCardConselhoClasse = () => {
   const [gerandoConselhoClasse, setGerandoConselhoClasse] = useState(false);
   const dadosAlunoObjectCard = useSelector(
     store => store.conselhoClasse.dadosAlunoObjectCard
@@ -19,6 +18,15 @@ const ObjectCardConselhoClasse = props => {
   const conselhoClasseAlunoId = useSelector(
     store =>
       store.conselhoClasse.dadosPrincipaisConselhoClasse.conselhoClasseAlunoId
+  );
+
+  const conselhoClasseId = useSelector(
+    store => store.conselhoClasse.dadosPrincipaisConselhoClasse.conselhoClasseId
+  );
+
+  const fechamentoTurmaId = useSelector(
+    store =>
+      store.conselhoClasse.dadosPrincipaisConselhoClasse.fechamentoTurmaId
   );
 
   const gerarConselhoClasseAluno = async () => {
