@@ -365,7 +365,7 @@ export default createGlobalStyle`
   .alerta-sucesso {
     color: #155724 !important;
     background-color: #d4edda !important;
-    border-color: #c3e6cb !important;
+    border: 1px solid #155724 !important;
 
     .ant-notification-notice-message {
       color: #155724 !important;
@@ -375,7 +375,7 @@ export default createGlobalStyle`
   .alerta-aviso {
     color: #856404 !important;
     background-color: #fff3cd !important;
-    border-color: #ffeeba !important;
+    border: 1px solid #856404 !important;
 
     .ant-notification-notice-message {
       color: #856404 !important;
@@ -385,7 +385,7 @@ export default createGlobalStyle`
   .alerta-erro {
     color: #721c24 !important;
     background-color: #f8d7da !important;
-    border-color: #f5c6cb !important;
+    border:1px solid #721c24 !important;
 
     .ant-notification-notice-message {
       color: #721c24 !important;
