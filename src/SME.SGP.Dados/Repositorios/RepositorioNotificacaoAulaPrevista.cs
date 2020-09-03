@@ -13,12 +13,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        //Não retorna modalidade infantil
         public IEnumerable<RegistroAulaPrevistaDivergenteDto> ObterTurmasAulasPrevistasDivergentes(int limiteDias)
         {
-            var query = @"select distinct a.turma_id as CodigoTurma, t.modalidade_codigo as ModalidadeTurma, t.nome as NomeTurma
+            var query = @"select a.turma_id as CodigoTurma, t.nome as NomeTurma
 	                        , ue.ue_id as CodigoUe, ue.nome as NomeUe
 	                        , dre.dre_id as CodigoDre, dre.nome as NomeDre
-                            , a.disciplina_id as DisciplinaId, pe.bimestre
+                            , a.disciplina_id as DisciplinaId, a.professor_rf as ProfessorRf, pe.bimestre
                            from aula a
                           inner join turma t on t.turma_id = a.turma_id
                           inner join ue on ue.id = t.ue_id
@@ -29,8 +30,9 @@ namespace SME.SGP.Dados.Repositorios
                          where (a.id is null or not a.excluido)
                            and now() between pe.periodo_inicio and pe.periodo_fim
                            and DATE_PART('day', age(pe.periodo_fim, date(now()))) <= @limiteDias
+                           and t.modalidade_codigo <> 1
                          group by
-                         	a.turma_id, t.nome, t.modalidade_codigo, ue.ue_id , ue.nome, dre.dre_id, dre.nome, apb.aulas_previstas, a.disciplina_id, pe.bimestre
+                         	a.turma_id, t.nome, ue.ue_id , ue.nome, dre.dre_id, dre.nome, apb.aulas_previstas, a.disciplina_id,  a.professor_rf, pe.bimestre
                          having  COUNT(a.*) filter (where a.tipo_aula = 1) <> coalesce(apb.aulas_previstas, 0)
                         order by dre.dre_id, ue.ue_id, a.turma_id";
 
