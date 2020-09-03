@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,34 +31,34 @@ namespace SME.SGP.Aplicacao
 
             if (perfil_1.Contains(perfilAtual))
             {
-                listaDashBoard.Add(CarregaDashBoard(Permissao.CI_C, roles));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.DDB_C, roles));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.FF_C, roles));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.CI_C, roles, false));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.DDB_C, roles, false));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.FF_C, roles, true));
             }
             else if (perfil_2.Contains(perfilAtual))
             {
-                listaDashBoard.Add(CarregaDashBoard(Permissao.CP_C, roles));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.PA_C, roles));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.PDA_C, roles));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.CP_C, roles, false));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.PA_C, roles, false));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.PDA_C, roles, false));
             }
             else
             {
-                listaDashBoard.Add(CarregaDashBoard(Permissao.PA_C, roles));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.C_C, roles, false));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.E_C, roles, false));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.PA_C, roles, false));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.C_C, roles, false, false));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.E_C, roles, false, false));
             }
 
             return listaDashBoard;
 
         }
 
-        private DashBoard CarregaDashBoard(Permissao menu, IEnumerable<Permissao> roles, bool exigeTurma = true)
+        private DashBoard CarregaDashBoard(Permissao menu, IEnumerable<Permissao> roles, bool eventoInfantil, bool exigeTurma = true)
         {
             var atributo = menu.GetAttribute<PermissaoMenuAttribute>();
-
+            
             return new DashBoard()
             {
-                Descricao = atributo.Menu,
+                Descricao = eventoInfantil ? "Evento" : atributo.Menu,
                 UsuarioTemPermissao = roles.Contains(menu),
                 TurmaObrigatoria = exigeTurma,
                 Icone = atributo.IconeDashBoard,
