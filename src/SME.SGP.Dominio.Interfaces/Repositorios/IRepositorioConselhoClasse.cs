@@ -9,6 +9,5 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<ConselhoClasse> ObterPorTurmaEPeriodoAsync(long turmaId, long? periodoEscolarId = null);
         Task<ConselhoClasse> ObterPorFechamentoId(long fechamentoTurmaId);
-        Task<bool> VerificaSeExisteConselhoClassePorIdAsync(long conselhoClasseId);
     }
 }

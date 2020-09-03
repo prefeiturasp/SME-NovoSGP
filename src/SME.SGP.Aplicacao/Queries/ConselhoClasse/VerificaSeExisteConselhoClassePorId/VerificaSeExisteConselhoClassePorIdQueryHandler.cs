@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(VerificaSeExisteConselhoClassePorIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasse.VerificaSeExisteConselhoClassePorIdAsync(request.ConselhoClasseId);
+            return await repositorioConselhoClasse.Exists(request.ConselhoClasseId);
         }
 
     }

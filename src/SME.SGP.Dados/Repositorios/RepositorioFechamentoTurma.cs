@@ -66,14 +66,5 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, periodoId });
         }
-
-        public async Task<bool> VerificaSeFechamentoTurmaExistePorId(long fechamentoTurmaId)
-        {
-            var query = new StringBuilder(@"select 1 
-                            from fechamento_turma 
-                           where id = @fechamentoTurmaId");
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new { fechamentoTurmaId });
-        }
     }
 }

@@ -10,6 +10,5 @@ namespace SME.SGP.Dominio.Interfaces
         Task<FechamentoTurma> ObterPorTurmaCodigoBimestreAsync(string turmaCodigo, int bimestre = 0);
         Task<FechamentoTurma> ObterPorTurmaPeriodo(long turmaId, long periodoId = 0);
         Task<FechamentoTurma> ObterCompletoPorIdAsync(long fechamentoTurmaId);
-        Task<bool> VerificaSeFechamentoTurmaExistePorId(long fechamentoTurmaId);
     }
 }
