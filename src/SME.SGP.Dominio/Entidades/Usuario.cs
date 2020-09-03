@@ -16,11 +16,6 @@ namespace SME.SGP.Dominio
         public Guid PerfilAtual { get; set; }
         public IEnumerable<PrioridadePerfil> Perfis { get; private set; }
 
-        public void ObterDashBoard()
-        {
-            throw new NotImplementedException();
-        }
-
         public Guid? TokenRecuperacaoSenha { get; set; }
         public DateTime UltimoLogin { get; set; }
         private string Email { get; set; }
