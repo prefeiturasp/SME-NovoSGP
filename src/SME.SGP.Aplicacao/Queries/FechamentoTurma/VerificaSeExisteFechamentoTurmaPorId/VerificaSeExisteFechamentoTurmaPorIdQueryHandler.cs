@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(VerificaSeExisteFechamentoTurmaPorIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioFechamentoTurma.VerificaSeFechamentoTurmaExistePorId(request.FechamentoTurmaId);
+            return await repositorioFechamentoTurma.Exists(request.FechamentoTurmaId);
         }
 
     }
