@@ -90,6 +90,7 @@ namespace SME.SGP.Dominio.Servicos
 
             await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);
             await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, quantidadeDiasCP, quantidadeDiasDiretor);
+            await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.Infantil, quantidadeDiasCP, quantidadeDiasDiretor);
         }
 
         private async Task NotificarAlunosFaltososModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidade, int quantidadeDiasCP, int quantidadeDiasDiretor)
@@ -317,7 +318,7 @@ namespace SME.SGP.Dominio.Servicos
             var alunosFaltosos = repositorioFrequencia.ObterAlunosFaltosos(dataReferencia, tipoCalendarioId);
 
             // Faltou em todas as aulas do dia e tem pelo menos 3 aulas registradas
-            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && ((c.modalidadeCodigo == Modalidade.Fundamental && c.Ano <= 5) || c.QuantidadeAulas >= 3));
+            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && ((c.modalidadeCodigo == Modalidade.Fundamental && c.Ano <= 5) || c.QuantidadeAulas >= 3 || c.modalidadeCodigo == Modalidade.Infantil));
 
 
             var alunosFaltasTodosOsDias = alunosFaltasTodasAulasDoDia
