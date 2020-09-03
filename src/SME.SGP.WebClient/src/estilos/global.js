@@ -60,7 +60,7 @@ export default createGlobalStyle`
   .ant-modal, .ant-modal-wrap {
     z-index: 9999 !important;
   }
-  
+
   .ant-dropdown {
     z-index: 10000 !important;
   }
@@ -354,5 +354,40 @@ export default createGlobalStyle`
   }
   .ant-pagination-item-active a:hover{
     color:#1890ff
+  }
+
+  .ant-notification {
+    z-index: 99999 !important;
+    top: 85px !important;
+  }
+
+  .alerta-sucesso {
+    color: #155724 !important;
+    background-color: #d4edda !important;
+    border-color: #c3e6cb !important;
+
+    .ant-notification-notice-message {
+      color: #155724 !important;
+    }
+  }
+
+  .alerta-aviso {
+    color: #856404 !important;
+    background-color: #fff3cd !important;
+    border-color: #ffeeba !important;
+
+    .ant-notification-notice-message {
+      color: #856404 !important;
+    }
+  }
+
+  .alerta-erro {
+    color: #721c24 !important;
+    background-color: #f8d7da !important;
+    border-color: #f5c6cb !important;
+
+    .ant-notification-notice-message {
+      color: #721c24 !important;
+    }
   }
 `;
