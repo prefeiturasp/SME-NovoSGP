@@ -359,6 +359,7 @@ export default createGlobalStyle`
   .ant-notification {
     z-index: 99999 !important;
     top: 85px !important;
+    width: 30% !important;
   }
 
   .alerta-sucesso {
