@@ -315,24 +315,33 @@ const EventosLista = ({ match }) => {
     history.push(URL_HOME);
   };
 
-  const onChangeUeId = async ueId => {
-    filtrar('ehTodasUes', ueId === '0');
-    filtrar('ueId', ueId === '0' ? '' : ueId);
+  const onChangeUeId = async (ueId, form) => {
+    form.setFieldValue('ehTodasUes', ueId === '0');
+    const filtroAtual = filtro;
+    filtroAtual.ueId = ueId === '0' ? '' : ueId;
+    filtroAtual.ehTodasUes = ueId === '0';
+    setFiltro({ ...filtroAtual });
+    validarFiltrar();
   };
 
-  const onChangeDreId = async dreId => {
-    refForm.setFieldValue('ueId', undefined);
-    filtrar('ehTodasDres', dreId === '0');
-    filtrar('dreId', dreId === '0' ? '' : dreId);
+  const onChangeDreId = async (dreId, form) => {
+    const filtroAtual = filtro;
+    filtroAtual.ehTodasUes = false;
+    filtroAtual.ueId = undefined;
+    filtroAtual.ehTodasUes = dreId === '0';
+    filtroAtual.dreId = dreId === '0' ? '' : dreId;
+
+    form.setFieldValue('ehTodasUes', false);
+    form.setFieldValue('ueId', undefined);
+    form.setFieldValue('ehTodasDres', dreId === '0');
+    setFiltro({ ...filtroAtual });
+    validarFiltrar();
 
     if (dreId) {
       setDreSelecionada(dreId);
       setCampoUeDesabilitado(false);
       return;
     }
-
-    filtrar('ehTodasUes', false);
-    filtrar('ueId', '');
 
     setCampoUeDesabilitado(true);
     setListaUe([]);
@@ -412,10 +421,20 @@ const EventosLista = ({ match }) => {
     }
   };
 
-  const onChangeCalendarioId = tipoCalendarioId => {
+  const onChangeCalendarioId = (tipoCalendarioId, form) => {
     if (tipoCalendarioId) {
       setSelecionouCalendario(true);
-      filtrar('tipoCalendarioId', tipoCalendarioId);
+      form.setFieldValue('dreId', undefined);
+      form.setFieldValue('ueId', undefined);
+      const filtroAtual = filtro;
+      filtroAtual.dreId = '';
+      filtroAtual.ueId = '';
+      filtroAtual.ehTodasDres = false;
+      filtroAtual.ehTodasUes = false;
+      filtroAtual.tipoCalendarioId = tipoCalendarioId;
+      setFiltro({ ...filtroAtual });
+      validarFiltrar();
+      setDreSelecionada(undefined);
       setBreadcrumbManual(
         `${match.url}/${tipoCalendarioId}`,
         '',
@@ -429,7 +448,8 @@ const EventosLista = ({ match }) => {
       setCampoUeDesabilitado(true);
       setTipoEvento('');
       setNomeEvento('');
-      refForm.resetForm();
+      form.resetForm();
+      setFiltro({});
     }
   };
 
@@ -530,7 +550,7 @@ const EventosLista = ({ match }) => {
                       lista={listaCalendarioEscolar}
                       valueOption="id"
                       valueText="descricaoTipoCalendario"
-                      onChange={onChangeCalendarioId}
+                      onChange={valor => onChangeCalendarioId(valor, form)}
                       placeholder="Selecione um calendário"
                       form={form}
                     />
@@ -543,7 +563,7 @@ const EventosLista = ({ match }) => {
                     lista={listaDre}
                     valueOption="codigo"
                     valueText="nome"
-                    onChange={onChangeDreId}
+                    onChange={valor => onChangeDreId(valor, form)}
                     disabled={dreDesabilitada}
                     placeholder="Selecione uma DRE (Opcional)"
                     form={form}
@@ -556,7 +576,7 @@ const EventosLista = ({ match }) => {
                     lista={listaUe}
                     valueOption="codigo"
                     valueText="nome"
-                    onChange={ueId => onChangeUeId(ueId)}
+                    onChange={ueId => onChangeUeId(ueId, form)}
                     disabled={campoUeDesabilitado || ueDesabilitada}
                     placeholder="Selecione uma UE (Opcional)"
                     form={form}
