@@ -31,9 +31,9 @@ namespace SME.SGP.Aplicacao
 
             if (perfil_1.Contains(perfilAtual))
             {
-                listaDashBoard.Add(CarregaDashBoard(Permissao.CI_C, roles, false));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.DDB_C, roles, false));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.FF_C, roles, true));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.CI_C, roles));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.DDB_C, roles));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.PDA_C, roles));
             }
             else if (perfil_2.Contains(perfilAtual))
             {
