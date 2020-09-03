@@ -41,6 +41,9 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach (var turma in turmasAulasPrevistasDivergentes)
             {
+                //Não enviar notificação se modalidade for = infantil.
+                if (turma.ModalidadeTurma == Modalidade.Infantil)
+                    continue;
                 // Carrega todas as aulas das turmas com aulas previstas divergentes por disciplina para notificação
                 turma.ProfessorRf =
                     repositorioAulaPrevista.ObterProfessorTurmaDisciplinaAulasPrevistasDivergente(turma.Bimestre, turma.CodigoTurma,
