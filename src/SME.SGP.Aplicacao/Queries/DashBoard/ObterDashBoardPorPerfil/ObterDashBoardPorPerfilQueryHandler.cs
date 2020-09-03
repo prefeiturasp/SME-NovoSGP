@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao
             {
                 listaDashBoard.Add(CarregaDashBoard(Permissao.CI_C, roles));
                 listaDashBoard.Add(CarregaDashBoard(Permissao.DDB_C, roles));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.PDA_C, roles));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.PDA_C, roles, descricao: "Frequência"));
             }
             else if (perfil_2.Contains(perfilAtual))
             {
@@ -51,13 +52,13 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        private DashBoard CarregaDashBoard(Permissao menu, IEnumerable<Permissao> roles, bool exigeTurma = true)
+        private DashBoard CarregaDashBoard(Permissao menu, IEnumerable<Permissao> roles, bool exigeTurma = true, string descricao = null)
         {
             var atributo = menu.GetAttribute<PermissaoMenuAttribute>();
-
+            
             return new DashBoard()
             {
-                Descricao = atributo.Menu,
+                Descricao = descricao ?? atributo.Menu,
                 UsuarioTemPermissao = roles.Contains(menu),
                 TurmaObrigatoria = exigeTurma,
                 Icone = atributo.IconeDashBoard,
