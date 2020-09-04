@@ -197,7 +197,10 @@ namespace SME.SGP.Dados.Repositorios
 	                                 ano_letivo,
 	                                 nome,
                                      modalidade,
-	                                 ano_letivo ||' - '|| nome as descricao 
+	                                 ano_letivo ||' - '|| nome as descricao,
+                                     migrado,
+                                     periodo,
+                                     situacao
                                 from tipo_calendario tc
                                where UPPER(cast(ano_letivo as varchar)) like UPPER('%{descricao}%') or UPPER(nome) like UPPER('%{descricao}%')
                                order by descricao desc
