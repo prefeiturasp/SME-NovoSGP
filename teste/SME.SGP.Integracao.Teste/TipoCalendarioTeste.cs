@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Extensions.Ordering;
 
 namespace SME.SGP.Integracao.Teste
 {
@@ -72,7 +73,20 @@ namespace SME.SGP.Integracao.Teste
         //    }
         //}
 
-        private string TransformarEmJson(object model)
+        [Fact, Order(1)]
+        public async Task Deve_Consultar_Tipos_Calendario()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.TCE_C}));
+
+            var getResult = await _fixture._clientApi.GetAsync("api/v1/calendarios/tipos/busca?descricao=2020");
+
+            Assert.True(getResult.IsSuccessStatusCode);
+        }
+
+            private string TransformarEmJson(object model)
         {
             return JsonConvert.SerializeObject(model);
         }
