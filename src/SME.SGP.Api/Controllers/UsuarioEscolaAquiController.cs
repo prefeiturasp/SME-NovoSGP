@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui;
 using System.Threading.Tasks;
@@ -11,13 +12,13 @@ namespace SME.SGP.Api.Controllers
     //[Authorize("Bearer")]
     public class UsuarioEscolaAquiController : ControllerBase
     {
-        [HttpPut]
+        [HttpPut("reiniciar-senha")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.CO_A, Policy = "Bearer")]
-        public async Task<IActionResult> ReiniciarSenha([FromBody] SolicitarReiniciarSenhaDto solicitarReiniciarSenhaDto)
+        public async Task<IActionResult> ReiniciarSenha([FromBody] SolicitarReiniciarSenhaDto solicitarReiniciarSenhaDto, [FromServices] ISolicitarReiniciarSenhaUseCase solicitarReiniciarSenhaUseCase)
         {
-            return Ok();
+            return Ok(await solicitarReiniciarSenhaUseCase.Executar(solicitarReiniciarSenhaDto.Cpf));
         }
 
         [HttpGet("{cpf}")]
