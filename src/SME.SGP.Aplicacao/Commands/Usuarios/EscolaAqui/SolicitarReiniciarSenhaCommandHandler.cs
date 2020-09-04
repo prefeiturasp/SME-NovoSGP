@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             var solicitarReiniciarSenhaDto = new SolicitarReiniciarSenhaDto(request.Cpf);
             var parametros = JsonConvert.SerializeObject(solicitarReiniciarSenhaDto);
             var resposta = await httpClient.PutAsync($"/api/v1/Autenticacao/Senha/ReiniciarSenha", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
-
+            
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
@@ -36,7 +36,12 @@ namespace SME.SGP.Aplicacao
 
                 return new RespostaSolicitarReiniciarSenhaDto(respostaApi.Data.ToString());
             }
-            else throw new NegocioException("Não foi possível reinciar a senha");
+            else
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                var respostaApi = JsonConvert.DeserializeObject<RespostaApi>(json);
+                throw new NegocioException(respostaApi.Erros[0].ToString(), HttpStatusCode.BadRequest);
+            }
         }
     }
 
