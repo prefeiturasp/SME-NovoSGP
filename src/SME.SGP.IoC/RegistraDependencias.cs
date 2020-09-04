@@ -7,6 +7,7 @@ using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
@@ -407,6 +408,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirCartaIntencoesObservacaoUseCase, ExcluirCartaIntencoesObservacaoUseCase>();
 
             services.TryAddScoped<IObterUsuarioPorCpfUseCase, ObterUsuarioPorCpfUseCase>();
+            services.TryAddScoped<ISolicitarReiniciarSenhaUseCase, SolicitarReiniciarSenhaUseCase>();
         }
     }
 }
