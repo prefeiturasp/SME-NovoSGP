@@ -8,6 +8,7 @@ import styled from 'styled-components';
 
 import { Base } from '../colors';
 import Label from '../label';
+import { UploadAdapter } from './uploadAdapter';
 
 const Campo = styled.div`
   .is-invalid {
@@ -41,6 +42,13 @@ const toolbar = [
   'undo',
 ];
 
+function UploadAdapterPlugin(editor) {
+  editor.plugins.get('FileRepository').createUploadAdapter = loader => {
+    // Configure the URL to the upload script in your back-end here!
+    return new UploadAdapter(loader);
+  };
+}
+
 export default function Editor(props) {
   const {
     onChange,
@@ -69,12 +77,12 @@ export default function Editor(props) {
     return (form && form.touched[name] && form.errors[name]) ||
       temErro ||
       validacaoComErro ? (
-      <span style={{ color: `${Base.Vermelho}` }}>
-        {(form && form.errors[name]) || mensagemErro}
-      </span>
-    ) : (
-      ''
-    );
+        <span style={{ color: `${Base.Vermelho}` }}>
+          {(form && form.errors[name]) || mensagemErro}
+        </span>
+      ) : (
+        ''
+      );
   };
 
   const editorComValidacoes = () => {
@@ -87,23 +95,26 @@ export default function Editor(props) {
             editor={ClassicEditor}
             disabled={desabilitar || false}
             config={{
-              toolbar,
+              //toolbar,
               table: { isEnabled: true },
               language: 'pt-br',
-              removePlugins: [
-                'Image',
-                'ImageCaption',
-                'ImageStyle',
-                'ImageToolbar',
-                'Indent',
-                'IndentToolbar',
-                'IndentStyle',
-                'Outdent',
-              ],
+              // removePlugins: [
+              //   'Image',
+              //   'ImageCaption',
+              //   'ImageStyle',
+              //   'ImageToolbar',
+              //   'Indent',
+              //   'IndentToolbar',
+              //   'IndentStyle',
+              //   'Outdent',
+              // ],
+              extraPlugins: [UploadAdapterPlugin],
             }}
             data={form.values[name] || ''}
             onChange={(event, editor) => {
               const data = editor.getData();
+              //pegar texto sem o html
+              var text = window.$(data).text();
               onChange && onChange(data);
               form.setFieldValue(name, data || '');
               form.setFieldTouched(name, true, true);
@@ -122,24 +133,27 @@ export default function Editor(props) {
             disabled={desabilitar || false}
             editor={ClassicEditor}
             config={{
-              toolbar: removerToolbar ? [] : toolbar,
+              //toolbar: removerToolbar ? [] : toolbar,
               table: { isEnabled: true },
               readOnly: desabilitar || false,
               language: 'pt-br',
-              removePlugins: [
-                'Image',
-                'ImageCaption',
-                'ImageStyle',
-                'ImageToolbar',
-                'Indent',
-                'IndentToolbar',
-                'IndentStyle',
-                'Outdent',
-              ],
+              // removePlugins: [
+              //   'Image',
+              //   'ImageCaption',
+              //   'ImageStyle',
+              //   'ImageToolbar',
+              //   'Indent',
+              //   'IndentToolbar',
+              //   'IndentStyle',
+              //   'Outdent',
+              // ],
+              extraPlugins: [UploadAdapterPlugin],
             }}
             data={inicial || ''}
             onChange={(event, editor) => {
               const data = editor.getData();
+              //pegar texto sem o html
+              var text = window.$(data).text();
               if (validarSeTemErro) {
                 setValidacaoComErro(validarSeTemErro(data));
               }

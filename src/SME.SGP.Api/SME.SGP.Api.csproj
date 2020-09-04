@@ -49,4 +49,10 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Imagens\Opa.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
