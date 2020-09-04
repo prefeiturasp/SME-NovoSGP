@@ -1,10 +1,10 @@
 ﻿namespace SME.SGP.Infra.Dtos.EscolaAqui
 {
-    public class RespostaSolicitarReiniciarSenhaDto
+    public class RespostaSolicitarReiniciarSenhaEscolaAquiDto
     {
         public string Mensagem { get; set; }
 
-        public RespostaSolicitarReiniciarSenhaDto(string mensagem)
+        public RespostaSolicitarReiniciarSenhaEscolaAquiDto(string mensagem)
         {
             Mensagem = mensagem;
         }

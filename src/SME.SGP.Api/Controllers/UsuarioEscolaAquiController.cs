@@ -16,9 +16,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.CO_A, Policy = "Bearer")]
-        public async Task<IActionResult> ReiniciarSenha([FromBody] SolicitarReiniciarSenhaDto solicitarReiniciarSenhaDto, [FromServices] ISolicitarReiniciarSenhaUseCase solicitarReiniciarSenhaUseCase)
+        public async Task<IActionResult> ReiniciarSenha([FromBody] SolicitarReiniciarSenhaEscolaAquiDto solicitarReiniciarSenhaDto, [FromServices] ISolicitarReiniciarSenhaEscolaAquiUseCase solicitarReiniciarSenhaEscolaAquiUseCase)
         {
-            return Ok(await solicitarReiniciarSenhaUseCase.Executar(solicitarReiniciarSenhaDto.Cpf));
+            return Ok(await solicitarReiniciarSenhaEscolaAquiUseCase.Executar(solicitarReiniciarSenhaDto.Cpf));
         }
 
         [HttpGet("{cpf}")]

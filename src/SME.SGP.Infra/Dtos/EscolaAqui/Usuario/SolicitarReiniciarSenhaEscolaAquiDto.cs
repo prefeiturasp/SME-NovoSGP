@@ -1,10 +1,10 @@
 ﻿namespace SME.SGP.Infra.Dtos.EscolaAqui
 {
-    public class SolicitarReiniciarSenhaDto
+    public class SolicitarReiniciarSenhaEscolaAquiDto
     {
         public string Cpf { get; set; }
 
-        public SolicitarReiniciarSenhaDto(string cpf)
+        public SolicitarReiniciarSenhaEscolaAquiDto(string cpf)
         {
             Cpf = cpf;
         }
