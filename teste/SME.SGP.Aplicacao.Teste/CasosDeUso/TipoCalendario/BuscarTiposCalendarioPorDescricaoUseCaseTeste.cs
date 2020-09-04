@@ -33,21 +33,30 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
                         Descricao = "2020 - Calendário Fundamental",
                         Id = 1,
                         Nome = "Calendário Fundamental",
-                        Modalidade = ModalidadeTipoCalendario.FundamentalMedio
+                        Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
+                        Periodo = Periodo.Anual,
+                        Migrado = false,
+                        Situacao = true
                     },
                     new TipoCalendarioBuscaDto{
                         AnoLetivo = 2020,
                         Descricao = "2020 - Calendário Médio",
                         Id = 1,
                         Nome = "Calendário Médio",
-                        Modalidade = ModalidadeTipoCalendario.FundamentalMedio
+                        Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
+                        Periodo = Periodo.Anual,
+                        Migrado = false,
+                        Situacao = true
                     },
                     new TipoCalendarioBuscaDto{
                         AnoLetivo = 2020,
                         Descricao = "2020 - Calendário EJA",
                         Id = 1,
                         Nome = "Calendário EJA",
-                        Modalidade = ModalidadeTipoCalendario.FundamentalMedio
+                        Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
+                        Periodo = Periodo.Anual,
+                        Migrado = false,
+                        Situacao = true
                     }
                 };
 

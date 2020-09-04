@@ -9,5 +9,8 @@ namespace SME.SGP.Infra
         public int AnoLetivo { get; set; }
         public string Nome { get; set; }
         public ModalidadeTipoCalendario Modalidade { get; set; }
+        public bool Migrado { get; set; }
+        public Periodo Periodo { get; set; }
+        public bool Situacao { get; set; }
     }
 }
