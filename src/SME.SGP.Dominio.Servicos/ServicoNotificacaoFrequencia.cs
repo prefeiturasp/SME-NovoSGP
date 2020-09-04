@@ -223,9 +223,11 @@ namespace SME.SGP.Dominio.Servicos
             // Notifica apenas no dia seguinte ao fim do bimestre
             var dataReferencia = DateTime.Today.AddDays(-1);
             var percentualCritico = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCritico, dataReferencia.Year));
+            var percentualFrequenciaMinimaInfantil = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaMinimaInfantil, dataReferencia.Year));
 
             await NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, percentualCritico);
             await NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, percentualCritico, dataReferencia.Semestre());
+            await NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.Infantil, percentualFrequenciaMinimaInfantil);
         }
         #endregion Metodos Publicos
 
@@ -238,7 +240,7 @@ namespace SME.SGP.Dominio.Servicos
             // Notifica apenas no dia seguinte ao fim do bimestre
             if (dataReferencia == periodoEscolar?.PeriodoFim)
             {
-                var alunosFaltososBimestre = repositorioFrequenciaAluno.ObterAlunosFaltososBimestre(modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA, percentualCritico, periodoEscolar.Bimestre, tipoCalendario?.AnoLetivo);
+                var alunosFaltososBimestre = repositorioFrequenciaAluno.ObterAlunosFaltososBimestre(modalidadeTipoCalendario, percentualCritico, periodoEscolar.Bimestre, tipoCalendario?.AnoLetivo);
 
                 foreach (var uesAgrupadas in alunosFaltososBimestre.GroupBy(a => new { a.DreCodigo, a.DreNome, a.DreAbreviacao, a.TipoEscola, a.UeCodigo, a.UeNome }))
                 {
@@ -289,7 +291,14 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             var funcionariosEol = servicoNotificacao.ObterFuncionariosPorNivel(ueCodigo, Cargo.Supervisor);
+            var functionariosEolCP = servicoNotificacao.ObterFuncionariosPorNivel(ueCodigo, Cargo.CP);
+            var functionariosEolAD = servicoNotificacao.ObterFuncionariosPorNivel(ueCodigo, Cargo.AD);
+            var functionariosEolDiretor = servicoNotificacao.ObterFuncionariosPorNivel(ueCodigo, Cargo.Diretor);
+
             NotficarFuncionariosAlunosFaltososBimestre(funcionariosEol, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
+            NotficarFuncionariosAlunosFaltososBimestre(functionariosEolCP, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
+            NotficarFuncionariosAlunosFaltososBimestre(functionariosEolAD, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
+            NotficarFuncionariosAlunosFaltososBimestre(functionariosEolDiretor, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
         }
 
         private void NotficarFuncionariosAlunosFaltososBimestre(IEnumerable<(Cargo? Cargo, string Id)> funcionariosEol, string titulo, string mensagem, string ueCodigo, string dreCodigo)
@@ -444,7 +453,7 @@ namespace SME.SGP.Dominio.Servicos
             var rfs = procurarRfs.Split(new char[] { ',' });
             var usuarios = new List<(Cargo?, Usuario)>();
 
-            foreach(var rf in rfs)
+            foreach (var rf in rfs)
             {
                 var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(rf.Trim());
                 if (usuario != null)
