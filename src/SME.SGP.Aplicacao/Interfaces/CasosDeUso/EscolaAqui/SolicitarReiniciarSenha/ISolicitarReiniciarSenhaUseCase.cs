@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Infra.Dtos.EscolaAqui;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha
 {
     public interface ISolicitarReiniciarSenhaUseCase
     {
-        Task Executar(string cpf);
+        Task<RespostaSolicitarReiniciarSenhaDto> Executar(string cpf);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha;
+using SME.SGP.Infra.Dtos.EscolaAqui;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -12,9 +13,9 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        public async Task Executar(string cpf)
+        public async Task<RespostaSolicitarReiniciarSenhaDto> Executar(string cpf)
         {
-            await mediator.Send(new SolicitarReiniciarSenhaCommand(cpf));
+            return await mediator.Send(new SolicitarReiniciarSenhaCommand(cpf));
         }
     }
 }
