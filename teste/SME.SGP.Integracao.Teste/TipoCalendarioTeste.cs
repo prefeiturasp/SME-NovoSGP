@@ -81,7 +81,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.TCE_C}));
 
-            var getResult = await _fixture._clientApi.GetAsync("api/v1/calendarios/tipos/busca?descricao=2020");
+            var getResult = await _fixture._clientApi.GetAsync("api/v1/calendarios/tipos/anos-letivos?descricao=2020");
 
             Assert.True(getResult.IsSuccessStatusCode);
         }
