@@ -216,4 +216,9 @@ export const Container = styled.div`
   .botao-reiniciar-tabela-acao {
     margin: -10px -7px -10px -14px;
   }
+
+  .botao-reiniciar-tabela-acao-escola-aqui {
+    padding: 2px;
+    margin: -8px;
+  }
 `;
