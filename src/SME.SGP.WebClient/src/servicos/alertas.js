@@ -80,8 +80,15 @@ const erroMensagem = (titulo, texto) => {
   });
 };
 
-const confirmar = (titulo, texto, textoNegrito, textoOk, textoCancelar, primeiroExibirTextoNegrito) => {
-  return new Promise((resolve, reject) => {
+const confirmar = (
+  titulo,
+  texto,
+  textoNegrito,
+  textoOk,
+  textoCancelar,
+  primeiroExibirTextoNegrito
+) => {
+  return new Promise((resolve, _) => {
     store.dispatch(
       alertaConfirmar(
         titulo,

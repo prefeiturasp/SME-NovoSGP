@@ -15,6 +15,7 @@ import RotasTipo from '~/constantes/rotasTipo';
 import MeusDados from '~/paginas/Perfil/meusDados';
 import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
 import ReiniciarSenha from '~/paginas/Configuracoes/Usuarios/reiniciarSenha';
+import TabsReiniciarSenha from '~/paginas/Configuracoes/Usuarios/TabsReiniciarSenha';
 import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarLista';
 import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
 import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
@@ -343,7 +344,7 @@ rotas.set(RotasDto.REINICIAR_SENHA, {
   breadcrumbName: 'Reiniciar Senha',
   menu: ['Configurações', 'Usuários'],
   parent: '/',
-  component: ReiniciarSenha,
+  component: TabsReiniciarSenha,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
