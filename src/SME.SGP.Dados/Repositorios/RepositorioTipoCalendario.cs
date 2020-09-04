@@ -196,6 +196,7 @@ namespace SME.SGP.Dados.Repositorios
             string query = $@"select id, 
 	                                 ano_letivo,
 	                                 nome,
+                                     modalidade,
 	                                 ano_letivo ||' - '|| nome as descricao 
                                 from tipo_calendario tc
                                where UPPER(cast(ano_letivo as varchar)) like UPPER('%{descricao}%') or UPPER(nome) like UPPER('%{descricao}%')
