@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Moq;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -31,19 +32,22 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
                         AnoLetivo = 2020,
                         Descricao = "2020 - Calendário Fundamental",
                         Id = 1,
-                        Nome = "Calendário Fundamental"
+                        Nome = "Calendário Fundamental",
+                        Modalidade = ModalidadeTipoCalendario.FundamentalMedio
                     },
                     new TipoCalendarioBuscaDto{
                         AnoLetivo = 2020,
                         Descricao = "2020 - Calendário Médio",
                         Id = 1,
-                        Nome = "Calendário Médio"
+                        Nome = "Calendário Médio",
+                        Modalidade = ModalidadeTipoCalendario.FundamentalMedio
                     },
                     new TipoCalendarioBuscaDto{
                         AnoLetivo = 2020,
                         Descricao = "2020 - Calendário EJA",
                         Id = 1,
-                        Nome = "Calendário EJA"
+                        Nome = "Calendário EJA",
+                        Modalidade = ModalidadeTipoCalendario.FundamentalMedio
                     }
                 };
 

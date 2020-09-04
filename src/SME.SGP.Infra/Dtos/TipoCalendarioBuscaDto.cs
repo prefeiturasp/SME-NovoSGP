@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
@@ -10,5 +8,6 @@ namespace SME.SGP.Infra
         public string Descricao { get; set; }
         public int AnoLetivo { get; set; }
         public string Nome { get; set; }
+        public ModalidadeTipoCalendario Modalidade { get; set; }
     }
 }
