@@ -8,6 +8,7 @@ import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
+import SelectAutocomplete from '~/componentes/select-autocomplete';
 import { URL_HOME } from '~/constantes/url';
 import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
 import RotasDto from '~/dtos/rotasDto';
@@ -52,6 +53,8 @@ const PeriodoFechamentoReaberturaLista = () => {
   const [filtroValido, setFiltroValido] = useState(false);
   const [filtro, setFiltro] = useState({});
   const [modalidadeTurma, setModalidadeTurma] = useState('');
+  const [listaTipoCalendario, setListaTipoCalendario] = useState([]);
+  const [filtroTipoCalendario, setFiltroTipoCalendario] = useState('');
 
   const criarCampoBimestre = (index, data) => {
     const bimestre = data[index];
@@ -60,8 +63,8 @@ const PeriodoFechamentoReaberturaLista = () => {
         <i className="fas fa-check" />
       </CampoBimestre>
     ) : (
-        <></>
-      );
+      <></>
+    );
   };
 
   const getColunasBimestreAnual = () => {
@@ -190,6 +193,17 @@ const PeriodoFechamentoReaberturaLista = () => {
     consultaTipos();
   }, [usuario.turmaSelecionada.anoLetivo, obterListaTiposCalAnoLetivo]);
 
+  useEffect(() => {
+    (async () => {
+      const {
+        data,
+      } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
+        tipoCalendarioSelecionado
+      );
+      setListaTipoCalendario(data);
+    })();
+  }, [tipoCalendarioSelecionado]);
+
   const onClickVoltar = () => {
     history.push(URL_HOME);
   };
@@ -278,7 +292,29 @@ const PeriodoFechamentoReaberturaLista = () => {
   const onChangeDre = dreId => {
     setUeSelecionada('');
     setDreSelecionada(dreId);
-  }
+  };
+
+  const selecionaTipoCalendario = id => {
+    if (Number(id) || !id) {
+      console.log('id ==>', id);
+      const tipo = listaTipoCalendarioEscolar?.find(t => t.id === id);
+      const value =
+        tipo?.modalidade === modalidadeTipoCalendario.FUNDAMENTAL_MEDIO
+          ? getColunasBimestreAnual
+          : getColunasBimestreSemestral;
+      setColunasBimestre(value);
+      setFiltroTipoCalendario(id);
+      setTipoCalendarioSelecionado(id);
+      return;
+    }
+    setTipoCalendarioSelecionado(undefined);
+  };
+
+  const filtraTipoCalendario = (item, texto) => {
+    return (
+      item.descricao.toLowerCase().indexOf(texto) > -1 || item.id === texto
+    );
+  };
 
   return (
     <>
@@ -331,7 +367,7 @@ const PeriodoFechamentoReaberturaLista = () => {
                 <div className="col-md-12 mb-2">
                   <Loader loading={carregandoTipos} tip="">
                     <div style={{ maxWidth: '300px' }}>
-                      <SelectComponent
+                      {/* <SelectComponent
                         name="tipoCalendarioId"
                         id="tipoCalendarioId"
                         lista={listaTipoCalendarioEscolar}
@@ -341,6 +377,22 @@ const PeriodoFechamentoReaberturaLista = () => {
                         valueSelect={tipoCalendarioSelecionado}
                         disabled={desabilitarTipoCalendario}
                         placeholder="Selecione um tipo de calendário"
+                      /> */}
+                      <SelectAutocomplete
+                        hideLabel
+                        showList
+                        placeholder="Selecione um tipo de calendário"
+                        className="col-md-12"
+                        name="tipoCalendarioId"
+                        id="tipoCalendarioId"
+                        lista={listaTipoCalendario}
+                        // disabled={!permissoesTela.podeConsultar}
+                        valueField="id"
+                        textField="descricao"
+                        onSelect={id => selecionaTipoCalendario(id)}
+                        onChange={id => selecionaTipoCalendario(id)}
+                        value={filtroTipoCalendario}
+                        filtro={filtraTipoCalendario}
                       />
                     </div>
                   </Loader>
@@ -395,8 +447,8 @@ const PeriodoFechamentoReaberturaLista = () => {
                       filtroEhValido={filtroValido}
                     />
                   ) : (
-                      ''
-                    )}
+                    ''
+                  )}
                 </div>
               </div>
             </Form>
