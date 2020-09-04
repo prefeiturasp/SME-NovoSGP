@@ -173,16 +173,8 @@ namespace SME.SGP.Aplicacao
                                                                                                          notasConselhoClasseAluno,
                                                                                                          notasFechamentoAluno,
                                                                                                          disciplinasComRegencia.Where(a => a.Regencia).ToList());
-                    }
-                    //    conselhoClasseAlunoNotas.ComponenteRegencia = await ObterNotasFrequenciaRegencia(disciplina.Descricao,
-                    //                                                                                     disciplina.Codigo,
-                    //                                                                                     frequenciaAluno,
-                    //                                                                                     fechamentoTurma.PeriodoEscolar,
-                    //                                                                                     fechamentoTurma.Turma,
-                    //                                                                                     notasConselhoClasseAluno,
-                    //                                                                                     notasFechamentoAluno);
-                    //else
-                    conselhoClasseAlunoNotas.ComponentesCurriculares.Add(ObterNotasFrequenciaComponente(disciplina.Nome,
+                    }else
+                        conselhoClasseAlunoNotas.ComponentesCurriculares.Add(ObterNotasFrequenciaComponente(disciplina.Nome,
                                                                                                             disciplina.CodigoComponenteCurricular,
                                                                                                             frequenciaAluno,
                                                                                                             fechamentoTurma.PeriodoEscolar,
