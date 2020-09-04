@@ -3,11 +3,11 @@ using SME.SGP.Infra.Dtos.EscolaAqui;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SolicitarReiniciarSenhaCommand : IRequest<RespostaSolicitarReiniciarSenhaDto>
+    public class SolicitarReiniciarSenhaEscolaAquiCommand : IRequest<RespostaSolicitarReiniciarSenhaEscolaAquiDto>
     {
         public string Cpf { get; set; }
 
-        public SolicitarReiniciarSenhaCommand(string cpf)
+        public SolicitarReiniciarSenhaEscolaAquiCommand(string cpf)
         {
             Cpf = cpf;
         }
