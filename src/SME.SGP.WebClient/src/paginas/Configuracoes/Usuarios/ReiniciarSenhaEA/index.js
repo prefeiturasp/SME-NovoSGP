@@ -44,6 +44,7 @@ export default function ReiniciarSenhaEA() {
   const [exibirModalReiniciarSenha, setExibirModalReiniciarSenha] = useState(
     false
   );
+  const [buscaCPF, setBuscaCPF] = useState('');
   const [
     exibirModalMensagemReiniciarSenha,
     setExibirModalMensagemReiniciarSenha,
@@ -84,23 +85,18 @@ export default function ReiniciarSenhaEA() {
     })
   );
 
-  const onClickFiltrar = async () => {
+  const onClickBuscaUsuarioPorCPF = async () => {
     if (!permissoesTela.podeConsultar) return;
 
     if (dreSelecionada) {
-      const parametrosPost = {
-        codigoDRE: dreSelecionada,
-        codigoUE: ueSelecionada,
-        nomeDoUsuario: nomeUsuarioSelecionado,
-      };
-      const lista = await api
-        .post(`v1/unidades-escolares/funcionarios`, parametrosPost)
+      const listaDeUsuarios = await api
+        .get(`v1/escola-aqui/usuarios/${buscaCPF}`)
         .catch(() => {
           setListaUsuario([]);
         });
-      if (lista && lista.data) {
+      if (listaDeUsuarios && listaDeUsuarios.data) {
         setListaUsuario([]);
-        setListaUsuario(dataMock);
+        setListaUsuario(listaDeUsuarios);
       } else {
         setListaUsuario([]);
       }
@@ -110,12 +106,20 @@ export default function ReiniciarSenhaEA() {
   };
 
   const reiniciarSenha = async linha => {
+    // PUT /api/v1/Autenticacao/Senha/ReiniciarSenha
+    /**
+     * {
+     *  cpf: '33344120832'
+     * }
+     */
+
+    console.log('linha --> ', linha);
+
     const parametros = {
-      dreCodigo: dreSelecionada,
-      ueCodigo: ueSelecionada,
+      // dreCodigo: dreSelecionada,
+      // ueCodigo: ueSelecionada,
     };
 
-    let deveAtualizarEmail = false;
     setCarregando(true);
     await api
       .put(`v1/autenticacao/${linha.codigoRf}/reiniciar-senha`, parametros)
@@ -124,20 +128,11 @@ export default function ReiniciarSenhaEA() {
         setMensagemSenhaAlterada(resposta.data.mensagem);
       })
       .catch(error => {
-        const { deveAtualizarEmai } = error.response.data;
         if (error && error.response && error.response.data) {
-          deveAtualizarEmail = deveAtualizarEmai;
+          console.log(error.response.data);
         }
         setCarregando(false);
       });
-    if (deveAtualizarEmail) {
-      setEmailUsuarioSelecionado('');
-      setSemEmailCadastrado(true);
-      setExibirModalReiniciarSenha(true);
-    } else {
-      setSemEmailCadastrado(false);
-      onClickFiltrar();
-    }
     setCarregando(false);
   };
 
@@ -234,8 +229,8 @@ export default function ReiniciarSenhaEA() {
     setUeSelecionada(ue);
   };
 
-  const onChangeNomeUsuario = nomeUsuario => {
-    setNomeUsuarioSelecionado(nomeUsuario.target.value);
+  const onChangeBuscaCPF = cpfUsuario => {
+    setBuscaCPF(cpfUsuario.target.value);
   };
 
   const carregarUes = useCallback(
@@ -329,11 +324,11 @@ export default function ReiniciarSenhaEA() {
       <div className="row mb-3">
         <div className="col-sm-12 col-md-12 col-lg-10 col-xl-11">
           <CampoTexto
-            label="Login"
+            label="CPF"
             placeholder="Digite o CPF"
-            onChange={onChangeNomeUsuario}
+            onChange={onChangeBuscaCPF}
             desabilitado={!permissoesTela.podeConsultar}
-            value={nomeUsuarioSelecionado}
+            value={buscaCPF}
           />
         </div>
 
@@ -344,7 +339,7 @@ export default function ReiniciarSenhaEA() {
             disabled={!permissoesTela.podeConsultar}
             border
             className="text-center d-block mt-4 float-right w-100"
-            onClick={onClickFiltrar}
+            onClick={onClickBuscaUsuarioPorCPF}
           />
         </div>
       </div>
