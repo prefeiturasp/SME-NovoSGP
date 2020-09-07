@@ -161,12 +161,10 @@ namespace SME.SGP.Aplicacao
             if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
                 throw new NegocioException("Disciplina da aula não encontrada");
 
-            var anotacoesTurma = Enumerable.Empty<string>();
             var ausencias = Enumerable.Empty<RegistroAusenciaAluno>();
             var frequenciaTurma = Enumerable.Empty<FrequenciaAluno>();
             if (disciplinaAula.FirstOrDefault().RegistraFrequencia)
             {
-                anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoNaAulaQuery(aulaId));
                 ausencias = await servicoFrequencia.ObterListaAusenciasPorAula(aulaId);
                 frequenciaTurma = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorTurma(aula.TurmaId, aula.DisciplinaId, bimestre.Id, TipoFrequenciaAluno.PorDisciplina);
             }
