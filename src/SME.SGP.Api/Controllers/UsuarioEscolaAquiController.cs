@@ -21,14 +21,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await solicitarReiniciarSenhaEscolaAquiUseCase.Executar(solicitarReiniciarSenhaDto.Cpf));
         }
 
-        [HttpGet("{cpf}")]
+        [HttpGet("dre/{codigoDre}/ue/{codigoUe}/cpf/{cpf}")]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Authorize(Policy = "Bearer")]
-        public async Task<IActionResult> ObterUsuarioPorCpf(string cpf, [FromServices] IObterUsuarioPorCpfUseCase obterUsuarioPorCpfUseCase)
+        public async Task<IActionResult> ObterUsuarioPorCpf(string codigoDre, long codigoUe, string cpf, [FromServices] IObterUsuarioPorCpfUseCase obterUsuarioPorCpfUseCase)
         {
-            return Ok(await obterUsuarioPorCpfUseCase.Executar(cpf));
+            return Ok(await obterUsuarioPorCpfUseCase.Executar(codigoDre, codigoUe, cpf));
         }
     }
 }
