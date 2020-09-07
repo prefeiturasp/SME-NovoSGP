@@ -1,12 +1,13 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAluno : IServicoAluno
     {
-        public MarcadorFrequenciaDto ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolar bimestre, bool ehInfantil = false)
+        public async Task<MarcadorFrequenciaDto> ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolar bimestre, bool ehInfantil = false)
         {
             MarcadorFrequenciaDto marcador = null;
 

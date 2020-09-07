@@ -71,14 +71,14 @@ namespace SME.SGP.Dominio.Servicos
             await repositorioFrequencia.ExcluirFrequenciaAula(aulaId);
         }
 
-        public IEnumerable<RegistroAusenciaAluno> ObterListaAusenciasPorAula(long aulaId)
+        public async Task<IEnumerable<RegistroAusenciaAluno>> ObterListaAusenciasPorAula(long aulaId)
         {
-            return repositorioFrequencia.ObterListaFrequenciaPorAula(aulaId);
+            return await repositorioFrequencia.ObterListaFrequenciaPorAula(aulaId);
         }
 
-        public RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId)
+        public async Task<RegistroFrequencia> ObterRegistroFrequenciaPorAulaId(long aulaId)
         {
-            return repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
+            return await repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
         }
 
         public async Task Registrar(long aulaId, IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos)
@@ -98,7 +98,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var alunos = await ObterAlunos(aula);
 
-            var registroFrequencia = repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
+            var registroFrequencia = await repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
             var alteracaoRegistro = registroFrequencia != null;
 
             unitOfWork.IniciarTransacao();
