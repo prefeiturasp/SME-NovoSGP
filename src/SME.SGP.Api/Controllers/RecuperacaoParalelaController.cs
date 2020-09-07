@@ -93,5 +93,20 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
+        [HttpGet("anos-letivos")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaPeriodoPAPDto>), 200)]
+        public async Task<IActionResult> ObterAnosLetivos([FromServices]IObterAnosLetivosPAPUseCase obterAnosLetivosPAPUseCase)
+        {
+            var retorno = await obterAnosLetivosPAPUseCase.Executar();
+
+            if (retorno == null || !retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
     }
 }
