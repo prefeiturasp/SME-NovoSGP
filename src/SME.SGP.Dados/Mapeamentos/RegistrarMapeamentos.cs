@@ -120,6 +120,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new DiarioBordoObservacaoMap());
                config.AddMap(new DevolutivaMap());
                config.AddMap(new CartaIntencoesObservacaoMap());
+               config.AddMap(new NotificacaoCartaIntencoesObservacaoMap());
                config.ForDommel();
            });
         }
