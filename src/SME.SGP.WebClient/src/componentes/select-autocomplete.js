@@ -37,6 +37,8 @@ const SelectAutocomplete = ({
   className,
   filtro,
   id,
+  isHandleSearch,
+  handleSearch,
   hideLabel,
   label,
   lista,
@@ -69,6 +71,8 @@ const SelectAutocomplete = ({
 
   const showDataSource = showList ? lista.map(item => item[textField]) : [];
 
+  const onSearch = isHandleSearch ? handleSearch : filtrar;
+
   useEffect(() => {
     if (!value) {
       setItensFiltrados([]);
@@ -82,7 +86,7 @@ const SelectAutocomplete = ({
       {!hideLabel && <Label text={label} control={name} />}
       <AutoComplete
         className={className}
-        onSearch={filtrar}
+        onSearch={onSearch}
         placeholder={placeholder}
         dataSource={showDataSource}
         name={name}
@@ -101,6 +105,8 @@ SelectAutocomplete.defaultProps = {
   className: '',
   filtro: () => {},
   id: '',
+  isHandleSearch: false,
+  handleSearch: () => {},
   hideLabel: false,
   label: '',
   lista: [],
@@ -118,6 +124,8 @@ SelectAutocomplete.propTypes = {
   className: PropTypes.string,
   filtro: PropTypes.func,
   id: PropTypes.string,
+  isHandleSearch: PropTypes.bool,
+  handleSearch: PropTypes.func,
   hideLabel: PropTypes.bool,
   label: PropTypes.string,
   lista: PropTypes.instanceOf(Array),
