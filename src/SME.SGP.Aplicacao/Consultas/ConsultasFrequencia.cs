@@ -131,9 +131,7 @@ namespace SME.SGP.Aplicacao
             if (aula == null)
                 throw new NegocioException("Aula não encontrada.");
 
-            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
-            if (alunosDaTurma == null || !alunosDaTurma.Any())
-                throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
+            var consultaAlunosDaTurma = servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
             
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(aula.TurmaId);
             if (turma == null)
@@ -172,6 +170,10 @@ namespace SME.SGP.Aplicacao
                 ausencias = await servicoFrequencia.ObterListaAusenciasPorAula(aulaId);
                 frequenciaTurma = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorTurma(aula.TurmaId, aula.DisciplinaId, bimestre.Id, TipoFrequenciaAluno.PorDisciplina);
             }
+
+            var alunosDaTurma = await consultaAlunosDaTurma;
+            if (alunosDaTurma == null || !alunosDaTurma.Any())
+                throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
             foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
             {
