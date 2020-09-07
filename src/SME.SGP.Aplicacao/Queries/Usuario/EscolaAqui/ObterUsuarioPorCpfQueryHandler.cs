@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.EscolaAqui;
 using System;
 using System.Net;
@@ -30,7 +31,12 @@ namespace SME.SGP.Aplicacao
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<UsuarioEscolaAquiDto>(json);
             }
-            else throw new NegocioException("Usuário não encontrado");
+            else
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                var respostaApi = JsonConvert.DeserializeObject<RespostaApi>(json);
+                throw new NegocioException(respostaApi.Erros[0].ToString());
+            }
         }
     }
 }
