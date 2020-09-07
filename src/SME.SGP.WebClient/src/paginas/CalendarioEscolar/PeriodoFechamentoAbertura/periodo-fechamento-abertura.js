@@ -2,29 +2,45 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Form, Formik, FieldArray } from 'formik';
 import * as Yup from 'yup';
-import { DreDropDown, UeDropDown } from 'componentes-sgp';
 import moment from 'moment';
-import Cabecalho from '~/componentes-sgp/cabecalho';
-import Button from '~/componentes/button';
-import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
-import SelectComponent from '~/componentes/select';
+import shortid from 'shortid';
+
 import {
-  BoxTextoBimetre,
+  Auditoria,
+  Button,
+  CampoData,
+  Card,
+  Colors,
+  Loader,
+  momentSchema,
+  SelectComponent,
+} from '~/componentes';
+import {
+  Cabecalho,
+  DreDropDown,
+  RegistroMigrado,
+  UeDropDown,
+} from '~/componentes-sgp';
+
+import { URL_HOME } from '~/constantes';
+
+import { periodo, RotasDto } from '~/dtos';
+
+import {
+  api,
+  confirmar,
+  erros,
+  history,
+  ServicoCalendarios,
+  ServicoPeriodoFechamento,
+  sucesso,
+  verificaSomenteConsulta,
+} from '~/servicos';
+
+import {
+  BoxTextoBimestre,
   CaixaBimestre,
 } from './periodo-fechamento-abertura.css';
-import api from '~/servicos/api';
-import { CampoData, Loader, Auditoria, momentSchema } from '~/componentes';
-import history from '~/servicos/history';
-import { URL_HOME } from '~/constantes/url';
-import { erros, sucesso, confirmar } from '~/servicos/alertas';
-import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
-import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import periodo from '~/dtos/periodo';
-import shortid from 'shortid';
-import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 
 const PeriodoFechamentoAbertura = () => {
   const usuarioLogado = useSelector(store => store.usuario);
@@ -479,7 +495,7 @@ const PeriodoFechamentoAbertura = () => {
       <div className="row" key={`key-${indice}`}>
         <div className="col-md-6 mb-2">
           <CaixaBimestre>
-            <BoxTextoBimetre>{descricao}</BoxTextoBimetre>
+            <BoxTextoBimestre>{descricao}</BoxTextoBimestre>
           </CaixaBimestre>
         </div>
         <div className="col-md-3 mb-2">
