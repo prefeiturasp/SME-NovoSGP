@@ -13,7 +13,7 @@ import {
 } from '~/componentes';
 import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
 
-import { URL_HOME } from '~/constantes/url';
+import { URL_HOME } from '~/constantes';
 
 import { modalidadeTipoCalendario, RotasDto } from '~/dtos';
 
