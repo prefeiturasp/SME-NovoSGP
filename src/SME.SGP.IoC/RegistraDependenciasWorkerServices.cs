@@ -281,6 +281,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
             services.TryAddScopedWorkerService<IRepositorioCartaIntencoes, RepositorioCartaIntencoes>();
             services.TryAddScopedWorkerService<IRepositorioCartaIntencoesObservacao, RepositorioCartaIntencoesObservacao>();
+            services.TryAddScopedWorkerService<IRepositorioNotificacaoCartaIntencoesObservacao, RepositorioNotificacaoCartaIntencoesObservacao>();
 
         }
 

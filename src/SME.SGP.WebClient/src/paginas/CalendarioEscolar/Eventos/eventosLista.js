@@ -44,6 +44,7 @@ const EventosLista = ({ match }) => {
   const [eventosSelecionados, setEventosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
   const [selecionouCalendario, setSelecionouCalendario] = useState(false);
+  const [tipoCalendarioId, setTipoCalendarioId] = useState(undefined);
 
   const [carregandoTipos, setCarregandoTipos] = useState(false);
 
@@ -188,14 +189,14 @@ const EventosLista = ({ match }) => {
       match.params &&
       match.params.tipoCalendarioId
     ) {
-      const { tipoCalendarioId } = match.params;
       const temTipoParaSetar = listaCalendarioEscolar.find(
-        item => item.id == tipoCalendarioId
+        item => item.id ==  match.params.tipoCalendarioId
       );
       if (temTipoParaSetar) {
-        refForm.setFieldValue('tipoCalendarioId', tipoCalendarioId);
+        refForm.setFieldValue('tipoCalendarioId', match.params.tipoCalendarioId);
         setSelecionouCalendario(true);
-        filtrar('tipoCalendarioId', tipoCalendarioId);
+        setTipoCalendarioId(match.params.tipoCalendarioId);
+        filtrar('tipoCalendarioId', match.params.tipoCalendarioId);
       }
     }
   }, [match, listaCalendarioEscolar, refForm]);
@@ -272,7 +273,6 @@ const EventosLista = ({ match }) => {
       )
         return;
 
-      const { tipoCalendarioId } = refForm.getFormikContext().values;
       const calendarioSelecionado = listaCalendarioEscolar.find(
         item => item.id === tipoCalendarioId
       );
@@ -308,8 +308,8 @@ const EventosLista = ({ match }) => {
         setListaUe(ues.conteudo);
       }
     };
-    if (dreSelecionada) listarUes();
-  }, [dreSelecionada, selecionouCalendario]);
+    if (dreSelecionada && tipoCalendarioId) listarUes();
+  }, [dreSelecionada, tipoCalendarioId]);
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
@@ -421,28 +421,36 @@ const EventosLista = ({ match }) => {
     }
   };
 
-  const onChangeCalendarioId = (tipoCalendarioId, form) => {
-    if (tipoCalendarioId) {
+  const onChangeCalendarioId = (calendarioId, form) => {
+    if (calendarioId) {
       setSelecionouCalendario(true);
-      form.setFieldValue('dreId', undefined);
-      form.setFieldValue('ueId', undefined);
+      setTipoCalendarioId(calendarioId);
       const filtroAtual = filtro;
-      filtroAtual.dreId = '';
-      filtroAtual.ueId = '';
+      if (listaDre && listaDre.length > 1) {
+        form.setFieldValue('dreId', undefined);
+        form.setFieldValue('ueId', undefined);
+        setDreSelecionada(undefined);
+        filtroAtual.dreId = '';
+        filtroAtual.ueId = '';
+      } else {
+        filtroAtual.dreId = form.values.dreId;
+        filtroAtual.ueId = form.values.ueId;
+        setDreSelecionada(form.values.dreId);
+      }
       filtroAtual.ehTodasDres = false;
       filtroAtual.ehTodasUes = false;
-      filtroAtual.tipoCalendarioId = tipoCalendarioId;
+      filtroAtual.tipoCalendarioId = calendarioId;
       setFiltro({ ...filtroAtual });
       validarFiltrar();
-      setDreSelecionada(undefined);
       setBreadcrumbManual(
-        `${match.url}/${tipoCalendarioId}`,
+        `${match.url}/${calendarioId}`,
         '',
         '/calendario-escolar/eventos'
       );
     } else {
       setFiltroValido(false);
       setSelecionouCalendario(false);
+      setTipoCalendarioId(undefined);
       setDreSelecionada([]);
       setListaUe([]);
       setCampoUeDesabilitado(true);
@@ -553,6 +561,7 @@ const EventosLista = ({ match }) => {
                       onChange={valor => onChangeCalendarioId(valor, form)}
                       placeholder="Selecione um calendário"
                       form={form}
+                      allowClear={false}
                     />
                   </Loader>
                 </div>
