@@ -84,14 +84,6 @@ const confirmacao = (
   });
 };
 
-const erroMensagem = (titulo, texto) => {
-  error({
-    title: titulo,
-    content: <div>{texto ? texto.map(t => <p>{t}</p>) : null}</div>,
-    type: 'error',
-  });
-};
-
 const confirmar = (
   titulo,
   texto,

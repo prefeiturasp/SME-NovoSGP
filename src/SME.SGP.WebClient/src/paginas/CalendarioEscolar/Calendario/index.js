@@ -44,6 +44,7 @@ const CalendarioEscolar = () => {
   const [carregandoUes, setCarregandoUes] = useState(false);
   const [imprimindo, setImprimindo] = useState(false);
   const [podeImprimir, setPodeImprimir] = useState(false);
+  const [unidadesEscolares, setUnidadesEscolares] = useState([]);
 
   const obterTiposCalendario = useCallback(
     async modalidades => {
@@ -222,6 +223,8 @@ const CalendarioEscolar = () => {
   const [dres, setDres] = useState([]);
 
   const obterDres = () => {
+    setUnidadeEscolarSelecionada(undefined);
+    setUnidadesEscolares([]);
     setCarregandoDres(true);
     api
       .get('v1/abrangencias/false/dres')
@@ -260,6 +263,8 @@ const CalendarioEscolar = () => {
     if (tipoCalendarioSelecionado) {
       consultarDiasLetivos();
       obterDres();
+      setDreSelecionada(undefined);
+      setDres([]);
     } else {
       setDiasLetivos();
       setDreSelecionada();
@@ -307,7 +312,6 @@ const CalendarioEscolar = () => {
   const unidadesEscolaresStore = useSelector(
     state => state.filtro.unidadesEscolares
   );
-  const [unidadesEscolares, setUnidadesEscolares] = useState([]);
 
   const obterUnidadesEscolares = dre => {
     setCarregandoUes(true);
