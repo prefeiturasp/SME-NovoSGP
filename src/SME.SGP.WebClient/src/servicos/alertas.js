@@ -84,6 +84,14 @@ const confirmacao = (
   });
 };
 
+const erroMensagem = (titulo, texto) => {
+  error({
+    title: titulo,
+    content: <div>{texto ? texto.map(t => <p>{t}</p>) : null}</div>,
+    type: 'error',
+  });
+};
+
 const confirmar = (
   titulo,
   texto,
@@ -92,7 +100,7 @@ const confirmar = (
   textoCancelar,
   primeiroExibirTextoNegrito
 ) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _) => {
     store.dispatch(
       alertaConfirmar(
         titulo,
