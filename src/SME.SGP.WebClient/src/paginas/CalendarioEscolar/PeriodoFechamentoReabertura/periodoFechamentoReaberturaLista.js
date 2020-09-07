@@ -165,43 +165,48 @@ const PeriodoFechamentoReaberturaLista = () => {
     [usuario.turmaSelecionada]
   );
 
-  useEffect(() => {
-    async function consultaTipos() {
-      setCarregandoTipos(true);
+  // useEffect(() => {
+  //   async function consultaTipos() {
+  //     setCarregandoTipos(true);
 
-      const listaTipo = await ServicoCalendarios.obterTiposCalendario(
-        anoLetivo
-      );
-      if (listaTipo && listaTipo.data && listaTipo.data.length) {
-        listaTipo.data.map(item => {
-          item.id = String(item.id);
-          item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
-        });
-        setListaTipoCalendarioEscolar(listaTipo.data);
-        if (listaTipo.data.length === 1) {
-          setTipoCalendarioSelecionado(String(listaTipo.data[0].id));
-          setDesabilitarTipoCalendario(true);
-        } else {
-          setDesabilitarTipoCalendario(false);
-          setTipoCalendarioSelecionado(undefined);
-        }
-      } else {
-        setListaTipoCalendarioEscolar([]);
-      }
-      setCarregandoTipos(false);
-    }
-    consultaTipos();
-  }, [usuario.turmaSelecionada.anoLetivo, obterListaTiposCalAnoLetivo]);
+  //     const listaTipo = await ServicoCalendarios.obterTiposCalendario(
+  //       anoLetivo
+  //     );
+  //     if (listaTipo && listaTipo.data && listaTipo.data.length) {
+  //       listaTipo.data.map(item => {
+  //         item.id = String(item.id);
+  //         item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
+  //       });
+  //       setListaTipoCalendarioEscolar(listaTipo.data);
+  //       if (listaTipo.data.length === 1) {
+  //         setTipoCalendarioSelecionado(String(listaTipo.data[0].id));
+  //         setDesabilitarTipoCalendario(true);
+  //       } else {
+  //         setDesabilitarTipoCalendario(false);
+  //         setTipoCalendarioSelecionado(undefined);
+  //       }
+  //     } else {
+  //       setListaTipoCalendarioEscolar([]);
+  //     }
+  //     setCarregandoTipos(false);
+  //   }
+  //   consultaTipos();
+  // }, [usuario.turmaSelecionada.anoLetivo, obterListaTiposCalAnoLetivo]);
 
   useEffect(() => {
-    (async () => {
+    async function consultaTipoCalendario() {
       const {
         data,
       } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
         tipoCalendarioSelecionado
       );
       setListaTipoCalendario(data);
-    })();
+    }
+    consultaTipoCalendario();
+
+    return () => {
+      setListaTipoCalendario([]);
+    };
   }, [tipoCalendarioSelecionado]);
 
   const onClickVoltar = () => {
@@ -294,17 +299,16 @@ const PeriodoFechamentoReaberturaLista = () => {
     setDreSelecionada(dreId);
   };
 
-  const selecionaTipoCalendario = id => {
-    if (Number(id) || !id) {
-      console.log('id ==>', id);
-      const tipo = listaTipoCalendarioEscolar?.find(t => t.id === id);
+  const selecionaTipoCalendario = descricao => {
+    const tipo = listaTipoCalendario?.find(t => t.descricao === descricao);
+    if (Number(tipo?.id) || !tipo?.id) {
       const value =
         tipo?.modalidade === modalidadeTipoCalendario.FUNDAMENTAL_MEDIO
           ? getColunasBimestreAnual
           : getColunasBimestreSemestral;
       setColunasBimestre(value);
-      setFiltroTipoCalendario(id);
-      setTipoCalendarioSelecionado(id);
+      setFiltroTipoCalendario(descricao);
+      setTipoCalendarioSelecionado(tipo?.id);
       return;
     }
     setTipoCalendarioSelecionado(undefined);
@@ -389,8 +393,8 @@ const PeriodoFechamentoReaberturaLista = () => {
                         // disabled={!permissoesTela.podeConsultar}
                         valueField="id"
                         textField="descricao"
-                        onSelect={id => selecionaTipoCalendario(id)}
-                        onChange={id => selecionaTipoCalendario(id)}
+                        onSelect={selecionaTipoCalendario}
+                        onChange={selecionaTipoCalendario}
                         value={filtroTipoCalendario}
                         filtro={filtraTipoCalendario}
                       />
