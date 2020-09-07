@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             var httpClient = httpClientFactory.CreateClient("servicoAcompanhamentoEscolar");
 
-            var resposta = await httpClient.GetAsync($"/api/v1/usuario/{request.Cpf}");
+            var resposta = await httpClient.GetAsync($"/api/v1/usuario/dre/{request.CodigoDre}/ue/{request.CodigoUe}/cpf/{request.Cpf}");
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
