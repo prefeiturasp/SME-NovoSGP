@@ -20,6 +20,7 @@ import localizadorEstudante from './localizadorEstudante/reducers';
 import observacoesUsuario from './observacoesUsuario/reducers';
 import cartaIntencoes from './cartaIntencoes/reducers';
 import devolutivas from './devolutivas/reducers';
+import dashboard from './dashboard/reducers';
 
 const reducers = combineReducers({
   navegacao,
@@ -42,6 +43,7 @@ const reducers = combineReducers({
   observacoesUsuario,
   cartaIntencoes,
   devolutivas,
+  dashboard,
 });
 
 const rootReducer = (state, action) => {
