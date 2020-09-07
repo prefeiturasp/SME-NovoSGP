@@ -20,10 +20,10 @@ import { modalidadeTipoCalendario, RotasDto } from '~/dtos';
 import {
   confirmar,
   erros,
-  sucesso,
   history,
   ServicoCalendarios,
   ServicoFechamentoReabertura,
+  sucesso,
   verificaSomenteConsulta,
 } from '~/servicos';
 
