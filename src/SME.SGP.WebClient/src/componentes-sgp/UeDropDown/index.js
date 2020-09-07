@@ -61,7 +61,7 @@ function UeDropDown({
     } else {
       setListaUes([]);
     }
-  }, [dreId, opcaoTodas, url]);
+  }, [dreId, opcaoTodas, url, modalidade]);
 
   useEffect(() => {
     let valorUeId = undefined;
