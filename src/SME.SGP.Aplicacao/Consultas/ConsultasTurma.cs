@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
                 var dadosBasicos = (AlunoDadosBasicosDto)dadoAluno;
                 // se informado periodo escolar carrega marcadores no periodo
                 if (periodoEscolar != null)
-                    dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolar);
+                    dadosBasicos.Marcador = await servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolar);
 
                 dadosAlunosDto.Add(dadosBasicos);
             }
