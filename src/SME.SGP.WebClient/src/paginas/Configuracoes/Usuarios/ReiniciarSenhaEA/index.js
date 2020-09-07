@@ -17,21 +17,6 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import { erros, confirmar } from '~/servicos/alertas';
 
-const dataMock = [
-  {
-    nomeDoUsuario: 'DIEGO COLLARES',
-    cpfDoUsuario: '33344120832',
-  },
-  {
-    nomeDoUsuario: 'CARLOS SILVA JUNIOR',
-    cpfDoUsuario: '44455630932',
-  },
-  {
-    nomeDoUsuario: 'CAIO GOLDMAN MIZHX',
-    cpfDoUsuario: '098732423487',
-  },
-];
-
 export default function ReiniciarSenhaEA() {
   const [linhaSelecionada, setLinhaSelecionada] = useState({});
   const [listaUsuario, setListaUsuario] = useState([]);
@@ -39,7 +24,6 @@ export default function ReiniciarSenhaEA() {
   const [dreSelecionada, setDreSelecionada] = useState('');
   const [listaUes, setListaUes] = useState([]);
   const [ueSelecionada, setUeSelecionada] = useState('');
-  const [nomeUsuarioSelecionado, setNomeUsuarioSelecionado] = useState('');
   const [emailUsuarioSelecionado, setEmailUsuarioSelecionado] = useState('');
   const [exibirModalReiniciarSenha, setExibirModalReiniciarSenha] = useState(
     false
@@ -106,15 +90,6 @@ export default function ReiniciarSenhaEA() {
   };
 
   const reiniciarSenha = async linha => {
-    // PUT /api/v1/Autenticacao/Senha/ReiniciarSenha
-    /**
-     * {
-     *  cpf: '33344120832'
-     * }
-     */
-
-    console.log('linha --> ', linha);
-
     const parametros = {
       // dreCodigo: dreSelecionada,
       // ueCodigo: ueSelecionada,
@@ -129,7 +104,7 @@ export default function ReiniciarSenhaEA() {
       })
       .catch(error => {
         if (error && error.response && error.response.data) {
-          console.log(error.response.data);
+          // console.log(error.response.data);
         }
         setCarregando(false);
       });
