@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
-    public class DiarioBordoObservacaoNotificacao : EntidadeBase
+    public class DiarioBordoObservacaoNotificacao
     {
         public DiarioBordoObservacaoNotificacao(long idObservacao, long idNotificacao)
         {
