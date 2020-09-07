@@ -667,13 +667,21 @@ const DiarioBordo = () => {
                       <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                         <PainelCollapse>
                           <PainelCollapse.Painel temBorda header="Devolutivas">
-                            <CampoTexto
-                              id="editor-devolutivas"
-                              name="devolutivas"
-                              type="textarea"
-                              form={form}
-                              desabilitado
-                            />
+                            {form && form.values && form.values.devolutivas ? (
+                              <Editor
+                                label="Somente leitura"
+                                form={form}
+                                name="devolutivas"
+                                id="editor-devolutivas"
+                                removerToolbar
+                                desabilitar
+                              />
+                            ) : (
+                              <div className="text-center p-2">
+                                Não há devolutiva registrada para este diário de
+                                bordo
+                              </div>
+                            )}
                           </PainelCollapse.Painel>
                         </PainelCollapse>
                       </div>
