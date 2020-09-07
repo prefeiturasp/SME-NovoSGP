@@ -341,7 +341,7 @@ const PeriodoFechamentoReaberturaLista = () => {
                       onChange={dreId => {
                         setDreSelecionada(dreId);
                         const tipoSelecionado = listaTipoCalendario.find(
-                          item => item.id == tipoCalendarioSelecionado
+                          item => item.id === tipoCalendarioSelecionado
                         );
                         if (tipoSelecionado && tipoSelecionado.modalidade) {
                           const modalidadeT = ServicoCalendarios.converterModalidade(
