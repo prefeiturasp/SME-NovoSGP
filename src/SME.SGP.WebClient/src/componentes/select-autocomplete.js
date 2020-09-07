@@ -99,7 +99,7 @@ const SelectAutocomplete = ({
 
 SelectAutocomplete.defaultProps = {
   className: '',
-  filtro: '',
+  filtro: () => {},
   id: '',
   hideLabel: false,
   label: '',
@@ -116,11 +116,11 @@ SelectAutocomplete.defaultProps = {
 
 SelectAutocomplete.propTypes = {
   className: PropTypes.string,
-  filtro: PropTypes.string,
+  filtro: PropTypes.func,
   id: PropTypes.string,
   hideLabel: PropTypes.bool,
   label: PropTypes.string,
-  lista: PropTypes.instanceOf(PropTypes.array),
+  lista: PropTypes.instanceOf(Array),
   name: PropTypes.string,
   onChange: PropTypes.func,
   onSelect: PropTypes.func,
