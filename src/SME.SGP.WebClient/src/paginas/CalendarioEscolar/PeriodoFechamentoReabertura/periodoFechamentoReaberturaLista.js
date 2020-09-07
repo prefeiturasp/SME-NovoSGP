@@ -1,25 +1,33 @@
+import React, { useCallback, useEffect, useState } from 'react';
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
-import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ListaPaginada, Loader } from '~/componentes';
+
+import {
+  Button,
+  Card,
+  Colors,
+  ListaPaginada,
+  Loader,
+  SelectAutocomplete,
+} from '~/componentes';
 import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
-import Button from '~/componentes/button';
-import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
-import SelectComponent from '~/componentes/select';
-import SelectAutocomplete from '~/componentes/select-autocomplete';
+
 import { URL_HOME } from '~/constantes/url';
-import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
-import RotasDto from '~/dtos/rotasDto';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
-import history from '~/servicos/history';
-import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
-import ServicoFechamentoReabertura from '~/servicos/Paginas/Calendario/ServicoFechamentoReabertura';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+
+import { modalidadeTipoCalendario, RotasDto } from '~/dtos';
+
+import {
+  confirmar,
+  erros,
+  sucesso,
+  history,
+  ServicoCalendarios,
+  ServicoFechamentoReabertura,
+  verificaSomenteConsulta,
+} from '~/servicos';
 
 import { CampoBimestre } from './periodoFechamentoReaberuraLista.css';
-import modalidade from '~/dtos/modalidade';
 
 const PeriodoFechamentoReaberturaLista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -34,14 +42,8 @@ const PeriodoFechamentoReaberturaLista = () => {
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
-  const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
-    []
-  );
   const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
     undefined
-  );
-  const [desabilitarTipoCalendario, setDesabilitarTipoCalendario] = useState(
-    false
   );
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [idsReaberturasSelecionadas, setIdsReaberturasSelecionadas] = useState(
@@ -54,7 +56,8 @@ const PeriodoFechamentoReaberturaLista = () => {
   const [filtro, setFiltro] = useState({});
   const [modalidadeTurma, setModalidadeTurma] = useState('');
   const [listaTipoCalendario, setListaTipoCalendario] = useState([]);
-  const [filtroTipoCalendario, setFiltroTipoCalendario] = useState('');
+  const [valorTipoCalendario, setValorTipoCalendario] = useState('');
+  const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
 
   const criarCampoBimestre = (index, data) => {
     const bimestre = data[index];
@@ -147,67 +150,27 @@ const PeriodoFechamentoReaberturaLista = () => {
     onFiltrar();
   }, [tipoCalendarioSelecionado, ueSelecionada, dreSelecionada, onFiltrar]);
 
-  const obterListaTiposCalAnoLetivo = useCallback(
-    lista => {
-      if (usuario.turmaSelecionada && usuario.turmaSelecionada.modalidade) {
-        const ehEja = usuario.turmaSelecionada.modalidade == modalidade.EJA;
-        const listaPorAnoLetivoModalidade = lista.filter(item => {
-          if (ehEja) {
-            return item.modalidade == modalidadeTipoCalendario.EJA;
-          }
-          return item.modalidade == modalidadeTipoCalendario.FUNDAMENTAL_MEDIO;
-        });
-        return listaPorAnoLetivoModalidade;
-      }
-
-      return lista.filter(item => item.anoLetivo == anoLetivo);
-    },
-    [usuario.turmaSelecionada]
-  );
-
-  // useEffect(() => {
-  //   async function consultaTipos() {
-  //     setCarregandoTipos(true);
-
-  //     const listaTipo = await ServicoCalendarios.obterTiposCalendario(
-  //       anoLetivo
-  //     );
-  //     if (listaTipo && listaTipo.data && listaTipo.data.length) {
-  //       listaTipo.data.map(item => {
-  //         item.id = String(item.id);
-  //         item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
-  //       });
-  //       setListaTipoCalendarioEscolar(listaTipo.data);
-  //       if (listaTipo.data.length === 1) {
-  //         setTipoCalendarioSelecionado(String(listaTipo.data[0].id));
-  //         setDesabilitarTipoCalendario(true);
-  //       } else {
-  //         setDesabilitarTipoCalendario(false);
-  //         setTipoCalendarioSelecionado(undefined);
-  //       }
-  //     } else {
-  //       setListaTipoCalendarioEscolar([]);
-  //     }
-  //     setCarregandoTipos(false);
-  //   }
-  //   consultaTipos();
-  // }, [usuario.turmaSelecionada.anoLetivo, obterListaTiposCalAnoLetivo]);
-
   useEffect(() => {
-    async function consultaTipoCalendario() {
+    let isSubscribed = true;
+    (async () => {
+      setCarregandoTipos(true);
+
       const {
         data,
       } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
-        tipoCalendarioSelecionado
+        pesquisaTipoCalendario
       );
-      setListaTipoCalendario(data);
-    }
-    consultaTipoCalendario();
+
+      if (isSubscribed) {
+        setListaTipoCalendario(data);
+        setCarregandoTipos(false);
+      }
+    })();
 
     return () => {
-      setListaTipoCalendario([]);
+      isSubscribed = false;
     };
-  }, [tipoCalendarioSelecionado]);
+  }, [pesquisaTipoCalendario]);
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
@@ -238,6 +201,7 @@ const PeriodoFechamentoReaberturaLista = () => {
   const onClickNovo = () => {
     history.push(`/calendario-escolar/periodo-fechamento-reabertura/novo`);
   };
+
   const onClickEditar = item => {
     history.push(
       `/calendario-escolar/periodo-fechamento-reabertura/editar/${item.id}`
@@ -280,25 +244,6 @@ const PeriodoFechamentoReaberturaLista = () => {
     },
   ];
 
-  const onChangeTipoCalendario = id => {
-    if (id) {
-      const tipo = listaTipoCalendarioEscolar.find(t => t.id === id);
-      if (tipo.modalidade === modalidadeTipoCalendario.FUNDAMENTAL_MEDIO) {
-        setColunasBimestre(getColunasBimestreAnual);
-      } else {
-        setColunasBimestre(getColunasBimestreSemestral);
-      }
-      setTipoCalendarioSelecionado(id);
-    } else {
-      setTipoCalendarioSelecionado(undefined);
-    }
-  };
-
-  const onChangeDre = dreId => {
-    setUeSelecionada('');
-    setDreSelecionada(dreId);
-  };
-
   const selecionaTipoCalendario = descricao => {
     const tipo = listaTipoCalendario?.find(t => t.descricao === descricao);
     if (Number(tipo?.id) || !tipo?.id) {
@@ -307,17 +252,15 @@ const PeriodoFechamentoReaberturaLista = () => {
           ? getColunasBimestreAnual
           : getColunasBimestreSemestral;
       setColunasBimestre(value);
-      setFiltroTipoCalendario(descricao);
-      setTipoCalendarioSelecionado(tipo?.id);
-      return;
+      setValorTipoCalendario(descricao);
     }
-    setTipoCalendarioSelecionado(undefined);
+    setTipoCalendarioSelecionado(tipo?.id);
   };
 
-  const filtraTipoCalendario = (item, texto) => {
-    return (
-      item.descricao.toLowerCase().indexOf(texto) > -1 || item.id === texto
-    );
+  const handleSearch = descricao => {
+    if (descricao.length > 3 || descricao.length === 0) {
+      setPesquisaTipoCalendario(descricao);
+    }
   };
 
   return (
@@ -371,32 +314,21 @@ const PeriodoFechamentoReaberturaLista = () => {
                 <div className="col-md-12 mb-2">
                   <Loader loading={carregandoTipos} tip="">
                     <div style={{ maxWidth: '300px' }}>
-                      {/* <SelectComponent
-                        name="tipoCalendarioId"
-                        id="tipoCalendarioId"
-                        lista={listaTipoCalendarioEscolar}
-                        valueOption="id"
-                        valueText="descricaoTipoCalendario"
-                        onChange={id => onChangeTipoCalendario(id)}
-                        valueSelect={tipoCalendarioSelecionado}
-                        disabled={desabilitarTipoCalendario}
-                        placeholder="Selecione um tipo de calendário"
-                      /> */}
                       <SelectAutocomplete
                         hideLabel
                         showList
+                        isHandleSearch
                         placeholder="Selecione um tipo de calendário"
                         className="col-md-12"
                         name="tipoCalendarioId"
                         id="tipoCalendarioId"
                         lista={listaTipoCalendario}
-                        // disabled={!permissoesTela.podeConsultar}
                         valueField="id"
                         textField="descricao"
                         onSelect={selecionaTipoCalendario}
                         onChange={selecionaTipoCalendario}
-                        value={filtroTipoCalendario}
-                        filtro={filtraTipoCalendario}
+                        handleSearch={handleSearch}
+                        value={valorTipoCalendario}
                       />
                     </div>
                   </Loader>
@@ -408,7 +340,7 @@ const PeriodoFechamentoReaberturaLista = () => {
                       form={form}
                       onChange={dreId => {
                         setDreSelecionada(dreId);
-                        const tipoSelecionado = listaTipoCalendarioEscolar.find(
+                        const tipoSelecionado = listaTipoCalendario.find(
                           item => item.id == tipoCalendarioSelecionado
                         );
                         if (tipoSelecionado && tipoSelecionado.modalidade) {
