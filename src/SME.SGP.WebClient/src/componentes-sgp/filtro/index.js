@@ -976,15 +976,13 @@ const Filtro = () => {
 
   useEffect(() => {
     if (!alternarFocoBusca) {
-      setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo || undefined);
-      setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade || undefined);
-      setPeriodoSelecionado(turmaUsuarioSelecionada.periodo || undefined);
-      setDreSelecionada(turmaUsuarioSelecionada.dre || undefined);
-      setUnidadeEscolarSelecionada(
-        turmaUsuarioSelecionada.unidadeEscolar || undefined
-      );
-      setTurmaSelecionada(turmaUsuarioSelecionada.turma || undefined);
-      setTextoAutocomplete(turmaUsuarioSelecionada.desc || undefined);
+      setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
+      setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade);
+      setPeriodoSelecionado(turmaUsuarioSelecionada.periodo);
+      setDreSelecionada(turmaUsuarioSelecionada.dre);
+      setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
+      setTurmaSelecionada(turmaUsuarioSelecionada.turma);
+      setTextoAutocomplete(turmaUsuarioSelecionada.desc);
       setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
 
       if (!turmaUsuarioSelecionada.length) setCampoAnoLetivoDesabilitado(false);
