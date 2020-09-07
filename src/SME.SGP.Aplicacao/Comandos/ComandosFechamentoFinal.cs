@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -17,6 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
+        private readonly IMediator mediator;
 
         public ComandosFechamentoFinal(
             IRepositorioConceito repositorioConceito,
@@ -25,7 +27,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioFechamentoNota repositorioFechamentoNota,
             IRepositorioFechamentoAluno repositorioFechamentoAluno,
             IRepositorioFechamentoTurma repositorioFechamentoTurma,
-            IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina)
+            IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
+            IMediator mediator)
         {
             this.repositorioConceito = repositorioConceito ?? throw new System.ArgumentNullException(nameof(repositorioConceito));
             this.servicoFechamentoFinal = servicoFechamentoFinal ?? throw new System.ArgumentNullException(nameof(servicoFechamentoFinal));
@@ -34,12 +37,16 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoAluno));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoNota));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<string[]> SalvarAsync(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
             var turma = await ObterTurma(fechamentoFinalSalvarDto.TurmaCodigo);
-            await servicoFechamentoFinal.VerificaPersistenciaGeral(turma);
+
+            var dataAtual = DateTime.Today;
+
+            var existePeriodoAberturaOuReabertura = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataAtual, 0, dataAtual.Year == turma.AnoLetivo));
 
             var fechamentoTurmaDisciplina = await TransformarDtoSalvarEmEntidade(fechamentoFinalSalvarDto, turma);
             
