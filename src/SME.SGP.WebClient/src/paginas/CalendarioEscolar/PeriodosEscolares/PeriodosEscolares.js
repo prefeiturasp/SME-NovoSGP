@@ -1,24 +1,34 @@
-import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
+import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
-import Cabecalho from '~/componentes-sgp/cabecalho';
-import Button from '~/componentes/button';
-import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
-import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
-import Label from '~/componentes/label';
-import SelectComponent from '~/componentes/select';
+
+import {
+  Button,
+  CampoData,
+  Card,
+  Colors,
+  Label,
+  momentSchema,
+  SelectComponent,
+} from '~/componentes';
+import { Cabecalho } from '~/componentes-sgp';
+
+import { URL_HOME } from '~/constantes';
+
+import { periodo, RotasDto } from '~/dtos';
+
+import {
+  api,
+  confirmar,
+  erros,
+  history,
+  sucesso,
+  verificaSomenteConsulta,
+} from '~/servicos';
 
 import { BoxTextoBimetre, CaixaBimestre } from './PeriodosEscoladres.css';
-import history from '~/servicos/history';
-import { URL_HOME } from '~/constantes/url';
-import { sucesso, confirmar, erros } from '~/servicos/alertas';
-import api from '~/servicos/api';
-import periodo from '~/dtos/periodo';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const PeriodosEscolares = () => {
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
@@ -52,7 +62,7 @@ const PeriodosEscolares = () => {
     ),
     primeiroBimestreDataFinal: momentSchema
       .required('Data final obrigatória')
-      .dataMenorQue( 
+      .dataMenorQue(
         'primeiroBimestreDataInicial',
         'primeiroBimestreDataFinal',
         'Data inválida'
@@ -344,7 +354,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             label="Início do Bimestre"
             name="primeiroBimestreDataInicial"
-            onChange={()=> onChangeCamposData(form)}
+            onChange={() => onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -355,7 +365,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             label="Fim do Bimestre"
             name="primeiroBimestreDataFinal"
-            onChange={()=> onChangeCamposData(form)}
+            onChange={() => onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -377,7 +387,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="segundoBimestreDataInicial"
-            onChange={()=> onChangeCamposData(form)}
+            onChange={() => onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -387,7 +397,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="segundoBimestreDataFinal"
-            onChange={()=> onChangeCamposData(form)}
+            onChange={() => onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -409,7 +419,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="terceiroBimestreDataInicial"
-            onChange={()=> onChangeCamposData(form)}
+            onChange={() => onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -419,7 +429,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="terceiroBimestreDataFinal"
-            onChange={()=> onChangeCamposData(form)}
+            onChange={() => onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -441,7 +451,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="quartoBimestreDataInicial"
-            onChange={()=> onChangeCamposData(form)}
+            onChange={() => onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -451,7 +461,7 @@ const PeriodosEscolares = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name="quartoBimestreDataFinal"
-            onChange={()=> onChangeCamposData(form)}
+            onChange={() => onChangeCamposData(form)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -459,12 +469,12 @@ const PeriodosEscolares = () => {
     );
   };
 
-  const touchedFields =  form => {
+  const touchedFields = form => {
     const arrayCampos = Object.keys(valoresFormInicial);
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
     });
-  }
+  };
 
   const validaAntesDoSubmit = form => {
     touchedFields(form);
@@ -537,24 +547,24 @@ const PeriodosEscolares = () => {
                 </div>
               </div>
               {listaCalendarioEscolar &&
-                listaCalendarioEscolar.length &&
-                calendarioEscolarSelecionado ? (
-                  <>
-                    {primeiroBimestre(form)}
-                    {segundoBimestre(form)}
+              listaCalendarioEscolar.length &&
+              calendarioEscolarSelecionado ? (
+                <>
+                  {primeiroBimestre(form)}
+                  {segundoBimestre(form)}
 
-                    {isTipoCalendarioAnual ? (
-                      <>
-                        {terceiroBimestre(form)}
-                        {quartoBimestre(form)}
-                      </>
-                    ) : (
-                        ''
-                      )}
-                  </>
-                ) : (
-                  ''
-                )}
+                  {isTipoCalendarioAnual ? (
+                    <>
+                      {terceiroBimestre(form)}
+                      {quartoBimestre(form)}
+                    </>
+                  ) : (
+                    ''
+                  )}
+                </>
+              ) : (
+                ''
+              )}
             </Form>
           )}
         </Formik>
