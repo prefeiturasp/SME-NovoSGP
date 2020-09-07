@@ -15,7 +15,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPut("reiniciar-senha")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CO_A, Policy = "Bearer")]
+        //[Authorize(Policy = "Bearer")]
         public async Task<IActionResult> ReiniciarSenha([FromBody] SolicitarReiniciarSenhaEscolaAquiDto solicitarReiniciarSenhaDto, [FromServices] ISolicitarReiniciarSenhaEscolaAquiUseCase solicitarReiniciarSenhaEscolaAquiUseCase)
         {
             return Ok(await solicitarReiniciarSenhaEscolaAquiUseCase.Executar(solicitarReiniciarSenhaDto.Cpf));
@@ -25,7 +25,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CO_C, Policy = "Bearer")]
+        //[Authorize(Policy = "Bearer")]
         public async Task<IActionResult> ObterUsuarioPorCpf(string cpf, [FromServices] IObterUsuarioPorCpfUseCase obterUsuarioPorCpfUseCase)
         {
             return Ok(await obterUsuarioPorCpfUseCase.Executar(cpf));
