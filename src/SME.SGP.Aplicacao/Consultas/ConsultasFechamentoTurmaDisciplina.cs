@@ -193,7 +193,7 @@ namespace SME.SGP.Aplicacao
                     alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&
                                         !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());
 
-                    var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
+                    var marcador = await servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
                     if (marcador != null)
                     {
                         alunoDto.Informacao = marcador.Descricao;

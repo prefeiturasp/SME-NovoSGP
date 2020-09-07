@@ -229,7 +229,7 @@ namespace SME.SGP.Aplicacao
 
                         notaConceitoAluno.PodeEditar = notasAvaliacoes.Any(na => na.PodeEditar);
 
-                        notaConceitoAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar()
+                        notaConceitoAluno.Marcador = await servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar()
                         {
                             Bimestre = valorBimestreAtual,
                             PeriodoInicio = periodoAtual.PeriodoInicio,
