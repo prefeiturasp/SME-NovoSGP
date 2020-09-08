@@ -279,6 +279,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioMotivoAusencia, RepositorioMotivoAusencia>();
             services.TryAddScoped<IRepositorioCartaIntencoesObservacao, RepositorioCartaIntencoesObservacao>();
             services.TryAddScoped<IRepositorioNotificacaoCartaIntencoesObservacao, RepositorioNotificacaoCartaIntencoesObservacao>();
+            services.TryAddScoped<IRepositorioDiarioBordoObservacaoNotificacao, RepositorioDiarioBordoObservacaoNotificacao>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
