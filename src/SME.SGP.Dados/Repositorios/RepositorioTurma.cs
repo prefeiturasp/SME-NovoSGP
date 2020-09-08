@@ -418,7 +418,8 @@ namespace SME.SGP.Dados.Repositorios
             var listaTurmas = string.Join(",", codigosTurmas);
 
             var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
-                .Replace("#codigosTurmasParaHistorico", GerarQueryCodigosTurmasForaLista(anoLetivo, true));
+                .Replace("#codigosTurmasParaHistorico", GerarQueryCodigosTurmasForaLista(anoLetivo, true))
+                .Replace("#idsTurmas", listaTurmas);
 
             var sqlExcluirTurmas = Delete.Replace("#queryIdsConselhoClasseTurmasForaListaCodigos", QueryIdsConselhoClasseTurmasForaListaCodigos)
                                          .Replace("#queryFechamentoAlunoTurmasForaListaCodigos", QueryFechamentoAlunoTurmasForaListaCodigos)
@@ -426,19 +427,18 @@ namespace SME.SGP.Dados.Repositorios
                                          .Replace("#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos", QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)
                                          .Replace("#queryIdsTurmasForaListaCodigos", QueryIdsTurmasForaListaCodigos)
                                          .Replace("#queryIdsAulasTurmasForaListaCodigos", QueryAulasTurmasForaListaCodigos)                            
-                                         .Replace("#codigosTurmasARemover", GerarQueryCodigosTurmasForaLista(anoLetivo, false));
+                                         .Replace("#codigosTurmasARemover", GerarQueryCodigosTurmasForaLista(anoLetivo, false))
+                                         .Replace("#idsTurmas", listaTurmas);
 
             var transacao = contexto.Conexao.BeginTransaction();
 
             try
-            {
-                var parametros = new { idsTurmas  = listaTurmas };
+            {                
+                await contexto.Conexao
+                    .ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
 
                 await contexto.Conexao
-                    .ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, parametros, transacao);
-
-                await contexto.Conexao
-                    .ExecuteAsync(sqlExcluirTurmas, parametros, transacao);              
+                    .ExecuteAsync(sqlExcluirTurmas, transacao);              
 
                 transacao.Commit();
             }
@@ -461,7 +461,7 @@ namespace SME.SGP.Dados.Repositorios
 		                inner join (select id, data_inicio, modalidade_codigo
 					                    from turma
 					                where not historica and
-						                  turma_id not in (@idsTurmas)) t2
+						                  turma_id not in (#idsTurmas)) t2
 			                on t.id = t2.id and
 			                   t.modalidade_codigo = t2.modalidade_codigo
                 where t.ano_letivo = {anoLetivo} and
