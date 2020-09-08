@@ -285,7 +285,7 @@ namespace SME.SGP.Dominio.Servicos
                     mensagem.AppendLine("<tr>");
                     mensagem.Append($"<td style='padding: 5px;'>{aluno.NumeroAlunoChamada}</td>");
                     mensagem.Append($"<td style='padding: 5px;'>{aluno.NomeAluno}</td>");
-                    mensagem.Append($"<td style='text-align: center;'>{percentualFrequenciaAluno} %</td>");
+                    mensagem.Append($"<td style='text-align: center;'>{percentualFrequenciaAluno:0.00} %</td>");
                     mensagem.AppendLine("</tr>");
                 }
             }
