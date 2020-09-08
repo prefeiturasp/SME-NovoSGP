@@ -48,6 +48,9 @@
 
         MunicipioAtendimentoHistoricoEscolar = 25,
 
+        //PAP        
+        PAPInicioAnoLetivo = 26,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
