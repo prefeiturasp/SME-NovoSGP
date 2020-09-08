@@ -17,10 +17,6 @@ const { TabPane } = Tabs;
 export default function TabsReiniciarSenha() {
   const onClickVoltar = () => history.push(URL_HOME);
 
-  function callback(key) {
-    console.log(`${key} ---> Carregar algum dado`);
-  }
-
   return (
     <>
       <Cabecalho pagina="Reiniciar senha" />
@@ -37,7 +33,7 @@ export default function TabsReiniciarSenha() {
         </div>
 
         <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-          <ContainerTabs type="card" defaultActiveKey="1" onChange={callback}>
+          <ContainerTabs type="card" defaultActiveKey="1">
             <TabPane tab="SGP" key="1">
               <ReiniciarSenha />
             </TabPane>
