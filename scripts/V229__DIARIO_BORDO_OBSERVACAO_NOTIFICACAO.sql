@@ -4,9 +4,9 @@
 DROP TABLE IF EXISTS public.diario_bordo_observacao_notificacao;
 
 CREATE TABLE public.diario_bordo_observacao_notificacao (
-	id int8 NOT NULL GENERATED ALWAYS AS identity
+	id int8 NOT NULL GENERATED ALWAYS AS identity,
 	observacao_id int8 NOT NULL,
-	notificacao_id int8 not null,	
+	notificacao_id int8 not null	
 );
 
 select
