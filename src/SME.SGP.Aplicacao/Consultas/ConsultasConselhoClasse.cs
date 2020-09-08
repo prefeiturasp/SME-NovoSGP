@@ -12,16 +12,20 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
+        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
         private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
         public ConsultasConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                        IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                        IRepositorioParametrosSistema repositorioParametrosSistema,
                                        IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
+                                       IRepositorioTipoCalendario repositorioTipoCalendario,
+                                       IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                        IConsultasTurma consultasTurma,
                                        IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                        IConsultasPeriodoFechamento consultasPeriodoFechamento,
@@ -32,6 +36,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
@@ -42,6 +48,7 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false, bool consideraHistorico = false)
         {
             var turma = await ObterTurma(turmaCodigo);
+            var ehAnoAnterior = turma.AnoLetivo != DateTime.Today.Year;
 
             if (bimestre == 0 && !ehFinal)
                 bimestre = await ObterBimestreAtual(turma);
@@ -49,7 +56,28 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turmaCodigo, bimestre);
 
             if (fechamentoTurma == null)
-                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal ? $"para o bimestre {bimestre}" : ""));
+            {
+                if (ehAnoAnterior)
+                {                    
+                    var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+                    if (tipoCalendario == null) throw new NegocioException("O sistema tentou criar um novo fechamento de turma, mas não encontrou o tipo de calendário para o mesmo");
+
+                    var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);
+                    if (tipoCalendario == null) throw new NegocioException("O sistema tentou criar um novo fechamento de turma, mas não encontrou o período escolar para o mesmo");
+
+                    fechamentoTurma = new FechamentoTurma()
+                    {
+                        TurmaId = turma.Id,
+                        Migrado = false,
+                        PeriodoEscolarId = periodoEscolar?.Id
+                    };
+                    await repositorioFechamentoTurma.SalvarAsync(fechamentoTurma);
+                }
+                else
+                {
+                    throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal ? $"para o bimestre {bimestre}" : ""));
+                }
+            }
 
             var conselhoClasse = await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id);
 
