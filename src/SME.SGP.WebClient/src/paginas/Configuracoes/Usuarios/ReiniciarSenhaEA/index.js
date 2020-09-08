@@ -64,7 +64,7 @@ export default function ReiniciarSenhaEA() {
   const onClickBuscaUsuarioPorCPF = async () => {
     if (!permissoesTela.podeConsultar) return;
 
-    if (dreSelecionada) {
+    if (dreSelecionada && ueSelecionada) {
       setCarregando(true);
       const cpfSemMascara = buscaCPF.replace(/[^\d]+/g, '');
       const responseUsuarioApp = await api
@@ -211,7 +211,7 @@ export default function ReiniciarSenhaEA() {
   };
 
   const onChangeBuscaCPF = cpfUsuario => {
-    if (!validate(cpfUsuario.target.value)) {
+    if (cpfUsuario.target.value !== '' && !validate(cpfUsuario.target.value)) {
       setMensagemValidacaoCPF('Este CPF é inválido');
     } else {
       setMensagemValidacaoCPF('');
