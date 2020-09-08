@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.M_A, Policy = "Bearer")]
-        public async Task<IActionResult> AlterarEmail([FromBody]AlterarEmailDto novoEmail, string codigoRf)
+        public async Task<IActionResult> AlterarEmail([FromBody] AlterarEmailDto novoEmail, string codigoRf)
         {
             await comandosUsuario.AlterarEmail(novoEmail, codigoRf);
             return Ok();
@@ -39,7 +39,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.M_A, Policy = "Bearer")]
-        public async Task<IActionResult> AlterarEmailUsuarioLogado([FromBody]AlterarEmailDto alterarEmailDto)
+        public async Task<IActionResult> AlterarEmailUsuarioLogado([FromBody] AlterarEmailDto alterarEmailDto)
         {
             await comandosUsuario.AlterarEmailUsuarioLogado(alterarEmailDto.NovoEmail);
             return Ok();
@@ -59,9 +59,9 @@ namespace SME.SGP.Api.Controllers
         [Route("imagens/perfil")]
         [HttpPost]
         [Permissao(Permissao.M_A, Policy = "Bearer")]
-        public IActionResult ModificarImagem([FromBody]ImagemPerfilDto imagemPerfilDto)
+        public IActionResult ModificarImagem([FromBody] ImagemPerfilDto imagemPerfilDto)
         {
             return Ok("https://telegramic.org/media/avatars/stickers/52cae315e8a464eb80a3.png");
-        }
+        }       
     }
 }
