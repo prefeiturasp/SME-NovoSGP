@@ -1,11 +1,10 @@
-import { Form, Formik } from 'formik';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import * as Yup from 'yup';
 import moment from 'moment';
+import { validate } from 'gerador-validador-cpf';
 
 import { Loader } from '~/componentes';
 import Button from '~/componentes/button';
-import CampoTexto from '~/componentes/campoTexto';
+
 import { Colors } from '~/componentes/colors';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import SelectComponent from '~/componentes/select';
@@ -16,27 +15,28 @@ import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import { erros, confirmar } from '~/servicos/alertas';
+import cpfMask from '~/servicos/maskCPF';
+
+import { MensagemInputError, InputBuscaCPF } from './style';
 
 export default function ReiniciarSenhaEA() {
   const [linhaSelecionada, setLinhaSelecionada] = useState({});
-  const [listaUsuario, setListaUsuario] = useState([]);
+  const [usuarioApp, setUsuarioApp] = useState([]);
   const [listaDres, setListaDres] = useState([]);
   const [dreSelecionada, setDreSelecionada] = useState('');
   const [listaUes, setListaUes] = useState([]);
   const [ueSelecionada, setUeSelecionada] = useState('');
-  const [emailUsuarioSelecionado, setEmailUsuarioSelecionado] = useState('');
   const [exibirModalReiniciarSenha, setExibirModalReiniciarSenha] = useState(
     false
   );
   const [buscaCPF, setBuscaCPF] = useState('');
+  const [tituloModal, setTituloModal] = useState('');
   const [
     exibirModalMensagemReiniciarSenha,
     setExibirModalMensagemReiniciarSenha,
   ] = useState(false);
   const [mensagemSenhaAlterada, setMensagemSenhaAlterada] = useState('');
-
-  const [semEmailCadastrado, setSemEmailCadastrado] = useState(false);
-  const [refForm, setRefForm] = useState();
+  const [mensagemValidacaoCPF, setMensagemValidacaoCPF] = useState('');
 
   const [dreDesabilitada, setDreDesabilitada] = useState(false);
   const [ueDesabilitada, setUeDesabilitada] = useState(false);
@@ -61,52 +61,58 @@ export default function ReiniciarSenhaEA() {
 
   const permissoesTela = usuario.permissoes[RotasDto.REINICIAR_SENHA];
 
-  const [validacoes] = useState(
-    Yup.object({
-      emailUsuario: Yup.string()
-        .email('Digite um e-mail válido.')
-        .required('E-mail é obrigatório'),
-    })
-  );
-
   const onClickBuscaUsuarioPorCPF = async () => {
     if (!permissoesTela.podeConsultar) return;
 
     if (dreSelecionada) {
-      const listaDeUsuarios = await api
-        .get(`v1/escola-aqui/usuarios/${buscaCPF}`)
-        .catch(() => {
-          setListaUsuario([]);
+      setCarregando(true);
+      const cpfSemMascara = buscaCPF.replace(/[^\d]+/g, '');
+      const responseUsuarioApp = await api
+        .get(
+          `v1/escola-aqui/usuarios/dre/${dreSelecionada}/ue/${ueSelecionada}/cpf/${cpfSemMascara}`
+        )
+        .catch(e => {
+          erros(e);
+          setUsuarioApp([]);
         });
-      if (listaDeUsuarios && listaDeUsuarios.data) {
-        setListaUsuario([]);
-        setListaUsuario(listaDeUsuarios);
+
+      if (responseUsuarioApp && responseUsuarioApp.data) {
+        setUsuarioApp([]);
+        setUsuarioApp([
+          {
+            nome: responseUsuarioApp.data.nome,
+            cpf: cpfMask(responseUsuarioApp.data.cpf),
+          },
+        ]);
       } else {
-        setListaUsuario([]);
+        setUsuarioApp([]);
       }
+      setCarregando(false);
     } else {
-      setListaUsuario([]);
+      setUsuarioApp([]);
     }
   };
 
   const reiniciarSenha = async linha => {
+    const cpfSemMascara = linha.cpf.replace(/[^\d]+/g, '');
     const parametros = {
-      // dreCodigo: dreSelecionada,
-      // ueCodigo: ueSelecionada,
+      cpf: cpfSemMascara,
     };
 
     setCarregando(true);
     await api
-      .put(`v1/autenticacao/${linha.codigoRf}/reiniciar-senha`, parametros)
+      .put(`v1/escola-aqui/usuarios/reiniciar-senha`, parametros)
       .then(resposta => {
+        setTituloModal('');
         setExibirModalMensagemReiniciarSenha(true);
         setMensagemSenhaAlterada(resposta.data.mensagem);
+        setTituloModal('Senha reiniciada');
       })
-      .catch(error => {
-        if (error && error.response && error.response.data) {
-          // console.log(error.response.data);
-        }
-        setCarregando(false);
+      .catch(e => {
+        setTituloModal('');
+        setExibirModalMensagemReiniciarSenha(true);
+        setMensagemSenhaAlterada(e.response.data.mensagens);
+        setTituloModal('Atenção');
       });
     setCarregando(false);
   };
@@ -130,11 +136,11 @@ export default function ReiniciarSenhaEA() {
   const colunas = [
     {
       title: 'Nome do usuário',
-      dataIndex: 'nomeDoUsuario',
+      dataIndex: 'nome',
     },
     {
       title: 'CPF',
-      dataIndex: 'cpfDoUsuario',
+      dataIndex: 'cpf',
     },
     {
       title: 'Ação',
@@ -205,6 +211,12 @@ export default function ReiniciarSenhaEA() {
   };
 
   const onChangeBuscaCPF = cpfUsuario => {
+    if (!validate(cpfUsuario.target.value)) {
+      setMensagemValidacaoCPF('Este CPF é inválido');
+    } else {
+      setMensagemValidacaoCPF('');
+    }
+
     setBuscaCPF(cpfUsuario.target.value);
   };
 
@@ -231,36 +243,6 @@ export default function ReiniciarSenhaEA() {
   const onCloseModalReiniciarSenha = () => {
     setExibirModalReiniciarSenha(false);
     setExibirModalMensagemReiniciarSenha(false);
-    setSemEmailCadastrado(false);
-    refForm.resetForm();
-  };
-
-  const onConfirmarReiniciarSenha = async form => {
-    const parametro = { novoEmail: form.emailUsuario };
-    onCloseModalReiniciarSenha();
-    setCarregando(true);
-    api
-      .put(`v1/usuarios/${linhaSelecionada.codigoRf}/email`, parametro)
-      .then(() => {
-        reiniciarSenha(linhaSelecionada);
-        refForm.resetForm();
-        setCarregando(false);
-      })
-      .catch(e => {
-        erros(e);
-        setCarregando(false);
-      });
-  };
-
-  const onCancelarReiniciarSenha = () => {
-    onCloseModalReiniciarSenha();
-  };
-
-  const validaSeTemEmailCadastrado = () => {
-    return semEmailCadastrado
-      ? `Este usuário não tem e-mail cadastrado, para seguir com
-     o processo de reinicio da senha é obrigatório informar um e-mail válido.`
-      : null;
   };
 
   return (
@@ -298,20 +280,27 @@ export default function ReiniciarSenhaEA() {
 
       <div className="row mb-3">
         <div className="col-sm-12 col-md-12 col-lg-10 col-xl-11">
-          <CampoTexto
-            label="CPF"
+          <InputBuscaCPF
+            label="Login"
             placeholder="Digite o CPF"
             onChange={onChangeBuscaCPF}
             desabilitado={!permissoesTela.podeConsultar}
-            value={buscaCPF}
+            value={cpfMask(buscaCPF)}
           />
+          {mensagemValidacaoCPF !== '' && (
+            <MensagemInputError>{mensagemValidacaoCPF}</MensagemInputError>
+          )}
         </div>
 
         <div className="col-sm-12 col-md-12 col-lg-2 col-xl-1">
           <Button
             label="Filtrar"
             color={Colors.Azul}
-            disabled={!permissoesTela.podeConsultar}
+            disabled={
+              !validate(buscaCPF) &&
+              dreSelecionada !== '' &&
+              ueSelecionada !== ''
+            }
             border
             className="text-center d-block mt-4 float-right w-100"
             onClick={onClickBuscaUsuarioPorCPF}
@@ -319,58 +308,18 @@ export default function ReiniciarSenhaEA() {
         </div>
       </div>
 
-      {listaUsuario.length > 0 && (
+      {usuarioApp.length > 0 && (
         <div className="row">
           <div className="col-md-12 pt-4">
             <DataTable
               rowKey="codigoRf"
               columns={colunas}
-              dataSource={listaUsuario}
+              dataSource={usuarioApp}
+              cpfRowMask
             />
           </div>
         </div>
       )}
-
-      <Formik
-        ref={refFormik => setRefForm(refFormik)}
-        enableReinitialize
-        initialValues={{
-          emailUsuario: emailUsuarioSelecionado,
-        }}
-        validationSchema={validacoes}
-        onSubmit={values => onConfirmarReiniciarSenha(values)}
-        validateOnChange
-        validateOnBlur
-      >
-        {form => (
-          <Form>
-            <ModalConteudoHtml
-              key="reiniciarSenha"
-              visivel={exibirModalReiniciarSenha}
-              onConfirmacaoPrincipal={() => {
-                form.validateForm().then(() => form.handleSubmit(e => e));
-              }}
-              onConfirmacaoSecundaria={() => onCancelarReiniciarSenha()}
-              onClose={onCloseModalReiniciarSenha}
-              labelBotaoPrincipal="Cadastrar e reiniciar"
-              tituloAtencao={semEmailCadastrado ? 'Atenção' : null}
-              perguntaAtencao={validaSeTemEmailCadastrado()}
-              labelBotaoSecundario="Cancelar"
-              titulo="Reiniciar Senha"
-              closable
-            >
-              <b> Deseja realmente reiniciar essa senha? </b>
-
-              <CampoTexto
-                label="E-mail"
-                name="emailUsuario"
-                form={form}
-                maxlength="50"
-              />
-            </ModalConteudoHtml>
-          </Form>
-        )}
-      </Formik>
 
       <ModalConteudoHtml
         key="exibirModalMensagemReiniciarSenha"
@@ -378,7 +327,7 @@ export default function ReiniciarSenhaEA() {
         onClose={onCloseModalReiniciarSenha}
         onConfirmacaoPrincipal={onCloseModalReiniciarSenha}
         labelBotaoPrincipal="OK"
-        titulo="Senha reiniciada"
+        titulo={tituloModal}
         esconderBotaoSecundario
         closable
       >
