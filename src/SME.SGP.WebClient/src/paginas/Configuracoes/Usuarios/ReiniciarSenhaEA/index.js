@@ -1,6 +1,4 @@
-import { Form, Formik } from 'formik';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import * as Yup from 'yup';
 import moment from 'moment';
 import { validate } from 'gerador-validador-cpf';
 

@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { Base } from '../colors';
-import CardBody from '../cardBody';
-import Icon from '../icon';
 import PropTypes from 'prop-types';
+import React from 'react';
+import CardBody from '../cardBody';
+import { Base } from '../colors';
 import LinkRouter from '../linkRouter';
+import { CardLine, DivCardLink, LabelCardLink } from './style';
 
 const CardLink = props => {
   const {
     icone,
-    pack,
     label,
     url,
     disabled,
@@ -26,51 +23,6 @@ const CardLink = props => {
   const colorActive = disabled ? Base.CinzaDesabilitado : Base.Branco;
   const backgroundActive = disabled ? Base.Branco : Base.Roxo;
   const background = Base.Branco;
-
-  const CardLine = styled.div`
-    border-bottom: 5.8px solid ${color} !important;
-    color: ${color} !important;
-    background: ${background} !important;
-
-    &:hover {
-      color: ${colorActive} !important;
-      background: ${backgroundActive} !important;
-
-      h2,
-      i {
-        color: ${colorActive};
-      }
-    }
-
-    &:not(:hover) {
-      color: ${color} !important;
-      background: ${background} !important;
-
-      h2,
-      i {
-        color: ${color};
-      }
-    }
-  `;
-
-  const Label = styled.h2`
-    font-size: 16px;
-    margin-top: 20px;
-    font-family: Roboto;
-    font-size: 16px;
-    font-weight: 500;
-  `;
-
-  const Div = styled.div`
-    min-height: ${minHeight};
-    height: 100%;
-    .card-body {
-      min-height: ${minHeight} !important;
-    }
-    .altura-100 {
-      height: 100%;
-    }
-  `;
 
   const getCols = () => {
     let retorno = 'col-lg-3';
@@ -89,36 +41,46 @@ const CardLink = props => {
   };
 
   return (
-    <Div className={`${getCols()} px-2 ${classHidden}`}>
+    <DivCardLink
+      className={`${getCols()} px-2 ${classHidden}`}
+      style={{ cursor: `${disabled ? 'not-allowed' : ''}` }}
+    >
       <LinkRouter
         className="altura-100"
         to={url}
         alt={disabled ? '' : alt}
         isactive={!disabled}
       >
-        <Div className={className + ' altura-100'}>
-          <CardLine className={`card altura-100`}>
-            <CardBody className={`text-center altura-100`}>
-              <div className={`col-md-12 p-0 text-center`}>
-                <Icon
-                  icon={icone}
-                  pack={pack}
+        <DivCardLink
+          className={`${className} altura-100`}
+          minHeight={minHeight}
+        >
+          <CardLine
+            className="card altura-100"
+            color={color}
+            colorActive={colorActive}
+            backgroundActive={backgroundActive}
+            background={background}
+          >
+            <CardBody className="text-center altura-100">
+              <div className="col-md-12 p-0 text-center">
+                <i
+                  className={icone}
                   color={color}
-                  iconSize={iconSize}
+                  style={{ fontSize: iconSize }}
                 />
-                <Label>{label}</Label>
+                <LabelCardLink>{label}</LabelCardLink>
               </div>
             </CardBody>
           </CardLine>
-        </Div>
+        </DivCardLink>
       </LinkRouter>
-    </Div>
+    </DivCardLink>
   );
 };
 
 CardLink.defaultProps = {
-  icone: 'fa-check',
-  pack: 'fa fa-5x',
+  icone: 'fa fa-check',
   label: 'Insira a label',
   url: '/',
   disabled: false,
@@ -132,12 +94,11 @@ CardLink.defaultProps = {
 
 CardLink.propTypes = {
   icone: PropTypes.string,
-  pack: PropTypes.string,
   label: PropTypes.string,
   url: PropTypes.string,
   disabled: PropTypes.bool,
   alt: PropTypes.string,
-  cols: PropTypes.array,
+  cols: PropTypes.oneOfType([PropTypes.array]),
   className: PropTypes.string,
   iconSize: PropTypes.string,
   classHidden: PropTypes.string,
