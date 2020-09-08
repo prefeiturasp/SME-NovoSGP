@@ -3,26 +3,33 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Tooltip, Switch } from 'antd';
 import shortid from 'shortid';
-import Card from '~/componentes/card';
-import Grid from '~/componentes/grid';
-import Calendario from '~/componentes-sgp/calendarioEscolar/Calendario';
-import { Base, Colors } from '~/componentes/colors';
-import SelectComponent from '~/componentes/select';
-import api from '~/servicos/api';
-import Button from '~/componentes/button';
-import history from '~/servicos/history';
+
+import {
+  Base,
+  Button,
+  Card,
+  Colors,
+  Loader,
+  Grid,
+  SelectComponent,
+} from '~/componentes';
+import { Calendario, FiltroHelper } from '~/componentes-sgp';
+
+import { ModalidadeDTO, tipoEscolaDTO } from '~/dtos';
+
+import {
+  api,
+  erro,
+  history,
+  ServicoCalendarios,
+  AbrangenciaServico,
+} from '~/servicos';
+
 import { store } from '~/redux';
 import {
   zeraCalendario,
   atribuiEventosMes,
 } from '~/redux/modulos/calendarioEscolar/actions';
-import ModalidadeDTO from '~/dtos/modalidade';
-import FiltroHelper from '~/componentes-sgp/filtro/helper';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
-import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
-import { Loader } from '~/componentes';
-import { erro } from '~/servicos/alertas';
-import AbrangenciaServico from '~/servicos/Abrangencia';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -111,8 +118,7 @@ const CalendarioEscolar = () => {
   }, [modalidadesAbrangencia]);
 
   const tiposDeCalendario = useMemo(() => {
-    if (tiposCalendario.length === 0)
-     return;
+    if (tiposCalendario.length === 0) return;
 
     let tipos = tiposCalendario;
 
@@ -126,7 +132,8 @@ const CalendarioEscolar = () => {
       const modalidadeSelecionada =
         turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
           ? 2
-          : turmaSelecionadaStore.modalidade === ModalidadeDTO.INFANTIL.toString()
+          : turmaSelecionadaStore.modalidade ===
+            ModalidadeDTO.INFANTIL.toString()
           ? 3
           : 1;
 
@@ -282,7 +289,7 @@ const CalendarioEscolar = () => {
     history.push('/');
   };
 
-  const aoTrocarEventoSme = (valor) => {
+  const aoTrocarEventoSme = valor => {
     setEventoSme(valor);
   };
 
@@ -469,7 +476,7 @@ const CalendarioEscolar = () => {
                     eventoSme
                       ? 'Exibindo eventos da SME'
                       : 'Não exibindo eventos da SME'
-                    }`}
+                  }`}
                 >
                   <Switch
                     onChange={aoTrocarEventoSme}
