@@ -20,5 +20,6 @@
         public static string RotaSincronizarAulasInfatil => "aulas.infantil.sincronizar";
         public static string RotaRelatorioComErro => "relatorios.erro";
         public static string RotaRelatorioCorrelacaoCopiar => "relatorios.correlacao.copiar";
+        public static string RotaNotificacaoNovaObservacaoCartaIntencoes => "notificacao.nova.observacao.cartaintencoes";
     }
 }

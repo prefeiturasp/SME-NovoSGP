@@ -80,7 +80,7 @@ namespace SME.SGP.Dominio.Servicos
             mensagemUsuario.Append($"para a turma {registroAulaPrevistaDivergente.NomeTurma} da escola {registroAulaPrevistaDivergente.NomeUe} ({registroAulaPrevistaDivergente.NomeDre})");
 
             var hostAplicacao = configuration["UrlFrontEnd"];
-            mensagemUsuario.Append($"<a href='{hostAplicacao}/diario-classe/aula-dada-aula-prevista'>Clique aqui para visualizar os detalhes.</a>");
+            mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/aula-dada-aula-prevista'>Clique aqui para visualizar os detalhes.</a>");
 
             var notificacao = new Notificacao()
             {
