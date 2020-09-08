@@ -12,7 +12,6 @@ import {
   Label,
   Loader,
   momentSchema,
-  // SelectComponent,
   SelectAutocomplete,
 } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
@@ -34,7 +33,6 @@ import {
 import { BoxTextoBimetre, CaixaBimestre } from './PeriodosEscoladres.css';
 
 const PeriodosEscolares = () => {
-  const [listaTipoCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
   const [
     calendarioEscolarSelecionado,
     setCalendarioEscolarSelecionado,
@@ -58,10 +56,6 @@ const PeriodosEscolares = () => {
   const permissoesTela = usuario.permissoes[RotasDto.PERIODOS_ESCOLARES];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [desabilitaCampos, setDesabilitaCampos] = useState(false);
-  // const [
-  //   setCalendarioEscolarSelecionado,
-  //   setTipoCalendarioSelecionado,
-  // ] = useState('');
   const [listaTipoCalendario, setListaTipoCalendario] = useState([]);
   const [valorTipoCalendario, setValorTipoCalendario] = useState('');
   const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
@@ -130,30 +124,6 @@ const PeriodosEscolares = () => {
         'Data inválida'
       ),
   };
-
-  const { turmaSelecionada } = usuario;
-
-  // useEffect(() => {
-  //   async function consultaTipos() {
-  //     const anoAtual = window.moment().format('YYYY');
-  //     const listaTipo = await api.get(
-  //       usuario && turmaSelecionada && turmaSelecionada.anoLetivo
-  //         ? `v1/calendarios/tipos/anos/letivos/${turmaSelecionada.anoLetivo}`
-  //         : `v1/calendarios/tipos/anos/letivos/${anoAtual}`
-  //     );
-  //     if (listaTipo && listaTipo.data && listaTipo.data.length) {
-  //       listaTipo.data.map(item => {
-  //         item.id = String(item.id);
-  //         item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
-  //       });
-  //       setListaCalendarioEscolar(listaTipo.data);
-  //     } else {
-  //       setListaCalendarioEscolar([]);
-  //     }
-  //   }
-  //   setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  //   consultaTipos();
-  // }, []);
 
   useEffect(() => {
     let periodos = {};
@@ -329,20 +299,6 @@ const PeriodosEscolares = () => {
     setValoresIniciais(bimestresValorInicial);
   };
 
-  // const onchangeCalendarioEscolar = (id, form) => {
-  //   const tipoSelecionado = listaTipoCalendario.find(item => item.id == id);
-
-  //   if (tipoSelecionado && tipoSelecionado.periodo == periodo.Anual) {
-  //     setIsTipoCalendarioAnual(true);
-  //   } else {
-  //     setIsTipoCalendarioAnual(false);
-  //   }
-  //   setCalendarioEscolarSelecionado(id);
-  //   resetarTela(form);
-  //   setValoresIniciais({});
-  //   consultarPeriodoPorId(id);
-  // };
-
   const onChangeCamposData = form => {
     if (!modoEdicao) {
       touchedFields(form);
@@ -511,7 +467,6 @@ const PeriodosEscolares = () => {
     resetarTela(form);
     setValoresIniciais({});
     consultarPeriodoPorId(tipo?.id);
-    // setTipoCalendarioSelecionado(tipo?.id);
     setCalendarioEscolarSelecionado(tipo?.id);
   };
 
@@ -537,10 +492,12 @@ const PeriodosEscolares = () => {
         setCarregandoTipos(false);
       }
     })();
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
 
     return () => {
       isSubscribed = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pesquisaTipoCalendario]);
 
   return (
@@ -559,15 +516,6 @@ const PeriodosEscolares = () => {
             <Form className="col-md-12">
               <div className="row">
                 <div className="col-sm-12 col-md-5 col-lg-4 col-xl-4 mb-4">
-                  {/* <SelectComponent
-                    name="calEscolar"
-                    id="calEscolar"
-                    lista={listaTipoCalendario}
-                    valueOption="id"
-                    valueText="descricaoTipoCalendario"
-                    onChange={id => onchangeCalendarioEscolar(id, form)}
-                    valueSelect={calendarioEscolarSelecionado}
-                  /> */}
                   <Loader loading={carregandoTipos} tip="">
                     <SelectAutocomplete
                       hideLabel
@@ -575,8 +523,8 @@ const PeriodosEscolares = () => {
                       isHandleSearch
                       placeholder="Selecione um tipo de calendário"
                       className="col-md-12"
-                      name="tipoCalendarioId"
-                      id="tipoCalendarioId"
+                      name="calEscolar"
+                      id="calEscolar"
                       lista={listaTipoCalendario}
                       valueField="id"
                       textField="descricao"
