@@ -14,7 +14,7 @@ import { store } from '~/redux';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
-import { erros, confirmar } from '~/servicos/alertas';
+import { erro, erros, confirmar } from '~/servicos/alertas';
 import cpfMask from '~/servicos/maskCPF';
 
 import { MensagemInputError, InputBuscaCPF } from './style';
@@ -64,7 +64,7 @@ export default function ReiniciarSenhaEA() {
   const onClickBuscaUsuarioPorCPF = async () => {
     if (!permissoesTela.podeConsultar) return;
 
-    if (dreSelecionada && ueSelecionada) {
+    if (validate(buscaCPF)) {
       setCarregando(true);
       const cpfSemMascara = buscaCPF.replace(/[^\d]+/g, '');
       const responseUsuarioApp = await api
@@ -89,6 +89,7 @@ export default function ReiniciarSenhaEA() {
       }
       setCarregando(false);
     } else {
+      erro('Insira um CPF válido');
       setUsuarioApp([]);
     }
   };
@@ -145,7 +146,7 @@ export default function ReiniciarSenhaEA() {
     {
       title: 'Ação',
       dataIndex: 'acaoReiniciar',
-      render: (texto, linha) => {
+      render: (_, linha) => {
         return (
           <div className="botao-reiniciar-tabela-acao-escola-aqui">
             <Button
@@ -211,7 +212,10 @@ export default function ReiniciarSenhaEA() {
   };
 
   const onChangeBuscaCPF = cpfUsuario => {
-    if (cpfUsuario.target.value !== '' && !validate(cpfUsuario.target.value)) {
+    if (
+      cpfUsuario.target.value.length === 14 &&
+      !validate(cpfUsuario.target.value)
+    ) {
       setMensagemValidacaoCPF('Este CPF é inválido');
     } else {
       setMensagemValidacaoCPF('');
@@ -296,11 +300,7 @@ export default function ReiniciarSenhaEA() {
           <Button
             label="Filtrar"
             color={Colors.Azul}
-            disabled={
-              !validate(buscaCPF) &&
-              dreSelecionada !== '' &&
-              ueSelecionada !== ''
-            }
+            disabled={!(!!dreSelecionada && !!ueSelecionada)}
             border
             className="text-center d-block mt-4 float-right w-100"
             onClick={onClickBuscaUsuarioPorCPF}
