@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("devolutiva_diario_bordo_notificacao");
             Map(c => c.Id).ToColumn("id");
-            Map(c => c.DevolutivaId).ToColumn("devolutiva_id");
+            Map(c => c.ObservacaoId).ToColumn("observacao_id");
             Map(c => c.NotificacaoId).ToColumn("notificacao_id");
         }
     }
