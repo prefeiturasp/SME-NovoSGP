@@ -1,30 +1,41 @@
+import React, { useEffect, useState, useCallback } from 'react';
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
-import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import shortid from 'shortid';
-import Cabecalho from '~/componentes-sgp/cabecalho';
-import Button from '~/componentes/button';
-import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
-import CampoTexto from '~/componentes/campoTexto';
-import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
-import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
-import SelectComponent from '~/componentes/select';
-import { URL_HOME } from '~/constantes/url';
-import RotasDto from '~/dtos/rotasDto';
-import { confirmar, erros, sucesso, erro } from '~/servicos/alertas';
-import api from '~/servicos/api';
-import history from '~/servicos/history';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import Grid from '~/componentes/grid';
-import Alert from '~/componentes/alert';
-import ServicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
-import FiltroHelper from '~/componentes-sgp/filtro/helper';
-import { Loader } from '~/componentes';
-import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
-import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
+
+import {
+  Alert,
+  Button,
+  CampoData,
+  CampoTexto,
+  Card,
+  Colors,
+  Grid,
+  ListaPaginada,
+  Loader,
+  momentSchema,
+  SelectComponent,
+} from '~/componentes';
+import { Cabecalho, FiltroHelper } from '~/componentes-sgp';
+
+import { URL_HOME } from '~/constantes';
+
+import { RotasDto } from '~/dtos';
+
+import {
+  api,
+  confirmar,
+  erro,
+  erros,
+  history,
+  ServicoCalendarios,
+  ServicoEvento,
+  setBreadcrumbManual,
+  sucesso,
+  verificaSomenteConsulta,
+} from '~/servicos';
 
 const EventosLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
