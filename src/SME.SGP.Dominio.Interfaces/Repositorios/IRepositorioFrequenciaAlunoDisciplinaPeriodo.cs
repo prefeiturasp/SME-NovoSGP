@@ -9,6 +9,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         FrequenciaAluno Obter(string codigoAluno, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia);
 
+        Task<IEnumerable<FrequenciaAluno>> ObterPorTurma(string turmaCodigo, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia);
+
         FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "");
 
         Task<FrequenciaAluno> ObterPorAlunoBimestreAsync(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "");

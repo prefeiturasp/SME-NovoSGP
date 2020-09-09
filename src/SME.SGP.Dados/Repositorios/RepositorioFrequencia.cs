@@ -171,7 +171,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RecuperacaoParalelaFrequenciaDto>(query.ToString(), new { CodigoAlunos, CodigoDisciplina = CodigoDisciplina.ToArray(), Ano });
         }
 
-        public IEnumerable<RegistroAusenciaAluno> ObterListaFrequenciaPorAula(long aulaId)
+        public async Task<IEnumerable<RegistroAusenciaAluno>> ObterListaFrequenciaPorAula(long aulaId)
         {
             var query = @"select ra.*
                         from
@@ -183,17 +183,17 @@ namespace SME.SGP.Dados.Repositorios
                         where ra.excluido = false and
 	                        a.id = @aulaId";
 
-            return database.Conexao.Query<RegistroAusenciaAluno>(query, new { aulaId });
+            return await database.Conexao.QueryAsync<RegistroAusenciaAluno>(query, new { aulaId });
         }
 
-        public RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId)
+        public async Task<RegistroFrequencia> ObterRegistroFrequenciaPorAulaId(long aulaId)
         {
             var query = @"select *
                             from registro_frequencia
                           where not excluido
                             and aula_id = @aulaId";
 
-            return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<RegistroFrequencia>(query, new { aulaId });
         }        
     }
 }
