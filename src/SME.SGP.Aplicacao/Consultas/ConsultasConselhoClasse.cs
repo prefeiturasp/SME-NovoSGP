@@ -60,8 +60,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
 
-            var mediaAprovacao = double.Parse(await repositorioParametrosSistema
-                .ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            var mediaAprovacao = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
             var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
 
