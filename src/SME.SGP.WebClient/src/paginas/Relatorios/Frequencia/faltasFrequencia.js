@@ -187,6 +187,7 @@ const FaltasFrequencia = () => {
       }
       setListaSemestre(lista);
     }
+    setCarregandoGeral(false);
   };
 
   useEffect(() => {
@@ -290,7 +291,7 @@ const FaltasFrequencia = () => {
       }
       setCarregandoGeral(false);
     }
-  }, [modalidadeId, anoLetivo, obterCodigoTodosAnosEscolares]);
+  }, [modalidadeId, anoLetivo, obterCodigoTodosAnosEscolares, codigoUe]);
 
   useEffect(() => {
     if (anosEscolares && anosEscolares.length) {
@@ -458,14 +459,11 @@ const FaltasFrequencia = () => {
   const onChangeAnoLetivo = ano => {
     setAnoLetivo(ano);
 
-    setListaModalidades([]);
-    setModalidadeId(undefined);
-
     setListaSemestre([]);
     setSemestre(undefined);
 
-    setListaAnosEscolares([]);
-    setAnosEscolares(undefined);
+    setListaComponenteCurricular([]);
+    setComponentesCurriculares(undefined);
   };
 
   const onChangeAnos = valor => {
