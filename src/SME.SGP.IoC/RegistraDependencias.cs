@@ -415,6 +415,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterUsuarioPorCpfUseCase, ObterUsuarioPorCpfUseCase>();
             services.TryAddScoped<ISolicitarReiniciarSenhaEscolaAquiUseCase, SolicitarReiniciarSenhaEscolaAquiUseCase>();
 
+            services.TryAddScoped<INotificarDiarioBordoObservacaoUserCase, NotificarDiarioBordoObservacaoUserCase>();
+
             
         }
     }
