@@ -32,9 +32,9 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public void ExecutaNotificacaoAulaPrevista()
+        public async Task ExecutaNotificacaoAulaPrevista()
         {
-            var qtdDiasBimestreNotificacao = QuantidadeDiasFimBimestreParaNotificacao();
+            var qtdDiasBimestreNotificacao = await QuantidadeDiasFimBimestreParaNotificacao();
 
             // Busca registro de aula sem frequencia e sem notificação do tipo
             var turmasAulasPrevistasDivergentes = repositorioNotificacaoAulaPrevista.ObterTurmasAulasPrevistasDivergentes(qtdDiasBimestreNotificacao);
@@ -55,8 +55,8 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private int QuantidadeDiasFimBimestreParaNotificacao()
-            => int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificarProfessor));
+        private async Task<int> QuantidadeDiasFimBimestreParaNotificacao()
+            => int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificarProfessor));
 
         private IEnumerable<Usuario> BuscaProfessorAula(RegistroAulaPrevistaDivergenteDto turma)
         {

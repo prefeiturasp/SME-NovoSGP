@@ -1,32 +1,40 @@
-import shortid from 'shortid';
-import React from 'react';
-import { Modal } from 'antd';
+import { Modal, notification } from 'antd';
 import { store } from '../redux';
 import {
-  exibir,
-  removerAlerta,
   alertaConfirmar,
   alertaFechar,
 } from '../redux/modulos/alertas/actions';
 
-const { confirm, error } = Modal;
+const { confirm } = Modal;
 
-const exibirAlerta = (tipo, mensagem, fixo = false) => {
-  const id = shortid.generate();
-  const alerta = {
-    tipo,
-    id,
-    mensagem,
-  };
-  store.dispatch(exibir(alerta));
-  if (!fixo) {
-    setTimeout(() => {
-      store.dispatch(removerAlerta(id));
-    }, 5000);
+const exibirAlerta = (tipo, mensagem) => {
+  let titulo;
+  let classeTipo;
+  switch (tipo) {
+    case 'success':
+      titulo = 'Sucesso';
+      classeTipo = 'alerta-sucesso';
+      break;
+    case 'error':
+      titulo = 'Erro';
+      classeTipo = 'alerta-erro';
+      break;
+    case 'warning':
+      titulo = 'Aviso';
+      classeTipo = 'alerta-aviso';
+      break;
+
+    default:
+      titulo = '';
+      classeTipo = '';
+      break;
   }
-  window.scroll(0, 0);
-
-  return id;
+  notification[tipo]({
+    message: titulo,
+    description: mensagem,
+    duration: 6,
+    className: classeTipo,
+  });
 };
 
 const sucesso = mensagem => {
@@ -34,7 +42,11 @@ const sucesso = mensagem => {
 };
 
 const erro = mensagem => {
-  exibirAlerta('danger', mensagem);
+  exibirAlerta('error', mensagem);
+};
+
+const aviso = mensagem => {
+  exibirAlerta('warning', mensagem);
 };
 
 const erros = listaErros => {
@@ -72,16 +84,15 @@ const confirmacao = (
   });
 };
 
-const erroMensagem = (titulo, texto) => {
-  error({
-    title: titulo,
-    content: <div>{texto ? texto.map(t => <p>{t}</p>) : null}</div>,
-    type: 'error',
-  });
-};
-
-const confirmar = (titulo, texto, textoNegrito, textoOk, textoCancelar, primeiroExibirTextoNegrito) => {
-  return new Promise((resolve, reject) => {
+const confirmar = (
+  titulo,
+  texto,
+  textoNegrito,
+  textoOk,
+  textoCancelar,
+  primeiroExibirTextoNegrito
+) => {
+  return new Promise((resolve, _) => {
     store.dispatch(
       alertaConfirmar(
         titulo,
@@ -105,8 +116,8 @@ export {
   sucesso,
   erro,
   confirmacao,
-  erroMensagem,
   confirmar,
   fecharModalConfirmacao,
   erros,
+  aviso,
 };
