@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario)
         {
-            var urlRedirecionamentoBase = configuration.GetValue<string>("UrlServidorRelatorios");
+            var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
 
             await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase, mensagemUsuario));
         }

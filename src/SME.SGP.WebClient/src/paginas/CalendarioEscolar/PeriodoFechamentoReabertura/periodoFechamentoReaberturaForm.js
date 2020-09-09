@@ -61,6 +61,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   });
   const [salvandoInformacoes, setSalvandoInformacoes] = useState(false);
   const [modalidadeTurma, setModalidadeTurma] = useState('');
+  const [listaDres, setListaDres] = useState([]);
 
   const montarListaBimestres = tipoModalidade => {
     const listaNova = [
@@ -427,6 +428,10 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   };
 
   const onChangeTipoCalendario = (tipoId, form) => {
+    form.setFieldValue('ueId', '');
+    if (listaDres && listaDres.length > 1) {
+      form.setFieldValue('dreId', '');
+    }
     if (tipoId) {
       const calendarioSelecionado = listaTipoCalendarioEscolar.find(
         item => item.id == tipoId
@@ -526,7 +531,8 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                       label="Diretoria Regional de Educação (DRE)"
                       form={form}
                       desabilitado={desabilitarCampos || !novoRegistro}
-                      onChange={() => {
+                      onChange={(valor, dres) => {
+                        setListaDres(dres);
                         if (novoRegistro) {
                           onChangeCampos();
                         }
