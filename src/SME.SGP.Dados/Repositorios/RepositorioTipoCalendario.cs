@@ -203,6 +203,7 @@ namespace SME.SGP.Dados.Repositorios
                                      situacao
                                 from tipo_calendario tc
                                where UPPER(ano_letivo ||' - '|| nome) like UPPER('%{descricao}%')
+                                 and not excluido
                                order by descricao desc
                                limit 10";
 
