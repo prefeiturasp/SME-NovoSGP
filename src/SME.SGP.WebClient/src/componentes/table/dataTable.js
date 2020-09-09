@@ -17,7 +17,7 @@ const DataTable = props => {
     idLinha,
     loading,
     id,
-    scroll
+    scroll,
   } = props;
 
   const rowSelection = {
@@ -61,7 +61,7 @@ const DataTable = props => {
             if (
               colunaClicada &&
               colunaClicada.target &&
-              colunaClicada.target.className == 'ant-table-selection-column'
+              colunaClicada.target.className === 'ant-table-selection-column'
             ) {
               selectRow(row);
             } else {
@@ -113,6 +113,7 @@ DataTable.propTypes = {
   idLinha: PropTypes.string,
   id: PropTypes.string,
   scroll: PropTypes.object,
+  cpfRowMask: PropTypes.bool,
 };
 
 DataTable.defaultProps = {
@@ -121,7 +122,7 @@ DataTable.defaultProps = {
   selectMultipleRows: false,
   pageSize: 10,
   pagination: true,
-  onRowClick: () => {},
+  onRowClick: () => { },
   locale: { emptyText: 'Sem dados' },
   idLinha: 'id',
   id: 'componente-tabela-sgp',

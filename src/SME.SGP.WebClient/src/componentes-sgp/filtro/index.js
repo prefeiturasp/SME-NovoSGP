@@ -657,7 +657,6 @@ const Filtro = () => {
   }, []);
 
   const aoSelecionarHistorico = () => {
-    setTextoAutocomplete('');
     setConsideraHistorico(!consideraHistorico);
     limparCamposSelecionados();
   };
@@ -974,6 +973,32 @@ const Filtro = () => {
 
     reabilitarCampos();
   };
+
+  useEffect(() => {
+    if (!alternarFocoBusca) {
+      setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
+      setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade);
+      setPeriodoSelecionado(turmaUsuarioSelecionada.periodo);
+      setDreSelecionada(turmaUsuarioSelecionada.dre);
+      setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
+      setTurmaSelecionada(turmaUsuarioSelecionada.turma);
+      setTextoAutocomplete(turmaUsuarioSelecionada.desc);
+      setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
+
+      if (!turmaUsuarioSelecionada.length) setCampoAnoLetivoDesabilitado(false);
+    }
+  }, [
+    alternarFocoBusca,
+    turmaUsuarioSelecionada.anoLetivo,
+    turmaUsuarioSelecionada.consideraHistorico,
+    turmaUsuarioSelecionada.desc,
+    turmaUsuarioSelecionada.dre,
+    turmaUsuarioSelecionada.length,
+    turmaUsuarioSelecionada.modalidade,
+    turmaUsuarioSelecionada.periodo,
+    turmaUsuarioSelecionada.turma,
+    turmaUsuarioSelecionada.unidadeEscolar,
+  ]);
 
   return (
     <Container className="position-relative w-100" id="containerFiltro">

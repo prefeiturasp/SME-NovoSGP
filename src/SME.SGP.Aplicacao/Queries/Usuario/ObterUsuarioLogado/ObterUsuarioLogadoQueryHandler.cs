@@ -32,6 +32,7 @@ namespace SME.SGP.Aplicacao
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil ?? throw new ArgumentNullException(nameof(repositorioPrioridadePerfil));
         }
+
         public string ObterLoginAtual()
         {
             var loginAtual = contextoAplicacao.ObterVarivel<string>("login");
@@ -40,6 +41,7 @@ namespace SME.SGP.Aplicacao
 
             return loginAtual;
         }
+
         public async Task<Usuario> Handle(ObterUsuarioLogadoQuery request, CancellationToken cancellationToken)
         {
             var login = ObterLoginAtual();
