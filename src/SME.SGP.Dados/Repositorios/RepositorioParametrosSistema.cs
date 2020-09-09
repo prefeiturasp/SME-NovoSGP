@@ -37,6 +37,16 @@ namespace SME.SGP.Dados.Repositorios
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
+        public KeyValuePair<string, string>? ObterUnicoChaveEValorPorTipo(TipoParametroSistema tipo)
+        {
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("select nome as Key, valor as Value");
+            query.AppendLine("from parametros_sistema");
+            query.AppendLine("where ativo and tipo = @tipo");
+
+            return database.Conexao.QueryFirstOrDefault<KeyValuePair<string, string>>(query.ToString(), new { tipo });
+        }
+
         public string ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null)
         {
             StringBuilder query = new StringBuilder();
