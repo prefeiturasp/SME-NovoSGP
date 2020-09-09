@@ -83,9 +83,6 @@ namespace SME.SGP.Aplicacao
 
             var bimestre = fechamentoTurma.PeriodoEscolar?.Bimestre ?? 0;
 
-            if (bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurma.Turma, alunoCodigo))
-                throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
-
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurma(fechamentoTurma.Turma.CodigoTurma);
@@ -192,10 +189,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
-            var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
-            if (!await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurma.Turma, alunoCodigo))
-                throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
-
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
             if (conselhoClasseAluno == null || !conselhoClasseAluno.ConselhoClasseParecerId.HasValue)
                 return await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
