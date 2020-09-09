@@ -28,16 +28,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var dadosMensagem = mensagemRabbit.ObterObjetoMensagem<ExcluirNotificacaoCartaIntencoesObservacaoDto>();
-
-            var notificacoes = await repositorioNotificacaoCartaIntencoesObservacao.ObterPorCartaIntencoesObservacaoId(dadosMensagem.CartaIntencoesObservacaoId);
-
-            foreach(var notificacao in notificacoes)
-            {
-                repositorioNotificacao.Remover(notificacao.NotificacaoId);
-                await repositorioNotificacaoCartaIntencoesObservacao.Excluir(notificacao);
-            }
-
-            return true;
+            
+            return await mediator.Send(new ExcluirNotificacaoCartaIntencoesObservacaoCommand(dadosMensagem.CartaIntencoesObservacaoId));
         }
     }
 }
