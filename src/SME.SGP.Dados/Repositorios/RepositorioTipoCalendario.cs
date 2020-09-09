@@ -202,7 +202,7 @@ namespace SME.SGP.Dados.Repositorios
                                      periodo,
                                      situacao
                                 from tipo_calendario tc
-                               where UPPER(cast(ano_letivo as varchar)) like UPPER('%{descricao}%') or UPPER(nome) like UPPER('%{descricao}%')
+                               where UPPER(ano_letivo ||' - '|| nome) like UPPER('%{descricao}%')
                                order by descricao desc
                                limit 10";
 
