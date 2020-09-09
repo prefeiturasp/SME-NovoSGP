@@ -34,6 +34,7 @@ const Container = styled.div`
 `;
 
 const SelectAutocomplete = ({
+  allowClear,
   className,
   filtro,
   id,
@@ -90,6 +91,7 @@ const SelectAutocomplete = ({
         placeholder={placeholder}
         dataSource={showDataSource}
         name={name}
+        allowClear={allowClear}
         onChange={onChange}
         onSelect={onSelect}
         id={id}
@@ -102,6 +104,7 @@ const SelectAutocomplete = ({
 };
 
 SelectAutocomplete.defaultProps = {
+  allowClear: true,
   className: '',
   filtro: () => {},
   id: '',
@@ -121,6 +124,7 @@ SelectAutocomplete.defaultProps = {
 };
 
 SelectAutocomplete.propTypes = {
+  allowClear: PropTypes.bool,
   className: PropTypes.string,
   filtro: PropTypes.func,
   id: PropTypes.string,
