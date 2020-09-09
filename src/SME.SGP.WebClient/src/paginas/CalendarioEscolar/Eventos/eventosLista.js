@@ -17,6 +17,7 @@ import {
   Loader,
   momentSchema,
   SelectComponent,
+  SelectAutocomplete,
 } from '~/componentes';
 import { Cabecalho, FiltroHelper } from '~/componentes-sgp';
 
@@ -36,6 +37,7 @@ import {
   sucesso,
   verificaSomenteConsulta,
 } from '~/servicos';
+import { CampoDescricao } from '~/paginas/Fechamento/PendenciasFechamento/situacaoFechamento.css';
 
 const EventosLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -43,7 +45,7 @@ const EventosLista = ({ match }) => {
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
-  const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
+  const [listaCalendario, setListaCalendario] = useState([]);
   const [listaDre, setListaDre] = useState([]);
   const [campoUeDesabilitado, setCampoUeDesabilitado] = useState(true);
   const [dreSelecionada, setDreSelecionada] = useState();
@@ -55,9 +57,12 @@ const EventosLista = ({ match }) => {
   const [eventosSelecionados, setEventosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
   const [selecionouCalendario, setSelecionouCalendario] = useState(false);
-
   const [carregandoTipos, setCarregandoTipos] = useState(false);
-
+  const [valorTipoCalendario, setValorTipoCalendario] = useState('');
+  const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
+    ''
+  );
   const [refForm, setRefForm] = useState();
 
   const [valoresIniciais] = useState({
@@ -193,14 +198,14 @@ const EventosLista = ({ match }) => {
   useEffect(() => {
     if (
       refForm &&
-      listaCalendarioEscolar &&
-      listaCalendarioEscolar.length &&
+      listaCalendario &&
+      listaCalendario.length &&
       match &&
       match.params &&
       match.params.tipoCalendarioId
     ) {
       const { tipoCalendarioId } = match.params;
-      const temTipoParaSetar = listaCalendarioEscolar.find(
+      const temTipoParaSetar = listaCalendario.find(
         item => item.id == tipoCalendarioId
       );
       if (temTipoParaSetar) {
@@ -209,50 +214,50 @@ const EventosLista = ({ match }) => {
         filtrar('tipoCalendarioId', tipoCalendarioId);
       }
     }
-  }, [match, listaCalendarioEscolar, refForm]);
+  }, [match, listaCalendario, refForm]);
 
-  useEffect(() => {
-    const obterListaEventos = async () => {
-      const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
+  // useEffect(() => {
+  //   const obterListaEventos = async () => {
+  //     const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
 
-      if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
-        setListaTipoEvento(tiposEvento.data.items);
-      } else {
-        setListaTipoEvento([]);
-      }
-    };
+  //     if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
+  //       setListaTipoEvento(tiposEvento.data.items);
+  //     } else {
+  //       setListaTipoEvento([]);
+  //     }
+  //   };
 
-    const consultaTipoCalendario = async () => {
-      setCarregandoTipos(true);
-      const anoAtual = window.moment().format('YYYY');
-      const tiposCalendario = await api.get(
-        usuario && turmaSelecionada && turmaSelecionada.anoLetivo
-          ? `v1/calendarios/tipos/anos/letivos/${turmaSelecionada.anoLetivo}`
-          : `v1/calendarios/tipos/anos/letivos/${anoAtual}`
-      );
+  //   const consultaTipoCalendario = async () => {
+  //     setCarregandoTipos(true);
+  //     const anoAtual = window.moment().format('YYYY');
+  //     const tiposCalendario = await api.get(
+  //       usuario && turmaSelecionada && turmaSelecionada.anoLetivo
+  //         ? `v1/calendarios/tipos/anos/letivos/${turmaSelecionada.anoLetivo}`
+  //         : `v1/calendarios/tipos/anos/letivos/${anoAtual}`
+  //     );
 
-      if (
-        tiposCalendario &&
-        tiposCalendario.data &&
-        tiposCalendario.data.length
-      ) {
-        tiposCalendario.data.forEach(tipo => {
-          tipo.id = String(tipo.id);
-          tipo.descricaoTipoCalendario = `${tipo.anoLetivo} - ${tipo.nome} - ${tipo.descricaoPeriodo}`;
-        });
-        setListaCalendarioEscolar(tiposCalendario.data);
-        setCarregandoTipos(false);
-      } else {
-        setListaCalendarioEscolar([]);
-        setCarregandoTipos(false);
-      }
-    };
+  //     if (
+  //       tiposCalendario &&
+  //       tiposCalendario.data &&
+  //       tiposCalendario.data.length
+  //     ) {
+  //       tiposCalendario.data.forEach(tipo => {
+  //         tipo.id = String(tipo.id);
+  //         tipo.descricaoTipoCalendario = `${tipo.anoLetivo} - ${tipo.nome} - ${tipo.descricaoPeriodo}`;
+  //       });
+  //       setListaCalendario(tiposCalendario.data);
+  //       setCarregandoTipos(false);
+  //     } else {
+  //       setListaCalendario([]);
+  //       setCarregandoTipos(false);
+  //     }
+  //   };
 
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-    obterListaEventos();
-    consultaTipoCalendario();
-    listarDres();
-  }, [permissoesTela]);
+  //   setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  //   obterListaEventos();
+  //   consultaTipoCalendario();
+  //   listarDres();
+  // }, [permissoesTela]);
 
   useEffect(() => {
     const semTipoSelecionado =
@@ -284,7 +289,7 @@ const EventosLista = ({ match }) => {
         return;
 
       const { tipoCalendarioId } = refForm.getFormikContext().values;
-      const calendarioSelecionado = listaCalendarioEscolar.find(
+      const calendarioSelecionado = listaCalendario.find(
         item => item.id === tipoCalendarioId
       );
 
@@ -380,6 +385,7 @@ const EventosLista = ({ match }) => {
 
   const onClickNovo = () => {
     const calendarioId = refForm.getFormikContext().values.tipoCalendarioId;
+    console.log('cl', calendarioId);
     history.push(`/calendario-escolar/eventos/novo/${calendarioId}`);
   };
 
@@ -460,6 +466,58 @@ const EventosLista = ({ match }) => {
     );
   };
 
+  const selecionaTipoCalendario = descricao => {
+    const tipo = listaCalendario?.find(t => t.descricao === descricao);
+    if (tipo.id) {
+      setSelecionouCalendario(true);
+      filtrar('tipoCalendarioId', tipo.id);
+      setBreadcrumbManual(
+        `${match.url}/${tipo.id}`,
+        '',
+        '/calendario-escolar/eventos'
+      );
+    } else {
+      setFiltroValido(false);
+      setSelecionouCalendario(false);
+      setDreSelecionada([]);
+      setListaUe([]);
+      setCampoUeDesabilitado(true);
+      setTipoEvento('');
+      setNomeEvento('');
+      refForm.resetForm();
+    }
+    setValorTipoCalendario(descricao);
+    setTipoCalendarioSelecionado(tipo?.id);
+  };
+
+  const handleSearch = descricao => {
+    if (descricao.length > 3 || descricao.length === 0) {
+      setPesquisaTipoCalendario(descricao);
+    }
+  };
+
+  useEffect(() => {
+    let isSubscribed = true;
+    (async () => {
+      setCarregandoTipos(true);
+
+      const {
+        data,
+      } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
+        pesquisaTipoCalendario
+      );
+
+      if (isSubscribed) {
+        setListaCalendario(data);
+        setCarregandoTipos(false);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [pesquisaTipoCalendario]);
+
   return (
     <>
       {mensagemAlerta && (
@@ -531,7 +589,7 @@ const EventosLista = ({ match }) => {
               <div className="row">
                 <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 pb-2">
                   <Loader loading={carregandoTipos} tip="">
-                    <SelectComponent
+                    {/* <SelectComponent
                       name="tipoCalendarioId"
                       id="select-tipo-calendario"
                       lista={listaCalendarioEscolar}
@@ -539,6 +597,23 @@ const EventosLista = ({ match }) => {
                       valueText="descricaoTipoCalendario"
                       onChange={onChangeCalendarioId}
                       placeholder="Selecione um calendário"
+                      form={form}
+                    /> */}
+                    <SelectAutocomplete
+                      hideLabel
+                      showList
+                      isHandleSearch
+                      placeholder="Selecione um calendário"
+                      className="col-md-12"
+                      name="tipoCalendarioId"
+                      id="select-tipo-calendario"
+                      lista={listaCalendario}
+                      valueField="id"
+                      textField="descricao"
+                      onSelect={selecionaTipoCalendario}
+                      onChange={selecionaTipoCalendario}
+                      handleSearch={handleSearch}
+                      value={valorTipoCalendario}
                       form={form}
                     />
                   </Loader>
