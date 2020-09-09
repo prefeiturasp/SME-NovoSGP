@@ -53,7 +53,7 @@ const CalendarioEscolar = () => {
   const [eventoSme, setEventoSme] = useState(true);
 
   useEffect(() => {
-    if (eventoCalendarioEdicao && eventoCalendarioEdicao.tipoCalendario) {
+    if (eventoCalendarioEdicao?.tipoCalendario) {
       if (eventoCalendarioEdicao.eventoSme) {
         setEventoSme(eventoCalendarioEdicao.eventoSme);
       }
