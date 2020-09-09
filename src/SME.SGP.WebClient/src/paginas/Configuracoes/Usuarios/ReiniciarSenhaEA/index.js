@@ -300,7 +300,10 @@ export default function ReiniciarSenhaEA() {
           <Button
             label="Filtrar"
             color={Colors.Azul}
-            disabled={!(!!dreSelecionada && !!ueSelecionada)}
+            disabled={
+              !permissoesTela.podeConsultar ||
+              !(!!dreSelecionada && !!ueSelecionada)
+            }
             border
             className="text-center d-block mt-4 float-right w-100"
             onClick={onClickBuscaUsuarioPorCPF}
