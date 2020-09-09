@@ -171,7 +171,7 @@ const FaltasFrequencia = () => {
     const retorno = await api
       .get(
         `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
-          0}`
+        0}`
       )
       .catch(e => {
         erros(e);
@@ -284,7 +284,7 @@ const FaltasFrequencia = () => {
 
         setListaComponenteCurricular(lista);
         if (lista && lista.length && lista.length === 1) {
-          setComponentesCurriculares(lista[0].valor);
+          setComponentesCurriculares([lista[0].valor]);
         }
       } else {
         setListaComponenteCurricular([]);
@@ -692,8 +692,8 @@ const FaltasFrequencia = () => {
                     A condição considerada será pela quantidade de faltas
                   </span>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
                 <SelectComponent
