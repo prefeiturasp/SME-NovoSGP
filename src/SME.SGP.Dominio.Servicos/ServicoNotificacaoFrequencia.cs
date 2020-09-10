@@ -74,9 +74,9 @@ namespace SME.SGP.Dominio.Servicos
 
             Console.WriteLine($"Notificando usuários de aulas sem frequência.");
 
-            //cargosNotificados = await NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.Professor, cargosNotificados);
+            cargosNotificados = await NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.Professor, cargosNotificados);
             cargosNotificados = await NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.SupervisorUe, cargosNotificados);
-            //await NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.GestorUe, cargosNotificados);
+            await NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.GestorUe, cargosNotificados);
 
             Console.WriteLine($"Rotina finalizada.");
         }
