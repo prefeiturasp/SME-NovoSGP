@@ -7,17 +7,6 @@ class ServicoFiltro {
       .then(resposta => resposta);
   };
 
-  static listarTodosAnosLetivos = async () => {
-    const promise1 = api
-      .get(`v1/abrangencias/true/anos-letivos`)
-      .then(resposta => resposta);
-    const promise2 = api
-      .get(`v1/abrangencias/false/anos-letivos`)
-      .then(resposta => resposta);
-
-    return Promise.all([promise1, promise2]);
-  };
-
   static listarModalidades = async ({
     consideraHistorico,
     anoLetivoSelecionado,
