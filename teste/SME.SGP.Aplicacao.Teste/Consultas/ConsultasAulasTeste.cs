@@ -79,8 +79,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             // Mock das aulas por turma e disciplina
             IEnumerable<AulasPorTurmaDisciplinaDto> aulas = new List<AulasPorTurmaDisciplinaDto>()
             {
-                new AulasPorTurmaDisciplinaDto() { ProfessorId = 1, Quantidade = 1, DataAula = new System.DateTime(2019,11,12) },
-                new AulasPorTurmaDisciplinaDto() { ProfessorId = 1, Quantidade = 3, DataAula = new System.DateTime(2019,11,15) },
+                new AulasPorTurmaDisciplinaDto() { ProfessorId = "1", Quantidade = 1, DataAula = new System.DateTime(2019,11,12) },
+                new AulasPorTurmaDisciplinaDto() { ProfessorId = "1", Quantidade = 3, DataAula = new System.DateTime(2019,11,15) },
             };
 
             repositorioAula.Setup(c => c.ObterAulasTurmaDisciplinaSemanaProfessor(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), null))
