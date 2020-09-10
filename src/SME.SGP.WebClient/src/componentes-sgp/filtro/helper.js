@@ -18,28 +18,6 @@ class FiltroHelper {
       .catch(() => anosLetivosLista);
   };
 
-  obterTodosAnosLetivos = async () => {
-    const anosLetivosLista = [];
-
-    return ServicoFiltro.listarTodosAnosLetivos()
-      .then(resposta => {
-        const [resposta1, resposta2] = resposta;
-        if (resposta1.data) {
-          resposta1.data.forEach(ano => {
-            anosLetivosLista.push({ desc: ano, valor: ano });
-          });
-        }
-        if (resposta2.data) {
-          resposta2.data.forEach(ano => {
-            anosLetivosLista.push({ desc: ano, valor: ano });
-          });
-        }
-
-        return anosLetivosLista;
-      })
-      .catch(() => anosLetivosLista);
-  };
-
   obterModalidades = async ({ consideraHistorico, anoLetivoSelecionado }) => {
     const modalidadesLista = [];
 

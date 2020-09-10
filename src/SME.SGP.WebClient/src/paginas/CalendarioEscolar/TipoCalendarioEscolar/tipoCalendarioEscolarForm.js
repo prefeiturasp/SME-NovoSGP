@@ -1,34 +1,34 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Form, Formik } from 'formik';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 
 import {
-  RadioGroupButton,
-  Card,
-  CampoTexto,
-  Button,
   Auditoria,
-  SelectComponent,
+  Button,
+  CampoTexto,
+  Card,
   Colors,
   Loader,
+  RadioGroupButton,
+  SelectComponent,
 } from '~/componentes';
 
-import { Cabecalho, FiltroHelper } from '~/componentes-sgp';
+import { Cabecalho } from '~/componentes-sgp';
 
-import { RotasDto, modalidadeTipoCalendario } from '~/dtos';
+import { modalidadeTipoCalendario, RotasDto } from '~/dtos';
 
 import {
-  verificaSomenteConsulta,
-  history,
-  setBreadcrumbManual,
+  AbrangenciaServico,
   api,
   confirmar,
   erros,
+  history,
+  setBreadcrumbManual,
   sucesso,
+  verificaSomenteConsulta,
 } from '~/servicos';
-
-import { CaixaAno, CaixaTextoAno } from './tipoCalendarioEscolar.css';
 
 const TipoCalendarioEscolarForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -99,6 +99,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
       setAnoLetivo(usuario.turmaSelecionada.anoLetivo);
     }
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -106,6 +107,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
       ? somenteConsulta || !permissoesTela.podeIncluir
       : somenteConsulta || !permissoesTela.podeAlterar;
     setDesabilitarCampos(desabilitar);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [somenteConsulta, novoRegistro]);
 
   const [possuiEventos, setPossuiEventos] = useState(false);
@@ -234,50 +236,21 @@ const TipoCalendarioEscolarForm = ({ match }) => {
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoAnos(true);
-    // let anosLetivos = [];
 
-    // const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
-    //   consideraHistorico: true,
-    // });
-    // const anosLetivoSemHistorico = await FiltroHelper.obterAnosLetivos({
-    //   consideraHistorico: false,
-    // });
+    const anosLetivo = await AbrangenciaServico.buscarTodosAnosLetivos().catch(
+      e => {
+        erros(e);
+        setCarregandoAnos(false);
+      }
+    );
 
-    // console.log('anosLetivoComHistorico', anosLetivoComHistorico);
-    // console.log('anosLetivoSemHistorico', anosLetivoSemHistorico);
+    const valorAnos = anosLetivo?.data.map(ano => ({ desc: ano, valor: ano }));
+    const valor = valorAnos[0]?.valor || ['1985'];
 
-    // const anosLetivos = anosLetivoComHistorico.concat(anosLetivoSemHistorico);
-
-    const todosAnosLetivos = await FiltroHelper.obterTodosAnosLetivos();
-    console.log('todosAnosLetivos', todosAnosLetivos);
-
-    // anosLetivoSemHistorico.forEach(ano => {
-    //   if (!anosLetivoComHistorico.find(a => a.valor === ano.valor)) {
-    //     anosLetivos.push(ano);
-    //   }
-    // });
-
-    // if (!anosLetivos.length) {
-    //   anosLetivos.push({
-    //     desc: anoAtual,
-    //     valor: anoAtual,
-    //   });
-    // }
-
-    if (todosAnosLetivos.length) {
-      const temAnoAtualNaLista = todosAnosLetivos.find(
-        item => String(item.valor) === String(anoAtual)
-      );
-      const valorAno = temAnoAtualNaLista
-        ? anoAtual
-        : todosAnosLetivos[0].valor;
-      // if (temAnoAtualNaLista) setAnoLetivo(anoAtual);
-      // else setAnoLetivo(anosLetivos[0].valor);
-      setAnoLetivo(valorAno);
-    }
-    setListaAnosLetivo(todosAnosLetivos);
+    setAnoLetivo(valor);
+    setListaAnosLetivo(valorAnos);
     setCarregandoAnos(false);
-  }, [anoAtual]);
+  }, []);
 
   useEffect(() => {
     obterAnosLetivos();
@@ -343,10 +316,6 @@ const TipoCalendarioEscolarForm = ({ match }) => {
               </div>
               <div className="row">
                 <div className="col-sm-4 col-md-2 col-lg-2 col-xl-2 mb-2">
-                  {/* <Label text="Ano" control="ano-letivo" /> */}
-                  {/* <CaixaAno>
-                    <CaixaTextoAno>{anoLetivo}</CaixaTextoAno>
-                  </CaixaAno> */}
                   <Loader loading={carregandoAnos} tip="">
                     <SelectComponent
                       id="drop-ano-letivo-rel-pendencias"
@@ -426,6 +395,14 @@ const TipoCalendarioEscolarForm = ({ match }) => {
       </Card>
     </>
   );
+};
+
+TipoCalendarioEscolarForm.defaultProps = {
+  match: {},
+};
+
+TipoCalendarioEscolarForm.propTypes = {
+  match: PropTypes.instanceOf(Object),
 };
 
 export default TipoCalendarioEscolarForm;
