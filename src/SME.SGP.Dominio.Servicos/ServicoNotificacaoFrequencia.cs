@@ -429,10 +429,11 @@ namespace SME.SGP.Dominio.Servicos
             if (turma.ModalidadeTurma == Modalidade.Infantil)
             {
                 var disciplinaEols = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
-                foreach (var disciplina in disciplinaEols)
-                {
-                    return this.RetornaUsuarios(disciplina.ProfessorRf);
-                }
+                if (disciplinaEols != null)
+                    foreach (var disciplina in disciplinaEols)
+                    {
+                        return RetornaUsuarios(disciplina.ProfessorRf);
+                    }
             }
             else
             {
@@ -441,7 +442,7 @@ namespace SME.SGP.Dominio.Servicos
                         .OrderBy(o => o.DataAula)
                         .Last().ProfessorId;
 
-                return this.RetornaUsuarios(professorRf.ToString());
+                return this.RetornaUsuarios(professorRf);
 
             }
 
