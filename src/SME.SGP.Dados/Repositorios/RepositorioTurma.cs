@@ -6,9 +6,8 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -420,6 +419,13 @@ namespace SME.SGP.Dados.Repositorios
                                 .Replace("#ids", listaTurmas);
             await contexto.Conexao
                 .ExecuteAsync(sql);
+        }
+
+        public async Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos)
+        {
+            var query = "select * from turma t where t.turma_id = ANY(@codigos)";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { codigos });
         }
     }
 }

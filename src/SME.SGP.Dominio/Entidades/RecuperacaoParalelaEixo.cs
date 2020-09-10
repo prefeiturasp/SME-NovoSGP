@@ -2,15 +2,12 @@
 
 namespace SME.SGP.Dominio
 {
-    public class Objetivo : EntidadeBase
+    public class RecuperacaoParalelaEixo : EntidadeBase
     {
         public string Descricao { get; set; }
         public DateTime DtFim { get; set; }
         public DateTime DtInicio { get; set; }
-        public bool EhEspecifico { get; set; }
-        public int EixoId { get; set; }
         public bool Excluido { get; set; }
-        public string Nome { get; set; }
-        public int Ordem { get; set; }
+        public int RecuperacaoParalelaPeriodoId { get; set; }
     }
 }
