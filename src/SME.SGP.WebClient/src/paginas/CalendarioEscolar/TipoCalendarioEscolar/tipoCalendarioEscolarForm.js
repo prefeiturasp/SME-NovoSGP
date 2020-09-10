@@ -1,27 +1,34 @@
-import { Form, Formik } from 'formik';
 import React, { useEffect, useState, useCallback } from 'react';
+import { Form, Formik } from 'formik';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import Cabecalho from '~/componentes-sgp/cabecalho';
-import Auditoria from '~/componentes/auditoria';
-import Button from '~/componentes/button';
-import CampoTexto from '~/componentes/campoTexto';
-import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
-import Label from '~/componentes/label';
-import RadioGroupButton from '~/componentes/radioGroupButton';
-import RotasDto from '~/dtos/rotasDto';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
-import api from '~/servicos/api';
-import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
-import history from '~/servicos/history';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import SelectComponent from '~/componentes/select';
-import FiltroHelper from '~componentes-sgp/filtro/helper';
-import { Loader } from '~/componentes';
+
+import {
+  RadioGroupButton,
+  Card,
+  CampoTexto,
+  Button,
+  Auditoria,
+  SelectComponent,
+  Colors,
+  Loader,
+} from '~/componentes';
+
+import { Cabecalho, FiltroHelper } from '~/componentes-sgp';
+
+import { RotasDto, modalidadeTipoCalendario } from '~/dtos';
+
+import {
+  verificaSomenteConsulta,
+  history,
+  setBreadcrumbManual,
+  api,
+  confirmar,
+  erros,
+  sucesso,
+} from '~/servicos';
 
 import { CaixaAno, CaixaTextoAno } from './tipoCalendarioEscolar.css';
-import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
 
 const TipoCalendarioEscolarForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
