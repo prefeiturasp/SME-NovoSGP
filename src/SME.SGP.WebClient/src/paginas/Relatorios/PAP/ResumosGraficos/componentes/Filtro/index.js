@@ -16,6 +16,8 @@ import { Linha } from '~/componentes/EstilosGlobais';
 // Services
 import api from '~/servicos/api';
 import AtribuicaoCJServico from '~/servicos/Paginas/AtribuicaoCJ';
+import ResumosGraficosPAPServico from '~/servicos/Paginas/Relatorios/PAP/ResumosGraficos';
+import { erros } from '~/servicos/alertas';
 
 // Funções
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
@@ -35,6 +37,9 @@ function Filtro({ onFiltrar }) {
   const [ano, setAno] = useState(undefined);
   const [turmaId, setTurmaId] = useState(undefined);
   const [periodo, setPeriodo] = useState(undefined);
+  const [carregandoAnosLetivos, setCarregandoAnosLetivos] = useState(false);
+  const [anoLetivo, setAnoLetivo] = useState(undefined);
+  const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
 
   const [valoresIniciais] = useState({
     dreId,
@@ -89,9 +94,9 @@ function Filtro({ onFiltrar }) {
     }
   };
 
-  useEffect(() => {
-    buscarListaCiclos();
-  }, []);
+  // useEffect(() => {
+  //   buscarListaCiclos();
+  // }, []);
 
   const [listaAnos, setListaAnos] = useState([]);
   const [carregandoAnos, setCarregandoAnos] = useState(false);
@@ -243,6 +248,39 @@ function Filtro({ onFiltrar }) {
     setUeId(valorUe);
   };
 
+  const onChangeAnoLetivo = async valor => {
+    setAnoLetivo(valor);
+  };
+
+  const obterAnosLetivos = useCallback(async () => {
+    setCarregandoAnosLetivos(true);
+    const anosLetivo = await ResumosGraficosPAPServico.ListarAnosLetivos().catch(
+      e => {
+        erros(e);
+        setCarregandoAnosLetivos(false);
+      }
+    );
+
+    const valorAnos = anosLetivo?.data.map(item => ({
+      desc: item.ano,
+      valor: item.ano,
+    }));
+
+    const anosFiltrado = anosLetivo?.data.filter(
+      item => item?.ehSugestao === true
+    );
+    const anoSugestao = anosFiltrado ? anosFiltrado[0]?.ano : [];
+
+    setAnoLetivo(anoSugestao);
+    setListaAnosLetivo(valorAnos);
+    setCarregandoAnos(false);
+    setCarregandoAnosLetivos(false);
+  }, []);
+
+  useEffect(() => {
+    obterAnosLetivos();
+  }, [obterAnosLetivos]);
+
   return (
     <Formik
       enableReinitialize
@@ -257,14 +295,27 @@ function Filtro({ onFiltrar }) {
       {form => (
         <Form className="col-md-12 mb-4">
           <Linha className="row mb-2">
-            <Grid cols={6}>
+            <Grid cols={2}>
+              <Loader loading={carregandoAnosLetivos} tip="">
+                <SelectComponent
+                  lista={listaAnosLetivo}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={listaAnosLetivo && listaAnosLetivo.length === 1}
+                  onChange={onChangeAnoLetivo}
+                  valueSelect={anoLetivo}
+                  placeholder="Ano Letivo"
+                />
+              </Loader>
+            </Grid>
+            <Grid cols={5}>
               <DreDropDown
                 form={form}
                 onChange={dre => aoTrocarDreId(dre)}
                 opcaoTodas
               />
             </Grid>
-            <Grid cols={6}>
+            <Grid cols={5}>
               <UeDropDown
                 form={form}
                 dreId={form.values.dreId}
