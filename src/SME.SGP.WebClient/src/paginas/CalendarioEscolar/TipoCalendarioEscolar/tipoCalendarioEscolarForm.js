@@ -245,7 +245,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
     );
 
     const valorAnos = anosLetivo?.data.map(ano => ({ desc: ano, valor: ano }));
-    const valor = valorAnos[0]?.valor || ['1985'];
+    const valor = valorAnos ? valorAnos[0]?.valor : [];
 
     setAnoLetivo(valor);
     setListaAnosLetivo(valorAnos);
