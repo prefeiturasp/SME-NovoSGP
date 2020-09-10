@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class ObjetivoDesenvolvimento : EntidadeBase
+    public class RecuperacaoParalelaObjetivoDesenvolvimento : EntidadeBase
     {
         public string Descricao { get; set; }
     }

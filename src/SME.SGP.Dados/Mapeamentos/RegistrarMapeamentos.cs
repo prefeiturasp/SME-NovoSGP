@@ -10,8 +10,8 @@ namespace SME.SGP.Dados.Mapeamentos
             FluentMapper.Initialize(config =>
            {
                config.AddMap(new PlanoCicloMap());
-               config.AddMap(new ObjetivoDesenvolvimentoMap());
-               config.AddMap(new ObjetivoDesenvolvimentoPlanoMap());
+               config.AddMap(new RecuperacaoParalelaObjetivoDesenvolvimentoMap());
+               config.AddMap(new RecuperacaoParalelaObjetivoDesenvolvimentoPlanoMap());
                config.AddMap(new MatrizSaberMap());
                config.AddMap(new MatrizSaberPlanoMap());
                config.AddMap(new AuditoriaMap());
@@ -80,9 +80,9 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RecuperacaoParalelaMap());
                config.AddMap(new RecuperacaoParalelaPeriodoMap());
                config.AddMap(new RecuperacaoParalelaPeriodoObjetivoRespostaMap());
-               config.AddMap(new EixoMap());
-               config.AddMap(new ObjetivoaMap());
-               config.AddMap(new RespostaMap());
+               config.AddMap(new RecuperacaoParalelaEixoMap());
+               config.AddMap(new RecuperacaoParalelaObjetivoMap());
+               config.AddMap(new RecuperacaoParalelaRespostaMap());
                config.AddMap(new NotificacaoAulaMap());
                config.AddMap(new HistoricoEmailUsuarioMap());
                config.AddMap(new PendenciaMap());
