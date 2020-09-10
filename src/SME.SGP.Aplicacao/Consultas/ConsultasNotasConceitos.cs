@@ -121,9 +121,9 @@ namespace SME.SGP.Aplicacao
             var tipoAvaliacaoBimestral = await repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral();
 
             retorno.BimestreAtual = bimestre.Value;
-            retorno.MediaAprovacaoBimestre = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            retorno.MediaAprovacaoBimestre = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
             retorno.MinimoAvaliacoesBimestrais = tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre;
-            retorno.PercentualAlunosInsuficientes = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
+            retorno.PercentualAlunosInsuficientes = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
 
             DateTime? dataUltimaNotaConceitoInserida = null;
             DateTime? dataUltimaNotaConceitoAlterada = null;
