@@ -1,40 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Form, Formik, FieldArray } from 'formik';
 import * as Yup from 'yup';
-import { DreDropDown, UeDropDown } from 'componentes-sgp';
 import moment from 'moment';
-import Cabecalho from '~/componentes-sgp/cabecalho';
-import Button from '~/componentes/button';
-import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
-import SelectComponent from '~/componentes/select';
+import shortid from 'shortid';
+
 import {
-  BoxTextoBimetre,
+  Auditoria,
+  Button,
+  CampoData,
+  Card,
+  Colors,
+  Loader,
+  momentSchema,
+  SelectAutocomplete,
+} from '~/componentes';
+import {
+  Cabecalho,
+  DreDropDown,
+  RegistroMigrado,
+  UeDropDown,
+} from '~/componentes-sgp';
+
+import { URL_HOME } from '~/constantes';
+
+import { periodo, RotasDto } from '~/dtos';
+
+import {
+  confirmar,
+  erros,
+  history,
+  ServicoCalendarios,
+  ServicoPeriodoFechamento,
+  sucesso,
+  verificaSomenteConsulta,
+} from '~/servicos';
+
+import {
+  BoxTextoBimestre,
   CaixaBimestre,
 } from './periodo-fechamento-abertura.css';
-import api from '~/servicos/api';
-import { CampoData, Loader, Auditoria, momentSchema } from '~/componentes';
-import history from '~/servicos/history';
-import { URL_HOME } from '~/constantes/url';
-import { erros, sucesso, confirmar } from '~/servicos/alertas';
-import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
-import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import periodo from '~/dtos/periodo';
-import shortid from 'shortid';
-import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 
 const PeriodoFechamentoAbertura = () => {
   const usuarioLogado = useSelector(store => store.usuario);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela =
     usuarioLogado.permissoes[RotasDto.PERIODO_FECHAMENTO_ABERTURA];
-
-  const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
-    []
-  );
   const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
     ''
   );
@@ -44,9 +55,6 @@ const PeriodoFechamentoAbertura = () => {
   const [emProcessamento, setEmprocessamento] = useState(false);
   const [registroMigrado, setRegistroMigrado] = useState(false);
   const [carregandoTipos, setCarregandoTipos] = useState(false);
-  const [desabilitarTipoCalendario, setDesabilitarTipoCalendario] = useState(
-    false
-  );
   const [modoEdicao, setModoEdicao] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [idFechamentoAbertura, setIdFechamentoAbertura] = useState(0);
@@ -76,6 +84,9 @@ const PeriodoFechamentoAbertura = () => {
   const [auditoria, setAuditoria] = useState({});
   const [isTipoCalendarioAnual, setIsTipoCalendarioAnual] = useState(true);
   const [validacoes, setValidacoes] = useState();
+  const [listaTipoCalendario, setListaTipoCalendario] = useState([]);
+  const [valorTipoCalendario, setValorTipoCalendario] = useState('');
+  const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
 
   const validacaoPrimeiroBim = {
     bimestre1InicioDoFechamento: momentSchema.required(
@@ -155,6 +166,7 @@ const PeriodoFechamentoAbertura = () => {
       periodos = Object.assign({}, validacaoPrimeiroBim, validacaoSegundoBim);
     }
     setValidacoes(Yup.object().shape(periodos));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTipoCalendarioAnual]);
 
   useEffect(() => {
@@ -175,45 +187,33 @@ const PeriodoFechamentoAbertura = () => {
     somenteConsulta,
   ]);
 
-  useEffect(() => {
-    setTipoCalendarioSelecionado(null);
-    setFechamento(obtemPeriodosIniciais());
-    async function consultaTipos() {
-      setCarregandoTipos(true);
-      let { anoLetivo } = usuarioLogado.turmaSelecionada;
-      if (!anoLetivo) anoLetivo = new Date().getFullYear();
-      const listaTipo = await api.get(
-        `v1/calendarios/tipos/anos/letivos/${anoLetivo}`
-      );
-      if (listaTipo && listaTipo.data && listaTipo.data.length) {
-        listaTipo.data.map(item => {
-          item.id = String(item.id);
-          item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
-        });
-        setListaTipoCalendarioEscolar(listaTipo.data);
-        if (listaTipo.data.length === 1) {
-          setTipoCalendarioSelecionado(listaTipo.data[0].id);
-          setDesabilitarTipoCalendario(true);
-        } else {
-          setDesabilitarTipoCalendario(false);
-        }
-      } else {
-        setListaTipoCalendarioEscolar([]);
-      }
-      setCarregandoTipos(false);
-    }
-    consultaTipos();
-  }, [usuarioLogado.turmaSelecionada]);
-
   const obterDataMoment = data => {
     return data ? moment(data) : null;
   };
 
   useEffect(() => {
-    carregaDados();
-  }, [dreSelecionada, tipoCalendarioSelecionado, ueSelecionada]);
+    let isSubscribed = true;
+    (async () => {
+      setCarregandoTipos(true);
 
-  const carregaDados = () => {
+      const {
+        data,
+      } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
+        pesquisaTipoCalendario
+      );
+
+      if (isSubscribed) {
+        setListaTipoCalendario(data);
+        setCarregandoTipos(false);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [pesquisaTipoCalendario]);
+
+  const carregaDados = useCallback(() => {
     setModoEdicao(false);
     if (tipoCalendarioSelecionado) {
       setEmprocessamento(true);
@@ -301,7 +301,11 @@ const PeriodoFechamentoAbertura = () => {
     } else {
       setFechamento(obtemPeriodosIniciais());
     }
-  };
+  }, [dreSelecionada, tipoCalendarioSelecionado, ueSelecionada]);
+
+  useEffect(() => {
+    carregaDados();
+  }, [dreSelecionada, carregaDados, tipoCalendarioSelecionado, ueSelecionada]);
 
   const onChangeCamposData = form => {
     if (!modoEdicao) {
@@ -432,28 +436,12 @@ const PeriodoFechamentoAbertura = () => {
     return dias;
   };
 
-  const possuiErro = (form, campo, indice) => {
-    return (
-      form &&
-      form.errors.fechamentosBimestres &&
-      form.errors.fechamentosBimestres[indice] &&
-      form.errors.fechamentosBimestres[indice][campo]
-    );
-  };
-
-  const obterErros = (form, campo, indice) =>
-    possuiErro(form, campo, indice) && (
-      <span className="erro">
-        {form.errors.fechamentosBimestres[indice][campo]}
-      </span>
-    );
-
   const onChangeDre = (dreId, form) => {
     if (dreId !== dreSelecionada) {
       setDreSelecionada(dreId);
       const ue = undefined;
       setUeSelecionada(ue);
-      const tipoSelecionado = listaTipoCalendarioEscolar.find(
+      const tipoSelecionado = listaTipoCalendario.find(
         item => item.id == form.values.tipoCalendarioId
       );
       if (tipoSelecionado && tipoSelecionado.modalidade) {
@@ -479,7 +467,7 @@ const PeriodoFechamentoAbertura = () => {
       <div className="row" key={`key-${indice}`}>
         <div className="col-md-6 mb-2">
           <CaixaBimestre>
-            <BoxTextoBimetre>{descricao}</BoxTextoBimetre>
+            <BoxTextoBimestre>{descricao}</BoxTextoBimestre>
           </CaixaBimestre>
         </div>
         <div className="col-md-3 mb-2">
@@ -506,6 +494,22 @@ const PeriodoFechamentoAbertura = () => {
         </div>
       </div>
     );
+  };
+
+  const selecionaTipoCalendario = descricao => {
+    const tipo = listaTipoCalendario?.find(t => t.descricao === descricao);
+    if (Number(tipo?.id) || !tipo?.id) {
+      const isPeriodoAnual = tipo?.periodo === periodo?.Anual;
+      setIsTipoCalendarioAnual(isPeriodoAnual);
+      setValorTipoCalendario(descricao);
+    }
+    setTipoCalendarioSelecionado(tipo?.id);
+  };
+
+  const handleSearch = descricao => {
+    if (descricao.length > 3 || descricao.length === 0) {
+      setPesquisaTipoCalendario(descricao);
+    }
   };
 
   return (
@@ -564,29 +568,21 @@ const PeriodoFechamentoAbertura = () => {
                   <div className="col-md-8 pb-2">
                     <Loader loading={carregandoTipos} tip="">
                       <div style={{ maxWidth: '300px' }}>
-                        <SelectComponent
+                        <SelectAutocomplete
+                          hideLabel
+                          showList
+                          isHandleSearch
+                          placeholder="Selecione um tipo de calendário"
+                          className="col-md-12"
                           name="tipoCalendarioId"
                           id="tipoCalendarioId"
-                          lista={listaTipoCalendarioEscolar}
-                          valueOption="id"
-                          valueText="descricaoTipoCalendario"
-                          onChange={id => {
-                            setTipoCalendarioSelecionado(id);
-                            const tipoSelecionado = listaTipoCalendarioEscolar.find(
-                              item => item.id == id
-                            );
-                            if (
-                              tipoSelecionado &&
-                              tipoSelecionado.periodo == periodo.Anual
-                            ) {
-                              setIsTipoCalendarioAnual(true);
-                            } else {
-                              setIsTipoCalendarioAnual(false);
-                            }
-                          }}
-                          valueSelect={tipoCalendarioSelecionado}
-                          disabled={desabilitarTipoCalendario}
-                          placeholder="Selecione um tipo de calendário"
+                          lista={listaTipoCalendario}
+                          valueField="id"
+                          textField="descricao"
+                          onSelect={selecionaTipoCalendario}
+                          onChange={selecionaTipoCalendario}
+                          handleSearch={handleSearch}
+                          value={valorTipoCalendario}
                         />
                       </div>
                     </Loader>
