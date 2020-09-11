@@ -201,6 +201,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        d.dre_id,
 	                        d.abreviacao,
 	                        d.data_atualizacao
+
                         from
 	                        turma t
                         inner join ue u on
