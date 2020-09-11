@@ -235,9 +235,7 @@ const PlanoAula = props => {
 
     if (planoAula.objetivosAprendizagemOpcionais) return false;
 
-    console.log(
-      !objetivosAprendizagem.filter(obj => obj.selected === true).length
-    );
+    if (objetivosAprendizagem.length == 0) return false;
 
     return !objetivosAprendizagem.filter(obj => obj.selected === true).length;
   }, [desabilitarCampos, temObjetivos, objetivosAprendizagem]);
