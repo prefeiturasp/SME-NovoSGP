@@ -14,14 +14,16 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioNotificacaoCartaIntencoesObservacao repositorioNotificacaoCartaIntencoesObservacao;
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IMediator mediator;
+        private readonly IUnitOfWork unitOfWork;
 
         public ExcluirNotificacaoCartaIntencoesObservacaoCommandHandler(IRepositorioNotificacao repositorioNotificacao,
             IRepositorioNotificacaoCartaIntencoesObservacao repositorioNotificacaoCartaIntencoesObservacao,
-            IMediator mediator)
+            IMediator mediator, IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioNotificacaoCartaIntencoesObservacao = repositorioNotificacaoCartaIntencoesObservacao ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCartaIntencoesObservacao));
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Handle(ExcluirNotificacaoCartaIntencoesObservacaoCommand request, CancellationToken cancellationToken)
@@ -29,11 +31,22 @@ namespace SME.SGP.Aplicacao
 
             var notificacoes = await repositorioNotificacaoCartaIntencoesObservacao.ObterPorCartaIntencoesObservacaoId(request.CartaIntencoesObservacaoId);
 
-            foreach (var notificacao in notificacoes)
+            unitOfWork.IniciarTransacao();
+            try
             {
-                repositorioNotificacao.Remover(notificacao.NotificacaoId);
-                await repositorioNotificacaoCartaIntencoesObservacao.Excluir(notificacao);
+                foreach (var notificacao in notificacoes)
+                {
+                    await repositorioNotificacaoCartaIntencoesObservacao.Excluir(notificacao);
+                    repositorioNotificacao.Remover(notificacao.NotificacaoId);                    
+                }
+
+                unitOfWork.PersistirTransacao();
             }
+            catch (Exception)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }      
 
             return true;
         }
