@@ -3,11 +3,11 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioDevolutivaDiarioBordoNotificacao : IRepositorioDevolutivaDiarioBordoNotificacao
+    public class RepositorioDevolutivaNotificacao : IRepositorioDevolutivaNotificacao
     {
         private readonly ISgpContext database;
 
-        public RepositorioDevolutivaDiarioBordoNotificacao(ISgpContext database)
+        public RepositorioDevolutivaNotificacao(ISgpContext database)
         {
             this.database = database;
         }
