@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
             {
                 AulaId = diarioBordo.AulaId,
                 DevolutivaId = diarioBordo.DevolutivaId,
-                Devolutiva = diarioBordo.Devolutiva != null ? diarioBordo.Devolutiva.Descricao : null,
+                Devolutivas = diarioBordo.Devolutiva != null ? diarioBordo.Devolutiva.Descricao : null,
                 Excluido = diarioBordo.Excluido,
                 Migrado = diarioBordo.Migrado,
                 Planejamento = diarioBordo.Planejamento,
