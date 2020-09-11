@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface INotificarNovaCartaIntencoesObservacaoUseCase
+    public interface ISalvarNotificacaoCartaIntencoesObservacaoUseCase
     {
         Task<bool> Executar(MensagemRabbit mensagemRabbit);
     }
