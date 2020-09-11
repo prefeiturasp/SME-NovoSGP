@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioEixo : RepositorioBase<Eixo>, IRepositorioEixo
+    public class RepositorioEixo : RepositorioBase<RecuperacaoParalelaEixo>, IRepositorioEixo
     {
         public RepositorioEixo(ISgpContext conexao) : base(conexao)
         {
@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("id,");
             query.AppendLine("recuperacao_paralela_periodo_id as PeriodoId,");
             query.AppendLine("descricao");
-            query.AppendLine("from eixo");
+            query.AppendLine("from recuperacao_paralela_eixo");
             query.AppendLine("where (dt_fim is null or dt_fim <= now())");
             query.AppendLine("and excluido = false");
             //se não for encaminhamento, não traz os específicos do período
