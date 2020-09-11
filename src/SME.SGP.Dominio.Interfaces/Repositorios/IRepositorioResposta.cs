@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioResposta : IRepositorioBase<Resposta>
+    public interface IRepositorioResposta : IRepositorioBase<RecuperacaoParalelaResposta>
     {
         Task<IEnumerable<RespostaDto>> Listar(long periodoId);
     }

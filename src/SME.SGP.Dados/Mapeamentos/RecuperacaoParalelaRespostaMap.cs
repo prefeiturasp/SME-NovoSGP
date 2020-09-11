@@ -2,11 +2,11 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RespostaMap : BaseMap<Resposta>
+    public class RecuperacaoParalelaRespostaMap : BaseMap<RecuperacaoParalelaResposta>
     {
-        public RespostaMap()
+        public RecuperacaoParalelaRespostaMap()
         {
-            ToTable("resposta");
+            ToTable("recuperacao_paralela_resposta");
             Map(c => c.DtInicio).ToColumn("dt_inicio");
             Map(c => c.DtFim).ToColumn("dt_fim");
         }
