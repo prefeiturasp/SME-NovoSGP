@@ -27,9 +27,14 @@ namespace SME.SGP.Aplicacao
         {
             var dadosMensagem = mensagemRabbit.ObterObjetoMensagem<NotificarDiarioBordoObservacaoDto>();
 
-            var turma = dadosMensagem.Turma;
-            var usuarioLogado = dadosMensagem.Usuario;
+            var usuarioId = dadosMensagem.UsuarioId;
+            var diarioBordoId = dadosMensagem.DiarioBordoId;
+            var diarioBordo = await mediator.Send(new ObterDiarioBordoComAulaPorIdQuery(diarioBordoId));
+
             var dataAtual = DateTime.Now.ToString("MM/dd/yyyy");
+
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaCodigo));
 
             var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turma.CodigoTurma));
 
