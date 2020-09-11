@@ -47,7 +47,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    data_atualizacao = @dataAtualizacao,
                         ensino_especial = @ensinoEspecial,
                         etapa_eja = @etapaEja,
-                        data_inicio = @dataInicio
+                        data_inicio = @dataInicio,
+                        serie_ensino = @serieEnsino
                     where
 	                    id = @id;";
 
@@ -321,7 +322,8 @@ namespace SME.SGP.Dados.Repositorios
                                         c.TipoTurno != l.TipoTurno ||
                                         c.EnsinoEspecial != l.EnsinoEspecial ||
                                         c.EtapaEJA != l.EtapaEJA ||
-                                        c.DataInicio != l.DataInicio)
+                                        c.DataInicio != l.DataInicio ||
+                                        c.SerieEnsino != l.SerieEnsino )
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -338,7 +340,8 @@ namespace SME.SGP.Dados.Repositorios
                                       UeId = l.UeId,
                                       EnsinoEspecial = c.EnsinoEspecial,
                                       EtapaEJA = c.EtapaEJA,
-                                      DataInicio = c.DataInicio
+                                      DataInicio = c.DataInicio,
+                                      SerieEnsino = c.SerieEnsino
                                   };
 
                 foreach (var item in modificados)
@@ -356,7 +359,8 @@ namespace SME.SGP.Dados.Repositorios
                         id = item.Id,
                         ensinoEspecial = item.EnsinoEspecial,
                         etapaEja = item.EtapaEJA,
-                        dataInicio = item.DataInicio
+                        dataInicio = item.DataInicio,
+                        serieEnsino = item.SerieEnsino
                     });
 
                     resultado.Add(item);

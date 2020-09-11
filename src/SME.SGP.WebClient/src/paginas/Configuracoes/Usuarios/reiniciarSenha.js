@@ -17,7 +17,7 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
-export default function ReiniciarSenha() {
+export default function ReiniciarSenha({ perfilSelecionado }) {
   const [linhaSelecionada, setLinhaSelecionada] = useState({});
   const [listaUsuario, setListaUsuario] = useState([]);
 
@@ -340,7 +340,7 @@ export default function ReiniciarSenha() {
           <Button
             label="Filtrar"
             color={Colors.Azul}
-            disabled={!permissoesTela.podeConsultar}
+            disabled={perfilSelecionado}
             border
             className="text-center d-block mt-4 float-right w-100"
             onClick={onClickFiltrar}

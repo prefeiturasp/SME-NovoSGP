@@ -50,7 +50,10 @@ const RelatorioNotasConceitosFinais = () => {
   ]);
   const [condicao, setCondicao] = useState(undefined);
 
-  const listaFormatos = [{ valor: '1', desc: 'PDF' }];
+  const listaFormatos = [
+    { valor: '1', desc: 'PDF' },
+    { valor: '4', desc: 'Excel' },
+  ];
   const listaTipoNota = [
     { valor: tipoNota.nota, desc: 'Nota' },
     { valor: tipoNota.conceito, desc: 'Conceito' },
