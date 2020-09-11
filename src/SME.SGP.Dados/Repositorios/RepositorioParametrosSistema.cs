@@ -56,5 +56,25 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query.ToString(), new { tipo, ano });
         }
+
+        public async Task<string> ObterValorUnicoPorTipo(TipoParametroSistema tipoParametroSistema)
+        {
+
+            var query = @"select valor
+                          from parametros_sistema
+                         where tipo = @tipoParametroSistema and ativo";
+
+            return await database.Conexao.QueryFirstAsync<string>(query, new { tipoParametroSistema });
+        }
+
+        public async Task<T> ObterValorUnicoPorTipo<T>(TipoParametroSistema tipoParametroSistema)
+        {
+
+            var query = @"select valor
+                          from parametros_sistema
+                         where tipo = @tipoParametroSistema and ativo";
+
+            return await database.Conexao.QueryFirstAsync<T>(query, new { tipoParametroSistema });
+        }
     }
 }

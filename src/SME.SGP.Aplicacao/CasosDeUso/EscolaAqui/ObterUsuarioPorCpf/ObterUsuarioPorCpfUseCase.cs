@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        public async Task<UsuarioEscolaAquiDto> Executar(string cpf)
+        public async Task<UsuarioEscolaAquiDto> Executar(string codigoDre, long codigoUe, string cpf)
         {
-            return await mediator.Send(new ObterUsuarioPorCpfQuery(cpf));
+            return await mediator.Send(new ObterUsuarioPorCpfQuery(codigoDre, codigoUe, cpf));
         }
     }
 }
