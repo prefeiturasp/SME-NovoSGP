@@ -16,16 +16,16 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IConfiguration configuration;
-        private readonly IRepositorioDevolutivaDiarioBordoNotificacao repositorioNotificacaoCartaIntencoesObservacao;
+        private readonly IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva;
         private readonly IServicoNotificacao servicoNotificacao;
 
         public SalvarNotificacaoDevolutivaUseCase(IMediator mediator, IConfiguration configuration, IServicoNotificacao servicoNotificacao,
-            IRepositorioNotificacaoCartaIntencoesObservacao repositorioNotificacaoCartaIntencoesObservacao)
+            IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            this.repositorioNotificacaoCartaIntencoesObservacao = repositorioNotificacaoCartaIntencoesObservacao ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCartaIntencoesObservacao));
+            this.repositorioNotificacaoDevolutiva = repositorioNotificacaoDevolutiva ?? throw new ArgumentNullException(nameof(repositorioNotificacaoDevolutiva));
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
