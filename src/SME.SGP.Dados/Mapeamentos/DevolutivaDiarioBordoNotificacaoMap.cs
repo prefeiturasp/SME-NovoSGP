@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class DevolutivaDiarioBordoNotificacaoMap : DommelEntityMap<DevolutivaDiarioBordoNotificacao>
+    public class DevolutivaDiarioBordoNotificacaoMap : DommelEntityMap<NotificacaoDevolutiva>
     {
         public DevolutivaDiarioBordoNotificacaoMap()
         {
