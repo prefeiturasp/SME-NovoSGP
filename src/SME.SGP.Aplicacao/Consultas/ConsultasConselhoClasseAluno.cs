@@ -22,14 +22,12 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IServicoConselhoClasse servicoConselhoClasse;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
-                                            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
                                             IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                             IConsultasTipoCalendario consultasTipoCalendario,
                                             IConsultasFechamentoTurma consultasFechamentoTurma,
@@ -45,7 +43,6 @@ namespace SME.SGP.Aplicacao
                                             IServicoConselhoClasse servicoConselhoClasse)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
-            this.repositorioFrequenciaAluno = repositorioFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAluno));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
@@ -271,7 +268,7 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar != null)
             {
                 // Frequencia do bimestre
-                frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(alunoCodigo,
+                frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(alunoCodigo,
                                                                                periodoEscolar.PeriodoFim,
                                                                                TipoFrequenciaAluno.PorDisciplina,
                                                                                componenteCurricularCodigo.ToString());
@@ -295,7 +292,7 @@ namespace SME.SGP.Aplicacao
                 var periodosEscolaresTurma = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
                 foreach (var periodoEscolarTurma in periodosEscolaresTurma)
                 {
-                    var frequenciaAlunoPeriodo = await repositorioFrequenciaAluno.ObterPorAlunoBimestreAsync(alunoCodigo,
+                    var frequenciaAlunoPeriodo = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoBimestreAsync(alunoCodigo,
                                                                                                              periodoEscolarTurma.Bimestre,
                                                                                                              TipoFrequenciaAluno.PorDisciplina,
                                                                                                              componenteCurricularCodigo.ToString());
