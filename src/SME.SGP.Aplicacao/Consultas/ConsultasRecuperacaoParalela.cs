@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RecuperacaoParalelaListagemDto> Listar(FiltroRecuperacaoParalelaDto filtro)
         {
-            var alunosEol = await servicoEOL.ObterAlunosAtivosPorTurma(filtro.TurmaId);
+            var alunosEol = await servicoEOL.ObterAlunosAtivosPorTurma(filtro.TurmaCodigo);
 
             if (!alunosEol.Any())
                 return null;
