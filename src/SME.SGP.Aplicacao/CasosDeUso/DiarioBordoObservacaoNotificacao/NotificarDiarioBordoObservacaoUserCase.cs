@@ -27,20 +27,18 @@ namespace SME.SGP.Aplicacao
         {
             var dadosMensagem = mensagemRabbit.ObterObjetoMensagem<NotificarDiarioBordoObservacaoDto>();
 
-            var usuarioId = dadosMensagem.UsuarioId;
-            var diarioBordoId = dadosMensagem.DiarioBordoId;
-            var diarioBordo = await mediator.Send(new ObterDia(diarioBordoId));
-
             var dataAtual = DateTime.Now.ToString("MM/dd/yyyy");
+            var usuarioId = dadosMensagem.UsuarioId;
+            long diarioBordoId = (long)dadosMensagem.DiarioBordoId;
+            var diarioBordo = await mediator.Send(new ObterDiarioBordoComAulaETurmaPorCodigoQuery(diarioBordoId));
+            
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());            
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaCodigo));
-
-            var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turma.CodigoTurma));
+            var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(diarioBordo.Aula.Turma.CodigoTurma));
 
             if (titulares != null)
             {
-                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação no Diário de bordo do dia {dataAtual} da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.Nome}</strong> ({turma.Ue.Dre.Abreviacao})");
+                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação no Diário de bordo do dia {dataAtual} da turma <strong>{diarioBordo.Aula.Turma.Nome}</strong> da <strong>{diarioBordo.Aula.Turma.Ue.Nome}</strong> ({diarioBordo.Aula.Turma.Ue.Dre.Abreviacao})");
 
                 var hostAplicacao = configuration["UrlFrontEnd"];
                 mensagem.AppendLine($"<br/><br/><a href='{hostAplicacao}diario-classe/diario-bordo'>Clique aqui para visualizar a observação.</a>");
@@ -56,7 +54,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
                         if (usuario != null)
-                            await mediator.Send(new NotificarUsuarioCommand($"Nova observação no Diário de bordo da turma {turma.Nome} ({dataAtual})",
+                            await mediator.Send(new NotificarUsuarioCommand($"Nova observação no Diário de bordo da turma {diarioBordo.Aula.Turma.Nome} ({dataAtual})",
                                                                             mensagem.ToString(),
                                                                             codigoRf,
                                                                             NotificacaoCategoria.Aviso,
