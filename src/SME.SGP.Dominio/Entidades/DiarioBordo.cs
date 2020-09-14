@@ -16,5 +16,13 @@ namespace SME.SGP.Dominio
 
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
+
+
+        public void AdicionarAula(Aula aula)
+        {
+            Aula = aula ?? throw new NegocioException("É necessario informar uma aula.");
+        }
     }
+
+    
 }

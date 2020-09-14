@@ -19,5 +19,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<long>> ObterIdsPorDevolutiva(long devolutivaId);
         Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> ObterDiariosBordoPorDevolutivaPaginado(long devolutivaId, Paginacao paginacao);
         Task ExcluirReferenciaDevolutiva(long devolutivaId);
+        Task<DiarioBordo> ObterDiarioBordoComAulaETurmaPorCodigo(long diarioBordoId);
     }
 }
