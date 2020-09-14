@@ -9,14 +9,17 @@ namespace SME.SGP.Infra.Dtos
 {
     public class NotificarNovaCartaIntencoesObservacaoDto
     {
-        public NotificarNovaCartaIntencoesObservacaoDto(Turma turma, Usuario usuario)
+        public NotificarNovaCartaIntencoesObservacaoDto(Turma turma, Usuario usuario, long cartaIntencoesObservacaoId)
         {
             Turma = turma;
             Usuario = usuario;
+            CartaIntencoesObservacaoId = cartaIntencoesObservacaoId;
         }
 
         public Turma Turma { get; set; }
         public Usuario Usuario { get; set; }
+
+        public long CartaIntencoesObservacaoId;
     }
 
     public class NotificarNovaCartaIntencoesObservacaoDtoValidator : AbstractValidator<NotificarNovaCartaIntencoesObservacaoDto>
@@ -30,6 +33,10 @@ namespace SME.SGP.Infra.Dtos
             RuleFor(c => c.Usuario)
                 .NotEmpty()
                 .WithMessage("O usuário deve ser informado.");
+
+            RuleFor(c => c.CartaIntencoesObservacaoId)
+                .NotEmpty()
+                .WithMessage("A Observação da Carta de Intenções deve ser informado.");
 
             RuleFor(c => c.Turma.Ue)
                 .NotEmpty()
