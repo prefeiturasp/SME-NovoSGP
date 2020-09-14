@@ -10,18 +10,20 @@ namespace SME.SGP.Aplicacao
     public class InserirDevolutivaCommand: IRequest<AuditoriaDto>
     {
         public long CodigoComponenteCurricular { get; set; }
+        public long TurmaId { get; set; }
         public IEnumerable<long> DiariosBordoIds { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
         public string Descricao { get; set; }
 
-        public InserirDevolutivaCommand(long codigoComponenteCurricular, IEnumerable<long> diariosBordoIds, DateTime periodoInicio, DateTime periodoFim, string descricao)
+        public InserirDevolutivaCommand(long codigoComponenteCurricular, IEnumerable<long> diariosBordoIds, DateTime periodoInicio, DateTime periodoFim, string descricao, long turmaId)
         {
             CodigoComponenteCurricular = codigoComponenteCurricular;
             DiariosBordoIds = diariosBordoIds;
             PeriodoInicio = periodoInicio;
             PeriodoFim = periodoFim;
             Descricao = descricao;
+            TurmaId = turmaId;
         }
     }
 
