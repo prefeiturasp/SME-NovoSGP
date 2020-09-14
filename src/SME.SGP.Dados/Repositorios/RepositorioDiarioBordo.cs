@@ -167,5 +167,31 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DateTime?>(query, new { turmaCodigo, disciplinaId = componenteCurricularCodigo.ToString() });
         }
+
+        public async Task<DiarioBordo> ObterDiarioBordoComAulaETurmaPorCodigo(long diarioBordoId)
+        {
+            var query = @"select 
+	                       db.id,
+                           db.devolutiva_id as DevolutivaId,
+                           db.planejamento,
+                           a.id as AulaPaiId,
+                           a.ue_id,
+                           a.disciplina_id,
+                           t.turma_id,
+                           t.nome,
+                           t.modalidade_codigo 
+                      from diario_bordo db  
+                     inner join aula a on
+                      db.aula_id = a.id
+                     inner join turma t on 
+                      a.turma_id = t.turma_id 
+                     where db.id =  @diarioBordoId";
+            return (await database.QueryAsync<DiarioBordo, Aula, Turma, DiarioBordo>(query, (diarioBordo, aula ,turma) =>
+            {
+                aula.AtualizaTurma(turma);
+                diarioBordo.AdicionarAula(aula);
+                return diarioBordo;
+            }, new { diarioBordoId }, splitOn: "DevolutivaId, AulaPaiId, turma_id")).FirstOrDefault();
+        }
     }
 }
