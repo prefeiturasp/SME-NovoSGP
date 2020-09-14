@@ -235,6 +235,8 @@ const PlanoAula = props => {
 
     if (planoAula.objetivosAprendizagemOpcionais) return false;
 
+    if (objetivosAprendizagem.length == 0) return false;
+
     return !objetivosAprendizagem.filter(obj => obj.selected === true).length;
   }, [desabilitarCampos, temObjetivos, objetivosAprendizagem]);
 
@@ -460,6 +462,7 @@ const PlanoAula = props => {
                     ) : null}
                     <Editor
                       desabilitar={editorObjetivosPlanejamentoDesabilitado}
+                      //desabilitar={false}
                       onChange={onBlurMeusObjetivos}
                       inicial={planoAula.descricao}
                     />

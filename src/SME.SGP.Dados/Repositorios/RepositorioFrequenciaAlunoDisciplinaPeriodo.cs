@@ -36,6 +36,23 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorTurma(string turmaCodigo, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia)
+        {
+            var query = @"select *
+                        from frequencia_aluno
+                        where turma_id = @turmaCodigo
+	                        and disciplina_id = @disciplinaId
+	                        and tipo = @tipoFrequencia
+	                        and periodo_escolar_id = @periodoEscolarId";
+            return await database.QueryAsync<FrequenciaAluno>(query, new
+            {
+                turmaCodigo,
+                disciplinaId,
+                periodoEscolarId,
+                tipoFrequencia
+            });
+        }
+
         public IEnumerable<FrequenciaAluno> ObterAlunosComAusenciaPorDisciplinaNoPeriodo(long periodoId, bool eja)
         {
             var query = $@"select f.* 
