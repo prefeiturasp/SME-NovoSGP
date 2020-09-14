@@ -8,14 +8,15 @@ namespace SME.SGP.Infra.Dtos
 {
     public class NotificarDiarioBordoObservacaoDto
     {
-        public NotificarDiarioBordoObservacaoDto(long diarioBordoId, long usuarioId)
+        public NotificarDiarioBordoObservacaoDto(long diarioBordoId, Usuario usuario, long observacaoId)
         {
             DiarioBordoId = diarioBordoId;
-            UsuarioId = usuarioId;
+            Usuario = usuario;
+            ObservacaoId = observacaoId;
         }
-
+        public long ObservacaoId { get; set; }
         public long DiarioBordoId { get; set; }
-        public long UsuarioId { get; set; }
+        public Usuario Usuario { get; set; }
     }
 
     public class NotificarDiarioBordoObservacaoDtoValidator : AbstractValidator<NotificarDiarioBordoObservacaoDto>
@@ -26,9 +27,9 @@ namespace SME.SGP.Infra.Dtos
                 .NotEmpty()
                 .WithMessage("O Id do diario de bordo deve ser informado");
 
-            RuleFor(c => c.UsuarioId)
+            RuleFor(c => c.Usuario)
                 .NotEmpty()
-                .WithMessage("O id do usuario deve ser informado");           
+                .WithMessage("O usuario deve ser informado");           
         }
     }    
 }

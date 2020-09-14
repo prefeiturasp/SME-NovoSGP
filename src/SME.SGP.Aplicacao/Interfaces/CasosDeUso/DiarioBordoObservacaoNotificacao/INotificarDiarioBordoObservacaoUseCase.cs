@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface INotificarDiarioBordoObservacaoUserCase
+    public interface INotificarDiarioBordoObservacaoUseCase
     {
         Task<bool> Executar(MensagemRabbit mensagemRabbit);
     }

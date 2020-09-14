@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao;
         private readonly IMediator mediator;
 
-        public AdicionarObservacaoDiarioBordoCommandHandler(IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao, IRepositorioDiarioBordo repositorioDiarioBordo, IMediator mediator)
+        public AdicionarObservacaoDiarioBordoCommandHandler(IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao, IMediator mediator)
         {
             this.repositorioDiarioBordoObservacao = repositorioDiarioBordoObservacao ?? throw new System.ArgumentNullException(nameof(repositorioDiarioBordoObservacao));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
@@ -22,12 +22,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Handle(AdicionarObservacaoDiarioBordoCommand request, CancellationToken cancellationToken)
         {
-
-            
             var diarioBordoObservacao = new DiarioBordoObservacao(request.Observacao, request.DiarioBordoId, request.UsuarioId);
-            await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
-
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo, new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, request.UsuarioId), Guid.NewGuid(), null));
+            var observacaoId = await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
+                new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, usuario, observacaoId), Guid.NewGuid(), null));
 
             return (AuditoriaDto)diarioBordoObservacao;
         }

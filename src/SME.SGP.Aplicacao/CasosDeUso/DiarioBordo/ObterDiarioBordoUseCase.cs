@@ -32,9 +32,10 @@ namespace SME.SGP.Aplicacao
 
                 return MapearParaDto(diarioBordo, aberto);
             }
-            
-            diarioBordo.Devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(diarioBordo.DevolutivaId.GetValueOrDefault()));
-            
+
+            if (diarioBordo.DevolutivaId != null)
+                diarioBordo.Devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(diarioBordo.DevolutivaId.GetValueOrDefault()));
+
             var dto = MapearParaDto(diarioBordo, aberto);
 
             return dto;
