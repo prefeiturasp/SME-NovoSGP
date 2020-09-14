@@ -597,9 +597,6 @@ const Filtro = () => {
       obterTurmas(true);
       return;
     }
-
-    setTurmaSelecionada();
-    setCampoTurmaDesabilitado(true);
   }, [
     anoLetivoSelecionado,
     dreSelecionada,
