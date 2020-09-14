@@ -223,17 +223,12 @@ const EventosLista = ({ match }) => {
         item => item.id == tipoCalendarioId
       );
 
-      const calendarioConvertido =
-        eventoCalendarioId && JSON.parse(eventoCalendarioId);
-
       const valorDescricao = temTipoParaSetar
         ? temTipoParaSetar.descricao
-        : calendarioConvertido
-        ? calendarioConvertido.descricao
         : null;
 
-      if (eventoCalendarioId && !temTipoParaSetar) {
-        setPesquisaTipoCalendario(calendarioConvertido.descricao);
+      if (!temTipoParaSetar) {
+        setPesquisaTipoCalendario(valorDescricao);
       }
 
       setTemEventoCalendarioId(false);
