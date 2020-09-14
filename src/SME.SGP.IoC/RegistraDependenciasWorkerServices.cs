@@ -374,6 +374,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExcluirCartaIntencoesObservacaoUseCase, ExcluirCartaIntencoesObservacaoUseCase>();
             services.TryAddScopedWorkerService<ISalvarNotificacaoCartaIntencoesObservacaoUseCase, SalvarNotificacaoCartaIntencoesObservacaoUseCase>();
             services.TryAddScopedWorkerService<IExcluirNotificacaoCartaIntencoesObservacaoUseCase, ExcluirNotificacaoCartaIntencoesObservacaoUseCase>();
+            services.TryAddScopedWorkerService<INotificarNovaCartaIntencoesObservacaoUseCase, NotificarNovaCartaIntencoesObservacaoUseCase>();
+            services.TryAddScopedWorkerService<INotificarDiarioBordoObservacaoUserCase, NotificarDiarioBordoObservacaoUserCase>();
 
         }
 
