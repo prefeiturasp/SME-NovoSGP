@@ -1,4 +1,4 @@
 {
-  "API_URL": "https://192.168.0.63:45455/api",
+  "API_URL": "https://localhost:5001/api",
   "TRACKING_ID": ""
 }
