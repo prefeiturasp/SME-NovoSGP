@@ -14,7 +14,8 @@ import {
   SelectComponent,
   SelectAutocomplete,
 } from '~/componentes';
-import { Calendario, FiltroHelper } from '~/componentes-sgp';
+import { FiltroHelper } from '~/componentes-sgp';
+import Calendario from '~/componentes-sgp/calendarioEscolar/Calendario';
 
 import {
   api,
