@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,16 +13,22 @@ namespace SME.SGP.Aplicacao
     public class ExcluirDevolutivaCommandHandler : IRequestHandler<ExcluirDevolutivaCommand, bool>
     {
         private readonly IRepositorioDevolutiva repositorioDevolutiva;
+        private readonly IMediator mediator;
 
-        public ExcluirDevolutivaCommandHandler(IRepositorioDevolutiva repositorioDevolutiva)
+        public ExcluirDevolutivaCommandHandler(IRepositorioDevolutiva repositorioDevolutiva, IMediator mediator)
         {
             this.repositorioDevolutiva = repositorioDevolutiva ?? throw new ArgumentNullException(nameof(repositorioDevolutiva));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(ExcluirDevolutivaCommand request, CancellationToken cancellationToken)
         {
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoDevolutiva,
+                      new ExcluirNotificacaoDevolutivaDto(request.DevolutivaId), Guid.NewGuid(), null));
+
             repositorioDevolutiva.Remover(request.DevolutivaId);
-            return await Task.FromResult(true);
+
+            return true;
         }
     }
 }
