@@ -122,6 +122,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new CartaIntencoesObservacaoMap());
                config.AddMap(new DiarioBordoObservacaoNotificacaoMap());
                config.AddMap(new NotificacaoCartaIntencoesObservacaoMap());
+               config.AddMap(new DevolutivaDiarioBordoNotificacaoMap());
                config.ForDommel();
            });
         }
