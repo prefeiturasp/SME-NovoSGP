@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var dadosMensagem = mensagemRabbit.ObterObjetoMensagem<NotificarNovaCartaIntencoesObservacaoDto>();
+            var dadosMensagem = mensagemRabbit.ObterObjetoMensagem<SalvarNotificacaoCartaIntencoesObservacaoDto>();
 
             var turma = dadosMensagem.Turma;
             var usuarioLogado = dadosMensagem.Usuario;

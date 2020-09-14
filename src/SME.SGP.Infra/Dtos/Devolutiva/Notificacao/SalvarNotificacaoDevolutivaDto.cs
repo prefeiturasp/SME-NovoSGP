@@ -7,24 +7,24 @@ using System.Text;
 
 namespace SME.SGP.Infra.Dtos
 {
-    public class NotificarNovaCartaIntencoesObservacaoDto
+    public class SalvarNotificacaoDevolutivaDto
     {
-        public NotificarNovaCartaIntencoesObservacaoDto(Turma turma, Usuario usuario, long cartaIntencoesObservacaoId)
+        public SalvarNotificacaoDevolutivaDto(Turma turma, Usuario usuario, long devolutivaId)
         {
             Turma = turma;
             Usuario = usuario;
-            CartaIntencoesObservacaoId = cartaIntencoesObservacaoId;
+            DevolutivaId = devolutivaId;
         }
 
         public Turma Turma { get; set; }
         public Usuario Usuario { get; set; }
 
-        public long CartaIntencoesObservacaoId;
+        public long DevolutivaId;
     }
 
-    public class NotificarNovaCartaIntencoesObservacaoDtoValidator : AbstractValidator<NotificarNovaCartaIntencoesObservacaoDto>
+    public class SalvarNotificacaoDevolutivaDtoValidator : AbstractValidator<SalvarNotificacaoDevolutivaDto>
     {
-        public NotificarNovaCartaIntencoesObservacaoDtoValidator()
+        public SalvarNotificacaoDevolutivaDtoValidator()
         {
             RuleFor(c => c.Turma)
                 .NotEmpty()
@@ -34,9 +34,9 @@ namespace SME.SGP.Infra.Dtos
                 .NotEmpty()
                 .WithMessage("O usuário deve ser informado.");
 
-            RuleFor(c => c.CartaIntencoesObservacaoId)
+            RuleFor(c => c.DevolutivaId)
                 .NotEmpty()
-                .WithMessage("A Observação da Carta de Intenções deve ser informado.");
+                .WithMessage("A Devolutiva deve ser informada.");
 
             RuleFor(c => c.Turma.Ue)
                 .NotEmpty()
