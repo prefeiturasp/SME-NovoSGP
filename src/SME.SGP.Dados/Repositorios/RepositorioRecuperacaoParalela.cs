@@ -25,10 +25,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join recuperacao_paralela_periodo rpp on rpp.id = recRel.periodo_recuperacao_paralela_id");
             query.AppendLine("inner join turma t on rec.turma_id = t.id");
             query.AppendLine("inner join turma t2 on rec.turma_recuperacao_paralela_id = t2.id");
-            query.AppendLine("where t2.turma_id = @turmaId ");
+            query.AppendLine("where rec.turma_recuperacao_paralela_id = @turmaId ");
             query.AppendLine("and rec.excluido = false ");
             query.AppendLine("and rpp.id = @periodoId");
-            return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId = turmaId.ToString(), periodoId });
+            return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId = turmaId, periodoId });
         }
 
         public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano)
