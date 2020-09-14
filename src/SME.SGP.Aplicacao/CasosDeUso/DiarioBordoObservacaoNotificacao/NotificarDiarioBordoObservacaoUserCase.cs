@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioId = dadosMensagem.UsuarioId;
             var diarioBordoId = dadosMensagem.DiarioBordoId;
-            var diarioBordo = await mediator.Send(new ObterDiarioBordoComAulaPorIdQuery(diarioBordoId));
+            var diarioBordo = await mediator.Send(new ObterDia(diarioBordoId));
 
             var dataAtual = DateTime.Now.ToString("MM/dd/yyyy");
 
