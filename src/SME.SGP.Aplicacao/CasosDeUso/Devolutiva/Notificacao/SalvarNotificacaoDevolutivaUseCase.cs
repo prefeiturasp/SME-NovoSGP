@@ -29,20 +29,21 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var dadosMensagem = mensagemRabbit.ObterObjetoMensagem<NotificarNovaCartaIntencoesObservacaoDto>();
+            var dadosMensagem = mensagemRabbit.ObterObjetoMensagem<SalvarNotificacaoDevolutivaDto>();
 
             var turma = dadosMensagem.Turma;
             var usuarioLogado = dadosMensagem.Usuario;
-            var cartaIntencoesObservacaoId = dadosMensagem.CartaIntencoesObservacaoId;
+            var devolutivaId = dadosMensagem.DevolutivaId;
 
             var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turma.CodigoTurma));
+            var devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(devolutivaId));
 
             if (titulares != null)
             {
-                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação na Carta de intenções da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.Nome}</strong> ({turma.Ue.Dre.Abreviacao})");
+                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) registrou a devolutiva dos diários de bordo da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.Nome}</strong> ({turma.Ue.Dre.Abreviacao}). Esta devolutiva contempla os diários de bordo do período de <strong>{devolutiva.PeriodoInicio:dd/MM/yyyy}</strong> à <strong>{devolutiva.PeriodoFim:dd/MM/yyyy}</strong>");
 
                 var hostAplicacao = configuration["UrlFrontEnd"];
-                mensagem.AppendLine($"<br/><br/><a href='{hostAplicacao}planejamento/carta-intencoes'>Clique aqui para visualizar a observação.</a>");
+                mensagem.AppendLine($"<br/><br/><a href='{hostAplicacao}diario-classe/diario-bordo'>Para consultar o diário de bordo da aula clique aqui.</a>");
 
                 if (titulares.Count() == 1)
                     titulares = titulares.FirstOrDefault().Split(',');
@@ -61,7 +62,7 @@ namespace SME.SGP.Aplicacao
                                 Ano = DateTime.Now.Year,
                                 Categoria = NotificacaoCategoria.Aviso,
                                 Tipo = NotificacaoTipo.Planejamento,
-                                Titulo = $"Nova observação na Carta de intenções da turma {turma.Nome}",
+                                Titulo = $"Devolutiva do Diário de bordo da turma {turma.Nome}",
                                 Mensagem = mensagem.ToString(),
                                 UsuarioId = usuario.Id,
                                 TurmaId = "",
@@ -71,13 +72,13 @@ namespace SME.SGP.Aplicacao
 
                             await servicoNotificacao.SalvarAsync(notificacao);
 
-                            var notificacaoObservacao = new NotificacaoCartaIntencoesObservacao()
+                            var notificacaoDevolutiva = new NotificacaoDevolutiva()
                             {
                                 NotificacaoId = notificacao.Id,
-                                CartaIntencoesObservacaoId = cartaIntencoesObservacaoId
+                                DevolutivaId = devolutivaId
                             };
 
-                            await repositorioNotificacaoCartaIntencoesObservacao.Salvar(notificacaoObservacao);
+                            await repositorioNotificacaoDevolutiva.Salvar(notificacaoDevolutiva);
 
                         }
 
