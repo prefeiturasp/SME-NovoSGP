@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Devolutiva\_Notificacao\" />
     <Folder Include="Interfaces\CasosDeUso\Aluno\" />
     <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>

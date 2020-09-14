@@ -21,5 +21,5 @@ select
 		'FOREIGN KEY (devolutiva_id) REFERENCES devolutiva (id)'
 	);
 
-CREATE INDEX devolutiva_diario_bordo_notificacao_notificacao__idx ON public.devolutiva_diario_bordo_notificacao USING btree (notificacao_id);
+CREATE INDEX devolutiva_diario_bordo_notificacao_notificacao_idx ON public.devolutiva_diario_bordo_notificacao USING btree (notificacao_id);
 CREATE INDEX devolutiva_diario_bordo_notificacao_devolutiva_idx ON public.devolutiva_diario_bordo_notificacao USING btree (devolutiva_id);
