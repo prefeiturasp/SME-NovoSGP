@@ -1,9 +1,9 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class DevolutivaDiarioBordoNotificacao
+    public class NotificacaoDevolutiva
     {
         public long Id { get; set; }
-        public long ObservacaoId { get; set; }
+        public long DevolutivaId { get; set; }
         public long NotificacaoId { get; set; }
     }
 }
