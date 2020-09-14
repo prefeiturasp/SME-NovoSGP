@@ -37,6 +37,7 @@ const AtaFinalResultados = () => {
   const [formato, setFormato] = useState('1');
 
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
+  const [desabilitarBtnFormato, setDesabilitarBtnFormato] = useState(true);
 
   const listaFormatos = [
     { valor: '1', desc: 'PDF' },
@@ -308,8 +309,17 @@ const AtaFinalResultados = () => {
     setTurmaId(undefined);
   };
 
+  const habilitarSelecaoFormato = valor => {
+    const turmaSelecionada = listaTurmas?.find(item => item.valor === valor);
+    const ehDesabilitado = turmaSelecionada?.desc === 'Todas';
+    setDesabilitarBtnFormato(ehDesabilitado);
+  };
+
   const onChangeSemestre = valor => setSemestre(valor);
-  const onChangeTurma = valor => setTurmaId(valor);
+  const onChangeTurma = valor => {
+    setTurmaId(valor);
+    habilitarSelecaoFormato(valor);
+  };
   const onChangeFormato = valor => setFormato(valor);
 
   return (
@@ -451,7 +461,7 @@ const AtaFinalResultados = () => {
                 valueText="desc"
                 valueSelect={formato}
                 onChange={onChangeFormato}
-                disabled
+                disabled={desabilitarBtnFormato}
               />
             </div>
           </div>
