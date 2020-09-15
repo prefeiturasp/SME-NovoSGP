@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -84,12 +85,19 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select * 
                             from frequencia_aluno
                            where tipo = 2
-	                        and codigo_aluno = @alunoCodigo
+	                        and codigo_aluno = @alunoCodigo::int8
                             and turma_id = @turmaCodigo ");
+
             if (!string.IsNullOrEmpty(componenteCurricularCodigo))
                 query.AppendLine(" and disciplina_id = @componenteCurricularCodigo");
 
-            return await database.Conexao.QueryAsync<FrequenciaAluno>(query.ToString(), new { alunoCodigo, turmaCodigo, componenteCurricularCodigo });
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new 
+                { 
+                    alunoCodigo, 
+                    turmaCodigo, 
+                    componenteCurricularCodigo 
+                });
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma)
