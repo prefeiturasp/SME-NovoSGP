@@ -15,15 +15,13 @@ namespace SME.SGP.Api
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+
             services.AddMvc(options =>
             {
-                options.AllowValidatingTopLevelNodes = false;
                 options.EnableEndpointRouting = true;
                 options.Filters.Add(new ValidaDtoAttribute());
                 options.Filters.Add(new FiltroExcecoesAttribute(configuration));
-            })
-                .AddFluentValidation()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            }).AddFluentValidation();
         }
     }
 }

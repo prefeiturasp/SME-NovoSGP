@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
@@ -23,7 +24,7 @@ namespace SME.SGP.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             _env = env;
@@ -31,10 +32,10 @@ namespace SME.SGP.Api
         }
 
         public IConfiguration Configuration { get; }
-        private IHostingEnvironment _env;
+        private IWebHostEnvironment _env;
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseResponseCompression();
 
@@ -47,8 +48,8 @@ namespace SME.SGP.Api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseRequestLocalization();
 
+            app.UseRequestLocalization();
             app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -69,7 +70,9 @@ namespace SME.SGP.Api
 
             app.UseAuthentication();
 
-            app.UseMvc();
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
 
             app.UseStaticFiles();
 

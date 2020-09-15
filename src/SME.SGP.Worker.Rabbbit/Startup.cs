@@ -17,9 +17,9 @@ namespace SME.SGP.Worker.Rabbbit
     public class Startup
     {
         private readonly IConfiguration configuration;
-        private readonly IHostingEnvironment env;
+        private readonly IWebHostEnvironment env;
 
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             this.configuration = configuration ??
                 throw new ArgumentNullException(nameof(configuration));
