@@ -94,9 +94,9 @@ function Filtro({ onFiltrar }) {
     }
   };
 
-  // useEffect(() => {
-  //   buscarListaCiclos();
-  // }, []);
+  useEffect(() => {
+    buscarListaCiclos();
+  }, []);
 
   const [listaAnos, setListaAnos] = useState([]);
   const [carregandoAnos, setCarregandoAnos] = useState(false);
@@ -269,7 +269,7 @@ function Filtro({ onFiltrar }) {
     const anosFiltrado = anosLetivo?.data.filter(
       item => item?.ehSugestao === true
     );
-    const anoSugestao = anosFiltrado ? anosFiltrado[0]?.ano : [];
+    const anoSugestao = anosFiltrado ? anosFiltrado[0]?.ano : '';
 
     setAnoLetivo(anoSugestao);
     setListaAnosLetivo(valorAnos);
@@ -280,6 +280,12 @@ function Filtro({ onFiltrar }) {
   useEffect(() => {
     obterAnosLetivos();
   }, [obterAnosLetivos]);
+
+  useEffect(() => {
+    if (anoLetivo) {
+      refForm.setFieldValue('anoLetivo', anoLetivo);
+    }
+  }, [refForm, anoLetivo]);
 
   return (
     <Formik
@@ -298,10 +304,11 @@ function Filtro({ onFiltrar }) {
             <Grid cols={2}>
               <Loader loading={carregandoAnosLetivos} tip="">
                 <SelectComponent
+                  form={form}
+                  name="anoLetivo"
                   lista={listaAnosLetivo}
                   valueOption="valor"
                   valueText="desc"
-                  disabled={listaAnosLetivo && listaAnosLetivo.length === 1}
                   onChange={onChangeAnoLetivo}
                   valueSelect={anoLetivo}
                   placeholder="Ano Letivo"
