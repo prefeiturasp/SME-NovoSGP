@@ -1,4 +1,5 @@
-﻿using Dommel;
+﻿using Dapper;
+using Dommel;
 using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio;
@@ -28,13 +29,14 @@ namespace SME.SGP.Dados.Repositorios
 	                    pendencia_aula on aula.id = aula_id and pendencia_aula.tipo = @tipo
                     left join
 	                    {tabelaReferencia} on aula.id = {tabelaReferencia}.aula_id
-                    where not aula.excluido and 
-                    aula.data_aula < @hoje and
-                    pendencia_aula.id is null and 
-                    {tabelaReferencia}.id is null
+                    where 
+                        not aula.excluido and 
+                        aula.data_aula < @hoje and
+                        pendencia_aula.id is null and 
+                        {tabelaReferencia}.id is null
                     group by aula.id";
 
-            return (await database.Conexao.QueryAsync<Aula>(query, new { hoje = DateTime.Today, tipo = tipoPendenciaAula, tabela = tabelaReferencia }));
+            return (await database.Conexao.QueryAsync<Aula>(query, new { hoje = DateTime.Today, tipo = tipoPendenciaAula}));
         }
 
 
@@ -48,10 +50,10 @@ namespace SME.SGP.Dados.Repositorios
                         not a.excluido and 
                         a.data_aula < @hoje and  
                         n.id is null and
-                    a.id not in (select aula_id from pendencia_aula pa where pa.tipo = 4)
+                    a.id not in (select aula_id from pendencia_aula pa where pa.tipo = @tipo)
             ";
 
-            return (await database.Conexao.QueryAsync<Aula>(sql.ToString(), new { hoje = DateTime.Today }));
+            return (await database.Conexao.QueryAsync<Aula>(sql.ToString(), new { hoje = DateTime.Today, tipo = TipoPendenciaAula.Avaliacao }));
         }
 
 
@@ -63,9 +65,9 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAula>(query, new { aulaid = aulaId, tipo = tipoPendenciaAula }));
         }
 
-        public async Task Excluir(PendenciaAula pendencia)
+        public async Task Excluir(TipoPendenciaAula tipoPendenciaAula, long aulaId)
         {
-            await database.Conexao.DeleteAsync(pendencia);
+            await database.Conexao.ExecuteScalarAsync("delete from pendencia_aula where aula_id= @aulaid and tipo = @tipo", new { aulaid = aulaId, tipo = tipoPendenciaAula });
         }
 
         public async Task Salvar(PendenciaAula pendencia)
