@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using SME.Background.Core;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
@@ -25,6 +26,9 @@ namespace SME.SGP.Background
             Cliente.ExecutarPeriodicamente<IServicoNotificacaoFrequencia>(c => c.NotificarAlunosFaltososBimestre(), Cron.Daily(3));
             
             Cliente.ExecutarPeriodicamente<ISincronizarAulasInfantilUseCase>(c => c.Executar(), Cron.Daily(6));
+
+            // Executa as 04am (vai ser ajustado o UTC corretamente depois no hangfire)
+            Cliente.ExecutarPeriodicamente<IPendenciaAulaUseCase>(c => c.Executar(), Cron.Daily(4));
         }
     }
 }
