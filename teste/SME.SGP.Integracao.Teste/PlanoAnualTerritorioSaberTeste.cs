@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -36,7 +36,7 @@ namespace SME.SGP.Integracao.Teste
 
         //        PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto = CriarDtoPlanoAnualTerritorioSaber();
 
-        //        var jsonParaPost = new StringContent(JsonConvert.SerializeObject(planoAnualTerritorioSaberDto), Encoding.UTF8, "application/json");
+        //        var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(planoAnualTerritorioSaberDto), Encoding.UTF8, "application/json");
 
         //        var postResult = _fixture._clientApi.PostAsync("api/v1/planos/anual/territorio-saber/", jsonParaPost).Result;
 
@@ -50,7 +50,7 @@ namespace SME.SGP.Integracao.Teste
         //                    territorioExperienciaId={planoAnualTerritorioSaberDto.TerritorioExperienciaId}").Result;
         //        if (planoAnualTerritorioSaberCompletoResponse.IsSuccessStatusCode)
         //        {
-        //            var planoAnualCompleto = JsonConvert.DeserializeObject<PlanoAnualTerritorioSaberCompletoDto>(planoAnualTerritorioSaberCompletoResponse.Content.ReadAsStringAsync().Result);
+        //            var planoAnualCompleto = SgpJsonSerializer.Deserialize<PlanoAnualTerritorioSaberCompletoDto>(planoAnualTerritorioSaberCompletoResponse.Content.ReadAsStringAsync().Result);
         //            Assert.Contains(planoAnualTerritorioSaberDto.Bimestres, c => c.Desenvolvimento == planoAnualCompleto.Desenvolvimento && 
         //                                                                         c.Reflexao == planoAnualCompleto.Reflexao);
         //        }
@@ -76,13 +76,13 @@ namespace SME.SGP.Integracao.Teste
 
             PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto = CriarDtoPlanoAnualTerritorioSaber();
             planoAnualTerritorioSaberDto.EscolaId = null;
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(planoAnualTerritorioSaberDto), Encoding.UTF8, "application/json");
+            var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(planoAnualTerritorioSaberDto), Encoding.UTF8, "application/json");
 
             var postResult = _fixture._clientApi.PostAsync("api/v1/planos/anual/territorio-saber/", jsonParaPost).Result;
 
             Assert.False(postResult.IsSuccessStatusCode);
             var jsonErro = postResult.Content.ReadAsStringAsync().Result;
-            var retornoBase = JsonConvert.DeserializeObject<RetornoBaseDto>(jsonErro);
+            var retornoBase = SgpJsonSerializer.Deserialize<RetornoBaseDto>(jsonErro);
             Assert.Contains(retornoBase.Mensagens, c => c.Equals("A escola deve ser informada"));
         }
 

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using SME.SGP.Infra.Json;
 using RabbitMQ.Client;
 using Sentry;
 using SME.SGP.Infra.Dtos;
@@ -38,7 +38,7 @@ namespace SME.SGP.Infra
                                              publicaFilaSgpDto.PerfilUsuario,
                                              publicaFilaSgpDto.NotificarErroUsuario);
 
-            var mensagem = JsonConvert.SerializeObject(request);
+            var mensagem = SgpJsonSerializer.Serialize(request);
             var body = Encoding.UTF8.GetBytes(mensagem);
 
             rabbitChannel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, publicaFilaSgpDto.NomeFila);
@@ -48,7 +48,7 @@ namespace SME.SGP.Infra
         private static byte[] FormataBodyWorker(PublicaFilaRelatoriosDto adicionaFilaDto)
         {
             var request = new MensagemRabbit(adicionaFilaDto.Endpoint, adicionaFilaDto.Mensagem, adicionaFilaDto.CodigoCorrelacao,adicionaFilaDto.UsuarioLogadoRF, adicionaFilaDto.NotificarErroUsuario, adicionaFilaDto.PerfilUsuario);
-            var mensagem = JsonConvert.SerializeObject(request);
+            var mensagem = SgpJsonSerializer.Serialize(request);
             var body = Encoding.UTF8.GetBytes(mensagem);
             return body;
         }

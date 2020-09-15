@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +52,7 @@ namespace SME.SGP.Integracao.Teste
         //        Assert.True(buscarTodosCalendariosResultado.IsSuccessStatusCode);
         //        if (buscarTodosCalendariosResultado.IsSuccessStatusCode)
         //        {
-        //            var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<TipoCalendarioDto>>(await buscarTodosCalendariosResultado.Content.ReadAsStringAsync());
+        //            var dtoTodos = SgpJsonSerializer.Deserialize<IEnumerable<TipoCalendarioDto>>(await buscarTodosCalendariosResultado.Content.ReadAsStringAsync());
         //            Assert.True(dtoTodos.Any());
 
         //            var filtroFeriadoCalendarioDto = new FiltroFeriadoCalendarioDto() { Tipo = Dominio.TipoFeriadoCalendario.Movel, Ano = 2019 };
@@ -66,7 +66,7 @@ namespace SME.SGP.Integracao.Teste
         //            Assert.True(postResultBuscaFeriados.IsSuccessStatusCode);
         //            if (postResultBuscaFeriados.IsSuccessStatusCode)
         //            {
-        //                var dtoFeriados = JsonConvert.DeserializeObject<IEnumerable<FeriadoCalendarioDto>>(await postResultBuscaFeriados.Content.ReadAsStringAsync());
+        //                var dtoFeriados = SgpJsonSerializer.Deserialize<IEnumerable<FeriadoCalendarioDto>>(await postResultBuscaFeriados.Content.ReadAsStringAsync());
         //                Assert.True(dtoFeriados.Count() == 4);
         //            }
         //        }
@@ -88,7 +88,7 @@ namespace SME.SGP.Integracao.Teste
 
             private string TransformarEmJson(object model)
         {
-            return JsonConvert.SerializeObject(model);
+            return SgpJsonSerializer.Serialize(model);
         }
     }
 }

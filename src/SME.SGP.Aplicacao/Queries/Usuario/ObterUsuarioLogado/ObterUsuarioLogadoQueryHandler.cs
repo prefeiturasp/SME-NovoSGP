@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
+using SME.SGP.Infra.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
 
             perfisDoUsuario = string.IsNullOrWhiteSpace(perfisUsuarioString)
                 ? await ObterPerfisUsuario(login)
-                : JsonConvert.DeserializeObject<IEnumerable<PrioridadePerfil>>(perfisUsuarioString);
+                : SgpJsonSerializer.Deserialize<IEnumerable<PrioridadePerfil>>(perfisUsuarioString);
 
             usuario.DefinirPerfis(perfisDoUsuario);
             usuario.DefinirPerfilAtual(ObterPerfilAtual());
@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
 
             var perfisDoUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfisPorLogin.Perfis);
 
-            await repositorioCache.SalvarAsync(chaveRedis, JsonConvert.SerializeObject(perfisDoUsuario));
+            await repositorioCache.SalvarAsync(chaveRedis, SgpJsonSerializer.Serialize(perfisDoUsuario));
 
             return perfisDoUsuario;
         }

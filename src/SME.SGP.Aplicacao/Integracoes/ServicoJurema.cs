@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<ObjetivoAprendizagemResposta>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<ObjetivoAprendizagemResposta>>(json);
             }
             return null;
         }

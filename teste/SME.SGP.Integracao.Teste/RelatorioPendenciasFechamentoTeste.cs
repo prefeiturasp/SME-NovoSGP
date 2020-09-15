@@ -3,7 +3,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using Newtonsoft.Json;
+using SME.SGP.Infra.Json;
 using SME.SGP.Infra.Dtos.Relatorios;
 using Xunit;
 
@@ -25,7 +25,7 @@ namespace SME.SGP.Integracao.Teste
         //{
         //    // Arrange
         //    FiltroRelatorioPendenciasFechamentoDto filtro = new FiltroRelatorioPendenciasFechamentoDto();
-        //    var jsonParaPost = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+        //    var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(filtro), Encoding.UTF8, "application/json");
         //    // & Act
         //    fixture._clientApi.DefaultRequestHeaders.Clear();
         //    fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }));

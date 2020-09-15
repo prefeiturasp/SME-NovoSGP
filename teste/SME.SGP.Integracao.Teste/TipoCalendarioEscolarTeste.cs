@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -59,7 +59,7 @@ namespace SME.SGP.Integracao.Teste
                 if (postResult2.IsSuccessStatusCode)
                 {
                     var getAllResult = await _fixture._clientApi.GetAsync($"api/v1/calendarios/tipos/");
-                    var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<TipoCalendarioDto>>(getAllResult.Content.ReadAsStringAsync().Result);
+                    var dtoTodos = SgpJsonSerializer.Deserialize<IEnumerable<TipoCalendarioDto>>(getAllResult.Content.ReadAsStringAsync().Result);
 
                     Assert.True(dtoTodos.Any());
 
@@ -68,7 +68,7 @@ namespace SME.SGP.Integracao.Teste
                     var ids = new long[1];
                     ids[0] = feriadoParaExcluir.Id;
 
-                    var jsonDelete = new StringContent(JsonConvert.SerializeObject(ids), UnicodeEncoding.UTF8, "application/json");
+                    var jsonDelete = new StringContent(SgpJsonSerializer.Serialize(ids), UnicodeEncoding.UTF8, "application/json");
                     HttpRequestMessage request = new HttpRequestMessage
                     {
                         Content = jsonDelete,
@@ -84,7 +84,7 @@ namespace SME.SGP.Integracao.Teste
 
                     Assert.True(getOneResult.IsSuccessStatusCode);
 
-                    var dtoUm = JsonConvert.DeserializeObject<TipoCalendarioCompletoDto>(getOneResult.Content.ReadAsStringAsync().Result);
+                    var dtoUm = SgpJsonSerializer.Deserialize<TipoCalendarioCompletoDto>(getOneResult.Content.ReadAsStringAsync().Result);
 
                     Assert.True(dtoUm.Id == feriadoParaConsultar.Id);
                 }
@@ -93,7 +93,7 @@ namespace SME.SGP.Integracao.Teste
 
         private string TransformarEmJson(object model)
         {
-            return JsonConvert.SerializeObject(model);
+            return SgpJsonSerializer.Serialize(model);
         }
     }
 }

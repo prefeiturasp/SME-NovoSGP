@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using System;
 
 namespace SME.SGP.Infra
@@ -39,7 +39,7 @@ namespace SME.SGP.Infra
 
         public T ObterObjetoMensagem<T>() where T : class
         {
-            return JsonConvert.DeserializeObject<T>(Mensagem.ToString());
+            return SgpJsonSerializer.Deserialize<T>(Mensagem.ToString());
         }
     }
 }

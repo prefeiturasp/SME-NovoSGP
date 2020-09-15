@@ -1,19 +1,19 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace SME.SGP.Infra
 {
     public class ProfessorTitularDisciplinaEol
     {
-        [JsonProperty("disciplina_Id")]
+        [JsonPropertyName("disciplina_Id")]
         public long DisciplinaId { get; set; }
 
-        [JsonProperty("disciplina")]
+        [JsonPropertyName("disciplina")]
         public string DisciplinaNome { get; set; }
 
-        [JsonProperty("nome_Professor")]
+        [JsonPropertyName("nome_Professor")]
         public string ProfessorNome { get; set; }
 
-        [JsonProperty("professorRf")]
+        [JsonPropertyName("professorRf")]
         public string ProfessorRf { get; set; }
     }
 }

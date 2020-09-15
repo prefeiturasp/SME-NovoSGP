@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -69,7 +69,7 @@ namespace SME.SGP.Integracao.Teste
                 {
                     var ids = new int[1];
                     ids[0] = 12;
-                    var jsonDelete = new StringContent(JsonConvert.SerializeObject(ids), Encoding.UTF8, "application/json");
+                    var jsonDelete = new StringContent(SgpJsonSerializer.Serialize(ids), Encoding.UTF8, "application/json");
                     HttpRequestMessage request = new HttpRequestMessage
                     {
                         Content = jsonDelete,
@@ -81,14 +81,14 @@ namespace SME.SGP.Integracao.Teste
 
                     Assert.True(deleteResult.IsSuccessStatusCode);
 
-                    var jsonGetAll = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+                    var jsonGetAll = new StringContent(SgpJsonSerializer.Serialize(filtro), Encoding.UTF8, "application/json");
                     var getAllResult = await _fixture._clientApi.PostAsync($"api/v1/calendarios/feriados/listar", jsonGetAll);
-                    var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<FeriadoCalendarioDto>>(getAllResult.Content.ReadAsStringAsync().Result);
+                    var dtoTodos = SgpJsonSerializer.Deserialize<IEnumerable<FeriadoCalendarioDto>>(getAllResult.Content.ReadAsStringAsync().Result);
 
                     Assert.True(dtoTodos.Any());
 
                     var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/calendarios/feriados/{dtoTodos.FirstOrDefault().Id}");
-                    var dtoUm = JsonConvert.DeserializeObject<TipoCalendarioCompletoDto>(getOneResult.Content.ReadAsStringAsync().Result);
+                    var dtoUm = SgpJsonSerializer.Deserialize<TipoCalendarioCompletoDto>(getOneResult.Content.ReadAsStringAsync().Result);
 
                     Assert.NotNull(dtoUm.Nome);
                 }
@@ -97,7 +97,7 @@ namespace SME.SGP.Integracao.Teste
 
         private string TransformarEmJson(object model)
         {
-            return JsonConvert.SerializeObject(model);
+            return SgpJsonSerializer.Serialize(model);
         }
     }
 }

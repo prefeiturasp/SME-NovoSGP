@@ -3,7 +3,7 @@ using System;
 using System.Net.Http.Headers;
 using System.Text;
 using Xunit;
-using Newtonsoft.Json;
+using SME.SGP.Infra.Json;
 using System.Net.Http;
 using SME.SGP.Dominio;
 using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace SME.SGP.Integracao.Teste
 
             // Act
             fixture._clientApi.DefaultRequestHeaders.Clear();
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(filtroCiclo), Encoding.UTF8, "application/json");
+            var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(filtroCiclo), Encoding.UTF8, "application/json");
             fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }));
             var result = await fixture._clientApi.PostAsync("api/v1/ciclos/filtro", jsonParaPost);
 

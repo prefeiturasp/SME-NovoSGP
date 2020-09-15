@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace SME.SGP.Infra
 {
     public class DisciplinaDto
     {
         public long CodigoComponenteCurricular { get; set; }
-        [JsonProperty("codDisciplinaPai")]
+        [JsonPropertyName("codDisciplinaPai")]
         public long? CdComponenteCurricularPai { get; set; }
         public bool Compartilhada { get; set; }
         public string Nome { get; set; }

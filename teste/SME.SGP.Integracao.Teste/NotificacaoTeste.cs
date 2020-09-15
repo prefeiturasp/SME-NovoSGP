@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -73,7 +73,7 @@ namespace SME.SGP.Integracao.Teste
             if (postResult.IsSuccessStatusCode)
             {
                 var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioRf={notificacaoDto.UsuarioRf}").Result;
-                var notificacoesDto = JsonConvert.DeserializeObject<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
+                var notificacoesDto = SgpJsonSerializer.Deserialize<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
                 Assert.True(notificacoesDto.Items.Any());
 
@@ -82,7 +82,7 @@ namespace SME.SGP.Integracao.Teste
                 var getResultDetalhe = _fixture._clientApi.GetAsync($"api/v1/notificacoes/{notificacao.Id}").Result;
                 Assert.True(getResultDetalhe.IsSuccessStatusCode);
 
-                var notificacaoDetalheDto = JsonConvert.DeserializeObject<NotificacaoDetalheDto>(getResultDetalhe.Content.ReadAsStringAsync().Result);
+                var notificacaoDetalheDto = SgpJsonSerializer.Deserialize<NotificacaoDetalheDto>(getResultDetalhe.Content.ReadAsStringAsync().Result);
 
                 Assert.Equal(notificacaoDetalheDto.Tipo, notificacaoDto.Tipo.GetAttribute<DisplayAttribute>().Name);
                 Assert.Equal(notificacaoDetalheDto.Mensagem, notificacaoDto.Mensagem);
@@ -116,19 +116,19 @@ namespace SME.SGP.Integracao.Teste
             if (postResult.IsSuccessStatusCode)
             {
                 var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioRf={notificacaoDto.UsuarioRf}").Result;
-                var notificacoesDto = JsonConvert.DeserializeObject<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
+                var notificacoesDto = SgpJsonSerializer.Deserialize<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
                 Assert.True(notificacoesDto.Items.Count() == 1);
 
                 var getResult2 = _fixture._clientApi.GetAsync($"api/v1/notificacoes?Tipo={(int)Dominio.NotificacaoTipo.Notas}").Result;
-                var notificacoesDto2 = JsonConvert.DeserializeObject<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult2.Content.ReadAsStringAsync().Result);
+                var notificacoesDto2 = SgpJsonSerializer.Deserialize<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult2.Content.ReadAsStringAsync().Result);
                 Assert.False(notificacoesDto2.Items.Any());
 
                 var getResultDetalhe = _fixture._clientApi.GetAsync($"api/v1/notificacoes/{notificacoesDto.Items.FirstOrDefault().Id}").Result;
 
                 Assert.True(getResultDetalhe.IsSuccessStatusCode);
 
-                var notificacaoDetalheDto = JsonConvert.DeserializeObject<NotificacaoDetalheDto>(getResultDetalhe.Content.ReadAsStringAsync().Result);
+                var notificacaoDetalheDto = SgpJsonSerializer.Deserialize<NotificacaoDetalheDto>(getResultDetalhe.Content.ReadAsStringAsync().Result);
 
                 Assert.Equal(notificacaoDto.Tipo.GetAttribute<DisplayAttribute>().Name, notificacaoDetalheDto.Tipo);
                 Assert.Equal(notificacaoDto.Mensagem, notificacaoDetalheDto.Mensagem);
@@ -159,9 +159,9 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(postResult.IsSuccessStatusCode);
 
             var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioRf={notificacaoDto.UsuarioRf}").Result;
-            var notificacoesDto = JsonConvert.DeserializeObject<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
+            var notificacoesDto = SgpJsonSerializer.Deserialize<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
-            var jsonDelete = new StringContent(JsonConvert.SerializeObject(notificacoesDto.Items.Select(c => c.Id)), UnicodeEncoding.UTF8, "application/json");
+            var jsonDelete = new StringContent(SgpJsonSerializer.Serialize(notificacoesDto.Items.Select(c => c.Id)), UnicodeEncoding.UTF8, "application/json");
             HttpRequestMessage request = new HttpRequestMessage
             {
                 Content = jsonDelete,
@@ -204,21 +204,21 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(postResult.IsSuccessStatusCode);
 
             var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioRf={notificacaoDto.UsuarioRf}").Result;
-            var notificacoesDto = JsonConvert.DeserializeObject<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
+            var notificacoesDto = SgpJsonSerializer.Deserialize<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
-            var jsonPut = new StringContent(JsonConvert.SerializeObject(notificacoesDto.Items.Select(c => c.Id)), UnicodeEncoding.UTF8, "application/json");
+            var jsonPut = new StringContent(SgpJsonSerializer.Serialize(notificacoesDto.Items.Select(c => c.Id)), UnicodeEncoding.UTF8, "application/json");
             var putResult = _fixture._clientApi.PutAsync($"api/v1/notificacoes/status/lida", jsonPut).Result;
 
             Assert.True(putResult.IsSuccessStatusCode);
             getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioRf={notificacaoDto.UsuarioRf}").Result;
-            notificacoesDto = JsonConvert.DeserializeObject<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
+            notificacoesDto = SgpJsonSerializer.Deserialize<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
             Assert.Contains(notificacoesDto.Items, c => c.Status == NotificacaoStatus.Lida && c.Categoria == NotificacaoCategoria.Alerta);
             Assert.Contains(notificacoesDto.Items, c => c.Status == NotificacaoStatus.Pendente && c.Categoria == NotificacaoCategoria.Aviso);
         }
 
         private string TransformarEmJson(object model)
         {
-            return JsonConvert.SerializeObject(model);
+            return SgpJsonSerializer.Serialize(model);
         }
     }
 }

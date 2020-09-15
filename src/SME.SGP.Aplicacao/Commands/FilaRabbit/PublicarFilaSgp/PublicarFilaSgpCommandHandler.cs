@@ -1,9 +1,10 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
 using System;
+using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.model = model ?? throw new ArgumentNullException(nameof(model));
         }
 
-        public Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
+        public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
         {
             var request = new MensagemRabbit(command.Filtros,
                                              command.CodigoCorrelacao,
@@ -27,15 +28,17 @@ namespace SME.SGP.Aplicacao
                                              command.PerfilUsuario,
                                              command.NotificarErroUsuario);
 
-            var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
+            using (MemoryStream body = new MemoryStream())
             {
-                NullValueHandling = NullValueHandling.Ignore
-            });
-            var body = Encoding.UTF8.GetBytes(mensagem);
+                await JsonSerializer.SerializeAsync(body, request, new JsonSerializerOptions
+                {
+                    IgnoreNullValues = true
+                });
 
-            model.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, command.NomeFila);
-            model.BasicPublish(RotasRabbit.ExchangeSgp, command.NomeFila, null, body);
-            return Task.FromResult(true);
+                model.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, command.NomeFila);
+                model.BasicPublish(RotasRabbit.ExchangeSgp, command.NomeFila, null, body.ToArray());
+                return true;
+            }
         }
     }
 }

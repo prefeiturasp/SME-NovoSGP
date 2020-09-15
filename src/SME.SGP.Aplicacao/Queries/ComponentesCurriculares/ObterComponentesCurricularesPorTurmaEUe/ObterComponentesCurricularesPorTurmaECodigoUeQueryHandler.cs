@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
+using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<ComponenteCurricularDto>>(json);
             }
             else throw new NegocioException("Não foi possível obter Componentes Curriculares.");
 

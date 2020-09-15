@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
+using SME.SGP.Infra.Json;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -54,14 +54,14 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
             {
-                turmasDto = JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(disciplinasCacheString);
+                turmasDto = SgpJsonSerializer.Deserialize<IEnumerable<TurmaDto>>(disciplinasCacheString);
             }
             else
             {
                 turmasDto = await servicoEOL.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(rfProfessor, codigoEscola, anoLetivo);
                 if (turmasDto != null && turmasDto.Any())
                 {
-                    await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(turmasDto));
+                    await repositorioCache.SalvarAsync(chaveCache, SgpJsonSerializer.Serialize(turmasDto));
                 }
             }
             return turmasDto;

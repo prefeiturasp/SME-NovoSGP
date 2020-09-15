@@ -1,15 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace SME.SGP.Infra
 {
     public class TurmaParaCopiaPlanoAnualDto
     {
-        [JsonProperty("nomeTurma")]
+        [JsonPropertyName("nomeTurma")]
         public string Nome { get; set; }
 
         public bool PossuiPlano { get; set; }
 
-        [JsonProperty("codTurma")]
+        [JsonPropertyName("codTurma")]
         public int TurmaId { get; set; }
     }
 }

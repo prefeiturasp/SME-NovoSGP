@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -51,7 +51,7 @@ namespace SME.SGP.Integracao.Teste
                 var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos/ciclo/2019/1/1").Result;
                 if (planoCicloCompletoResult.IsSuccessStatusCode)
                 {
-                    var planoCicloCompletoDto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoCicloCompletoResult.Content.ReadAsStringAsync().Result);
+                    var planoCicloCompletoDto = SgpJsonSerializer.Deserialize<PlanoCicloCompletoDto>(planoCicloCompletoResult.Content.ReadAsStringAsync().Result);
                     Assert.Equal(planoDeCicloDto.Descricao, planoCicloCompletoDto.Descricao);
                 }
                 else
@@ -92,7 +92,7 @@ namespace SME.SGP.Integracao.Teste
                 var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos/ciclo/2020/1/1").Result;
                 if (planoCicloCompletoResult.IsSuccessStatusCode)
                 {
-                    var planoCicloCompletoDto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoCicloCompletoResult.Content.ReadAsStringAsync().Result);
+                    var planoCicloCompletoDto = SgpJsonSerializer.Deserialize<PlanoCicloCompletoDto>(planoCicloCompletoResult.Content.ReadAsStringAsync().Result);
                     Assert.Equal(planoDeCicloDto.Descricao, planoCicloCompletoDto.Descricao);
                 }
                 else
@@ -110,7 +110,7 @@ namespace SME.SGP.Integracao.Teste
 
         private string TransformarEmJson(object model)
         {
-            return JsonConvert.SerializeObject(model);
+            return SgpJsonSerializer.Serialize(model);
         }
     }
 }

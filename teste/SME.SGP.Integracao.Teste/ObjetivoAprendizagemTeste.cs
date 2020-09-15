@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -37,13 +37,13 @@ namespace SME.SGP.Integracao.Teste
             var getResult = _fixture._clientApi.PostAsync("api/v1/objetivos-aprendizagem/", jsonParaPost).Result;
 
             Assert.True(getResult.IsSuccessStatusCode);
-            var disciplinas = JsonConvert.DeserializeObject<IEnumerable<ObjetivoAprendizagemDto>>(getResult.Content.ReadAsStringAsync().Result);
+            var disciplinas = SgpJsonSerializer.Deserialize<IEnumerable<ObjetivoAprendizagemDto>>(getResult.Content.ReadAsStringAsync().Result);
             Assert.True(disciplinas != null);
         }
 
         private string TransformarEmJson(object model)
         {
-            return JsonConvert.SerializeObject(model);
+            return SgpJsonSerializer.Serialize(model);
         }
     }
 }

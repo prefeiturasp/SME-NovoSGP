@@ -1,29 +1,29 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace SME.SGP.Aplicacao.Integracoes.Respostas
 {
     public class ObjetivoAprendizagemResposta
     {
-        [JsonProperty("year_id")]
+        [JsonPropertyName("year_id")]
         public string Ano { get; set; }
 
-        [JsonProperty("updated_at")]
+        [JsonPropertyName("updated_at")]
         public DateTime AtualizadoEm { get; set; }
 
-        [JsonProperty("code")]
+        [JsonPropertyName("code")]
         public string Codigo { get; set; }
 
-        [JsonProperty("curricular_component_id")]
+        [JsonPropertyName("curricular_component_id")]
         public long ComponenteCurricularId { get; set; }
 
-        [JsonProperty("created_at")]
+        [JsonPropertyName("created_at")]
         public DateTime CriadoEm { get; set; }
 
-        [JsonProperty("description")]
+        [JsonPropertyName("description")]
         public string Descricao { get; set; }
 
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public long Id { get; set; }
     }
 }

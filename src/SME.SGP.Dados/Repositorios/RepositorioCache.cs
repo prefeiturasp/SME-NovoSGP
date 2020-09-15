@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
                     {
                         stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
                     }
-                    return JsonConvert.DeserializeObject<T>(stringCache);
+                    return SgpJsonSerializer.Deserialize<T>(stringCache);
                 }
             }
             catch (Exception ex)
@@ -82,12 +82,12 @@ namespace SME.SGP.Dados.Repositorios
                     {
                         stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
                     }
-                    return JsonConvert.DeserializeObject<T>(stringCache);
+                    return SgpJsonSerializer.Deserialize<T>(stringCache);
                 }
 
                 var dados = await buscarDados();
 
-                await SalvarAsync(nomeChave, JsonConvert.SerializeObject(dados), minutosParaExpirar, utilizarGZip);
+                await SalvarAsync(nomeChave, SgpJsonSerializer.Serialize(dados), minutosParaExpirar, utilizarGZip);
 
                 return dados;
             }
@@ -118,7 +118,7 @@ namespace SME.SGP.Dados.Repositorios
                     {
                         stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
                     }
-                    return JsonConvert.DeserializeObject<T>(stringCache);
+                    return SgpJsonSerializer.Deserialize<T>(stringCache);
                 }
 
                 var dados = await buscarDados();
@@ -252,7 +252,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task SalvarAsync(string nomeChave, object valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {
-            await SalvarAsync(nomeChave, JsonConvert.SerializeObject(valor), minutosParaExpirar, utilizarGZip);
+            await SalvarAsync(nomeChave, SgpJsonSerializer.Serialize(valor), minutosParaExpirar, utilizarGZip);
         }
     }
 }
