@@ -2,6 +2,8 @@
 {
     public class DiarioBordoObservacaoNotificacao
     {
+        protected DiarioBordoObservacaoNotificacao() { }
+
         public DiarioBordoObservacaoNotificacao(long idObservacao, long idNotificacao)
         {
             this.IdObservacao = idObservacao;
