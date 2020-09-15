@@ -88,8 +88,8 @@ namespace SME.SGP.Dominio.Servicos
             var quantidadeDiasCP = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
             var quantidadeDiasDiretor = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes));
 
-           await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);
-           await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, quantidadeDiasCP, quantidadeDiasDiretor);
+            await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);
+            await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, quantidadeDiasCP, quantidadeDiasDiretor);
         }
 
         private async Task NotificarAlunosFaltososModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidade, int quantidadeDiasCP, int quantidadeDiasDiretor)
@@ -103,7 +103,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task NotificarCompensacaoAusencia(long compensacaoId)
         {
             // Verifica se compensação possui alunos vinculados
-            var alunos = repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId).Result;
+            var alunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
             if (alunos == null || !alunos.Any())
                 return;
 
@@ -118,10 +118,10 @@ namespace SME.SGP.Dominio.Servicos
             var ue = repositorioUe.ObterUEPorTurma(turma.CodigoTurma);
             var dre = repositorioDre.ObterPorId(ue.DreId);
             var disciplinaEOL = ObterNomeDisciplina(compensacao.DisciplinaId);
-            MeusDadosDto professor = servicoEOL.ObterMeusDados(compensacao.CriadoRF).Result;
+            MeusDadosDto professor = await servicoEOL.ObterMeusDados(compensacao.CriadoRF);
 
             // Carrega dados dos alunos não notificados
-            var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
+            var alunosTurma = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
             var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
             foreach (var aluno in alunos)
             {
@@ -186,7 +186,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 foreach (var tipo in tiposCalendario)
                 {
-                   await VerificaNotificacaoBimestralCalendario(tipo, dataAtual, ModalidadeTipoCalendario.EJA);
+                    await VerificaNotificacaoBimestralCalendario(tipo, dataAtual, ModalidadeTipoCalendario.EJA);
                 }
             }
         }
@@ -218,7 +218,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // Dados da Aula
             var registroFrequencia = repositorioFrequencia.ObterAulaDaFrequencia(registroFrequenciaId);
-            MeusDadosDto professor = servicoEOL.ObterMeusDados(registroFrequencia.ProfessorRf).Result;
+            MeusDadosDto professor = await servicoEOL.ObterMeusDados(registroFrequencia.ProfessorRf);
 
             // Gestores
             var usuarios = BuscaGestoresUe(registroFrequencia.CodigoUe);
@@ -261,22 +261,22 @@ namespace SME.SGP.Dominio.Servicos
 
                 foreach (var uesAgrupadas in alunosFaltososBimestre.GroupBy(a => new { a.DreCodigo, a.DreNome, a.DreAbreviacao, a.TipoEscola, a.UeCodigo, a.UeNome }))
                 {
-                    NotificarEscolaAlunosFaltososBimestre(uesAgrupadas.Key.DreCodigo,
-                                                          uesAgrupadas.Key.DreNome,
-                                                          uesAgrupadas.Key.DreAbreviacao,
-                                                          (TipoEscola)uesAgrupadas.Key.TipoEscola,
-                                                          uesAgrupadas.Key.UeCodigo,
-                                                          uesAgrupadas.Key.UeNome,
-                                                          percentualCritico,
-                                                          periodoEscolar.Bimestre,
-                                                          dataReferencia.Year,
-                                                          uesAgrupadas.GroupBy(u => u.TurmaCodigo),
-                                                          modalidadeTipoCalendario);
+                    await NotificarEscolaAlunosFaltososBimestre(uesAgrupadas.Key.DreCodigo,
+                                                                uesAgrupadas.Key.DreNome,
+                                                                uesAgrupadas.Key.DreAbreviacao,
+                                                                (TipoEscola)uesAgrupadas.Key.TipoEscola,
+                                                                uesAgrupadas.Key.UeCodigo,
+                                                                uesAgrupadas.Key.UeNome,
+                                                                percentualCritico,
+                                                                periodoEscolar.Bimestre,
+                                                                dataReferencia.Year,
+                                                                uesAgrupadas.GroupBy(u => u.TurmaCodigo),
+                                                                modalidadeTipoCalendario);
                 }
             }
         }
 
-        private void NotificarEscolaAlunosFaltososBimestre(string dreCodigo, string dreNome, string dreAbreviacao, TipoEscola tipoEscola, string ueCodigo, string ueNome, double percentualCritico, int bimestre, int ano, IEnumerable<IGrouping<string, AlunoFaltosoBimestreDto>> turmasAgrupadas, ModalidadeTipoCalendario modalidadeTipoCalendario)
+        private async Task NotificarEscolaAlunosFaltososBimestre(string dreCodigo, string dreNome, string dreAbreviacao, TipoEscola tipoEscola, string ueCodigo, string ueNome, double percentualCritico, int bimestre, int ano, IEnumerable<IGrouping<string, AlunoFaltosoBimestreDto>> turmasAgrupadas, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
             var titulo = $"Alunos com baixa frequência da {tipoEscola.ShortName()} {ueNome} - {modalidadeTipoCalendario.Name()}";
             StringBuilder mensagem = new StringBuilder();
@@ -284,7 +284,7 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach (var turmaAgrupada in turmasAgrupadas)
             {
-                var alunosDaTurma = servicoEOL.ObterAlunosPorTurma(turmaAgrupada.Key).Result;
+                var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(turmaAgrupada.Key);
                 var alunosFaltososTurma = alunosDaTurma.Where(c => turmaAgrupada.Any(a => a.AlunoCodigo == c.CodigoAluno));
 
                 mensagem.AppendLine($"<p>Turma <b>{turmaAgrupada.First().TurmaModalidade.ShortName()} - {turmaAgrupada.First().TurmaNome}</b></p>");
@@ -776,7 +776,7 @@ namespace SME.SGP.Dominio.Servicos
 
                             foreach (var turma in turmasUE)
                             {
-                                var alunosEOL = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
+                                var alunosEOL = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
 
                                 var alunosTurma = alunosAusentes.Where(c => c.TurmaId == turma.CodigoTurma);
                                 alunosTurma.Select(a => a.DisciplinaId).Distinct().ToList()
