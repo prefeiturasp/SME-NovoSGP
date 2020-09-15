@@ -203,5 +203,12 @@ namespace SME.SGP.Dados.Repositorios
                 return diarioBordo;
             }, new { diarioBordoId }, splitOn: "DevolutivaId, AulaPaiId, turma_id, ue_id, dre_id")).FirstOrDefault();
         }
+
+        public async Task<IEnumerable<long>> ObterObservacaoPorId(long diarioBordoId)
+        {
+            var query = "select id from diario_bordo_observacao where diario_bordo_id = @diarioBordoId";
+
+            return await database.Conexao.QueryAsync<long>(query, new { diarioBordoId });
+        }
     }
 }

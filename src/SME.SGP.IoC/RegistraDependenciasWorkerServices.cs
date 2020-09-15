@@ -380,6 +380,8 @@ private static void RegistrarRabbit(IServiceCollection services)
 
             services.TryAddScopedWorkerService<ISalvarNotificacaoDevolutivaUseCase, SalvarNotificacaoDevolutivaUseCase>();
             services.TryAddScopedWorkerService<IExcluirNotificacaoDevolutivaUseCase, ExcluirNotificacaoDevolutivaUseCase>();
+
+            services.TryAddScopedWorkerService<IExcluirNotificacaoDiarioBordoUseCase, ExcluirNotificacaoDiarioBordoUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
