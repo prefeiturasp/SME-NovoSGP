@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -23,6 +24,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
 
         public ComandosPlanoAula(IRepositorioPlanoAula repositorioPlanoAula,
                         IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula,
@@ -35,7 +37,8 @@ namespace SME.SGP.Aplicacao
                         IConsultasProfessor consultasProfessor,
                         IServicoUsuario servicoUsuario,
                         IUnitOfWork unitOfWork,
-                        IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+                        IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                        IMediator mediator)
         {
             this.repositorio = repositorioPlanoAula;
             this.repositorioObjetivosAula = repositorioObjetivosAula;
@@ -47,6 +50,7 @@ namespace SME.SGP.Aplicacao
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem;
             this.consultasPlanoAnual = consultasPlanoAnual;
             this.unitOfWork = unitOfWork;
+            this.mediator = mediator;
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoUsuario = servicoUsuario;
         }
@@ -193,6 +197,10 @@ namespace SME.SGP.Aplicacao
         private async Task SalvarPlanoAula(PlanoAula planoAula, PlanoAulaDto planoAulaDto, long planoAnualId)
         {
             repositorio.Salvar(planoAula);
+
+            await mediator.Send(new ExcluirPendenciaAulaCommand(planoAula.AulaId, Dominio.TipoPendenciaAula.PlanoAula));
+
+
             // Salvar Objetivos
             await repositorioObjetivosAula.LimparObjetivosAula(planoAula.Id);
             if (planoAulaDto.ObjetivosAprendizagemJurema != null)
