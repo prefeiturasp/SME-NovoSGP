@@ -74,7 +74,8 @@ namespace SME.SGP.Aplicacao
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
                 TipoNota = tipoNota,
-                Media = mediaAprovacao
+                Media = mediaAprovacao,
+                AnoLetivo = turma.AnoLetivo
             };
         }
 
