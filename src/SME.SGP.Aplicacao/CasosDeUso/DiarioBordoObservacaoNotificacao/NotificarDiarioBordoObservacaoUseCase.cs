@@ -19,8 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IUnitOfWork unitOfWork;
 
         public NotificarDiarioBordoObservacaoUseCase(IMediator mediator,
-                                                      IConfiguration configuration,
-                                                      IServicoNotificacao servicoNotificacao,
+                                                      IConfiguration configuration,                                                      
                                                       IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao,
                                                       IUnitOfWork unitOfWork)
         {
