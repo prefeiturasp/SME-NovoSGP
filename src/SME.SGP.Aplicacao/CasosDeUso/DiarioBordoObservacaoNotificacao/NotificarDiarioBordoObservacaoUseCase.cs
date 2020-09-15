@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var dadosMensagem = mensagemRabbit.ObterObjetoMensagem<NotificarDiarioBordoObservacaoDto>();
-            var dataAtual = DateTime.Now.ToString("MM/dd/yyyy");
+            var dataAtual = DateTime.Now.ToString("dd/MM/yyyy");
             var usuarioLogado = dadosMensagem.Usuario;
             long diarioBordoId = (long)dadosMensagem.DiarioBordoId;
             var diarioBordo = await mediator.Send(new ObterDiarioBordoComAulaETurmaPorCodigoQuery(diarioBordoId));
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
                     if (codigoRf != usuarioLogado.CodigoRf)
                     {
                         var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
-                        if (usuario != null)
+                        //if (usuario != null)
                         {
                             unitOfWork.IniciarTransacao();
                             var notificacaoId = await mediator.Send(new NotificarUsuarioCommand($"Nova observação no Diário de bordo da turma {diarioBordo.Aula.Turma.Nome} ({dataAtual})",

@@ -202,6 +202,6 @@ namespace SME.SGP.Dados.Repositorios
                 diarioBordo.AdicionarAula(aula);
                 return diarioBordo;
             }, new { diarioBordoId }, splitOn: "DevolutivaId, AulaPaiId, turma_id, ue_id, dre_id")).FirstOrDefault();
-        }
+        }       
     }
 }

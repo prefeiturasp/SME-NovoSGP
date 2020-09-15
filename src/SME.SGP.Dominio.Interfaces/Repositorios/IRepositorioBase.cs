@@ -19,6 +19,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<long> SalvarAsync(T entidade);
 
-        Task<bool> Exists(long id);
+        Task<bool> Exists(long id, string coluna = null);
+
+        Task<long> RemoverLogico(long id, string coluna = null);
     }
 }
