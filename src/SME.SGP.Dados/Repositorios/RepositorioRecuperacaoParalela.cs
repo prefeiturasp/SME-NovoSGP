@@ -31,9 +31,10 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId = turmaId, periodoId });
         }
 
-        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano)
+        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto>> ListarTotalAlunosSeries(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, 
+            string ano, int anoLetivo)
         {
-            //TODO: colocar os wheres
+            
             var query = new StringBuilder();
             query.Append(@" select
                                 count ( distinct aluno_id) as total,
@@ -51,11 +52,12 @@ namespace SME.SGP.Dados.Repositorios
             query.Append(@" group by
                                 turma.ano,
                                 tipo_ciclo.descricao");
-            var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId };
+            var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId, anoLetivo };
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoDto>(query.ToString(), parametros);
         }
 
-        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>> ListarTotalEstudantesPorFrequencia(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano)
+        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>> ListarTotalEstudantesPorFrequencia(int? periodoId, string dreId, string ueId, int? cicloId, 
+            string turmaId, string ano, int anoLetivo)
         {
             var query = new StringBuilder();
             query.Append(@"select
@@ -84,12 +86,13 @@ namespace SME.SGP.Dados.Repositorios
                                 tipo_ciclo.id
                             order by rpr.ordem");
 
-            var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId };
+            var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId, anoLetivo };
 
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalAlunosAnoFrequenciaDto>(query.ToString(), parametros);
         }
 
-        public async Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? pagina)
+        public async Task<PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, 
+            string ano, int anoLetivo, int? pagina)
         {
             //a paginação desse ítem é diferente das outras, pois ela é determinada pela paginação da coluna pagina
             //ela não tem uma quantidade exata de ítens por página, apenas os objetivos daquele eixo, podendo variar para cada um
@@ -124,7 +127,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("rpr.ordem;");
             query.AppendLine("select max(pagina) from recuperacao_paralela_objetivo;");
 
-            var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId, pagina };
+            var parametros = new { dreId, ueId, cicloId, turmaId, ano, periodoId, pagina, anoLetivo };
             var retorno = new PaginacaoResultadoDto<RetornoRecuperacaoParalelaTotalResultadoDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), parametros))
@@ -138,7 +141,8 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano, int? pagina)
+        public async Task<IEnumerable<RetornoRecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodoId, string dreId, string ueId, int? cicloId, string turmaId, string ano, int anoLetivo, 
+            int? pagina)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
@@ -166,7 +170,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("o.ordem,");
             query.AppendLine("rpr.ordem;");
 
-            var parametros = new { dreId, ueId, cicloId, turmaId, ano, pagina, periodoId };
+            var parametros = new { dreId, ueId, cicloId, turmaId, ano, pagina, periodoId, anoLetivo };
             return await database.Conexao.QueryAsync<RetornoRecuperacaoParalelaTotalResultadoDto>(query.ToString(), parametros);
         }
 
@@ -217,6 +221,9 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(" and turma.turma_id = @turmaId");
             if (pagina.HasValue)
                 query.AppendLine(" and o.pagina = @pagina");
+
+            query.AppendLine(" and rp.ano_letivo = @anoLetivo");
+
         }
 
         private string MontaCamposCabecalho()
