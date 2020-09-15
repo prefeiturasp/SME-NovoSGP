@@ -61,6 +61,5 @@ namespace SME.SGP.Dados.Repositorios
                 writer.Complete();
             }
         }
-
     }
 }
