@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
         #region Metodos Privados
         private async Task VerificaPendenciasDiarioDeBordo()
         {
-            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.DiarioBordo);
+            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.DiarioBordo, "diario_bordo");
             if (aulas != null)
             {
 
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaPendenciasAvaliacao()
         {
-            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.Avaliacao);
+            var aulas = await repositorioPendenciaAula.ListarPendenciasAtividadeAvaliativa();
             if (aulas != null)
             {
                 await RegistraPendencia(aulas, TipoPendenciaAula.Avaliacao);
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaPendenciasFrequencia()
         {
-            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.Frequencia);
+            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.Frequencia, "registro_frequencia");
             if (aulas != null)
             {
                 await RegistraPendencia(aulas, TipoPendenciaAula.Frequencia);
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaPendenciasPlanoAula()
         {
-            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.PlanoAula);
+            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.PlanoAula, "plano_aula");
             if (aulas != null)
             {
                 await RegistraPendencia(aulas, TipoPendenciaAula.PlanoAula);
